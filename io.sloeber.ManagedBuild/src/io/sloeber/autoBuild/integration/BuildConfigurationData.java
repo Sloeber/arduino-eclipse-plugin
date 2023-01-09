@@ -153,7 +153,7 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public ICdtVariablesContributor getBuildVariablesContributor() {
-       return null;//TOFIX new BuildVariablesContributor(this);
+        return null;//TOFIX new BuildVariablesContributor(this);
     }
 
     void clearCachedData() {
@@ -183,12 +183,13 @@ public class BuildConfigurationData extends CConfigurationData {
             String tname = toolChain != null ? toolChain.getName() : ""; //$NON-NLS-1$
             //TOFIX msg = NLS.bind(DataProviderMessages.getString("BuildConfigurationData.NoToolchainSupport"), tname); //$NON-NLS-1$
             msg = "BuildConfigurationData.NoToolchainSupport"; //$NON-NLS-1$
-        } else if (ManagedBuildManager.getExtensionConfiguration(fCfg) == null) {
-            flags |= CConfigurationStatus.SETTINGS_INVALID;
-            //TOFIX msg = NLS.bind(DataProviderMessages.getString("BuildConfigurationData.OrphanedConfiguration"), //$NON-NLS-1$
-            //fCfg.getId());
-            msg = "BuildConfigurationData.OrphanedConfiguration"; //$NON-NLS-1$
         }
+        //        else if (ManagedBuildManager.getExtensionConfiguration(fCfg) == null) {
+        //            flags |= CConfigurationStatus.SETTINGS_INVALID;
+        //            //TOFIX msg = NLS.bind(DataProviderMessages.getString("BuildConfigurationData.OrphanedConfiguration"), //$NON-NLS-1$
+        //            //fCfg.getId());
+        //            msg = "BuildConfigurationData.OrphanedConfiguration"; //$NON-NLS-1$
+        //        }
 
         if (flags != 0)
             return new CConfigurationStatus(Activator.getId(), flags, msg, null);

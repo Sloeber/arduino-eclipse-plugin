@@ -123,24 +123,21 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         Builder b = (Builder) cfg.getEditableBuilder();
         // Need to ensure that build macro supplier can get the description for this configuration during the write...
         cfg.setConfigurationDescription(cfgDescription);
-        
-        
-        
-        
-//       TOFIX JABA disabled this. This whole method doesn't make sense to me
-//        I ùean 2 parameters are provided and one parameter is used to set the description of the other via a 
-//        a lot of detours
-//        if (b != null && b.isManagedBuildOn() && b.getBuildPathAttribute(false) == null) {
-//            String bPath = b.getDefaultBuildPath();
-//            b.setBuildPathAttribute(bPath);
-//        }
-//        //		cfg.setConfigurationDescription(des);
-//        //		ManagedBuildManager.performValueHandlerEvent(cfg, IManagedOptionValueHandler.EVENT_APPLY);
-//        
-        
-        
-        
-        cfg.serialize(cfgElemen);
+
+        //       TOFIX JABA disabled this. This whole method doesn't make sense to me
+        //        I ùean 2 parameters are provided and one parameter is used to set the description of the other via a 
+        //        a lot of detours
+        //        if (b != null && b.isManagedBuildOn() && b.getBuildPathAttribute(false) == null) {
+        //            String bPath = b.getDefaultBuildPath();
+        //            b.setBuildPathAttribute(bPath);
+        //        }
+        //        //		cfg.setConfigurationDescription(des);
+        //        //		ManagedBuildManager.performValueHandlerEvent(cfg, IManagedOptionValueHandler.EVENT_APPLY);
+        //        
+        //        
+        //        
+        //        
+        //        cfg.serialize(cfgElemen);
 
         return appliedCfg;
     }
@@ -282,7 +279,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         Configuration cfg = (Configuration) ((BuildConfigurationData) base).getConfiguration();
         Configuration newCfg = copyCfg(cfg, cfgDescription);
 
-        if (!newCfg.getId().equals(cfg.getId()) ) {
+        if (!newCfg.getId().equals(cfg.getId())) {
             // Bug 335001: Remove existing exported settings as they point at this configuration
             for (ICExternalSetting extSetting : newCfg.getConfigurationDescription().getExternalSettings())
                 newCfg.getConfigurationDescription().removeExternalSetting(extSetting);
@@ -422,8 +419,6 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         return cfg.getConfigurationData();
     }
 
-
-
     private static Configuration updatePreferenceOnLoad(Configuration cfg, ICConfigurationDescription cfgDescription) {
         if (cfg == null) {
             cfg = createEmptyPrefConfiguration(cfgDescription.getId(), cfgDescription.getName());
@@ -468,8 +463,8 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
                             adjustInputType(tool, type, des);
                         continue;
                     } else {
-                    	List<IContentType> cTypes = type.getSourceContentTypes();
-                        for (IContentType cType: cTypes) {
+                        List<IContentType> cTypes = type.getSourceContentTypes();
+                        for (IContentType cType : cTypes) {
                             ILanguageDescriptor[] langs = map.remove(cType.getId());
                             if (langs != null && langs.length != 0) {
                                 for (int q = 0; q < langs.length; q++) {
@@ -492,7 +487,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
     private static InputType adjustInputType(Tool tool, InputType type, ILanguageDescriptor des) {
         String[] cTypeIds = des.getContentTypeIds();
         String srcIds[] = type.getSourceContentTypeIds();
-        String hIds[] =null;// type.getHeaderContentTypeIds();
+        String hIds[] = null;// type.getHeaderContentTypeIds();
 
         Set<String> landTypes = new HashSet<>(Arrays.asList(cTypeIds));
         landTypes.removeAll(Arrays.asList(srcIds));
@@ -512,7 +507,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 
     private static void addTools(IToolChain tc, Map<String, ILanguageDescriptor> langMap,
             Map<Object, ILanguageDescriptor[]> cTypeToLangMap) {
-        ITool extTool = ManagedBuildManager.getExtensionTool(PREF_TOOL_ID);
+        ITool extTool = null;//TOFIX JABA  ManagedBuildManager.getExtensionTool(PREF_TOOL_ID);
         List<ILanguageDescriptor> list = new ArrayList<>(langMap.values());
         ILanguageDescriptor des;
         while (list.size() != 0) {
@@ -535,13 +530,13 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
                 Tool tool = (Tool) tc.createTool(extTool, id, name, false);
                 InputType type = (InputType) tool.getInputTypes()[0];
                 type = (InputType) tool.getEditableInputType(type);
-                type.setName(des.getName());
+                type.name = (des.getName());
             }
         }
     }
 
     private static Configuration createEmptyPrefConfiguration(String id, String name) {
-        Configuration extCfg = (Configuration) ManagedBuildManager.getExtensionConfiguration(PREF_CFG_ID);
+        Configuration extCfg = (Configuration) null;//TOFIX JABA ManagedBuildManager.getExtensionConfiguration(PREF_CFG_ID);
         Configuration emptyPrefCfg = null;
         if (extCfg != null) {
             if (id == null)

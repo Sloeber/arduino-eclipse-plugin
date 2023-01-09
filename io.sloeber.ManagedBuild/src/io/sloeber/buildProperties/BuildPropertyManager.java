@@ -26,10 +26,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.autoBuild.Internal.BuildProperties;
-import io.sloeber.autoBuild.api.IBuildProperty;
-import io.sloeber.autoBuild.api.IBuildPropertyType;
-import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.core.Activator;
 
 public class BuildPropertyManager implements IBuildPropertyManager {

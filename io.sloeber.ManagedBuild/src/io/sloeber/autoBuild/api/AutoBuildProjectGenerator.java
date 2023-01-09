@@ -36,7 +36,7 @@ import io.sloeber.autoBuild.integration.AutoBuildNature;
 public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
     private String myProjectName = null;
-    private IProject myProject=null;
+    private IProject myProject = null;
 
     public AutoBuildProjectGenerator() {
 
@@ -75,11 +75,12 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
                 ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(myProject);
 
-                IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
+                IProjectType sloeberProjType = ManagedBuildManager.getProjectType(
+                        "io.sloeber.autoBuild.buildDefinitions", "io.sloeber.builddef", "io.sloeber.core.sketch", true); //$NON-NLS-1$
                 IConfiguration[] configs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) configs[0];
                 ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
-                info.setManagedProject((IManagedProject)mProj);
+                info.setManagedProject((IManagedProject) mProj);
                 for (IConfiguration cfinter : configs) {
                     //        for (CfgHolder cfg : cfgs) {
                     cf = (Configuration) cfinter;
@@ -112,7 +113,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
         monitor.done();
     }
 
-
     @Override
     public IFile[] getFilesToOpen() {
         // TODO Auto-generated method stub
@@ -128,9 +128,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
         // TODO Auto-generated method stub
         myProjectURI = locationURI;
     }
-    
+
     public IProject getProject() {
-    	return myProject;
+        return myProject;
     }
 
 }

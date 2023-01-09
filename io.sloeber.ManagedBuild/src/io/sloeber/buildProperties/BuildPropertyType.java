@@ -16,8 +16,7 @@ package io.sloeber.buildProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.sloeber.autoBuild.api.IBuildPropertyType;
-import io.sloeber.autoBuild.api.IBuildPropertyValue;
+import io.sloeber.autoBuild.api.PropertyBase;
 
 //import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
 //import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;

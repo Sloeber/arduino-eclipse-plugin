@@ -22,10 +22,11 @@ import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.ITargetPlatform;
 import io.sloeber.autoBuild.api.IToolChain;
@@ -71,135 +72,11 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
      * @param managedBuildRevision
      *            the fileVersion of Managed Build System
      */
-    public TargetPlatform(IToolChain parent, IManagedConfigElement element, String managedBuildRevision) {
+    public TargetPlatform(IToolChain parent, IExtensionPoint root, IConfigurationElement element) {
         this.parent = parent;
         isExtensionTargetPlatform = true;
 
-        // setup for resolving
-        resolved = false;
-
-        setManagedBuildRevision(managedBuildRevision);
-        loadFromManifest(element);
-
-        // Hook me up to the Managed Build Manager
-  //      ManagedBuildManager.addExtensionTargetPlatform(this);
-    }
-
-    /**
-     * This constructor is called to create a TargetPlatform whose attributes and
-     * children will be
-     * added by separate calls.
-     *
-     * @param parent
-     *            The parent of the builder, if any
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The id for the new tool chain
-     * @param name
-     *            The name for the new tool chain
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a managed
-     *            project element
-     */
-    public TargetPlatform(ToolChain parent, ITargetPlatform superClass, String Id, String name,
-            boolean isExtensionElement) {
-        this.parent = parent;
-        this.superClass = superClass;
-        setManagedBuildRevision(parent.getManagedBuildRevision());
-        if (this.superClass != null) {
-            superClassId = this.superClass.getId();
-        }
-        setId(Id);
-        setName(name);
-    }
-
-    /**
-     * Create a <code>TargetPlatform</code> based on the specification stored in the
-     * project file (.cdtbuild).
-     *
-     * @param parent
-     *            The <code>IToolChain</code> the TargetPlatform will be added to.
-     * @param element
-     *            The XML element that contains the TargetPlatform settings.
-     * @param managedBuildRevision
-     *            the fileVersion of Managed Build System
-     */
-    public TargetPlatform(IToolChain parent, ICStorageElement element, String managedBuildRevision) {
-        this.parent = parent;
-        isExtensionTargetPlatform = false;
-        fTargetPlatformData = new BuildTargetPlatformData(this);
-
-        setManagedBuildRevision(managedBuildRevision);
-        // Initialize from the XML attributes
-        loadFromProject(element);
-    }
-
-    /**
-     * Create a <code>TargetPlatform</code> based upon an existing TargetPlatform.
-     *
-     * @param parent
-     *            The <code>IToolChain</code> the TargetPlatform will be added to.
-     * @param targetPlatform
-     *            The existing TargetPlatform to clone.
-     */
-    public TargetPlatform(IToolChain parent, String Id, String name, TargetPlatform targetPlatform) {
-        this.parent = parent;
-
-        superClass = targetPlatform.isExtensionTargetPlatform ? targetPlatform : targetPlatform.superClass;
-        if (superClass != null) {
-            //			if (targetPlatform.superClassId != null) {
-            superClassId = superClass.getId();// targetPlatform.superClassId;
-            //			}
-        }
-        setId(Id);
-        setName(name);
-        isExtensionTargetPlatform = false;
-        fTargetPlatformData = new BuildTargetPlatformData(this);
-
-        setManagedBuildRevision(targetPlatform.getManagedBuildRevision());
-
-        //  Copy the remaining attributes
-        if (targetPlatform.errorParserIds != null) {
-            errorParserIds = targetPlatform.errorParserIds;
-        }
-        if (targetPlatform.isAbstract != null) {
-            isAbstract = targetPlatform.isAbstract;
-        }
-        if (targetPlatform.osList != null) {
-            osList = new ArrayList<>(targetPlatform.osList);
-        }
-        if (targetPlatform.archList != null) {
-            archList = new ArrayList<>(targetPlatform.archList);
-        }
-        if (targetPlatform.binaryParserList != null) {
-            binaryParserList = new ArrayList<>(targetPlatform.binaryParserList);
-        }
-
-        setDirty(true);
-    }
-
-    /*
-     *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
-     */
-
-    /* (non-Javadoc)
-     * Loads the target platform information from the ManagedConfigElement specified in the
-     * argument.
-     *
-     * @param element Contains the tool-chain information
-     */
-    protected void loadFromManifest(IManagedConfigElement element) {
-        ManagedBuildManager.putConfigElement(this, element);
-
-        // id
-        setId(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.ID)));
-
-        // Get the name
-        setName(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
-
-        // superClass
-        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
+        loadNameAndID(root, element);
 
         // isAbstract
         String isAbs = element.getAttribute(IProjectType.IS_ABSTRACT);
@@ -236,37 +113,74 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
                 binaryParserList.add(SafeStringInterner.safeIntern(bparsTokens[j].trim()));
             }
         }
+
+        // Hook me up to the Managed Build Manager
+        //      ManagedBuildManager.addExtensionTargetPlatform(this);
     }
 
-    /* (non-Javadoc)
-     * Initialize the target platform information from the XML element
-     * specified in the argument
+    /**
+     * This constructor is called to create a TargetPlatform whose attributes and
+     * children will be
+     * added by separate calls.
      *
-     * @param element An XML element containing the target platform information
+     * @param parent
+     *            The parent of the builder, if any
+     * @param superClass
+     *            The superClass, if any
+     * @param Id
+     *            The id for the new tool chain
+     * @param name
+     *            The name for the new tool chain
+     * @param isExtensionElement
+     *            Indicates whether this is an extension element or a managed
+     *            project element
      */
-    protected void loadFromProject(ICStorageElement element) {
+    public TargetPlatform(ToolChain parent, ITargetPlatform superClass, String Id, String newName,
+            boolean isExtensionElement) {
+        this.parent = parent;
+        this.superClass = superClass;
+        setManagedBuildRevision(parent.getManagedBuildRevision());
+        if (this.superClass != null) {
+            superClassId = this.superClass.getId();
+        }
+        id = (Id);
+        name = (newName);
+    }
+
+    /**
+     * Create a <code>TargetPlatform</code> based on the specification stored in the
+     * project file (.cdtbuild).
+     *
+     * @param parent
+     *            The <code>IToolChain</code> the TargetPlatform will be added to.
+     * @param element
+     *            The XML element that contains the TargetPlatform settings.
+     * @param managedBuildRevision
+     *            the fileVersion of Managed Build System
+     */
+    public TargetPlatform(IToolChain parent, ICStorageElement element) {
+        this.parent = parent;
+        isExtensionTargetPlatform = false;
+        fTargetPlatformData = new BuildTargetPlatformData(this);
+
+        setManagedBuildRevision(managedBuildRevision);
+        // Initialize from the XML attributes
 
         // id (unique, do not intern)
-        setId(element.getAttribute(IBuildObject.ID));
-
-        // name
-        if (element.getAttribute(IBuildObject.NAME) != null) {
-            setName(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
-        }
+        loadNameAndID(element);
 
         // superClass
         superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
         if (superClassId != null && superClassId.length() > 0) {
-            superClass = ManagedBuildManager.getExtensionTargetPlatform(superClassId);
+            superClass = null;//TOFIX JABA ManagedBuildManager.getExtensionTargetPlatform(superClassId);
             if (superClass == null) {
                 // TODO:  Report error
             }
         }
 
-
         // isAbstract
-        if (element.getAttribute(IProjectType.IS_ABSTRACT) != null) {
-            String isAbs = element.getAttribute(IProjectType.IS_ABSTRACT);
+        if (element.getAttribute(IS_ABSTRACT) != null) {
+            String isAbs = element.getAttribute(IS_ABSTRACT);
             if (isAbs != null) {
                 isAbstract = Boolean.parseBoolean(isAbs);
             }
@@ -311,6 +225,54 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
     }
 
     /**
+     * Create a <code>TargetPlatform</code> based upon an existing TargetPlatform.
+     *
+     * @param parent
+     *            The <code>IToolChain</code> the TargetPlatform will be added to.
+     * @param targetPlatform
+     *            The existing TargetPlatform to clone.
+     */
+    public TargetPlatform(IToolChain parent, String Id, String name, TargetPlatform targetPlatform) {
+        //        this.parent = parent;
+        //
+        //        superClass = targetPlatform.isExtensionTargetPlatform ? targetPlatform : targetPlatform.superClass;
+        //        if (superClass != null) {
+        //            //			if (targetPlatform.superClassId != null) {
+        //            superClassId = superClass.getId();// targetPlatform.superClassId;
+        //            //			}
+        //        }
+        //        setId(Id);
+        //        setName(name);
+        //        isExtensionTargetPlatform = false;
+        //        fTargetPlatformData = new BuildTargetPlatformData(this);
+        //
+        //        setManagedBuildRevision(targetPlatform.getManagedBuildRevision());
+        //
+        //        //  Copy the remaining attributes
+        //        if (targetPlatform.errorParserIds != null) {
+        //            errorParserIds = targetPlatform.errorParserIds;
+        //        }
+        //        if (targetPlatform.isAbstract != null) {
+        //            isAbstract = targetPlatform.isAbstract;
+        //        }
+        //        if (targetPlatform.osList != null) {
+        //            osList = new ArrayList<>(targetPlatform.osList);
+        //        }
+        //        if (targetPlatform.archList != null) {
+        //            archList = new ArrayList<>(targetPlatform.archList);
+        //        }
+        //        if (targetPlatform.binaryParserList != null) {
+        //            binaryParserList = new ArrayList<>(targetPlatform.binaryParserList);
+        //        }
+        //
+        //        setDirty(true);
+    }
+
+    /*
+     *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
+     */
+
+    /**
      * Persist the target platform to the project file.
      */
     public void serialize(ICStorageElement element) {
@@ -323,9 +285,8 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
             element.setAttribute(IBuildObject.NAME, name);
         }
 
-
         if (isAbstract != null) {
-            element.setAttribute(IProjectType.IS_ABSTRACT, isAbstract.toString());
+            element.setAttribute(IS_ABSTRACT, isAbstract.toString());
         }
 
         if (binaryParserList != null) {
@@ -594,7 +555,7 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
             resolved = true;
             // Resolve superClass
             if (superClassId != null && superClassId.length() > 0) {
-                superClass = ManagedBuildManager.getExtensionTargetPlatform(superClassId);
+                superClass = null;//TOFIX JABA ManagedBuildManager.getExtensionTargetPlatform(superClassId);
                 if (superClass == null) {
                     // Report error
                     ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
@@ -627,17 +588,5 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
     public CTargetPlatformData getTargetPlatformData() {
         return fTargetPlatformData;
     }
-
-	@Override
-	public void resolveFields() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void resolveSuperClass() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

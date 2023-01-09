@@ -49,7 +49,7 @@ public class BuildTargetPlatformData extends CTargetPlatformData {
     }
 
     public void setName(String name) {
-        fTargetPlatform.setName(name);
+        fTargetPlatform.name = (name);
     }
 
 }

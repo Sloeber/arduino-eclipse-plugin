@@ -235,8 +235,7 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
     protected ResolvedMacro resolveMacro(ICdtVariable macro) throws CdtVariableException {
         ResolvedMacro resolved = null;
 
-        if (fConfiguration != null && fBuilder != null && fBuilder.keepEnvironmentVariablesInBuildfile()
-                && fVarMngr.isEnvironmentVariable(macro, fCfgDes)
+        if (fConfiguration != null && fBuilder != null && fVarMngr.isEnvironmentVariable(macro, fCfgDes)
                 && (!CdtVariableResolver.isStringListVariable(macro.getValueType())
                         || size(macro.getStringListValue()) < 2)) {
             String ref = getMacroReference(macro);

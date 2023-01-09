@@ -29,40 +29,17 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuildPropertiesRestriction;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionApplicability;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCategory;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCommandGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IOptionDefaultValueGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.core.ManagedOptionValueHandler;
-//import org.eclipse.cdt.managedbuilder.core.OptionStringValue;
-//import org.eclipse.cdt.managedbuilder.internal.enablement.OptionEnablementExpression;
-//import org.eclipse.cdt.managedbuilder.internal.macros.OptionContextData;
-//import org.eclipse.cdt.managedbuilder.macros.IOptionContextData;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IBuildPropertiesRestriction;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionCategory;
 import io.sloeber.autoBuild.api.IProjectType;
@@ -75,7 +52,7 @@ import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
 
-public class Option extends BuildObject implements IOption, IBuildPropertiesRestriction {
+public class Option extends BuildObject implements IOption {
     private static final String IS_BUILTIN_EMPTY = "IS_BUILTIN_EMPTY"; //$NON-NLS-1$
     private static final String IS_VALUE_EMPTY = "IS_VALUE_EMPTY"; //$NON-NLS-1$
     // Static default return values
@@ -83,26 +60,41 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final OptionStringValue[] EMPTY_LV_ARRAY = new OptionStringValue[0];
 
+    String[] myIsAbs;
+    String[] categoryId;
+    String[] resFilterStr;
+    String[] valueTypeStr;
+    String[] browseTypeStr;
+    String[] browseFilterPath;
+    String[] browseFilterExtensionsStr;
+    String[] myValueString;
+    String[] myDefaultValueString;
+    String[] defaultValueGeneratorStr;
+    String[] command;
+    String[] commandGeneratorStr;
+    String[] commandFalse;
+    String[] isForSD;
+    String[] tip;
+    String[] contextId;
+    String[] valueHandlerString;
+    String[] valueHandlerExtraArgument;
+    String[] applicabilityCalculatorStr;
+    String[] fieldEditorId;
+    String[] fieldEditorExtraArgument;
+
+    List<OptionEnablementExpression> myEnablements = new ArrayList<>();
+
     //  Superclass
-    private IOption superClass;
-    private String superClassId;
     //  Parent and children
     private IHoldsOptions holder;
     //  Managed Build model attributes
-    private String unusedChildren;
-    private Integer browseType;
-    private String browseFilterPath;
+    private Integer browseType = null;
     private String[] browseFilterExtensions;
     private List<OptionStringValue> builtIns;
     private IOptionCategory category;
-    private String categoryId;
-    private String command;
     private IConfigurationElement commandGeneratorElement;
     private IOptionCommandGenerator commandGenerator;
-    private String commandFalse;
     private Boolean isForScannerDiscovery;
-    private String tip;
-    private String contextId;
     private List<String> applicableValuesList;
     private Map<String, String> commandsMap;
     private Map<String, String> namesMap;
@@ -115,18 +107,12 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     private Integer resourceFilter;
     private IConfigurationElement valueHandlerElement = null;
     private IManagedOptionValueHandler valueHandler = null;
-    private String valueHandlerExtraArgument;
-    private String fieldEditorId;
-    private String fieldEditorExtraArgument;
     private IConfigurationElement applicabilityCalculatorElement = null;
     private IOptionApplicability applicabilityCalculator = null;
     private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator = null;
     private ITreeRoot treeRoot;
     //  Miscellaneous
     private boolean isExtensionOption = false;
-    private boolean isDirty = false;
-    private boolean resolved = true;
-    private boolean verified = false;
 
     /**
      * False for options which are invalid. getOption()
@@ -140,7 +126,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      */
     private boolean wasOptRef = false;
     private boolean isUdjusted = false;
-    private boolean rebuildState;
 
     /**
      * This constructor is called to create an option defined by an extension point
@@ -154,17 +139,81 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      *            The option definition from the manifest file or a dynamic element
      *            provider
      */
-    public Option(IHoldsOptions parent, IManagedConfigElement element) {
+    public Option(IHoldsOptions parent, IExtensionPoint root, IConfigurationElement element) {
         this.holder = parent;
         isExtensionOption = true;
 
-        // setup for resolving
-        resolved = false;
+        loadNameAndID(root, element);
 
-        loadFromManifest(element);
+        myIsAbs = getAttributes(IS_ABSTRACT);
+        categoryId = getAttributes(CATEGORY);
+        resFilterStr = getAttributes(RESOURCE_FILTER);
+        valueTypeStr = getAttributes(VALUE_TYPE);
+        browseTypeStr = getAttributes(BROWSE_TYPE);
+        browseFilterPath = getAttributes(BROWSE_FILTER_PATH);
+        browseFilterExtensionsStr = getAttributes(BROWSE_FILTER_EXTENSIONS);
+        myValueString = getAttributes(VALUE);
+        myDefaultValueString = getAttributes(DEFAULT_VALUE);
+        defaultValueGeneratorStr = getAttributes(DEFAULTVALUE_GENERATOR);
+        command = getAttributes(COMMAND);
+        commandGeneratorStr = getAttributes(COMMAND_GENERATOR);
+        commandFalse = getAttributes(COMMAND_FALSE);
+        isForSD = getAttributes(USE_BY_SCANNER_DISCOVERY);
+        tip = getAttributes(TOOL_TIP);
+        contextId = getAttributes(CONTEXT_ID);
+        valueHandlerString = getAttributes(VALUE_HANDLER);
+        valueHandlerExtraArgument = getAttributes(VALUE_HANDLER_EXTRA_ARGUMENT);
+        applicabilityCalculatorStr = getAttributes(APPLICABILITY_CALCULATOR);
+        fieldEditorId = getAttributes(FIELD_EDITOR_ID);
+        fieldEditorExtraArgument = getAttributes(FIELD_EDITOR_EXTRA_ARGUMENT);
 
-        // Hook me up to the Managed Build Manager
-        ManagedBuildManager.addExtensionOption(this);
+        myEnablements.clear();
+        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
+        for (IConfigurationElement curEnablement : enablements) {
+            myEnablements.add(new OptionEnablementExpression(curEnablement));
+        }
+
+        resolveFields();
+
+    }
+
+    private void resolveFields() {
+        isAbstract = Boolean.parseBoolean(myIsAbs[SUPER]);
+        isForScannerDiscovery = Boolean.parseBoolean(isForSD[SUPER]);
+        valueType = Integer.valueOf(ValueTypeStrToInt(valueTypeStr[SUPER]));
+
+        browseType = null;
+        switch (browseTypeStr[SUPER]) {
+        case NONE:
+            browseType = BROWSE_NONE;
+            break;
+        case FILE:
+            browseType = BROWSE_FILE;
+            break;
+        case DIR:
+            browseType = BROWSE_DIR;
+        }
+
+        this.browseFilterExtensions = browseFilterExtensionsStr[SUPER].split("\\s*,\\s*"); //$NON-NLS-1$
+
+        resourceFilter = null;
+        switch (resFilterStr[SUPER]) {
+        case ALL:
+            resourceFilter = FILTER_ALL;
+            break;
+        case FILE:
+            resourceFilter = FILTER_FILE;
+            break;
+        case PROJECT:
+            resourceFilter = FILTER_PROJECT;
+        }
+
+        //get enablements
+        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myEnablements);
+
+        applicabilityCalculator = booleanExpressionCalculator;
+        resolveReferences();
+
     }
 
     /**
@@ -184,22 +233,22 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      *            - indicates whether this is an extension element or a managed
      *            project element
      */
-    public Option(IHoldsOptions parent, IOption superClass, String Id, String name, boolean isExtensionElement) {
-        this.holder = parent;
-        this.superClass = superClass;
-        if (this.superClass != null) {
-            superClassId = this.superClass.getId();
-        }
-        setId(Id);
-        setName(name);
-        isExtensionOption = isExtensionElement;
-        if (isExtensionElement) {
-            // Hook me up to the Managed Build Manager
-            ManagedBuildManager.addExtensionOption(this);
-        } else {
-            setDirty(true);
-            setRebuildState(true);
-        }
+    public Option(IHoldsOptions parent, IOption superClass, String Id, String newName, boolean isExtensionElement) {
+        //        this.holder = parent;
+        //        this.superClass = superClass;
+        //        if (this.superClass != null) {
+        //            superClassId = this.superClass.getId();
+        //        }
+        //        id = (Id);
+        //        name = (newName);
+        //        isExtensionOption = isExtensionElement;
+        //        if (isExtensionElement) {
+        //            // Hook me up to the Managed Build Manager
+        //            ManagedBuildManager.addExtensionOption(this);
+        //        } else {
+        //            setDirty(true);
+        //            setRebuildState(true);
+        //        }
     }
 
     /**
@@ -212,11 +261,11 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      *            The XML element that contains the option settings.
      */
     public Option(IHoldsOptions parent, ICStorageElement element) {
-        this.holder = parent;
-        isExtensionOption = false;
-
-        // Initialize from the XML attributes
-        loadFromProject(element);
+        //        this.holder = parent;
+        //        isExtensionOption = false;
+        //
+        //        // Initialize from the XML attributes
+        //        loadFromProject(element);
     }
 
     /**
@@ -231,611 +280,467 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      * @param option
      *            The existing option to clone, except for the above fields.
      */
-    public Option(IHoldsOptions parent, String Id, String name, Option option) {
-        this.holder = parent;
-        superClass = option.superClass;
-        if (superClass != null) {
-            superClassId = option.superClass.getId();
-        } else if (option.superClassId != null) {
-            superClassId = option.superClassId;
-        }
-        setId(Id);
-        setName(name);
-        isExtensionOption = false;
-        boolean copyIds = Id.equals(option.id);
-
-        //  Copy the remaining attributes
-        if (option.unusedChildren != null) {
-            unusedChildren = option.unusedChildren;
-        }
-        if (option.isAbstract != null) {
-            isAbstract = option.isAbstract;
-        }
-        if (option.command != null) {
-            command = option.command;
-        }
-        if (option.commandFalse != null) {
-            commandFalse = option.commandFalse;
-        }
-        if (option.isForScannerDiscovery != null) {
-            isForScannerDiscovery = option.isForScannerDiscovery;
-        }
-        if (option.tip != null) {
-            tip = option.tip;
-        }
-        if (option.contextId != null) {
-            contextId = option.contextId;
-        }
-        if (option.categoryId != null) {
-            categoryId = option.categoryId;
-        }
-        if (option.builtIns != null) {
-            builtIns = new ArrayList<>(option.builtIns);
-        }
-        if (option.browseType != null) {
-            browseType = option.browseType;
-        }
-        if (option.browseFilterPath != null) {
-            browseFilterPath = option.browseFilterPath;
-        }
-        if (option.browseFilterExtensions != null) {
-            browseFilterExtensions = option.browseFilterExtensions.clone();
-        }
-        if (option.resourceFilter != null) {
-            resourceFilter = option.resourceFilter;
-        }
-        if (option.applicableValuesList != null) {
-            applicableValuesList = new ArrayList<>(option.applicableValuesList);
-            commandsMap = new HashMap<>(option.commandsMap);
-            namesMap = new HashMap<>(option.namesMap);
-        }
-        if (option.treeRoot != null) {
-            treeRoot = new TreeRoot((TreeRoot) option.treeRoot);
-        }
-
-        if (option.valueType != null) {
-            valueType = option.valueType;
-        }
-        try {
-            int vType = option.getValueType();
-            switch (vType) {
-            case BOOLEAN:
-                if (option.value != null) {
-                    value = option.value;
-                }
-                if (option.defaultValue != null) {
-                    defaultValue = option.defaultValue;
-                }
-                break;
-            case STRING:
-            case ENUMERATED:
-            case TREE:
-                if (option.value != null) {
-                    value = option.value;
-                }
-                if (option.defaultValue != null) {
-                    defaultValue = option.defaultValue;
-                }
-                break;
-            case STRING_LIST:
-            case INCLUDE_PATH:
-            case PREPROCESSOR_SYMBOLS:
-            case LIBRARIES:
-            case OBJECTS:
-            case INCLUDE_FILES:
-            case LIBRARY_PATHS:
-            case LIBRARY_FILES:
-            case MACRO_FILES:
-            case UNDEF_INCLUDE_PATH:
-            case UNDEF_PREPROCESSOR_SYMBOLS:
-            case UNDEF_INCLUDE_FILES:
-            case UNDEF_LIBRARY_PATHS:
-            case UNDEF_LIBRARY_FILES:
-            case UNDEF_MACRO_FILES:
-                if (option.value != null) {
-                    @SuppressWarnings("unchecked")
-                    ArrayList<OptionStringValue> list = new ArrayList<>((ArrayList<OptionStringValue>) option.value);
-                    value = list;
-                }
-                if (option.defaultValue != null) {
-                    @SuppressWarnings("unchecked")
-                    ArrayList<OptionStringValue> list = new ArrayList<>(
-                            (ArrayList<OptionStringValue>) option.defaultValue);
-                    defaultValue = list;
-                }
-                break;
-            }
-        } catch (BuildException be) {
-            // TODO: should we ignore this??
-        }
-
-        category = option.category;
-
-        defaultValueGeneratorElement = option.defaultValueGeneratorElement;
-        defaultValueGenerator = option.defaultValueGenerator;
-
-        commandGeneratorElement = option.commandGeneratorElement;
-        commandGenerator = option.commandGenerator;
-
-        applicabilityCalculatorElement = option.applicabilityCalculatorElement;
-        applicabilityCalculator = option.applicabilityCalculator;
-
-        booleanExpressionCalculator = option.booleanExpressionCalculator;
-
-        if (option.valueHandlerElement != null) {
-            valueHandlerElement = option.valueHandlerElement;
-            valueHandler = option.valueHandler;
-        }
-        if (option.valueHandlerExtraArgument != null) {
-            valueHandlerExtraArgument = option.valueHandlerExtraArgument;
-        }
-
-        if (option.fieldEditorId != null) {
-            fieldEditorId = option.fieldEditorId;
-        }
-        if (option.fieldEditorExtraArgument != null) {
-            fieldEditorExtraArgument = option.fieldEditorExtraArgument;
-        }
-
-        if (copyIds) {
-            isDirty = option.isDirty;
-            rebuildState = option.rebuildState;
-        } else {
-            setDirty(true);
-            setRebuildState(true);
-        }
+    public Option(IHoldsOptions parent, String newId, String newName, Option option) {
+        //        this.holder = parent;
+        //        superClass = option.superClass;
+        //        if (superClass != null) {
+        //            superClassId = option.superClass.getId();
+        //        } else if (option.superClassId != null) {
+        //            superClassId = option.superClassId;
+        //        }
+        //        id = newId;
+        //        name = newName;
+        //        isExtensionOption = false;
+        //        boolean copyIds = newId.equals(option.id);
+        //
+        //        //  Copy the remaining attributes
+        //        if (option.unusedChildren != null) {
+        //            unusedChildren = option.unusedChildren;
+        //        }
+        //        if (option.isAbstract != null) {
+        //            isAbstract = option.isAbstract;
+        //        }
+        //        if (option.command != null) {
+        //            command = option.command;
+        //        }
+        //        if (option.commandFalse != null) {
+        //            commandFalse = option.commandFalse;
+        //        }
+        //        if (option.isForScannerDiscovery != null) {
+        //            isForScannerDiscovery = option.isForScannerDiscovery;
+        //        }
+        //        if (option.tip != null) {
+        //            tip = option.tip;
+        //        }
+        //        if (option.contextId != null) {
+        //            contextId = option.contextId;
+        //        }
+        //        if (option.categoryId != null) {
+        //            categoryId = option.categoryId;
+        //        }
+        //        if (option.builtIns != null) {
+        //            builtIns = new ArrayList<>(option.builtIns);
+        //        }
+        //        if (option.browseType != null) {
+        //            browseType = option.browseType;
+        //        }
+        //        if (option.browseFilterPath != null) {
+        //            browseFilterPath = option.browseFilterPath;
+        //        }
+        //        if (option.browseFilterExtensions != null) {
+        //            browseFilterExtensions = option.browseFilterExtensions.clone();
+        //        }
+        //        if (option.resourceFilter != null) {
+        //            resourceFilter = option.resourceFilter;
+        //        }
+        //        if (option.applicableValuesList != null) {
+        //            applicableValuesList = new ArrayList<>(option.applicableValuesList);
+        //            commandsMap = new HashMap<>(option.commandsMap);
+        //            namesMap = new HashMap<>(option.namesMap);
+        //        }
+        //        if (option.treeRoot != null) {
+        //            treeRoot = new TreeRoot((TreeRoot) option.treeRoot);
+        //        }
+        //
+        //        if (option.valueType != null) {
+        //            valueType = option.valueType;
+        //        }
+        //        try {
+        //            int vType = option.getValueType();
+        //            switch (vType) {
+        //            case BOOLEAN:
+        //                if (option.value != null) {
+        //                    value = option.value;
+        //                }
+        //                if (option.defaultValue != null) {
+        //                    defaultValue = option.defaultValue;
+        //                }
+        //                break;
+        //            case STRING:
+        //            case ENUMERATED:
+        //            case TREE:
+        //                if (option.value != null) {
+        //                    value = option.value;
+        //                }
+        //                if (option.defaultValue != null) {
+        //                    defaultValue = option.defaultValue;
+        //                }
+        //                break;
+        //            case STRING_LIST:
+        //            case INCLUDE_PATH:
+        //            case PREPROCESSOR_SYMBOLS:
+        //            case LIBRARIES:
+        //            case OBJECTS:
+        //            case INCLUDE_FILES:
+        //            case LIBRARY_PATHS:
+        //            case LIBRARY_FILES:
+        //            case MACRO_FILES:
+        //            case UNDEF_INCLUDE_PATH:
+        //            case UNDEF_PREPROCESSOR_SYMBOLS:
+        //            case UNDEF_INCLUDE_FILES:
+        //            case UNDEF_LIBRARY_PATHS:
+        //            case UNDEF_LIBRARY_FILES:
+        //            case UNDEF_MACRO_FILES:
+        //                if (option.value != null) {
+        //                    @SuppressWarnings("unchecked")
+        //                    ArrayList<OptionStringValue> list = new ArrayList<>((ArrayList<OptionStringValue>) option.value);
+        //                    value = list;
+        //                }
+        //                if (option.defaultValue != null) {
+        //                    @SuppressWarnings("unchecked")
+        //                    ArrayList<OptionStringValue> list = new ArrayList<>(
+        //                            (ArrayList<OptionStringValue>) option.defaultValue);
+        //                    defaultValue = list;
+        //                }
+        //                break;
+        //            }
+        //        } catch (BuildException be) {
+        //            // TODO: should we ignore this??
+        //        }
+        //
+        //        category = option.category;
+        //
+        //        defaultValueGeneratorElement = option.defaultValueGeneratorElement;
+        //        defaultValueGenerator = option.defaultValueGenerator;
+        //
+        //        commandGeneratorElement = option.commandGeneratorElement;
+        //        commandGenerator = option.commandGenerator;
+        //
+        //        applicabilityCalculatorElement = option.applicabilityCalculatorElement;
+        //        applicabilityCalculator = option.applicabilityCalculator;
+        //
+        //        booleanExpressionCalculator = option.booleanExpressionCalculator;
+        //
+        //        if (option.valueHandlerElement != null) {
+        //            valueHandlerElement = option.valueHandlerElement;
+        //            valueHandler = option.valueHandler;
+        //        }
+        //        if (option.valueHandlerExtraArgument != null) {
+        //            valueHandlerExtraArgument = option.valueHandlerExtraArgument;
+        //        }
+        //
+        //        if (option.fieldEditorId != null) {
+        //            fieldEditorId = option.fieldEditorId;
+        //        }
+        //        if (option.fieldEditorExtraArgument != null) {
+        //            fieldEditorExtraArgument = option.fieldEditorExtraArgument;
+        //        }
+        //
+        //        if (copyIds) {
+        //            isDirty = option.isDirty;
+        //            rebuildState = option.rebuildState;
+        //        } else {
+        //            setDirty(true);
+        //            setRebuildState(true);
+        //        }
     }
 
     /*
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
      */
-
-    /**
-     * Loads the option information from the ManagedConfigElement specified in the
-     * argument.
-     *
-     * @param element
-     *            Contains the option information
-     */
-    protected void loadFromManifest(IManagedConfigElement element) {
-        ManagedBuildManager.putConfigElement(this, element);
-
-        // id
-        setId(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.ID)));
-
-        // Get the name
-        setName(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
-
-        // superClass
-        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
-
-        // Get the unused children, if any
-        unusedChildren = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.UNUSED_CHILDREN));
-
-        // isAbstract
-        String isAbs = element.getAttribute(IProjectType.IS_ABSTRACT);
-        if (isAbs != null) {
-            isAbstract = Boolean.parseBoolean(isAbs);
-        }
-
-        // Get the defaultValue-generator, if any
-        String defaultValueGeneratorStr = element.getAttribute(DEFAULTVALUE_GENERATOR);
-        if (defaultValueGeneratorStr != null && element instanceof DefaultManagedConfigElement) {
-            defaultValueGeneratorElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-        }
-
-        // Get the command defined for the option
-        command = SafeStringInterner.safeIntern(element.getAttribute(COMMAND));
-
-        // Get the command-generator, if any
-        String commandGeneratorStr = element.getAttribute(COMMAND_GENERATOR);
-        if (commandGeneratorStr != null && element instanceof DefaultManagedConfigElement) {
-            commandGeneratorElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-        }
-
-        // Get the command defined for a Boolean option when the value is False
-        commandFalse = SafeStringInterner.safeIntern(element.getAttribute(COMMAND_FALSE));
-
-        // isForScannerDiscovery
-        String isForSD = element.getAttribute(USE_BY_SCANNER_DISCOVERY);
-        if (isForSD != null) {
-            isForScannerDiscovery = Boolean.parseBoolean(isForSD);
-        }
-
-        // Get the tooltip for the option
-        tip = SafeStringInterner.safeIntern(element.getAttribute(TOOL_TIP));
-
-        // Get the contextID for the option
-        contextId = SafeStringInterner.safeIntern(element.getAttribute(CONTEXT_ID));
-
-        // Options hold different types of values
-        String valueTypeStr = element.getAttribute(VALUE_TYPE);
-        if (valueTypeStr != null) {
-            valueType = Integer.valueOf(ValueTypeStrToInt(valueTypeStr));
-        }
-
-        // Note: The value and defaultValue attributes are loaded in the resolveReferences routine.
-        //       This is because we need to have the value-type, and this may be defined in a
-        //       superClass that is not yet loaded.
-
-        // Determine if there needs to be a browse button
-        String browseTypeStr = element.getAttribute(BROWSE_TYPE);
-        if (browseTypeStr == null) {
-            // Set to null, to indicate no browse type specification
-            // This will allow any superclasses to be searched for the
-            // browse type specification, and thus inherited, if found,
-            // which they should be
-            browseType = null;
-        } else if (browseTypeStr.equals(NONE)) {
-            browseType = BROWSE_NONE;
-        } else if (browseTypeStr.equals(FILE)) {
-            browseType = BROWSE_FILE;
-        } else if (browseTypeStr.equals(DIR)) {
-            browseType = BROWSE_DIR;
-        }
-
-        // Get the browseFilterPath attribute
-        this.browseFilterPath = SafeStringInterner.safeIntern(element.getAttribute(BROWSE_FILTER_PATH));
-
-        // Get the browseFilterExtensions attribute
-        String browseFilterExtensionsStr = element.getAttribute(BROWSE_FILTER_EXTENSIONS);
-        if (browseFilterExtensionsStr != null) {
-            this.browseFilterExtensions = SafeStringInterner.safeIntern(browseFilterExtensionsStr.split("\\s*,\\s*")); //$NON-NLS-1$
-        }
-
-        categoryId = SafeStringInterner.safeIntern(element.getAttribute(CATEGORY));
-
-        // Get the resourceFilter attribute
-        String resFilterStr = element.getAttribute(RESOURCE_FILTER);
-        if (resFilterStr == null) {
-            // Set to null, to indicate no resource filter specification
-            // This will allow any superclasses to be searched for the
-            // resource filter specification, and thus inherited, if found,
-            // which they should be
-            resourceFilter = null;
-        } else if (resFilterStr.equals(ALL)) {
-            resourceFilter = FILTER_ALL;
-        } else if (resFilterStr.equals(FILE)) {
-            resourceFilter = FILTER_FILE;
-        } else if (resFilterStr.equals(PROJECT)) {
-            resourceFilter = FILTER_PROJECT;
-        }
-
-        //get enablements
-        IManagedConfigElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        if (enablements.length > 0) {
-            booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(enablements);
-        }
-
-        // get the applicability calculator, if any
-        String applicabilityCalculatorStr = element.getAttribute(APPLICABILITY_CALCULATOR);
-        if (applicabilityCalculatorStr != null && element instanceof DefaultManagedConfigElement) {
-            applicabilityCalculatorElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-        } else {
-            applicabilityCalculator = booleanExpressionCalculator;
-        }
-
-        // valueHandler
-        // Store the configuration element IFF there is a value handler defined
-        String valueHandler = element.getAttribute(VALUE_HANDLER);
-        if (valueHandler != null && element instanceof DefaultManagedConfigElement) {
-            valueHandlerElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-        }
-        // valueHandlerExtraArgument
-        valueHandlerExtraArgument = SafeStringInterner.safeIntern(element.getAttribute(VALUE_HANDLER_EXTRA_ARGUMENT));
-
-        // fieldEditor and optional argument
-        fieldEditorId = element.getAttribute(FIELD_EDITOR_ID);
-        fieldEditorExtraArgument = element.getAttribute(FIELD_EDITOR_EXTRA_ARGUMENT);
-    }
-
-    /**
-     * Initialize the option information from the XML element
-     * specified in the argument
-     *
-     * @param element
-     *            An XML element containing the option information
-     */
-    protected void loadFromProject(ICStorageElement element) {
-
-        // id (unique, don't intern)
-        setId(element.getAttribute(IBuildObject.ID));
-
-        // name
-        if (element.getAttribute(IBuildObject.NAME) != null) {
-            setName(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
-        }
-
-        // superClass
-        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
-        if (superClassId != null && superClassId.length() > 0) {
-            superClass = ManagedBuildManager.getExtensionOption(superClassId);
-            if (superClass == null) {
-                /*
-                 * This can happen when options are set at the resource level, for a project using a toolchain definition
-                 * where there are options at the toolchain level & one or more of those options is set at a
-                 * non-default value.
-                 *
-                 * In these cases the superclass is set to the option from the parent not the extension's ID
-                 * Workaround this by searching for any missing superclass IDs at on the parent configs toolchain
-                 *
-                 * See the "bug580009.tests.cfg1.tc" definition in org.eclipse.cdt.managedbuilder.core.tests for an example
-                 */
-                IBuildObject parent = this.getParent();
-                if (parent instanceof IToolChain) {
-                    IConfiguration config = ((IToolChain) parent).getParent();
-                    IOption foundOption = null;
-                    //In rare cases the RootFolderInfo may not have loaded & will cause an NPE
-                    if (config != null && config.getRootFolderInfo() != null) {
-                        IToolChain parentToolchain = config.getToolChain();
-                        if (parentToolchain != null) {
-                            foundOption = parentToolchain.getOptionById(superClassId);
-                        }
-                    }
-                    if (foundOption != null) {
-                        superClass = foundOption;
-                    } else {
-                        Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-                                MessageFormat.format("Missing superclass \"{0}\" for \"{1}\"", superClassId, getId()))); //$NON-NLS-1$
-                    }
-                } else {
-                    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-                            MessageFormat.format("Missing superclass \"{0}\" for \"{1}\"", superClassId, getId()))); //$NON-NLS-1$
-                }
-            }
-        }
-
-        // Get the unused children, if any
-        if (element.getAttribute(IProjectType.UNUSED_CHILDREN) != null) {
-            unusedChildren = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.UNUSED_CHILDREN));
-        }
-
-        // isAbstract
-        if (element.getAttribute(IProjectType.IS_ABSTRACT) != null) {
-            String isAbs = element.getAttribute(IProjectType.IS_ABSTRACT);
-            if (isAbs != null) {
-                isAbstract = Boolean.parseBoolean(isAbs);
-            }
-        }
-
-        // Get the command defined for the option
-        if (element.getAttribute(COMMAND) != null) {
-            command = SafeStringInterner.safeIntern(element.getAttribute(COMMAND));
-        }
-
-        // Get the command defined for a Boolean option when the value is False
-        if (element.getAttribute(COMMAND_FALSE) != null) {
-            commandFalse = SafeStringInterner.safeIntern(element.getAttribute(COMMAND_FALSE));
-        }
-
-        // isForScannerDiscovery
-        if (element.getAttribute(USE_BY_SCANNER_DISCOVERY) != null) {
-            String isForSD = element.getAttribute(USE_BY_SCANNER_DISCOVERY);
-            if (isForSD != null) {
-                isForScannerDiscovery = Boolean.parseBoolean(isForSD);
-            }
-        }
-
-        // Get the tooltip for the option
-        if (element.getAttribute(TOOL_TIP) != null) {
-            tip = SafeStringInterner.safeIntern(element.getAttribute(TOOL_TIP));
-        }
-
-        // Get the contextID for the option
-        if (element.getAttribute(CONTEXT_ID) != null) {
-            contextId = SafeStringInterner.safeIntern(element.getAttribute(CONTEXT_ID));
-        }
-
-        // Options hold different types of values
-        if (element.getAttribute(VALUE_TYPE) != null) {
-            String valueTypeStr = element.getAttribute(VALUE_TYPE);
-            valueType = Integer.valueOf(ValueTypeStrToInt(valueTypeStr));
-        }
-
-        // Now get the actual value based upon value-type
-        try {
-            int valType = getValueType();
-            switch (valType) {
-            case BOOLEAN:
-                // Convert the string to a boolean
-                if (element.getAttribute(VALUE) != null) {
-                    value = Boolean.valueOf(element.getAttribute(VALUE));
-                }
-                if (element.getAttribute(DEFAULT_VALUE) != null) {
-                    defaultValue = Boolean.valueOf(element.getAttribute(DEFAULT_VALUE));
-                }
-                break;
-            case STRING:
-                // Just get the value out of the option directly
-                if (element.getAttribute(VALUE) != null) {
-                    value = SafeStringInterner.safeIntern(element.getAttribute(VALUE));
-                }
-                if (element.getAttribute(DEFAULT_VALUE) != null) {
-                    defaultValue = SafeStringInterner.safeIntern(element.getAttribute(DEFAULT_VALUE));
-                }
-                break;
-            case ENUMERATED:
-                if (element.getAttribute(VALUE) != null) {
-                    value = SafeStringInterner.safeIntern(element.getAttribute(VALUE));
-                }
-                if (element.getAttribute(DEFAULT_VALUE) != null) {
-                    defaultValue = SafeStringInterner.safeIntern(element.getAttribute(DEFAULT_VALUE));
-                }
-
-                //  Do we have enumeratedOptionValue children?  If so, load them
-                //  to define the valid values and the default value.
-                ICStorageElement configElements[] = element.getChildren();
-                for (int i = 0; i < configElements.length; ++i) {
-                    ICStorageElement configNode = configElements[i];
-                    if (configNode.getName().equals(ENUM_VALUE)) {
-                        ICStorageElement configElement = configNode;
-                        String optId = SafeStringInterner.safeIntern(configElement.getAttribute(ID));
-                        if (i == 0) {
-                            applicableValuesList = new ArrayList<>();
-                            if (defaultValue == null) {
-                                defaultValue = optId; //  Default value to be overridden is default is specified
-                            }
-                        }
-                        applicableValuesList.add(optId);
-                        if (configElement.getAttribute(COMMAND) != null) {
-                            getCommandMap().put(optId,
-                                    SafeStringInterner.safeIntern(configElement.getAttribute(COMMAND)));
-                        } else {
-                            getCommandMap().put(optId, EMPTY_STRING);
-                        }
-                        getNameMap().put(optId, SafeStringInterner.safeIntern(configElement.getAttribute(NAME)));
-                        if (configElement.getAttribute(IS_DEFAULT) != null) {
-                            Boolean isDefault = Boolean.valueOf(configElement.getAttribute(IS_DEFAULT));
-                            if (isDefault.booleanValue()) {
-                                defaultValue = optId;
-                            }
-                        }
-                    }
-                }
-                break;
-            case TREE:
-                if (element.getAttribute(VALUE) != null) {
-                    value = element.getAttribute(VALUE);
-                }
-                if (element.getAttribute(DEFAULT_VALUE) != null) {
-                    defaultValue = element.getAttribute(DEFAULT_VALUE);
-                }
-                break;
-            case STRING_LIST:
-            case INCLUDE_PATH:
-            case PREPROCESSOR_SYMBOLS:
-            case LIBRARIES:
-            case OBJECTS:
-            case INCLUDE_FILES:
-            case LIBRARY_PATHS:
-            case LIBRARY_FILES:
-            case MACRO_FILES:
-            case UNDEF_INCLUDE_PATH:
-            case UNDEF_PREPROCESSOR_SYMBOLS:
-            case UNDEF_INCLUDE_FILES:
-            case UNDEF_LIBRARY_PATHS:
-            case UNDEF_LIBRARY_FILES:
-            case UNDEF_MACRO_FILES:
-                //  Note:  These string-list options do not load either the "value" or
-                //         "defaultValue" attributes.  Instead, the ListOptionValue children
-                //         are loaded in the value field.
-                List<OptionStringValue> vList = new ArrayList<>();
-                List<OptionStringValue> biList = new ArrayList<>();
-                configElements = element.getChildren();
-                for (ICStorageElement veNode : configElements) {
-                    if (veNode.getName().equals(LIST_VALUE)) {
-                        OptionStringValue ve = new OptionStringValue(veNode);
-                        if (ve.isBuiltIn()) {
-                            biList.add(ve);
-                        } else {
-                            vList.add(ve);
-                        }
-                    }
-                }
-
-                //Assume not empty unless specificaly flagged
-                boolean isValueEmpty = false;
-                boolean isBuiltinEmpty = false;
-
-                if (element.getAttribute(IS_VALUE_EMPTY) != null) {
-                    Boolean isEmpty = Boolean.valueOf(element.getAttribute(IS_VALUE_EMPTY));
-                    if (isEmpty.booleanValue()) {
-                        isValueEmpty = true;
-                    }
-                }
-                if (element.getAttribute(IS_BUILTIN_EMPTY) != null) {
-                    Boolean isEmpty = Boolean.valueOf(element.getAttribute(IS_BUILTIN_EMPTY));
-                    if (isEmpty.booleanValue()) {
-                        isBuiltinEmpty = true;
-                    }
-                }
-
-                if (vList.size() != 0 || isValueEmpty) {
-                    value = vList;
-                } else {
-                    value = null;
-                }
-                if (biList.size() != 0 || isBuiltinEmpty) {
-                    builtIns = biList;
-                } else {
-                    builtIns = null;
-                }
-
-                break;
-            default:
-                break;
-            }
-        } catch (BuildException e) {
-            // TODO: report error
-        }
-
-        // Determine if there needs to be a browse button
-        if (element.getAttribute(BROWSE_TYPE) != null) {
-            String browseTypeStr = element.getAttribute(BROWSE_TYPE);
-
-            if (browseTypeStr == null) {
-                // Set to null, to indicate no browse type specification
-                // This will allow any superclasses to be searched for the
-                // browse type specification, and thus inherited, if found,
-                // which they should be
-                browseType = null;
-            } else if (browseTypeStr.equals(NONE)) {
-                browseType = BROWSE_NONE;
-            } else if (browseTypeStr.equals(FILE)) {
-                browseType = BROWSE_FILE;
-            } else if (browseTypeStr.equals(DIR)) {
-                browseType = BROWSE_DIR;
-            }
-        }
-
-        // Get the browseFilterPath attribute
-        if (element.getAttribute(BROWSE_FILTER_PATH) != null) {
-            this.browseFilterPath = SafeStringInterner.safeIntern(element.getAttribute(BROWSE_FILTER_PATH));
-        }
-
-        // Get the browseFilterExtensions attribute
-        if (element.getAttribute(BROWSE_FILTER_EXTENSIONS) != null) {
-            String browseFilterExtensionsStr = element.getAttribute(BROWSE_FILTER_EXTENSIONS);
-            if (browseFilterExtensionsStr != null) {
-                this.browseFilterExtensions = SafeStringInterner
-                        .safeIntern(browseFilterExtensionsStr.split("\\s*,\\s*")); //$NON-NLS-1$
-            }
-        }
-
-        if (element.getAttribute(CATEGORY) != null) {
-            categoryId = SafeStringInterner.safeIntern(element.getAttribute(CATEGORY));
-            if (categoryId != null) {
-                category = holder.getOptionCategory(categoryId);
-            }
-        }
-
-        // Get the resourceFilter attribute
-        if (element.getAttribute(RESOURCE_FILTER) != null) {
-            String resFilterStr = element.getAttribute(RESOURCE_FILTER);
-            if (resFilterStr == null) {
-                // Set to null, to indicate no resource filter specification
-                // This will allow any superclasses to be searched for the
-                // resource filter specification, and thus inherited, if found,
-                // which they should be
-                resourceFilter = null;
-            } else if (resFilterStr.equals(ALL)) {
-                resourceFilter = FILTER_ALL;
-            } else if (resFilterStr.equals(FILE)) {
-                resourceFilter = FILTER_FILE;
-            } else if (resFilterStr.equals(PROJECT)) {
-                resourceFilter = FILTER_PROJECT;
-            }
-        }
-
-        // Note: valueHandlerElement and VALUE_HANDLER are not restored,
-        // as they are not saved. See note in serialize().
-
-        // valueHandlerExtraArgument
-        if (element.getAttribute(VALUE_HANDLER_EXTRA_ARGUMENT) != null) {
-            valueHandlerExtraArgument = SafeStringInterner
-                    .safeIntern(element.getAttribute(VALUE_HANDLER_EXTRA_ARGUMENT));
-        }
-    }
+    //
+    //    /**
+    //     * Initialize the option information from the XML element
+    //     * specified in the argument
+    //     *
+    //     * @param element
+    //     *            An XML element containing the option information
+    //     */
+    //    protected void loadFromProject(ICStorageElement element) {
+    //
+    //        // id (unique, don't intern)
+    //        id = (element.getAttribute(IBuildObject.ID));
+    //
+    //        // name
+    //        if (element.getAttribute(IBuildObject.NAME) != null) {
+    //            name = (SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
+    //        }
+    //
+    //        // superClass
+    //        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
+    //        if (superClassId != null && superClassId.length() > 0) {
+    //            superClass = ManagedBuildManager.getExtensionOption(superClassId);
+    //            if (superClass == null) {
+    //                /*
+    //                 * This can happen when options are set at the resource level, for a project using a toolchain definition
+    //                 * where there are options at the toolchain level & one or more of those options is set at a
+    //                 * non-default value.
+    //                 *
+    //                 * In these cases the superclass is set to the option from the parent not the extension's ID
+    //                 * Workaround this by searching for any missing superclass IDs at on the parent configs toolchain
+    //                 *
+    //                 * See the "bug580009.tests.cfg1.tc" definition in org.eclipse.cdt.managedbuilder.core.tests for an example
+    //                 */
+    //                IBuildObject parent = this.getParent();
+    //                if (parent instanceof IToolChain) {
+    //                    IConfiguration config = ((IToolChain) parent).getParent();
+    //                    IOption foundOption = null;
+    //                    //In rare cases the RootFolderInfo may not have loaded & will cause an NPE
+    //                    if (config != null && config.getRootFolderInfo() != null) {
+    //                        IToolChain parentToolchain = config.getToolChain();
+    //                        if (parentToolchain != null) {
+    //                            foundOption = parentToolchain.getOptionById(superClassId);
+    //                        }
+    //                    }
+    //                    if (foundOption != null) {
+    //                        superClass = foundOption;
+    //                    } else {
+    //                        Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+    //                                MessageFormat.format("Missing superclass \"{0}\" for \"{1}\"", superClassId, getId()))); //$NON-NLS-1$
+    //                    }
+    //                } else {
+    //                    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+    //                            MessageFormat.format("Missing superclass \"{0}\" for \"{1}\"", superClassId, getId()))); //$NON-NLS-1$
+    //                }
+    //            }
+    //        }
+    //
+    //        // isAbstract
+    //        if (element.getAttribute(IS_ABSTRACT) != null) {
+    //            String isAbs = element.getAttribute(IS_ABSTRACT);
+    //            if (isAbs != null) {
+    //                isAbstract = Boolean.parseBoolean(isAbs);
+    //            }
+    //        }
+    //
+    //        // Get the command defined for the option
+    //        if (element.getAttribute(COMMAND) != null) {
+    //            command = SafeStringInterner.safeIntern(element.getAttribute(COMMAND));
+    //        }
+    //
+    //        // Get the command defined for a Boolean option when the value is False
+    //        if (element.getAttribute(COMMAND_FALSE) != null) {
+    //            commandFalse = SafeStringInterner.safeIntern(element.getAttribute(COMMAND_FALSE));
+    //        }
+    //
+    //        // isForScannerDiscovery
+    //        if (element.getAttribute(USE_BY_SCANNER_DISCOVERY) != null) {
+    //            String isForSD = element.getAttribute(USE_BY_SCANNER_DISCOVERY);
+    //            if (isForSD != null) {
+    //                isForScannerDiscovery = Boolean.parseBoolean(isForSD);
+    //            }
+    //        }
+    //
+    //        // Get the tooltip for the option
+    //        if (element.getAttribute(TOOL_TIP) != null) {
+    //            tip = SafeStringInterner.safeIntern(element.getAttribute(TOOL_TIP));
+    //        }
+    //
+    //        // Get the contextID for the option
+    //        if (element.getAttribute(CONTEXT_ID) != null) {
+    //            contextId = SafeStringInterner.safeIntern(element.getAttribute(CONTEXT_ID));
+    //        }
+    //
+    //        // Options hold different types of values
+    //        if (element.getAttribute(VALUE_TYPE) != null) {
+    //            String valueTypeStr = element.getAttribute(VALUE_TYPE);
+    //            valueType = Integer.valueOf(ValueTypeStrToInt(valueTypeStr));
+    //        }
+    //
+    //        // Now get the actual value based upon value-type
+    //        try {
+    //            int valType = getValueType();
+    //            switch (valType) {
+    //            case BOOLEAN:
+    //                // Convert the string to a boolean
+    //                if (element.getAttribute(VALUE) != null) {
+    //                    value = Boolean.valueOf(element.getAttribute(VALUE));
+    //                }
+    //                if (element.getAttribute(DEFAULT_VALUE) != null) {
+    //                    defaultValue = Boolean.valueOf(element.getAttribute(DEFAULT_VALUE));
+    //                }
+    //                break;
+    //            case STRING:
+    //                // Just get the value out of the option directly
+    //                if (element.getAttribute(VALUE) != null) {
+    //                    value = SafeStringInterner.safeIntern(element.getAttribute(VALUE));
+    //                }
+    //                if (element.getAttribute(DEFAULT_VALUE) != null) {
+    //                    defaultValue = SafeStringInterner.safeIntern(element.getAttribute(DEFAULT_VALUE));
+    //                }
+    //                break;
+    //            case ENUMERATED:
+    //                if (element.getAttribute(VALUE) != null) {
+    //                    value = SafeStringInterner.safeIntern(element.getAttribute(VALUE));
+    //                }
+    //                if (element.getAttribute(DEFAULT_VALUE) != null) {
+    //                    defaultValue = SafeStringInterner.safeIntern(element.getAttribute(DEFAULT_VALUE));
+    //                }
+    //
+    //                //  Do we have enumeratedOptionValue children?  If so, load them
+    //                //  to define the valid values and the default value.
+    //                ICStorageElement configElements[] = element.getChildren();
+    //                for (int i = 0; i < configElements.length; ++i) {
+    //                    ICStorageElement configNode = configElements[i];
+    //                    if (configNode.getName().equals(ENUM_VALUE)) {
+    //                        ICStorageElement configElement = configNode;
+    //                        String optId = SafeStringInterner.safeIntern(configElement.getAttribute(ID));
+    //                        if (i == 0) {
+    //                            applicableValuesList = new ArrayList<>();
+    //                            if (defaultValue == null) {
+    //                                defaultValue = optId; //  Default value to be overridden is default is specified
+    //                            }
+    //                        }
+    //                        applicableValuesList.add(optId);
+    //                        if (configElement.getAttribute(COMMAND) != null) {
+    //                            getCommandMap().put(optId,
+    //                                    SafeStringInterner.safeIntern(configElement.getAttribute(COMMAND)));
+    //                        } else {
+    //                            getCommandMap().put(optId, EMPTY_STRING);
+    //                        }
+    //                        getNameMap().put(optId, SafeStringInterner.safeIntern(configElement.getAttribute(NAME)));
+    //                        if (configElement.getAttribute(IS_DEFAULT) != null) {
+    //                            Boolean isDefault = Boolean.valueOf(configElement.getAttribute(IS_DEFAULT));
+    //                            if (isDefault.booleanValue()) {
+    //                                defaultValue = optId;
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                break;
+    //            case TREE:
+    //                if (element.getAttribute(VALUE) != null) {
+    //                    value = element.getAttribute(VALUE);
+    //                }
+    //                if (element.getAttribute(DEFAULT_VALUE) != null) {
+    //                    defaultValue = element.getAttribute(DEFAULT_VALUE);
+    //                }
+    //                break;
+    //            case STRING_LIST:
+    //            case INCLUDE_PATH:
+    //            case PREPROCESSOR_SYMBOLS:
+    //            case LIBRARIES:
+    //            case OBJECTS:
+    //            case INCLUDE_FILES:
+    //            case LIBRARY_PATHS:
+    //            case LIBRARY_FILES:
+    //            case MACRO_FILES:
+    //            case UNDEF_INCLUDE_PATH:
+    //            case UNDEF_PREPROCESSOR_SYMBOLS:
+    //            case UNDEF_INCLUDE_FILES:
+    //            case UNDEF_LIBRARY_PATHS:
+    //            case UNDEF_LIBRARY_FILES:
+    //            case UNDEF_MACRO_FILES:
+    //                //  Note:  These string-list options do not load either the "value" or
+    //                //         "defaultValue" attributes.  Instead, the ListOptionValue children
+    //                //         are loaded in the value field.
+    //                List<OptionStringValue> vList = new ArrayList<>();
+    //                List<OptionStringValue> biList = new ArrayList<>();
+    //                configElements = element.getChildren();
+    //                for (ICStorageElement veNode : configElements) {
+    //                    if (veNode.getName().equals(LIST_VALUE)) {
+    //                        OptionStringValue ve = new OptionStringValue(veNode);
+    //                        if (ve.isBuiltIn()) {
+    //                            biList.add(ve);
+    //                        } else {
+    //                            vList.add(ve);
+    //                        }
+    //                    }
+    //                }
+    //
+    //                //Assume not empty unless specificaly flagged
+    //                boolean isValueEmpty = false;
+    //                boolean isBuiltinEmpty = false;
+    //
+    //                if (element.getAttribute(IS_VALUE_EMPTY) != null) {
+    //                    Boolean isEmpty = Boolean.valueOf(element.getAttribute(IS_VALUE_EMPTY));
+    //                    if (isEmpty.booleanValue()) {
+    //                        isValueEmpty = true;
+    //                    }
+    //                }
+    //                if (element.getAttribute(IS_BUILTIN_EMPTY) != null) {
+    //                    Boolean isEmpty = Boolean.valueOf(element.getAttribute(IS_BUILTIN_EMPTY));
+    //                    if (isEmpty.booleanValue()) {
+    //                        isBuiltinEmpty = true;
+    //                    }
+    //                }
+    //
+    //                if (vList.size() != 0 || isValueEmpty) {
+    //                    value = vList;
+    //                } else {
+    //                    value = null;
+    //                }
+    //                if (biList.size() != 0 || isBuiltinEmpty) {
+    //                    builtIns = biList;
+    //                } else {
+    //                    builtIns = null;
+    //                }
+    //
+    //                break;
+    //            default:
+    //                break;
+    //            }
+    //        } catch (BuildException e) {
+    //            // TODO: report error
+    //        }
+    //
+    //        // Determine if there needs to be a browse button
+    //        if (element.getAttribute(BROWSE_TYPE) != null) {
+    //            String browseTypeStr = element.getAttribute(BROWSE_TYPE);
+    //
+    //            if (browseTypeStr == null) {
+    //                // Set to null, to indicate no browse type specification
+    //                // This will allow any superclasses to be searched for the
+    //                // browse type specification, and thus inherited, if found,
+    //                // which they should be
+    //                browseType = null;
+    //            } else if (browseTypeStr.equals(NONE)) {
+    //                browseType = BROWSE_NONE;
+    //            } else if (browseTypeStr.equals(FILE)) {
+    //                browseType = BROWSE_FILE;
+    //            } else if (browseTypeStr.equals(DIR)) {
+    //                browseType = BROWSE_DIR;
+    //            }
+    //        }
+    //
+    //        // Get the browseFilterPath attribute
+    //        if (element.getAttribute(BROWSE_FILTER_PATH) != null) {
+    //            this.browseFilterPath = SafeStringInterner.safeIntern(element.getAttribute(BROWSE_FILTER_PATH));
+    //        }
+    //
+    //        // Get the browseFilterExtensions attribute
+    //        if (element.getAttribute(BROWSE_FILTER_EXTENSIONS) != null) {
+    //            String browseFilterExtensionsStr = element.getAttribute(BROWSE_FILTER_EXTENSIONS);
+    //            if (browseFilterExtensionsStr != null) {
+    //                this.browseFilterExtensions = SafeStringInterner
+    //                        .safeIntern(browseFilterExtensionsStr.split("\\s*,\\s*")); //$NON-NLS-1$
+    //            }
+    //        }
+    //
+    //        if (element.getAttribute(CATEGORY) != null) {
+    //            categoryId = SafeStringInterner.safeIntern(element.getAttribute(CATEGORY));
+    //            if (categoryId != null) {
+    //                category = holder.getOptionCategory(categoryId);
+    //            }
+    //        }
+    //
+    //        // Get the resourceFilter attribute
+    //        if (element.getAttribute(RESOURCE_FILTER) != null) {
+    //            String resFilterStr = element.getAttribute(RESOURCE_FILTER);
+    //            if (resFilterStr == null) {
+    //                // Set to null, to indicate no resource filter specification
+    //                // This will allow any superclasses to be searched for the
+    //                // resource filter specification, and thus inherited, if found,
+    //                // which they should be
+    //                resourceFilter = null;
+    //            } else if (resFilterStr.equals(ALL)) {
+    //                resourceFilter = FILTER_ALL;
+    //            } else if (resFilterStr.equals(FILE)) {
+    //                resourceFilter = FILTER_FILE;
+    //            } else if (resFilterStr.equals(PROJECT)) {
+    //                resourceFilter = FILTER_PROJECT;
+    //            }
+    //        }
+    //
+    //        // Note: valueHandlerElement and VALUE_HANDLER are not restored,
+    //        // as they are not saved. See note in serialize().
+    //
+    //        // valueHandlerExtraArgument
+    //        if (element.getAttribute(VALUE_HANDLER_EXTRA_ARGUMENT) != null) {
+    //            valueHandlerExtraArgument = SafeStringInterner
+    //                    .safeIntern(element.getAttribute(VALUE_HANDLER_EXTRA_ARGUMENT));
+    //        }
+    //    }
 
     private int ValueTypeStrToInt(String valueTypeStr) {
         if (valueTypeStr == null) {
@@ -887,290 +792,286 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         }
     }
 
-    /**
-     * Persist the option to the {@link ICStorageElement}.
-     *
-     * @param element
-     *            - storage element to persist the option
-     */
-    public void serialize(ICStorageElement element) throws BuildException {
-        if (superClass != null) {
-            element.setAttribute(IProjectType.SUPERCLASS, superClass.getId());
-        } else if (superClassId != null) {
-            element.setAttribute(IProjectType.SUPERCLASS, superClassId);
-        }
+    //    /**
+    //     * Persist the option to the {@link ICStorageElement}.
+    //     *
+    //     * @param element
+    //     *            - storage element to persist the option
+    //     */
+    //    public void serialize(ICStorageElement element) throws BuildException {
+    //        if (superClass != null) {
+    //            element.setAttribute(IProjectType.SUPERCLASS, superClass.getId());
+    //        } else if (superClassId != null) {
+    //            element.setAttribute(IProjectType.SUPERCLASS, superClassId);
+    //        }
+    //
+    //        element.setAttribute(IBuildObject.ID, id);
+    //
+    //        if (name != null) {
+    //            element.setAttribute(IBuildObject.NAME, name);
+    //        }
+    //
+    //        if (isAbstract != null) {
+    //            element.setAttribute(IS_ABSTRACT, isAbstract.toString());
+    //        }
+    //
+    //        if (command != null) {
+    //            element.setAttribute(COMMAND, command);
+    //        }
+    //
+    //        if (commandFalse != null) {
+    //            element.setAttribute(COMMAND_FALSE, commandFalse);
+    //        }
+    //
+    //        if (isForScannerDiscovery != null) {
+    //            element.setAttribute(USE_BY_SCANNER_DISCOVERY, isForScannerDiscovery.toString());
+    //        }
+    //
+    //        if (tip != null) {
+    //            element.setAttribute(TOOL_TIP, tip);
+    //        }
+    //
+    //        if (contextId != null) {
+    //            element.setAttribute(CONTEXT_ID, contextId);
+    //        }
+    //        /*
+    //         * Note:  We store value & value-type as a pair, so we know what type of value we are
+    //         *        dealing with when we read it back in.
+    //         *        This is also true of defaultValue.
+    //         */
+    //        boolean storeValueType = false;
+    //
+    //        // value
+    //        if (value != null) {
+    //            storeValueType = true;
+    //            switch (getValueType()) {
+    //            case BOOLEAN:
+    //                element.setAttribute(VALUE, ((Boolean) value).toString());
+    //                break;
+    //            case STRING:
+    //            case ENUMERATED:
+    //            case TREE:
+    //                element.setAttribute(VALUE, (String) value);
+    //                break;
+    //            case STRING_LIST:
+    //            case INCLUDE_PATH:
+    //            case PREPROCESSOR_SYMBOLS:
+    //            case LIBRARIES:
+    //            case OBJECTS:
+    //            case INCLUDE_FILES:
+    //            case LIBRARY_PATHS:
+    //            case LIBRARY_FILES:
+    //            case MACRO_FILES:
+    //            case UNDEF_INCLUDE_PATH:
+    //            case UNDEF_PREPROCESSOR_SYMBOLS:
+    //            case UNDEF_INCLUDE_FILES:
+    //            case UNDEF_LIBRARY_PATHS:
+    //            case UNDEF_LIBRARY_FILES:
+    //            case UNDEF_MACRO_FILES:
+    //                if (value != null) {
+    //                    @SuppressWarnings("unchecked")
+    //                    ArrayList<OptionStringValue> stringList = (ArrayList<OptionStringValue>) value;
+    //                    for (OptionStringValue optValue : stringList) {
+    //                        ICStorageElement valueElement = element.createChild(LIST_VALUE);
+    //                        optValue.serialize(valueElement);
+    //                    }
+    //
+    //                    if (stringList.isEmpty()) {
+    //                        element.setAttribute(IS_VALUE_EMPTY, Boolean.TRUE.toString());
+    //                    } else {
+    //                        element.setAttribute(IS_VALUE_EMPTY, Boolean.FALSE.toString());
+    //                    }
+    //                } else {
+    //                    element.setAttribute(IS_VALUE_EMPTY, Boolean.FALSE.toString());
+    //                }
+    //
+    //                // Serialize the built-ins that have been overridden
+    //                if (builtIns != null) {
+    //                    for (OptionStringValue optionValue : builtIns) {
+    //                        ICStorageElement valueElement = element.createChild(LIST_VALUE);
+    //                        optionValue.serialize(valueElement);
+    //                    }
+    //
+    //                    if (builtIns.isEmpty()) {
+    //                        element.setAttribute(IS_BUILTIN_EMPTY, Boolean.TRUE.toString());
+    //                    } else {
+    //                        element.setAttribute(IS_BUILTIN_EMPTY, Boolean.FALSE.toString());
+    //                    }
+    //                } else {
+    //                    element.setAttribute(IS_BUILTIN_EMPTY, Boolean.FALSE.toString());
+    //                }
+    //
+    //                break;
+    //            }
+    //        }
+    //
+    //        // defaultValue
+    //        if (defaultValue != null) {
+    //            storeValueType = true;
+    //            switch (getValueType()) {
+    //            case BOOLEAN:
+    //                element.setAttribute(DEFAULT_VALUE, ((Boolean) defaultValue).toString());
+    //                break;
+    //            case STRING:
+    //            case ENUMERATED:
+    //            case TREE:
+    //                element.setAttribute(DEFAULT_VALUE, (String) defaultValue);
+    //                break;
+    //            default:
+    //                break;
+    //            }
+    //        }
+    //
+    //        if (storeValueType) {
+    //            String str;
+    //            switch (getValueType()) {
+    //            case BOOLEAN:
+    //                str = TYPE_BOOL;
+    //                break;
+    //            case STRING:
+    //                str = TYPE_STRING;
+    //                break;
+    //            case ENUMERATED:
+    //                str = TYPE_ENUM;
+    //                break;
+    //            case STRING_LIST:
+    //                str = TYPE_STR_LIST;
+    //                break;
+    //            case INCLUDE_PATH:
+    //                str = TYPE_INC_PATH;
+    //                break;
+    //            case LIBRARIES:
+    //                str = TYPE_LIB;
+    //                break;
+    //            case OBJECTS:
+    //                str = TYPE_USER_OBJS;
+    //                break;
+    //            case PREPROCESSOR_SYMBOLS:
+    //                str = TYPE_DEFINED_SYMBOLS;
+    //                break;
+    //            case INCLUDE_FILES:
+    //                str = TYPE_INC_FILES;
+    //                break;
+    //            case LIBRARY_PATHS:
+    //                str = TYPE_LIB_PATHS;
+    //                break;
+    //            case LIBRARY_FILES:
+    //                str = TYPE_LIB_FILES;
+    //                break;
+    //            case MACRO_FILES:
+    //                str = TYPE_SYMBOL_FILES;
+    //                break;
+    //            case UNDEF_INCLUDE_PATH:
+    //                str = TYPE_UNDEF_INC_PATH;
+    //                break;
+    //            case UNDEF_PREPROCESSOR_SYMBOLS:
+    //                str = TYPE_UNDEF_DEFINED_SYMBOLS;
+    //                break;
+    //            case UNDEF_INCLUDE_FILES:
+    //                str = TYPE_UNDEF_INC_FILES;
+    //                break;
+    //            case UNDEF_LIBRARY_PATHS:
+    //                str = TYPE_UNDEF_LIB_PATHS;
+    //                break;
+    //            case UNDEF_LIBRARY_FILES:
+    //                str = TYPE_UNDEF_LIB_FILES;
+    //                break;
+    //            case UNDEF_MACRO_FILES:
+    //                str = TYPE_UNDEF_SYMBOL_FILES;
+    //                break;
+    //            case TREE:
+    //                str = TYPE_TREE;
+    //                break;
+    //            default:
+    //                //  TODO; is this a problem...
+    //                str = EMPTY_STRING;
+    //                break;
+    //            }
+    //            element.setAttribute(VALUE_TYPE, str);
+    //        }
+    //
+    //        // browse type
+    //        if (browseType != null) {
+    //            String str;
+    //            switch (getBrowseType()) {
+    //            case BROWSE_NONE:
+    //                str = NONE;
+    //                break;
+    //            case BROWSE_FILE:
+    //                str = FILE;
+    //                break;
+    //            case BROWSE_DIR:
+    //                str = DIR;
+    //                break;
+    //            default:
+    //                str = EMPTY_STRING;
+    //                break;
+    //            }
+    //            element.setAttribute(BROWSE_TYPE, str);
+    //        }
+    //
+    //        // browse filter path
+    //        if (browseFilterPath != null) {
+    //            element.setAttribute(BROWSE_FILTER_PATH, browseFilterPath);
+    //        }
+    //
+    //        // browse filter extensions
+    //        if (browseFilterExtensions != null) {
+    //            StringBuilder sb = new StringBuilder();
+    //            for (String ext : browseFilterExtensions) {
+    //                sb.append(ext).append(',');
+    //            }
+    //            element.setAttribute(BROWSE_FILTER_EXTENSIONS, sb.toString());
+    //        }
+    //
+    //        if (categoryId != null) {
+    //            element.setAttribute(CATEGORY, categoryId);
+    //        }
+    //
+    //        // resource filter
+    //        if (resourceFilter != null) {
+    //            String str;
+    //            switch (getResourceFilter()) {
+    //            case FILTER_ALL:
+    //                str = ALL;
+    //                break;
+    //            case FILTER_FILE:
+    //                str = FILE;
+    //                break;
+    //            case FILTER_PROJECT:
+    //                str = PROJECT;
+    //                break;
+    //            default:
+    //                str = EMPTY_STRING;
+    //                break;
+    //            }
+    //            element.setAttribute(RESOURCE_FILTER, str);
+    //        }
+    //
+    //        // Note: applicability calculator cannot be specified in a project file because
+    //        //       an IConfigurationElement is needed to load it!
+    //        if (applicabilityCalculatorElement != null) {
+    //            //  TODO:  issue warning?
+    //        }
+    //
+    //        // Note: a value handler cannot be specified in a project file because
+    //        //       an IConfigurationElement is needed to load it!
+    //        if (valueHandlerElement != null) {
+    //            //  TODO:  Issue warning? Stuck with behavior of this elsewhere in
+    //            //         CDT, e.g. the implementation of Tool
+    //        }
+    //        if (valueHandlerExtraArgument != null) {
+    //            element.setAttribute(VALUE_HANDLER_EXTRA_ARGUMENT, valueHandlerExtraArgument);
+    //        }
+    //
+    //        // I am clean now
+    //        isDirty = false;
+    //    }
 
-        element.setAttribute(IBuildObject.ID, id);
-
-        if (name != null) {
-            element.setAttribute(IBuildObject.NAME, name);
-        }
-
-        if (unusedChildren != null) {
-            element.setAttribute(IProjectType.UNUSED_CHILDREN, unusedChildren);
-        }
-
-        if (isAbstract != null) {
-            element.setAttribute(IProjectType.IS_ABSTRACT, isAbstract.toString());
-        }
-
-        if (command != null) {
-            element.setAttribute(COMMAND, command);
-        }
-
-        if (commandFalse != null) {
-            element.setAttribute(COMMAND_FALSE, commandFalse);
-        }
-
-        if (isForScannerDiscovery != null) {
-            element.setAttribute(USE_BY_SCANNER_DISCOVERY, isForScannerDiscovery.toString());
-        }
-
-        if (tip != null) {
-            element.setAttribute(TOOL_TIP, tip);
-        }
-
-        if (contextId != null) {
-            element.setAttribute(CONTEXT_ID, contextId);
-        }
-        /*
-         * Note:  We store value & value-type as a pair, so we know what type of value we are
-         *        dealing with when we read it back in.
-         *        This is also true of defaultValue.
-         */
-        boolean storeValueType = false;
-
-        // value
-        if (value != null) {
-            storeValueType = true;
-            switch (getValueType()) {
-            case BOOLEAN:
-                element.setAttribute(VALUE, ((Boolean) value).toString());
-                break;
-            case STRING:
-            case ENUMERATED:
-            case TREE:
-                element.setAttribute(VALUE, (String) value);
-                break;
-            case STRING_LIST:
-            case INCLUDE_PATH:
-            case PREPROCESSOR_SYMBOLS:
-            case LIBRARIES:
-            case OBJECTS:
-            case INCLUDE_FILES:
-            case LIBRARY_PATHS:
-            case LIBRARY_FILES:
-            case MACRO_FILES:
-            case UNDEF_INCLUDE_PATH:
-            case UNDEF_PREPROCESSOR_SYMBOLS:
-            case UNDEF_INCLUDE_FILES:
-            case UNDEF_LIBRARY_PATHS:
-            case UNDEF_LIBRARY_FILES:
-            case UNDEF_MACRO_FILES:
-                if (value != null) {
-                    @SuppressWarnings("unchecked")
-                    ArrayList<OptionStringValue> stringList = (ArrayList<OptionStringValue>) value;
-                    for (OptionStringValue optValue : stringList) {
-                        ICStorageElement valueElement = element.createChild(LIST_VALUE);
-                        optValue.serialize(valueElement);
-                    }
-
-                    if (stringList.isEmpty()) {
-                        element.setAttribute(IS_VALUE_EMPTY, Boolean.TRUE.toString());
-                    } else {
-                        element.setAttribute(IS_VALUE_EMPTY, Boolean.FALSE.toString());
-                    }
-                } else {
-                    element.setAttribute(IS_VALUE_EMPTY, Boolean.FALSE.toString());
-                }
-
-                // Serialize the built-ins that have been overridden
-                if (builtIns != null) {
-                    for (OptionStringValue optionValue : builtIns) {
-                        ICStorageElement valueElement = element.createChild(LIST_VALUE);
-                        optionValue.serialize(valueElement);
-                    }
-
-                    if (builtIns.isEmpty()) {
-                        element.setAttribute(IS_BUILTIN_EMPTY, Boolean.TRUE.toString());
-                    } else {
-                        element.setAttribute(IS_BUILTIN_EMPTY, Boolean.FALSE.toString());
-                    }
-                } else {
-                    element.setAttribute(IS_BUILTIN_EMPTY, Boolean.FALSE.toString());
-                }
-
-                break;
-            }
-        }
-
-        // defaultValue
-        if (defaultValue != null) {
-            storeValueType = true;
-            switch (getValueType()) {
-            case BOOLEAN:
-                element.setAttribute(DEFAULT_VALUE, ((Boolean) defaultValue).toString());
-                break;
-            case STRING:
-            case ENUMERATED:
-            case TREE:
-                element.setAttribute(DEFAULT_VALUE, (String) defaultValue);
-                break;
-            default:
-                break;
-            }
-        }
-
-        if (storeValueType) {
-            String str;
-            switch (getValueType()) {
-            case BOOLEAN:
-                str = TYPE_BOOL;
-                break;
-            case STRING:
-                str = TYPE_STRING;
-                break;
-            case ENUMERATED:
-                str = TYPE_ENUM;
-                break;
-            case STRING_LIST:
-                str = TYPE_STR_LIST;
-                break;
-            case INCLUDE_PATH:
-                str = TYPE_INC_PATH;
-                break;
-            case LIBRARIES:
-                str = TYPE_LIB;
-                break;
-            case OBJECTS:
-                str = TYPE_USER_OBJS;
-                break;
-            case PREPROCESSOR_SYMBOLS:
-                str = TYPE_DEFINED_SYMBOLS;
-                break;
-            case INCLUDE_FILES:
-                str = TYPE_INC_FILES;
-                break;
-            case LIBRARY_PATHS:
-                str = TYPE_LIB_PATHS;
-                break;
-            case LIBRARY_FILES:
-                str = TYPE_LIB_FILES;
-                break;
-            case MACRO_FILES:
-                str = TYPE_SYMBOL_FILES;
-                break;
-            case UNDEF_INCLUDE_PATH:
-                str = TYPE_UNDEF_INC_PATH;
-                break;
-            case UNDEF_PREPROCESSOR_SYMBOLS:
-                str = TYPE_UNDEF_DEFINED_SYMBOLS;
-                break;
-            case UNDEF_INCLUDE_FILES:
-                str = TYPE_UNDEF_INC_FILES;
-                break;
-            case UNDEF_LIBRARY_PATHS:
-                str = TYPE_UNDEF_LIB_PATHS;
-                break;
-            case UNDEF_LIBRARY_FILES:
-                str = TYPE_UNDEF_LIB_FILES;
-                break;
-            case UNDEF_MACRO_FILES:
-                str = TYPE_UNDEF_SYMBOL_FILES;
-                break;
-            case TREE:
-                str = TYPE_TREE;
-                break;
-            default:
-                //  TODO; is this a problem...
-                str = EMPTY_STRING;
-                break;
-            }
-            element.setAttribute(VALUE_TYPE, str);
-        }
-
-        // browse type
-        if (browseType != null) {
-            String str;
-            switch (getBrowseType()) {
-            case BROWSE_NONE:
-                str = NONE;
-                break;
-            case BROWSE_FILE:
-                str = FILE;
-                break;
-            case BROWSE_DIR:
-                str = DIR;
-                break;
-            default:
-                str = EMPTY_STRING;
-                break;
-            }
-            element.setAttribute(BROWSE_TYPE, str);
-        }
-
-        // browse filter path
-        if (browseFilterPath != null) {
-            element.setAttribute(BROWSE_FILTER_PATH, browseFilterPath);
-        }
-
-        // browse filter extensions
-        if (browseFilterExtensions != null) {
-            StringBuilder sb = new StringBuilder();
-            for (String ext : browseFilterExtensions) {
-                sb.append(ext).append(',');
-            }
-            element.setAttribute(BROWSE_FILTER_EXTENSIONS, sb.toString());
-        }
-
-        if (categoryId != null) {
-            element.setAttribute(CATEGORY, categoryId);
-        }
-
-        // resource filter
-        if (resourceFilter != null) {
-            String str;
-            switch (getResourceFilter()) {
-            case FILTER_ALL:
-                str = ALL;
-                break;
-            case FILTER_FILE:
-                str = FILE;
-                break;
-            case FILTER_PROJECT:
-                str = PROJECT;
-                break;
-            default:
-                str = EMPTY_STRING;
-                break;
-            }
-            element.setAttribute(RESOURCE_FILTER, str);
-        }
-
-        // Note: applicability calculator cannot be specified in a project file because
-        //       an IConfigurationElement is needed to load it!
-        if (applicabilityCalculatorElement != null) {
-            //  TODO:  issue warning?
-        }
-
-        // Note: a value handler cannot be specified in a project file because
-        //       an IConfigurationElement is needed to load it!
-        if (valueHandlerElement != null) {
-            //  TODO:  Issue warning? Stuck with behavior of this elsewhere in
-            //         CDT, e.g. the implementation of Tool
-        }
-        if (valueHandlerExtraArgument != null) {
-            element.setAttribute(VALUE_HANDLER_EXTRA_ARGUMENT, valueHandlerExtraArgument);
-        }
-
-        // I am clean now
-        isDirty = false;
-    }
-
-    // @Override
-    public IOptionContextData getOptionContextData(IHoldsOptions holder) {
-        return new OptionContextData(this, holder);
-    }
+    //    // @Override
+    //    public IOptionContextData getOptionContextData(IHoldsOptions holder) {
+    //        return new OptionContextData(this, holder);
+    //    }
 
     /*
      *  P A R E N T   A N D   C H I L D   H A N D L I N G
@@ -1192,24 +1093,15 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      */
 
     @Override
-    public IOption getSuperClass() {
-        return superClass;
-    }
-
-    @Override
     public String getName() {
-        return (name == null && superClass != null) ? superClass.getName() : name;
+        return name;
     }
 
     @Override
     public String[] getApplicableValues() {
         // Does this option instance have the list of values?
         if (applicableValuesList == null) {
-            if (superClass != null) {
-                return superClass.getApplicableValues();
-            } else {
-                return EMPTY_STRING_ARRAY;
-            }
+            return EMPTY_STRING_ARRAY;
         }
         // Get all of the enumerated names from the option
         if (applicableValuesList.size() == 0) {
@@ -1231,79 +1123,30 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
 
     @Override
     public int getBrowseType() {
-        if (browseType == null) {
-            if (superClass != null) {
-                return superClass.getBrowseType();
-            } else {
-                return BROWSE_NONE;
-            }
-        }
         return browseType.intValue();
     }
 
     @Override
     public String getBrowseFilterPath() {
-        if (browseFilterPath == null) {
-            if (superClass != null) {
-                return superClass.getBrowseFilterPath();
-            } else {
-                return null;
-            }
-        }
-        return browseFilterPath;
+        return browseFilterPath[SUPER];
     }
 
     @Override
     public String[] getBrowseFilterExtensions() {
-        if (browseFilterExtensions == null) {
-            if (superClass != null) {
-                return superClass.getBrowseFilterExtensions();
-            } else {
-                return null;
-            }
-        }
         return browseFilterExtensions.clone();
     }
 
     @Override
     public int getResourceFilter() {
-        if (resourceFilter == null) {
-            if (superClass != null) {
-                return superClass.getResourceFilter();
-            } else {
-                return FILTER_ALL;
-            }
-        }
         return resourceFilter.intValue();
     }
 
     public IConfigurationElement getApplicabilityCalculatorElement() {
-        /*		if (applicabilityCalculatorElement == null) {
-        			if (superClass != null) {
-        				return ((Option)superClass).getApplicabilityCalculatorElement();
-        			}
-        		}
-        */
         return applicabilityCalculatorElement;
     }
 
     @Override
     public IOptionApplicability getApplicabilityCalculator() {
-        if (applicabilityCalculator == null) {
-            if (applicabilityCalculatorElement != null) {
-                try {
-                    if (applicabilityCalculatorElement.getAttribute(APPLICABILITY_CALCULATOR) != null) {
-                        applicabilityCalculator = (IOptionApplicability) applicabilityCalculatorElement
-                                .createExecutableExtension(APPLICABILITY_CALCULATOR);
-                    }
-                } catch (CoreException e) {
-                    Activator.log(e);
-                }
-            } else if (superClass != null) {
-                applicabilityCalculator = superClass.getApplicabilityCalculator();
-            }
-        }
-
         return applicabilityCalculator;
     }
 
@@ -1320,128 +1163,47 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     }
 
     public List<OptionStringValue> getExactBuiltinsList() {
-        // Return the list of built-ins as an array
-        if (builtIns == null) {
-            if (superClass != null) {
-                return ((Option) superClass).getExactBuiltinsList();
-            } else {
-                return null;
-            }
-        }
-
         return builtIns;
     }
 
     @Override
     public IOptionCategory getCategory() {
-        if (category == null) {
-            if (superClass != null) {
-                return superClass.getCategory();
-            } else {
-                if (getOptionHolder() instanceof ITool) {
-                    return ((ITool) getOptionHolder()).getTopOptionCategory();
-                } else {
-                    return null;
-                }
-            }
-        }
         return category;
     }
 
     @Override
     public IOptionDefaultValueGenerator getDefaultValueGenerator() {
-        if (defaultValueGenerator == null) {
-            if (defaultValueGeneratorElement != null) {
-                try {
-                    if (defaultValueGeneratorElement.getAttribute(DEFAULTVALUE_GENERATOR) != null) {
-                        defaultValueGenerator = (IOptionDefaultValueGenerator) defaultValueGeneratorElement
-                                .createExecutableExtension(DEFAULTVALUE_GENERATOR);
-                    }
-                } catch (CoreException e) {
-                    Activator.log(e);
-                }
-            } else if (superClass != null) {
-                defaultValueGenerator = superClass.getDefaultValueGenerator();
-            }
-        }
-
         return defaultValueGenerator;
     }
 
     @Override
     public String getCommand() {
-        if (command == null) {
-            if (superClass != null) {
-                return superClass.getCommand();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return command;
+        return command[SUPER];
     }
 
     @Override
     public IOptionCommandGenerator getCommandGenerator() {
-        if (commandGenerator == null) {
-            if (commandGeneratorElement != null) {
-                try {
-                    if (commandGeneratorElement.getAttribute(COMMAND_GENERATOR) != null) {
-                        commandGenerator = (IOptionCommandGenerator) commandGeneratorElement
-                                .createExecutableExtension(COMMAND_GENERATOR);
-                    }
-                } catch (CoreException e) {
-                    Activator.log(e);
-                }
-            } else if (superClass != null) {
-                commandGenerator = superClass.getCommandGenerator();
-            }
-        }
-
         return commandGenerator;
     }
 
     @Override
     public String getCommandFalse() {
-        if (commandFalse == null) {
-            if (superClass != null) {
-                return superClass.getCommandFalse();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return commandFalse;
+        return commandFalse[SUPER];
     }
 
     @Override
     public boolean isForScannerDiscovery() {
-        if (isForScannerDiscovery == null) {
-            isForScannerDiscovery = superClass != null && superClass.isForScannerDiscovery();
-        }
         return isForScannerDiscovery;
     }
 
     @Override
     public String getToolTip() {
-        if (tip == null) {
-            if (superClass != null) {
-                return superClass.getToolTip();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return tip;
+        return tip[SUPER];
     }
 
     @Override
     public String getContextId() {
-        if (contextId == null) {
-            if (superClass != null) {
-                return superClass.getContextId();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return contextId;
+        return contextId[SUPER];
     }
 
     @Override
@@ -1468,11 +1230,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
 
         // Does this option instance have the list of values?
         if (applicableValuesList == null) {
-            if (superClass != null) {
-                return superClass.getCommand(id);
-            } else {
-                return EMPTY_STRING;
-            }
+            return EMPTY_STRING;
         }
         if (getValueType() != ENUMERATED && getValueType() != TREE) {
             throw new BuildException(Option_error_bad_value_type);
@@ -1514,14 +1272,10 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
 
         // Does this option instance have the list of values?
         if (applicableValuesList == null) {
-            if (superClass != null) {
-                return superClass.getName(id);
-            } else {
-                return EMPTY_STRING;
-            }
+            return EMPTY_STRING;
         }
         if (getValueType() != ENUMERATED) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
 
         // First check for the command in ID->name map
@@ -1563,11 +1317,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
 
         // Does this option instance have the list of values?
         if (applicableValuesList == null) {
-            if (superClass != null) {
-                return superClass.getId(name);
-            } else {
-                return EMPTY_STRING;
-            }
+            return EMPTY_STRING;
         }
         if (getValueType() != ENUMERATED && getValueType() != TREE) {
             throw new BuildException(Option_error_bad_value_type);
@@ -1612,7 +1362,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String[] getLibraries() throws BuildException {
         if (getValueType() != LIBRARIES) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         @SuppressWarnings("unchecked")
         ArrayList<String> v = (ArrayList<String>) getValue();
@@ -1627,7 +1377,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String[] getLibraryFiles() throws BuildException {
         if (getValueType() != LIBRARY_FILES) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         @SuppressWarnings("unchecked")
         ArrayList<String> v = (ArrayList<String>) getValue();
@@ -1642,7 +1392,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String[] getLibraryPaths() throws BuildException {
         if (getValueType() != LIBRARY_PATHS) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         @SuppressWarnings("unchecked")
         ArrayList<String> v = (ArrayList<String>) getValue();
@@ -1657,7 +1407,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String getSelectedEnum() throws BuildException {
         if (getValueType() != ENUMERATED) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         return getStringValue();
     }
@@ -1665,7 +1415,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String[] getStringListValue() throws BuildException {
         if (getValueType() != STRING_LIST) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         @SuppressWarnings("unchecked")
         ArrayList<String> v = (ArrayList<String>) getValue();
@@ -1680,7 +1430,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String getStringValue() throws BuildException {
         if (getValueType() != STRING && getValueType() != ENUMERATED && getValueType() != TREE) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         return getValue() == null ? EMPTY_STRING : (String) getValue();
     }
@@ -1688,7 +1438,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     @Override
     public String[] getUserObjects() throws BuildException {
         if (getValueType() != OBJECTS) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         // This is the right puppy, so return its list value
         @SuppressWarnings("unchecked")
@@ -1703,13 +1453,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
 
     @Override
     public int getValueType() throws BuildException {
-        if (valueType == null) {
-            if (superClass != null) {
-                return superClass.getValueType();
-            } else {
-                throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$;
-            }
-        }
         return valueType.intValue();
     }
 
@@ -1853,12 +1596,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     }
 
     public Object getExactRawValue() {
-        if (value == null) {
-            if (superClass != null) {
-                Option mySuperClass = (Option) superClass;
-                return mySuperClass.getExactRawValue();
-            }
-        }
         return value;
     }
 
@@ -1903,12 +1640,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     }
 
     public Object getExactDefaultValue() {
-        // Note: string-list options do not have a default value
-        if (defaultValue == null) {
-            if (superClass != null) {
-                return ((Option) superClass).getExactDefaultValue();
-            }
-        }
         return defaultValue;
     }
 
@@ -1921,92 +1652,65 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         } else {
             defaultValue = v;
         }
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
-        }
     }
 
     @Override
     public void setCategory(IOptionCategory category) {
-        if (this.category != category) {
-            this.category = category;
-            if (category != null) {
-                categoryId = category.getId();
-            } else {
-                categoryId = null;
-            }
-            if (!isExtensionElement()) {
-                setDirty(true);
-                rebuildState = true;
-            }
-        }
+        //        if (this.category != category) {
+        //            this.category = category;
+        //            if (category != null) {
+        //                categoryId = category.getId();
+        //            } else {
+        //                categoryId = null;
+        //            }
+        //        }
     }
 
     @Override
     public void setCommand(String cmd) {
-        if (cmd == null && command == null) {
-            return;
-        }
-        if (cmd == null || command == null || !cmd.equals(command)) {
-            command = cmd;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (cmd == null && command == null) {
+        //            return;
+        //        }
+        //        if (cmd == null || command == null || !cmd.equals(command)) {
+        //            command = cmd;
+        //        }
     }
 
     @Override
     public void setCommandFalse(String cmd) {
-        if (cmd == null && commandFalse == null) {
-            return;
-        }
-        if (cmd == null || commandFalse == null || !cmd.equals(commandFalse)) {
-            commandFalse = cmd;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (cmd == null && commandFalse == null) {
+        //            return;
+        //        }
+        //        if (cmd == null || commandFalse == null || !cmd.equals(commandFalse)) {
+        //            commandFalse = cmd;
+        //        }
     }
 
     @Override
     public void setToolTip(String tooltip) {
-        if (tooltip == null && tip == null) {
-            return;
-        }
-        if (tooltip == null || tip == null || !tooltip.equals(tip)) {
-            tip = tooltip;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (tooltip == null && tip == null) {
+        //            return;
+        //        }
+        //        if (tooltip == null || tip == null || !tooltip.equals(tip)) {
+        //            tip = tooltip;
+        //        }
     }
 
     @Override
     public void setContextId(String id) {
-        if (id == null && contextId == null) {
-            return;
-        }
-        if (id == null || contextId == null || !id.equals(contextId)) {
-            contextId = id;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (id == null && contextId == null) {
+        //            return;
+        //        }
+        //        if (id == null || contextId == null || !id.equals(contextId)) {
+        //            contextId = id;
+        //}
+
     }
 
     @Override
     public void setResourceFilter(int filter) {
         if (resourceFilter == null || !(filter == resourceFilter.intValue())) {
             resourceFilter = Integer.valueOf(filter);
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
         }
     }
 
@@ -2014,32 +1718,20 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     public void setBrowseType(int type) {
         if (browseType == null || !(type == browseType.intValue())) {
             browseType = Integer.valueOf(type);
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
         }
     }
 
     @Override
     public void setBrowseFilterPath(String path) {
-        if (browseFilterPath == null || !(browseFilterPath.equals(path))) {
-            browseFilterPath = path;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (browseFilterPath == null || !(browseFilterPath.equals(path))) {
+        //            browseFilterPath = path;
+        //        }
     }
 
     @Override
     public void setBrowseFilterExtensions(String[] extensions) {
         if (browseFilterExtensions == null || !(browseFilterExtensions.equals(extensions))) {
             browseFilterExtensions = extensions;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
         }
     }
 
@@ -2048,11 +1740,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         if (/*!isExtensionElement() && */getValueType() == BOOLEAN) {
             this.value = value;
         } else {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
-        }
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
+            throw new BuildException(Option_error_bad_value_type);
         }
     }
 
@@ -2063,11 +1751,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
                 || getValueType() == TREE)) {
             this.value = value;
         } else {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
-        }
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
+            throw new BuildException(Option_error_bad_value_type);
         }
     }
 
@@ -2087,11 +1771,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
                 this.value = valueListToListValueList(Arrays.asList(value), false);
             }
         } else {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
-        }
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
+            throw new BuildException(Option_error_bad_value_type);
         }
     }
 
@@ -2110,11 +1790,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
                 this.value = new ArrayList<>(Arrays.asList(value));
             }
         } else {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
-        }
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
+            throw new BuildException(Option_error_bad_value_type);
         }
     }
 
@@ -2127,10 +1803,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         } else {
             value = v;
         }
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
-        }
     }
 
     @Override
@@ -2138,28 +1810,15 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         // TODO:  Verify that this is a valid type
         if (valueType == null || valueType.intValue() != type) {
             valueType = Integer.valueOf(type);
-            if (!isExtensionElement()) {
-                setDirty(true);
-                rebuildState = true;
-            }
         }
     }
 
     public IConfigurationElement getValueHandlerElement() {
-        if (valueHandlerElement == null) {
-            if (superClass != null) {
-                return ((Option) superClass).getValueHandlerElement();
-            }
-        }
         return valueHandlerElement;
     }
 
     public void setValueHandlerElement(IConfigurationElement element) {
         valueHandlerElement = element;
-        if (!isExtensionElement()) {
-            setDirty(true);
-            rebuildState = true;
-        }
     }
 
     @Override
@@ -2187,66 +1846,39 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
 
     @Override
     public String getValueHandlerExtraArgument() {
-        if (valueHandlerExtraArgument == null) {
-            if (superClass != null) {
-                return superClass.getValueHandlerExtraArgument();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return valueHandlerExtraArgument;
+        return valueHandlerExtraArgument[SUPER];
     }
 
     @Override
     public void setValueHandlerExtraArgument(String extraArgument) {
-        if (extraArgument == null && valueHandlerExtraArgument == null) {
-            return;
-        }
-        if (extraArgument == null || valueHandlerExtraArgument == null
-                || !extraArgument.equals(valueHandlerExtraArgument)) {
-            valueHandlerExtraArgument = extraArgument;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (extraArgument == null && valueHandlerExtraArgument == null) {
+        //            return;
+        //        }
+        //        if (extraArgument == null || valueHandlerExtraArgument == null
+        //                || !extraArgument.equals(valueHandlerExtraArgument)) {
+        //            valueHandlerExtraArgument = extraArgument;
+        //        }
     }
 
     @Override
     public String getFieldEditorId() {
-        if (fieldEditorId == null) {
-            if (superClass != null) {
-                return ((Option) superClass).getFieldEditorId();
-            }
-        }
-        return fieldEditorId;
+        return fieldEditorId[SUPER];
     }
 
     @Override
     public String getFieldEditorExtraArgument() {
-        if (fieldEditorExtraArgument == null) {
-            if (superClass != null) {
-                return superClass.getFieldEditorExtraArgument();
-            } else {
-                return null;
-            }
-        }
-        return fieldEditorExtraArgument;
+        return fieldEditorExtraArgument[SUPER];
     }
 
     @Override
     public void setFieldEditorExtraArgument(String extraArgument) {
-        if (extraArgument == null && fieldEditorExtraArgument == null) {
-            return;
-        }
-        if (extraArgument == null || fieldEditorExtraArgument == null
-                || !extraArgument.equals(fieldEditorExtraArgument)) {
-            fieldEditorExtraArgument = extraArgument;
-            if (!isExtensionElement()) {
-                isDirty = true;
-                rebuildState = true;
-            }
-        }
+        //        if (extraArgument == null && fieldEditorExtraArgument == null) {
+        //            return;
+        //        }
+        //        if (extraArgument == null || fieldEditorExtraArgument == null
+        //                || !extraArgument.equals(fieldEditorExtraArgument)) {
+        //            fieldEditorExtraArgument = extraArgument;
+        //        }
     }
 
     /*
@@ -2259,155 +1891,132 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     }
 
     public boolean isDirty() {
-        // This shouldn't be called for an extension option
-        if (isExtensionOption) {
-            return false;
-        }
-        return isDirty;
+        return false;
     }
 
     public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
     }
 
     public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            // Resolve superClass
-            if (superClassId != null && superClassId.length() > 0) {
-                superClass = ManagedBuildManager.getExtensionOption(superClassId);
-                if (superClass == null) {
-                    // Report error
-                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-                            superClassId, "option", //$NON-NLS-1$
-                            getId());
-                } else {
-                    //  All of our superclasses must be resolved in order to call
-                    //  getValueType below.
-                    ((Option) superClass).resolveReferences();
-                }
+        if (categoryId != null) {
+            category = holder.getOptionCategory(categoryId[SUPER]);
+            if (category == null) {
+                // Report error
+                ManagedBuildManager.outputResolveError("category", //$NON-NLS-1$
+                        categoryId[SUPER], "option", //$NON-NLS-1$
+                        getId());
             }
-            if (categoryId != null) {
-                category = holder.getOptionCategory(categoryId);
-                if (category == null) {
-                    // Report error
-                    ManagedBuildManager.outputResolveError("category", //$NON-NLS-1$
-                            categoryId, "option", //$NON-NLS-1$
-                            getId());
+        }
+        // Process the value and default value attributes.  This is delayed until now
+        // because we may not know the valueType until after we have resolved the superClass above
+        // Now get the actual value
+        try {
+            IConfigurationElement element = null; //TOFIX JABA ManagedBuildManager.getConfigElement(this);
+            switch (getValueType()) {
+            case BOOLEAN:
+                // Convert the string to a boolean
+                String val = element.getAttribute(VALUE);
+                if (val != null) {
+                    value = Boolean.valueOf(val);
                 }
-            }
-            // Process the value and default value attributes.  This is delayed until now
-            // because we may not know the valueType until after we have resolved the superClass above
-            // Now get the actual value
-            try {
-                IManagedConfigElement element = ManagedBuildManager.getConfigElement(this);
-                switch (getValueType()) {
-                case BOOLEAN:
-                    // Convert the string to a boolean
-                    String val = element.getAttribute(VALUE);
-                    if (val != null) {
-                        value = Boolean.valueOf(val);
-                    }
-                    val = element.getAttribute(DEFAULT_VALUE);
-                    if (val != null) {
-                        defaultValue = Boolean.valueOf(val);
-                    }
-                    break;
-                case STRING:
-                    // Just get the value out of the option directly
-                    value = element.getAttribute(VALUE);
-                    defaultValue = element.getAttribute(DEFAULT_VALUE);
-                    break;
-                case ENUMERATED:
-                    value = element.getAttribute(VALUE);
-                    defaultValue = element.getAttribute(DEFAULT_VALUE);
+                val = element.getAttribute(DEFAULT_VALUE);
+                if (val != null) {
+                    defaultValue = Boolean.valueOf(val);
+                }
+                break;
+            case STRING:
+                // Just get the value out of the option directly
+                value = element.getAttribute(VALUE);
+                defaultValue = element.getAttribute(DEFAULT_VALUE);
+                break;
+            case ENUMERATED:
+                value = element.getAttribute(VALUE);
+                defaultValue = element.getAttribute(DEFAULT_VALUE);
 
-                    //  Do we have enumeratedOptionValue children?  If so, load them
-                    //  to define the valid values and the default value.
-                    IManagedConfigElement[] enumElements = element.getChildren(ENUM_VALUE);
-                    for (int i = 0; i < enumElements.length; ++i) {
-                        String optId = SafeStringInterner.safeIntern(enumElements[i].getAttribute(ID));
-                        if (i == 0) {
-                            applicableValuesList = new ArrayList<>();
-                            if (defaultValue == null) {
-                                defaultValue = optId; //  Default value to be overridden if default is specified
-                            }
-                        }
-                        applicableValuesList.add(optId);
-                        getCommandMap().put(optId,
-                                SafeStringInterner.safeIntern(enumElements[i].getAttribute(COMMAND)));
-                        getNameMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(NAME)));
-                        Boolean isDefault = Boolean.valueOf(enumElements[i].getAttribute(IS_DEFAULT));
-                        if (isDefault.booleanValue()) {
-                            defaultValue = optId;
-                        }
-                    }
-                    break;
-                case TREE:
-                    value = element.getAttribute(VALUE);
-                    defaultValue = element.getAttribute(DEFAULT_VALUE);
-
-                    IManagedConfigElement[] treeRootConfigs = element.getChildren(TREE_ROOT);
-                    if (treeRootConfigs != null && treeRootConfigs.length == 1) {
-                        IManagedConfigElement treeRootConfig = treeRootConfigs[0];
-                        treeRoot = new TreeRoot(treeRootConfig, element, getParent() instanceof IToolChain);
+                //  Do we have enumeratedOptionValue children?  If so, load them
+                //  to define the valid values and the default value.
+                IConfigurationElement[] enumElements = element.getChildren(ENUM_VALUE);
+                for (int i = 0; i < enumElements.length; ++i) {
+                    String optId = SafeStringInterner.safeIntern(enumElements[i].getAttribute(ID));
+                    if (i == 0) {
                         applicableValuesList = new ArrayList<>();
-                        iterateOnTree(treeRoot, new ITreeNodeIterator() {
-
-                            @Override
-                            public void iterateOnNode(ITreeOption node) {
-                            }
-
-                            @Override
-                            public void iterateOnLeaf(ITreeOption leafNode) {
-                                applicableValuesList.add(leafNode.getID());
-                                getCommandMap().put(leafNode.getID(), leafNode.getCommand());
-                                getNameMap().put(leafNode.getID(), leafNode.getName());
-                            }
-                        });
-                    }
-
-                    break;
-                case STRING_LIST:
-                case INCLUDE_PATH:
-                case PREPROCESSOR_SYMBOLS:
-                case LIBRARIES:
-                case OBJECTS:
-                case INCLUDE_FILES:
-                case LIBRARY_PATHS:
-                case LIBRARY_FILES:
-                case MACRO_FILES:
-                case UNDEF_INCLUDE_PATH:
-                case UNDEF_PREPROCESSOR_SYMBOLS:
-                case UNDEF_INCLUDE_FILES:
-                case UNDEF_LIBRARY_PATHS:
-                case UNDEF_LIBRARY_FILES:
-                case UNDEF_MACRO_FILES:
-                    //  Note:  These string-list options do not load either the "value" or
-                    //         "defaultValue" attributes.  Instead, the ListOptionValue children
-                    //         are loaded in the value field.
-                    List<OptionStringValue> vList = null;
-                    IManagedConfigElement[] vElements = element.getChildren(LIST_VALUE);
-                    for (IManagedConfigElement vElement : vElements) {
-                        if (vList == null) {
-                            vList = new ArrayList<>();
-                            builtIns = new ArrayList<>();
-                        }
-                        OptionStringValue ve = new OptionStringValue(vElement);
-                        if (ve.isBuiltIn()) {
-                            builtIns.add(ve);
-                        } else {
-                            vList.add(ve);
+                        if (defaultValue == null) {
+                            defaultValue = optId; //  Default value to be overridden if default is specified
                         }
                     }
-                    value = vList;
-                    break;
-                default:
-                    break;
+                    applicableValuesList.add(optId);
+                    getCommandMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(COMMAND)));
+                    getNameMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(NAME)));
+                    Boolean isDefault = Boolean.valueOf(enumElements[i].getAttribute(IS_DEFAULT));
+                    if (isDefault.booleanValue()) {
+                        defaultValue = optId;
+                    }
                 }
-            } catch (BuildException e) {
-                // TODO: report error
+                break;
+            case TREE:
+                value = element.getAttribute(VALUE);
+                defaultValue = element.getAttribute(DEFAULT_VALUE);
+
+                IConfigurationElement[] treeRootConfigs = element.getChildren(TREE_ROOT);
+                if (treeRootConfigs != null && treeRootConfigs.length == 1) {
+                    IConfigurationElement treeRootConfig = treeRootConfigs[0];
+                    treeRoot = new TreeRoot(treeRootConfig, element, getParent() instanceof IToolChain);
+                    applicableValuesList = new ArrayList<>();
+                    iterateOnTree(treeRoot, new ITreeNodeIterator() {
+
+                        @Override
+                        public void iterateOnNode(ITreeOption node) {
+                        }
+
+                        @Override
+                        public void iterateOnLeaf(ITreeOption leafNode) {
+                            applicableValuesList.add(leafNode.getID());
+                            getCommandMap().put(leafNode.getID(), leafNode.getCommand());
+                            getNameMap().put(leafNode.getID(), leafNode.getName());
+                        }
+                    });
+                }
+
+                break;
+            case STRING_LIST:
+            case INCLUDE_PATH:
+            case PREPROCESSOR_SYMBOLS:
+            case LIBRARIES:
+            case OBJECTS:
+            case INCLUDE_FILES:
+            case LIBRARY_PATHS:
+            case LIBRARY_FILES:
+            case MACRO_FILES:
+            case UNDEF_INCLUDE_PATH:
+            case UNDEF_PREPROCESSOR_SYMBOLS:
+            case UNDEF_INCLUDE_FILES:
+            case UNDEF_LIBRARY_PATHS:
+            case UNDEF_LIBRARY_FILES:
+            case UNDEF_MACRO_FILES:
+                //  Note:  These string-list options do not load either the "value" or
+                //         "defaultValue" attributes.  Instead, the ListOptionValue children
+                //         are loaded in the value field.
+                List<OptionStringValue> vList = null;
+                IConfigurationElement[] vElements = element.getChildren(LIST_VALUE);
+                for (IConfigurationElement vElement : vElements) {
+                    if (vList == null) {
+                        vList = new ArrayList<>();
+                        builtIns = new ArrayList<>();
+                    }
+                    OptionStringValue ve = new OptionStringValue(vElement);
+                    if (ve.isBuiltIn()) {
+                        builtIns.add(ve);
+                    } else {
+                        vList.add(ve);
+                    }
+                }
+                value = vList;
+                break;
+            default:
+                break;
             }
+        } catch (BuildException e) {
+            // TODO: report error
         }
     }
 
@@ -2450,49 +2059,38 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
      * @pre All references have been resolved.
      */
     private void verify() {
-        if (verified) {
-            return;
-        }
-        verified = true;
-        // Ignore elements that are superclasses
-        if (getOptionHolder() instanceof IToolChain && isAbstract() == false) {
-            // Check for error (a)
-            if (getCategory() == null) {
-                ManagedBuildManager.optionValidError(ManagedBuildManager.ERROR_CATEGORY, getId());
-                // Object becomes invalid
-                isValid = false;
-            }
-            // Check for error (b). Not specifying an attribute is OK.
-            // Do not use getResourceFilter as it does not allow
-            // differentiating between "all" and no attribute specified.
-            if (resourceFilter != null) {
-                switch (getResourceFilter()) {
-                case IOption.FILTER_FILE:
-                    // TODO: Cannot differentiate between "all" and attribute not
-                    // specified. Thus do not produce an error. We can argue that "all"
-                    // means all valid resource configurations.
-                    ManagedBuildManager.optionValidError(ManagedBuildManager.ERROR_FILTER, getId());
-                    // Object becomes invalid
-                    isValid = false;
-                }
-            }
-        }
+        //        if (verified) {
+        //            return;
+        //        }
+        //        verified = true;
+        //        // Ignore elements that are superclasses
+        //        if (getOptionHolder() instanceof IToolChain && isAbstract() == false) {
+        //            // Check for error (a)
+        //            if (getCategory() == null) {
+        //                ManagedBuildManager.optionValidError(ManagedBuildManager.ERROR_CATEGORY, getId());
+        //                // Object becomes invalid
+        //                isValid = false;
+        //            }
+        //            // Check for error (b). Not specifying an attribute is OK.
+        //            // Do not use getResourceFilter as it does not allow
+        //            // differentiating between "all" and no attribute specified.
+        //            if (resourceFilter != null) {
+        //                switch (getResourceFilter()) {
+        //                case IOption.FILTER_FILE:
+        //                    // TODO: Cannot differentiate between "all" and attribute not
+        //                    // specified. Thus do not produce an error. We can argue that "all"
+        //                    // means all valid resource configurations.
+        //                    ManagedBuildManager.optionValidError(ManagedBuildManager.ERROR_FILTER, getId());
+        //                    // Object becomes invalid
+        //                    isValid = false;
+        //                }
+        //            }
+        //        }
     }
 
     @Override
     public boolean isValid() {
-        // We use a lazy scheme to check whether the option is valid.
-        // Note that by default an option is valid. verify() is only called if
-        // the option has been resolved. This gets us around having to deal with
-        // ordering problems during a resolve, or introducing another global
-        // stage to verify the configuration after a resolve.
-        // The trade-off is that errors in the MBS grammar may not be
-        // detected on load, but only when a particular grammar element
-        // is used, say in the GUI.
-        if (verified == false && resolved == true) {
-            verify();
-        }
-        return isValid;
+        return true;
     }
 
     /**
@@ -2526,11 +2124,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     }
 
     public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator(boolean isExtensionAdjustment) {
-        if (booleanExpressionCalculator == null && !isExtensionAdjustment) {
-            if (superClass != null) {
-                return ((Option) superClass).getBooleanExpressionCalculator(isExtensionAdjustment);
-            }
-        }
         return booleanExpressionCalculator;
     }
 
@@ -2542,119 +2135,14 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         isUdjusted = adjusted;
     }
 
-    public void setSuperClass(IOption superClass) {
-        if (this.superClass != superClass) {
-            this.superClass = superClass;
-            if (this.superClass == null) {
-                superClassId = null;
-            } else {
-                superClassId = this.superClass.getId();
-            }
-
-            if (!isExtensionElement()) {
-                setDirty(true);
-            }
-        }
-    }
-
     public boolean needsRebuild() {
-        return rebuildState;
-    }
-
-    public void setRebuildState(boolean rebuild) {
-        if (isExtensionElement() && rebuild) {
-            return;
-        }
-
-        rebuildState = rebuild;
-    }
-
-    public boolean matches(IOption option) {
-        try {
-            if (option.getValueType() != getValueType()) {
-                return false;
-            }
-
-            if (!option.getName().equals(getName())) {
-                return false;
-            }
-        } catch (BuildException e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public String[] getRequiredTypeIds() {
-        return new String[0];
-    }
-
-    @Override
-    public String[] getSupportedTypeIds() {
-        String referenced[] = null;
-        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator(false);
-
-        if (calc != null) {
-            referenced = calc.getReferencedPropertyIds();
-        }
-
-        if (referenced == null) {
-            referenced = new String[0];
-        }
-        return referenced;
-    }
-
-    @Override
-    public String[] getSupportedValueIds(String typeId) {
-        String referenced[] = null;
-        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator(false);
-
-        if (calc != null) {
-            referenced = calc.getReferencedValueIds(typeId);
-        }
-
-        if (referenced == null) {
-            referenced = new String[0];
-        }
-        return referenced;
-    }
-
-    @Override
-    public boolean requiresType(String typeId) {
         return false;
-    }
-
-    @Override
-    public boolean supportsType(String id) {
-        boolean supports = false;
-        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator(false);
-
-        if (calc != null) {
-            if (calc.referesProperty(id)) {
-                supports = true;
-            }
-        }
-        return supports;
-    }
-
-    @Override
-    public boolean supportsValue(String typeId, String valueId) {
-        boolean supports = false;
-        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator(false);
-
-        if (calc != null) {
-            if (calc.referesPropertyValue(typeId, valueId)) {
-                supports = true;
-            }
-        }
-        return supports;
     }
 
     @Override
     public String[] getBasicStringListValue() throws BuildException {
         if (getBasicValueType() != STRING_LIST) {
-            throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
+            throw new BuildException(Option_error_bad_value_type);
         }
         @SuppressWarnings("unchecked")
         ArrayList<String> v = (ArrayList<String>) getValue();
@@ -2696,14 +2184,6 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     }
 
     public boolean hasCustomSettings() {
-        if (superClass == null) {
-            return true;
-        }
-
-        if (value != null && !value.equals(superClass.getValue())) {
-            return true;
-        }
-
         return false;
     }
 
@@ -2740,7 +2220,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
     public static class TreeRoot extends TreeOption implements ITreeRoot {
         private boolean selectLeafOnly = true;
 
-        TreeRoot(IManagedConfigElement element, IManagedConfigElement buildOption, boolean readTool) {
+        TreeRoot(IConfigurationElement element, IConfigurationElement buildOption, boolean readTool) {
             super(element, null, readTool);
             String leaf = element.getAttribute(SELECT_LEAF_ONLY);
             if (leaf != null) {
@@ -2828,7 +2308,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         private int order = DEFAULT_ORDER;
         private ITreeOption parent;
 
-        TreeOption(IManagedConfigElement element, ITreeOption parent, boolean readTool) {
+        TreeOption(IConfigurationElement element, ITreeOption parent, boolean readTool) {
             treeNodeId = element.getAttribute(ID);
             treeNodeName = element.getAttribute(NAME);
             description = element.getAttribute(DESCRIPTION);
@@ -2845,10 +2325,10 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
             }
             this.parent = parent;
 
-            IManagedConfigElement[] treeChildren = element.getChildren(TREE_VALUE);
+            IConfigurationElement[] treeChildren = element.getChildren(TREE_VALUE);
             if (treeChildren != null && treeChildren.length > 0) {
                 children = new ArrayList<>();
-                for (IManagedConfigElement configElement : treeChildren) {
+                for (IConfigurationElement configElement : treeChildren) {
                     children.add(new TreeOption(configElement, this, readTool));
                 }
             }
@@ -2995,14 +2475,7 @@ public class Option extends BuildObject implements IOption, IBuildPropertiesRest
         if (getValueType() != TREE) {
             throw new BuildException(Option_error_bad_value_type); //$NON-NLS-1$
         }
-        if (treeRoot == null) {
-            if (superClass != null) {
-                return superClass.getTreeRoot();
-            } else {
-                return null;
-            }
-        }
-
         return treeRoot;
     }
+
 }

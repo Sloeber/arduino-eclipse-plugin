@@ -15,16 +15,9 @@
 package io.sloeber.autoBuild.Internal;
 
 import org.eclipse.cdt.internal.core.SafeStringInterner;
-//import org.eclipse.cdt.managedbuilder
-//import org.eclipse.cdt.managedbuilder.core.IEnvVarBuildPath;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.extensionPoint.IBuildPathResolver;
 
@@ -43,7 +36,7 @@ public class EnvVarBuildPath implements IEnvVarBuildPath {
      * @param element
      *            The element containing the information about the tool.
      */
-    public EnvVarBuildPath(ITool tool, IManagedConfigElement element) {
+    public EnvVarBuildPath(ITool tool, IConfigurationElement element) {
         loadFromManifest(element);
     }
 
@@ -52,7 +45,7 @@ public class EnvVarBuildPath implements IEnvVarBuildPath {
      * argument
      * @param element An XML element containing the tool information
      */
-    protected void loadFromManifest(IManagedConfigElement element) {
+    protected void loadFromManifest(IConfigurationElement element) {
 
         setType(convertPathTypeToInt(element.getAttribute(TYPE)));
 
@@ -60,11 +53,6 @@ public class EnvVarBuildPath implements IEnvVarBuildPath {
 
         setPathDelimiter(SafeStringInterner.safeIntern(element.getAttribute(PATH_DELIMITER)));
 
-        // Store the configuration element IFF there is a build path resolver defined
-        String buildPathResolver = element.getAttribute(BUILD_PATH_RESOLVER);
-        if (buildPathResolver != null && element instanceof DefaultManagedConfigElement) {
-            fBuildPathResolverElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-        }
     }
 
     @Override

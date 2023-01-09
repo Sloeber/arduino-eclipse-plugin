@@ -14,21 +14,15 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.core.resources.IFile;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedOutputNameProvider;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.internal.enablement.OptionEnablementExpression;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
@@ -36,7 +30,6 @@ import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.ITool;
@@ -69,6 +62,7 @@ public class OutputType extends BuildObject implements IOutputType {
     private boolean isDirty = false;
     private boolean resolved = true;
     private boolean rebuildState;
+    private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
 
     /*
      *  C O N S T R U C T O R S
@@ -86,21 +80,39 @@ public class OutputType extends BuildObject implements IOutputType {
      *            element
      *            provider
      */
-    public OutputType(ITool parent, IManagedConfigElement element) {
+    public OutputType(ITool parent, IExtensionPoint root, IConfigurationElement element) {
         this.parent = parent;
         isExtensionOutputType = true;
 
         // setup for resolving
         resolved = false;
 
-        loadFromManifest(element);
+        loadNameAndID(root, element);
 
-        IManagedConfigElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        if (enablements.length > 0)
-            booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(enablements);
+        // option
+        optionId = element.getAttribute(IOutputType.OPTION);
+
+        // outputPrefix
+        outputPrefix = element.getAttribute(IOutputType.OUTPUT_PREFIX);
+
+        // outputNames
+        outputName = element.getAttribute(IOutputType.OUTPUT_NAME);
+
+        // namePattern
+        namePattern = element.getAttribute(IOutputType.NAME_PATTERN);
+
+        // buildVariable
+        buildVariable = element.getAttribute(IOutputType.BUILD_VARIABLE);
+
+        myOptionEnablementExpression.clear();
+        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
+        for (IConfigurationElement curEnablement : enablements) {
+            myOptionEnablementExpression.add(new OptionEnablementExpression(curEnablement));
+        }
+        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
 
         // Hook me up to the Managed Build Manager
-        ManagedBuildManager.addExtensionOutputType(this);
+        //       ManagedBuildManager.addExtensionOutputType(this);
     }
 
     /**
@@ -120,21 +132,21 @@ public class OutputType extends BuildObject implements IOutputType {
      *            project element
      */
     public OutputType(Tool parent, IOutputType superClass, String Id, String name, boolean isExtensionElement) {
-        this.parent = parent;
-        this.superClass = superClass;
-        if (this.superClass != null) {
-            superClassId = this.superClass.getId();
-        }
-        setId(Id);
-        setName(name);
-        isExtensionOutputType = isExtensionElement;
-        if (isExtensionElement) {
-            // Hook me up to the Managed Build Manager
-            ManagedBuildManager.addExtensionOutputType(this);
-        } else {
-            //setDirty(true);
-            //setRebuildState(true);
-        }
+        //        this.parent = parent;
+        //        this.superClass = superClass;
+        //        if (this.superClass != null) {
+        //            superClassId = this.superClass.getId();
+        //        }
+        //        setId(Id);
+        //        setName(name);
+        //        isExtensionOutputType = isExtensionElement;
+        //        if (isExtensionElement) {
+        //            // Hook me up to the Managed Build Manager
+        //            ManagedBuildManager.addExtensionOutputType(this);
+        //        } else {
+        //            //setDirty(true);
+        //            //setRebuildState(true);
+        //        }
     }
 
     /**
@@ -146,12 +158,43 @@ public class OutputType extends BuildObject implements IOutputType {
      * @param element
      *            The XML element that contains the OutputType settings.
      */
-    public OutputType(ITool parent, ICStorageElement element) {
+    public OutputType(ITool parent, ICStorageElement root, ICStorageElement element) {
         this.parent = parent;
         isExtensionOutputType = false;
 
         // Initialize from the XML attributes
-        loadFromProject(element);
+        loadNameAndID(element);
+
+        // option
+        if (element.getAttribute(IOutputType.OPTION) != null) {
+            optionId = element.getAttribute(IOutputType.OPTION);
+        }
+
+        // outputPrefix
+        if (element.getAttribute(IOutputType.OUTPUT_PREFIX) != null) {
+            outputPrefix = element.getAttribute(IOutputType.OUTPUT_PREFIX);
+        }
+
+        // outputNames
+        if (element.getAttribute(IOutputType.OUTPUT_NAME) != null) {
+            outputName = element.getAttribute(IOutputType.OUTPUT_NAME);
+        }
+
+        // namePattern
+        if (element.getAttribute(IOutputType.NAME_PATTERN) != null) {
+            namePattern = element.getAttribute(IOutputType.NAME_PATTERN);
+        }
+
+        // buildVariable
+        if (element.getAttribute(IOutputType.BUILD_VARIABLE) != null) {
+            buildVariable = element.getAttribute(IOutputType.BUILD_VARIABLE);
+        }
+
+        // Note: Name Provider cannot be specified in a project file because
+        //       an IConfigurationElement is needed to load it!
+        if (element.getAttribute(IOutputType.NAME_PROVIDER) != null) {
+            // TODO:  Issue warning?
+        }
     }
 
     /**
@@ -166,7 +209,7 @@ public class OutputType extends BuildObject implements IOutputType {
      * @param outputType
      *            The existing OutputType to clone.
      */
-    public OutputType(ITool parent, String Id, String name, OutputType outputType) {
+    public OutputType(ITool parent, String newID, String newName, OutputType outputType) {
         this.parent = parent;
         superClass = outputType.superClass;
         if (superClass != null) {
@@ -174,10 +217,10 @@ public class OutputType extends BuildObject implements IOutputType {
                 superClassId = outputType.superClassId;
             }
         }
-        setId(Id);
-        setName(name);
+        id = (newID);
+        name = (newName);
         isExtensionOutputType = false;
-        boolean copyIds = Id.equals(outputType.id);
+        boolean copyIds = id.equals(outputType.id);
 
         //  Copy the remaining attributes
         if (outputType.optionId != null) {
@@ -203,113 +246,14 @@ public class OutputType extends BuildObject implements IOutputType {
             isDirty = outputType.isDirty;
             rebuildState = outputType.rebuildState;
         } else {
-           // setDirty(true);
-           // setRebuildState(true);
+            // setDirty(true);
+            // setRebuildState(true);
         }
     }
 
     /*
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
      */
-
-    /* (non-Javadoc)
-     * Loads the OutputType information from the ManagedConfigElement specified in the
-     * argument.
-     *
-     * @param element Contains the OutputType information
-     */
-    protected void loadFromManifest(IManagedConfigElement element) {
-        ManagedBuildManager.putConfigElement(this, element);
-
-        // id
-        setId(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.ID)));
-
-        // Get the name
-        setName(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
-
-        // superClass
-        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
-
-        // option
-        optionId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OPTION));
-
-
-        // outputPrefix
-        outputPrefix = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_PREFIX));
-
-        // outputNames
-        outputName = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_NAME));
-
-        // namePattern
-        namePattern = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.NAME_PATTERN));
-
-        // buildVariable
-        buildVariable = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.BUILD_VARIABLE));
-
-        // Store the configuration element IFF there is a name provider defined
-        String nameProvider = element.getAttribute(IOutputType.NAME_PROVIDER);
-        if (nameProvider != null && element instanceof DefaultManagedConfigElement) {
-            nameProviderElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-        }
-    }
-
-    /* (non-Javadoc)
-     * Initialize the OutputType information from the XML element
-     * specified in the argument
-     *
-     * @param element An XML element containing the OutputType information
-     */
-    protected void loadFromProject(ICStorageElement element) {
-
-        // id (unique, do not intern)
-        setId(element.getAttribute(IBuildObject.ID));
-
-        // name
-        if (element.getAttribute(IBuildObject.NAME) != null) {
-            setName(SafeStringInterner.safeIntern(element.getAttribute(IBuildObject.NAME)));
-        }
-
-        // superClass
-        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
-        if (superClassId != null && superClassId.length() > 0) {
-            superClass = ManagedBuildManager.getExtensionOutputType(superClassId);
-            if (superClass == null) {
-                // TODO:  Report error
-            }
-        }
-
-        // option
-        if (element.getAttribute(IOutputType.OPTION) != null) {
-            optionId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OPTION));
-        }
-
-
-        // outputPrefix
-        if (element.getAttribute(IOutputType.OUTPUT_PREFIX) != null) {
-            outputPrefix = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_PREFIX));
-        }
-
-        // outputNames
-        if (element.getAttribute(IOutputType.OUTPUT_NAME) != null) {
-            outputName = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_NAME));
-        }
-
-        // namePattern
-        if (element.getAttribute(IOutputType.NAME_PATTERN) != null) {
-            namePattern = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.NAME_PATTERN));
-        }
-
-        // buildVariable
-        if (element.getAttribute(IOutputType.BUILD_VARIABLE) != null) {
-            buildVariable = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.BUILD_VARIABLE));
-        }
-
-        // Note: Name Provider cannot be specified in a project file because
-        //       an IConfigurationElement is needed to load it!
-        if (element.getAttribute(IOutputType.NAME_PROVIDER) != null) {
-            // TODO:  Issue warning?
-        }
-    }
 
     /**
      * Persist the OutputType to the project file.
@@ -324,11 +268,9 @@ public class OutputType extends BuildObject implements IOutputType {
             element.setAttribute(IBuildObject.NAME, name);
         }
 
-
         if (optionId != null) {
             element.setAttribute(IOutputType.OPTION, optionId);
         }
-
 
         if (outputPrefix != null) {
             element.setAttribute(IOutputType.OUTPUT_PREFIX, outputPrefix);
@@ -412,10 +354,6 @@ public class OutputType extends BuildObject implements IOutputType {
         return buildVariable;
     }
 
-
-
-
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IOuputType#getOptionId()
      */
@@ -431,38 +369,35 @@ public class OutputType extends BuildObject implements IOutputType {
         return optionId;
     }
 
-
-
-
-//    /* (non-Javadoc)
-//     *  Resolve the element IDs to interface references
-//     */
-//    public void resolveReferences() {
-//        if (!resolved) {
-//            resolved = true;
-//            // Resolve superClass
-//            if (superClassId != null && superClassId.length() > 0) {
-//                superClass = ManagedBuildManager.getExtensionOutputType(superClassId);
-//                if (superClass == null) {
-//                    // Report error
-//                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-//                            superClassId, "outputType", //$NON-NLS-1$
-//                            getId());
-//                }
-//            }
-//
-//            // Resolve content types
-//            IContentTypeManager manager = Platform.getContentTypeManager();
-//            if (outputContentTypeId != null && outputContentTypeId.length() > 0) {
-//                outputContentType = manager.getContentType(outputContentTypeId);
-//            }
-//
-//            // Resolve primary input type
-//            if (primaryInputTypeId != null && primaryInputTypeId.length() > 0) {
-//                primaryInputType = parent.getInputTypeById(primaryInputTypeId);
-//            }
-//        }
-//    }
+    //    /* (non-Javadoc)
+    //     *  Resolve the element IDs to interface references
+    //     */
+    //    public void resolveReferences() {
+    //        if (!resolved) {
+    //            resolved = true;
+    //            // Resolve superClass
+    //            if (superClassId != null && superClassId.length() > 0) {
+    //                superClass = ManagedBuildManager.getExtensionOutputType(superClassId);
+    //                if (superClass == null) {
+    //                    // Report error
+    //                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
+    //                            superClassId, "outputType", //$NON-NLS-1$
+    //                            getId());
+    //                }
+    //            }
+    //
+    //            // Resolve content types
+    //            IContentTypeManager manager = Platform.getContentTypeManager();
+    //            if (outputContentTypeId != null && outputContentTypeId.length() > 0) {
+    //                outputContentType = manager.getContentType(outputContentTypeId);
+    //            }
+    //
+    //            // Resolve primary input type
+    //            if (primaryInputTypeId != null && primaryInputTypeId.length() > 0) {
+    //                primaryInputType = parent.getInputTypeById(primaryInputTypeId);
+    //            }
+    //        }
+    //    }
 
     /**
      * @return Returns the managedBuildRevision.
@@ -499,7 +434,6 @@ public class OutputType extends BuildObject implements IOutputType {
         return rebuildState;
     }
 
-
     public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
         if (booleanExpressionCalculator == null) {
             if (superClass != null) {
@@ -525,31 +459,30 @@ public class OutputType extends BuildObject implements IOutputType {
         return false;
     }
 
-
     @Override
     public IFile getOutputName(IFile inputFile, ICConfigurationDescription config, IInputType inputType) {
-		if (nameProvider != null) {
-			String outputFile= nameProvider.getOutputFileName(inputFile, config,  inputType);
-			if(outputFile==null) {
-				return null;
-			}
-			return getOutputFile(inputFile,outputFile);
-		}
+        if (nameProvider != null) {
+            String outputFile = nameProvider.getOutputFileName(inputFile, config, inputType);
+            if (outputFile == null) {
+                return null;
+            }
+            return getOutputFile(inputFile, outputFile);
+        }
 
-		if (outputName != null && !outputName.isEmpty()) {
-			return getOutputFile(inputFile,outputName);
-		}
+        if (outputName != null && !outputName.isEmpty()) {
+            return getOutputFile(inputFile, outputName);
+        }
 
-		if (outputExtension != null && !outputExtension.isEmpty()) {
-			return getOutputFile(inputFile,inputFile.getName()+"."+outputExtension);
-		}
-		return null;
+        if (outputExtension != null && !outputExtension.isEmpty()) {
+            return getOutputFile(inputFile, inputFile.getName() + "." + outputExtension);
+        }
+        return null;
     }
 
-	private IFile getOutputFile(IFile inputFile, String outputFile) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private IFile getOutputFile(IFile inputFile, String outputFile) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IOutputType#isOutputExtension()
@@ -557,11 +490,10 @@ public class OutputType extends BuildObject implements IOutputType {
     @Override
     public boolean isOutputExtension(ITool tool, String ext) {
         if (outputExtension != null) {
-                if (ext.equals(outputExtension))
-                    return true;
+            if (ext.equals(outputExtension))
+                return true;
         }
         return false;
     }
 
-	
 }

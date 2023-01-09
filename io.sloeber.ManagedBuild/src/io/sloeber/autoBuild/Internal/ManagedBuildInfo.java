@@ -154,7 +154,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return managedProject;
     }
 
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getBuildArtifactExtension()
      */
@@ -322,8 +321,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return config.getFilteredTools();
     }
 
-
-
     private ArrayList<String> getIncludePathEntries() {
         // Extract the resolved paths from the project (if any)
         ArrayList<String> paths = new ArrayList<>();
@@ -462,13 +459,10 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return name;
     }
 
-
-
     @Override
     public String getOutputFlag(String outputExt) {
         return getDefaultConfiguration().getOutputFlag(outputExt);
     }
-
 
     /**
      * @return IResource owner
@@ -476,8 +470,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     public IResource getOwner() {
         return owner;
     }
-
-
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolForConfiguration(java.lang.String)
@@ -515,8 +507,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return config.getToolFromOutputExtension(extension);
     }
 
-
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getUserObjectsForConfiguration(java.lang.String)
      */
@@ -546,7 +536,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         }
     }
 
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isValid()
      */
@@ -555,7 +544,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         // If the info has been flagged as valid, answer true
         return isValid;
     }
-
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isHeaderFile(java.lang.String)
@@ -673,8 +661,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return false;
     }
 
-
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#setValid(boolean)
      */
@@ -696,13 +682,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         }
         // Reset the status here
         rebuildNeeded = rebuild;
-    }
-
-    public void setVersion(String version) {
-        updateRevision(version);
-        if (version != null && !version.equals(this.version))
-            this.version = version;
-        //setDirty(true);  - It is primarily up to the ManagedProject to maintain the dirty state
     }
 
     public void setContainerInited(boolean bInited) {
@@ -1106,12 +1085,5 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         }
         return entries;
     }
-
-    public void updateRevision(String revision) {
-        if (managedProject != null)
-            ((ManagedProject) managedProject).updateManagedBuildRevision(revision);
-    }
-
-
 
 }

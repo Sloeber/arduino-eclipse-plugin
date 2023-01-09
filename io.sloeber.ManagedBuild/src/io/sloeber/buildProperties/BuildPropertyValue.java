@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.buildProperties;
 
-import io.sloeber.autoBuild.api.IBuildPropertyValue;
+import io.sloeber.autoBuild.api.PropertyBase;
 
 //import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 

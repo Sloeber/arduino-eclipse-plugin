@@ -13,35 +13,79 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import org.eclipse.cdt.core.settings.model.ICStorageElement;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.IBuildObject;
+import io.sloeber.autoBuild.api.IProjectType;
 
 public abstract class BuildObject implements IBuildObject {
 
     protected String id;
-    protected String name;
+    public String name;
+    protected String mySuperClassID;
+    protected IConfigurationElement myConfigurationSuperClassElement;
+    protected IConfigurationElement myConfigurationElement;
+    protected ICStorageElement myStorageElement;
+    protected ICStorageElement myStorageSuperClassElement;
+
+    public static int ORIGINAL = 0;
+    public static int SUPER = 1;
 
     protected Version version = null;
     protected String managedBuildRevision = null;
+
+    protected void loadNameAndID(IExtensionPoint root, IConfigurationElement element) {
+        myConfigurationElement = element;
+        id = element.getAttribute(ID);
+        name = element.getAttribute(NAME);
+        mySuperClassID = element.getAttribute(SUPERCLASS);
+        myConfigurationSuperClassElement = getSuperClassConfigurationElement();
+        if (myConfigurationSuperClassElement == null) {
+            ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
+                    mySuperClassID, "option", //$NON-NLS-1$
+                    getId());
+        }
+    }
+
+    protected void loadNameAndID(ICStorageElement element) {
+        myStorageElement = element;
+        id = element.getAttribute(IBuildObject.ID);
+        name = element.getAttribute(IBuildObject.NAME);
+        // superClass
+        mySuperClassID = element.getAttribute(SUPERCLASS);
+        if (mySuperClassID != null && mySuperClassID.length() > 0) {
+            myStorageSuperClassElement = getSuperClassSorageElement();
+            if (myStorageSuperClassElement == null) {
+                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
+                        getId());
+            }
+        }
+    }
+
+    protected String[] getAttributes(String attributeName) {
+        String[] ret = new String[2];
+        ret[SUPER] = ret[ORIGINAL] = myConfigurationElement.getAttribute(attributeName);
+        if (ret[SUPER] == null && myConfigurationSuperClassElement != null) {
+            ret[SUPER] = myConfigurationSuperClassElement.getAttribute(attributeName);
+            if (ret[SUPER] == null) {
+                ret[SUPER] = EMPTY;
+            }
+        }
+        return ret;
+    }
 
     @Override
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     @Override
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @SuppressWarnings("nls")
@@ -79,7 +123,6 @@ public abstract class BuildObject implements IBuildObject {
         this.version = version;
     }
 
-
     public Version getVersionFromId() {
         String versionNumber = ManagedBuildManager.getVersionFromIdAndVersion(getId());
 
@@ -108,13 +151,13 @@ public abstract class BuildObject implements IBuildObject {
         this.managedBuildRevision = managedBuildRevision;
     }
 
-    /**
-     * updates revision for this build object and all its children
-     */
-    public void updateManagedBuildRevision(String revision) {
-        setManagedBuildRevision(revision);
-        setVersion(getVersionFromId());
+    private IConfigurationElement getSuperClassConfigurationElement() {
+        // TODO Auto-generated method stub
+        return null;
     }
-    
 
+    private ICStorageElement getSuperClassSorageElement() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

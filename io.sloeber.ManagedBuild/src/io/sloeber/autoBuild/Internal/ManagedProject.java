@@ -34,8 +34,7 @@ import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 
-public class ManagedProject extends BuildObject
-        implements IManagedProject {
+public class ManagedProject extends BuildObject implements IManagedProject {
 
     //  Parent and children
     private IProjectType projectType;
@@ -48,7 +47,6 @@ public class ManagedProject extends BuildObject
     private boolean isDirty = false;
     private boolean isValid = true;
     private boolean resolved = true;
-
 
     /*
      *  C O N S T R U C T O R S
@@ -76,9 +74,9 @@ public class ManagedProject extends BuildObject
 
         // Copy the parent's identity
         this.projectType = projectType;
-        int id = ManagedBuildManager.getRandomNumber();
-        setId(owner.getName() + "." + projectType.getId() + "." + id); //$NON-NLS-1$ //$NON-NLS-2$
-        setName(projectType.getName());
+        int randomNumber = ManagedBuildManager.getRandomNumber();
+        id = (owner.getName() + "." + projectType.getId() + "." + randomNumber); //$NON-NLS-1$ //$NON-NLS-2$
+        name = (projectType.getName());
 
         setManagedBuildRevision(projectType.getManagedBuildRevision());
 
@@ -93,9 +91,9 @@ public class ManagedProject extends BuildObject
 
         // Copy the parent's identity
         //		this.projectType = projectType;
-        int id = ManagedBuildManager.getRandomNumber();
-        setId(owner.getName() + "." + des.getId() + "." + id); //$NON-NLS-1$ //$NON-NLS-2$
-        setName(des.getName());
+        int randomNumuber = ManagedBuildManager.getRandomNumber();
+        id = (owner.getName() + "." + des.getId() + "." + randomNumuber); //$NON-NLS-1$ //$NON-NLS-2$
+        name = (des.getName());
 
         //		setManagedBuildRevision(projectType.getManagedBuildRevision());
 
@@ -120,30 +118,22 @@ public class ManagedProject extends BuildObject
         // Initialize from the XML attributes
         if (loadFromProject(element)) {
 
-            // check for migration support.
-            boolean isSupportAvailable = projectType != null ? projectType.checkForMigrationSupport() : true;
-            if (isSupportAvailable == false) {
-                setValid(false);
-            }
+            //            // check for migration support.
+            //            boolean isSupportAvailable = projectType != null ? projectType.checkForMigrationSupport() : true;
+            //            if (isSupportAvailable == false) {
+            //                setValid(false);
+            //            }
 
             if (loadConfigs) {
                 // Load children
-                StorableCdtVariables vars = null;
                 ICStorageElement configElements[] = element.getChildren();
                 for (ICStorageElement configElement : configElements) {
                     if (configElement.getName().equals(IConfiguration.CONFIGURATION_ELEMENT_NAME)) {
                         Configuration config = new Configuration(this, configElement, managedBuildRevision, false);
-                    } else if (configElement.getName().equals("macros")) { //$NON-NLS-1$
-                        vars = new StorableCdtVariables(configElement, false);
                     }
 
                 }
 
-                if (vars != null) {
-                    for (Configuration cfg : getConfigurationCollection()) {
-                        ((ToolChain) cfg.getToolChain()).addProjectVariables(vars);
-                    }
-                }
             }
         } else {
             setValid(false);
@@ -166,17 +156,15 @@ public class ManagedProject extends BuildObject
     protected boolean loadFromProject(ICStorageElement element) {
         // note: id and name are unique, so don't intern them
         // id
-        setId(element.getAttribute(IBuildObject.ID));
+        id = (element.getAttribute(IBuildObject.ID));
 
         // name
-        if (element.getAttribute(IBuildObject.NAME) != null) {
-            setName(element.getAttribute(IBuildObject.NAME));
-        }
+        name = (element.getAttribute(IBuildObject.NAME));
 
         // projectType
         projectTypeId = element.getAttribute(PROJECTTYPE);
         if (projectTypeId != null && projectTypeId.length() > 0) {
-            projectType = ManagedBuildManager.getExtensionProjectType(projectTypeId);
+            projectType = null;//TOFIX JABA ManagedBuildManager.getExtensionProjectType(projectTypeId);
             if (projectType == null) {
                 return false;
             }
@@ -195,35 +183,6 @@ public class ManagedProject extends BuildObject
         if (projectType != null) {
             element.setAttribute(PROJECTTYPE, projectType.getId());
         }
-
-        // I am clean now
-        isDirty = false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedProject#serialize()
-     */
-    public void serialize(ICStorageElement element, boolean saveChildren) {
-        serializeProjectInfo(element);
-
-        if (saveChildren) {
-            for (Configuration cfg : getConfigurationCollection()) {
-                ICStorageElement configElement = element.createChild(IConfiguration.CONFIGURATION_ELEMENT_NAME);
-                cfg.serialize(configElement);
-            }
-        }
-        // Serialize my children
-
-        //		//serialize user-defined macros
-        //		if(userDefinedMacros != null){
-        //			Element macrosElement = doc.createElement(StorableMacros.MACROS_ELEMENT_NAME);
-        //			element.appendChild(macrosElement);
-        //			userDefinedMacros.serialize(doc,macrosElement);
-        //		}
-        //
-        //		if(userDefinedEnvironment != null){
-        //			EnvironmentVariableProvider.fUserSupplier.storeEnvironment(this,true);
-        //		}
 
         // I am clean now
         isDirty = false;
@@ -412,7 +371,7 @@ public class ManagedProject extends BuildObject
             resolved = true;
             // Resolve project-type
             if (projectTypeId != null && projectTypeId.length() > 0) {
-                projectType = ManagedBuildManager.getExtensionProjectType(projectTypeId);
+                projectType = null;//TOFIX JABA ManagedBuildManager.getExtensionProjectType(projectTypeId);
                 if (projectType == null) {
                     return false;
                 }
@@ -425,7 +384,6 @@ public class ManagedProject extends BuildObject
         return true;
     }
 
-  
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedProject#isValid()
      */
@@ -480,17 +438,6 @@ public class ManagedProject extends BuildObject
     //		userDefinedEnvironment = env;
     //	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.internal.core.BuildObject#updateManagedBuildRevision(java.lang.String)
-     */
-    @Override
-    public void updateManagedBuildRevision(String revision) {
-        super.updateManagedBuildRevision(revision);
-        for (Configuration cfg : getConfigurationCollection()) {
-            cfg.updateManagedBuildRevision(revision);
-        }
-    }
-
     public void setProjectType(IProjectType projectType) {
         if (this.projectType != projectType) {
             this.projectType = projectType;
@@ -505,17 +452,4 @@ public class ManagedProject extends BuildObject
     public void applyConfiguration(Configuration cfg) {
         cfg.applyToManagedProject(this);
     }
-
-
-	@Override
-	public void resolveFields() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void resolveSuperClass() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }

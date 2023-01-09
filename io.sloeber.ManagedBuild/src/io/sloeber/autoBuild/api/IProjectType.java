@@ -50,17 +50,15 @@ import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IProjectType  extends IBuildObject{
+public interface IProjectType extends IBuildObject {
     public static final String PROJECTTYPE_ELEMENT_NAME = "projectType"; //$NON-NLS-1$
-    public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
-    public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
+
     public static final String IS_TEST = "isTest"; //$NON-NLS-1$
     public static final String PROJECT_ENVIRONMENT_SUPPLIER = "projectEnvironmentSupplier"; //$NON-NLS-1$
     public static final String PROJECT_MACRO_SUPPLIER = "projectMacroSupplier"; //$NON-NLS-1$
     public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
-
 
     /**
      * Returns all of the configurations defined by this project-type.
@@ -80,21 +78,12 @@ public interface IProjectType  extends IBuildObject{
     public IConfiguration getConfiguration(String id);
 
     /**
-     * Returns the <code>IProjectType</code> that is the superclass of this
-     * project-type, or <code>null</code> if the attribute was not specified.
-     *
-     * @return IProjectType
-     */
-    public IProjectType getSuperClass();
-
-    /**
      * Returns whether this element is abstract. Returns <code>false</code>
      * if the attribute was not specified.
      * 
      * @return boolean
      */
     public boolean isAbstract();
-
 
     /**
      * Returns <code>true</code> if the project-type is defined
@@ -140,11 +129,4 @@ public interface IProjectType  extends IBuildObject{
      */
     public IProjectBuildMacroSupplier getBuildMacroSupplier();
 
-    /**
-     * check for migration support.
-     * 
-     * @return boolean
-     */
-
-    public boolean checkForMigrationSupport();
 }

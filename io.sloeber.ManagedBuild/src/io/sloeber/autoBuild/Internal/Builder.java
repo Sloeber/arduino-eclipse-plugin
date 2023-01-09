@@ -66,7 +66,6 @@ import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileContextBuildMacroValues;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.IResourceInfo;
@@ -81,8 +80,34 @@ public class Builder extends HoldsOptions implements IBuilder {
     public static final int UNLIMITED_JOBS = Integer.MAX_VALUE;
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
-    //  Superclass
-    private String superClassId;
+    static final String VALUE_UNLIMITED = "unlimited"; //$NON-NLS-1$
+    static final String PARALLEL_PATTERN_NUM = "*"; //$NON-NLS-1$
+    static final String PARALLEL_PATTERN_NUM_START = "["; //$NON-NLS-1$
+    static final String PARALLEL_PATTERN_NUM_END = "]"; //$NON-NLS-1$
+    static final String VALUE_OPTIMAL = "optimal"; //$NON-NLS-1$
+    static final String DEFAULT_TARGET_CLEAN = "clean"; //$NON-NLS-1$
+    static final String DEFAULT_TARGET_INCREMENTAL = "all"; //$NON-NLS-1$
+    static final String DEFAULT_TARGET_AUTO = "all"; //$NON-NLS-1$
+
+    String[] modelsAbstract;
+    String[] modelcommand;
+    String[] modelarguments;
+    String[] modelbuildfileGenerator;
+    String[] modelvariableFormat;
+    String[] modelreservedMacroNames;
+    String[] modelreservedMacro;
+    String[] modelsupportsManagedBuild;
+    String[] modelautoBuildTarget;
+    String[] modelincrementalBuildTarget;
+    String[] modelcleanBuildTarget;
+    String[] modelignoreErrCmd;
+    String[] modelparallelBuildCmd;
+    String[] modelparallelBuildOn;
+    String[] modelparallelizationNumber;
+    String[] modelisSystem;
+    String[] modelcommandLauncher;
+    String[] modelbuildRunner;
+
     //  Parent and children
     private IToolChain parent;
     //  Managed Build model attributes
@@ -95,38 +120,20 @@ public class Builder extends HoldsOptions implements IBuilder {
     private String convertToId;
     //    private FileContextBuildMacroValues fileContextBuildMacroValues;
     private String builderVariablePattern;
-    private String[] reservedMacroNames;
     private IReservedMacroNameSupplier reservedMacroNameSupplier;
     private IConfigurationElement reservedMacroNameSupplierElement;
 
-    private String autoBuildTarget;
-    private Boolean autoBuildEnabled;
-    private String incrementalBuildTarget;
-    private Boolean incrementalBuildEnabled;
-    private String cleanBuildTarget;
-    private Boolean cleanBuildEnabled;
-    private Boolean managedBuildOn;
-    private Boolean keepEnvVarInBuildfile;
-    private Boolean supportsManagedBuild;
     //custom builder settings
-    private String[] customizedErrorParserIds;
     private HashMap<String, String> customizedEnvironment;
-    private Boolean appendEnvironment;// = Boolean.valueOf(true);
     private IFolder myBuildFolder;
     private HashMap<String, String> customBuildProperties;
-    //	private Boolean isWorkspaceBuildPath;
-    private String ignoreErrCmd;
-    private Boolean stopOnErr;
     // parallelization
-    private String parallelBuildCmd;
     private Boolean isParallelBuildEnabled;
     private Integer parallelNumberAttribute; // negative number denotes "optimal" value, see getOptimalParallelJobNum()
 
     private boolean isTest;
 
     //  Miscellaneous
-    private boolean isExtensionBuilder = false;
-    private boolean resolved = true;
 
     private IConfigurationElement previousMbsVersionConversionElement = null;
     private IConfigurationElement currentMbsVersionConversionElement = null;
@@ -143,6 +150,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     private IBuildRunner fBuildRunner = null;
     private IConfigurationElement fBuildRunnerElement = null;
+    private String[] reservedMacroNames;
 
     /*
      *  C O N S T R U C T O R S
@@ -162,38 +170,47 @@ public class Builder extends HoldsOptions implements IBuilder {
      * @param managedBuildRevision
      *            The fileVersion of Managed Buid System
      */
-    public Builder(IToolChain parent, IManagedConfigElement element, String managedBuildRevision) {
+    public Builder(IToolChain parent, IExtensionPoint root, IConfigurationElement element) {
         super(true);
         this.parent = parent;
-        isExtensionBuilder = true;
+        loadNameAndID(root, element);
 
-        // setup for resolving
-        resolved = false;
+        modelsAbstract = getAttributes(IS_ABSTRACT);
+        modelcommand = getAttributes(COMMAND);
+        modelarguments = getAttributes(ARGUMENTS);
+        modelbuildfileGenerator = getAttributes(BUILDFILEGEN_ID);
+        modelvariableFormat = getAttributes(VARIABLE_FORMAT);
+        modelreservedMacroNames = getAttributes(RESERVED_MACRO_NAMES);
+        modelreservedMacro = getAttributes(RESERVED_MACRO_NAME_SUPPLIER);
+        modelsupportsManagedBuild = getAttributes(ATTRIBUTE_SUPORTS_MANAGED_BUILD);
+        modelautoBuildTarget = getAttributes(ATTRIBUTE_TARGET_AUTO);
+        modelincrementalBuildTarget = getAttributes(ATTRIBUTE_TARGET_INCREMENTAL);
+        modelcleanBuildTarget = getAttributes(ATTRIBUTE_TARGET_CLEAN);
+        modelignoreErrCmd = getAttributes(ATTRIBUTE_IGNORE_ERR_CMD);
+        modelparallelBuildCmd = getAttributes(ATTRIBUTE_PARALLEL_BUILD_CMD);
+        modelparallelBuildOn = getAttributes(ATTRIBUTE_PARALLEL_BUILD_ON);
+        modelparallelizationNumber = getAttributes(ATTRIBUTE_PARALLELIZATION_NUMBER);
+        modelisSystem = getAttributes(IS_SYSTEM);
+        modelcommandLauncher = getAttributes(ATTRIBUTE_COMMAND_LAUNCHER);
+        modelbuildRunner = getAttributes(ATTRIBUTE_BUILD_RUNNER);
 
-        // Set the managedBuildRevision
-        setManagedBuildRevision(managedBuildRevision);
+        IConfigurationElement[] children = element.getChildren();
+        for (IConfigurationElement child : children) {
+            loadChild(root, child);
+        }
 
-        loadFromManifest(element);
+        resolveFields();
 
         // Hook me up to the Managed Build Manager
-     //   ManagedBuildManager.addExtensionBuilder(this);
+        //   ManagedBuildManager.addExtensionBuilder(this);
     }
 
     public Builder(IToolChain parent, Map<String, String> args2, String managedBuildRevision) {
         super(true);
-        this.parent = parent;
-        isExtensionBuilder = true;
+        //        this.parent = parent;
+        //
+        //        loadFromMap(args2, null);
 
-        // setup for resolving
-        resolved = false;
-
-        // Set the managedBuildRevision
-        setManagedBuildRevision(managedBuildRevision);
-
-        loadFromMap(args2, null);
-
-        // Hook me up to the Managed Build Manager
-   //     ManagedBuildManager.addExtensionBuilder(this);
     }
 
     /**
@@ -215,23 +232,23 @@ public class Builder extends HoldsOptions implements IBuilder {
      */
     public Builder(ToolChain parent, IBuilder superClass, String Id, String name, boolean isExtensionElement) {
         super(true);
-        this.parent = parent;
-        this.superClass = superClass;
-        setManagedBuildRevision(parent.getManagedBuildRevision());
-        if (this.superClass != null) {
-            superClassId = this.superClass.getId();
-        }
-        setId(Id);
-        setName(name);
-        setVersion(getVersionFromId());
-
-        isExtensionBuilder = isExtensionElement;
-//        if (isExtensionElement) {
-//            // Hook me up to the Managed Build Manager
-//            ManagedBuildManager.addExtensionBuilder(this);
-//        } else {
-//            fBuildData = new BuildBuildData(this);
-//        }
+        //        this.parent = parent;
+        //        this.superClass = superClass;
+        //        setManagedBuildRevision(parent.getManagedBuildRevision());
+        //        if (this.superClass != null) {
+        //            superClassId = this.superClass.getId();
+        //        }
+        //        setId(Id);
+        //        setName(name);
+        //        setVersion(getVersionFromId());
+        //
+        //        isExtensionBuilder = isExtensionElement;
+        //        //        if (isExtensionElement) {
+        //        //            // Hook me up to the Managed Build Manager
+        //        //            ManagedBuildManager.addExtensionBuilder(this);
+        //        //        } else {
+        //        //            fBuildData = new BuildBuildData(this);
+        //        //        }
     }
 
     /**
@@ -247,16 +264,16 @@ public class Builder extends HoldsOptions implements IBuilder {
      */
     public Builder(IToolChain parent, ICStorageElement element, String managedBuildRevision) {
         super(true);
-        this.parent = parent;
-        isExtensionBuilder = false;
-
-        fBuildData = new BuildBuildData(this);
-
-        // Set the managedBuildRevision
-        setManagedBuildRevision(managedBuildRevision);
-
-        // Initialize from the XML attributes
-        loadFromProject(element);
+        //        this.parent = parent;
+        //        isExtensionBuilder = false;
+        //
+        //        fBuildData = new BuildBuildData(this);
+        //
+        //        // Set the managedBuildRevision
+        //        setManagedBuildRevision(managedBuildRevision);
+        //
+        //        // Initialize from the XML attributes
+        //        loadFromProject(element);
     }
 
     @SuppressWarnings("unchecked")
@@ -274,165 +291,165 @@ public class Builder extends HoldsOptions implements IBuilder {
      */
     public Builder(IToolChain parent, String Id, String name, Builder builder) {
         super(true);
-        this.parent = parent;
-
-        superClass = builder.superClass;
-        if (superClass != null && builder.superClassId != null) {
-            superClassId = builder.superClassId;
-        }
-
-        setId(Id);
-        setName(name);
-
-        // Set the managedBuildRevision & the version
-        setManagedBuildRevision(builder.getManagedBuildRevision());
-        setVersion(getVersionFromId());
-
-        isExtensionBuilder = false;
-
-        //  Copy the remaining attributes
-        if (builder.versionsSupported != null) {
-            versionsSupported = builder.versionsSupported;
-        }
-        if (builder.convertToId != null) {
-            convertToId = builder.convertToId;
-        }
-        if (builder.errorParserIds != null) {
-            errorParserIds = builder.errorParserIds;
-        }
-        if (builder.isAbstract != null) {
-            isAbstract = builder.isAbstract;
-        }
-        if (builder.command != null) {
-            command = builder.command;
-        }
-        if (builder.args != null) {
-            args = builder.args;
-        }
-        autoBuildTarget = builder.autoBuildTarget;
-        autoBuildEnabled = builder.autoBuildEnabled;
-        incrementalBuildTarget = builder.incrementalBuildTarget;
-        incrementalBuildEnabled = builder.incrementalBuildEnabled;
-        cleanBuildTarget = builder.cleanBuildTarget;
-        cleanBuildEnabled = builder.cleanBuildEnabled;
-        managedBuildOn = builder.managedBuildOn;
-        keepEnvVarInBuildfile = builder.keepEnvVarInBuildfile;
-        supportsManagedBuild = builder.supportsManagedBuild;
-        if (builder.customizedErrorParserIds != null)
-            customizedErrorParserIds = builder.customizedErrorParserIds.clone();
-        if (builder.customizedEnvironment != null)
-            customizedEnvironment = cloneMap(builder.customizedEnvironment);
-        appendEnvironment = builder.appendEnvironment;
-        myBuildFolder = builder.myBuildFolder;
-        if (builder.customBuildProperties != null)
-            customBuildProperties = cloneMap(builder.customBuildProperties);
-
-        buildFileGeneratorElement = builder.buildFileGeneratorElement;
-
-        //        if (builder.fileContextBuildMacroValues != null) {
-        //            fileContextBuildMacroValues = (FileContextBuildMacroValues) builder.fileContextBuildMacroValues.clone();
-        //            fileContextBuildMacroValues.setBuilder(this);
+        //        this.parent = parent;
+        //
+        //        superClass = builder.superClass;
+        //        if (superClass != null && builder.superClassId != null) {
+        //            superClassId = builder.superClassId;
         //        }
-
-        builderVariablePattern = builder.builderVariablePattern;
-
-        if (builder.reservedMacroNames != null)
-            reservedMacroNames = builder.reservedMacroNames.clone();
-
-        reservedMacroNameSupplierElement = builder.reservedMacroNameSupplierElement;
-        reservedMacroNameSupplier = builder.reservedMacroNameSupplier;
-
-        fBuildData = new BuildBuildData(this);
-
-        stopOnErr = builder.stopOnErr;
-        ignoreErrCmd = builder.ignoreErrCmd;
-
-        isParallelBuildEnabled = builder.isParallelBuildEnabled;
-        parallelNumberAttribute = builder.parallelNumberAttribute;
-        parallelBuildCmd = builder.parallelBuildCmd;
-
-        if (builder.outputEntries != null) {
-            outputEntries = builder.outputEntries.clone();
-        }
-
-        super.copyChildren(builder);
-
-        fCommandLauncherElement = builder.fCommandLauncherElement;
-
-        fBuildRunner = builder.fBuildRunner;
-        fBuildRunnerElement = builder.fBuildRunnerElement;
+        //
+        //        setId(Id);
+        //        setName(name);
+        //
+        //        // Set the managedBuildRevision & the version
+        //        setManagedBuildRevision(builder.getManagedBuildRevision());
+        //        setVersion(getVersionFromId());
+        //
+        //        isExtensionBuilder = false;
+        //
+        //        //  Copy the remaining attributes
+        //        if (builder.versionsSupported != null) {
+        //            versionsSupported = builder.versionsSupported;
+        //        }
+        //        if (builder.convertToId != null) {
+        //            convertToId = builder.convertToId;
+        //        }
+        //        if (builder.errorParserIds != null) {
+        //            errorParserIds = builder.errorParserIds;
+        //        }
+        //        if (builder.isAbstract != null) {
+        //            isAbstract = builder.isAbstract;
+        //        }
+        //        if (builder.command != null) {
+        //            command = builder.command;
+        //        }
+        //        if (builder.args != null) {
+        //            args = builder.args;
+        //        }
+        //        autoBuildTarget = builder.autoBuildTarget;
+        //        autoBuildEnabled = builder.autoBuildEnabled;
+        //        incrementalBuildTarget = builder.incrementalBuildTarget;
+        //        incrementalBuildEnabled = builder.incrementalBuildEnabled;
+        //        cleanBuildTarget = builder.cleanBuildTarget;
+        //        cleanBuildEnabled = builder.cleanBuildEnabled;
+        //        managedBuildOn = builder.managedBuildOn;
+        //        keepEnvVarInBuildfile = builder.keepEnvVarInBuildfile;
+        //        supportsManagedBuild = builder.supportsManagedBuild;
+        //        if (builder.customizedErrorParserIds != null)
+        //            customizedErrorParserIds = builder.customizedErrorParserIds.clone();
+        //        if (builder.customizedEnvironment != null)
+        //            customizedEnvironment = cloneMap(builder.customizedEnvironment);
+        //        appendEnvironment = builder.appendEnvironment;
+        //        myBuildFolder = builder.myBuildFolder;
+        //        if (builder.customBuildProperties != null)
+        //            customBuildProperties = cloneMap(builder.customBuildProperties);
+        //
+        //        buildFileGeneratorElement = builder.buildFileGeneratorElement;
+        //
+        //        //        if (builder.fileContextBuildMacroValues != null) {
+        //        //            fileContextBuildMacroValues = (FileContextBuildMacroValues) builder.fileContextBuildMacroValues.clone();
+        //        //            fileContextBuildMacroValues.setBuilder(this);
+        //        //        }
+        //
+        //        builderVariablePattern = builder.builderVariablePattern;
+        //
+        //        if (builder.reservedMacroNames != null)
+        //            reservedMacroNames = builder.reservedMacroNames.clone();
+        //
+        //        reservedMacroNameSupplierElement = builder.reservedMacroNameSupplierElement;
+        //        reservedMacroNameSupplier = builder.reservedMacroNameSupplier;
+        //
+        //        fBuildData = new BuildBuildData(this);
+        //
+        //        stopOnErr = builder.stopOnErr;
+        //        ignoreErrCmd = builder.ignoreErrCmd;
+        //
+        //        isParallelBuildEnabled = builder.isParallelBuildEnabled;
+        //        parallelNumberAttribute = builder.parallelNumberAttribute;
+        //        parallelBuildCmd = builder.parallelBuildCmd;
+        //
+        //        if (builder.outputEntries != null) {
+        //            outputEntries = builder.outputEntries.clone();
+        //        }
+        //
+        //        super.copyChildren(builder);
+        //
+        //        fCommandLauncherElement = builder.fCommandLauncherElement;
+        //
+        //        fBuildRunner = builder.fBuildRunner;
+        //        fBuildRunnerElement = builder.fBuildRunnerElement;
     }
 
     public void copySettings(Builder builder, boolean allBuildSettings) {
-        try {
-            if (isAutoBuildEnable() != builder.isAutoBuildEnable())
-                setAutoBuildEnable(builder.isAutoBuildEnable());
-        } catch (CoreException e) {
-        }
-        try {
-            if (isIncrementalBuildEnabled() != builder.isIncrementalBuildEnabled())
-                setIncrementalBuildEnable(builder.isIncrementalBuildEnabled());
-        } catch (CoreException e) {
-        }
-        try {
-            if (isFullBuildEnabled() != builder.isFullBuildEnabled())
-                setFullBuildEnable(builder.isFullBuildEnabled());
-        } catch (CoreException e) {
-        }
-        try {
-            if (isCleanBuildEnabled() != builder.isCleanBuildEnabled())
-                setCleanBuildEnable(builder.isCleanBuildEnabled());
-        } catch (CoreException e) {
-        }
-        if (isStopOnError() != builder.isStopOnError() && supportsStopOnError(builder.isStopOnError())) {
-            try {
-                setStopOnError(builder.isStopOnError());
-            } catch (CoreException e) {
-            }
-        }
-        if (isParallelBuildOn() != builder.isParallelBuildOn() && supportsParallelBuild()) {
-            try {
-                setParallelBuildOn(builder.isParallelBuildOn());
-            } catch (CoreException e) {
-            }
-        }
-        if (getParallelizationNumAttribute() != builder.getParallelizationNumAttribute() && supportsParallelBuild()) {
-            try {
-                setParallelizationNum(builder.getParallelizationNumAttribute());
-            } catch (CoreException e) {
-            }
-        }
-        if (builder.keepEnvironmentVariablesInBuildfile() && canKeepEnvironmentVariablesInBuildfile()) {
-            setKeepEnvironmentVariablesInBuildfile(builder.keepEnvironmentVariablesInBuildfile());
-        }
-        if (isManagedBuildOn() != builder.isManagedBuildOn() && supportsBuild(builder.isManagedBuildOn())) {
-            setManagedBuildOn(builder.isManagedBuildOn());
-        }
-
-        if (builder.customizedErrorParserIds != null)
-            customizedErrorParserIds = builder.customizedErrorParserIds.clone();
-        if (builder.customizedEnvironment != null)
-            customizedEnvironment = cloneMap(builder.customizedEnvironment);
-        appendEnvironment = builder.appendEnvironment;
-
-        if (builder.customBuildProperties != null)
-            customBuildProperties = cloneMap(builder.customBuildProperties);
-
-        if (allBuildSettings) {
-            if (!getCommand().equals(builder.getCommand()))
-                setCommand(builder.getCommand());
-            if (!getArgumentsAttribute().equals(builder.getArgumentsAttribute()))
-                setArgumentsAttribute(builder.getArgumentsAttribute());
-            if (!Objects.equals(getAutoBuildTargetAttribute(), builder.getAutoBuildTargetAttribute())) {
-                autoBuildTarget = builder.getAutoBuildTargetAttribute();
-            }
-            if (!Objects.equals(getIncrementalBuildTargetAttribute(), builder.getIncrementalBuildTargetAttribute())) {
-                incrementalBuildTarget = builder.getIncrementalBuildTargetAttribute();
-            }
-            if (!Objects.equals(getCleanBuildTargetAttribute(), builder.getCleanBuildTargetAttribute())) {
-                cleanBuildTarget = builder.getCleanBuildTargetAttribute();
-            }
-        }
+        //        try {
+        //            if (isAutoBuildEnable() != builder.isAutoBuildEnable())
+        //                setAutoBuildEnable(builder.isAutoBuildEnable());
+        //        } catch (CoreException e) {
+        //        }
+        //        try {
+        //            if (isIncrementalBuildEnabled() != builder.isIncrementalBuildEnabled())
+        //                setIncrementalBuildEnable(builder.isIncrementalBuildEnabled());
+        //        } catch (CoreException e) {
+        //        }
+        //        try {
+        //            if (isFullBuildEnabled() != builder.isFullBuildEnabled())
+        //                setFullBuildEnable(builder.isFullBuildEnabled());
+        //        } catch (CoreException e) {
+        //        }
+        //        try {
+        //            if (isCleanBuildEnabled() != builder.isCleanBuildEnabled())
+        //                setCleanBuildEnable(builder.isCleanBuildEnabled());
+        //        } catch (CoreException e) {
+        //        }
+        //        if (isStopOnError() != builder.isStopOnError() && supportsStopOnError(builder.isStopOnError())) {
+        //            try {
+        //                setStopOnError(builder.isStopOnError());
+        //            } catch (CoreException e) {
+        //            }
+        //        }
+        //        if (isParallelBuildOn() != builder.isParallelBuildOn() && supportsParallelBuild()) {
+        //            try {
+        //                setParallelBuildOn(builder.isParallelBuildOn());
+        //            } catch (CoreException e) {
+        //            }
+        //        }
+        //        if (getParallelizationNumAttribute() != builder.getParallelizationNumAttribute() && supportsParallelBuild()) {
+        //            try {
+        //                setParallelizationNum(builder.getParallelizationNumAttribute());
+        //            } catch (CoreException e) {
+        //            }
+        //        }
+        //        if (builder.keepEnvironmentVariablesInBuildfile() && canKeepEnvironmentVariablesInBuildfile()) {
+        //            setKeepEnvironmentVariablesInBuildfile(builder.keepEnvironmentVariablesInBuildfile());
+        //        }
+        //        if (isManagedBuildOn() != builder.isManagedBuildOn() && supportsBuild(builder.isManagedBuildOn())) {
+        //            setManagedBuildOn(builder.isManagedBuildOn());
+        //        }
+        //
+        //        if (builder.customizedErrorParserIds != null)
+        //            customizedErrorParserIds = builder.customizedErrorParserIds.clone();
+        //        if (builder.customizedEnvironment != null)
+        //            customizedEnvironment = cloneMap(builder.customizedEnvironment);
+        //        appendEnvironment = builder.appendEnvironment;
+        //
+        //        if (builder.customBuildProperties != null)
+        //            customBuildProperties = cloneMap(builder.customBuildProperties);
+        //
+        //        if (allBuildSettings) {
+        //            if (!getCommand().equals(builder.getCommand()))
+        //                setCommand(builder.getCommand());
+        //            if (!getArgumentsAttribute().equals(builder.getArgumentsAttribute()))
+        //                setArgumentsAttribute(builder.getArgumentsAttribute());
+        //            if (!Objects.equals(getAutoBuildTargetAttribute(), builder.getAutoBuildTargetAttribute())) {
+        //                autoBuildTarget = builder.getAutoBuildTargetAttribute();
+        //            }
+        //            if (!Objects.equals(getIncrementalBuildTargetAttribute(), builder.getIncrementalBuildTargetAttribute())) {
+        //                incrementalBuildTarget = builder.getIncrementalBuildTargetAttribute();
+        //            }
+        //            if (!Objects.equals(getCleanBuildTargetAttribute(), builder.getCleanBuildTargetAttribute())) {
+        //                cleanBuildTarget = builder.getCleanBuildTargetAttribute();
+        //            }
+        //        }
 
     }
 
@@ -474,14 +491,8 @@ public class Builder extends HoldsOptions implements IBuilder {
             try {
                 parallelNumber = Integer.decode(value);
                 if (parallelNumber <= 0) {
-                    // compatibility with legacy representation - it was that inconsistent
-                    if (isInternalBuilder()) {
-                        // "optimal" for Internal Builder
-                        parallelNumber = -getOptimalParallelJobNum();
-                    } else {
-                        // unlimited for External Builder
-                        parallelNumber = UNLIMITED_JOBS;
-                    }
+                    // unlimited for External Builder
+                    parallelNumber = UNLIMITED_JOBS;
                 }
             } catch (NumberFormatException e) {
                 Activator.log(e);
@@ -492,150 +503,17 @@ public class Builder extends HoldsOptions implements IBuilder {
         return parallelNumber;
     }
 
-    public void loadFromMap(Map<String, String> newArgs, IManagedConfigElement element) {
+    public void resolveFields() {
 
-        setId(newArgs.get(IBuildObject.ID));
-        // Set the version after extracting from 'id' attribute
-        setVersion(getVersionFromId());
+        reservedMacroNames = modelreservedMacroNames[SUPER].split(","); //$NON-NLS-1$
+        isAbstract = Boolean.parseBoolean(modelsAbstract[SUPER]);
 
-        setId(newArgs.get(IBuildObject.ID));
-        setName(newArgs.get(IBuildObject.NAME));
-        superClassId = newArgs.get(IProjectType.SUPERCLASS);
-        versionsSupported = newArgs.get(VERSIONS_SUPPORTED);
-        convertToId = newArgs.get(CONVERT_TO_ID);
-        builderVariablePattern = newArgs.get(VARIABLE_FORMAT);
-        command = newArgs.get(IBuilder.COMMAND);
-        args = newArgs.get(IBuilder.ARGUMENTS);
-        autoBuildTarget = newArgs.get(ATTRIBUTE_TARGET_AUTO);
-        incrementalBuildTarget = newArgs.get(ATTRIBUTE_TARGET_INCREMENTAL);
-        cleanBuildTarget = newArgs.get(ATTRIBUTE_TARGET_CLEAN);
-        ignoreErrCmd = newArgs.get(ATTRIBUTE_IGNORE_ERR_CMD);
-        errorParserIds = newArgs.get(IToolChain.ERROR_PARSERS);
-
-        // get the reserved macro names
-        String reservedNames = newArgs.get(RESERVED_MACRO_NAMES);
-        reservedMacroNames = null;
-        if (reservedNames != null)
-            reservedMacroNames = reservedNames.split(","); //$NON-NLS-1$
-
-        String isAbs = newArgs.get(IProjectType.IS_ABSTRACT);
-        if (isAbs != null) {
-            isAbstract = Boolean.parseBoolean(isAbs);
+        isParallelBuildEnabled = Boolean.valueOf(modelparallelBuildOn[SUPER]);
+        if (isParallelBuildEnabled) {
+            setParallelizationNumAttribute(decodeParallelizationNumber(modelparallelizationNumber[SUPER]));
         }
+        isTest = Boolean.parseBoolean(modelisSystem[SUPER]);
 
-        String tmp = newArgs.get(ATTRIBUTE_AUTO_ENABLED);
-        if (tmp != null)
-            autoBuildEnabled = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_INCREMENTAL_ENABLED);
-        if (tmp != null)
-            incrementalBuildEnabled = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_CLEAN_ENABLED);
-        if (tmp != null)
-            cleanBuildEnabled = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_MANAGED_BUILD_ON);
-        if (tmp != null)
-            managedBuildOn = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_KEEP_ENV);
-        if (tmp != null)
-            keepEnvVarInBuildfile = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_SUPORTS_MANAGED_BUILD);
-        if (tmp != null)
-            supportsManagedBuild = Boolean.valueOf(tmp);
-        customizedErrorParserIds = null;
-        tmp = newArgs.get(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS);
-        if (tmp != null)
-            customizedErrorParserIds = CDataUtil.stringToArray(tmp, ";"); //$NON-NLS-1$
-        tmp = newArgs.get(ATTRIBUTE_ENVIRONMENT);
-        //        if (tmp != null)
-        //            customizedEnvironment = MapStorageElement.decodeMap(tmp);
-        tmp = newArgs.get(ATTRIBUTE_APPEND_ENVIRONMENT);
-        if (tmp != null)
-            appendEnvironment = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_CUSTOM_PROPS);
-        //        if (tmp != null)
-        //            customBuildProperties = MapStorageElement.decodeMap(tmp);
-        tmp = newArgs.get(ATTRIBUTE_STOP_ON_ERR);
-        if (tmp != null)
-            stopOnErr = Boolean.valueOf(tmp);
-        tmp = newArgs.get(ATTRIBUTE_PARALLEL_BUILD_CMD);
-        if (tmp != null)
-            parallelBuildCmd = SafeStringInterner.safeIntern(tmp);
-        tmp = newArgs.get(ATTRIBUTE_PARALLEL_BUILD_ON);
-        if (tmp != null) {
-            isParallelBuildEnabled = Boolean.valueOf(tmp);
-            if (isParallelBuildEnabled) {
-                tmp = newArgs.get(ATTRIBUTE_PARALLELIZATION_NUMBER);
-                setParallelizationNumAttribute(
-                        decodeParallelizationNumber(newArgs.get(ATTRIBUTE_PARALLELIZATION_NUMBER)));
-            }
-        }
-        tmp = newArgs.get(IS_SYSTEM);
-        if (tmp != null)
-            isTest = Boolean.parseBoolean(tmp);
-
-        if (element instanceof DefaultManagedConfigElement) {
-            String commandLauncher = newArgs.get(ATTRIBUTE_COMMAND_LAUNCHER);
-            if (commandLauncher != null) {
-                fCommandLauncherElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-            }
-
-            String buildRunner = newArgs.get(ATTRIBUTE_BUILD_RUNNER);
-            if (buildRunner != null)
-                fBuildRunnerElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-            // Get the reservedMacroNameSupplier configuration element
-            String reservedMacroNameSupplier = newArgs.get(RESERVED_MACRO_NAME_SUPPLIER);
-            if (reservedMacroNameSupplier != null) {
-                reservedMacroNameSupplierElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-            }
-            // Store the configuration element IFF there is a build file generator defined
-            String buildfileGenerator = newArgs.get(BUILDFILEGEN_ID);
-            if (buildfileGenerator != null) {
-                buildFileGeneratorElement = ((DefaultManagedConfigElement) element).getConfigurationElement();
-            }
-        }
-
-    }
-
-    protected void loadFromManifest(IManagedConfigElement element) {
-        ManagedBuildManager.putConfigElement(this, element);
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put(IBuildObject.ID, element.getAttribute(IBuildObject.ID));
-        attributes.put(IBuildObject.NAME, element.getAttribute(IBuildObject.NAME));
-        attributes.put(IProjectType.SUPERCLASS, element.getAttribute(IProjectType.SUPERCLASS));
-        attributes.put(IProjectType.IS_ABSTRACT, element.getAttribute(IProjectType.IS_ABSTRACT));
-        attributes.put(IToolChain.ERROR_PARSERS, element.getAttribute(IToolChain.ERROR_PARSERS));
-        attributes.put(IBuilder.COMMAND, element.getAttribute(IBuilder.COMMAND));
-        attributes.put(IBuilder.ARGUMENTS, element.getAttribute(IBuilder.ARGUMENTS));
-        attributes.put(VERSIONS_SUPPORTED, element.getAttribute(VERSIONS_SUPPORTED));
-        attributes.put(CONVERT_TO_ID, element.getAttribute(CONVERT_TO_ID));
-        attributes.put(VARIABLE_FORMAT, element.getAttribute(VARIABLE_FORMAT));
-        attributes.put(RESERVED_MACRO_NAMES, element.getAttribute(RESERVED_MACRO_NAMES));
-        attributes.put(RESERVED_MACRO_NAME_SUPPLIER, element.getAttribute(RESERVED_MACRO_NAME_SUPPLIER));
-        attributes.put(ATTRIBUTE_TARGET_AUTO, element.getAttribute(ATTRIBUTE_TARGET_AUTO));
-        attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
-        attributes.put(ATTRIBUTE_TARGET_INCREMENTAL, element.getAttribute(ATTRIBUTE_TARGET_INCREMENTAL));
-        attributes.put(ATTRIBUTE_TARGET_CLEAN, element.getAttribute(ATTRIBUTE_TARGET_CLEAN));
-        attributes.put(ATTRIBUTE_IGNORE_ERR_CMD, element.getAttribute(ATTRIBUTE_IGNORE_ERR_CMD));
-
-        attributes.put(ATTRIBUTE_BUILD_RUNNER, element.getAttribute(ATTRIBUTE_BUILD_RUNNER));
-        attributes.put(ATTRIBUTE_COMMAND_LAUNCHER, element.getAttribute(ATTRIBUTE_COMMAND_LAUNCHER));
-        attributes.put(IS_SYSTEM, element.getAttribute(IS_SYSTEM));
-        attributes.put(ATTRIBUTE_PARALLELIZATION_NUMBER, element.getAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER));
-        attributes.put(ATTRIBUTE_PARALLEL_BUILD_ON, element.getAttribute(ATTRIBUTE_PARALLEL_BUILD_ON));
-        attributes.put(ATTRIBUTE_PARALLEL_BUILD_CMD, element.getAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD));
-        attributes.put(ATTRIBUTE_STOP_ON_ERR, element.getAttribute(ATTRIBUTE_STOP_ON_ERR));
-        attributes.put(ATTRIBUTE_CUSTOM_PROPS, element.getAttribute(ATTRIBUTE_CUSTOM_PROPS));
-        attributes.put(ATTRIBUTE_APPEND_ENVIRONMENT, element.getAttribute(ATTRIBUTE_APPEND_ENVIRONMENT));
-        attributes.put(ATTRIBUTE_ENVIRONMENT, element.getAttribute(ATTRIBUTE_ENVIRONMENT));
-        attributes.put(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS, element.getAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS));
-        attributes.put(ATTRIBUTE_SUPORTS_MANAGED_BUILD, element.getAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD));
-        attributes.put(ATTRIBUTE_KEEP_ENV, element.getAttribute(ATTRIBUTE_KEEP_ENV));
-        attributes.put(ATTRIBUTE_MANAGED_BUILD_ON, element.getAttribute(ATTRIBUTE_MANAGED_BUILD_ON));
-        attributes.put(ATTRIBUTE_CLEAN_ENABLED, element.getAttribute(ATTRIBUTE_CLEAN_ENABLED));
-        attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
-        attributes.put(BUILDFILEGEN_ID, element.getAttribute(BUILDFILEGEN_ID));
-
-        loadFromMap(attributes, element);
     }
 
     /**
@@ -646,265 +524,250 @@ public class Builder extends HoldsOptions implements IBuilder {
      *            An XML element containing the builder information
      */
     protected void loadFromProject(ICStorageElement element) {
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put(IBuildObject.ID, element.getAttribute(IBuildObject.ID));
-        attributes.put(IBuildObject.NAME, element.getAttribute(IBuildObject.NAME));
-        attributes.put(IProjectType.SUPERCLASS, element.getAttribute(IProjectType.SUPERCLASS));
-        attributes.put(IProjectType.IS_ABSTRACT, element.getAttribute(IProjectType.IS_ABSTRACT));
-        attributes.put(IToolChain.ERROR_PARSERS, element.getAttribute(IToolChain.ERROR_PARSERS));
-        attributes.put(IBuilder.COMMAND, element.getAttribute(IBuilder.COMMAND));
-        attributes.put(IBuilder.ARGUMENTS, element.getAttribute(IBuilder.ARGUMENTS));
-        attributes.put(VERSIONS_SUPPORTED, element.getAttribute(VERSIONS_SUPPORTED));
-        attributes.put(CONVERT_TO_ID, element.getAttribute(CONVERT_TO_ID));
-        attributes.put(VARIABLE_FORMAT, element.getAttribute(VARIABLE_FORMAT));
-        attributes.put(RESERVED_MACRO_NAMES, element.getAttribute(RESERVED_MACRO_NAMES));
-        attributes.put(RESERVED_MACRO_NAME_SUPPLIER, element.getAttribute(RESERVED_MACRO_NAME_SUPPLIER));
-        attributes.put(ATTRIBUTE_TARGET_AUTO, element.getAttribute(ATTRIBUTE_TARGET_AUTO));
-        attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
-        attributes.put(ATTRIBUTE_TARGET_INCREMENTAL, element.getAttribute(ATTRIBUTE_TARGET_INCREMENTAL));
-        attributes.put(ATTRIBUTE_TARGET_CLEAN, element.getAttribute(ATTRIBUTE_TARGET_CLEAN));
-        attributes.put(ATTRIBUTE_IGNORE_ERR_CMD, element.getAttribute(ATTRIBUTE_IGNORE_ERR_CMD));
+        //        Map<String, String> attributes = new HashMap<>();
+        //        attributes.put(IBuildObject.ID, element.getAttribute(IBuildObject.ID));
+        //        attributes.put(IBuildObject.NAME, element.getAttribute(IBuildObject.NAME));
+        //        attributes.put(IProjectType.SUPERCLASS, element.getAttribute(IProjectType.SUPERCLASS));
+        //        attributes.put(IS_ABSTRACT, element.getAttribute(IS_ABSTRACT));
+        //        attributes.put(IToolChain.ERROR_PARSERS, element.getAttribute(IToolChain.ERROR_PARSERS));
+        //        attributes.put(IBuilder.COMMAND, element.getAttribute(IBuilder.COMMAND));
+        //        attributes.put(IBuilder.ARGUMENTS, element.getAttribute(IBuilder.ARGUMENTS));
+        //        attributes.put(VERSIONS_SUPPORTED, element.getAttribute(VERSIONS_SUPPORTED));
+        //        attributes.put(CONVERT_TO_ID, element.getAttribute(CONVERT_TO_ID));
+        //        attributes.put(VARIABLE_FORMAT, element.getAttribute(VARIABLE_FORMAT));
+        //        attributes.put(RESERVED_MACRO_NAMES, element.getAttribute(RESERVED_MACRO_NAMES));
+        //        attributes.put(RESERVED_MACRO_NAME_SUPPLIER, element.getAttribute(RESERVED_MACRO_NAME_SUPPLIER));
+        //        attributes.put(ATTRIBUTE_TARGET_AUTO, element.getAttribute(ATTRIBUTE_TARGET_AUTO));
+        //        attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
+        //        attributes.put(ATTRIBUTE_TARGET_INCREMENTAL, element.getAttribute(ATTRIBUTE_TARGET_INCREMENTAL));
+        //        attributes.put(ATTRIBUTE_TARGET_CLEAN, element.getAttribute(ATTRIBUTE_TARGET_CLEAN));
+        //        attributes.put(ATTRIBUTE_IGNORE_ERR_CMD, element.getAttribute(ATTRIBUTE_IGNORE_ERR_CMD));
+        //
+        //        attributes.put(ATTRIBUTE_BUILD_RUNNER, element.getAttribute(ATTRIBUTE_BUILD_RUNNER));
+        //        attributes.put(ATTRIBUTE_COMMAND_LAUNCHER, element.getAttribute(ATTRIBUTE_COMMAND_LAUNCHER));
+        //        attributes.put(IS_SYSTEM, element.getAttribute(IS_SYSTEM));
+        //        attributes.put(ATTRIBUTE_PARALLELIZATION_NUMBER, element.getAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER));
+        //        attributes.put(ATTRIBUTE_PARALLEL_BUILD_ON, element.getAttribute(ATTRIBUTE_PARALLEL_BUILD_ON));
+        //        attributes.put(ATTRIBUTE_PARALLEL_BUILD_CMD, element.getAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD));
+        //        attributes.put(ATTRIBUTE_STOP_ON_ERR, element.getAttribute(ATTRIBUTE_STOP_ON_ERR));
+        //        attributes.put(ATTRIBUTE_CUSTOM_PROPS, element.getAttribute(ATTRIBUTE_CUSTOM_PROPS));
+        //        attributes.put(ATTRIBUTE_APPEND_ENVIRONMENT, element.getAttribute(ATTRIBUTE_APPEND_ENVIRONMENT));
+        //        attributes.put(ATTRIBUTE_ENVIRONMENT, element.getAttribute(ATTRIBUTE_ENVIRONMENT));
+        //        attributes.put(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS, element.getAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS));
+        //        attributes.put(ATTRIBUTE_SUPORTS_MANAGED_BUILD, element.getAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD));
+        //        attributes.put(ATTRIBUTE_KEEP_ENV, element.getAttribute(ATTRIBUTE_KEEP_ENV));
+        //        attributes.put(ATTRIBUTE_MANAGED_BUILD_ON, element.getAttribute(ATTRIBUTE_MANAGED_BUILD_ON));
+        //        attributes.put(ATTRIBUTE_CLEAN_ENABLED, element.getAttribute(ATTRIBUTE_CLEAN_ENABLED));
+        //        attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
+        //        attributes.put(BUILDFILEGEN_ID, element.getAttribute(BUILDFILEGEN_ID));
+        //
+        //        loadFromMap(attributes, null);
+        //
+        //        if (superClassId != null && superClassId.length() > 0) {
+        //            superClass = ManagedBuildManager.getExtensionBuilder(superClassId);
+        //            // Check for migration support
+        //            checkForMigrationSupport();
+        //        }
+        //
+        //        ICStorageElement[] children = element.getChildren();
+        //        for (int i = 0; i < children.length; i++) {
+        //            ICStorageElement child = children[i];
+        //            if (loadChild(child)) {
+        //                // nothing
+        //            } else {
+        //                String name = child.getName();
+        //                if (OUTPUT_ENTRIES.equals(name)) {
+        //                    ICSettingEntry entries[] = LanguageSettingEntriesSerializer.loadEntries(child);
+        //                    if (entries.length == 0) {
+        //                        outputEntries = new ICOutputEntry[0];
+        //                    } else {
+        //                        List<ICSettingEntry> list = new ArrayList<>(entries.length);
+        //                        for (int k = 0; k < entries.length; k++) {
+        //                            if (entries[k].getKind() == ICLanguageSettingEntry.OUTPUT_PATH)
+        //                                list.add(entries[k]);
+        //                        }
+        //                        outputEntries = list.toArray(new ICOutputEntry[list.size()]);
+        //                    }
+        //                }
+        //            }
+        //        }
 
-        attributes.put(ATTRIBUTE_BUILD_RUNNER, element.getAttribute(ATTRIBUTE_BUILD_RUNNER));
-        attributes.put(ATTRIBUTE_COMMAND_LAUNCHER, element.getAttribute(ATTRIBUTE_COMMAND_LAUNCHER));
-        attributes.put(IS_SYSTEM, element.getAttribute(IS_SYSTEM));
-        attributes.put(ATTRIBUTE_PARALLELIZATION_NUMBER, element.getAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER));
-        attributes.put(ATTRIBUTE_PARALLEL_BUILD_ON, element.getAttribute(ATTRIBUTE_PARALLEL_BUILD_ON));
-        attributes.put(ATTRIBUTE_PARALLEL_BUILD_CMD, element.getAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD));
-        attributes.put(ATTRIBUTE_STOP_ON_ERR, element.getAttribute(ATTRIBUTE_STOP_ON_ERR));
-        attributes.put(ATTRIBUTE_CUSTOM_PROPS, element.getAttribute(ATTRIBUTE_CUSTOM_PROPS));
-        attributes.put(ATTRIBUTE_APPEND_ENVIRONMENT, element.getAttribute(ATTRIBUTE_APPEND_ENVIRONMENT));
-        attributes.put(ATTRIBUTE_ENVIRONMENT, element.getAttribute(ATTRIBUTE_ENVIRONMENT));
-        attributes.put(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS, element.getAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS));
-        attributes.put(ATTRIBUTE_SUPORTS_MANAGED_BUILD, element.getAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD));
-        attributes.put(ATTRIBUTE_KEEP_ENV, element.getAttribute(ATTRIBUTE_KEEP_ENV));
-        attributes.put(ATTRIBUTE_MANAGED_BUILD_ON, element.getAttribute(ATTRIBUTE_MANAGED_BUILD_ON));
-        attributes.put(ATTRIBUTE_CLEAN_ENABLED, element.getAttribute(ATTRIBUTE_CLEAN_ENABLED));
-        attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
-        attributes.put(BUILDFILEGEN_ID, element.getAttribute(BUILDFILEGEN_ID));
-
-        loadFromMap(attributes, null);
-
-        if (superClassId != null && superClassId.length() > 0) {
-            superClass = ManagedBuildManager.getExtensionBuilder(superClassId);
-            // Check for migration support
-            checkForMigrationSupport();
-        }
-
-        ICStorageElement[] children = element.getChildren();
-        for (int i = 0; i < children.length; i++) {
-            ICStorageElement child = children[i];
-            if (loadChild(child)) {
-                // nothing
-            } else {
-                String name = child.getName();
-                if (OUTPUT_ENTRIES.equals(name)) {
-                    ICSettingEntry entries[] = LanguageSettingEntriesSerializer.loadEntries(child);
-                    if (entries.length == 0) {
-                        outputEntries = new ICOutputEntry[0];
-                    } else {
-                        List<ICSettingEntry> list = new ArrayList<>(entries.length);
-                        for (int k = 0; k < entries.length; k++) {
-                            if (entries[k].getKind() == ICLanguageSettingEntry.OUTPUT_PATH)
-                                list.add(entries[k]);
-                        }
-                        outputEntries = list.toArray(new ICOutputEntry[list.size()]);
-                    }
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public void serialize(ICStorageElement element) {
-        serialize(element, true);
     }
 
     /**
      * Persist the builder to the project file.
      */
     public void serialize(ICStorageElement element, boolean resetDirtyState) {
-        if (superClass != null)
-            element.setAttribute(IProjectType.SUPERCLASS, superClass.getId());
-
-        element.setAttribute(IBuildObject.ID, id);
-
-        if (name != null) {
-            element.setAttribute(IBuildObject.NAME, name);
-        }
-
-
-        if (isAbstract != null) {
-            element.setAttribute(IProjectType.IS_ABSTRACT, isAbstract.toString());
-        }
-
-        // versionsSupported
-        if (versionsSupported != null) {
-            element.setAttribute(VERSIONS_SUPPORTED, versionsSupported);
-        }
-
-        // convertToId
-        if (convertToId != null) {
-            element.setAttribute(CONVERT_TO_ID, convertToId);
-        }
-
-        if (errorParserIds != null) {
-            element.setAttribute(IToolChain.ERROR_PARSERS, errorParserIds);
-        }
-
-        if (command != null) {
-            element.setAttribute(IBuilder.COMMAND, command);
-        }
-
-        if (args != null) {
-            element.setAttribute(IBuilder.ARGUMENTS, args);
-        }
-
-        if (autoBuildTarget != null)
-            element.setAttribute(ATTRIBUTE_TARGET_AUTO, autoBuildTarget);
-        if (autoBuildEnabled != null)
-            element.setAttribute(ATTRIBUTE_AUTO_ENABLED, autoBuildEnabled.toString());
-        if (incrementalBuildTarget != null)
-            element.setAttribute(ATTRIBUTE_TARGET_INCREMENTAL, incrementalBuildTarget);
-        if (incrementalBuildEnabled != null)
-            element.setAttribute(ATTRIBUTE_INCREMENTAL_ENABLED, incrementalBuildEnabled.toString());
-        if (cleanBuildTarget != null)
-            element.setAttribute(ATTRIBUTE_TARGET_CLEAN, cleanBuildTarget);
-        if (cleanBuildEnabled != null)
-            element.setAttribute(ATTRIBUTE_CLEAN_ENABLED, cleanBuildEnabled.toString());
-        if (managedBuildOn != null)
-            element.setAttribute(ATTRIBUTE_MANAGED_BUILD_ON, managedBuildOn.toString());
-        if (keepEnvVarInBuildfile != null)
-            element.setAttribute(ATTRIBUTE_KEEP_ENV, keepEnvVarInBuildfile.toString());
-        if (supportsManagedBuild != null)
-            element.setAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD, supportsManagedBuild.toString());
-        if (customizedErrorParserIds != null)
-            element.setAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS,
-                    CDataUtil.arrayToString(customizedErrorParserIds, ";")); //$NON-NLS-1$
-        //        if (customizedEnvironment != null)
-        //            element.setAttribute(ATTRIBUTE_ENVIRONMENT, MapStorageElement.encodeMap(customizedEnvironment));
-        if (appendEnvironment != null)
-            element.setAttribute(ATTRIBUTE_APPEND_ENVIRONMENT, appendEnvironment.toString());
-
-        if (ignoreErrCmd != null)
-            element.setAttribute(ATTRIBUTE_IGNORE_ERR_CMD, ignoreErrCmd);
-        if (stopOnErr != null)
-            element.setAttribute(ATTRIBUTE_STOP_ON_ERR, stopOnErr.toString());
-
-        if (parallelBuildCmd != null)
-            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD, parallelBuildCmd);
-
-        if (isParallelBuildEnabled != null)
-            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_ON, isParallelBuildEnabled.toString());
-        if (isParallelBuildOn() && parallelNumberAttribute != null)
-            element.setAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER,
-                    encodeParallelizationNumber(parallelNumberAttribute));
-
-        // Note: build file generator cannot be specified in a project file because
-        //       an IConfigurationElement is needed to load it!
-        if (buildFileGeneratorElement != null) {
-            //  TODO:  issue warning?
-        }
-
-        // options
-        try {
-            super.serialize(element);
-        } catch (BuildException e) {
-            Activator.log(e);
-        }
-
-        if (outputEntries != null) {
-            ICStorageElement outEl = element.createChild(OUTPUT_ENTRIES);
-            LanguageSettingEntriesSerializer.serializeEntries(outputEntries, outEl);
-        }
+        //        if (superClass != null)
+        //            element.setAttribute(SUPERCLASS, superClass.getId());
+        //
+        //        element.setAttribute(IBuildObject.ID, id);
+        //
+        //        if (name != null) {
+        //            element.setAttribute(IBuildObject.NAME, name);
+        //        }
+        //
+        //        if (isAbstract != null) {
+        //            element.setAttribute(IS_ABSTRACT, isAbstract.toString());
+        //        }
+        //
+        //
+        //        if (errorParserIds != null) {
+        //            element.setAttribute(IToolChain.ERROR_PARSERS, errorParserIds);
+        //        }
+        //
+        //        if (command != null) {
+        //            element.setAttribute(IBuilder.COMMAND, command);
+        //        }
+        //
+        //        if (args != null) {
+        //            element.setAttribute(IBuilder.ARGUMENTS, args);
+        //        }
+        //
+        //        if (autoBuildTarget != null)
+        //            element.setAttribute(ATTRIBUTE_TARGET_AUTO, autoBuildTarget);
+        //        if (autoBuildEnabled != null)
+        //            element.setAttribute(ATTRIBUTE_AUTO_ENABLED, autoBuildEnabled.toString());
+        //        if (incrementalBuildTarget != null)
+        //            element.setAttribute(ATTRIBUTE_TARGET_INCREMENTAL, incrementalBuildTarget);
+        //        if (incrementalBuildEnabled != null)
+        //            element.setAttribute(ATTRIBUTE_INCREMENTAL_ENABLED, incrementalBuildEnabled.toString());
+        //        if (cleanBuildTarget != null)
+        //            element.setAttribute(ATTRIBUTE_TARGET_CLEAN, cleanBuildTarget);
+        //        if (cleanBuildEnabled != null)
+        //            element.setAttribute(ATTRIBUTE_CLEAN_ENABLED, cleanBuildEnabled.toString());
+        //        if (managedBuildOn != null)
+        //            element.setAttribute(ATTRIBUTE_MANAGED_BUILD_ON, managedBuildOn.toString());
+        //        if (keepEnvVarInBuildfile != null)
+        //            element.setAttribute(ATTRIBUTE_KEEP_ENV, keepEnvVarInBuildfile.toString());
+        //        if (supportsManagedBuild != null)
+        //            element.setAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD, supportsManagedBuild.toString());
+        //        if (customizedErrorParserIds != null)
+        //            element.setAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS,
+        //                    CDataUtil.arrayToString(customizedErrorParserIds, ";")); //$NON-NLS-1$
+        //        //        if (customizedEnvironment != null)
+        //        //            element.setAttribute(ATTRIBUTE_ENVIRONMENT, MapStorageElement.encodeMap(customizedEnvironment));
+        //        if (appendEnvironment != null)
+        //            element.setAttribute(ATTRIBUTE_APPEND_ENVIRONMENT, appendEnvironment.toString());
+        //
+        //        if (ignoreErrCmd != null)
+        //            element.setAttribute(ATTRIBUTE_IGNORE_ERR_CMD, ignoreErrCmd);
+        //        if (stopOnErr != null)
+        //            element.setAttribute(ATTRIBUTE_STOP_ON_ERR, stopOnErr.toString());
+        //
+        //        if (parallelBuildCmd != null)
+        //            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD, parallelBuildCmd);
+        //
+        //        if (isParallelBuildEnabled != null)
+        //            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_ON, isParallelBuildEnabled.toString());
+        //        if (isParallelBuildOn() && parallelNumberAttribute != null)
+        //            element.setAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER,
+        //                    encodeParallelizationNumber(parallelNumberAttribute));
+        //
+        //        // Note: build file generator cannot be specified in a project file because
+        //        //       an IConfigurationElement is needed to load it!
+        //        if (buildFileGeneratorElement != null) {
+        //            //  TODO:  issue warning?
+        //        }
+        //
+        //        // options
+        //        //        try {
+        //        //            super.serialize(element);
+        //        //        } catch (BuildException e) {
+        //        //            Activator.log(e);
+        //        //        }
+        //
+        //        if (outputEntries != null) {
+        //            ICStorageElement outEl = element.createChild(OUTPUT_ENTRIES);
+        //            LanguageSettingEntriesSerializer.serializeEntries(outputEntries, outEl);
+        //        }
 
     }
 
     public void serializeRawData(ICStorageElement element) {
-        if (superClass != null)
-            element.setAttribute(IProjectType.SUPERCLASS, superClass.getId());
-
-        element.setAttribute(IBuildObject.ID, id);
-
-        if (getName() != null) {
-            element.setAttribute(IBuildObject.NAME, getName());
-        }
-
-        if (isAbstract != null) {
-            element.setAttribute(IProjectType.IS_ABSTRACT, isAbstract.toString());
-        }
-
-        // versionsSupported
-        if (versionsSupported != null) {
-            element.setAttribute(VERSIONS_SUPPORTED, versionsSupported);
-        }
-
-        // convertToId
-        if (convertToId != null) {
-            element.setAttribute(CONVERT_TO_ID, convertToId);
-        }
-
-        if (getErrorParserIds() != null) {
-            element.setAttribute(IToolChain.ERROR_PARSERS, getErrorParserIds());
-        }
-
-        if (getCommand() != null) {
-            element.setAttribute(IBuilder.COMMAND, getCommand());
-        }
-
-        if (getArgumentsAttribute() != null) {
-            element.setAttribute(IBuilder.ARGUMENTS, getArguments/*Attribute*/());
-        }
-
-        if (getAutoBuildTargetAttribute() != null)
-            element.setAttribute(ATTRIBUTE_TARGET_AUTO, getAutoBuildTargetAttribute());
-        element.setAttribute(ATTRIBUTE_AUTO_ENABLED, String.valueOf(isAutoBuildEnable()));
-        if (getIncrementalBuildTargetAttribute() != null)
-            element.setAttribute(ATTRIBUTE_TARGET_INCREMENTAL, getIncrementalBuildTargetAttribute());
-        element.setAttribute(ATTRIBUTE_INCREMENTAL_ENABLED, String.valueOf(isIncrementalBuildEnabled()));
-        if (getCleanBuildTargetAttribute() != null)
-            element.setAttribute(ATTRIBUTE_TARGET_CLEAN, getCleanBuildTargetAttribute());
-        element.setAttribute(ATTRIBUTE_CLEAN_ENABLED, String.valueOf(isCleanBuildEnabled()));
-        element.setAttribute(ATTRIBUTE_MANAGED_BUILD_ON, String.valueOf(isManagedBuildOn()));
-        element.setAttribute(ATTRIBUTE_KEEP_ENV, String.valueOf(keepEnvironmentVariablesInBuildfile()));
-        element.setAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD, String.valueOf(supportsBuild(true)));
-        if (customizedErrorParserIds != null)
-            element.setAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS,
-                    CDataUtil.arrayToString(customizedErrorParserIds, ";")); //$NON-NLS-1$
-        //        if (customizedEnvironment != null)
-        //            element.setAttribute(ATTRIBUTE_ENVIRONMENT, MapStorageElement.encodeMap(customizedEnvironment));
-        element.setAttribute(ATTRIBUTE_APPEND_ENVIRONMENT, String.valueOf(appendEnvironment()));
-        if (getIgnoreErrCmdAttribute() != null)
-            element.setAttribute(ATTRIBUTE_IGNORE_ERR_CMD, getIgnoreErrCmdAttribute());
-        element.setAttribute(ATTRIBUTE_STOP_ON_ERR, String.valueOf(isStopOnError()));
-
-        if (parallelBuildCmd != null)
-            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD, parallelBuildCmd);
-
-        if (isParallelBuildEnabled != null)
-            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_ON, isParallelBuildEnabled.toString());
-        if (isParallelBuildOn() && parallelNumberAttribute != null)
-            element.setAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER,
-                    encodeParallelizationNumber(parallelNumberAttribute));
-
-        // Note: build file generator cannot be specified in a project file because
-        //       an IConfigurationElement is needed to load it!
-        if (buildFileGeneratorElement != null) {
-            //  TODO:  issue warning?
-        }
-
-        // options
-        try {
-            super.serialize(element);
-        } catch (BuildException e) {
-            Activator.log(e);
-        }
-
-        if (outputEntries != null) {
-            ICStorageElement outEl = element.createChild(OUTPUT_ENTRIES);
-            LanguageSettingEntriesSerializer.serializeEntries(outputEntries, outEl);
-        }
+        //        if (superClass != null)
+        //            element.setAttribute(IProjectType.SUPERCLASS, superClass.getId());
+        //
+        //        element.setAttribute(IBuildObject.ID, id);
+        //
+        //        if (getName() != null) {
+        //            element.setAttribute(IBuildObject.NAME, getName());
+        //        }
+        //
+        //        if (isAbstract != null) {
+        //            element.setAttribute(IS_ABSTRACT, isAbstract.toString());
+        //        }
+        //
+        //        // versionsSupported
+        //        if (versionsSupported != null) {
+        //            element.setAttribute(VERSIONS_SUPPORTED, versionsSupported);
+        //        }
+        //
+        //        // convertToId
+        //        if (convertToId != null) {
+        //            element.setAttribute(CONVERT_TO_ID, convertToId);
+        //        }
+        //
+        //        if (getErrorParserIds() != null) {
+        //            element.setAttribute(IToolChain.ERROR_PARSERS, getErrorParserIds());
+        //        }
+        //
+        //        if (getCommand() != null) {
+        //            element.setAttribute(IBuilder.COMMAND, getCommand());
+        //        }
+        //
+        //        if (getArgumentsAttribute() != null) {
+        //            element.setAttribute(IBuilder.ARGUMENTS, getArguments/*Attribute*/());
+        //        }
+        //
+        //        if (getAutoBuildTargetAttribute() != null)
+        //            element.setAttribute(ATTRIBUTE_TARGET_AUTO, getAutoBuildTargetAttribute());
+        //        element.setAttribute(ATTRIBUTE_AUTO_ENABLED, String.valueOf(isAutoBuildEnable()));
+        //        if (getIncrementalBuildTargetAttribute() != null)
+        //            element.setAttribute(ATTRIBUTE_TARGET_INCREMENTAL, getIncrementalBuildTargetAttribute());
+        //        element.setAttribute(ATTRIBUTE_INCREMENTAL_ENABLED, String.valueOf(isIncrementalBuildEnabled()));
+        //        if (getCleanBuildTargetAttribute() != null)
+        //            element.setAttribute(ATTRIBUTE_TARGET_CLEAN, getCleanBuildTargetAttribute());
+        //        element.setAttribute(ATTRIBUTE_CLEAN_ENABLED, String.valueOf(isCleanBuildEnabled()));
+        //        element.setAttribute(ATTRIBUTE_MANAGED_BUILD_ON, String.valueOf(isManagedBuildOn()));
+        //        element.setAttribute(ATTRIBUTE_KEEP_ENV, String.valueOf(keepEnvironmentVariablesInBuildfile()));
+        //        element.setAttribute(ATTRIBUTE_SUPORTS_MANAGED_BUILD, String.valueOf(supportsBuild(true)));
+        //        if (customizedErrorParserIds != null)
+        //            element.setAttribute(ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS,
+        //                    CDataUtil.arrayToString(customizedErrorParserIds, ";")); //$NON-NLS-1$
+        //        //        if (customizedEnvironment != null)
+        //        //            element.setAttribute(ATTRIBUTE_ENVIRONMENT, MapStorageElement.encodeMap(customizedEnvironment));
+        //        element.setAttribute(ATTRIBUTE_APPEND_ENVIRONMENT, String.valueOf(appendEnvironment()));
+        //        if (getIgnoreErrCmdAttribute() != null)
+        //            element.setAttribute(ATTRIBUTE_IGNORE_ERR_CMD, getIgnoreErrCmdAttribute());
+        //        element.setAttribute(ATTRIBUTE_STOP_ON_ERR, String.valueOf(isStopOnError()));
+        //
+        //        if (parallelBuildCmd != null)
+        //            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_CMD, parallelBuildCmd);
+        //
+        //        if (isParallelBuildEnabled != null)
+        //            element.setAttribute(ATTRIBUTE_PARALLEL_BUILD_ON, isParallelBuildEnabled.toString());
+        //        if (isParallelBuildOn() && parallelNumberAttribute != null)
+        //            element.setAttribute(ATTRIBUTE_PARALLELIZATION_NUMBER,
+        //                    encodeParallelizationNumber(parallelNumberAttribute));
+        //
+        //        // Note: build file generator cannot be specified in a project file because
+        //        //       an IConfigurationElement is needed to load it!
+        //        if (buildFileGeneratorElement != null) {
+        //            //  TODO:  issue warning?
+        //        }
+        //
+        //        // options
+        //        try {
+        //            super.serialize(element);
+        //        } catch (BuildException e) {
+        //            Activator.log(e);
+        //        }
+        //
+        //        if (outputEntries != null) {
+        //            ICStorageElement outEl = element.createChild(OUTPUT_ENTRIES);
+        //            LanguageSettingEntriesSerializer.serializeEntries(outputEntries, outEl);
+        //        }
     }
 
     /*
@@ -938,7 +801,6 @@ public class Builder extends HoldsOptions implements IBuilder {
             return false; // Note: no inheritance from superClass
         }
     }
-
 
     @Override
     public String getCommand() {
@@ -1154,43 +1016,12 @@ public class Builder extends HoldsOptions implements IBuilder {
         return errorParsers;
     }
 
-    @Override
-    public void setCommand(String cmd) {
-        if (getCommand().equals(cmd))
-            return;
-        if (cmd == null && command == null)
-            return;
-        if (command == null || cmd == null || !cmd.equals(command)) {
-            command = cmd;
-        }
-    }
-
-    @Override
-    public void setArguments(String newArgs) {
-        setArgumentsAttribute(newArgs);
-    }
-
     public void setArgumentsAttribute(String newArgs) {
         if (newArgs == null && args == null)
             return;
         if (args == null || newArgs == null || !newArgs.equals(args)) {
             args = newArgs;
         }
-    }
-
-    @Override
-    public void setErrorParserIds(String ids) {
-        String currentIds = getErrorParserIds();
-        if (ids == null && currentIds == null)
-            return;
-        if (currentIds == null || ids == null || !(currentIds.equals(ids))) {
-            errorParserIds = ids;
-        }
-    }
-
-    @Override
-    public void setIsAbstract(boolean b) {
-        isAbstract = b;
     }
 
     //@Override
@@ -1237,72 +1068,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean isExtensionElement() {
-        return isExtensionBuilder;
-    }
-
-
-    @Override
-    public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            // Resolve superClass
-            if (superClassId != null && superClassId.length() > 0) {
-                superClass = ManagedBuildManager.getExtensionBuilder(superClassId);
-                if (superClass == null) {
-                    // Report error
-                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-                            superClassId, "builder", //$NON-NLS-1$
-                            getId());
-                }
-            }
-        }
-    }
-
-    @Override
-    public String getConvertToId() {
-        if (convertToId == null) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return getSuperClass().getConvertToId();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return convertToId;
-    }
-
-    @Override
-    public void setConvertToId(String convertToId) {
-        if (convertToId == null && this.convertToId == null)
-            return;
-        if (convertToId == null || this.convertToId == null || !convertToId.equals(this.convertToId)) {
-            this.convertToId = convertToId;
-        }
-        return;
-    }
-
-    @Override
-    public String getVersionsSupported() {
-        if (versionsSupported == null) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return getSuperClass().getVersionsSupported();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return versionsSupported;
-    }
-
-    @Override
-    public void setVersionsSupported(String versionsSupported) {
-        if (versionsSupported == null && this.versionsSupported == null)
-            return;
-        if (versionsSupported == null || this.versionsSupported == null
-                || !versionsSupported.equals(this.versionsSupported)) {
-            this.versionsSupported = versionsSupported;
-        }
-        return;
+        return false;
     }
 
     @Override
@@ -1348,109 +1114,109 @@ public class Builder extends HoldsOptions implements IBuilder {
      */
 
     public void checkForMigrationSupport() {
-
-        //		String tmpId = null;
-        boolean isExists = false;
-
-        if (getSuperClass() == null) {
-            // If 'superClass' is null, then there is no builder available in
-            // plugin manifest file with the same 'id' & version.
-            // Look for the 'versionsSupported' attribute
-            String high = ManagedBuildManager.getExtensionBuilderMap().lastKey();
-
-            SortedMap<String, ? extends IBuilder> subMap = null;
-            if (superClassId.compareTo(high) <= 0) {
-                subMap = ManagedBuildManager.getExtensionBuilderMap().subMap(superClassId, high + "\0"); //$NON-NLS-1$
-            } else {
-                // It means there are no entries in the map for the given id.
-                // make the project is invalid
-
-                IToolChain parent = getParent();
-                IConfiguration parentConfig = parent.getParent();
-                IManagedProject managedProject = parentConfig.getManagedProject();
-                if (managedProject != null) {
-                    managedProject.setValid(false);
-                }
-                return;
-            }
-
-            // for each element in the 'subMap',
-            // check the 'versionsSupported' attribute whether the given
-            // builder version is supported
-
-            String baseId = ManagedBuildManager.getIdFromIdAndVersion(superClassId);
-            String version = ManagedBuildManager.getVersionFromIdAndVersion(superClassId);
-
-            Collection<? extends IBuilder> c = subMap.values();
-            IBuilder[] builderElements = c.toArray(new IBuilder[c.size()]);
-
-            for (int i = 0; i < builderElements.length; i++) {
-                IBuilder builderElement = builderElements[i];
-
-                if (ManagedBuildManager.getIdFromIdAndVersion(builderElement.getId()).compareTo(baseId) > 0)
-                    break;
-                // First check if both base ids are equal
-                if (ManagedBuildManager.getIdFromIdAndVersion(builderElement.getId()).equals(baseId)) {
-
-                    // Check if 'versionsSupported' attribute is available'
-                    String versionsSupported = builderElement.getVersionsSupported();
-
-                    if ((versionsSupported != null) && (!versionsSupported.isEmpty())) {
-                        String[] tmpVersions = versionsSupported.split(","); //$NON-NLS-1$
-
-                        for (int j = 0; j < tmpVersions.length; j++) {
-                            if (new Version(version).equals(new Version(tmpVersions[j]))) {
-                                // version is supported.
-                                // Do the automatic conversion without
-                                // prompting the user.
-                                // Get the supported version
-                                String supportedVersion = ManagedBuildManager
-                                        .getVersionFromIdAndVersion(builderElement.getId());
-                                setId(ManagedBuildManager.getIdFromIdAndVersion(getId()) + "_" + supportedVersion); //$NON-NLS-1$
-
-                                // If control comes here means that 'superClass' is null
-                                // So, set the superClass to this builder element
-                                superClass = builderElement;
-                                superClassId = superClass.getId();
-                                isExists = true;
-                                break;
-                            }
-                        }
-                        if (isExists)
-                            break; // break the outer for loop if 'isExists' is true
-                    }
-                }
-            }
-        }
-        if (getSuperClass() != null) {
-            // If 'getSuperClass()' is not null, look for 'convertToId' attribute in plugin
-            // manifest file for this builder.
-            String convertToId = getSuperClass().getConvertToId();
-            if ((convertToId == null) || (convertToId.isEmpty())) {
-                // It means there is no 'convertToId' attribute available and
-                // the version is still actively
-                // supported by the tool integrator. So do nothing, just return
-                return;
-            } else {
-                // Incase the 'convertToId' attribute is available,
-                // it means that Tool integrator currently does not support this
-                // version of builder.
-                // Look for the converters available for this builder version.
-
-                getConverter(convertToId);
-            }
-
-        } else {
-            // make the project is invalid
-            //
-            IToolChain parent = getParent();
-            IConfiguration parentConfig = parent.getParent();
-            IManagedProject managedProject = parentConfig.getManagedProject();
-            if (managedProject != null) {
-                managedProject.setValid(false);
-            }
-        }
-        return;
+        //
+        //        //		String tmpId = null;
+        //        boolean isExists = false;
+        //
+        //        if (getSuperClass() == null) {
+        //            // If 'superClass' is null, then there is no builder available in
+        //            // plugin manifest file with the same 'id' & version.
+        //            // Look for the 'versionsSupported' attribute
+        //            String high = ManagedBuildManager.getExtensionBuilderMap().lastKey();
+        //
+        //            SortedMap<String, ? extends IBuilder> subMap = null;
+        //            if (superClassId.compareTo(high) <= 0) {
+        //                subMap = ManagedBuildManager.getExtensionBuilderMap().subMap(superClassId, high + "\0"); //$NON-NLS-1$
+        //            } else {
+        //                // It means there are no entries in the map for the given id.
+        //                // make the project is invalid
+        //
+        //                IToolChain parent = getParent();
+        //                IConfiguration parentConfig = parent.getParent();
+        //                IManagedProject managedProject = parentConfig.getManagedProject();
+        //                if (managedProject != null) {
+        //                    managedProject.setValid(false);
+        //                }
+        //                return;
+        //            }
+        //
+        //            // for each element in the 'subMap',
+        //            // check the 'versionsSupported' attribute whether the given
+        //            // builder version is supported
+        //
+        //            String baseId = ManagedBuildManager.getIdFromIdAndVersion(superClassId);
+        //            String version = ManagedBuildManager.getVersionFromIdAndVersion(superClassId);
+        //
+        //            Collection<? extends IBuilder> c = subMap.values();
+        //            IBuilder[] builderElements = c.toArray(new IBuilder[c.size()]);
+        //
+        //            for (int i = 0; i < builderElements.length; i++) {
+        //                IBuilder builderElement = builderElements[i];
+        //
+        //                if (ManagedBuildManager.getIdFromIdAndVersion(builderElement.getId()).compareTo(baseId) > 0)
+        //                    break;
+        //                // First check if both base ids are equal
+        //                if (ManagedBuildManager.getIdFromIdAndVersion(builderElement.getId()).equals(baseId)) {
+        //
+        //                    // Check if 'versionsSupported' attribute is available'
+        //                    String versionsSupported = builderElement.getVersionsSupported();
+        //
+        //                    if ((versionsSupported != null) && (!versionsSupported.isEmpty())) {
+        //                        String[] tmpVersions = versionsSupported.split(","); //$NON-NLS-1$
+        //
+        //                        for (int j = 0; j < tmpVersions.length; j++) {
+        //                            if (new Version(version).equals(new Version(tmpVersions[j]))) {
+        //                                // version is supported.
+        //                                // Do the automatic conversion without
+        //                                // prompting the user.
+        //                                // Get the supported version
+        //                                String supportedVersion = ManagedBuildManager
+        //                                        .getVersionFromIdAndVersion(builderElement.getId());
+        //                                id = (ManagedBuildManager.getIdFromIdAndVersion(getId()) + "_" + supportedVersion); //$NON-NLS-1$
+        //
+        //                                // If control comes here means that 'superClass' is null
+        //                                // So, set the superClass to this builder element
+        //                                superClass = builderElement;
+        //                                superClassId = superClass.getId();
+        //                                isExists = true;
+        //                                break;
+        //                            }
+        //                        }
+        //                        if (isExists)
+        //                            break; // break the outer for loop if 'isExists' is true
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        if (getSuperClass() != null) {
+        //            // If 'getSuperClass()' is not null, look for 'convertToId' attribute in plugin
+        //            // manifest file for this builder.
+        //            String convertToId = getSuperClass().getConvertToId();
+        //            if ((convertToId == null) || (convertToId.isEmpty())) {
+        //                // It means there is no 'convertToId' attribute available and
+        //                // the version is still actively
+        //                // supported by the tool integrator. So do nothing, just return
+        //                return;
+        //            } else {
+        //                // Incase the 'convertToId' attribute is available,
+        //                // it means that Tool integrator currently does not support this
+        //                // version of builder.
+        //                // Look for the converters available for this builder version.
+        //
+        //                getConverter(convertToId);
+        //            }
+        //
+        //        } else {
+        //            // make the project is invalid
+        //            //
+        //            IToolChain parent = getParent();
+        //            IConfiguration parentConfig = parent.getParent();
+        //            IManagedProject managedProject = parentConfig.getManagedProject();
+        //            if (managedProject != null) {
+        //                managedProject.setValid(false);
+        //            }
+        //        }
+        //        return;
     }
 
     private void getConverter(String convertToId) {
@@ -1531,37 +1297,15 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public String[] getErrorParsers() {
-        if (isCustomBuilder() && customizedErrorParserIds != null)
-            return customizedErrorParserIds.clone();
-
-        IToolChain parent = getParent();
-        IConfiguration parentConfig = parent.getParent();
-        return parentConfig.getErrorParserList();
-    }
-
-    public String[] getCustomizedErrorParserIds() {
-        if (customizedErrorParserIds != null)
-            return customizedErrorParserIds.clone();
         return null;
     }
 
-    public void setCustomizedErrorParserIds(String[] ids) {
-        customizedErrorParserIds = ids != null ? (String[]) ids.clone() : ids;
-    }
-
-    // @Override
-    public void setErrorParsers(String[] parsers) throws CoreException {
-        if (isCustomBuilder()) {
-            customizedErrorParserIds = (parsers != null && parsers.length != 0) ? (String[]) parsers.clone() : parsers;
-        } else {
-            IToolChain parent = getParent();
-            IConfiguration parentConfig = parent.getParent();
-            parentConfig.setErrorParserList(parsers);
-        }
+    public String[] getCustomizedErrorParserIds() {
+        return null;
     }
 
     private Object getMacroContextData() {
-        return !isExtensionBuilder ? (Object)this : (Object)getParent().getParent();
+        return (Object) this;
     }
 
     //@Override
@@ -1587,97 +1331,60 @@ public class Builder extends HoldsOptions implements IBuilder {
             command = provider.resolveValue(command, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, //$NON-NLS-1$//$NON-NLS-2$
                     getMacroContextData());
         } catch (BuildMacroException e) {
-        	Activator.log(e);
+            Activator.log(e);
         }
 
         return new Path(command);
     }
 
-
     @Override
     public boolean isDefaultBuildCmd() {
-        return isExtensionBuilder || (command == null
+        return (command == null
                 && args == null /*&& stopOnErr == null && parallelBuildOn == null && parallelNum == null */
                 && superClass != null);
     }
 
     @Override
     public boolean isDefaultBuildCmdOnly() {
-        return isExtensionBuilder || (command == null && superClass != null);
+        return (command == null && superClass != null);
     }
 
     @Override
     public boolean isDefaultBuildArgsOnly() {
-        return isExtensionBuilder || (args == null && superClass != null);
+        return (args == null && superClass != null);
     }
 
     @Override
     public boolean isStopOnError() {
-        if (stopOnErr == null) {
-            if (superClass != null) {
-                return getSuperClass().isStopOnError();
-            }
-            return true;
-        }
-        return stopOnErr.booleanValue();
+        return true;
     }
 
     @Override
     public void setBuildArguments(String args) throws CoreException {
-        setArguments(args);
+        //deprecated
     }
 
     @Override
     public void setBuildCommand(IPath command) throws CoreException {
-        String cmd = command != null ? command.toString() : null;
-        setCommand(cmd);
+        //@Deprecated
     }
-
 
     @Override
     public void setStopOnError(boolean on) throws CoreException {
-        if (isStopOnError() == on)
-            return;
-
-        if (supportsStopOnError(on)) {
-            String curCmd = getStopOnErrCmd(isStopOnError());
-            String args = getArgumentsAttribute();
-            String updatedArgs = removeCmd(args, curCmd);
-            if (!updatedArgs.equals(args))
-                setArgumentsAttribute(updatedArgs);
-            stopOnErr = on;
-        }
     }
 
     @Override
     public void setUseDefaultBuildCmd(boolean on) throws CoreException {
-        if (!isExtensionBuilder && superClass != null) {
-            if (on) {
-                command = null;
-                args = null;
-                //				stopOnErr = null;
-                //				parallelBuildOn = null;
-                //				parallelNum = null;
-            } else {
-                command = getCommand();
-            }
-        }
+        //@Deprecated
     }
 
     @Override
     public void setUseDefaultBuildCmdOnly(boolean on) throws CoreException {
-        if (!isExtensionBuilder && superClass != null) {
-            if (on) {
-                command = null;
-            } else {
-                command = getCommand();
-            }
-        }
     }
 
     @Override
     public void setUseDefaultBuildArgsOnly(boolean on) throws CoreException {
-        if (!isExtensionBuilder && superClass != null) {
+        if (superClass != null) {
             if (on) {
                 args = null;
             } else {
@@ -1687,12 +1394,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public String getAutoBuildTargetAttribute() {
-        if (autoBuildTarget == null) {
-            if (superClass != null)
-                return ((Builder) superClass).getAutoBuildTargetAttribute();
-            return null;
-        }
-        return autoBuildTarget;
+        return modelautoBuildTarget[SUPER];
     }
 
     @Override
@@ -1716,12 +1418,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public String getCleanBuildTargetAttribute() {
-        if (cleanBuildTarget == null) {
-            if (superClass != null)
-                return ((Builder) superClass).getCleanBuildTargetAttribute();
-            return null;
-        }
-        return cleanBuildTarget;
+        return DEFAULT_TARGET_CLEAN;
     }
 
     @Override
@@ -1750,12 +1447,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public String getIncrementalBuildTargetAttribute() {
-        if (incrementalBuildTarget == null) {
-            if (superClass != null)
-                return ((Builder) superClass).getIncrementalBuildTargetAttribute();
-            return null;
-        }
-        return incrementalBuildTarget;
+        return null;
     }
 
     @Override
@@ -1780,22 +1472,12 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean isAutoBuildEnable() {
-        if (autoBuildEnabled == null) {
-            if (superClass != null)
-                return getSuperClass().isAutoBuildEnable();
-            return false;
-        }
-        return autoBuildEnabled.booleanValue();
+        return true;
     }
 
     @Override
     public boolean isCleanBuildEnabled() {
-        if (cleanBuildEnabled == null) {
-            if (superClass != null)
-                return getSuperClass().isCleanBuildEnabled();
-            return true;
-        }
-        return cleanBuildEnabled.booleanValue();
+        return true;
     }
 
     @Override
@@ -1805,64 +1487,29 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean isIncrementalBuildEnabled() {
-        if (incrementalBuildEnabled == null) {
-            if (superClass != null)
-                return getSuperClass().isIncrementalBuildEnabled();
-            return true;
-        }
-        return incrementalBuildEnabled.booleanValue();
+        return true;
     }
 
     @Override
     public void setAutoBuildEnable(boolean enabled) throws CoreException {
-        autoBuildEnabled = enabled;
     }
 
     @Override
     public void setAutoBuildTarget(String target) throws CoreException {
-        autoBuildTarget = target;
     }
 
     @Override
     public void setCleanBuildEnable(boolean enabled) throws CoreException {
-        cleanBuildEnabled = enabled;
     }
 
     @Override
     public void setCleanBuildTarget(String target) throws CoreException {
-        cleanBuildTarget = target;
     }
 
     @Override
     public void setFullBuildEnable(boolean enabled) throws CoreException {
         setIncrementalBuildEnable(enabled);
     }
-
-    // @Override
-    public void setFullBuildTarget(String target) throws CoreException {
-        setIncrementalBuildTarget(target);
-    }
-
-    //@Override
-    public void setIncrementalBuildEnable(boolean enabled) throws CoreException {
-        incrementalBuildEnabled = enabled;
-    }
-
-    //@Override
-    public void setIncrementalBuildTarget(String target) throws CoreException {
-        incrementalBuildTarget = target;
-    }
-
-    //@Override
-    //    public boolean appendEnvironment() {
-    //        if (appendEnvironment == null) {
-    //            if (superClass != null) {
-    //                return getSuperClass().appendEnvironment();
-    //            }
-    //            return true;
-    //        }
-    //        return appendEnvironment.booleanValue();
-    //    }
 
     //@Override TODO is this used?
     public String getBuildAttribute(String name, String defaultValue) {
@@ -2021,11 +1668,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     @Override
-    public void setAppendEnvironment(boolean append) throws CoreException {
-        appendEnvironment = append;
-    }
-
-    @Override
     public void setBuildAttribute(String name, String value) throws CoreException {
         //        if (BUILD_TARGET_INCREMENTAL.equals(name)) {
         //            incrementalBuildTarget = value;
@@ -2095,7 +1737,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean isCustomBuilder() {
-        if (!isExtensionBuilder && getParent().getBuilder() != this)
+        if (getParent().getBuilder() != this)
             return true;
         return false;
     }
@@ -2123,37 +1765,11 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public Boolean getManagedBuildOnAttribute() {
-        if (managedBuildOn == null) {
-            if (superClass != null)
-                return ((Builder) superClass).getManagedBuildOnAttribute();
-            return null;
-        }
-        return managedBuildOn;
+        return true;
     }
 
     @Override
     public void setManagedBuildOn(boolean on) {
-        managedBuildOn = on;
-    }
-
-    @Override
-    public boolean canKeepEnvironmentVariablesInBuildfile() {
-        return BuildMacroProvider.canKeepMacrosInBuildfile(this);
-    }
-
-    @Override
-    public boolean keepEnvironmentVariablesInBuildfile() {
-        if (keepEnvVarInBuildfile == null) {
-            if (superClass != null)
-                return getSuperClass().keepEnvironmentVariablesInBuildfile();
-            return false;
-        }
-        return keepEnvVarInBuildfile.booleanValue();
-    }
-
-    @Override
-    public void setKeepEnvironmentVariablesInBuildfile(boolean keep) {
-        keepEnvVarInBuildfile = keep;
     }
 
     @Override
@@ -2170,12 +1786,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean supportsBuild(boolean managed) {
-        if (supportsManagedBuild == null) {
-            if (superClass != null)
-                return getSuperClass().supportsBuild(managed);
-            return managed || !isInternalBuilder();
-        }
-        return supportsManagedBuild.booleanValue();
+        return false;
     }
 
     public void setParent(IToolChain toolChain) {
@@ -2194,7 +1805,6 @@ public class Builder extends HoldsOptions implements IBuilder {
         return rBld == ManagedBuildManager.getRealBuilder(builder);
     }
 
-
     public String getNameAndVersion() {
         String name = getName();
         String version = ManagedBuildManager.getVersionFromIdAndVersion(getId());
@@ -2204,14 +1814,8 @@ public class Builder extends HoldsOptions implements IBuilder {
         return name;
     }
 
-
     @Override
     public boolean isInternalBuilder() {
-        IBuilder internalBuilder = ManagedBuildManager.getInternalBuilder();
-        for (IBuilder builder = this; builder != null; builder = builder.getSuperClass()) {
-            if (internalBuilder == builder)
-                return true;
-        }
         return false;
     }
 
@@ -2304,15 +1908,11 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean supportsParallelBuild() {
-        if (isInternalBuilder())
-            return true;
         return getParrallelBuildCmd().length() != 0;
     }
 
     @Override
     public boolean supportsStopOnError(boolean on) {
-        if (isInternalBuilder())
-            return true;
 
         if (!on)
             return getIgnoreErrCmdAttribute().length() != 0;
@@ -2326,23 +1926,11 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public String getIgnoreErrCmdAttribute() {
-        if (ignoreErrCmd == null) {
-            if (superClass != null) {
-                return ((Builder) superClass).getIgnoreErrCmdAttribute();
-            }
-            return EMPTY_STRING;
-        }
-        return ignoreErrCmd;
+        return modelignoreErrCmd[SUPER];
     }
 
     public String getParrallelBuildCmd() {
-        if (parallelBuildCmd == null) {
-            if (superClass != null) {
-                return ((Builder) superClass).getParrallelBuildCmd();
-            }
-            return EMPTY_STRING;
-        }
-        return parallelBuildCmd;
+        return modelparallelBuildCmd[SUPER];
     }
 
     @Override
@@ -2423,9 +2011,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     @Override
     public boolean isSystemObject() {
         if (isTest)
-            return true;
-
-        if (getConvertToId().length() != 0)
             return true;
 
         if (getParent() != null)
@@ -2536,10 +2121,6 @@ public class Builder extends HoldsOptions implements IBuilder {
         if (superClass != null)
             return getSuperClass().getBuildRunner();
 
-        // Default internal or external builder
-        if (isInternalBuilder())
-            return new InternalBuildRunner();
-
         return new BuildRunner();
     }
 
@@ -2555,33 +2136,45 @@ public class Builder extends HoldsOptions implements IBuilder {
         return false;
     }
 
-	@Override
-	public IPath getBuildLocation() {
-		return myBuildFolder.getLocation();
-	}
+    @Override
+    public IPath getBuildLocation() {
+        return myBuildFolder.getLocation();
+    }
 
-	@Override
-	public void setBuildLocation(IPath location) throws CoreException {
-		// This method is Deprecated
-		
-	}
+    @Override
+    public void setBuildLocation(IPath location) throws CoreException {
+        // This method is Deprecated
 
-	@Override
-	public void setBuildFolder(IFolder path) {
-		myBuildFolder=path;
-		
-	}
+    }
 
-	@Override
-	public void resolveFields() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setIncrementalBuildEnable(boolean enabled) throws CoreException {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void resolveSuperClass() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+    }
+
+    @Override
+    public void setIncrementalBuildTarget(String target) throws CoreException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setFullBuildTarget(String target) throws CoreException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setAppendEnvironment(boolean append) throws CoreException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setErrorParsers(String[] parsers) throws CoreException {
+        // TODO Auto-generated method stub
+
+    }
 
 }

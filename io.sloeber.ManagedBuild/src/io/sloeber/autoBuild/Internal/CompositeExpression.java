@@ -16,15 +16,15 @@ package io.sloeber.autoBuild.Internal;
 import java.util.Map;
 import java.util.Set;
 
-import io.sloeber.autoBuild.api.IManagedConfigElement;
+import org.eclipse.core.runtime.IConfigurationElement;
 
 //import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
 
 public abstract class CompositeExpression implements IBooleanExpression {
     private IBooleanExpression fChildren[];
 
-    protected CompositeExpression(IManagedConfigElement element) {
-        IManagedConfigElement childElement[] = element.getChildren();
+    protected CompositeExpression(IConfigurationElement element) {
+        IConfigurationElement childElement[] = element.getChildren();
         IBooleanExpression children[] = new IBooleanExpression[childElement.length];
         int num = 0;
         for (int i = 0; i < childElement.length; i++) {
@@ -41,7 +41,7 @@ public abstract class CompositeExpression implements IBooleanExpression {
         fChildren = children;
     }
 
-    protected IBooleanExpression createExpression(IManagedConfigElement element) {
+    protected IBooleanExpression createExpression(IConfigurationElement element) {
         String name = element.getName();
         //TOFIX this code should not be removerd but treplaced
         //        if (AndExpression.NAME.equals(name))

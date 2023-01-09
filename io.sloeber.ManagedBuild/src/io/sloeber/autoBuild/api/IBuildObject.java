@@ -23,6 +23,10 @@ public interface IBuildObject {
     // Schema element names
     public static final String ID = "id"; //$NON-NLS-1$
     public static final String NAME = "name"; //$NON-NLS-1$
+    public static final String EMPTY = ""; //$NON-NLS-1$
+    public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
+    public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
+    public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
 
     public String getId();
 
@@ -35,6 +39,4 @@ public interface IBuildObject {
     public void setVersion(Version version);
 
     public String getManagedBuildRevision();
-    public void resolveFields() throws Exception;
-    public void resolveSuperClass()  throws Exception;
 }

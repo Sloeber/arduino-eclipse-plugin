@@ -14,11 +14,9 @@
 package io.sloeber.autoBuild.Internal;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 
 class SourcePath {
     static final String ELEMENT_NAME = "sourcePath"; //$NON-NLS-1$
@@ -35,7 +33,7 @@ class SourcePath {
             path = new Path(pathStr);
     }
 
-    SourcePath(IManagedConfigElement el) {
+    SourcePath(IConfigurationElement el) {
         String pathStr = el.getAttribute(ATTRIBUTE_PATH);
         if (pathStr != null)
             path = new Path(pathStr);

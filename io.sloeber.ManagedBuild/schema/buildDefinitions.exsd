@@ -1016,24 +1016,18 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="sources" type="string">
+         <attribute name="extensions" type="string">
             <annotation>
                <documentation>
                   A comma-separated list of file extensions that identify files of this input type. Note that the user will not be able to modify the set of file extensions as they can when sourceContentType is specified.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="dependencyContentType" type="string">
+         <attribute name="outputTypeID" type="string">
             <annotation>
                <documentation>
-                  The id of an Eclipse content type that describes the calculated dependencies for this type of input.  If dependencyExtensions is also specified, and the content type specified here is defined by Eclipse, the dependencyExtensions attribute is not used.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="dependencyExtensions" type="string">
-            <annotation>
-               <documentation>
-                  A comma-separated list of file extensions that are used for calculated dependencies of this input-type. Note that the user will not be able to modify the set of file extensions as they can when dependencyContentType is specified.
+                  The ID of an output type.
+All files from that output type will match this input type
                </documentation>
             </annotation>
          </attribute>
@@ -1048,6 +1042,20 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
             <annotation>
                <documentation>
                   The id of an Option element whose value is to be assigned to the file(s) calculated for this input type.  The default is not to assign the input file(s) to a command line option but to assign the files to the ${Inputs} part of the command line.  Note that the option value is only updated during build file generation and therefore could be out of sync with the project until build file generation occurs.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="dependencyContentType" type="string">
+            <annotation>
+               <documentation>
+                  The id of an Eclipse content type that describes the calculated dependencies for this type of input.  If dependencyExtensions is also specified, and the content type specified here is defined by Eclipse, the dependencyExtensions attribute is not used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="dependencyExtensions" type="string">
+            <annotation>
+               <documentation>
+                  A comma-separated list of file extensions that are used for calculated dependencies of this input-type. Note that the user will not be able to modify the set of file extensions as they can when dependencyContentType is specified.
                </documentation>
             </annotation>
          </attribute>
@@ -1561,102 +1569,21 @@ If this attribute is not specified, MBS will assume that there are no reserved m
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="macroInputFileNameValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the InputFileName macro value. The macro specifies the input file name. The input file has the following meaning:
-1. If a tool does not accept building multiple files of the primary input type with one tool invocation, the input file is the file of the primary input type being built.
-2. If a tool accepts building multiple files of the primary input type with one tool invocation the input file is undefined and the macros representing the input file contain information about one of the inputs of the primary input type being built.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroInputFileExtValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the InputFileExt macro value. The macro specifies the extension of the input file.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroInputFileBaseNameValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the InputFileBaseName macro value. The macro specifies the base name of the input file. That is the file name with an extension stripped.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroInputFileRelPathValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the InputFileRelPath macro value. The macro specifies the input file path relative to the builder current directory.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroInputDirRelPathValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the InputDirRelPath macro value. The macro specifies the input file directory path relative to the builder current directory.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroOutputFileNameValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the OutputFileName macro value. The macro specifies the output file name. The output file has the following meaning:
-1. If a tool is not capable of producing multiple files of the primary output type with one tool invocation the output file is the file of the primary output type that is built with a given tool invocation.
-2. If a tool is capable of producing multiple files of the primary output type with one tool invocation the output file is undefined and the macros representing the output file contain information about one of the files of the primary output type that are built with a given tool invocation.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroOutputFileExtValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the OutputFileExt macro value. The macro specifies the output file extension.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroOutputFileBaseNameValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the OutputFileBaseName macro value. The macro specifies the output file base name. That is the output file name with an extension stripped.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroOutputFileRelPathValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the OutputFileRelPath macro value. The macro specifies the output file path relative to the current builder directory.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="macroOutputDirRelPathValue" type="string">
-            <annotation>
-               <documentation>
-                  Represents the OutputDirRelPath macro value. The macro specifies the output file directory path relative to the current builder directory.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="supportsManagedBuild" type="boolean" use="default" value="true">
-            <annotation>
-               <documentation>
-                  Specifies whether the duilder supports Auto build. Default value is true.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="autoBuildTarget" type="string">
+         <attribute name="autoBuildTarget" type="string" use="default" value="all">
             <annotation>
                <documentation>
                   represents the build target to be used for auto build
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="incrementalBuildTarget" type="string">
+         <attribute name="incrementalBuildTarget" type="string" use="default" value="all">
             <annotation>
                <documentation>
                   represents the build target to be used for incremental build
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="cleanBuildTarget" type="string">
+         <attribute name="cleanBuildTarget" type="string" use="default" value="clean">
             <annotation>
                <documentation>
                   represents the build target to be used for clean build

@@ -125,8 +125,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             if ((resolved = resolved.trim()).length() > 0)
                 name = resolved;
 
-
-                buildGoalName = name;
+            buildGoalName = name;
             reservedNames = Arrays.asList(new String[] { ".cdtbuild", ".cdtproject", ".project" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
@@ -437,18 +436,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         for (IConfiguration cfg : cfgs) {
             updateOtherConfigs(cfg, kind);
 
-            if (((Configuration) cfg).isInternalBuilderEnabled()) {
-                invokeInternalBuilder(cfg, kind != FULL_BUILD, ((Configuration) cfg).getInternalBuilderIgnoreErr(),
-                        monitor);
-
-                // Scrub the build info the project
-                info.setRebuildState(false);
-                return referencedProjects;
-            }
-
             // Create a makefile generator for the build
-            IMakefileGenerator generator = ManagedBuildManager
-                    .getBuildfileGenerator(info.getDefaultConfiguration());
+            IMakefileGenerator generator = ManagedBuildManager.getBuildfileGenerator(info.getDefaultConfiguration());
             generator.initialize(getProject(), info, monitor);
 
             //perform necessary cleaning and build type calculation
@@ -647,8 +636,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             // Create a makefile generator for the build
             status = MessageFormat.format(ManagedMakeBuilder_message_clean_build_clean, buildDir.getName());
             monitor.subTask(status);
-            IMakefileGenerator generator = ManagedBuildManager
-                    .getBuildfileGenerator(info.getDefaultConfiguration());
+            IMakefileGenerator generator = ManagedBuildManager.getBuildfileGenerator(info.getDefaultConfiguration());
             generator.initialize(getProject(), info, monitor);
             cleanBuild(info, generator, monitor);
         } catch (IOException io) {
@@ -660,8 +648,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param generator
      * @param monitor
      */
-    protected void cleanBuild(IManagedBuildInfo info, IMakefileGenerator generator,
-            IProgressMonitor monitor) {
+    protected void cleanBuild(IManagedBuildInfo info, IMakefileGenerator generator, IProgressMonitor monitor) {
         // Make sure that there is a top level directory and a set of makefiles
         IPath buildDir = generator.getBuildWorkingDir();
         if (buildDir == null) {
@@ -685,8 +672,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param generator
      * @param monitor
      */
-    protected void fullBuild(IManagedBuildInfo info, IMakefileGenerator generator,
-            IProgressMonitor monitor) throws CoreException {
+    protected void fullBuild(IManagedBuildInfo info, IMakefileGenerator generator, IProgressMonitor monitor)
+            throws CoreException {
         // Always need one of these bad boys
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -811,8 +798,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param monitor
      * @throws CoreException
      */
-    protected void incrementalBuild(IResourceDelta delta, IManagedBuildInfo info,
-            IMakefileGenerator generator, IProgressMonitor monitor) throws CoreException {
+    protected void incrementalBuild(IResourceDelta delta, IManagedBuildInfo info, IMakefileGenerator generator,
+            IProgressMonitor monitor) throws CoreException {
         // Need to report status to the user
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -882,8 +869,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param generator
      * @param monitor
      */
-    protected void invokeMake(int buildType, IPath buildDir, IManagedBuildInfo info,
-            IMakefileGenerator generator, IProgressMonitor monitor) {
+    protected void invokeMake(int buildType, IPath buildDir, IManagedBuildInfo info, IMakefileGenerator generator,
+            IProgressMonitor monitor) {
         // Get the project and make sure there's a monitor to cancel the build
         IProject project = getProject();
         if (monitor == null) {
@@ -1403,7 +1390,6 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         }
         return projectMap;
     }
-
 
     private void invokeInternalBuilderForOneProject(List<IFile> files, IProgressMonitor monitor) {
         IProject project = files.get(0).getProject();

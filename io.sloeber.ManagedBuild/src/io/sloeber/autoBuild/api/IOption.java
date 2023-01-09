@@ -200,12 +200,6 @@ public interface IOption extends IBuildObject {
     public IHoldsOptions getOptionHolder();
 
     /**
-     * @return the <code>IOption</code> that is the superclass of this
-     *         option, or <code>null</code> if the attribute was not specified.
-     */
-    public IOption getSuperClass();
-
-    /**
      * @param holder
      *            - the actual option-holder for the context-data. This holder
      *            is usually a subclass of this option's {@link #getOptionHolder()

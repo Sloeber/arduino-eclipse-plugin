@@ -211,7 +211,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             this.project = cfg.getOwner().getProject();
             buildPaths = new IPath[allConfigs.length];
             for (int i = 0; i < buildPaths.length; i++) {
-                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], allConfigs[i].getBuilder()).getLocation();
+                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], allConfigs[i].getBuilder())
+                        .getLocation();
             }
             String ext = cfg.getArtifactExtension();
             //try to resolve build macros in the build artifact extension
@@ -233,8 +234,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             } catch (BuildMacroException e) {
             }
 
-
-                buildGoalName = name;
+            buildGoalName = name;
 
             reservedNames = Arrays.asList(new String[] { ".cdtbuild", ".cdtproject", ".project" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
@@ -850,8 +850,6 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     protected BuildStatus performPostbuildGeneration(int kind, CfgBuildInfo bInfo, BuildStatus buildStatus,
             IProgressMonitor monitor) throws CoreException {
         IBuilder builder = bInfo.getBuilder();
-        if (builder.isInternalBuilder())
-            return buildStatus;
 
         if (buildStatus.isRebuild()) {
             buildStatus.getMakeGen().regenerateDependencies(false);
@@ -865,8 +863,6 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     protected BuildStatus performPrebuildGeneration(int kind, CfgBuildInfo bInfo, BuildStatus buildStatus,
             IProgressMonitor monitor) throws CoreException {
         IBuilder builder = bInfo.getBuilder();
-        if (builder.isInternalBuilder())
-            return buildStatus;
 
         buildStatus = performCleanning(kind, bInfo, buildStatus, monitor);
         IMakefileGenerator generator = builder.getBuildFileGenerator();
@@ -1087,18 +1083,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                 boolean programmatically = true;
                 IFolder rc = ManagedBuildManager.getBuildFolder(cfg, bInfo.getBuilder());
 
-                if (rc != null ) {
-                    if (!cfg.getEditableBuilder().isInternalBuilder()) {
-                        fBuildErrOccured = false;
-                        try {
-                            performExternalClean(bInfo, false, monitor);
-                        } catch (CoreException e) {
-                            Activator.log(e);
-                            fBuildErrOccured = true;
-                        }
-                        if (!fBuildErrOccured)
-                            programmatically = false;
-                    }
+                if (rc != null) {
 
                     if (programmatically) {
                         try {
@@ -1459,39 +1444,40 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     }
 
     private static IBuilder createBuilder(IConfiguration cfg, Map<String, String> args, boolean customization) {
-        IToolChain tCh = cfg.getToolChain();
-        IBuilder cfgBuilder = cfg.getEditableBuilder();
-
-        Builder builder;
-        if (customization) {
-            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
-
-            //adjusting settings
-            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
-            if (tmp != null && tmp.length() == 0)
-                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
-
-            tmp = args.get(USE_DEFAULT_BUILD_CMD);
-            if (tmp != null) {
-                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
-                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
-                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
-                } else {
-                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
-                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
-                }
-            }
-            //end adjusting settings
-
-            builder.loadFromMap(args, null);
-        } else {
-            if (args.get(IBuilder.ID) == null) {
-                args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
-            }
-            builder = new Builder(tCh, args, ManagedBuildManager.getVersion().toString());
-        }
-
-        return builder;
+        return null;
+        //        IToolChain tCh = cfg.getToolChain();
+        //        IBuilder cfgBuilder = cfg.getEditableBuilder();
+        //
+        //        Builder builder;
+        //        if (customization) {
+        //            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
+        //
+        //            //adjusting settings
+        //            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
+        //            if (tmp != null && tmp.length() == 0)
+        //                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
+        //
+        //            tmp = args.get(USE_DEFAULT_BUILD_CMD);
+        //            if (tmp != null) {
+        //                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
+        //                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
+        //                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
+        //                } else {
+        //                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
+        //                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
+        //                }
+        //            }
+        //            //end adjusting settings
+        //
+        //            builder.loadFromMap(args, null);
+        //        } else {
+        //            if (args.get(IBuilder.ID) == null) {
+        //                args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
+        //            }
+        //            builder = new Builder(tCh, args, ManagedBuildManager.getVersion().toString());
+        //        }
+        //
+        //        return builder;
     }
 
     private static IBuilder createCustomBuilder(IConfiguration cfg, IBuilder base) {

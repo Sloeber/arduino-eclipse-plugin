@@ -14,22 +14,17 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+
 import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionCategory;
 import io.sloeber.autoBuild.api.IResourceInfo;
 
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCategory;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-
 public class AndExpression extends CompositeExpression {
     public static final String NAME = "and"; //$NON-NLS-1$
 
-    public AndExpression(IManagedConfigElement element) {
+    public AndExpression(IConfigurationElement element) {
         super(element);
     }
 

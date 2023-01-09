@@ -16,26 +16,16 @@ package io.sloeber.autoBuild.Internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
-
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 
 public class OptionEnablementExpression extends AndExpression {
     public static final String NAME = "enablement"; //$NON-NLS-1$
@@ -76,7 +66,7 @@ public class OptionEnablementExpression extends AndExpression {
     private String fValue;
     private boolean fIsExtensionAdjustment;
 
-    public OptionEnablementExpression(IManagedConfigElement element) {
+    public OptionEnablementExpression(IConfigurationElement element) {
         super(element);
 
         fEnablementFlags = calculateFlags(element.getAttribute(TYPE));
@@ -229,129 +219,129 @@ public class OptionEnablementExpression extends AndExpression {
     		return adjusted;
     	}
     */
-    private static IOption getOptionToSet(IHoldsOptions holder, IOption option, String value,
-            boolean extensionAdjustment) {
-        IOption optionToSet = null;
-        if (value != null) {
-            try {
-                optionToSet = holder.getOptionToSet(option, extensionAdjustment);
-            } catch (BuildException e) {
-            }
-        } else {
-            if (!extensionAdjustment && option.getOptionHolder() == holder) {
-                optionToSet = option;
-            }
-        }
-        return optionToSet;
-    }
+    //    private static IOption getOptionToSet(IHoldsOptions holder, IOption option, String value,
+    //            boolean extensionAdjustment) {
+    //        IOption optionToSet = null;
+    //        if (value != null) {
+    //            try {
+    //                optionToSet = holder.getOptionToSet(option, extensionAdjustment);
+    //            } catch (BuildException e) {
+    //            }
+    //        } else {
+    //            if (!extensionAdjustment && option.getOptionHolder() == holder) {
+    //                optionToSet = option;
+    //            }
+    //        }
+    //        return optionToSet;
+    //    }
 
-    public static boolean adjustOption(IResourceInfo rcInfo, IHoldsOptions holder, IOption option, String attribute,
-            String value, boolean extensionAdjustment) {
+    //    public static boolean adjustOption(IResourceInfo rcInfo, IHoldsOptions holder, IOption option, String attribute,
+    //            String value, boolean extensionAdjustment) {
+    //
+    //        if (value == null)
+    //            return false;
+    //
+    //        IOption setOption = getOptionToSet(holder, option, value, extensionAdjustment);
+    //        if (setOption == null)
+    //            return false;
+    //
+    //        boolean adjusted = true;
+    //        try {
+    //            if (IOption.COMMAND.equals(attribute)) {
+    //                //				IOption setOption = holder.getOptionToSet(option, extensionAdjustment);
+    //                setOption.setCommand(value);
+    //            } else if (IOption.COMMAND_FALSE.equals(attribute)) {
+    //                //				IOption setOption = holder.getOptionToSet(option, extensionAdjustment);
+    //                setOption.setCommandFalse(value);
+    //            } else if (IOption.VALUE.equals(attribute)) {
+    //                //				IOption setOption = holder.getOptionToSet(option, extensionAdjustment);
+    //                switch (setOption.getValueType()) {
+    //                case IOption.BOOLEAN:
+    //                    Boolean bValue = value != null ? Boolean.valueOf(value) : null;
+    //                    if (extensionAdjustment)
+    //                        setOption.setValue(bValue);
+    //                    else {
+    //                        if (bValue == null) {
+    //                            IOption superOption = setOption.getSuperClass();
+    //                            if (superOption != null) {
+    //                                bValue = Boolean.valueOf(superOption.getBooleanValue());
+    //                            }
+    //                        }
+    //
+    //                        if (bValue != null)
+    //                            ManagedBuildManager.setOption(rcInfo, holder, setOption, bValue.booleanValue());
+    //                        else
+    //                            setOption.setValue((Object) null);
+    //                    }
+    //                    break;
+    //                case IOption.ENUMERATED:
+    //                case IOption.TREE:
+    //                case IOption.STRING:
+    //                    if (extensionAdjustment)
+    //                        setOption.setValue(value);
+    //                    else
+    //                        ManagedBuildManager.setOption(rcInfo, holder, setOption, value);
+    //                    break;
+    //                case IOption.STRING_LIST:
+    //                case IOption.INCLUDE_PATH:
+    //                case IOption.PREPROCESSOR_SYMBOLS:
+    //                case IOption.LIBRARIES:
+    //                case IOption.OBJECTS:
+    //                case IOption.INCLUDE_FILES:
+    //                case IOption.LIBRARY_PATHS:
+    //                case IOption.LIBRARY_FILES:
+    //                case IOption.MACRO_FILES:
+    //                case IOption.UNDEF_INCLUDE_PATH:
+    //                case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
+    //                case IOption.UNDEF_INCLUDE_FILES:
+    //                case IOption.UNDEF_LIBRARY_PATHS:
+    //                case IOption.UNDEF_LIBRARY_FILES:
+    //                case IOption.UNDEF_MACRO_FILES:
+    //                    //TODO: add String list value support
+    //                    adjusted = false;
+    //                    break;
+    //                }
+    //            } else if (IOption.DEFAULT_VALUE.equals(attribute)) {
+    //                switch (setOption.getValueType()) {
+    //                case IOption.BOOLEAN:
+    //                    Boolean bValue = value != null ? Boolean.valueOf(value) : null;
+    //                    setOption.setDefaultValue(bValue);
+    //                    break;
+    //                case IOption.ENUMERATED:
+    //                case IOption.STRING:
+    //                    setOption.setDefaultValue(value);
+    //                    break;
+    //                case IOption.STRING_LIST:
+    //                case IOption.INCLUDE_PATH:
+    //                case IOption.PREPROCESSOR_SYMBOLS:
+    //                case IOption.LIBRARIES:
+    //                case IOption.OBJECTS:
+    //                    //TODO: add String list value support
+    //                    adjusted = false;
+    //                    break;
+    //                }
+    //            } else
+    //                adjusted = false;
+    //        } catch (BuildException e) {
+    //            adjusted = false;
+    //        }
+    //        return adjusted;
+    //    }
 
-        if (value == null )
-            return false;
-
-        IOption setOption = getOptionToSet(holder, option, value, extensionAdjustment);
-        if (setOption == null)
-            return false;
-
-        boolean adjusted = true;
-        try {
-            if (IOption.COMMAND.equals(attribute)) {
-                //				IOption setOption = holder.getOptionToSet(option, extensionAdjustment);
-                setOption.setCommand(value);
-            } else if (IOption.COMMAND_FALSE.equals(attribute)) {
-                //				IOption setOption = holder.getOptionToSet(option, extensionAdjustment);
-                setOption.setCommandFalse(value);
-            } else if (IOption.VALUE.equals(attribute)) {
-                //				IOption setOption = holder.getOptionToSet(option, extensionAdjustment);
-                switch (setOption.getValueType()) {
-                case IOption.BOOLEAN:
-                    Boolean bValue = value != null ? Boolean.valueOf(value) : null;
-                    if (extensionAdjustment)
-                        setOption.setValue(bValue);
-                    else {
-                        if (bValue == null) {
-                            IOption superOption = setOption.getSuperClass();
-                            if (superOption != null) {
-                                bValue = Boolean.valueOf(superOption.getBooleanValue());
-                            }
-                        }
-
-                        if (bValue != null)
-                            ManagedBuildManager.setOption(rcInfo, holder, setOption, bValue.booleanValue());
-                        else
-                            setOption.setValue((Object) null);
-                    }
-                    break;
-                case IOption.ENUMERATED:
-                case IOption.TREE:
-                case IOption.STRING:
-                    if (extensionAdjustment)
-                        setOption.setValue(value);
-                    else
-                        ManagedBuildManager.setOption(rcInfo, holder, setOption, value);
-                    break;
-                case IOption.STRING_LIST:
-                case IOption.INCLUDE_PATH:
-                case IOption.PREPROCESSOR_SYMBOLS:
-                case IOption.LIBRARIES:
-                case IOption.OBJECTS:
-                case IOption.INCLUDE_FILES:
-                case IOption.LIBRARY_PATHS:
-                case IOption.LIBRARY_FILES:
-                case IOption.MACRO_FILES:
-                case IOption.UNDEF_INCLUDE_PATH:
-                case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
-                case IOption.UNDEF_INCLUDE_FILES:
-                case IOption.UNDEF_LIBRARY_PATHS:
-                case IOption.UNDEF_LIBRARY_FILES:
-                case IOption.UNDEF_MACRO_FILES:
-                    //TODO: add String list value support
-                    adjusted = false;
-                    break;
-                }
-            } else if (IOption.DEFAULT_VALUE.equals(attribute)) {
-                switch (setOption.getValueType()) {
-                case IOption.BOOLEAN:
-                    Boolean bValue = value != null ? Boolean.valueOf(value) : null;
-                    setOption.setDefaultValue(bValue);
-                    break;
-                case IOption.ENUMERATED:
-                case IOption.STRING:
-                    setOption.setDefaultValue(value);
-                    break;
-                case IOption.STRING_LIST:
-                case IOption.INCLUDE_PATH:
-                case IOption.PREPROCESSOR_SYMBOLS:
-                case IOption.LIBRARIES:
-                case IOption.OBJECTS:
-                    //TODO: add String list value support
-                    adjusted = false;
-                    break;
-                }
-            } else
-                adjusted = false;
-        } catch (BuildException e) {
-            adjusted = false;
-        }
-        return adjusted;
-    }
-
-    public boolean adjustOption(IResourceInfo rcInfo, IHoldsOptions holder, IOption option, AdjustmentContext context,
-            boolean extensionAdjustment) {
-        if (!canPerformAdjustment(extensionAdjustment))
-            return false;
-
-        boolean needed = adjustmentNeeded(rcInfo, holder, option);
-
-        if (context != null)
-            context.addAdjustedState(fAttribute, needed);
-
-        if (needed)
-            return adjustOption(rcInfo, holder, option, fAttribute, fValue, extensionAdjustment);
-        return false;
-    }
+    //    public boolean adjustOption(IResourceInfo rcInfo, IHoldsOptions holder, IOption option, AdjustmentContext context,
+    //            boolean extensionAdjustment) {
+    //        if (!canPerformAdjustment(extensionAdjustment))
+    //            return false;
+    //
+    //        boolean needed = adjustmentNeeded(rcInfo, holder, option);
+    //
+    //        if (context != null)
+    //            context.addAdjustedState(fAttribute, needed);
+    //
+    //        if (needed)
+    //            return adjustOption(rcInfo, holder, option, fAttribute, fValue, extensionAdjustment);
+    //        return false;
+    //    }
 
     private boolean adjustmentNeeded(IResourceInfo rcInfo, IHoldsOptions holder, IOption option) {
         return evaluate(rcInfo, holder, option, FLAG_CONTAINER_ATTRIBUTE);

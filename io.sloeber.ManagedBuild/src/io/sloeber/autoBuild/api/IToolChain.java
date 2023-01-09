@@ -50,7 +50,7 @@ public interface IToolChain extends IHoldsOptions {
     public static final String CONFIGURATION_ENVIRONMENT_SUPPLIER = "configurationEnvironmentSupplier"; //$NON-NLS-1$
     public static final String CONFIGURATION_MACRO_SUPPLIER = "configurationMacroSupplier"; //$NON-NLS-1$
     public static final String SUPPORTS_MANAGED_BUILD = "supportsManagedBuild"; //$NON-NLS-1$
-    public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
+    //public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
     public static final String NON_INTERNAL_BUILDER_ID = "nonInternalBuilderId"; //$NON-NLS-1$
     public static final String RESOURCE_TYPE_BASED_DISCOVERY = "resourceTypeBasedDiscovery"; //$NON-NLS-1$
 
@@ -66,7 +66,6 @@ public interface IToolChain extends IHoldsOptions {
      * @return IConfiguration
      */
     public IConfiguration getParent();
-
 
     /**
      * Returns the target-platform child of this tool-chain
@@ -208,20 +207,6 @@ public interface IToolChain extends IHoldsOptions {
     public boolean isAbstract();
 
     /**
-     * Sets the isAbstract attribute of the tool-chain.
-     */
-    public void setIsAbstract(boolean b);
-
-    /**
-     * Returns a semi-colon delimited list of child Ids of the superclass'
-     * children that should not be automatically inherited by this element.
-     * Returns an empty string if the attribute was not specified.
-     * 
-     * @return String
-     */
-    public String getUnusedChildren();
-
-    /**
      * Returns an array of operating systems the tool-chain outputs can run on.
      *
      * @return String[]
@@ -349,7 +334,6 @@ public interface IToolChain extends IHoldsOptions {
      * that are also considered to be build artifacts.
      */
     public void setSecondaryOutputs(String ids);
-
 
     /**
      * Returns <code>true</code> if this tool-chain was loaded from a manifest file,

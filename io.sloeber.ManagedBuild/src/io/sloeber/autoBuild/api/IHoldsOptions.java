@@ -166,15 +166,4 @@ public interface IHoldsOptions extends IBuildObject {
      */
     IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException;
 
-    /**
-     * specifies whether the option holder is modified and needs rebuild
-     *
-     * @return boolean
-     */
-    public boolean needsRebuild();
-
-    /**
-     * sets the holder rebuild state
-     */
-    public void setRebuildState(boolean rebuild);
 }

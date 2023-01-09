@@ -24,6 +24,4 @@ public interface IFileInfo extends IResourceConfiguration {
 
     CFileData getFileData();
 
-    void updateManagedBuildRevision(String revision);
-
 }

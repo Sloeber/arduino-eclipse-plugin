@@ -22,11 +22,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.cdt.internal.core.SafeStringInterner;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IContributor;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.InvalidRegistryObjectException;
 
-import io.sloeber.autoBuild.api.IBuildPropertiesRestriction;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
-
-public class SupportedProperties implements IBuildPropertiesRestriction {
+public class SupportedProperties implements IConfigurationElement {
     public static final String SUPPORTED_PROPERTIES = "supportedProperties"; //$NON-NLS-1$
     public static final String PROPERTY = "property"; //$NON-NLS-1$
     public static final String PROPERTY_VALUE = "value"; //$NON-NLS-1$
@@ -102,12 +104,12 @@ public class SupportedProperties implements IBuildPropertiesRestriction {
 
     }
 
-    public SupportedProperties(IManagedConfigElement el) {
+    public SupportedProperties(IConfigurationElement el) {
         //		IBuildPropertyManager mngr = BuildPropertyManager.getInstance();
 
-        IManagedConfigElement children[] = el.getChildren();
+        IConfigurationElement children[] = el.getChildren();
         for (int i = 0; i < children.length; i++) {
-            IManagedConfigElement child = children[i];
+            IConfigurationElement child = children[i];
             if (PROPERTY.equals(child.getName())) {
                 String id = SafeStringInterner.safeIntern(child.getAttribute(ID));
                 if (id == null)
@@ -121,9 +123,9 @@ public class SupportedProperties implements IBuildPropertiesRestriction {
 
                 Set<String> set = new HashSet<>();
 
-                IManagedConfigElement values[] = child.getChildren();
+                IConfigurationElement values[] = child.getChildren();
                 for (int k = 0; k < values.length; k++) {
-                    IManagedConfigElement value = values[k];
+                    IConfigurationElement value = values[k];
                     if (PROPERTY_VALUE.equals(value.getName())) {
                         String valueId = SafeStringInterner.safeIntern(value.getAttribute(ID));
                         if (valueId == null || valueId.length() == 0)
@@ -155,12 +157,10 @@ public class SupportedProperties implements IBuildPropertiesRestriction {
     //		return supportsType(type.getId());
     //	}
 
-    @Override
     public boolean supportsType(String type) {
         return fSupportedProperties.containsKey(type);
     }
 
-    @Override
     public boolean supportsValue(String type, String value) {
         boolean suports = false;
         SupportedProperty prop = fSupportedProperties.get(type);
@@ -175,7 +175,6 @@ public class SupportedProperties implements IBuildPropertiesRestriction {
     //		return supportsValue(type.getId(), value.getId());
     //	}
 
-    @Override
     public String[] getRequiredTypeIds() {
         List<String> list = new ArrayList<>(fSupportedProperties.size());
         Collection<SupportedProperty> values = fSupportedProperties.values();
@@ -186,14 +185,12 @@ public class SupportedProperties implements IBuildPropertiesRestriction {
         return list.toArray(new String[list.size()]);
     }
 
-    @Override
     public String[] getSupportedTypeIds() {
         String result[] = new String[fSupportedProperties.size()];
         fSupportedProperties.keySet().toArray(result);
         return result;
     }
 
-    @Override
     public String[] getSupportedValueIds(String typeId) {
         SupportedProperty prop = fSupportedProperties.get(typeId);
         if (prop != null)
@@ -201,12 +198,119 @@ public class SupportedProperties implements IBuildPropertiesRestriction {
         return new String[0];
     }
 
-    @Override
     public boolean requiresType(String typeId) {
         SupportedProperty prop = fSupportedProperties.get(typeId);
         if (prop != null)
             return prop.isRequired();
         return false;
+    }
+
+    @Override
+    public Object createExecutableExtension(String propertyName) throws CoreException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getAttribute(String name) throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getAttribute(String attrName, String locale) throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getAttributeAsIs(String name) throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String[] getAttributeNames() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IConfigurationElement[] getChildren() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IConfigurationElement[] getChildren(String name) throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IExtension getDeclaringExtension() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getName() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Object getParent() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getValue() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getValue(String locale) throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getValueAsIs() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getNamespace() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getNamespaceIdentifier() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IContributor getContributor() throws InvalidRegistryObjectException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isValid() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public int getHandleId() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

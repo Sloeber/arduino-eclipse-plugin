@@ -22,20 +22,7 @@ import org.eclipse.cdt.core.settings.model.ICSettingBase;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IFileInfo;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IResourceConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.core.OptionStringValue;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -47,7 +34,6 @@ import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IResourceConfiguration;
 import io.sloeber.autoBuild.api.IResourceInfo;
@@ -63,18 +49,18 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
     private ResourceInfoContainer rcInfo;
     private CResourceData resourceData;
 
-    ResourceInfo(IConfiguration cfg, IManagedConfigElement element, boolean hasBody) {
+    ResourceInfo(IConfiguration cfg, IConfigurationElement element, boolean hasBody) {
         config = (Configuration) cfg;
         if (hasBody)
             loadFromManifest(element);
     }
 
-    ResourceInfo(IConfiguration cfg, ResourceInfo base, String id) {
+    ResourceInfo(IConfiguration cfg, ResourceInfo base, String id_in) {
         config = (Configuration) cfg;
         path = normalizePath(base.path);
 
-        setId(id);
-        setName(base.getName());
+        id = id_in;
+        name = base.getName();
 
         if (id.equals(base.getId())) {
             isDirty = base.isDirty;
@@ -89,20 +75,20 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         return path.segmentCount() == 0;
     }
 
-    ResourceInfo(IConfiguration cfg, IPath path, String id, String name) {
+    ResourceInfo(IConfiguration cfg, IPath path, String newID, String newName) {
         config = (Configuration) cfg;
         path = normalizePath(path);
         this.path = path;
 
-        setId(id);
-        setName(name);
+        id = newID;
+        name = newName;
     }
 
-    ResourceInfo(IFileInfo base, IPath path, String id, String name) {
+    ResourceInfo(IFileInfo base, IPath path, String newID, String newName) {
         config = (Configuration) base.getParent();
 
-        setId(id);
-        setName(name);
+        id = newID;
+        name = newName;
         path = normalizePath(path);
 
         this.path = path;
@@ -110,11 +96,11 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         isDirty = true;
     }
 
-    ResourceInfo(FolderInfo base, IPath path, String id, String name) {
+    ResourceInfo(FolderInfo base, IPath path, String newID, String newName) {
         config = (Configuration) base.getParent();
 
-        setId(id);
-        setName(name);
+        id = newID;
+        name = newName;
         path = normalizePath(path);
 
         this.path = path;
@@ -128,13 +114,13 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
             loadFromProject(element);
     }
 
-    private void loadFromManifest(IManagedConfigElement element) {
+    private void loadFromManifest(IConfigurationElement element) {
 
         // id
-        setId(SafeStringInterner.safeIntern(element.getAttribute(ID)));
+        id = (SafeStringInterner.safeIntern(element.getAttribute(ID)));
 
         // Get the name
-        setName(SafeStringInterner.safeIntern(element.getAttribute(NAME)));
+        name = (SafeStringInterner.safeIntern(element.getAttribute(NAME)));
 
         // resourcePath
         String tmp = element.getAttribute(RESOURCE_PATH);
@@ -160,11 +146,11 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
     private void loadFromProject(ICStorageElement element) {
 
         // id (unique, do not intern)
-        setId(element.getAttribute(ID));
+        id = (element.getAttribute(ID));
 
         // name
         if (element.getAttribute(NAME) != null) {
-            setName(SafeStringInterner.safeIntern(element.getAttribute(NAME)));
+            name = (SafeStringInterner.safeIntern(element.getAttribute(NAME)));
         }
 
         // resourcePath
@@ -208,20 +194,11 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
     }
 
     @Override
-    public boolean needsRebuild() {
-        return needsRebuild;
-    }
-
-
-
-    @Override
     public void setExclude(boolean excluded) {
         if (isExcluded() == excluded)
             return;
 
         config.setExcluded(getPath(), isFolderInfo(), excluded);
-
-        setRebuildState(true);
     }
 
     @Override
@@ -240,7 +217,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
             ResourceInfoContainer info = getRcInfo();
             info.changeCurrentPath(p, true);
             this.path = p;
-            setRebuildState(true);
         }
 
     }
@@ -249,26 +225,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         if (rcInfo == null)
             rcInfo = (config).getRcInfoContainer(this);
         return rcInfo;
-    }
-
-    @Override
-    public void setRebuildState(boolean rebuild) {
-        needsRebuild = rebuild;
-    }
-
-    void serialize(ICStorageElement element) {
-        element.setAttribute(IBuildObject.ID, id);
-
-        if (name != null) {
-            element.setAttribute(IBuildObject.NAME, name);
-        }
-
-        if (path != null) {
-            element.setAttribute(IResourceInfo.RESOURCE_PATH, path.toString());
-        }
-    }
-
-    void resolveReferences() {
     }
 
     @Override
@@ -295,10 +251,10 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         ITool tool = (ITool) parent;
         String sup = option.getId();
         IOption op = option;
-        while (op.getSuperClass() != null) {
-            op = op.getSuperClass();
-            sup = op.getId();
-        }
+        //        while (op.getSuperClass() != null) {
+        //            op = op.getSuperClass();
+        //            sup = op.getId();
+        //        }
         for (IResourceInfo ri : getChildResourceInfos()) {
             for (ITool t : ri.getTools()) {
                 if (t.getDefaultInputExtension() != tool.getDefaultInputExtension())
@@ -405,14 +361,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         return retOpt;
     }
 
-    public void propertiesChanged() {
-        ITool tools[] = getTools();
-        for (ITool tool : tools) {
-            ((Tool) tool).propertiesChanged();
-        }
-    }
-
-
     public abstract Set<String> contributeErrorParsers(Set<String> set);
 
     protected Set<String> contributeErrorParsers(ITool[] tools, Set<String> set) {
@@ -491,12 +439,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         return pairs;
     }
 
-
-
-    void performPostModificationAdjustments(ToolListModificationInfo info) {
-        propertiesChanged();
-    }
-
     public IResourceInfo[] getDirectChildResourceInfos() {
         ResourceInfoContainer cr = getRcInfo();
         return cr.getDirectChildResourceInfos();
@@ -509,11 +451,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
 
     public List<IResourceInfo> getChildResourceInfoList(boolean includeCurrent) {
         return getRcInfo().getRcInfoList(ICSettingBase.SETTING_FILE | ICSettingBase.SETTING_FOLDER, includeCurrent);
-    }
-
-    public void updateManagedBuildRevision(String revision) {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -51,6 +51,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -68,7 +69,6 @@ import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IManagedCommandLineInfo;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IProjectType;
@@ -111,7 +111,6 @@ public class Configuration extends BuildObject implements IConfiguration {
     private String postannouncebuildStep;
     private String description;
     private ICSourceEntry[] sourceEntries;
-    private boolean isTest;
     private SupportedProperties supportedProperties;
 
     //  Miscellaneous
@@ -136,8 +135,8 @@ public class Configuration extends BuildObject implements IConfiguration {
     private static final String RC_CHANGE_STATE = "rcState"; //$NON-NLS-1$
     //resource change state
     private int resourceChangeState = -1;
-	private String parentId;
-
+    private String parentId;
+    private boolean isTest;
 
     /**
      * Create an extension configuration from the project manifest file element.
@@ -148,23 +147,57 @@ public class Configuration extends BuildObject implements IConfiguration {
      *            The element from the manifest that contains the configuration
      *            information.
      */
-    public Configuration(ProjectType projectType, IConfigurationElement element, String managedBuildRevision) {
+    public Configuration(ProjectType projectType, IExtensionPoint root, IConfigurationElement element) {
         this.projectType = projectType;
         isExtensionConfig = true;
 
-        setManagedBuildRevision(managedBuildRevision);
+        loadNameAndID(root, element);
 
-        // Initialize from the XML attributes
-        loadFromManifest(element);
+        // description
+        description = element.getAttribute(IConfiguration.DESCRIPTION);
+
+        // parent
+        parentId = element.getAttribute(IConfiguration.PARENT);
+
+        //      if (parentID != null) {
+        //          // Lookup the parent configuration by ID
+        //          parent = ManagedBuildManager.getExtensionConfiguration(parentID);
+        //      }
+
+        // Get the name of the build artifact associated with configuration
+        artifactName = element.getAttribute(ARTIFACT_NAME);
+
+        // Get the semicolon separated list of IDs of the error parsers
+        errorParserIds = element.getAttribute(ERROR_PARSERS);
+
+        // Get the initial/default language settings providers IDs
+        defaultLanguageSettingsProvidersAttribute = element.getAttribute(LANGUAGE_SETTINGS_PROVIDERS);
+
+        // Get the artifact extension
+        artifactExtension = element.getAttribute(EXTENSION);
+
+        // Get the clean command
+        cleanCommand = element.getAttribute(CLEAN_COMMAND);
+
+        // Get the pre-build and post-build commands
+        prebuildStep = element.getAttribute(PREBUILD_STEP);
+        postbuildStep = element.getAttribute(POSTBUILD_STEP);
+
+        // Get the pre-build and post-build announcements
+        preannouncebuildStep = element.getAttribute(PREANNOUNCEBUILD_STEP);
+        postannouncebuildStep = element.getAttribute(POSTANNOUNCEBUILD_STEP);
+
+        String tmp = element.getAttribute(IS_SYSTEM);
+        if (tmp != null)
+            isTest = Boolean.valueOf(tmp).booleanValue();
 
         // Hook me up to the Managed Build Manager
-    //    ManagedBuildManager.addExtensionConfiguration(this);
+        //    ManagedBuildManager.addExtensionConfiguration(this);
 
         // Hook me up to the ProjectType
         if (projectType != null) {
             projectType.addConfiguration(this);
         }
-
 
         // Load the children
         IConfigurationElement[] configElements = element.getChildren();
@@ -173,14 +206,14 @@ public class Configuration extends BuildObject implements IConfiguration {
         for (int l = 0; l < configElements.length; ++l) {
             IConfigurationElement configElement = configElements[l];
             if (configElement.getName().equals(IToolChain.TOOL_CHAIN_ELEMENT_NAME)) {
-                rootFolderInfo = new FolderInfo(this, configElement, managedBuildRevision, false);
+                rootFolderInfo = new FolderInfo(this, root, configElement, false);
                 addResourceConfiguration(rootFolderInfo);
             } else if (IFolderInfo.FOLDER_INFO_ELEMENT_NAME.equals(configElement.getName())) {
-                FolderInfo resConfig = new FolderInfo(this, configElement, managedBuildRevision, true);
+                FolderInfo resConfig = new FolderInfo(this, root, configElement, true);
                 addResourceConfiguration(resConfig);
             } else if (IFileInfo.FILE_INFO_ELEMENT_NAME.equals(configElement.getName())
                     || IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(configElement.getName())) {
-                ResourceConfiguration resConfig = new ResourceConfiguration(this, configElement, managedBuildRevision);
+                ResourceConfiguration resConfig = new ResourceConfiguration(this, root, configElement);
                 addResourceConfiguration(resConfig);
             } else if (SourcePath.ELEMENT_NAME.equals(configElement.getName())) {
                 SourcePath p = new SourcePath(configElement);
@@ -251,11 +284,10 @@ public class Configuration extends BuildObject implements IConfiguration {
      * @param id
      *            A unique ID for the new configuration.
      */
-    public Configuration(ProjectType projectType, IConfiguration parentConfig, String id) {
-        setId(id);
+    public Configuration(ProjectType projectType, IConfiguration parentConfig, String newID) {
+        id = newID;
         this.projectType = projectType;
         isExtensionConfig = true;
-
 
         if (parentConfig != null) {
             name = parentConfig.getName();
@@ -265,7 +297,6 @@ public class Configuration extends BuildObject implements IConfiguration {
             // worry about
             parent = parentConfig.getParent() == null ? parentConfig : parentConfig.getParent();
         }
-
 
         // Hook me up to the ProjectType
         if (projectType != null) {
@@ -289,9 +320,9 @@ public class Configuration extends BuildObject implements IConfiguration {
      * @param name
      *            A name for the new configuration.
      */
-    public Configuration(ProjectType projectType, IConfiguration parentConfig, String id, String name) {
-        setId(id);
-        setName(name);
+    public Configuration(ProjectType projectType, IConfiguration parentConfig, String newID, String newName) {
+        newID = (id);
+        newName = name;
         this.projectType = projectType;
         parent = parentConfig;
         isExtensionConfig = true;
@@ -380,9 +411,9 @@ public class Configuration extends BuildObject implements IConfiguration {
 
     }
 
-    public Configuration(ManagedProject managedProject, IToolChain tCh, String id, String name) {
-        setId(id);
-        setName(name);
+    public Configuration(ManagedProject managedProject, IToolChain tCh, String newID, String newName) {
+        id = newID;
+        name = newName;
 
         //		this.description = cloneConfig.getDescription();
         this.managedProject = managedProject;
@@ -394,7 +425,7 @@ public class Configuration extends BuildObject implements IConfiguration {
             if (cfg != null)
                 copySettingsFrom((Configuration) cfg, true);
         } else {
-            Configuration baseCfg = (Configuration) ManagedBuildManager.getExtensionConfiguration(EMPTY_CFG_ID);
+            Configuration baseCfg = null;//TOFIX JABA (Configuration) ManagedBuildManager.getExtensionConfiguration(EMPTY_CFG_ID);
             //		this.isTemporary = temporary;
             fCfgData = new BuildConfigurationData(this);
 
@@ -527,10 +558,10 @@ public class Configuration extends BuildObject implements IConfiguration {
      * @param cloneChildren
      *            If <code>true</code>, the configuration's tools are cloned
      */
-    public Configuration(ManagedProject managedProject, Configuration cloneConfig, String id, boolean cloneChildren,
+    public Configuration(ManagedProject managedProject, Configuration cloneConfig, String newID, boolean cloneChildren,
             boolean temporary, boolean isPreferenceConfig) {
-        setId(id);
-        setName(cloneConfig.getName());
+        id = newID;
+        name = (cloneConfig.getName());
         this.isPreferenceConfig = isPreferenceConfig;
         this.managedProject = managedProject;
         isExtensionConfig = false;
@@ -540,107 +571,106 @@ public class Configuration extends BuildObject implements IConfiguration {
     }
 
     private void copySettingsFrom(Configuration cloneConfig, boolean cloneChildren) {
-        fCfgData = new BuildConfigurationData(this);
-
-
-        this.description = cloneConfig.getDescription();
-
-        // set managedBuildRevision
-        setManagedBuildRevision(cloneConfig.getManagedBuildRevision());
-
-        if (!cloneConfig.isExtensionConfig)
-            cloneChildren = true;
-        // If this constructor is called to clone an existing
-        // configuration, the parent of the cloning config should be stored.
-        parent = cloneConfig.isExtensionConfig || cloneConfig.getParent() == null ? cloneConfig
-                : cloneConfig.getParent();
-        parentId = parent.getId();
-
-        //  Copy the remaining attributes
-        projectType = cloneConfig.projectType;
-        artifactName = cloneConfig.artifactName;
-        cleanCommand = cloneConfig.cleanCommand;
-        artifactExtension = cloneConfig.artifactExtension;
-        errorParserIds = cloneConfig.errorParserIds;
-        prebuildStep = cloneConfig.prebuildStep;
-        postbuildStep = cloneConfig.postbuildStep;
-        preannouncebuildStep = cloneConfig.preannouncebuildStep;
-        postannouncebuildStep = cloneConfig.postannouncebuildStep;
-        if (cloneConfig.sourceEntries != null) {
-            sourceEntries = cloneConfig.sourceEntries.clone();
-        }
-        defaultLanguageSettingsProvidersAttribute = cloneConfig.defaultLanguageSettingsProvidersAttribute;
-        if (cloneConfig.defaultLanguageSettingsProviderIds != null) {
-            defaultLanguageSettingsProviderIds = cloneConfig.defaultLanguageSettingsProviderIds.clone();
-        }
-
-        //		enableInternalBuilder(cloneConfig.isInternalBuilderEnabled());
-        //		setInternalBuilderIgnoreErr(cloneConfig.getInternalBuilderIgnoreErr());
-        //		setInternalBuilderParallel(cloneConfig.getInternalBuilderParallel());
-        //		setParallelDef(cloneConfig.getParallelDef());
-        //		setParallelNumber(cloneConfig.getParallelNumber());
-        //		internalBuilderEnabled = cloneConfig.internalBuilderEnabled;
-        //		internalBuilderIgnoreErr = cloneConfig.internalBuilderIgnoreErr;
-
-        // Clone the configuration's children
-        // Tool Chain
-        boolean copyIds = cloneConfig.getId().equals(id);
-        String subId;
-        //  Resource Configurations
-        Map<IPath, Map<String, String>> toolIdMap = new HashMap<>();
-        IResourceInfo infos[] = cloneConfig.rcInfos.getResourceInfos();
-        for (int i = 0; i < infos.length; i++) {
-            if (infos[i] instanceof FolderInfo) {
-                FolderInfo folderInfo = (FolderInfo) infos[i];
-                subId = copyIds ? folderInfo.getId()
-                        : ManagedBuildManager.calculateChildId(getId(), folderInfo.getPath().toString());
-                FolderInfo newFolderInfo = new FolderInfo(this, folderInfo, subId, toolIdMap, cloneChildren);
-                addResourceConfiguration(newFolderInfo);
-            } else {
-                ResourceConfiguration fileInfo = (ResourceConfiguration) infos[i];
-                subId = copyIds ? fileInfo.getId()
-                        : ManagedBuildManager.calculateChildId(getId(), fileInfo.getPath().toString());
-                ResourceConfiguration newResConfig = new ResourceConfiguration(this, fileInfo, subId, toolIdMap,
-                        cloneChildren);
-                addResourceConfiguration(newResConfig);
-
-            }
-        }
-
-        resolveProjectReferences(false);
-
-        if (cloneChildren) {
-            //copy expand build macros setting
-            BuildMacroProvider macroProvider = (BuildMacroProvider) ManagedBuildManager.getBuildMacroProvider();
-            macroProvider.expandMacrosInBuildfile(this, macroProvider.areMacrosExpandedInBuildfile(cloneConfig));
-
-            //copy user-defined build macros
-            /*			UserDefinedMacroSupplier userMacros = BuildMacroProvider.fUserDefinedMacroSupplier;
-            			userMacros.setMacros(
-            					userMacros.getMacros(BuildMacroProvider.CONTEXT_CONFIGURATION,cloneConfig),
-            					BuildMacroProvider.CONTEXT_CONFIGURATION,
-            					this);
-            */
-            //copy user-defined environment
-            //			UserDefinedEnvironmentSupplier userEnv = EnvironmentVariableProvider.fUserSupplier;
-            //			userEnv.setVariables(
-            //					userEnv.getVariables(cloneConfig), this);
-
-        }
-
-        // Hook me up
-        if (managedProject != null) {
-            managedProject.addConfiguration(this);
-        }
-
-        if (copyIds) {
-            rebuildNeeded = cloneConfig.rebuildNeeded;
-            resourceChangeState = cloneConfig.resourceChangeState;
-        } else {
-            if (cloneConfig.isExtensionConfig)
-                exportArtifactInfo();
-            setRebuildState(true);
-        }
+        //        fCfgData = new BuildConfigurationData(this);
+        //
+        //        this.description = cloneConfig.getDescription();
+        //
+        //        // set managedBuildRevision
+        //        setManagedBuildRevision(cloneConfig.getManagedBuildRevision());
+        //
+        //        if (!cloneConfig.isExtensionConfig)
+        //            cloneChildren = true;
+        //        // If this constructor is called to clone an existing
+        //        // configuration, the parent of the cloning config should be stored.
+        //        parent = cloneConfig.isExtensionConfig || cloneConfig.getParent() == null ? cloneConfig
+        //                : cloneConfig.getParent();
+        //        parentId = parent.getId();
+        //
+        //        //  Copy the remaining attributes
+        //        projectType = cloneConfig.projectType;
+        //        artifactName = cloneConfig.artifactName;
+        //        cleanCommand = cloneConfig.cleanCommand;
+        //        artifactExtension = cloneConfig.artifactExtension;
+        //        errorParserIds = cloneConfig.errorParserIds;
+        //        prebuildStep = cloneConfig.prebuildStep;
+        //        postbuildStep = cloneConfig.postbuildStep;
+        //        preannouncebuildStep = cloneConfig.preannouncebuildStep;
+        //        postannouncebuildStep = cloneConfig.postannouncebuildStep;
+        //        if (cloneConfig.sourceEntries != null) {
+        //            sourceEntries = cloneConfig.sourceEntries.clone();
+        //        }
+        //        defaultLanguageSettingsProvidersAttribute = cloneConfig.defaultLanguageSettingsProvidersAttribute;
+        //        if (cloneConfig.defaultLanguageSettingsProviderIds != null) {
+        //            defaultLanguageSettingsProviderIds = cloneConfig.defaultLanguageSettingsProviderIds.clone();
+        //        }
+        //
+        //        //		enableInternalBuilder(cloneConfig.isInternalBuilderEnabled());
+        //        //		setInternalBuilderIgnoreErr(cloneConfig.getInternalBuilderIgnoreErr());
+        //        //		setInternalBuilderParallel(cloneConfig.getInternalBuilderParallel());
+        //        //		setParallelDef(cloneConfig.getParallelDef());
+        //        //		setParallelNumber(cloneConfig.getParallelNumber());
+        //        //		internalBuilderEnabled = cloneConfig.internalBuilderEnabled;
+        //        //		internalBuilderIgnoreErr = cloneConfig.internalBuilderIgnoreErr;
+        //
+        //        // Clone the configuration's children
+        //        // Tool Chain
+        //        boolean copyIds = cloneConfig.getId().equals(id);
+        //        String subId;
+        //        //  Resource Configurations
+        //        Map<IPath, Map<String, String>> toolIdMap = new HashMap<>();
+        //        IResourceInfo infos[] = cloneConfig.rcInfos.getResourceInfos();
+        //        for (int i = 0; i < infos.length; i++) {
+        //            if (infos[i] instanceof FolderInfo) {
+        //                FolderInfo folderInfo = (FolderInfo) infos[i];
+        //                subId = copyIds ? folderInfo.getId()
+        //                        : ManagedBuildManager.calculateChildId(getId(), folderInfo.getPath().toString());
+        //                FolderInfo newFolderInfo = new FolderInfo(this, folderInfo, subId, toolIdMap, cloneChildren);
+        //                addResourceConfiguration(newFolderInfo);
+        //            } else {
+        //                ResourceConfiguration fileInfo = (ResourceConfiguration) infos[i];
+        //                subId = copyIds ? fileInfo.getId()
+        //                        : ManagedBuildManager.calculateChildId(getId(), fileInfo.getPath().toString());
+        //                ResourceConfiguration newResConfig = new ResourceConfiguration(this, fileInfo, subId, toolIdMap,
+        //                        cloneChildren);
+        //                addResourceConfiguration(newResConfig);
+        //
+        //            }
+        //        }
+        //
+        //        resolveProjectReferences(false);
+        //
+        //        if (cloneChildren) {
+        //            //copy expand build macros setting
+        //            BuildMacroProvider macroProvider = (BuildMacroProvider) ManagedBuildManager.getBuildMacroProvider();
+        //            macroProvider.expandMacrosInBuildfile(this, macroProvider.areMacrosExpandedInBuildfile(cloneConfig));
+        //
+        //            //copy user-defined build macros
+        //            /*			UserDefinedMacroSupplier userMacros = BuildMacroProvider.fUserDefinedMacroSupplier;
+        //            			userMacros.setMacros(
+        //            					userMacros.getMacros(BuildMacroProvider.CONTEXT_CONFIGURATION,cloneConfig),
+        //            					BuildMacroProvider.CONTEXT_CONFIGURATION,
+        //            					this);
+        //            */
+        //            //copy user-defined environment
+        //            //			UserDefinedEnvironmentSupplier userEnv = EnvironmentVariableProvider.fUserSupplier;
+        //            //			userEnv.setVariables(
+        //            //					userEnv.getVariables(cloneConfig), this);
+        //
+        //        }
+        //
+        //        // Hook me up
+        //        if (managedProject != null) {
+        //            managedProject.addConfiguration(this);
+        //        }
+        //
+        //        if (copyIds) {
+        //            rebuildNeeded = cloneConfig.rebuildNeeded;
+        //            resourceChangeState = cloneConfig.resourceChangeState;
+        //        } else {
+        //            if (cloneConfig.isExtensionConfig)
+        //                exportArtifactInfo();
+        //            setRebuildState(true);
+        //        }
 
     }
 
@@ -656,61 +686,6 @@ public class Configuration extends BuildObject implements IConfiguration {
      */
 
     /**
-     * Initialize the configuration information from an element in the
-     * manifest file or provided by a dynamicElementProvider
-     *
-     * @param element
-     *            An obejct implementing IManagedConfigElement
-     */
-    protected void loadFromManifest(IConfigurationElement element) {
-
-        // id
-        setId(element.getAttribute(IBuildObject.ID));
-
-        // name
-        name = element.getAttribute(IBuildObject.NAME);
-
-        // description
-        description = element.getAttribute(IConfiguration.DESCRIPTION);
-
-        // parent
-        parentId = element.getAttribute(IConfiguration.PARENT);
-
-        //		if (parentID != null) {
-        //			// Lookup the parent configuration by ID
-        //			parent = ManagedBuildManager.getExtensionConfiguration(parentID);
-        //		}
-
-        // Get the name of the build artifact associated with configuration
-        artifactName = element.getAttribute(ARTIFACT_NAME);
-
-        // Get the semicolon separated list of IDs of the error parsers
-        errorParserIds = element.getAttribute(ERROR_PARSERS);
-
-        // Get the initial/default language settings providers IDs
-        defaultLanguageSettingsProvidersAttribute = 
-                element.getAttribute(LANGUAGE_SETTINGS_PROVIDERS);
-
-        // Get the artifact extension
-        artifactExtension = element.getAttribute(EXTENSION);
-
-        // Get the clean command
-        cleanCommand = element.getAttribute(CLEAN_COMMAND);
-
-        // Get the pre-build and post-build commands
-        prebuildStep = element.getAttribute(PREBUILD_STEP);
-        postbuildStep = element.getAttribute(POSTBUILD_STEP);
-
-        // Get the pre-build and post-build announcements
-        preannouncebuildStep = element.getAttribute(PREANNOUNCEBUILD_STEP);
-        postannouncebuildStep = element.getAttribute(POSTANNOUNCEBUILD_STEP);
-
-        String tmp = element.getAttribute(IS_SYSTEM);
-        if (tmp != null)
-            isTest = Boolean.valueOf(tmp).booleanValue();
-    }
-
-    /**
      * Initialize the configuration information from the XML element
      * specified in the argument
      *
@@ -719,136 +694,77 @@ public class Configuration extends BuildObject implements IConfiguration {
      */
     protected void loadFromProject(ICStorageElement element) {
 
-        // id
-        // note: IDs are unique so no benefit to intern them
-        setId(element.getAttribute(IBuildObject.ID));
-
-        // name
-        if (element.getAttribute(IBuildObject.NAME) != null)
-            setName(element.getAttribute(IBuildObject.NAME));
-
-        // description
-        if (element.getAttribute(IConfiguration.DESCRIPTION) != null)
-            description = element.getAttribute(IConfiguration.DESCRIPTION);
-
-        String props = element.getAttribute(BUILD_PROPERTIES);
-
-        String optionalProps = element.getAttribute(OPTIONAL_BUILD_PROPERTIES);
-
-        String artType = element.getAttribute(BUILD_ARTEFACT_TYPE);
-
-
-        if (element.getAttribute(IConfiguration.PARENT) != null) {
-            // See if the parent belongs to the same project
-            if (managedProject != null)
-                parent = managedProject.getConfiguration(element.getAttribute(IConfiguration.PARENT));
-            // If not, then try the extension configurations
-            if (parent == null) {
-                parent = ManagedBuildManager.getExtensionConfiguration(element.getAttribute(IConfiguration.PARENT));
-                if (parent == null) {
-                    String message = NLS.bind(Configuration_orphaned, getId(), //$NON-NLS-1$
-                            element.getAttribute(IConfiguration.PARENT));
-                    Activator.error(message);
-                }
-            }
-        }
-
-        // Get the name of the build artifact associated with target (usually
-        // in the plugin specification).
-        if (element.getAttribute(ARTIFACT_NAME) != null) {
-            artifactName = element.getAttribute(ARTIFACT_NAME);
-        }
-
-        // Get the semicolon separated list of IDs of the error parsers
-        if (element.getAttribute(ERROR_PARSERS) != null) {
-            errorParserIds = element.getAttribute(ERROR_PARSERS);
-        }
-
-        // Get the artifact extension
-        if (element.getAttribute(EXTENSION) != null) {
-            artifactExtension = element.getAttribute(EXTENSION);
-        }
-
-        // Get the clean command
-        if (element.getAttribute(CLEAN_COMMAND) != null) {
-            cleanCommand = element.getAttribute(CLEAN_COMMAND);
-        }
-
-        // Get the pre-build and post-build commands
-        if (element.getAttribute(PREBUILD_STEP) != null) {
-            prebuildStep = element.getAttribute(PREBUILD_STEP);
-        }
-
-        if (element.getAttribute(POSTBUILD_STEP) != null) {
-            postbuildStep = element.getAttribute(POSTBUILD_STEP);
-        }
-
-        // Get the pre-build and post-build announcements
-        if (element.getAttribute(PREANNOUNCEBUILD_STEP) != null) {
-            preannouncebuildStep = element.getAttribute(PREANNOUNCEBUILD_STEP);
-        }
-
-        if (element.getAttribute(POSTANNOUNCEBUILD_STEP) != null) {
-            postannouncebuildStep = element.getAttribute(POSTANNOUNCEBUILD_STEP);
-        }
-    }
-
-    /**
-     * Persist this configuration to project file.
-     */
-    public void serialize(ICStorageElement element) {
-        element.setAttribute(IBuildObject.ID, id);
-
-        if (name != null)
-            element.setAttribute(IBuildObject.NAME, name);
-
-        if (description != null)
-            element.setAttribute(IConfiguration.DESCRIPTION, description);
-
-
-        if (parent != null)
-            element.setAttribute(IConfiguration.PARENT, parent.getId());
-
-        if (artifactName != null)
-            element.setAttribute(ARTIFACT_NAME, artifactName);
-
-        if (errorParserIds != null)
-            element.setAttribute(ERROR_PARSERS, errorParserIds);
-
-        if (artifactExtension != null)
-            element.setAttribute(EXTENSION, artifactExtension);
-
-        if (cleanCommand != null)
-            element.setAttribute(CLEAN_COMMAND, cleanCommand);
-
-        if (prebuildStep != null)
-            element.setAttribute(PREBUILD_STEP, prebuildStep);
-
-        if (postbuildStep != null)
-            element.setAttribute(POSTBUILD_STEP, postbuildStep);
-
-        if (preannouncebuildStep != null)
-            element.setAttribute(PREANNOUNCEBUILD_STEP, preannouncebuildStep);
-
-        if (postannouncebuildStep != null)
-            element.setAttribute(POSTANNOUNCEBUILD_STEP, postannouncebuildStep);
-
-        // Serialize my children
-        IResourceInfo infos[] = rcInfos.getResourceInfos();
-        for (int i = 0; i < infos.length; i++) {
-            String elementName = infos[i].getKind() == ICSettingBase.SETTING_FILE ? IFileInfo.FILE_INFO_ELEMENT_NAME
-                    : IFolderInfo.FOLDER_INFO_ELEMENT_NAME;
-
-            ICStorageElement resElement = element.createChild(elementName);
-            ((ResourceInfo) infos[i]).serialize(resElement);
-        }
-
-        PropertyManager.getInstance().serialize(this);
-
-        if (sourceEntries != null && sourceEntries.length > 0) {
-            ICStorageElement el = element.createChild(SOURCE_ENTRIES);
-            LanguageSettingEntriesSerializer.serializeEntries(sourceEntries, el);
-        }
+        //        // id
+        //        // note: IDs are unique so no benefit to intern them
+        //        setId(element.getAttribute(IBuildObject.ID));
+        //
+        //        // name
+        //        if (element.getAttribute(IBuildObject.NAME) != null)
+        //            setName(element.getAttribute(IBuildObject.NAME));
+        //
+        //        // description
+        //        if (element.getAttribute(IConfiguration.DESCRIPTION) != null)
+        //            description = element.getAttribute(IConfiguration.DESCRIPTION);
+        //
+        //        String props = element.getAttribute(BUILD_PROPERTIES);
+        //
+        //        String optionalProps = element.getAttribute(OPTIONAL_BUILD_PROPERTIES);
+        //
+        //        String artType = element.getAttribute(BUILD_ARTEFACT_TYPE);
+        //
+        //        if (element.getAttribute(IConfiguration.PARENT) != null) {
+        //            // See if the parent belongs to the same project
+        //            if (managedProject != null)
+        //                parent = managedProject.getConfiguration(element.getAttribute(IConfiguration.PARENT));
+        //            // If not, then try the extension configurations
+        //            if (parent == null) {
+        //                parent = ManagedBuildManager.getExtensionConfiguration(element.getAttribute(IConfiguration.PARENT));
+        //                if (parent == null) {
+        //                    String message = NLS.bind(Configuration_orphaned, getId(), //$NON-NLS-1$
+        //                            element.getAttribute(IConfiguration.PARENT));
+        //                    Activator.error(message);
+        //                }
+        //            }
+        //        }
+        //
+        //        // Get the name of the build artifact associated with target (usually
+        //        // in the plugin specification).
+        //        if (element.getAttribute(ARTIFACT_NAME) != null) {
+        //            artifactName = element.getAttribute(ARTIFACT_NAME);
+        //        }
+        //
+        //        // Get the semicolon separated list of IDs of the error parsers
+        //        if (element.getAttribute(ERROR_PARSERS) != null) {
+        //            errorParserIds = element.getAttribute(ERROR_PARSERS);
+        //        }
+        //
+        //        // Get the artifact extension
+        //        if (element.getAttribute(EXTENSION) != null) {
+        //            artifactExtension = element.getAttribute(EXTENSION);
+        //        }
+        //
+        //        // Get the clean command
+        //        if (element.getAttribute(CLEAN_COMMAND) != null) {
+        //            cleanCommand = element.getAttribute(CLEAN_COMMAND);
+        //        }
+        //
+        //        // Get the pre-build and post-build commands
+        //        if (element.getAttribute(PREBUILD_STEP) != null) {
+        //            prebuildStep = element.getAttribute(PREBUILD_STEP);
+        //        }
+        //
+        //        if (element.getAttribute(POSTBUILD_STEP) != null) {
+        //            postbuildStep = element.getAttribute(POSTBUILD_STEP);
+        //        }
+        //
+        //        // Get the pre-build and post-build announcements
+        //        if (element.getAttribute(PREANNOUNCEBUILD_STEP) != null) {
+        //            preannouncebuildStep = element.getAttribute(PREANNOUNCEBUILD_STEP);
+        //        }
+        //
+        //        if (element.getAttribute(POSTANNOUNCEBUILD_STEP) != null) {
+        //            postannouncebuildStep = element.getAttribute(POSTANNOUNCEBUILD_STEP);
+        //        }
     }
 
     /*
@@ -972,22 +888,6 @@ public class Configuration extends BuildObject implements IConfiguration {
     public String getToolCommand(ITool tool) {
         // TODO:  Do we need to verify that the tool is part of the configuration?
         return tool.getToolCommand();
-    }
-
-
-    @Override
-    public IOption setOption(IHoldsOptions holder, IOption option, boolean value) throws BuildException {
-        return getRootFolderInfo().setOption(holder, option, value);
-    }
-
-    @Override
-    public IOption setOption(IHoldsOptions holder, IOption option, String value) throws BuildException {
-        return getRootFolderInfo().setOption(holder, option, value);
-    }
-
-    @Override
-    public IOption setOption(IHoldsOptions holder, IOption option, String[] value) throws BuildException {
-        return getRootFolderInfo().setOption(holder, option, value);
     }
 
     /**
@@ -1299,22 +1199,14 @@ public class Configuration extends BuildObject implements IConfiguration {
         if (artifactExtension == null || extension == null || !artifactExtension.equals(extension)) {
             artifactExtension = extension;
             //			rebuildNeeded = true;
-            if (!isExtensionElement()) {
-                ITool tool = calculateTargetTool();
-                if (tool != null) {
-                    tool.setRebuildState(true);
-                } else {
-                    setRebuildState(true);
-                }
-            }
         }
     }
 
     @Override
     public void setArtifactName(String name) {
-    	//TOFIX JABA should be deleted
-            artifactName = name;
-         
+        //TOFIX JABA should be deleted
+        artifactName = name;
+
     }
 
     @Override
@@ -1342,46 +1234,6 @@ public class Configuration extends BuildObject implements IConfiguration {
             return;
         if (this.description == null || description == null || !description.equals(this.description)) {
             this.description = description;
-        }
-    }
-
-    @Override
-    public void setBuildArguments(String makeArgs) {
-        IToolChain tc = getToolChain();
-        IBuilder builder = tc.getBuilder();
-        if (makeArgs == null) { //resetting the build arguments
-            if (!builder.isExtensionElement()) {
-                builder.setArguments(makeArgs);
-                //				rebuildNeeded = true;
-            }
-        } else if (!makeArgs.equals(builder.getArguments())) {
-            if (builder.isExtensionElement()) {
-                String subId = ManagedBuildManager.calculateChildId(builder.getId(), null);
-                String builderName = builder.getName() + "." + getName(); //$NON-NLS-1$
-                builder = getToolChain().createBuilder(builder, subId, builderName, false);
-            }
-            builder.setArguments(makeArgs);
-            //			rebuildNeeded = true;
-        }
-    }
-
-    @Override
-    public void setBuildCommand(String command) {
-        IToolChain tc = getToolChain();
-        IBuilder builder = tc.getBuilder();
-        if (command == null) { //resetting the build command
-            if (!builder.isExtensionElement()) {
-                builder.setCommand(command);
-                //				rebuildNeeded = true;
-            }
-        } else if (!command.equals(builder.getCommand())) {
-            if (builder.isExtensionElement()) {
-                String subId = ManagedBuildManager.calculateChildId(builder.getId(), null);
-                String builderName = builder.getName() + "." + getName(); //$NON-NLS-1$
-                builder = getToolChain().createBuilder(builder, subId, builderName, false);
-            }
-            builder.setCommand(command);
-            //			rebuildNeeded = true;
         }
     }
 
@@ -1449,7 +1301,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         return isExtensionConfig;
     }
 
-
     @Override
     public boolean needsRebuild() {
         return needsRebuild(true);
@@ -1466,17 +1317,8 @@ public class Configuration extends BuildObject implements IConfiguration {
         if (needRebuild || !checkChildren)
             return needRebuild;
 
-        IResourceInfo infos[] = rcInfos.getResourceInfos();
-
-        for (int i = 0; i < infos.length; i++) {
-            if (infos[i].needsRebuild())
-                return true;
-        }
-
         return false;
     }
-
-
 
     @Override
     public void setRebuildState(boolean rebuild) {
@@ -1493,9 +1335,6 @@ public class Configuration extends BuildObject implements IConfiguration {
 
             IResourceInfo infos[] = rcInfos.getResourceInfos();
 
-            for (int i = 0; i < infos.length; i++) {
-                infos[i].setRebuildState(false);
-            }
         }
     }
 
@@ -1545,13 +1384,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         //            }
         //
         //        }
-    }
-
-    /**
-     * Reset the configuration's, tools', options
-     */
-    public void reset() {
-        ((FolderInfo) getRootFolderInfo()).resetOptionSettings();
     }
 
     /**
@@ -1648,18 +1480,6 @@ public class Configuration extends BuildObject implements IConfiguration {
     }
 
     @Override
-    public void updateManagedBuildRevision(String revision) {
-        super.updateManagedBuildRevision(revision);
-
-        ResourceInfo infos[] = (ResourceInfo[]) rcInfos.getResourceInfos(ResourceInfo.class);
-
-        for (int i = 0; i < infos.length; i++) {
-            infos[i].updateManagedBuildRevision(revision);
-        }
-    }
-
-
-    @Override
     public ITool calculateTargetTool() {
         ITool tool = getTargetTool();
 
@@ -1726,8 +1546,7 @@ public class Configuration extends BuildObject implements IConfiguration {
     }
 
     private boolean resourceChangesRequireRebuild() {
-        return isInternalBuilderEnabled() ? resourceChangeState != 0
-                : (resourceChangeState & IResourceDelta.REMOVED) == IResourceDelta.REMOVED;
+        return true;
     }
 
     private void saveRebuildState() {
@@ -1763,102 +1582,9 @@ public class Configuration extends BuildObject implements IConfiguration {
     				prefs.getBoolean(pref, false) : defaultValue;
     	}
     */
-    /**
-     * this method is used for enabling/disabling the internal builder
-     * for the given configuration
-     *
-     * @param enable
-     *            boolean
-     */
-    public void enableInternalBuilder(boolean enable) {
-        if (enable == isInternalBuilderEnabled())
-            return;
-
-        IBuilder builder = getBuilderForInternalBuilderEnablement(enable, true);
-        if (builder != null) {
-            if (enable) {
-                savePrevBuilderId(getBuilder());
-            }
-
-            changeBuilder(builder, ManagedBuildManager.calculateChildId(builder.getId(), null), builder.getName(),
-                    true);
-
-            if (enable) {
-                try {
-                    setManagedBuildOn(true);
-                } catch (BuildException e) {
-                }
-            }
-        }
-    }
 
     public boolean canEnableInternalBuilder(boolean enable) {
-        return getBuilderForInternalBuilderEnablement(enable, true) != null;
-    }
-
-    private IBuilder getBuilderForInternalBuilderEnablement(boolean enable, boolean checkCompatibility) {
-        IBuilder newBuilder = null;
-        if (enable) {
-            if (supportsBuild(true, false)) {
-                IBuilder b = ManagedBuildManager.getInternalBuilder();
-                if (b != null) {
-                    if (!checkCompatibility || isBuilderCompatible(b))
-                        newBuilder = b;
-                }
-            }
-        } else {
-            String id = getPrevBuilderId();
-            if (id != null) {
-                IBuilder b = ManagedBuildManager.getExtensionBuilder(id);
-                if (b != null) {
-                    if (!checkCompatibility || isBuilderCompatible(b))
-                        newBuilder = b;
-                }
-            }
-            if (newBuilder == null) {
-                for (IToolChain tc = getToolChain(); tc != null; tc = tc.getSuperClass()) {
-                    IBuilder b = tc.getBuilder();
-                    if (b.isInternalBuilder())
-                        continue;
-
-                    for (; b != null && !b.isExtensionElement(); b = b.getSuperClass()) {
-                    }
-
-                    if (b != null) {
-                        if (!checkCompatibility || isBuilderCompatible(b)) {
-                            newBuilder = b;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            //			if(newBuilder == null){
-            //				IBuilder builders[] = ManagedBuildManager.getRealBuilders();
-            //				IBuilder tmpB = null;
-            //				for(int i = 0; i < builders.length; i++){
-            //					IBuilder b = builders[i];
-            //					if(b.isInternalBuilder())
-            //						continue;
-            //
-            //
-            //					if(isBuilderCompatible(b)){
-            //						newBuilder = b;
-            //						break;
-            //					} else if(!checkCompatibility){
-            //						tmpB = b;
-            //					}
-            //				}
-            //
-            //				if(newBuilder == null){
-            //					if(tmpB != null)
-            //						newBuilder = tmpB;
-            //				}
-            //			}
-
-        }
-
-        return newBuilder;
+        return false;
     }
 
     private void savePrevBuilderId(IBuilder builder) {
@@ -1879,15 +1605,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         if (tc != null)
             return tc.getNonInternalBuilderId();
         return null;
-    }
-
-    /**
-     * returns whether the internal builder is enabled
-     * 
-     * @return boolean
-     */
-    public boolean isInternalBuilderEnabled() {
-        return getBuilder().isInternalBuilder();
     }
 
     /**
@@ -2087,7 +1804,6 @@ public class Configuration extends BuildObject implements IConfiguration {
 
         FolderInfo folderInfo = new FolderInfo((FolderInfo) base, id, name, path);
         addResourceConfiguration(folderInfo);
-        folderInfo.propertiesChanged();
         ManagedBuildManager.performValueHandlerEvent(folderInfo, IManagedOptionValueHandler.EVENT_OPEN);
 
         return folderInfo;
@@ -2193,7 +1909,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         return getToolChain().getBuilder();
     }
 
-
     public ICConfigurationDescription getConfigurationDescription() {
         return fCfgDes;
     }
@@ -2201,8 +1916,6 @@ public class Configuration extends BuildObject implements IConfiguration {
     public void setConfigurationDescription(ICConfigurationDescription cfgDes) {
         fCfgDes = cfgDes;
     }
-
-
 
     public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
         if (booleanExpressionCalculator == null) {
@@ -2212,8 +1925,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         }
         return booleanExpressionCalculator;
     }
-
-
 
     @Override
     public String getOutputFlag(String outputExt) {
@@ -2372,7 +2083,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         return libs.toArray(new String[libs.size()]);
     }
 
-
     /**
      * Responsible for contributing 'external' settings back to the core for use
      * by referenced projects.
@@ -2423,25 +2133,21 @@ public class Configuration extends BuildObject implements IConfiguration {
     }
 
     public boolean supportsBuild(boolean managed, boolean checkBuilder) {
-    	return false;
-//        IResourceInfo[] rcs = getResourceInfos();
-//        for (int i = 0; i < rcs.length; i++) {
-//            if (!rcs[i].supportsBuild(managed))
-//                return false;
-//        }
-//
-//        if (checkBuilder) {
-//            IBuilder builder = getBuilder();
-//            if (builder != null && !builder.supportsBuild(managed))
-//                return false;
-//        }
-//
-//        return true;
+        return false;
+        //        IResourceInfo[] rcs = getResourceInfos();
+        //        for (int i = 0; i < rcs.length; i++) {
+        //            if (!rcs[i].supportsBuild(managed))
+        //                return false;
+        //        }
+        //
+        //        if (checkBuilder) {
+        //            IBuilder builder = getBuilder();
+        //            if (builder != null && !builder.supportsBuild(managed))
+        //                return false;
+        //        }
+        //
+        //        return true;
     }
-
-
-
-
 
     private SupportedProperties findSupportedProperties() {
         if (supportedProperties == null) {
@@ -2452,10 +2158,9 @@ public class Configuration extends BuildObject implements IConfiguration {
         return supportedProperties;
     }
 
-    private void loadProperties(IManagedConfigElement el) {
+    private void loadProperties(IConfigurationElement el) {
         supportedProperties = new SupportedProperties(el);
     }
-
 
     @Override
     public boolean isManagedBuildOn() {
@@ -2497,11 +2202,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         if (newCfgBuilder != null) {
             tc.setBuilder(newCfgBuilder);
         }
-    }
-
-    @Override
-    public boolean isBuilderCompatible(IBuilder builder) {
-        return builder.supportsBuild(isManagedBuildOn());
     }
 
     ITool findToolById(String id) {
@@ -2580,17 +2280,16 @@ public class Configuration extends BuildObject implements IConfiguration {
         return isPreferenceConfig;
     }
 
-
     @Override
     public void setBuildArtefactType(String id) throws BuildException {
-//        IBuildObjectProperties props = getBuildProperties();
-//        try {
-//            props.setProperty(ManagedBuildManager.BUILD_ARTEFACT_TYPE_PROPERTY_ID, id);
-//        } catch (CoreException e) {
-//            throw new BuildException(e.getLocalizedMessage());
-//        }
-//        // May need to update the exports paths & symbols after artifact type change
-//        exportArtifactInfo();
+        //        IBuildObjectProperties props = getBuildProperties();
+        //        try {
+        //            props.setProperty(ManagedBuildManager.BUILD_ARTEFACT_TYPE_PROPERTY_ID, id);
+        //        } catch (CoreException e) {
+        //            throw new BuildException(e.getLocalizedMessage());
+        //        }
+        //        // May need to update the exports paths & symbols after artifact type change
+        //        exportArtifactInfo();
     }
 
     boolean isExcluded(IPath path) {
@@ -2634,21 +2333,11 @@ public class Configuration extends BuildObject implements IConfiguration {
         }
     }
 
-	@Override
-	public void resolveFields() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+    //TOFIX JABA should be deleted
+    @Override
+    public void setName(String name) {
+        this.name = name;
 
-	@Override
-	public void resolveSuperClass() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
- 
-
+    }
 
 }

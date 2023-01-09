@@ -25,26 +25,13 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildPropertiesRestriction;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCategory;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IBuildPropertiesRestriction;
-import io.sloeber.autoBuild.api.IBuildPropertyType;
-import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionCategory;
 import io.sloeber.autoBuild.api.IResourceInfo;
@@ -69,8 +56,7 @@ import io.sloeber.autoBuild.core.Activator;
  *
  * @since 3.0
  */
-public abstract class HoldsOptions extends BuildObject
-        implements IHoldsOptions, IBuildPropertiesRestriction, IBuildPropertyChangeListener {
+public abstract class HoldsOptions extends BuildObject implements IHoldsOptions {
 
     private static final IOptionCategory[] EMPTY_CATEGORIES = new IOptionCategory[0];
 
@@ -108,60 +94,60 @@ public abstract class HoldsOptions extends BuildObject
      *            The children of the source will be cloned and added
      *            to the class itself.
      */
-    protected void copyChildren(HoldsOptions source) {
+    //    protected void copyChildren(HoldsOptions source) {
+    //
+    //        //  Note: This function ignores OptionCategories since they should not be
+    //        //        found on an non-extension tools
+    //
+    //        boolean copyIds = id.equals(source.id);
+    //        if (source.optionMap != null) {
+    //            for (Option option : source.getOptionCollection()) {
+    //                int nnn = ManagedBuildManager.getRandomNumber();
+    //                String subId;
+    //                String subName;
+    //                if (option.getSuperClass() != null) {
+    //                    subId = copyIds ? option.getId() : option.getSuperClass().getId() + "." + nnn; //$NON-NLS-1$
+    //                    subName = option.getSuperClass().getName();
+    //                } else {
+    //                    subId = copyIds ? option.getId() : option.getId() + "." + nnn; //$NON-NLS-1$
+    //                    subName = option.getName();
+    //                }
+    //                Option newOption = new Option(this, subId, subName, option);
+    //                addOption(newOption);
+    //            }
+    //        }
+    //
+    //        if (copyIds) {
+    //            //isDirty = source.isDirty;
+    //            //rebuildState = source.rebuildState;
+    //        }
+    //    }
 
-        //  Note: This function ignores OptionCategories since they should not be
-        //        found on an non-extension tools
-
-        boolean copyIds = id.equals(source.id);
-        if (source.optionMap != null) {
-            for (Option option : source.getOptionCollection()) {
-                int nnn = ManagedBuildManager.getRandomNumber();
-                String subId;
-                String subName;
-                if (option.getSuperClass() != null) {
-                    subId = copyIds ? option.getId() : option.getSuperClass().getId() + "." + nnn; //$NON-NLS-1$
-                    subName = option.getSuperClass().getName();
-                } else {
-                    subId = copyIds ? option.getId() : option.getId() + "." + nnn; //$NON-NLS-1$
-                    subName = option.getName();
-                }
-                Option newOption = new Option(this, subId, subName, option);
-                addOption(newOption);
-            }
-        }
-
-        if (copyIds) {
-           //isDirty = source.isDirty;
-            //rebuildState = source.rebuildState;
-        }
-    }
-
-    void copyNonoverriddenSettings(HoldsOptions ho) {
-        if (ho.optionMap == null || ho.optionMap.size() == 0)
-            return;
-
-        IOption options[] = getOptions();
-        for (int i = 0; i < options.length; i++) {
-            if (!options[i].getParent().equals(ho))
-                continue;
-
-            Option option = (Option) options[i];
-            int nnn = ManagedBuildManager.getRandomNumber();
-            String subId;
-            String subName;
-            if (option.getSuperClass() != null) {
-                subId = option.getSuperClass().getId() + "." + nnn; //$NON-NLS-1$
-                subName = option.getSuperClass().getName();
-            } else {
-                subId = option.getId() + "." + nnn; //$NON-NLS-1$
-                subName = option.getName();
-            }
-            Option newOption = new Option(this, subId, subName, option);
-            addOption(newOption);
-
-        }
-    }
+    //    void copyNonoverriddenSettings(HoldsOptions ho) {
+    //        if (ho.optionMap == null || ho.optionMap.size() == 0)
+    //            return;
+    //
+    //        IOption options[] = getOptions();
+    //        for (int i = 0; i < options.length; i++) {
+    //            if (!options[i].getParent().equals(ho))
+    //                continue;
+    //
+    //            Option option = (Option) options[i];
+    //            int nnn = ManagedBuildManager.getRandomNumber();
+    //            String subId;
+    //            String subName;
+    //            if (option.getSuperClass() != null) {
+    //                subId = option.getSuperClass().getId() + "." + nnn; //$NON-NLS-1$
+    //                subName = option.getSuperClass().getName();
+    //            } else {
+    //                subId = option.getId() + "." + nnn; //$NON-NLS-1$
+    //                subName = option.getName();
+    //            }
+    //            Option newOption = new Option(this, subId, subName, option);
+    //            addOption(newOption);
+    //
+    //        }
+    //    }
 
     /*
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
@@ -193,38 +179,16 @@ public abstract class HoldsOptions extends BuildObject
      *            which is loaded as child only iff it is of the correct type
      * @return true when a child has been loaded, false otherwise
      */
-    protected boolean loadChild(IManagedConfigElement element) {
+    protected boolean loadChild(IExtensionPoint root, IConfigurationElement element) {
         if (element.getName().equals(IHoldsOptions.OPTION)) {
-            Option option = new Option(this, element);
+            Option option = new Option(this, root, element);
             addOption(option);
             return true;
         } else if (element.getName().equals(IHoldsOptions.OPTION_CAT)) {
-            new OptionCategory(this, element);
+            new OptionCategory(this, root, element);
             return true;
         }
         return false;
-    }
-
-    /**
-     * Persist the tool to the XML storage element. Intended to be called by derived
-     * class only, thus do not handle exceptions.
-     *
-     * @param element
-     *            where to serialize the tool
-     */
-    protected void serialize(ICStorageElement element) throws BuildException {
-        if (childOptionCategories != null) {
-            for (IOptionCategory optCat : childOptionCategories) {
-                ICStorageElement optCatElement = element.createChild(OPTION);
-                ((OptionCategory) optCat).serialize(optCatElement);
-            }
-        }
-
-        Collection<Option> optionElements = getOptionCollection();
-        for (Option option : optionElements) {
-            ICStorageElement optionElement = element.createChild(OPTION);
-            option.serialize(optionElement);
-        }
     }
 
     /*
@@ -238,10 +202,6 @@ public abstract class HoldsOptions extends BuildObject
     public IOption createOption(IOption superClass, String Id, String name, boolean isExtensionElement) {
         Option option = new Option(this, superClass, Id, name, isExtensionElement);
         addOption(option);
-        if (!isExtensionElement) {
-            //setDirty(true);
-            setRebuildState(true);
-        }
         return option;
     }
 
@@ -267,8 +227,6 @@ public abstract class HoldsOptions extends BuildObject
         //			throw new IllegalArgumentException();
 
         getOptionMap().remove(option.getId());
-        //setDirty(true);
-        setRebuildState(true);
 
         if (!isExtensionElement()) {
             NotificationManager.getInstance().optionRemoved(getParentResourceInfo(), this, option);
@@ -299,35 +257,11 @@ public abstract class HoldsOptions extends BuildObject
     private Map<String, IOption> doGetOptions() {
         Map<String, IOption> map = null;
 
-        if (this.superClass == null) {
-            map = new LinkedHashMap<>(); // LinkedHashMap ensures we maintain option ordering
+        map = new LinkedHashMap<>(); // LinkedHashMap ensures we maintain option ordering
 
-            for (Option ourOpt : getOptionCollection()) {
-                if (ourOpt.isValid()) {
-                    map.put(ourOpt.getId(), ourOpt);
-                }
-            }
-        } else {
-
-            // 1. Get the option-map from superClass.
-            map = ((HoldsOptions) this.superClass).doGetOptions();
-
-            // 2. Override the superClass' options with ours, maintaining the option ordering
-            for (Option ourOpt : getOptionCollection()) {
-                String key = ourOpt.getId();
-
-                for (IOption superOpt = ourOpt.getSuperClass(); superOpt != null; superOpt = superOpt.getSuperClass()) {
-                    if (map.containsKey(superOpt.getId())) {
-                        key = superOpt.getId();
-                        break;
-                    }
-                }
-
-                if (ourOpt.isValid()) {
-                    map.put(key, ourOpt);
-                } else {
-                    map.remove(key);
-                }
+        for (Option ourOpt : getOptionCollection()) {
+            if (ourOpt.isValid()) {
+                map.put(ourOpt.getId(), ourOpt);
             }
         }
 
@@ -372,19 +306,19 @@ public abstract class HoldsOptions extends BuildObject
             return option;
         }
 
-        // 2. Try to find the option among those that we override.
-        for (Option ourOpt : getOptionCollection()) {
-            for (IOption superOpt = ourOpt.getSuperClass(); superOpt != null; superOpt = superOpt.getSuperClass()) {
-                if (optionId.equals(superOpt.getId())) {
-                    return ourOpt.isValid() ? ourOpt : null;
-                }
-            }
-        }
-
-        // 3. If not found in step 2, recurse into superClass.
-        if (this.superClass != null) {
-            return this.superClass.getOptionBySuperClassId(optionId);
-        }
+        //        // 2. Try to find the option among those that we override.
+        //        for (Option ourOpt : getOptionCollection()) {
+        //            for (IOption superOpt = ourOpt.getSuperClass(); superOpt != null; superOpt = superOpt.getSuperClass()) {
+        //                if (optionId.equals(superOpt.getId())) {
+        //                    return ourOpt.isValid() ? ourOpt : null;
+        //                }
+        //            }
+        //        }
+        //
+        //        // 3. If not found in step 2, recurse into superClass.
+        //        if (this.superClass != null) {
+        //            return this.superClass.getOptionBySuperClassId(optionId);
+        //        }
 
         return null;
     }
@@ -503,246 +437,112 @@ public abstract class HoldsOptions extends BuildObject
      *  O B J E C T   S T A T E   M A I N T E N A N C E
      */
 
-
-
-
-    /**
-     * Resolve the element IDs to interface references. Intended to be
-     * called by derived class.
-     */
-    protected void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            //  Call resolveReferences on our children
-            for (Option current : getOptionCollection()) {
-                current.resolveReferences();
-            }
-            // Somewhat wasteful, but use the vector to retrieve the categories in proper order
-            for (String id : getCategoryIds()) {
-                IOptionCategory current = getCategoryMap().get(id);
-                if (current instanceof Tool) {
-                    ((Tool) current).resolveReferences();
-                } else if (current instanceof ToolChain) {
-                    ((ToolChain) current).resolveReferences();
-                } else if (current instanceof OptionCategory) {
-                    ((OptionCategory) current).resolveReferences();
-                }
-            }
-        }
-    }
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getOptionToSet(org.eclipse.cdt.managedbuilder.core.IOption, boolean)
      */
     @Override
     public IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException {
-        IOption setOption = null;
+        //  IOption setOption = null;
         // start changes
         if (option.getOptionHolder() != this) {
             // option = getOptionBySuperClassId(option.getId());
+            //            IOption op = getOptionBySuperClassId(option.getId());
+            //            if (op == null && option.getSuperClass() != null) {
+            //                op = getOptionBySuperClassId(option.getSuperClass().getId());
+            //                if (op == null) {
+            //                    Activator.log(new Status(IStatus.ERROR, Activator.getId(), IStatus.OK,
+            //                            "Cannot get OptionToSet for option " + //$NON-NLS-1$
+            //                                    option.getId() + " @ holder " + //$NON-NLS-1$
+            //                                    option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
+            //                                    getId(),
+            //                            null));
+            //                } else
+            //                    option = op;
+            //            } else
+            //                option = op;
             IOption op = getOptionBySuperClassId(option.getId());
-            if (op == null && option.getSuperClass() != null) {
-                op = getOptionBySuperClassId(option.getSuperClass().getId());
-                if (op == null) {
-                    Activator.log(new Status(IStatus.ERROR, Activator.getId(), IStatus.OK,
-                            "Cannot get OptionToSet for option " + //$NON-NLS-1$
-                                    option.getId() + " @ holder " + //$NON-NLS-1$
-                                    option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
-                                    getId(),
-                            null));
-                } else
-                    option = op;
-            } else
-                option = op;
+            if (op == null) {
+                Activator.log(
+                        new Status(IStatus.ERROR, Activator.getId(), IStatus.OK, "Cannot get OptionToSet for option " + //$NON-NLS-1$
+                                option.getId() + " @ holder " + //$NON-NLS-1$
+                                option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
+                                getId(), null));
+            }
+            return op;
+            //        }
+            //        // end changes
+            //
+            //        if (adjustExtension) {
+            //            for (; option != null && !option.isExtensionElement(); option = option.getSuperClass()) {
+            //            }
+            //
+            //            if (option != null) {
+            //                IHoldsOptions holder = option.getOptionHolder();
+            //                if (holder == this)
+            //                    setOption = option;
+            //                else {
+            //                    IOption newSuperClass = option;
+            //                    if (((Option) option).wasOptRef()) {
+            //                        newSuperClass = option.getSuperClass();
+            //                    }
+            //                    //  Create a new extension Option element
+            //                    String subId;
+            //                    String version = ManagedBuildManager.getVersionFromIdAndVersion(newSuperClass.getId());
+            //                    String baseId = ManagedBuildManager.getIdFromIdAndVersion(newSuperClass.getId());
+            //                    if (version != null) {
+            //                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()) + "_" //$NON-NLS-1$//$NON-NLS-2$
+            //                                + version;
+            //                    } else {
+            //                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()); //$NON-NLS-1$
+            //                    }
+            //                    setOption = createOption(newSuperClass, subId, null, true);
+            //                    ((Option) setOption).setAdjusted(true);
+            //                    setOption.setValueType(option.getValueType());
+            //                }
         }
-        // end changes
-
-        if (adjustExtension) {
-            for (; option != null && !option.isExtensionElement(); option = option.getSuperClass()) {
-            }
-
-            if (option != null) {
-                IHoldsOptions holder = option.getOptionHolder();
-                if (holder == this)
-                    setOption = option;
-                else {
-                    IOption newSuperClass = option;
-                    if (((Option) option).wasOptRef()) {
-                        newSuperClass = option.getSuperClass();
-                    }
-                    //  Create a new extension Option element
-                    String subId;
-                    String version = ManagedBuildManager.getVersionFromIdAndVersion(newSuperClass.getId());
-                    String baseId = ManagedBuildManager.getIdFromIdAndVersion(newSuperClass.getId());
-                    if (version != null) {
-                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()) + "_" //$NON-NLS-1$//$NON-NLS-2$
-                                + version;
-                    } else {
-                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()); //$NON-NLS-1$
-                    }
-                    setOption = createOption(newSuperClass, subId, null, true);
-                    ((Option) setOption).setAdjusted(true);
-                    setOption.setValueType(option.getValueType());
-                }
-            }
-        } else {
-            if (option.getOptionHolder() == this && !option.isExtensionElement()) {
-                setOption = option;
-            } else {
-                IOption newSuperClass = option;
-                for (; newSuperClass != null
-                        && !newSuperClass.isExtensionElement(); newSuperClass = newSuperClass.getSuperClass()) {
-                }
-
-                if (((Option) newSuperClass).wasOptRef()) {
-                    newSuperClass = newSuperClass.getSuperClass();
-                }
-
-                if (((Option) newSuperClass).isAdjustedExtension()) {
-                    newSuperClass = newSuperClass.getSuperClass();
-                }
-                //  Create an Option element for the managed build project file (.CDTBUILD)
-                String subId;
-                subId = ManagedBuildManager.calculateChildId(newSuperClass.getId(), null);
-                setOption = createOption(newSuperClass, subId, null, false);
-                setOption.setValueType(option.getValueType());
-            }
+        //        } else {
+        if (!option.isExtensionElement()) {
+            return option;
+            //            } else {
+            //                IOption newSuperClass = option;
+            //                for (; newSuperClass != null
+            //                        && !newSuperClass.isExtensionElement(); newSuperClass = newSuperClass.getSuperClass()) {
+            //                }
+            //
+            //                if (((Option) newSuperClass).wasOptRef()) {
+            //                    newSuperClass = newSuperClass.getSuperClass();
+            //                }
+            //
+            //                if (((Option) newSuperClass).isAdjustedExtension()) {
+            //                    newSuperClass = newSuperClass.getSuperClass();
+            //                }
+            //                //  Create an Option element for the managed build project file (.CDTBUILD)
+            //                String subId;
+            //                subId = ManagedBuildManager.calculateChildId(newSuperClass.getId(), null);
+            //                setOption = createOption(newSuperClass, subId, null, false);
+            //                setOption.setValueType(option.getValueType());
+            //            }
         }
-        return setOption;
+        return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#needsRebuild()
-     */
-    @Override
-    public boolean needsRebuild() {
-        if (rebuildState)
-            return true;
-
-        // Otherwise see if any options need saving
-        for (Option option : getOptionCollection())
-            if (option.needsRebuild())
-                return true;
-
-        // Bug 318331 If the parent needs a rebuild, then we do too as we may inherit options from our superClass...
-        if (superClass != null && superClass.needsRebuild())
-            return true;
-
-        return rebuildState;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#setRebuildState(boolean)
-     */
-    @Override
-    public void setRebuildState(boolean rebuild) {
-        rebuildState = rebuild;
-
-        // Propagate "false" to the children
-        if (!rebuildState)
-            for (Option option : getOptionCollection())
-                if (!option.isExtensionElement())
-                    option.setRebuildState(false);
-    }
-
-    @Override
-    public void propertiesChanged() {
-        if (isExtensionElement())
-            return;
-        adjustOptions(false);
-    }
-
-    public void adjustOptions(boolean extensions) {
-        IOption options[] = getOptions();
-
-        for (IOption opt : options) {
-            if (opt.isExtensionElement()) {
-                Option option = (Option) opt;
-                BooleanExpressionApplicabilityCalculator calc = option.getBooleanExpressionCalculator(extensions);
-
-                if (calc != null)
-                    calc.adjustOption(getParentResourceInfo(), this, option, extensions);
-            }
-        }
-    }
-
-    @Override
-    public boolean supportsType(String type) {
-        IOption options[] = getOptions();
-        boolean supports = false;
-        for (IOption opt : options) {
-            Option option = (Option) opt;
-            if (option.supportsType(type)) {
-                supports = true;
-                break;
-            }
-        }
-        return supports;
-    }
-
-    public boolean supportsType(IBuildPropertyType type) {
-        return supportsType(type.getId());
-    }
-
-    @Override
-    public boolean supportsValue(String type, String value) {
-        IOption options[] = getOptions();
-        boolean supports = false;
-        for (IOption opt : options) {
-            Option option = (Option) opt;
-            if (option.supportsValue(type, value)) {
-                supports = true;
-                break;
-            }
-        }
-        return supports;
-    }
-
-    public boolean supportsValue(IBuildPropertyType type, IBuildPropertyValue value) {
-        return supportsValue(type.getId(), value.getId());
-    }
+    //    public void adjustOptions(boolean extensions) {
+    //        IOption options[] = getOptions();
+    //
+    //        for (IOption opt : options) {
+    //            if (opt.isExtensionElement()) {
+    //                Option option = (Option) opt;
+    //                BooleanExpressionApplicabilityCalculator calc = option.getBooleanExpressionCalculator(extensions);
+    //
+    //                if (calc != null)
+    //                    calc.adjustOption(getParentResourceInfo(), this, option, extensions);
+    //            }
+    //        }
+    //    }
 
     public abstract boolean isExtensionElement();
 
     protected abstract IResourceInfo getParentResourceInfo();
-
-    @Override
-    public String[] getRequiredTypeIds() {
-        List<String> list = new ArrayList<>();
-        for (IOption op : getOptions())
-            list.addAll(Arrays.asList(((Option) op).getRequiredTypeIds()));
-        return list.toArray(new String[list.size()]);
-    }
-
-    @Override
-    public String[] getSupportedTypeIds() {
-        List<String> list = new ArrayList<>();
-        for (IOption op : getOptions())
-            list.addAll(Arrays.asList(((Option) op).getSupportedTypeIds()));
-        return list.toArray(new String[list.size()]);
-    }
-
-    @Override
-    public String[] getSupportedValueIds(String typeId) {
-        List<String> list = new ArrayList<>();
-        for (IOption op : getOptions())
-            list.addAll(Arrays.asList(((Option) op).getSupportedValueIds(typeId)));
-        return list.toArray(new String[list.size()]);
-    }
-
-    @Override
-    public boolean requiresType(String typeId) {
-        IOption options[] = getOptions();
-        boolean requires = false;
-        for (IOption opt : options) {
-            Option option = (Option) opt;
-            if (option.requiresType(typeId)) {
-                requires = true;
-                break;
-            }
-        }
-        return requires;
-    }
 
     boolean hasCustomSettings() {
         if (superClass == null)

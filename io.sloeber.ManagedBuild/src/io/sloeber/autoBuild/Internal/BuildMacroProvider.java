@@ -63,7 +63,6 @@ public class BuildMacroProvider implements IBuildMacroProvider, IMacroContextInf
 
     static private BuildMacroProvider fDefault;
 
-
     protected BuildMacroProvider() {
 
     }
@@ -350,37 +349,6 @@ public class BuildMacroProvider implements IBuildMacroProvider, IMacroContextInf
         return new BuildfileMacroSubstitutor(info, inexistentMacroValue, listDelimiter);
     }
 
-    /**
-     * @return whether the environment macros are to be expanded in the buildfile
-     */
-    public boolean areMacrosExpandedInBuildfile(IConfiguration cfg) {
-        IBuilder builder = cfg.getBuilder();
-        boolean expanded = !builder.keepEnvironmentVariablesInBuildfile();
-        if (expanded || canKeepMacrosInBuildfile(cfg))
-            return expanded;
-        return true;
-    }
-
-    /**
-     * sets whether the environment macros are to be expanded in the buildfile or
-     * not
-     * If a builder does not support treating environment variables as its own ones
-     * this method
-     * has no effect
-     * Returns the result of this set operation. That is whether the environment
-     * macros are to be expanded in the buildfile
-     *
-     * @return whether the environment macros are to be expanded in the buildfile
-     */
-    public boolean expandMacrosInBuildfile(IConfiguration cfg, boolean expand) {
-        if (expand || canKeepMacrosInBuildfile(cfg)) {
-            IBuilder builder = cfg.getEditableBuilder();
-            builder.setKeepEnvironmentVariablesInBuildfile(!expand);
-            return expand;
-        }
-        return true;
-    }
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider#resolveStringListValues(java.lang.String[], java.lang.String, java.lang.String, int, java.lang.Object)
      */
@@ -482,15 +450,15 @@ public class BuildMacroProvider implements IBuildMacroProvider, IMacroContextInf
      *         specified in the format of the builder automatic variables and text
      *         functions)
      */
-    public static IBuildMacro[] getReferencedExplitFileMacros(ITool tool) {
-        if (tool instanceof Tool) {
-            Tool t = (Tool) tool;
-            ExplicitFileMacroCollector collector = new ExplicitFileMacroCollector(null);
-            t.getToolCommandFlags(null, null, collector, getDefault());
-            return collector.getExplicisFileMacros();
-        }
-        return new IBuildMacro[0];
-    }
+    //    public static IBuildMacro[] getReferencedExplitFileMacros(ITool tool) {
+    //        if (tool instanceof Tool) {
+    //            Tool t = (Tool) tool;
+    //            ExplicitFileMacroCollector collector = new ExplicitFileMacroCollector(null);
+    //            t.getToolCommandFlags(null, null, collector, getDefault());
+    //            return collector.getExplicisFileMacros();
+    //        }
+    //        return new IBuildMacro[0];
+    //    }
 
     static IConfiguration getConfiguration(ITool tool) {
         IBuildObject bo = tool.getParent();

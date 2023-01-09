@@ -41,30 +41,6 @@ public interface IOptionCategory extends IBuildObject {
     public IOptionCategory[] getChildCategories();
 
     /**
-     * Returns an array of ITool/IOption pairs for the options in this category
-     * for a given configuration.
-     *
-     * @since 3.1
-     */
-    public Object[][] getOptions(IConfiguration configuration, IHoldsOptions optHolder);
-
-    //	/**
-    //	 * Returns an array of ITool/IOption pairs for the options in this category
-    //	 * for a given resource configuration.
-    //	 *
-    //	 * @since 3.1
-    //	 */
-    //public Object[][] getOptions(IResourceConfiguration resConfig, IHoldsOptions optHolder);
-
-    /**
-     * Returns an array of ITool/IOption pairs for the options in this category
-     * for a given resource configuration.
-     *
-     * @since 3.1
-     */
-    public Object[][] getOptions(IResourceInfo resInfo, IHoldsOptions optHolder);
-
-    /**
      * Returns the category that owns this category, or null if this is the
      * top category for a tool.
      */
@@ -93,10 +69,6 @@ public interface IOptionCategory extends IBuildObject {
      * @since 3.0
      */
     public URL getIconPath();
-
-
-
-
 
     /**
      * @return an instance of the class that calculates whether the option category

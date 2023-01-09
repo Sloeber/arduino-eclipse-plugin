@@ -47,8 +47,7 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IConfiguration
-        extends IBuildObject {
+public interface IConfiguration extends IBuildObject {
     public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
     public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
     public static final String PREBUILD_STEP = "prebuildStep"; //$NON-NLS-1$
@@ -71,7 +70,7 @@ public interface IConfiguration
      */
     public static final String OPTIONAL_BUILD_PROPERTIES = "optionalBuildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
-    public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
+    // public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
 
     public static final String SOURCE_ENTRIES = "sourceEntries"; //$NON-NLS-1$
 
@@ -342,7 +341,6 @@ public interface IConfiguration
      */
     public boolean isHeaderFile(String ext);
 
-
     /**
      * Returns <code>true</code> if this configuration was loaded from a manifest
      * file,
@@ -385,17 +383,6 @@ public interface IConfiguration
     public void setArtifactName(String name);
 
     /**
-     * Sets the arguments to be passed to the build utility used by the
-     * receiver to produce a build goal.
-     */
-    public void setBuildArguments(String makeArgs);
-
-    /**
-     * Sets the build command for the receiver to the value in the argument.
-     */
-    public void setBuildCommand(String command);
-
-    /**
      * Sets the prebuild step for the receiver to the value in the argument.
      */
     public void setPrebuildStep(String step);
@@ -425,7 +412,6 @@ public interface IConfiguration
      */
     public void setCleanCommand(String command);
 
-
     /**
      * Sets the semicolon separated list of error parser ids
      */
@@ -438,8 +424,6 @@ public interface IConfiguration
      */
     public void setName(String name);
 
- 
-
     /**
      * Sets the rebuild state in this configuration.
      *
@@ -448,7 +432,6 @@ public interface IConfiguration
      *            builds
      */
     void setRebuildState(boolean rebuild);
-
 
     /**
      * Returns <code>true</code> if the configuration's tool-chain is supported on
@@ -558,7 +541,6 @@ public interface IConfiguration
 
     IBuilder getEditableBuilder();
 
-
     String getOutputFlag(String outputExt);
 
     String[] getUserObjects(String extension);
@@ -570,8 +552,6 @@ public interface IConfiguration
     boolean isManagedBuildOn();
 
     void setManagedBuildOn(boolean on) throws BuildException;
-
-    boolean isBuilderCompatible(IBuilder builder);
 
     void changeBuilder(IBuilder newBuilder, String id, String name);
 

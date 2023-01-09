@@ -22,75 +22,82 @@ import org.eclipse.core.runtime.IPath;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IResourceInfo extends IBuildObject {
-	//	public static final String PARENT_FOLDER_INFO_ID = "parentFolderInfoId";
-	//	public static final String BASE_TOOLCHAIN_ID = "baseToolChainId";
-	//	public static final String INHERIT_PARENT_INFO = "inheritParentInfo";					  //$NON-NLS-1$
-	public static final String RESOURCE_PATH = "resourcePath"; //$NON-NLS-1$
-	public static final String EXCLUDE = "exclude"; //$NON-NLS-1$
+    //	public static final String PARENT_FOLDER_INFO_ID = "parentFolderInfoId";
+    //	public static final String BASE_TOOLCHAIN_ID = "baseToolChainId";
+    //	public static final String INHERIT_PARENT_INFO = "inheritParentInfo";					  //$NON-NLS-1$
+    public static final String RESOURCE_PATH = "resourcePath"; //$NON-NLS-1$
+    public static final String EXCLUDE = "exclude"; //$NON-NLS-1$
 
-	IPath getPath();
+    IPath getPath();
 
-	void setPath(IPath path);
+    void setPath(IPath path);
 
-	boolean isExcluded();
+    boolean isExcluded();
 
-	void setExclude(boolean excluded);
+    void setExclude(boolean excluded);
 
-	boolean canExclude(boolean exclude);
+    boolean canExclude(boolean exclude);
 
-	boolean needsRebuild();
+    int getKind();
 
+    IConfiguration getParent();
 
-	void setRebuildState(boolean rebuild);
+    CResourceData getResourceData();
 
-	int getKind();
+    boolean isValid();
 
-	IConfiguration getParent();
+    CLanguageData[] getCLanguageDatas();
 
-	CResourceData getResourceData();
+    ITool[] getTools();
 
-	boolean isValid();
+    boolean supportsBuild(boolean managed);
 
-	CLanguageData[] getCLanguageDatas();
+    /**
+     * Sets the value of a boolean option for this resource configuration.
+     *
+     * @param parent
+     *            The holder/parent of the option.
+     * @param option
+     *            The option to change.
+     * @param value
+     *            The value to apply to the option.
+     *
+     * @return IOption The modified option. This can be the same option or a newly
+     *         created option.
+     */
+    public IOption setOption(IHoldsOptions parent, IOption option, boolean value) throws BuildException;
 
-	ITool[] getTools();
+    /**
+     * Sets the value of a string option for this resource configuration.
+     *
+     * @param parent
+     *            The holder/parent of the option.
+     * @param option
+     *            The option that will be effected by change.
+     * @param value
+     *            The value to apply to the option.
+     *
+     * @return IOption The modified option. This can be the same option or a newly
+     *         created option.
+     */
+    public IOption setOption(IHoldsOptions parent, IOption option, String value) throws BuildException;
 
-	boolean supportsBuild(boolean managed);
+    /**
+     * Sets the value of a list option for this resource configuration.
+     *
+     * @param parent
+     *            The holder/parent of the option.
+     * @param option
+     *            The option to change.
+     * @param value
+     *            The values to apply to the option.
+     *
+     * @return IOption The modified option. This can be the same option or a newly
+     *         created option.
+     */
+    public IOption setOption(IHoldsOptions parent, IOption option, String[] value) throws BuildException;
 
-	/**
-	 * Sets the value of a boolean option for this resource configuration.
-	 *
-	 * @param parent The holder/parent of the option.
-	 * @param option The option to change.
-	 * @param value The value to apply to the option.
-	 *
-	 * @return IOption The modified option.  This can be the same option or a newly created option.
-	 */
-	public IOption setOption(IHoldsOptions parent, IOption option, boolean value) throws BuildException;
+    public IOption setOption(IHoldsOptions parent, IOption option, OptionStringValue[] value) throws BuildException;
 
-	/**
-	 * Sets the value of a string option for this resource configuration.
-	 *
-	 * @param parent The holder/parent of the option.
-	 * @param option The option that will be effected by change.
-	 * @param value The value to apply to the option.
-	 *
-	 * @return IOption The modified option.  This can be the same option or a newly created option.
-	 */
-	public IOption setOption(IHoldsOptions parent, IOption option, String value) throws BuildException;
-
-	/**
-	 * Sets the value of a list option for this resource configuration.
-	 *
-	 * @param parent The holder/parent of the option.
-	 * @param option The option to change.
-	 * @param value The values to apply to the option.
-	 *
-	 * @return IOption The modified option.  This can be the same option or a newly created option.
-	 */
-	public IOption setOption(IHoldsOptions parent, IOption option, String[] value) throws BuildException;
-
-	public IOption setOption(IHoldsOptions parent, IOption option, OptionStringValue[] value) throws BuildException;
-
-	boolean isSupported();
+    boolean isSupported();
 }

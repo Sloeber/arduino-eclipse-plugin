@@ -132,7 +132,6 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return fRis[curr].getTools();
     }
 
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#isExcluded()
      */
@@ -167,19 +166,6 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#needsRebuild()
-     */
-    @Override
-    public boolean needsRebuild() {
-        for (int i = 0; i < fRis.length; i++)
-            if (fRis[i].needsRebuild())
-                return true;
-        return false;
-    }
-
-
-
-    /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setExclude(boolean)
      */
     @Override
@@ -192,16 +178,9 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         String s = null;
         while (op != null) {
             s = op.getId();
-            op = op.getSuperClass();
         }
         return s;
     }
-
-
-
-
-
-
 
     private IOption setOption(IHoldsOptions parent, IOption option, Object value, int mode) throws BuildException {
         IOption op = null;
@@ -285,23 +264,12 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setRebuildState(boolean)
-     */
-    @Override
-    public void setRebuildState(boolean rebuild) {
-        for (int i = 0; i < fRis.length; i++)
-            fRis[i].setRebuildState(rebuild);
-    }
-
-    /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#supportsBuild(boolean)
      */
     @Override
     public boolean supportsBuild(boolean managed) {
         return fRis[curr].supportsBuild(managed);
     }
-
-
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#getId()

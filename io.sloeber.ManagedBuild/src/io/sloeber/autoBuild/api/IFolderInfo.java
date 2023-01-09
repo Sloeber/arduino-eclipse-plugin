@@ -20,49 +20,41 @@ import org.eclipse.cdt.core.settings.model.extension.CFolderData;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IFolderInfo extends IResourceInfo {
-	public final static String FOLDER_INFO_ELEMENT_NAME = "folderInfo"; //$NON-NLS-1$
+    public final static String FOLDER_INFO_ELEMENT_NAME = "folderInfo"; //$NON-NLS-1$
 
-	ITool[] getFilteredTools();
+    ITool[] getFilteredTools();
 
-	IToolChain getToolChain();
+    IToolChain getToolChain();
 
-	ITool getTool(String id);
+    ITool getTool(String id);
 
-	ITool[] getToolsBySuperClassId(String id);
+    ITool[] getToolsBySuperClassId(String id);
 
-	CFolderData getFolderData();
+    CFolderData getFolderData();
 
-	/**
-	 * Returns a <code>ITool</code> for the tool associated with the
-	 * output extension.
-	 *
-	 * @param extension the file extension of the output file
-	 * @return ITool
-	 *
-	 * @since 3.1
-	 */
-	ITool getToolFromOutputExtension(String extension);
+    /**
+     * Returns a <code>ITool</code> for the tool associated with the
+     * output extension.
+     *
+     * @param extension
+     *            the file extension of the output file
+     * @return ITool
+     *
+     * @since 3.1
+     */
+    ITool getToolFromOutputExtension(String extension);
 
-	/**
-	 * Returns a <code>ITool</code> for the tool associated with the
-	 * input extension.
-	 *
-	 * @param sourceExtension the file extension of the input file
-	 * @return ITool
-	 *
-	 * @since 3.1
-	 */
-	ITool getToolFromInputExtension(String sourceExtension);
+    /**
+     * Returns a <code>ITool</code> for the tool associated with the
+     * input extension.
+     *
+     * @param sourceExtension
+     *            the file extension of the input file
+     * @return ITool
+     *
+     * @since 3.1
+     */
+    ITool getToolFromInputExtension(String sourceExtension);
 
-
-	IModificationStatus getToolChainModificationStatus(ITool[] removed, ITool[] added);
-
-	void modifyToolChain(ITool[] removed, ITool[] added) throws BuildException;
-
-	IToolChain changeToolChain(IToolChain newSuperClass, String Id, String name) throws BuildException;
-
-	boolean isToolChainCompatible(IToolChain tCh);
-
-
-	boolean isHeaderFile(String ext);
+    boolean isHeaderFile(String ext);
 }

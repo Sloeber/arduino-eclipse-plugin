@@ -231,7 +231,7 @@ public class BuilderFactory {
     public static IBuilder createCustomBuilder(IConfiguration cfg, String builderId) throws CoreException {
         IBuilder builder = cfg.getBuilder();
         if (!builderId.equals(builder.getId())) {
-            builder = ManagedBuildManager.getExtensionBuilder(builderId);
+            builder = null;//TOFIX JABA  ManagedBuildManager.getExtensionBuilder(builderId);
         }
 
         if (builder != null)
