@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import static io.sloeber.autoBuild.core.Messages.*;
+import java.util.List;
 
 import org.eclipse.cdt.core.settings.model.MultiItemsHolder;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
@@ -32,13 +32,10 @@ import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
-import io.sloeber.autoBuild.api.OptionStringValue;
 
 /**
  * This class holds a number of IResourceInfo objects
@@ -128,7 +125,7 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#getTools()
      */
     @Override
-    public ITool[] getTools() {
+    public List<ITool> getTools() {
         return fRis[curr].getTools();
     }
 
@@ -165,103 +162,53 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setExclude(boolean)
-     */
-    @Override
-    public void setExclude(boolean excluded) {
-        for (int i = 0; i < fRis.length; i++)
-            fRis[i].setExclude(excluded);
-    }
 
-    private String getSuperClassId(IOption op) {
-        String s = null;
-        while (op != null) {
-            s = op.getId();
-        }
-        return s;
-    }
+
+
 
     private IOption setOption(IHoldsOptions parent, IOption option, Object value, int mode) throws BuildException {
         IOption op = null;
-        String ext = parent instanceof ITool ? ((ITool) parent).getDefaultInputExtension() : null;
-
-        String sid = getSuperClassId(option);
-        for (int i = 0; i < fRis.length; i++) {
-            IHoldsOptions[] hos;
-            if (parent instanceof ITool)
-                hos = fRis[i].getTools();
-            else if (parent instanceof IToolChain)
-                // If parent is an IToolChain then the resource infos must be at folder level
-                hos = new IHoldsOptions[] { ((IFolderInfo) fRis[i]).getToolChain() };
-            else // Shouldn't happen
-                throw new BuildException(MultiResourceInfo_MultiResourceInfo_UnhandledIHoldsOptionsType);
-
-            for (int j = 0; j < hos.length; j++) {
-                if (ext != null && !ext.equals(((ITool) hos[j]).getDefaultInputExtension()))
-                    continue;
-                IOption op2 = hos[j].getOptionBySuperClassId(sid);
-                if (op2 != null) {
-                    switch (mode) {
-                    case MODE_BOOL:
-                        op = fRis[i].setOption(hos[j], op2, ((Boolean) value).booleanValue());
-                        break;
-                    case MODE_STR:
-                        op = fRis[i].setOption(hos[j], op2, (String) value);
-                        break;
-                    case MODE_SAR:
-                        op = fRis[i].setOption(hos[j], op2, (String[]) value);
-                        break;
-                    case MODE_OSV:
-                        op = fRis[i].setOption(hos[j], op2, (OptionStringValue[]) value);
-                        break;
-                    }
-                }
-            }
-        }
+//        String ext = parent instanceof ITool ? ((ITool) parent).getDefaultInputExtension() : null;
+//
+//        String sid = getSuperClassId(option);
+//        for (int i = 0; i < fRis.length; i++) {
+//            IHoldsOptions[] hos;
+//            if (parent instanceof ITool)
+//                hos = fRis[i].getTools();
+//            else if (parent instanceof IToolChain)
+//                // If parent is an IToolChain then the resource infos must be at folder level
+//                hos = new IHoldsOptions[] { ((IFolderInfo) fRis[i]).getToolChain() };
+//            else // Shouldn't happen
+//                throw new BuildException(MultiResourceInfo_MultiResourceInfo_UnhandledIHoldsOptionsType);
+//
+//            for (int j = 0; j < hos.length; j++) {
+//                if (ext != null && !ext.equals(((ITool) hos[j]).getDefaultInputExtension()))
+//                    continue;
+//                IOption op2 = hos[j].getOptionBySuperClassId(sid);
+//                if (op2 != null) {
+//                    switch (mode) {
+//                    case MODE_BOOL:
+//                        op = fRis[i].setOption(hos[j], op2, ((Boolean) value).booleanValue());
+//                        break;
+//                    case MODE_STR:
+//                        op = fRis[i].setOption(hos[j], op2, (String) value);
+//                        break;
+//                    case MODE_SAR:
+//                        op = fRis[i].setOption(hos[j], op2, (String[]) value);
+//                        break;
+//                    case MODE_OSV:
+//                        op = fRis[i].setOption(hos[j], op2, (OptionStringValue[]) value);
+//                        break;
+//                    }
+//                }
+//            }
+//        }
         return op;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setOption(org.eclipse.cdt.managedbuilder.core.IHoldsOptions, org.eclipse.cdt.managedbuilder.core.IOption, boolean)
-     */
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, boolean value) throws BuildException {
-        return setOption(parent, option, Boolean.valueOf(value), MODE_BOOL);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setOption(org.eclipse.cdt.managedbuilder.core.IHoldsOptions, org.eclipse.cdt.managedbuilder.core.IOption, java.lang.String)
-     */
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, String value) throws BuildException {
-        return setOption(parent, option, value, MODE_STR);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setOption(org.eclipse.cdt.managedbuilder.core.IHoldsOptions, org.eclipse.cdt.managedbuilder.core.IOption, java.lang.String[])
-     */
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, String[] value) throws BuildException {
-        return setOption(parent, option, value, MODE_SAR);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setOption(org.eclipse.cdt.managedbuilder.core.IHoldsOptions, org.eclipse.cdt.managedbuilder.core.IOption, org.eclipse.cdt.managedbuilder.core.OptionStringValue[])
-     */
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, OptionStringValue[] value) throws BuildException {
-        return setOption(parent, option, value, MODE_OSV);
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setPath(org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public void setPath(IPath path) {
-        for (int i = 0; i < fRis.length; i++)
-            fRis[i].setPath(path);
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#supportsBuild(boolean)

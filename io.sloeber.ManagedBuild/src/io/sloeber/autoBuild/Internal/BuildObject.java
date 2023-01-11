@@ -14,6 +14,7 @@
 package io.sloeber.autoBuild.Internal;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
@@ -71,11 +72,30 @@ public abstract class BuildObject implements IBuildObject {
         ret[SUPER] = ret[ORIGINAL] = myConfigurationElement.getAttribute(attributeName);
         if (ret[SUPER] == null && myConfigurationSuperClassElement != null) {
             ret[SUPER] = myConfigurationSuperClassElement.getAttribute(attributeName);
-            if (ret[SUPER] == null) {
-                ret[SUPER] = EMPTY;
-            }
+        }
+        if (ret[SUPER] == null) {
+            ret[SUPER] = EMPTY;
+        }
+        if (ret[ORIGINAL] == null) {
+            ret[ORIGINAL] = EMPTY;
         }
         return ret;
+    }
+    
+    protected Object createExecutableExtension(String attributeName) {
+    	try {
+    		if(myConfigurationElement.getAttribute(attributeName)!=null) {
+			return myConfigurationElement.createExecutableExtension(attributeName);
+    		}
+    		if(myConfigurationSuperClassElement!=null && myConfigurationSuperClassElement.getAttribute(attributeName)!=null) {
+			return myConfigurationSuperClassElement.createExecutableExtension(attributeName);
+    		}
+
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
     }
 
     @Override

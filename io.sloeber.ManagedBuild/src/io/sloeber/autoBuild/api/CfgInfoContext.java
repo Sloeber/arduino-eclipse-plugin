@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import java.util.List;
+
 import org.eclipse.cdt.core.model.ILanguage;
 import org.eclipse.cdt.core.model.LanguageManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -144,20 +146,20 @@ public final class CfgInfoContext {
         }
 
         if (rcInfoId != null) {
-            rcInfo = (IResourceInfo) find(cfg.getResourceInfos(), rcInfoId);
+            rcInfo = cfg.getResourceInfoById(rcInfoId);
             if (rcInfo == null) {
                 return null;
             }
         }
 
         if (toolId != null) {
-            tool = (ITool) find(rcInfo.getTools(), toolId);
+            tool = (ITool)rcInfo.getToolById(toolId);
             if (tool == null)
                 return null;
         }
 
         if (inTypeId != null) {
-            inType = (IInputType) find(tool.getInputTypes(), inTypeId);
+            inType = tool.getInputTypeByID(inTypeId);
             if (inType == null)
                 return null;
         }
@@ -185,10 +187,10 @@ public final class CfgInfoContext {
         return doCreate(cfg, ids, context);
     }
 
-    private static IBuildObject find(IBuildObject objs[], String id) {
-        for (int i = 0; i < objs.length; i++) {
-            if (objs[i].getId().equals(id))
-                return objs[i];
+    private static IBuildObject find(List<IBuildObject> objs, String id) {
+        for (IBuildObject obj: objs) {
+            if (obj.getId().equals(id))
+                return obj;
         }
         return null;
     }

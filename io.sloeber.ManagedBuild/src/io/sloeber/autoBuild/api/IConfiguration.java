@@ -15,6 +15,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import java.util.List;
+
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -82,31 +84,7 @@ public interface IConfiguration extends IBuildObject {
     public String getDescription();
 
     /**
-     * Sets the description of the receiver to the value specified in the argument
-     */
-    public void setDescription(String description);
 
-    /**
-     * Creates a child resource configuration corresponding to the passed in file.
-     */
-    public IResourceConfiguration createResourceConfiguration(IFile file);
-
-    /**
-     * Creates the <code>IToolChain</code> child of this configuration.
-     *
-     * @param superClass
-     *            - The superClass, if any
-     * @param Id
-     *            - The id for the new tool chain
-     * @param name
-     *            - The name for the new tool chain
-     * @param isExtensionElement
-     *            - set {@code true} if the toolchain being created
-     *            represents extension point toolchain
-     *
-     * @return IToolChain
-     */
-    public IToolChain createToolChain(IToolChain superClass, String Id, String name, boolean isExtensionElement);
 
     /**
      * Returns the extension that should be applied to build artifacts created by
@@ -188,7 +166,7 @@ public interface IConfiguration extends IBuildObject {
      *
      * @return String[]
      */
-    public String[] getErrorParserList();
+    public List<String> getErrorParserList();
 
     /**
      * Returns default language settings providers IDs specified for the
@@ -198,7 +176,7 @@ public interface IConfiguration extends IBuildObject {
      *
      * @since 8.1
      */
-    public String[] getDefaultLanguageSettingsProviderIds();
+    public List<String> getDefaultLanguageSettingsProviderIds();
 
     /**
      * Projects have C or CC natures. Tools can specify a filter so they are not
@@ -208,7 +186,7 @@ public interface IConfiguration extends IBuildObject {
      * @return an array of <code>ITools</code> that have compatible filters
      *         for this configuration.
      */
-    ITool[] getFilteredTools();
+    List<ITool> getFilteredTools();
 
     /**
      * Returns the managed-project parent of this configuration, if this is a
@@ -255,7 +233,7 @@ public interface IConfiguration extends IBuildObject {
      *
      * @return IResourceConfigurations[]
      */
-    public IResourceConfiguration[] getResourceConfigurations();
+    public List<IResourceConfiguration> getResourceConfigurations();
 
     /**
      * Returns the <code>ITool</code> in this configuration's tool-chain with
@@ -267,21 +245,6 @@ public interface IConfiguration extends IBuildObject {
      */
     public ITool getTool(String id);
 
-    /**
-     * Returns the <code>ITool</code> in this configuration's tool-chain with
-     * the specified ID, or the tool(s) with a superclass with this id.
-     *
-     * <p>
-     * If the tool-chain does not have a tool with that ID, the method
-     * returns an empty array. It is the responsibility of the caller to
-     * verify the return value.
-     *
-     * @param id
-     *            unique identifier of the tool to search for
-     * @return <code>ITool[]</code>
-     * @since 3.0.2
-     */
-    public ITool[] getToolsBySuperClassId(String id);
 
     /**
      * Returns the <code>IToolChain</code> child of this configuration.
@@ -304,7 +267,7 @@ public interface IConfiguration extends IBuildObject {
      *
      * @return ITool[]
      */
-    public ITool[] getTools();
+    public List<ITool> getTools();
 
     /**
      * Returns the tool in this configuration specified with
@@ -341,97 +304,7 @@ public interface IConfiguration extends IBuildObject {
      */
     public boolean isHeaderFile(String ext);
 
-    /**
-     * Returns <code>true</code> if this configuration was loaded from a manifest
-     * file,
-     * and <code>false</code> if it was loaded from a project (.cdtbuild) file.
-     *
-     * @return boolean
-     */
-    public boolean isExtensionElement();
 
-    /**
-     * Returns whether this configuration has been changed and requires the
-     * project to be rebuilt.
-     *
-     * @return <code>true</code> if the configuration contains a change
-     *         that needs the project to be rebuilt.
-     *         Should not be called for an extension configuration.
-     */
-    public boolean needsRebuild();
-
-    /**
-     * Removes a resource configuration from the configuration's list.
-     *
-     * @param resConfig
-     *            - resource configuration to remove
-     */
-    //public void removeResourceConfiguration(IResourceInfo resConfig);
-
-    public void removeResourceInfo(IPath path);
-
-    /**
-     * Set (override) the extension that should be appended to the build artifact
-     * for the receiver.
-     */
-    public void setArtifactExtension(String extension);
-
-    /**
-     * Set the name of the artifact that will be produced when the receiver
-     * is built.
-     */
-    public void setArtifactName(String name);
-
-    /**
-     * Sets the prebuild step for the receiver to the value in the argument.
-     */
-    public void setPrebuildStep(String step);
-
-    /**
-     * Sets the postbuild step for the receiver to the value in the argument.
-     */
-    public void setPostbuildStep(String step);
-
-    /**
-     * Sets the prebuild step display string for the receiver to the value in the
-     * argument.
-     */
-    public void setPreannouncebuildStep(String announceStep);
-
-    /**
-     * Sets the postbuild step display string for the receiver to the value in the
-     * argument.
-     */
-    public void setPostannouncebuildStep(String announceStep);
-
-    /**
-     * Sets the command used to clean the outputs of this configuration.
-     * 
-     * @param command
-     *            - the command to clean outputs
-     */
-    public void setCleanCommand(String command);
-
-    /**
-     * Sets the semicolon separated list of error parser ids
-     */
-    public void setErrorParserIds(String ids);
-
-    public void setErrorParserList(String ids[]);
-
-    /**
-     * Sets the name of the receiver to the value specified in the argument
-     */
-    public void setName(String name);
-
-    /**
-     * Sets the rebuild state in this configuration.
-     *
-     * @param rebuild
-     *            <code>true</code> will force a rebuild the next time the project
-     *            builds
-     */
-    void setRebuildState(boolean rebuild);
 
     /**
      * Returns <code>true</code> if the configuration's tool-chain is supported on
@@ -460,19 +333,7 @@ public interface IConfiguration extends IBuildObject {
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
 
-    /**
-     * answers true if the configuration is temporary, otherwise - false
-     * 
-     * @return boolean
-     */
-    public boolean isTemporary();
 
-    /**
-     * Returns whether this configuration requires a full rebuild
-     *
-     * @return boolean
-     */
-    public boolean needsFullRebuild();
 
     /**
      * Calculates the configuration target tool.
@@ -509,31 +370,15 @@ public interface IConfiguration extends IBuildObject {
 
     IResourceInfo getResourceInfo(IPath path, boolean exactPath);
 
-    IResourceInfo[] getResourceInfos();
+    List<IResourceInfo> getResourceInfos();
 
     IResourceInfo getResourceInfoById(String id);
 
     IFolderInfo getRootFolderInfo();
 
-    IFileInfo createFileInfo(IPath path);
-
-    IFileInfo createFileInfo(IPath path, String id, String name);
-
-    IFileInfo createFileInfo(IPath path, IFolderInfo base, ITool baseTool, String id, String name);
-
-    IFileInfo createFileInfo(IPath path, IFileInfo base, String id, String name);
-
-    IFolderInfo createFolderInfo(IPath path);
-
-    IFolderInfo createFolderInfo(IPath path, String id, String name);
-
-    IFolderInfo createFolderInfo(IPath path, IFolderInfo base, String id, String name);
-
     CConfigurationData getConfigurationData();
 
-    ICSourceEntry[] getSourceEntries();
-
-    void setSourceEntries(ICSourceEntry[] entries);
+    List<ICSourceEntry> getSourceEntries();
 
     CBuildData getBuildData();
 
@@ -543,20 +388,11 @@ public interface IConfiguration extends IBuildObject {
 
     String getOutputFlag(String outputExt);
 
-    String[] getUserObjects(String extension);
+    List<String> getUserObjects(String extension);
 
-    String[] getLibs(String extension);
+    List<String> getLibs(String extension);
 
     boolean supportsBuild(boolean managed);
 
-    boolean isManagedBuildOn();
-
-    void setManagedBuildOn(boolean on) throws BuildException;
-
-    void changeBuilder(IBuilder newBuilder, String id, String name);
-
-    void setBuildArtefactType(String id) throws BuildException;
-
-    public void addResourceChangeState(int state);
 
 }

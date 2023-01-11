@@ -58,34 +58,34 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 
     public FolderInfo(FolderInfo folderInfo, String id, String resourceName, IPath path) {
         super(folderInfo, path, id, resourceName);
-
-        //        isExtensionElement = folderInfo.isExtensionElement();
-        //        if (!isExtensionElement)
-        setResourceData(new BuildFolderData(this));
-
-        if (folderInfo.getParent() != null)
-            setManagedBuildRevision(folderInfo.getParent().getManagedBuildRevision());
-
-        IToolChain parTc = folderInfo.getToolChain();
-        IToolChain extTc = ManagedBuildManager.getExtensionToolChain(parTc);
-        if (extTc == null)
-            extTc = parTc;
-
-        String tcId = ManagedBuildManager.calculateChildId(extTc.getId(), null);
-        createToolChain(extTc, tcId, parTc.getName(), false);
-
-        toolChain.createOptions(parTc);
-
-        ITool tools[] = parTc.getTools();
-        String subId = ""; //$NON-NLS-1$
-        for (ITool tool : tools) {
-            ITool extTool = null;//TOFIX JABA ManagedBuildManager.getExtensionTool(tool);
-            if (extTool == null)
-                extTool = tool;
-
-            subId = ManagedBuildManager.calculateChildId(extTool.getId(), null);
-            toolChain.createTool(tool, subId, tool.getName(), false);
-        }
+//
+//        //        isExtensionElement = folderInfo.isExtensionElement();
+//        //        if (!isExtensionElement)
+//        setResourceData(new BuildFolderData(this));
+//
+//        if (folderInfo.getParent() != null)
+//            setManagedBuildRevision(folderInfo.getParent().getManagedBuildRevision());
+//
+//        IToolChain parTc = folderInfo.getToolChain();
+//        IToolChain extTc = ManagedBuildManager.getExtensionToolChain(parTc);
+//        if (extTc == null)
+//            extTc = parTc;
+//
+//        String tcId = ManagedBuildManager.calculateChildId(extTc.getId(), null);
+//        createToolChain(extTc, tcId, parTc.getName(), false);
+//
+//        toolChain.createOptions(parTc);
+//
+//        ITool tools[] = parTc.getTools();
+//        String subId = ""; //$NON-NLS-1$
+//        for (ITool tool : tools) {
+//            ITool extTool = null;//TOFIX JABA ManagedBuildManager.getExtensionTool(tool);
+//            if (extTool == null)
+//                extTool = tool;
+//
+//            subId = ManagedBuildManager.calculateChildId(extTool.getId(), null);
+//            toolChain.createTool(tool, subId, tool.getName(), false);
+//        }
     }
 
     public FolderInfo(IConfiguration parent, IExtensionPoint root, IConfigurationElement element, boolean hasBody) {
@@ -94,7 +94,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         isExtensionElement = true;
         IConfigurationElement tcEl = null;
         if (!hasBody) {
-            setPath(Path.ROOT);
+            //setPath(Path.ROOT);
             id = (ManagedBuildManager.calculateChildId(parent.getId(), null));
             name = ("/"); //$NON-NLS-1$
             tcEl = element;
@@ -140,8 +140,8 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         super(parent, path, id, name);
 
         this.isExtensionElement = isExtensionElement;
-        if (!isExtensionElement)
-            setResourceData(new BuildFolderData(this));
+//        if (!isExtensionElement)
+//            setResourceData(new BuildFolderData(this));
 
     }
 
@@ -149,84 +149,84 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
             boolean cloneChildren) {
         super(cfg, cloneInfo, id);
 
-        isExtensionElement = cfg.isExtensionElement();
-        if (!isExtensionElement)
-            setResourceData(new BuildFolderData(this));
-
-        String subName;
-        if (!cloneInfo.isExtensionElement)
-            cloneChildren = true;
-
-        boolean copyIds = cloneChildren && id.equals(cloneInfo.id);
-
-        IToolChain cloneToolChain = cloneInfo.getToolChain();
-        IToolChain extToolChain = ManagedBuildManager.getExtensionToolChain(cloneToolChain);
-        if (extToolChain == null)
-            extToolChain = cloneToolChain;
-
-        subName = cloneToolChain.getName();
-
-        if (cloneChildren) {
-            String subId = copyIds ? cloneToolChain.getId()
-                    : ManagedBuildManager.calculateChildId(extToolChain.getId(), null);
-            toolChain = new ToolChain(this, subId, subName, superIdMap, (ToolChain) cloneToolChain);
-
-        } else {
-            // Add a tool-chain element that specifies as its superClass the
-            // tool-chain that is the child of the configuration.
-            String subId = ManagedBuildManager.calculateChildId(extToolChain.getId(), null);
-            IToolChain newChain = createToolChain(extToolChain, subId, extToolChain.getName(), false);
-
-            // For each option/option category child of the tool-chain that is
-            // the child of the selected configuration element, create an option/
-            // option category child of the cloned configuration's tool-chain element
-            // that specifies the original tool element as its superClass.
-            newChain.createOptions(extToolChain);
-
-            // For each tool element child of the tool-chain that is the child of
-            // the selected configuration element, create a tool element child of
-            // the cloned configuration's tool-chain element that specifies the
-            // original tool element as its superClass.
-            ITool[] tools = extToolChain.getTools();
-            for (ITool tool : tools) {
-                Tool toolChild = (Tool) tool;
-                subId = ManagedBuildManager.calculateChildId(toolChild.getId(), null);
-                newChain.createTool(toolChild, subId, toolChild.getName(), false);
-            }
-
-            ITargetPlatform tpBase = cloneInfo.getToolChain().getTargetPlatform();
-            ITargetPlatform extTp = tpBase;
-            for (; extTp != null && !extTp.isExtensionElement(); extTp = extTp.getSuperClass()) {
-                // empty body, loop is to find extension element only
-            }
-
-            TargetPlatform tp;
-            if (extTp != null) {
-                int nnn = ManagedBuildManager.getRandomNumber();
-                subId = copyIds ? tpBase.getId() : extTp.getId() + "." + nnn; //$NON-NLS-1$
-                tp = new TargetPlatform(newChain, subId, tpBase.getName(), (TargetPlatform) tpBase);
-            } else {
-                subId = copyIds ? tpBase.getId() : ManagedBuildManager.calculateChildId(getId(), null);
-                subName = tpBase != null ? tpBase.getName() : ""; //$NON-NLS-1$
-                tp = new TargetPlatform((ToolChain) newChain, null, subId, subName, false);
-            }
-
-            ((ToolChain) newChain).setTargetPlatform(tp);
-        }
-
-        if (isRoot())
-            containsDiscoveredScannerInfo = cloneInfo.containsDiscoveredScannerInfo;
-
-        if (copyIds) {
-            isDirty = cloneInfo.isDirty;
-            needsRebuild = cloneInfo.needsRebuild;
-        }
+//        isExtensionElement = cfg.isExtensionElement();
+//        if (!isExtensionElement)
+//            setResourceData(new BuildFolderData(this));
+//
+//        String subName;
+//        if (!cloneInfo.isExtensionElement)
+//            cloneChildren = true;
+//
+//        boolean copyIds = cloneChildren && id.equals(cloneInfo.id);
+//
+//        IToolChain cloneToolChain = cloneInfo.getToolChain();
+//        IToolChain extToolChain = ManagedBuildManager.getExtensionToolChain(cloneToolChain);
+//        if (extToolChain == null)
+//            extToolChain = cloneToolChain;
+//
+//        subName = cloneToolChain.getName();
+//
+//        if (cloneChildren) {
+//            String subId = copyIds ? cloneToolChain.getId()
+//                    : ManagedBuildManager.calculateChildId(extToolChain.getId(), null);
+//            toolChain = new ToolChain(this, subId, subName, superIdMap, (ToolChain) cloneToolChain);
+//
+//        } else {
+//            // Add a tool-chain element that specifies as its superClass the
+//            // tool-chain that is the child of the configuration.
+//            String subId = ManagedBuildManager.calculateChildId(extToolChain.getId(), null);
+//            IToolChain newChain = createToolChain(extToolChain, subId, extToolChain.getName(), false);
+//
+//            // For each option/option category child of the tool-chain that is
+//            // the child of the selected configuration element, create an option/
+//            // option category child of the cloned configuration's tool-chain element
+//            // that specifies the original tool element as its superClass.
+//            newChain.createOptions(extToolChain);
+//
+//            // For each tool element child of the tool-chain that is the child of
+//            // the selected configuration element, create a tool element child of
+//            // the cloned configuration's tool-chain element that specifies the
+//            // original tool element as its superClass.
+//            ITool[] tools = extToolChain.getTools();
+//            for (ITool tool : tools) {
+//                Tool toolChild = (Tool) tool;
+//                subId = ManagedBuildManager.calculateChildId(toolChild.getId(), null);
+//                newChain.createTool(toolChild, subId, toolChild.getName(), false);
+//            }
+//
+//            ITargetPlatform tpBase = cloneInfo.getToolChain().getTargetPlatform();
+//            ITargetPlatform extTp = tpBase;
+//            for (; extTp != null && !extTp.isExtensionElement(); extTp = extTp.getSuperClass()) {
+//                // empty body, loop is to find extension element only
+//            }
+//
+//            TargetPlatform tp;
+//            if (extTp != null) {
+//                int nnn = ManagedBuildManager.getRandomNumber();
+//                subId = copyIds ? tpBase.getId() : extTp.getId() + "." + nnn; //$NON-NLS-1$
+//                tp = new TargetPlatform(newChain, subId, tpBase.getName(), (TargetPlatform) tpBase);
+//            } else {
+//                subId = copyIds ? tpBase.getId() : ManagedBuildManager.calculateChildId(getId(), null);
+//                subName = tpBase != null ? tpBase.getName() : ""; //$NON-NLS-1$
+//                tp = new TargetPlatform((ToolChain) newChain, null, subId, subName, false);
+//            }
+//
+//            ((ToolChain) newChain).setTargetPlatform(tp);
+//        }
+//
+//        if (isRoot())
+//            containsDiscoveredScannerInfo = cloneInfo.containsDiscoveredScannerInfo;
+//
+//        if (copyIds) {
+//            isDirty = cloneInfo.isDirty;
+//            needsRebuild = cloneInfo.needsRebuild;
+//        }
 
     }
 
     private boolean conflictsWithRootTools(ITool tool) {
         IFolderInfo rf = getParent().getRootFolderInfo();
-        ITool[] rootTools = rf.getFilteredTools();
+        List<ITool> rootTools = rf.getFilteredTools();
         ITool tt = getParent().getTargetTool();
         for (ITool rootTool : rootTools) {
             if (rootTool == tt || getMultipleOfType(rootTool) != null) {
@@ -261,14 +261,14 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         //        return foundNonMultiplePrimary ? null : mType;
     }
 
-    public ITool[] filterTools(ITool localTools[], IManagedProject manProj) {
+    public List<ITool> filterTools(List<ITool> localTools, IManagedProject manProj) {
         if (manProj == null) {
             // If this is not associated with a project, then there is nothing to filter
             // with
             return localTools;
         }
         IProject project = (IProject) manProj.getOwner();
-        Vector<Tool> tools = new Vector<>(localTools.length);
+        List<ITool> tools = new ArrayList<>(localTools.size());
         for (ITool t : localTools) {
             Tool tool = (Tool) t;
             if (!tool.isEnabled(this))
@@ -303,15 +303,15 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         }
 
         // Answer the filtered tools as an array
-        return tools.toArray(new Tool[tools.size()]);
+        return tools;
     }
 
     @Override
-    public ITool[] getFilteredTools() {
+    public List<ITool> getFilteredTools() {
         if (toolChain == null) {
-            return new ITool[0];
+            return new ArrayList<ITool>();
         }
-        ITool[] localTools = toolChain.getTools();
+        List<ITool> localTools = toolChain.getTools();
         IManagedProject manProj = getParent().getManagedProject();
         return filterTools(localTools, manProj);
     }
@@ -327,7 +327,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
     }
 
     @Override
-    public ITool[] getTools() {
+    public List<ITool> getTools() {
         return toolChain.getTools();
     }
 
@@ -336,10 +336,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         return toolChain.getTool(id);
     }
 
-    @Override
-    public ITool[] getToolsBySuperClassId(String id) {
-        return toolChain.getToolsBySuperClassId(id);
-    }
 
     ToolChain createToolChain(IToolChain superClass, String Id, String name, boolean isExtensionElement) {
         toolChain = new ToolChain(this, superClass, Id, name, isExtensionElement);
@@ -375,7 +371,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         // Treat a null argument as an empty string
         String ext = extension == null ? "" : extension; //$NON-NLS-1$
         // Get all the tools for the current config
-        ITool[] tools = getFilteredTools();
+       List< ITool> tools = getFilteredTools();
         for (ITool tool : tools) {
             if (tool.producesFileType(ext)) {
                 return tool;
@@ -543,7 +539,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         if (manProj != null) {
             project = (IProject) manProj.getOwner();
         }
-        ITool[] tools = getFilteredTools();
+        List<ITool> tools = getFilteredTools();
         for (ITool tool : tools) {
             try {
                 if (project != null) {
@@ -573,24 +569,8 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         return false;
     }
 
-    @Override
-    public Set<String> contributeErrorParsers(Set<String> set) {
-        if (toolChain != null)
-            set = toolChain.contributeErrorParsers(this, set, true);
-        return set;
-    }
 
-    @Override
-    public void resetErrorParsers() {
-        if (toolChain != null)
-            toolChain.resetErrorParsers(this);
-    }
 
-    @Override
-    void removeErrorParsers(Set<String> set) {
-        if (toolChain != null)
-            toolChain.removeErrorParsers(this, set);
-    }
 
     @Override
     public ITool getToolById(String id) {
@@ -607,10 +587,10 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 
     @Override
     public boolean hasCustomSettings() {
-        IFolderInfo parentFo = getParentFolderInfo();
-        if (parentFo == null)
+//        IFolderInfo parentFo = getParentFolderInfo();
+//        if (parentFo == null)
             return true;
-        return toolChain.hasCustomSettings((ToolChain) parentFo.getToolChain());
+//        return toolChain.hasCustomSettings((ToolChain) parentFo.getToolChain());
     }
 
     public boolean containsDiscoveredScannerInfo() {

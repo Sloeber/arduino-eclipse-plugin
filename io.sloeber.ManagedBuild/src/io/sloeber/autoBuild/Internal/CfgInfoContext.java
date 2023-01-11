@@ -147,14 +147,14 @@ public final class CfgInfoContext {
         }
 
         if (rcInfoId != null) {
-            rcInfo = (IResourceInfo) find(cfg.getResourceInfos(), rcInfoId);
+            rcInfo = cfg.getResourceInfoById(rcInfoId);
             if (rcInfo == null) {
                 return null;
             }
         }
 
         if (toolId != null) {
-            tool = (ITool) find(rcInfo.getTools(), toolId);
+            tool = rcInfo.getToolById(toolId);
             if (tool == null)
                 return null;
         }

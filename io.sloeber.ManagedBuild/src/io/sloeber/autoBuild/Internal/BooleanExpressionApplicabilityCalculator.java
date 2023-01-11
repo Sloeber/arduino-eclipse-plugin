@@ -141,59 +141,9 @@ public class BooleanExpressionApplicabilityCalculator implements IOptionApplicab
     //        return adjusted;
     //    }
 
-    public boolean adjustToolChain(IFolderInfo info, IToolChain tChain, boolean extensionAdjustment) {
-        boolean adjusted = false;
-        AdjustmentContext context = extensionAdjustment ? null : new AdjustmentContext();
-        for (OptionEnablementExpression expression : fExpressions) {
-            if (expression.adjustToolChain(info, tChain, context, extensionAdjustment))
-                adjusted = true;
-        }
 
-        if (context != null) {
-            String unadjusted[] = context.getUnadjusted();
-            for (int i = 0; i < unadjusted.length; i++) {
-                OptionEnablementExpression.adjustToolChain(info, tChain, unadjusted[i], null, extensionAdjustment);
-            }
-        }
 
-        return adjusted;
-    }
 
-    public boolean adjustTool(IResourceInfo info, ITool tool, boolean extensionAdjustment) {
-        boolean adjusted = false;
-        AdjustmentContext context = extensionAdjustment ? null : new AdjustmentContext();
-        for (OptionEnablementExpression expression : fExpressions) {
-            if (expression.adjustTool(info, tool, context, extensionAdjustment))
-                adjusted = true;
-        }
-
-        if (context != null) {
-            String unadjusted[] = context.getUnadjusted();
-            for (int i = 0; i < unadjusted.length; i++) {
-                OptionEnablementExpression.adjustTool(info, tool, unadjusted[i], null, extensionAdjustment);
-            }
-        }
-
-        return adjusted;
-    }
-
-    public boolean adjustConfiguration(IConfiguration cfg, boolean extensionAdjustment) {
-        boolean adjusted = false;
-        AdjustmentContext context = extensionAdjustment ? null : new AdjustmentContext();
-        for (OptionEnablementExpression expression : fExpressions) {
-            if (expression.adjustConfiguration(cfg, context, extensionAdjustment))
-                adjusted = true;
-        }
-
-        if (context != null) {
-            String unadjusted[] = context.getUnadjusted();
-            for (int i = 0; i < unadjusted.length; i++) {
-                OptionEnablementExpression.adjustConfiguration(cfg, unadjusted[i], null, extensionAdjustment);
-            }
-        }
-
-        return adjusted;
-    }
 
     private Map<String, Set<String>> getReferencedProperties() {
         if (fRefPropsMap == null) {

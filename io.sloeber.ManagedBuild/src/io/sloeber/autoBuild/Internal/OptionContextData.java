@@ -14,6 +14,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import java.util.List;
+
 import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileInfo;
@@ -102,30 +104,31 @@ public class OptionContextData implements IOptionContextData {
 
             IHoldsOptions tmp = option.getOptionHolder();
 
-            ITool tools[] = null;
-            if (tCh != null) {
-                for (IToolChain cur = tCh; cur != null; cur = cur.getSuperClass()) {
-                    if (cur == tmp)
-                        return tCh;
-                }
-                tools = tCh.getTools();
-            } else if (rcInfo != null) {
+            List<ITool> tools = null;
+//            if (tCh != null) {
+//                for (IToolChain cur = tCh; cur != null; cur = cur.getSuperClass()) {
+//                    if (cur == tmp)
+//                        return tCh;
+//                }
+//                tools = tCh.getTools();
+//            } else 
+            	if (rcInfo != null) {
                 tools = rcInfo.getTools();
             }
 
-            if (tools != null) {
-                for (int i = 0; i < tools.length; i++) {
-                    for (ITool cur = tools[i]; cur != null; cur = cur.getSuperClass()) {
-                        if (cur == tmp) {
-                            ITool tool = tools[i];
-                            if (!tool.isExtensionElement() && tool.getParent() != null) {
-                                ho = tools[i];
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+//            if (tools != null) {
+//                for (int i = 0; i < tools.length; i++) {
+//                    for (ITool cur = tools[i]; cur != null; cur = cur.getSuperClass()) {
+//                        if (cur == tmp) {
+//                            ITool tool = tools[i];
+//                            if (!tool.isExtensionElement() && tool.getParent() != null) {
+//                                ho = tools[i];
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
             if (ho == null && tmp != null) {
                 if (tmp instanceof ITool) {
@@ -135,7 +138,7 @@ public class OptionContextData implements IOptionContextData {
                     }
                 } else if (tmp instanceof IToolChain) {
                     IToolChain tChain = (IToolChain) tmp;
-                    if (!tChain.isExtensionElement() && tChain.getParent() != null) {
+                    if ( tChain.getParent() != null) {
                         ho = tmp;
                     }
                 }

@@ -16,6 +16,7 @@ package io.sloeber.autoBuild.Internal;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -177,9 +178,9 @@ public class CfgScannerConfigInfoFactory2 {
 
                     Map<CfgInfoContext, IScannerConfigBuilderInfo2> configMap = getConfigInfoMap(baseMap);
 
-                    IResourceInfo[] rcInfos = cfg.getResourceInfos();
+                    List<IResourceInfo> rcInfos = cfg.getResourceInfos();
                     for (IResourceInfo rcInfo : rcInfos) {
-                        ITool tools[];
+                        List<ITool> tools;
                         if (rcInfo instanceof IFolderInfo) {
                             tools = ((IFolderInfo) rcInfo).getFilteredTools();
                         } else {

@@ -14,6 +14,7 @@
 package io.sloeber.autoBuild.Internal;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,11 +108,11 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
         }
 
         protected String[] getConfigurationReservedNames(IConfiguration configuration) {
-            ITool tools[] = configuration.getFilteredTools();
+           List< ITool> tools = configuration.getFilteredTools();
             if (tools != null) {
                 Set<String> set = new HashSet<>();
-                for (int i = 0; i < tools.length; i++) {
-                    IOutputType ots[] = tools[i].getOutputTypes();
+                for (ITool tool: tools) {
+                    IOutputType ots[] = tool.getOutputTypes();
                     if (ots != null) {
                         for (int j = 0; j < ots.length; j++) {
                             String varName = ots[j].getBuildVariable();
@@ -121,7 +122,7 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
                         }
                     }
 
-                    IInputType its[] = tools[i].getInputTypes();
+                    IInputType its[] = tool.getInputTypes();
                     if (its != null) {
                         for (int j = 0; j < its.length; j++) {
                             String varName = its[j].getBuildVariable();

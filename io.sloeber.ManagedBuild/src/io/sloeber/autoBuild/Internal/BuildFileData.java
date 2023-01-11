@@ -37,18 +37,6 @@ public class BuildFileData extends CFileData {
         return fFileInfo.getPath();
     }
 
-    //	public boolean isExcluded() {
-    //		return fFileInfo.isExcluded();
-    //	}
-    //
-    //	public void setExcluded(boolean excluded) {
-    //		fFileInfo.setExclude(excluded);
-    //	}
-
-    @Override
-    public void setPath(IPath path) {
-        fFileInfo.setPath(path);
-    }
 
     @Override
     public String getId() {
@@ -87,5 +75,11 @@ public class BuildFileData extends CFileData {
         if (lData != null)
             lData.clearCachedData();
     }
+
+	@Override
+	public void setPath(IPath path) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

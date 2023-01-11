@@ -167,18 +167,19 @@ public class BuildEntryStorage extends AbstractEntryStorage {
     }
 
     private void restoreDefaults() {
-        ITool tool = fLangData.getTool();
-        for (IOption option : fLangData.getOptionsForKind(getKind())) {
-            if (option.getParent() == tool) {
-                tool.removeOption(option);
-            }
-        }
-
-        for (IOption option : fLangData.getUndefOptionsForKind(getKind())) {
-            if (option.getParent() == tool) {
-                tool.removeOption(option);
-            }
-        }
+    	//TOFIX JABA
+//        ITool tool = fLangData.getTool();
+//        for (IOption option : fLangData.getOptionsForKind(getKind())) {
+//            if (option.getParent() == tool) {
+//                tool.removeOption(option);
+//            }
+//        }
+//
+//        for (IOption option : fLangData.getUndefOptionsForKind(getKind())) {
+//            if (option.getParent() == tool) {
+//                tool.removeOption(option);
+//            }
+//        }
     }
 
     @Override

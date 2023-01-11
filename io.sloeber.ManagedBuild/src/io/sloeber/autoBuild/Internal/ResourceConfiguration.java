@@ -17,6 +17,7 @@ package io.sloeber.autoBuild.Internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,11 +150,11 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
                 baseTool = null;
         }
         // Add the resource specific tools to this resource.
-        ITool tools[] = folderInfo.getFilteredTools();
+        List<ITool> tools = folderInfo.getFilteredTools();
         String subId = ""; //$NON-NLS-1$
-        for (int i = 0; i < tools.length; i++) {
-            if (tools[i].buildsFileType(theFile)) {
-                baseTool = tools[i];
+        for (ITool tool: tools) {
+            if (tool.buildsFileType(theFile)) {
+                baseTool = tool;
                 break;
             }
         }
@@ -244,11 +245,11 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
                         ITool otherExtTool = null;//JABA TOFIX  ManagedBuildManager.getExtensionTool(otherSuperTool);
                         if (otherExtTool != null) {
                             if (thisRcInfo != null) {
-                                ITool tools[] = thisRcInfo.getTools();
-                                for (int i = 0; i < tools.length; i++) {
-                                    ITool thisExtTool = null;//TOFIX JABA  ManagedBuildManager.getExtensionTool(tools[i]);
+                                List<ITool> tools = thisRcInfo.getTools();
+                                for (ITool tool: tools) {
+                                    ITool thisExtTool = null;//TOFIX JABA  ManagedBuildManager.getExtensionTool(tool);
                                     if (otherExtTool.equals(thisExtTool)) {
-                                        toolSuperClass = tools[i];
+                                        toolSuperClass =tool;
                                         superId = toolSuperClass.getId();
                                         break;
                                     }
@@ -401,14 +402,8 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
      * @see org.eclipse.cdt.core.build.managed.IResourceConfiguration#getTools()
      */
     @Override
-    public ITool[] getTools() {
-        List<ITool> toolList = getToolList();
-        ITool[] tools = new ITool[toolList.size()];
-        int i = 0;
-        for (ITool tool : toolList) {
-            tools[i++] = tool;
-        }
-        return tools;
+    public List<ITool> getTools() {
+        return  getToolList();
     }
 
     /*
@@ -513,7 +508,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
      * org.eclipse.cdt.managedbuilder.core.IResourceConfiguration#getToolsToInvoke()
      */
     @Override
-    public ITool[] getToolsToInvoke() {
+    public List<ITool> getToolsToInvoke() {
         /*
          * toolsToInvoke is an ordered list of tool ids for the currently defined tools
          * in the resource configuration. Defaults to all tools in the order found.
@@ -524,12 +519,9 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
          * returns an ITool[] to consumers (i.e., the makefile generator).
          */
         String t_ToolsToInvoke = ""; //$NON-NLS-1$
-        ITool[] resConfigTools;
-        ITool[] tools;
-        String rcbsToolId = ""; //$NON-NLS-1$
-        int len;
-        int j;
-        int rcbsToolIdx = -1;
+        List<ITool> resConfigTools;
+        List<ITool> tools=new LinkedList<>();
+
         resConfigTools = getTools();
 
         /*
@@ -541,23 +533,24 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         /*
          * If no tools are currently defined, return a zero lengh array of ITool.
          */
-        if (resConfigTools.length == 0) {
-            toolsToInvoke = ""; //$NON-NLS-1$
-            tools = new ITool[0];
-            return tools;
+        if (resConfigTools.size() == 0) {
+        	toolsToInvoke="";
+            return resConfigTools;
         }
 
         /*
          * See if there is an rcbs tool defined. There should only be one at most.
          */
-        for (int i = 0; i < resConfigTools.length; i++) {
-            if (resConfigTools[i].getCustomBuildStep() && !resConfigTools[i].isExtensionElement()) {
-                rcbsToolId = resConfigTools[i].getId();
-                rcbsToolIdx = i;
+        String rcbsToolId = null;
+        ITool rcbsToolIdx = null;
+        for (ITool resConfigTool: resConfigTools) {
+            if (resConfigTool.getCustomBuildStep() && !resConfigTool.isExtensionElement()) {
+                rcbsToolId = resConfigTool.getId();
+                rcbsToolIdx = resConfigTool;
                 break;
             }
         }
-        if (!rcbsToolId.isEmpty()) {
+        if (rcbsToolId!=null) {
             /*
              * Here if an rcbs tool is defined. Apply the tools according to the current
              * rcbsApplicability setting.
@@ -565,87 +558,65 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             switch (rcbsApplicability.intValue()) {
             case KIND_APPLY_RCBS_TOOL_AS_OVERRIDE:
                 toolsToInvoke = rcbsToolId;
-                tools = new ITool[1];
-                tools[0] = resConfigTools[rcbsToolIdx];
-                break;
+                tools.add(rcbsToolIdx);
+                return tools;
             case KIND_APPLY_RCBS_TOOL_AFTER:
-                j = 0;
-                tools = new ITool[resConfigTools.length];
-                for (int i = 0; i < resConfigTools.length; i++) {
-                    if (resConfigTools[i].getId() != rcbsToolId) {
-                        t_ToolsToInvoke += resConfigTools[i].getId() + ";"; //$NON-NLS-1$
-                        tools[j++] = resConfigTools[i];
+                for (ITool curtool: resConfigTools) {
+                    if (curtool.getId() != rcbsToolId) {
+                        t_ToolsToInvoke += curtool.getId() + ";"; //$NON-NLS-1$
+                        tools.add(curtool);
                     }
                 }
                 t_ToolsToInvoke += rcbsToolId;
-                tools[j++] = resConfigTools[rcbsToolIdx];
+                tools.add(rcbsToolIdx);
                 toolsToInvoke = t_ToolsToInvoke;
-                break;
+                return tools;
             case KIND_APPLY_RCBS_TOOL_BEFORE:
-                j = 0;
-                tools = new ITool[resConfigTools.length];
-                t_ToolsToInvoke = rcbsToolId + ";"; //$NON-NLS-1$
-                tools[j++] = resConfigTools[rcbsToolIdx];
-                for (int i = 0; i < resConfigTools.length; i++) {
-                    if (resConfigTools[i].getId() != rcbsToolId) {
-                        t_ToolsToInvoke += resConfigTools[i].getId() + ";"; //$NON-NLS-1$
-                        tools[j++] = resConfigTools[i];
+                t_ToolsToInvoke = rcbsToolId ;
+                tools.add(rcbsToolIdx);
+                for (ITool curtool: resConfigTools) {
+                    if (curtool.getId() != rcbsToolId) {
+                        t_ToolsToInvoke +=  ";"+curtool.getId() ; //$NON-NLS-1$
+                        tools.add(curtool);
                     }
                 }
-                len = t_ToolsToInvoke.length();
-                t_ToolsToInvoke = t_ToolsToInvoke.substring(0, len - 1);
                 toolsToInvoke = t_ToolsToInvoke;
-                break;
+                return tools;
             case KIND_DISABLE_RCBS_TOOL:
                 /*
                  * If the rcbs tool is the only tool and the user has disabled it, there are no
                  * tools to invoke in the resource configuration.
                  */
-                if (resConfigTools.length == 1) {
-                    tools = new ITool[0];
+                if (resConfigTools.size() == 1) {
                     toolsToInvoke = ""; //$NON-NLS-1$
-                    break;
-                }
-                j = 0;
-                tools = new ITool[resConfigTools.length - 1];
-                for (int i = 0; i < resConfigTools.length; i++) {
-                    if (resConfigTools[i].getId() != rcbsToolId) {
-                        t_ToolsToInvoke += resConfigTools[i].getId() + ";"; //$NON-NLS-1$
-                        tools[j++] = resConfigTools[i];
+                    
+                }else {
+                String prepend="";
+                for (ITool curtool: resConfigTools) {
+                	if (curtool.getId() != rcbsToolId) {
+                        t_ToolsToInvoke += prepend +curtool.getId() ; //$NON-NLS-1$
+                        prepend=";";
+                        tools.add(curtool);
                     }
                 }
-                len = t_ToolsToInvoke.length();
-                t_ToolsToInvoke = t_ToolsToInvoke.substring(0, len - 1);
-                toolsToInvoke = t_ToolsToInvoke;
-                break;
+                toolsToInvoke = t_ToolsToInvoke;}
+                return tools;
             default:
                 /*
                  * If we get an unexpected value, apply all tools in the order found.
                  */
-                tools = new ITool[resConfigTools.length];
-                for (int i = 0; i < resConfigTools.length; i++) {
-                    t_ToolsToInvoke += resConfigTools[i].getId() + ";"; //$NON-NLS-1$
-                    tools[i] = resConfigTools[i];
-                }
-                len = t_ToolsToInvoke.length();
-                t_ToolsToInvoke = t_ToolsToInvoke.substring(0, len - 1);
-                toolsToInvoke = t_ToolsToInvoke;
-                break;
+                
             }
-        } else {
-            /*
-             * Here if no rcbs tool is defined, but there are other tools in the resource
-             * configuration. Specify all tools in the order found.
-             */
-            tools = new ITool[resConfigTools.length];
-            for (int i = 0; i < resConfigTools.length; i++) {
-                t_ToolsToInvoke += resConfigTools[i].getId() + ";"; //$NON-NLS-1$
-                tools[i] = resConfigTools[i];
+        } 
+        String prepend="";
+        for (ITool curtool: resConfigTools) {
+        	if (curtool.getId() != rcbsToolId) {
+                t_ToolsToInvoke += prepend +curtool.getId() ; //$NON-NLS-1$
+                prepend=";";
+                tools.add(curtool);
             }
-            len = t_ToolsToInvoke.length();
-            t_ToolsToInvoke = t_ToolsToInvoke.substring(0, len - 1);
-            toolsToInvoke = t_ToolsToInvoke;
         }
+        toolsToInvoke = t_ToolsToInvoke;
         return tools;
     }
 
@@ -679,7 +650,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         if (path == null)
             return;
         IPath p = new Path(path).removeFirstSegments(1);
-        setPath(p);
+  //      setPath(p);
     }
 
     @Override
@@ -689,22 +660,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         return tool;
     }
 
-    public void reset() {
-        // We just need to remove all Options
-        ITool[] tools = getTools();
-        // Send out the event to notify the options that they are about to be removed
-        // ManagedBuildManager.performValueHandlerEvent(this,
-        // IManagedOptionValueHandler.EVENT_CLOSE);
-        // Remove the configurations
-        for (int i = 0; i < tools.length; i++) {
-            ITool tool = tools[i];
-            IOption[] opts = tool.getOptions();
-            for (int j = 0; j < opts.length; j++) {
-                tool.removeOption(opts[j]);
-            }
-        }
-        // setExclude(false);
-    }
+
 
     // private IBuildObject getHoldersParent(IOption option) {
     // IHoldsOptions holder = option.getOptionHolder();
@@ -751,7 +707,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public CLanguageData[] getCLanguageDatas() {
-        ITool tools[] = getTools/* ToInvoke */();
+        List<ITool> tools= getTools/* ToInvoke */();
         List<CLanguageData> list = new ArrayList<>();
         for (ITool tool : tools) {
             CLanguageData datas[] = tool.getCLanguageDatas();
@@ -764,10 +720,9 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public IToolChain getBaseToolChain() {
-        ITool tools[] = getToolsToInvoke();
+    	List<ITool> tools = getToolsToInvoke();
         ITool baseTool = null;
-        for (int i = 0; i < tools.length; i++) {
-            ITool tool = tools[i];
+        for (ITool tool:tools) {
             ITool superTool = tool.getSuperClass();
             if (superTool != null) {
                 baseTool = superTool;
@@ -792,28 +747,13 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public boolean supportsBuild(boolean managed) {
-        ITool tools[] = getToolsToInvoke();
-        for (int i = 0; i < tools.length; i++) {
-            if (!tools[i].supportsBuild(managed))
+    	List<ITool> tools = getToolsToInvoke();
+        for (ITool tool: tools) {
+            if (!tool.supportsBuild(managed))
                 return false;
         }
 
         return true;
-    }
-
-    @Override
-    public Set<String> contributeErrorParsers(Set<String> set) {
-        return contributeErrorParsers(getToolsToInvoke(), set);
-    }
-
-    @Override
-    public void resetErrorParsers() {
-        resetErrorParsers(getToolsToInvoke());
-    }
-
-    @Override
-    void removeErrorParsers(Set<String> set) {
-        removeErrorParsers(getToolsToInvoke(), set);
     }
 
     @Override
@@ -825,39 +765,40 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public boolean hasCustomSettings() {
-        IResourceInfo parentRc = getParentResourceInfo();
-        if (parentRc instanceof FolderInfo) {
-            IPath path = getPath();
-            String ext = path.getFileExtension();
-            if (ext == null)
-                ext = ""; //$NON-NLS-1$
-            ITool otherTool = ((FolderInfo) parentRc).getToolFromInputExtension(ext);
-            if (otherTool == null)
-                return true;
-
-            ITool[] tti = getToolsToInvoke();
-            if (tti.length != 1)
-                return true;
-
-            return ((Tool) tti[0]).hasCustomSettings((Tool) otherTool);
-        }
-        ITool[] tools = getTools();
-        ITool[] otherTools = ((IFileInfo) parentRc).getTools();
-        if (tools.length != otherTools.length)
-            return true;
-
-        for (int i = 0; i < tools.length; i++) {
-            Tool tool = (Tool) tools[i];
-            Tool otherTool = (Tool) otherTools[i];
-            if (tool.hasCustomSettings(otherTool))
-                return true;
-        }
-
-        return false;
+    	return true;
+//        IResourceInfo parentRc = getParentResourceInfo();
+//        if (parentRc instanceof FolderInfo) {
+//            IPath path = getPath();
+//            String ext = path.getFileExtension();
+//            if (ext == null)
+//                ext = ""; //$NON-NLS-1$
+//            ITool otherTool = ((FolderInfo) parentRc).getToolFromInputExtension(ext);
+//            if (otherTool == null)
+//                return true;
+//
+//            List<ITool> tti = getToolsToInvoke();
+//            if (tti.size() != 1)
+//                return true;
+//
+//            return ((Tool) tti[0]).hasCustomSettings((Tool) otherTool);
+//        }
+//        List<ITool> tools = getTools();
+//        List<ITool>  otherTools = ((IFileInfo) parentRc).getTools();
+//        if (tools.size() != otherTools.size())
+//            return true;
+//
+////        for (int i = 0; i < tools.length; i++) {
+////            Tool tool = (Tool) tools[i];
+////            Tool otherTool = (Tool) otherTools[i];
+////            if (tool.hasCustomSettings(otherTool))
+//                return true;
+////        }
+//
+//        return false;
     }
 
     @Override
-    public void setTools(ITool[] tools) {
+    public void setTools(List<ITool> tools) {
         ToolListModificationInfo info = getToolListModificationInfo(tools);
         info.apply();
     }

@@ -40,9 +40,9 @@ public class BuildSettingsUtil {
             IOption.LIBRARIES, IOption.OBJECTS, IOption.INCLUDE_FILES, IOption.LIBRARY_PATHS, IOption.LIBRARY_FILES,
             IOption.MACRO_FILES, };
 
-    public static void disconnectDepentents(IConfiguration cfg, ITool[] tools) {
-        for (int i = 0; i < tools.length; i++) {
-            disconnectDepentents(cfg, tools[i]);
+    public static void disconnectDepentents(IConfiguration cfg, List<ITool> tools) {
+        for (ITool tool: tools) {
+            disconnectDepentents(cfg, tool);
         }
     }
 
@@ -69,10 +69,10 @@ public class BuildSettingsUtil {
     }
 
     public static ITool[] getDependentTools(IConfiguration cfg, ITool tool) {
-        IResourceInfo rcInfos[] = cfg.getResourceInfos();
+        List<IResourceInfo> rcInfos= cfg.getResourceInfos();
         List<ITool> list = new ArrayList<>();
-        for (int i = 0; i < rcInfos.length; i++) {
-            calcDependentTools(rcInfos[i], tool, list);
+        for (IResourceInfo rcInfo: rcInfos) {
+            calcDependentTools(rcInfo, tool, list);
         }
         return list.toArray(new Tool[list.size()]);
     }
@@ -81,15 +81,14 @@ public class BuildSettingsUtil {
         return calcDependentTools(info.getTools(), tool, list);
     }
 
-    public static List<ITool> calcDependentTools(ITool tools[], ITool tool, List<ITool> list) {
+    public static List<ITool> calcDependentTools(List<ITool> tools, ITool tool, List<ITool> list) {
         if (list == null)
             list = new ArrayList<>();
 
-        for (int i = 0; i < tools.length; i++) {
-            ITool superTool = tools[i];
+        for (ITool superTool: tools) {
             for (; superTool != null; superTool = superTool.getSuperClass()) {
                 if (superTool.equals(tool)) {
-                    list.add(tools[i]);
+                    list.add(superTool);
                 }
             }
         }
@@ -97,49 +96,7 @@ public class BuildSettingsUtil {
         return list;
     }
 
-    public static void copyCommonSettings(ITool fromTool, ITool toTool) {
-        Tool fromT = (Tool) fromTool;
-        Tool toT = (Tool) toTool;
-        List<OptionStringValue> values = new ArrayList<>();
-        for (int i = 0; i < COMMON_SETTINGS_IDS.length; i++) {
-            int type = COMMON_SETTINGS_IDS[i];
-            IOption[] toOptions = toT.getOptionsOfType(type);
-            if (toOptions.length == 0)
-                continue;
 
-            IOption[] fromOptions = fromT.getOptionsOfType(type);
-            values.clear();
-            for (int k = 0; k < fromOptions.length; k++) {
-                Option fromOption = (Option) fromOptions[k];
-                if (fromOption.getParent() != fromTool)
-                    continue;
-
-                @SuppressWarnings("unchecked")
-                List<OptionStringValue> v = (List<OptionStringValue>) fromOption.getExactValue();
-                values.addAll(v);
-            }
-
-            if (values.size() == 0)
-                continue;
-
-            IOption toOption = toOptions[0];
-
-            try {
-                OptionStringValue[] v = toOption.getBasicStringListValueElements();
-                if (v.length != 0)
-                    values.addAll(Arrays.asList(v));
-            } catch (BuildException e) {
-                Activator.log(e);
-            }
-
-            OptionStringValue[] v = values.toArray(new OptionStringValue[values.size()]);
-            IResourceInfo rcInfo = toTool.getParentResourceInfo();
-
-            ManagedBuildManager.setOption(rcInfo, toTool, toOption, v);
-
-            values.clear();
-        }
-    }
 
     public static ICProjectDescription checkSynchBuildInfo(IProject project) throws CoreException {
         IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project, false);

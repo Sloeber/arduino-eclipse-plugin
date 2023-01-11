@@ -14,10 +14,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-
 import org.eclipse.cdt.core.settings.model.ICSettingBase;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
@@ -28,429 +25,265 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IResourceConfiguration;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
 
 public abstract class ResourceInfo extends BuildObject implements IResourceInfo {
-    private Configuration config;
-    private IPath path;
-    boolean isDirty;
-    boolean needsRebuild;
-    private ResourceInfoContainer rcInfo;
-    private CResourceData resourceData;
+	private Configuration config;
+	private IPath path;
+	boolean isDirty;
+	boolean needsRebuild;
+	private ResourceInfoContainer rcInfo;
+	private CResourceData resourceData;
+	private boolean excluded = false;
 
-    ResourceInfo(IConfiguration cfg, IConfigurationElement element, boolean hasBody) {
-        config = (Configuration) cfg;
-        if (hasBody)
-            loadFromManifest(element);
-    }
+	ResourceInfo(IConfiguration cfg, IConfigurationElement element, boolean hasBody) {
+		config = (Configuration) cfg;
+		if (hasBody)
+			loadFromManifest(element);
+	}
 
-    ResourceInfo(IConfiguration cfg, ResourceInfo base, String id_in) {
-        config = (Configuration) cfg;
-        path = normalizePath(base.path);
+	ResourceInfo(IConfiguration cfg, ResourceInfo base, String id_in) {
+		config = (Configuration) cfg;
+		path = normalizePath(base.path);
 
-        id = id_in;
-        name = base.getName();
+		id = id_in;
+		name = base.getName();
 
-        if (id.equals(base.getId())) {
-            isDirty = base.isDirty;
-            needsRebuild = base.needsRebuild;
-        } else {
-            needsRebuild = true;
-            isDirty = true;
-        }
-    }
+		if (id.equals(base.getId())) {
+			isDirty = base.isDirty;
+			needsRebuild = base.needsRebuild;
+		} else {
+			needsRebuild = true;
+			isDirty = true;
+		}
+	}
 
-    public boolean isRoot() {
-        return path.segmentCount() == 0;
-    }
+	public boolean isRoot() {
+		return path.segmentCount() == 0;
+	}
 
-    ResourceInfo(IConfiguration cfg, IPath path, String newID, String newName) {
-        config = (Configuration) cfg;
-        path = normalizePath(path);
-        this.path = path;
+	ResourceInfo(IConfiguration cfg, IPath path, String newID, String newName) {
+		config = (Configuration) cfg;
+		path = normalizePath(path);
+		this.path = path;
 
-        id = newID;
-        name = newName;
-    }
+		id = newID;
+		name = newName;
+	}
 
-    ResourceInfo(IFileInfo base, IPath path, String newID, String newName) {
-        config = (Configuration) base.getParent();
+	ResourceInfo(IFileInfo base, IPath path, String newID, String newName) {
+		config = (Configuration) base.getParent();
 
-        id = newID;
-        name = newName;
-        path = normalizePath(path);
+		id = newID;
+		name = newName;
+		path = normalizePath(path);
 
-        this.path = path;
-        needsRebuild = true;
-        isDirty = true;
-    }
+		this.path = path;
+		needsRebuild = true;
+		isDirty = true;
+	}
 
-    ResourceInfo(FolderInfo base, IPath path, String newID, String newName) {
-        config = (Configuration) base.getParent();
+	ResourceInfo(FolderInfo base, IPath path, String newID, String newName) {
+		config = (Configuration) base.getParent();
 
-        id = newID;
-        name = newName;
-        path = normalizePath(path);
+		id = newID;
+		name = newName;
+		path = normalizePath(path);
 
-        this.path = path;
-        needsRebuild = true;
-        isDirty = true;
-    }
+		this.path = path;
+		needsRebuild = true;
+		isDirty = true;
+	}
 
-    ResourceInfo(IConfiguration cfg, ICStorageElement element, boolean hasBody) {
-        config = (Configuration) cfg;
-        if (hasBody)
-            loadFromProject(element);
-    }
+	ResourceInfo(IConfiguration cfg, ICStorageElement element, boolean hasBody) {
+		config = (Configuration) cfg;
+		if (hasBody)
+			loadFromProject(element);
+	}
 
-    private void loadFromManifest(IConfigurationElement element) {
+	private void loadFromManifest(IConfigurationElement element) {
 
-        // id
-        id = (SafeStringInterner.safeIntern(element.getAttribute(ID)));
+		// id
+		id = (SafeStringInterner.safeIntern(element.getAttribute(ID)));
 
-        // Get the name
-        name = (SafeStringInterner.safeIntern(element.getAttribute(NAME)));
+		// Get the name
+		name = (SafeStringInterner.safeIntern(element.getAttribute(NAME)));
 
-        // resourcePath
-        String tmp = element.getAttribute(RESOURCE_PATH);
-        if (tmp != null) {
-            path = new Path(tmp);
-            if (IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(element.getName())) {
-                path = path.removeFirstSegments(1);
-            }
-            path = normalizePath(path);
-        } else {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-                    "ResourceInfo.loadFromManifest() : resourcePath=NULL", null); //$NON-NLS-1$
-            Activator.log(status);
-        }
+		// resourcePath
+		String tmp = element.getAttribute(RESOURCE_PATH);
+		if (tmp != null) {
+			path = new Path(tmp);
+			if (IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(element.getName())) {
+				path = path.removeFirstSegments(1);
+			}
+			path = normalizePath(path);
+		} else {
+			Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					"ResourceInfo.loadFromManifest() : resourcePath=NULL", null); //$NON-NLS-1$
+			Activator.log(status);
+		}
 
-        // exclude
-        String excludeStr = element.getAttribute(EXCLUDE);
-        if (excludeStr != null) {
-            config.setExcluded(getPath(), isFolderInfo(), (Boolean.parseBoolean(excludeStr)));
-        }
-    }
+		// exclude
+//        String excludeStr = element.getAttribute(EXCLUDE);
+//        if (excludeStr != null) {
+//            config.setExcluded(getPath(), isFolderInfo(), (Boolean.parseBoolean(excludeStr)));
+//        }
+	}
 
-    private void loadFromProject(ICStorageElement element) {
+	private void loadFromProject(ICStorageElement element) {
 
-        // id (unique, do not intern)
-        id = (element.getAttribute(ID));
+		// id (unique, do not intern)
+		id = (element.getAttribute(ID));
 
-        // name
-        if (element.getAttribute(NAME) != null) {
-            name = (SafeStringInterner.safeIntern(element.getAttribute(NAME)));
-        }
+		// name
+		if (element.getAttribute(NAME) != null) {
+			name = (SafeStringInterner.safeIntern(element.getAttribute(NAME)));
+		}
 
-        // resourcePath
-        if (element.getAttribute(RESOURCE_PATH) != null) {
-            String tmp = element.getAttribute(RESOURCE_PATH);
-            if (tmp != null) {
-                path = new Path(tmp);
-                if (IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(element.getName())) {
-                    path = path.removeFirstSegments(1);
-                }
-                path = normalizePath(path);
-            } else {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-                        "ResourceInfo.loadFromProject() : resourcePath=NULL", null); //$NON-NLS-1$
-                Activator.log(status);
-            }
-        }
+		// resourcePath
+		if (element.getAttribute(RESOURCE_PATH) != null) {
+			String tmp = element.getAttribute(RESOURCE_PATH);
+			if (tmp != null) {
+				path = new Path(tmp);
+				if (IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(element.getName())) {
+					path = path.removeFirstSegments(1);
+				}
+				path = normalizePath(path);
+			} else {
+				Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						"ResourceInfo.loadFromProject() : resourcePath=NULL", null); //$NON-NLS-1$
+				Activator.log(status);
+			}
+		}
 
-        // exclude
-        if (element.getAttribute(EXCLUDE) != null) {
-            String excludeStr = element.getAttribute(EXCLUDE);
-            if (excludeStr != null) {
-                config.setExcluded(getPath(), isFolderInfo(), (Boolean.parseBoolean(excludeStr)));
-            }
-        }
-    }
+//        // exclude
+//        if (element.getAttribute(EXCLUDE) != null) {
+//            String excludeStr = element.getAttribute(EXCLUDE);
+//            if (excludeStr != null) {
+//                config.setExcluded(getPath(), isFolderInfo(), (Boolean.parseBoolean(excludeStr)));
+//            }
+//        }
+	}
 
-    @Override
-    public IConfiguration getParent() {
-        return config;
-    }
+	@Override
+	public IConfiguration getParent() {
+		return config;
+	}
 
-    @Override
-    public IPath getPath() {
-        return normalizePath(path);
-    }
+	@Override
+	public IPath getPath() {
+		return normalizePath(path);
+	}
 
-    @Override
-    public boolean isExcluded() {
-        return config.isExcluded(getPath());
-    }
+	@Override
+	public boolean isExcluded() {
+		return false; // TOFIX jaba config.isExcluded(getPath());
+	}
 
-    @Override
-    public void setExclude(boolean excluded) {
-        if (isExcluded() == excluded)
-            return;
+	@Override
+	public boolean canExclude(boolean exclude) {
+		return true; // tofix jaba config.canExclude(getPath(), isFolderInfo(), exclude);
+	}
 
-        config.setExcluded(getPath(), isFolderInfo(), excluded);
-    }
+	public abstract boolean isFolderInfo();
 
-    @Override
-    public boolean canExclude(boolean exclude) {
-        return config.canExclude(getPath(), isFolderInfo(), exclude);
-    }
+	private ResourceInfoContainer getRcInfo() {
+		if (rcInfo == null)
+			rcInfo = (config).getRcInfoContainer(this);
+		return rcInfo;
+	}
 
-    public abstract boolean isFolderInfo();
+	@Override
+	public CResourceData getResourceData() {
+		return resourceData;
+	}
 
-    @Override
-    public void setPath(IPath p) {
-        p = normalizePath(p);
-        if (path == null)
-            path = p;
-        else if (!p.equals(normalizePath(this.path))) {
-            ResourceInfoContainer info = getRcInfo();
-            info.changeCurrentPath(p, true);
-            this.path = p;
-        }
+	protected void setResourceData(CResourceData data) {
+		resourceData = data;
+	}
 
-    }
+	void removed() {
+		config = null;
+	}
 
-    private ResourceInfoContainer getRcInfo() {
-        if (rcInfo == null)
-            rcInfo = (config).getRcInfoContainer(this);
-        return rcInfo;
-    }
+	@Override
+	public boolean isValid() {
+		return config != null;
+	}
 
-    @Override
-    public CResourceData getResourceData() {
-        return resourceData;
-    }
+	public ITool getToolById(String id) {
+		List<ITool> tools = getTools();
+		for (ITool tool : tools) {
+			if (id.equals(tool.getId()))
+				return tool;
+		}
+		return null;
+	}
 
-    protected void setResourceData(CResourceData data) {
-        resourceData = data;
-    }
+	public static IPath normalizePath(IPath path) {
+		if (path == null)
+			return null;
+		return path.makeRelative();
+	}
 
-    void removed() {
-        config = null;
-    }
+	public ResourceInfo getParentResourceInfo() {
+		if (isRoot())
+			return null;
 
-    @Override
-    public boolean isValid() {
-        return config != null;
-    }
+		IPath path = getPath();
+		path = path.removeLastSegments(1);
+		return (ResourceInfo) getParent().getResourceInfo(path, false);
+	}
 
-    private void propagate(IHoldsOptions parent, IOption option, Object oldValue, Object value) {
-        if (!(parent instanceof ITool))
-            return;
-        ITool tool = (ITool) parent;
-        String sup = option.getId();
-        IOption op = option;
-        //        while (op.getSuperClass() != null) {
-        //            op = op.getSuperClass();
-        //            sup = op.getId();
-        //        }
-        for (IResourceInfo ri : getChildResourceInfos()) {
-            for (ITool t : ri.getTools()) {
-                if (t.getDefaultInputExtension() != tool.getDefaultInputExtension())
-                    continue;
-                op = t.getOptionBySuperClassId(sup);
-                if (op == null)
-                    continue;
-                try {
-                    if (value instanceof Boolean) {
-                        boolean b = ((Boolean) oldValue).booleanValue();
-                        if (b == op.getBooleanValue() && b != ((Boolean) value).booleanValue())
-                            ri.setOption(t, op, ((Boolean) value).booleanValue());
-                    } else if (value instanceof String) {
-                        String s = (String) oldValue;
-                        if (s.equals(op.getStringValue()) && !s.equals(value))
-                            ri.setOption(t, op, (String) value);
-                    } else if (value instanceof String[]) {
-                        String[] s = (String[]) oldValue;
-                        if (Arrays.equals(s, op.getStringListValue()) && !Arrays.equals(s, (String[]) value))
-                            ri.setOption(t, op, (String[]) value);
-                    } else if (value instanceof OptionStringValue[]) {
-                        OptionStringValue[] s = (OptionStringValue[]) oldValue;
-                        if (Arrays.equals(s, op.getBasicStringListValueElements())
-                                && !Arrays.equals(s, (OptionStringValue[]) value))
-                            ri.setOption(t, op, (OptionStringValue[]) value);
-                    }
-                    break;
-                } catch (BuildException e) {
-                }
-            }
-        }
+	public IFolderInfo getParentFolderInfo() {
+		ResourceInfo parentRc = getParentResourceInfo();
+		for (; parentRc != null && !parentRc.isFolderInfo(); parentRc = parentRc.getParentResourceInfo()) {
+			// empty body, loop is to find parent only
+		}
 
-    }
+		return (IFolderInfo) parentRc;
+	}
 
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, boolean value) throws BuildException {
-        // Is there a change?
-        IOption retOpt = option;
-        boolean oldVal = option.getBooleanValue();
-        if (oldVal != value) {
-            retOpt = parent.getOptionToSet(option, false);
-            retOpt.setValue(value);
-            propagate(parent, option, (oldVal ? Boolean.TRUE : Boolean.FALSE), (value ? Boolean.TRUE : Boolean.FALSE));
-            NotificationManager.getInstance().optionChanged(this, parent, option, Boolean.valueOf(oldVal));
-        }
-        return retOpt;
-    }
+	abstract void resolveProjectReferences(boolean onLoad);
 
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, String value) throws BuildException {
-        IOption retOpt = option;
-        String oldValue;
-        oldValue = option.getStringValue();
-        if (oldValue != null && !oldValue.equals(value)) {
-            retOpt = parent.getOptionToSet(option, false);
-            retOpt.setValue(value);
-            propagate(parent, option, oldValue, value);
-            NotificationManager.getInstance().optionChanged(this, parent, option, oldValue);
-        }
-        return retOpt;
-    }
+	abstract public boolean hasCustomSettings();
 
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, String[] value) throws BuildException {
-        IOption retOpt = option;
-        // Is there a change?
-        String[] oldValue;
-        switch (option.getBasicValueType()) {
-        case IOption.STRING_LIST:
-            oldValue = option.getBasicStringListValue();
-            break;
-        default:
-            oldValue = new String[0];
-            break;
-        }
-        if (!Arrays.equals(value, oldValue)) {
-            retOpt = parent.getOptionToSet(option, false);
-            retOpt.setValue(value);
-            propagate(parent, option, oldValue, value);
-            NotificationManager.getInstance().optionChanged(this, parent, option, oldValue);
-        }
-        return retOpt;
-    }
+	public ToolListModificationInfo getToolListModificationInfo(List<ITool> tools) {
+		List<ITool> curTools = getTools();
+		return ToolChainModificationHelper.getModificationInfo(this, curTools, tools);
+	}
 
-    @Override
-    public IOption setOption(IHoldsOptions parent, IOption option, OptionStringValue[] value) throws BuildException {
-        IOption retOpt = option;
-        // Is there a change?
-        OptionStringValue[] oldValue;
-        switch (option.getBasicValueType()) {
-        case IOption.STRING_LIST:
-            oldValue = ((Option) option).getBasicStringListValueElements();
-            break;
-        default:
-            oldValue = new OptionStringValue[0];
-            break;
-        }
-        if (!Arrays.equals(value, oldValue)) {
-            retOpt = parent.getOptionToSet(option, false);
-            ((Option) retOpt).setValue(value);
-            propagate(parent, option, oldValue, value);
-            NotificationManager.getInstance().optionChanged(this, parent, option, oldValue);
-        }
-        return retOpt;
-    }
+	static ITool[][] getRealPairs(ITool[] tools) {
+		ITool[][] pairs = new ITool[tools.length][];
+		for (int i = 0; i < tools.length; i++) {
+			ITool[] pair = new ITool[2];
+			pair[0] = ManagedBuildManager.getRealTool(tools[i]);
+			if (pair[0] == null)
+				pair[0] = tools[i];
+			pair[1] = tools[i];
+			pairs[i] = pair;
+		}
+		return pairs;
+	}
 
-    public abstract Set<String> contributeErrorParsers(Set<String> set);
+	public IResourceInfo[] getDirectChildResourceInfos() {
+		ResourceInfoContainer cr = getRcInfo();
+		return cr.getDirectChildResourceInfos();
+	}
 
-    protected Set<String> contributeErrorParsers(ITool[] tools, Set<String> set) {
-        for (ITool tool : tools) {
-            set = ((Tool) tool).contributeErrorParsers(set);
-        }
-        return set;
-    }
+	public List<IResourceInfo> getChildResourceInfos() {
+		ResourceInfoContainer cr = getRcInfo();
+		return cr.getResourceInfos();
+	}
 
-    public abstract void resetErrorParsers();
-
-    protected void resetErrorParsers(ITool tools[]) {
-        for (ITool tool : tools) {
-            ((Tool) tool).resetErrorParsers();
-        }
-    }
-
-    abstract void removeErrorParsers(Set<String> set);
-
-    protected void removeErrorParsers(ITool tools[], Set<String> set) {
-        for (ITool tool : tools) {
-            ((Tool) tool).removeErrorParsers(set);
-        }
-    }
-
-    public ITool getToolById(String id) {
-        ITool[] tools = getTools();
-        for (ITool tool : tools) {
-            if (id.equals(tool.getId()))
-                return tool;
-        }
-        return null;
-    }
-
-    public static IPath normalizePath(IPath path) {
-        return path.makeRelative();
-    }
-
-    public ResourceInfo getParentResourceInfo() {
-        if (isRoot())
-            return null;
-
-        IPath path = getPath();
-        path = path.removeLastSegments(1);
-        return (ResourceInfo) getParent().getResourceInfo(path, false);
-    }
-
-    public IFolderInfo getParentFolderInfo() {
-        ResourceInfo parentRc = getParentResourceInfo();
-        for (; parentRc != null && !parentRc.isFolderInfo(); parentRc = parentRc.getParentResourceInfo()) {
-            // empty body, loop is to find parent only
-        }
-
-        return (IFolderInfo) parentRc;
-    }
-
-    abstract void resolveProjectReferences(boolean onLoad);
-
-    abstract public boolean hasCustomSettings();
-
-    public ToolListModificationInfo getToolListModificationInfo(ITool[] tools) {
-        ITool[] curTools = getTools();
-        return ToolChainModificationHelper.getModificationInfo(this, curTools, tools);
-    }
-
-    static ITool[][] getRealPairs(ITool[] tools) {
-        ITool[][] pairs = new ITool[tools.length][];
-        for (int i = 0; i < tools.length; i++) {
-            ITool[] pair = new ITool[2];
-            pair[0] = ManagedBuildManager.getRealTool(tools[i]);
-            if (pair[0] == null)
-                pair[0] = tools[i];
-            pair[1] = tools[i];
-            pairs[i] = pair;
-        }
-        return pairs;
-    }
-
-    public IResourceInfo[] getDirectChildResourceInfos() {
-        ResourceInfoContainer cr = getRcInfo();
-        return cr.getDirectChildResourceInfos();
-    }
-
-    public IResourceInfo[] getChildResourceInfos() {
-        ResourceInfoContainer cr = getRcInfo();
-        return cr.getResourceInfos();
-    }
-
-    public List<IResourceInfo> getChildResourceInfoList(boolean includeCurrent) {
-        return getRcInfo().getRcInfoList(ICSettingBase.SETTING_FILE | ICSettingBase.SETTING_FOLDER, includeCurrent);
-    }
+	public List<IResourceInfo> getChildResourceInfoList(boolean includeCurrent) {
+		return getRcInfo().getRcInfoList(ICSettingBase.SETTING_FILE | ICSettingBase.SETTING_FOLDER, includeCurrent);
+	}
 
 }

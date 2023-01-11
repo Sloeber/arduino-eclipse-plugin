@@ -87,6 +87,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                     String id = ManagedBuildManager.calculateChildId(cf.getId(), null);
                     Configuration config = new Configuration(mProj, cf, id, false, true);
                     CConfigurationData data = config.getConfigurationData();
+                    assert(data!=null);
                     ICConfigurationDescription cfgDes = des
                             .createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
                     config.setConfigurationDescription(cfgDes);
@@ -97,8 +98,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
                         bld.setManagedBuildOn(true);
                     }
 
-                    config.setName(cf.getName());
-                    config.setArtifactName(mProj.getDefaultArtifactName());
 
                 }
                 des.setCdtProjectCreated();

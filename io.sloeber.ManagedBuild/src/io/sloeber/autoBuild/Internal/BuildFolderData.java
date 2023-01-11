@@ -42,18 +42,6 @@ public class BuildFolderData extends CFolderData {
         return fFolderInfo.getPath();
     }
 
-    //	public boolean isExcluded() {
-    //		return fFolderInfo.isExcluded();
-    //	}
-    //
-    //	public void setExcluded(boolean excluded) {
-    //		fFolderInfo.setExclude(excluded);
-    //	}
-
-    @Override
-    public void setPath(IPath path) {
-        fFolderInfo.setPath(path);
-    }
 
     @Override
     public String getId() {
@@ -105,5 +93,11 @@ public class BuildFolderData extends CFolderData {
     public void setContainsDiscoveredScannerInfo(boolean contains) {
         fFolderInfo.setContainsDiscoveredScannerInfo(contains);
     }
+
+	@Override
+	public void setPath(IPath path) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

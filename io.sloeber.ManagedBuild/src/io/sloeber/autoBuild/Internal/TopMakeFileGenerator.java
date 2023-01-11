@@ -239,8 +239,8 @@ public class TopMakeFileGenerator {
 		}
 
 		// Add the Secondary Outputs to the all target, if any
-		IOutputType[] secondaryOutputs = config.getToolChain().getSecondaryOutputs();
-		if (secondaryOutputs.length > 0) {
+		List<IOutputType> secondaryOutputs = config.getToolChain().getSecondaryOutputs();
+		if (secondaryOutputs.size() > 0) {
 			buffer.append(WHITESPACE).append(SECONDARY_OUTPUTS);
 		}
 		buffer.append(NEWLINE).append(NEWLINE);

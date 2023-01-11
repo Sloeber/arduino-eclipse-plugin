@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import java.util.List;
+
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.core.runtime.IPath;
@@ -30,11 +32,7 @@ public interface IResourceInfo extends IBuildObject {
 
     IPath getPath();
 
-    void setPath(IPath path);
-
     boolean isExcluded();
-
-    void setExclude(boolean excluded);
 
     boolean canExclude(boolean exclude);
 
@@ -48,56 +46,10 @@ public interface IResourceInfo extends IBuildObject {
 
     CLanguageData[] getCLanguageDatas();
 
-    ITool[] getTools();
+    List<ITool> getTools();
+    public ITool getToolById(String id);
 
     boolean supportsBuild(boolean managed);
-
-    /**
-     * Sets the value of a boolean option for this resource configuration.
-     *
-     * @param parent
-     *            The holder/parent of the option.
-     * @param option
-     *            The option to change.
-     * @param value
-     *            The value to apply to the option.
-     *
-     * @return IOption The modified option. This can be the same option or a newly
-     *         created option.
-     */
-    public IOption setOption(IHoldsOptions parent, IOption option, boolean value) throws BuildException;
-
-    /**
-     * Sets the value of a string option for this resource configuration.
-     *
-     * @param parent
-     *            The holder/parent of the option.
-     * @param option
-     *            The option that will be effected by change.
-     * @param value
-     *            The value to apply to the option.
-     *
-     * @return IOption The modified option. This can be the same option or a newly
-     *         created option.
-     */
-    public IOption setOption(IHoldsOptions parent, IOption option, String value) throws BuildException;
-
-    /**
-     * Sets the value of a list option for this resource configuration.
-     *
-     * @param parent
-     *            The holder/parent of the option.
-     * @param option
-     *            The option to change.
-     * @param value
-     *            The values to apply to the option.
-     *
-     * @return IOption The modified option. This can be the same option or a newly
-     *         created option.
-     */
-    public IOption setOption(IHoldsOptions parent, IOption option, String[] value) throws BuildException;
-
-    public IOption setOption(IHoldsOptions parent, IOption option, OptionStringValue[] value) throws BuildException;
 
     boolean isSupported();
 }

@@ -15,9 +15,11 @@ package io.sloeber.autoBuild.Internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -69,7 +71,6 @@ import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedCommandLineInfo;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
@@ -209,15 +210,14 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getConfigurationNames()
      */
     @Override
-    public String[] getConfigurationNames() {
-        ArrayList<String> configNames = new ArrayList<>();
+    public Set<String> getConfigurationNames() {
+        Set<String> configNames = new HashSet<>();
         IConfiguration[] configs = managedProject.getConfigurations();
         for (int i = 0; i < configs.length; i++) {
             IConfiguration configuration = configs[i];
             configNames.add(configuration.getName());
         }
-        configNames.trimToSize();
-        return configNames.toArray(new String[configNames.size()]);
+        return configNames;
     }
 
     public ICProject getCProject() {
@@ -315,7 +315,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      *
      * @return
      */
-    private ITool[] getFilteredTools() {
+    private List<ITool> getFilteredTools() {
         // Get all the tools for the current config filtered by the project nature
         IConfiguration config = getDefaultConfiguration();
         return config.getFilteredTools();
@@ -360,7 +360,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getLibsForConfiguration(java.lang.String)
      */
     @Override
-    public String[] getLibsForConfiguration(String extension) {
+    public List<String> getLibsForConfiguration(String extension) {
         return getDefaultConfiguration().getLibs(extension);
     }
 
@@ -479,9 +479,8 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         // Treat a null argument as an empty string
         String ext = extension == null ? "" : extension; //$NON-NLS-1$
         // Get all the tools for the current config
-        ITool[] tools = getFilteredTools();
-        for (int index = 0; index < tools.length; index++) {
-            ITool tool = tools[index];
+        List<ITool> tools = getFilteredTools();
+        for (ITool tool: tools) {
             if (tool.producesFileType(ext)) {
                 return tool.getToolCommand();
             }
@@ -511,7 +510,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getUserObjectsForConfiguration(java.lang.String)
      */
     @Override
-    public String[] getUserObjectsForConfiguration(String extension) {
+    public List<String> getUserObjectsForConfiguration(String extension) {
         return getDefaultConfiguration().getUserObjects(extension);
     }
 
@@ -571,9 +570,9 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         if (rebuildNeeded)
             return true;
 
-        if (getDefaultConfiguration() != null) {
-            return getDefaultConfiguration().needsRebuild();
-        }
+//        if (getDefaultConfiguration() != null) {
+//            return getDefaultConfiguration().needsRebuild();
+//        }
         return false;
     }
 
@@ -600,7 +599,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         // TODO:  This is probably wrong.  I'll bet we don't handle the case where all configs are deleted...
         //        But, at least, our UI does not allow the last config to be deleted.
         // Sanity
-        if (configuration == null || configuration.isExtensionElement())
+        if (configuration == null)
             return;
 
         ICProjectDescription des = null;
@@ -677,9 +676,9 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     public void setRebuildState(boolean rebuild) {
         // TODO:  Is the appropriate?  Should the rebuild state be stored in the project file?
         // and in the managed project
-        if (getDefaultConfiguration() != null) {
-            getDefaultConfiguration().setRebuildState(rebuild);
-        }
+//        if (getDefaultConfiguration() != null) {
+//            getDefaultConfiguration().setRebuildState(rebuild);
+//        }
         // Reset the status here
         rebuildNeeded = rebuild;
     }
@@ -941,7 +940,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      */
     private List<IPathEntry> readToolsOptions(int entryType, List<IPathEntry> entries, boolean builtIns,
             IBuildObject obj) {
-        ITool[] t = null;
+       List< ITool> t = null;
         IPath resPath = Path.EMPTY;
 
         // check that entryType is correct
@@ -970,29 +969,29 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         }
 
         // process all tools and all their options
-        for (int i = 0; i < t.length; i++) {
-            IOption[] op = t[i].getOptions();
-            for (int j = 0; j < op.length; j++) {
+        for (ITool i : t) {
+        	List< IOption> options = i.getOptions();
+            for (IOption op: options) {
 
                 // check to see if the option has an applicability calculator
-                IOptionApplicability applicabilityCalculator = op[j].getApplicabilityCalculator();
+                IOptionApplicability applicabilityCalculator = op.getApplicabilityCalculator();
                 if (applicabilityCalculator != null
-                        && !applicabilityCalculator.isOptionUsedInCommandLine(obj, t[i], op[j]))
+                        && !applicabilityCalculator.isOptionUsedInCommandLine(obj, i, op))
                     continue;
 
                 try {
-                    if (entryType == IPathEntry.CDT_INCLUDE && op[j].getValueType() == IOption.INCLUDE_PATH) {
-                        OptionContextData ocd = new OptionContextData(op[j], t[i]);
-                        addIncludes(entries, builtIns ? op[j].getBuiltIns() : op[j].getIncludePaths(), resPath,
+                    if (entryType == IPathEntry.CDT_INCLUDE && op.getValueType() == IOption.INCLUDE_PATH) {
+                        OptionContextData ocd = new OptionContextData(op, i);
+                        addIncludes(entries, builtIns ? op.getBuiltIns() : op.getIncludePaths(), resPath,
                                 IBuildMacroProvider.CONTEXT_OPTION, ocd);
-                    } else if (entryType == IPathEntry.CDT_LIBRARY && op[j].getValueType() == IOption.LIBRARIES) {
-                        OptionContextData ocd = new OptionContextData(op[j], t[i]);
-                        addLibraries(entries, builtIns ? op[j].getBuiltIns() : op[j].getLibraries(), resPath,
+                    } else if (entryType == IPathEntry.CDT_LIBRARY && op.getValueType() == IOption.LIBRARIES) {
+                        OptionContextData ocd = new OptionContextData(op, i);
+                        addLibraries(entries, builtIns ? op.getBuiltIns() : op.getLibraries(), resPath,
                                 IBuildMacroProvider.CONTEXT_OPTION, ocd);
                     } else if (entryType == IPathEntry.CDT_MACRO
-                            && op[j].getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
-                        OptionContextData ocd = new OptionContextData(op[j], t[i]);
-                        addSymbols(entries, builtIns ? op[j].getBuiltIns() : op[j].getDefinedSymbols(), resPath,
+                            && op.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
+                        OptionContextData ocd = new OptionContextData(op, i);
+                        addSymbols(entries, builtIns ? op.getBuiltIns() : op.getDefinedSymbols(), resPath,
                                 IBuildMacroProvider.CONTEXT_OPTION, ocd);
                     } else {
                         continue;

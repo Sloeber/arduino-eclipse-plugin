@@ -132,9 +132,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         private boolean isGeneratedResource(IResource resource) {
             // Is this a generated directory ...
             IPath path = resource.getProjectRelativePath();
-            String[] configNames = buildInfo.getConfigurationNames();
-            for (int i = 0; i < configNames.length; i++) {
-                String name = configNames[i];
+            Set<String> configNames = buildInfo.getConfigurationNames();
+            for (String name: configNames) {
                 IPath root = new Path(name);
                 // It is if it is a root of the resource pathname
                 if (root.isPrefixOf(path))
@@ -259,9 +258,9 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         }
 
         private void setResourceChangeStateForOtherConfigs() {
-            for (IConfiguration curConfig : otherConfigs) {
-                curConfig.addResourceChangeState(resourceChangeState);
-            }
+//            for (IConfiguration curConfig : otherConfigs) {
+//                curConfig.addResourceChangeState(resourceChangeState);
+//            }
         }
 
         private boolean isGeneratedForConfig(IResource resource, IConfiguration cfg) {
@@ -441,7 +440,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             generator.initialize(getProject(), info, monitor);
 
             //perform necessary cleaning and build type calculation
-            if (cfg.needsFullRebuild()) {
+            boolean needsFullRebuild=true;//TOFIX JAB cfg.needsFullRebuild();
+            if (needsFullRebuild) {
                 //configuration rebuild state is set to true,
                 //full rebuild is needed in any case
                 //clean first, then make a full build
@@ -974,8 +974,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             }
 
             // Hook up an error parser manager
-            String[] errorParsers = info.getDefaultConfiguration().getErrorParserList();
-            ErrorParserManager epm = new ErrorParserManager(getProject(), workingDirectoryURI, this, errorParsers);
+            List<String> errorParsers = info.getDefaultConfiguration().getErrorParserList();
+            ErrorParserManager epm = new ErrorParserManager(getProject(), workingDirectoryURI, this, errorParsers.toArray(new String[errorParsers.size()]));
             epm.setOutputStream(consoleOutStream);
             // This variable is necessary to ensure that the EPM stream stay open
             // until we explicitly close it. See bug#123302.
@@ -1103,7 +1103,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
                             //TODO: the better way of handling cancel is needed
                             //currently the rebuild state is set to true forcing the full rebuild
                             //on the next builder invocation
-                            info.getDefaultConfiguration().setRebuildState(true);
+                           // info.getDefaultConfiguration().setRebuildState(true);
                         }
                     }
 
@@ -1269,9 +1269,9 @@ public class GeneratedMakefileBuilder extends ACBuilder {
                 removeAllMarkers(project);
 
                 // Hook up an error parser manager
-                String[] errorParsers = cfg.getErrorParserList();
+                List<String> errorParsers = cfg.getErrorParserList();
                 ErrorParserManager epm = new ErrorParserManager(getProject(), buildFolder.getLocationURI(), this,
-                        errorParsers);
+                        errorParsers.toArray(new String[errorParsers.size()]));
                 epm.setOutputStream(consoleOutStream);
                 // This variable is necessary to ensure that the EPM stream stay open
                 // until we explicitly close it. See bug#123302.
@@ -1414,8 +1414,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
 
             //IBuildDescription des = BuildDescriptionManager.createBuildDescription(configuration, null, 0);
 
-            String[] errorParsers = configuration.getErrorParserList();
-            ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), this, errorParsers);
+            List<String> errorParsers = configuration.getErrorParserList();
+            ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), this, errorParsers.toArray(new String[errorParsers.size()]));
 
             buildRunnerHelper.prepareStreams(epm, null, console,
                     new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
@@ -1554,9 +1554,9 @@ public class GeneratedMakefileBuilder extends ACBuilder {
 
             //IBuildDescription des = BuildDescriptionManager.createBuildDescription(configuration, delta, flags);
 
-            String[] errorParsers = configuration.getErrorParserList();
+            List<String> errorParsers = configuration.getErrorParserList();
             ErrorParserManager epm = new ErrorParserManager(project, buildLocation.getLocationURI(), this,
-                    errorParsers);
+                    errorParsers.toArray(new String [errorParsers.size()]));
             buildRunnerHelper.prepareStreams(epm, null, console,
                     new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
 

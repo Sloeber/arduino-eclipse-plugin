@@ -14,6 +14,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -117,10 +118,9 @@ public class CfgScannerConfigUtil {
         return id;
     }
 
-    public static String getFirstProfileId(ITool[] tools) {
+    public static String getFirstProfileId(List<ITool> tools) {
         String id = null;
-        for (int i = 0; i < tools.length; i++) {
-            ITool tool = tools[i];
+        for (ITool tool: tools) {
             IInputType[] types = tool.getInputTypes();
 
             if (types.length != 0) {
@@ -164,14 +164,14 @@ public class CfgScannerConfigUtil {
             if (toolchainProfileId != null && toolchainProfileId.length() > 0) {
                 profiles.add(toolchainProfileId);
             }
-            ITool[] tools = toolchain.getTools();
+            List<ITool> tools = toolchain.getTools();
             for (ITool tool : tools) {
                 profiles.addAll(getAllScannerDiscoveryProfileIds(tool));
             }
-            IToolChain superClass = toolchain.getSuperClass();
-            if (superClass != null) {
-                profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
-            }
+//            IToolChain superClass = toolchain.getSuperClass();
+//            if (superClass != null) {
+//                profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
+//            }
         }
 
         return profiles;

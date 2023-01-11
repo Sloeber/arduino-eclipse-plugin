@@ -331,7 +331,7 @@ public class ManagedProject extends BuildObject implements IManagedProject {
      * @param Tool
      */
     public void addConfiguration(Configuration configuration) {
-        if (!configuration.isTemporary())
+      //  if (!configuration.isTemporary())
             configMap.put(configuration.getId(), configuration);
     }
 

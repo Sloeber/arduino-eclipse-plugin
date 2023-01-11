@@ -386,9 +386,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         }
 
         private void setResourceChangeStateForOtherConfigs() {
-            for (Configuration otherConfig : otherConfigs) {
-                otherConfig.addResourceChangeState(resourceChangeState);
-            }
+//            for (Configuration otherConfig : otherConfigs) {
+//                otherConfig.addResourceChangeState(resourceChangeState);
+//            }
         }
 
         private boolean isResourceValuable(IResource rc) {
@@ -440,8 +440,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         IProject project = getProject();
 
-        if (!isCdtProjectCreated(project))
+        if (!isCdtProjectCreated(project)) {
+        	System.err.println("The build is cancelled as the project has not yet ben created.");
             return project.getReferencedProjects();
+        }
 
         if (VERBOSE)
             outputTrace(project.getName(), ">>build requested, type = " + kind); //$NON-NLS-1$
@@ -766,15 +768,15 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                             bInfo.getConfiguration(), builder, bInfo.getConsole(), this, this, monitor);
                     if (isClean) {
                         forgetLastBuiltState();
-                        cfg.setRebuildState(true);
+                       //cfg.setRebuildState(true);
                     } else {
                         if (status.isManagedBuildOn()) {
                             performPostbuildGeneration(kind, bInfo, status, monitor);
                         }
-                        cfg.setRebuildState(false);
+                       // cfg.setRebuildState(false);
                     }
                 } catch (CoreException e) {
-                    cfg.setRebuildState(true);
+                   // cfg.setRebuildState(true);
                     throw e;
                 }
 

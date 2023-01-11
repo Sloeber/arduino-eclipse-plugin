@@ -173,11 +173,11 @@ public class Option extends BuildObject implements IOption {
             myEnablements.add(new OptionEnablementExpression(curEnablement));
         }
 
-        resolveFields();
+        resolveFields( element);
 
     }
 
-    private void resolveFields() {
+    private void resolveFields(IConfigurationElement element) {
         isAbstract = Boolean.parseBoolean(myIsAbs[SUPER]);
         isForScannerDiscovery = Boolean.parseBoolean(isForSD[SUPER]);
         valueType = Integer.valueOf(ValueTypeStrToInt(valueTypeStr[SUPER]));
@@ -212,7 +212,129 @@ public class Option extends BuildObject implements IOption {
         booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myEnablements);
 
         applicabilityCalculator = booleanExpressionCalculator;
-        resolveReferences();
+        if (categoryId != null) {
+            category = holder.getOptionCategory(categoryId[SUPER]);
+            if (category == null) {
+                // Report error
+                ManagedBuildManager.outputResolveError("category", //$NON-NLS-1$
+                        categoryId[SUPER], "option", //$NON-NLS-1$
+                        getId());
+            }
+        }
+        
+        
+        
+        // Process the value and default value attributes.  This is delayed until now
+        // because we may not know the valueType until after we have resolved the superClass above
+        // Now get the actual value
+        try {
+            switch (getValueType()) {
+            case BOOLEAN:
+                // Convert the string to a boolean
+                String val = element.getAttribute(VALUE);
+                if (val != null) {
+                    value = Boolean.valueOf(val);
+                }
+                val = element.getAttribute(DEFAULT_VALUE);
+                if (val != null) {
+                    defaultValue = Boolean.valueOf(val);
+                }
+                break;
+            case STRING:
+                // Just get the value out of the option directly
+                value = element.getAttribute(VALUE);
+                defaultValue = element.getAttribute(DEFAULT_VALUE);
+                break;
+            case ENUMERATED:
+                value = element.getAttribute(VALUE);
+                defaultValue = element.getAttribute(DEFAULT_VALUE);
+
+                //  Do we have enumeratedOptionValue children?  If so, load them
+                //  to define the valid values and the default value.
+                IConfigurationElement[] enumElements = element.getChildren(ENUM_VALUE);
+                for (int i = 0; i < enumElements.length; ++i) {
+                    String optId = SafeStringInterner.safeIntern(enumElements[i].getAttribute(ID));
+                    if (i == 0) {
+                        applicableValuesList = new ArrayList<>();
+                        if (defaultValue == null) {
+                            defaultValue = optId; //  Default value to be overridden if default is specified
+                        }
+                    }
+                    applicableValuesList.add(optId);
+                    getCommandMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(COMMAND)));
+                    getNameMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(NAME)));
+                    Boolean isDefault = Boolean.valueOf(enumElements[i].getAttribute(IS_DEFAULT));
+                    if (isDefault.booleanValue()) {
+                        defaultValue = optId;
+                    }
+                }
+                break;
+            case TREE:
+                value = element.getAttribute(VALUE);
+                defaultValue = element.getAttribute(DEFAULT_VALUE);
+
+                IConfigurationElement[] treeRootConfigs = element.getChildren(TREE_ROOT);
+                if (treeRootConfigs != null && treeRootConfigs.length == 1) {
+                    IConfigurationElement treeRootConfig = treeRootConfigs[0];
+                    treeRoot = new TreeRoot(treeRootConfig, element, getParent() instanceof IToolChain);
+                    applicableValuesList = new ArrayList<>();
+                    iterateOnTree(treeRoot, new ITreeNodeIterator() {
+
+                        @Override
+                        public void iterateOnNode(ITreeOption node) {
+                        }
+
+                        @Override
+                        public void iterateOnLeaf(ITreeOption leafNode) {
+                            applicableValuesList.add(leafNode.getID());
+                            getCommandMap().put(leafNode.getID(), leafNode.getCommand());
+                            getNameMap().put(leafNode.getID(), leafNode.getName());
+                        }
+                    });
+                }
+
+                break;
+            case STRING_LIST:
+            case INCLUDE_PATH:
+            case PREPROCESSOR_SYMBOLS:
+            case LIBRARIES:
+            case OBJECTS:
+            case INCLUDE_FILES:
+            case LIBRARY_PATHS:
+            case LIBRARY_FILES:
+            case MACRO_FILES:
+            case UNDEF_INCLUDE_PATH:
+            case UNDEF_PREPROCESSOR_SYMBOLS:
+            case UNDEF_INCLUDE_FILES:
+            case UNDEF_LIBRARY_PATHS:
+            case UNDEF_LIBRARY_FILES:
+            case UNDEF_MACRO_FILES:
+                //  Note:  These string-list options do not load either the "value" or
+                //         "defaultValue" attributes.  Instead, the ListOptionValue children
+                //         are loaded in the value field.
+                List<OptionStringValue> vList = null;
+                IConfigurationElement[] vElements = element.getChildren(LIST_VALUE);
+                for (IConfigurationElement vElement : vElements) {
+                    if (vList == null) {
+                        vList = new ArrayList<>();
+                        builtIns = new ArrayList<>();
+                    }
+                    OptionStringValue ve = new OptionStringValue(vElement);
+                    if (ve.isBuiltIn()) {
+                        builtIns.add(ve);
+                    } else {
+                        vList.add(ve);
+                    }
+                }
+                value = vList;
+                break;
+            default:
+                break;
+            }
+        } catch (BuildException e) {
+            Activator.log(e);
+        }
+
 
     }
 
@@ -1895,129 +2017,6 @@ public class Option extends BuildObject implements IOption {
     }
 
     public void setDirty(boolean isDirty) {
-    }
-
-    public void resolveReferences() {
-        if (categoryId != null) {
-            category = holder.getOptionCategory(categoryId[SUPER]);
-            if (category == null) {
-                // Report error
-                ManagedBuildManager.outputResolveError("category", //$NON-NLS-1$
-                        categoryId[SUPER], "option", //$NON-NLS-1$
-                        getId());
-            }
-        }
-        // Process the value and default value attributes.  This is delayed until now
-        // because we may not know the valueType until after we have resolved the superClass above
-        // Now get the actual value
-        try {
-            IConfigurationElement element = null; //TOFIX JABA ManagedBuildManager.getConfigElement(this);
-            switch (getValueType()) {
-            case BOOLEAN:
-                // Convert the string to a boolean
-                String val = element.getAttribute(VALUE);
-                if (val != null) {
-                    value = Boolean.valueOf(val);
-                }
-                val = element.getAttribute(DEFAULT_VALUE);
-                if (val != null) {
-                    defaultValue = Boolean.valueOf(val);
-                }
-                break;
-            case STRING:
-                // Just get the value out of the option directly
-                value = element.getAttribute(VALUE);
-                defaultValue = element.getAttribute(DEFAULT_VALUE);
-                break;
-            case ENUMERATED:
-                value = element.getAttribute(VALUE);
-                defaultValue = element.getAttribute(DEFAULT_VALUE);
-
-                //  Do we have enumeratedOptionValue children?  If so, load them
-                //  to define the valid values and the default value.
-                IConfigurationElement[] enumElements = element.getChildren(ENUM_VALUE);
-                for (int i = 0; i < enumElements.length; ++i) {
-                    String optId = SafeStringInterner.safeIntern(enumElements[i].getAttribute(ID));
-                    if (i == 0) {
-                        applicableValuesList = new ArrayList<>();
-                        if (defaultValue == null) {
-                            defaultValue = optId; //  Default value to be overridden if default is specified
-                        }
-                    }
-                    applicableValuesList.add(optId);
-                    getCommandMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(COMMAND)));
-                    getNameMap().put(optId, SafeStringInterner.safeIntern(enumElements[i].getAttribute(NAME)));
-                    Boolean isDefault = Boolean.valueOf(enumElements[i].getAttribute(IS_DEFAULT));
-                    if (isDefault.booleanValue()) {
-                        defaultValue = optId;
-                    }
-                }
-                break;
-            case TREE:
-                value = element.getAttribute(VALUE);
-                defaultValue = element.getAttribute(DEFAULT_VALUE);
-
-                IConfigurationElement[] treeRootConfigs = element.getChildren(TREE_ROOT);
-                if (treeRootConfigs != null && treeRootConfigs.length == 1) {
-                    IConfigurationElement treeRootConfig = treeRootConfigs[0];
-                    treeRoot = new TreeRoot(treeRootConfig, element, getParent() instanceof IToolChain);
-                    applicableValuesList = new ArrayList<>();
-                    iterateOnTree(treeRoot, new ITreeNodeIterator() {
-
-                        @Override
-                        public void iterateOnNode(ITreeOption node) {
-                        }
-
-                        @Override
-                        public void iterateOnLeaf(ITreeOption leafNode) {
-                            applicableValuesList.add(leafNode.getID());
-                            getCommandMap().put(leafNode.getID(), leafNode.getCommand());
-                            getNameMap().put(leafNode.getID(), leafNode.getName());
-                        }
-                    });
-                }
-
-                break;
-            case STRING_LIST:
-            case INCLUDE_PATH:
-            case PREPROCESSOR_SYMBOLS:
-            case LIBRARIES:
-            case OBJECTS:
-            case INCLUDE_FILES:
-            case LIBRARY_PATHS:
-            case LIBRARY_FILES:
-            case MACRO_FILES:
-            case UNDEF_INCLUDE_PATH:
-            case UNDEF_PREPROCESSOR_SYMBOLS:
-            case UNDEF_INCLUDE_FILES:
-            case UNDEF_LIBRARY_PATHS:
-            case UNDEF_LIBRARY_FILES:
-            case UNDEF_MACRO_FILES:
-                //  Note:  These string-list options do not load either the "value" or
-                //         "defaultValue" attributes.  Instead, the ListOptionValue children
-                //         are loaded in the value field.
-                List<OptionStringValue> vList = null;
-                IConfigurationElement[] vElements = element.getChildren(LIST_VALUE);
-                for (IConfigurationElement vElement : vElements) {
-                    if (vList == null) {
-                        vList = new ArrayList<>();
-                        builtIns = new ArrayList<>();
-                    }
-                    OptionStringValue ve = new OptionStringValue(vElement);
-                    if (ve.isBuiltIn()) {
-                        builtIns.add(ve);
-                    } else {
-                        vList.add(ve);
-                    }
-                }
-                value = vList;
-                break;
-            default:
-                break;
-            }
-        } catch (BuildException e) {
-            // TODO: report error
-        }
     }
 
     /**

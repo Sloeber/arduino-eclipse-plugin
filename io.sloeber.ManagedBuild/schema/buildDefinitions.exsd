@@ -531,13 +531,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="unusedChildren" type="string">
-            <annotation>
-               <documentation>
-                  A semi-colon separated list of child IDs of the superclass&apos; children that should not be automatically inherited by this element.  Note: This attribute is not yet implemented.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="osList" type="string">
             <annotation>
                <documentation>
@@ -597,7 +590,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="configurationEnvironmentSupplier" type="string">
+         <attribute name="environmentSupplier" type="string">
             <annotation>
                <documentation>
                   Specifies the name of the class that implements IConfigurationEnvironmentVariableSupplier in order to provide configuration level environment variables.
@@ -607,7 +600,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="configurationMacroSupplier" type="string">
+         <attribute name="buildMacroSupplier" type="string">
             <annotation>
                <documentation>
                   Specifies the name of the class that implements IConfigurationBuildMacroSupplier in order to provide configuration level build macros.
@@ -615,13 +608,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                <appinfo>
                   <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier"/>
                </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="supportsManagedBuild" type="boolean" use="default" value="true">
-            <annotation>
-               <documentation>
-                  Specifies whether or not the tool-chain supports Auto build. Default value is true.
-               </documentation>
             </annotation>
          </attribute>
          <attribute name="isSystem" type="boolean">
@@ -784,7 +770,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="projectEnvironmentSupplier" type="string">
+         <attribute name="environmentSupplier" type="string">
             <annotation>
                <documentation>
                   Specifies the name of the class that implements IProjectEnvironmentVariableSupplier in order to provide project level environment variables.
@@ -794,7 +780,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="projectMacroSupplier" type="string">
+         <attribute name="buildMacroSupplier" type="string">
             <annotation>
                <documentation>
                   Specifies the name of the class that implements IProjectBuildMacroSupplier in order to provide project level build macros.

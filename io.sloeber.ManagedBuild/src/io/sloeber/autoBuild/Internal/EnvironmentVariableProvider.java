@@ -196,7 +196,7 @@ public class EnvironmentVariableProvider implements IEnvironmentVariableProvider
 
     @Override
     public String[] getBuildPaths(IConfiguration configuration, int buildPathType) {
-        ITool tools[] = configuration.getFilteredTools();
+       List< ITool> tools = configuration.getFilteredTools();
         List<String> list = new ArrayList<>();
 
         for (ITool tool : tools) {

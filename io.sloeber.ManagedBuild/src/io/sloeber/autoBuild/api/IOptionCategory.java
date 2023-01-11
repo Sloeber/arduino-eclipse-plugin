@@ -15,6 +15,7 @@
 package io.sloeber.autoBuild.api;
 
 import java.net.URL;
+import java.util.List;
 
 import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
 
@@ -38,7 +39,7 @@ public interface IOptionCategory extends IBuildObject {
     /**
      * Returns the list of children of this node in the option category tree
      */
-    public IOptionCategory[] getChildCategories();
+    public List<IOptionCategory> getChildCategories();
 
     /**
      * Returns the category that owns this category, or null if this is the

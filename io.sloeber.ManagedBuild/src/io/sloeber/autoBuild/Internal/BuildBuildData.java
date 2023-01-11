@@ -47,7 +47,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public String[] getErrorParserIDs() {
-        return fCfg.getErrorParserList();
+        return fCfg.getErrorParserList().toArray(new String[0]);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public void setErrorParserIDs(String[] ids) {
-        fCfg.setErrorParserList(ids);
+       // fCfg.setErrorParserList(ids);
     }
 
     @Override

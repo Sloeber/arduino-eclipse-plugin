@@ -94,6 +94,7 @@ public interface ITool extends IHoldsOptions {
      * @since 3.0
      */
     public IInputType[] getInputTypes();
+    public IInputType getInputTypeByID(String id);
 
     /**
      * Returns the primary <code>IInputType</code> in this tool

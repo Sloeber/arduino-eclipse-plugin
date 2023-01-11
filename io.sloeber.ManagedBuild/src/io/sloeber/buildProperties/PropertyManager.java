@@ -535,7 +535,7 @@ public class PropertyManager {
     }
 
     public void serialize(IConfiguration cfg) {
-        if (cfg.isTemporary() || cfg.getOwner() == null)
+        if (/*cfg.isTemporary() || */cfg.getOwner() == null)
             return;
 
         storeData(cfg);

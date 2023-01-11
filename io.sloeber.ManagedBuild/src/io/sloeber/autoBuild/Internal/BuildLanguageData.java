@@ -239,7 +239,7 @@ public class BuildLanguageData extends CLanguageData {
     private void calculateKindToOptionArrayStore() {
         fKindToOptionArrayStore.clear();
         Map<Integer, List<IOption>> kindToOptionList = new HashMap<>();
-        IOption options[] = fTool.getOptions();
+        List<IOption >options = fTool.getOptions();
         for (final IOption option : options) {
             try {
                 Integer entryKind = ManagedBuildManager.optionTypeToEntryKind(option.getValueType());
@@ -272,7 +272,7 @@ public class BuildLanguageData extends CLanguageData {
     private void calculateKindToUndefOptionArrayStore() {
         fKindToUndefOptionArrayStore.clear();
         Map<Integer, List<IOption>> kindToOptionList = new HashMap<>();
-        IOption options[] = fTool.getOptions();
+        List<IOption> options = fTool.getOptions();
         for (final IOption option : options) {
             try {
                 Integer entryKind = ManagedBuildManager.optionUndefTypeToEntryKind(option.getValueType());

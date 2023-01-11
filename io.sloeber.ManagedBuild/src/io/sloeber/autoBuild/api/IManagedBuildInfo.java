@@ -13,6 +13,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import java.util.List;
+import java.util.Set;
+
 //import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
 //import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 import org.eclipse.core.runtime.IPath;
@@ -127,7 +130,7 @@ public interface IManagedBuildInfo {
      *
      * @return String[] of configuration names
      */
-    public String[] getConfigurationNames();
+    public Set<String> getConfigurationNames();
 
     /**
      * Get the default configuration associated with the receiver
@@ -141,7 +144,7 @@ public interface IManagedBuildInfo {
     /**
      * Answers the libraries the project links in.
      */
-    public String[] getLibsForConfiguration(String extension);
+    public List<String> getLibsForConfiguration(String extension);
 
     /**
      * Returns the ManagedProject associated with this build info
@@ -208,7 +211,7 @@ public interface IManagedBuildInfo {
      * @return a <code>String</code> array containing the contents of the
      *         user objects option, if one is defined for the target.
      */
-    public String[] getUserObjectsForConfiguration(String extension);
+    public List<String> getUserObjectsForConfiguration(String extension);
 
     /**
      * Answers the version of the build information in the format

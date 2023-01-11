@@ -13,7 +13,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,24 +56,20 @@ public class ResourceInfoContainer {
         return null;
     }
 
-    public IResourceInfo[] getResourceInfos(Class<? extends IResourceInfo> clazz) {
+    public List<IResourceInfo> getResourceInfos(Class<? extends IResourceInfo> clazz) {
         return getResourceInfos(ICSettingBase.SETTING_FILE | ICSettingBase.SETTING_FOLDER, clazz);
     }
 
-    public IResourceInfo[] getResourceInfos() {
+    public List<IResourceInfo> getResourceInfos() {
         return getResourceInfos(ICSettingBase.SETTING_FILE | ICSettingBase.SETTING_FOLDER);
     }
 
-    public IResourceInfo[] getResourceInfos(final int kind) {
+    public List<IResourceInfo> getResourceInfos(final int kind) {
         return getResourceInfos(kind, IResourceInfo.class);
     }
 
-    public IResourceInfo[] getResourceInfos(int kind, Class<? extends IResourceInfo> clazz) {
-        List<IResourceInfo> list = getRcInfoList(kind);
-
-        IResourceInfo datas[] = (IResourceInfo[]) Array.newInstance(clazz, list.size());
-
-        return list.toArray(datas);
+    public List<IResourceInfo> getResourceInfos(int kind, Class<? extends IResourceInfo> clazz) {
+        return getRcInfoList(kind);
     }
 
     public IResourceInfo[] getDirectChildResourceInfos() {

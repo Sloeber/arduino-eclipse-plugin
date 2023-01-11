@@ -176,7 +176,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      */
     public Tool(IExtensionPoint root, IConfigurationElement element) {
         // setup for resolving
-        super(false);
         resolved = false;
 
         isExtensionTool = true;
@@ -289,7 +288,10 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         //   ManagedBuildManager.addExtensionTool(this);
 
         // set up the category map
-        addOptionCategory(this);
+     
+        categoryIds.add(this.getId());
+		// Map the categories by ID for resolution later
+        categoryMap.put(getId(), this);
 
         myOptionEnablementExpression.clear();
         IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
@@ -353,7 +355,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      *            project element
      */
     public Tool(ToolChain parent, ITool superClass, String Id, String name, boolean isExtensionElement) {
-        super(resolvedDefault);
         //        this.parent = parent;
         //        setSuperClassInternal(superClass);
         //        setManagedBuildRevision(parent.getManagedBuildRevision());
@@ -397,7 +398,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      */
 
     public Tool(ResourceConfiguration parent, ITool superClass, String Id, String name, boolean isExtensionElement) {
-        super(resolvedDefault);
         //        this.parent = parent;
         //        setSuperClassInternal(superClass);
         //        setManagedBuildRevision(parent.getManagedBuildRevision());
@@ -433,7 +433,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      *            the fileVersion of Managed Build System
      */
     public Tool(IBuildObject parent, ICStorageElement element, String managedBuildRevision) {
-        super(resolvedDefault);
         //        this.parent = parent;
         //        isExtensionTool = false;
         //
@@ -489,7 +488,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     }
 
     public Tool(IBuildObject parent, String toolSuperClassId, String Id, String name, Tool tool) {
-        super(resolvedDefault);
+   //     super(resolvedDefault);
         //        this.parent = parent;
         //        superClassId = toolSuperClassId;
         //        setId(Id);
@@ -1057,7 +1056,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         // Find the child of the configuration that represents the same tool.
         // It could be the tool itself, or a "sub-class" of the tool.
         if (configuration != null) {
-            ITool[] tools = configuration.getTools();
+           List< ITool> tools = configuration.getTools();
             return getOptions(tools);
         } else {
             return getAllOptions(this);
@@ -1069,16 +1068,16 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      */
     //@Override
     public Object[][] getOptions(IResourceConfiguration resConfig) {
-        ITool[] tools = resConfig.getTools();
+        List<ITool> tools = resConfig.getTools();
         return getOptions(tools);
     }
 
     public Object[][] getOptions(IResourceInfo resConfig) {
-        ITool[] tools = resConfig.getTools();
+        List<ITool> tools = resConfig.getTools();
         return getOptions(tools);
     }
 
-    private Object[][] getOptions(ITool[] tools) {
+    private Object[][] getOptions(List<ITool> tools) {
         ITool catTool = this;
         ITool tool = null;
         for (ITool curTool : tools) {
@@ -1101,8 +1100,8 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     }
 
     private Object[][] getAllOptions(ITool tool) {
-        IOption[] allOptions = tool.getOptions();
-        Object[][] myOptions = new Object[allOptions.length][2];
+       List< IOption> allOptions = tool.getOptions();
+        Object[][] retOptions = new Object[allOptions.size()][2];
         int index = 0;
         for (IOption option : allOptions) {
             IOptionCategory optCat = option.getCategory();
@@ -1117,15 +1116,15 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
                     }
                 } while ((current = current.getSuperClass()) != null);
                 if (match) {
-                    myOptions[index] = new Object[2];
-                    myOptions[index][0] = tool;
-                    myOptions[index][1] = option;
+                    retOptions[index] = new Object[2];
+                    retOptions[index][0] = tool;
+                    retOptions[index][1] = option;
                     index++;
                 }
             }
         }
 
-        return myOptions;
+        return retOptions;
     }
 
     /* (non-Javadoc)
@@ -1943,7 +1942,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      */
     public String[] getToolCommandFlags(IPath inputFileLocation, IPath outputFileLocation,
             SupplierBasedCdtVariableSubstitutor macroSubstitutor, IMacroContextInfoProvider provider) {
-        IOption[] opts = getOptions();
+        List<IOption> opts = getOptions();
         ArrayList<String> flags = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (IOption option : opts) {
@@ -2534,7 +2533,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     }
 
     public boolean supportsLanguageSettings() {
-        IOption options[] = getOptions();
+        List<IOption> options = getOptions();
         boolean found = false;
         for (IOption option : options) {
             try {
@@ -3077,5 +3076,16 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         // TODO Auto-generated method stub
 
     }
+
+	@Override
+	public IInputType getInputTypeByID(String id) {
+		IInputType[] allInputTypes =getAllInputTypes();
+		for(IInputType curInputType:allInputTypes) {
+			if(id.equals(curInputType.getId())){
+				return curInputType;
+			}
+		}
+		return null;
+	}
 
 }

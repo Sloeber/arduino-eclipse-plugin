@@ -171,7 +171,6 @@ public class Builder extends HoldsOptions implements IBuilder {
      *            The fileVersion of Managed Buid System
      */
     public Builder(IToolChain parent, IExtensionPoint root, IConfigurationElement element) {
-        super(true);
         this.parent = parent;
         loadNameAndID(root, element);
 
@@ -206,7 +205,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public Builder(IToolChain parent, Map<String, String> args2, String managedBuildRevision) {
-        super(true);
         //        this.parent = parent;
         //
         //        loadFromMap(args2, null);
@@ -231,7 +229,6 @@ public class Builder extends HoldsOptions implements IBuilder {
      *            project element
      */
     public Builder(ToolChain parent, IBuilder superClass, String Id, String name, boolean isExtensionElement) {
-        super(true);
         //        this.parent = parent;
         //        this.superClass = superClass;
         //        setManagedBuildRevision(parent.getManagedBuildRevision());
@@ -263,7 +260,6 @@ public class Builder extends HoldsOptions implements IBuilder {
      *            The fileVersion of Managed Buid System
      */
     public Builder(IToolChain parent, ICStorageElement element, String managedBuildRevision) {
-        super(true);
         //        this.parent = parent;
         //        isExtensionBuilder = false;
         //
@@ -290,7 +286,6 @@ public class Builder extends HoldsOptions implements IBuilder {
      *            The existing builder to clone.
      */
     public Builder(IToolChain parent, String Id, String name, Builder builder) {
-        super(true);
         //        this.parent = parent;
         //
         //        superClass = builder.superClass;
@@ -2048,7 +2043,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     private ICOutputEntry[] getDefaultOutputSettings() {
         Configuration cfg = (Configuration) getConfguration();
-        if (cfg == null || cfg.isPreference() || cfg.isExtensionElement()) {
+        if (cfg == null || cfg.isPreference() ) {
             return new ICOutputEntry[] { new COutputEntry(Path.EMPTY, null,
                     ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
         }

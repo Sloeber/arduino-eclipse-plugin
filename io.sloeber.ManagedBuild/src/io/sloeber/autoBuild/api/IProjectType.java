@@ -54,8 +54,8 @@ public interface IProjectType extends IBuildObject {
     public static final String PROJECTTYPE_ELEMENT_NAME = "projectType"; //$NON-NLS-1$
 
     public static final String IS_TEST = "isTest"; //$NON-NLS-1$
-    public static final String PROJECT_ENVIRONMENT_SUPPLIER = "projectEnvironmentSupplier"; //$NON-NLS-1$
-    public static final String PROJECT_MACRO_SUPPLIER = "projectMacroSupplier"; //$NON-NLS-1$
+    public static final String PROJECT_ENVIRONMENT_SUPPLIER = "environmentSupplier"; //$NON-NLS-1$
+    public static final String PROJECT_BUILD_MACRO_SUPPLIER = "buildMacroSupplier"; //$NON-NLS-1$
     public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$

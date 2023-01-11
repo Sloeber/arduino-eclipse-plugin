@@ -45,12 +45,8 @@ public class ProjectType extends BuildObject implements IProjectType {
     private boolean myIisAbstract;
     private boolean myIsTest;
 
-    private IConfigurationElement myConfigurationNameProviderElement = null;
     private IConfigurationNameProvider myConfigurationNameProvider = null;
-
-    private IConfigurationElement myEnvironmentVariableSupplierElement = null;
     private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
-    private IConfigurationElement myBuildMacroSupplierElement = null;
     private IProjectBuildMacroSupplier myBuildMacroSupplier = null;
 
     /*
@@ -70,7 +66,11 @@ public class ProjectType extends BuildObject implements IProjectType {
         modelIsTest = getAttributes(IS_TEST);
         modelConfigurationNameProvider = getAttributes(CONFIGURATION_NAME_PROVIDER);
         modelEnvironmentVariableSupplier = getAttributes(PROJECT_ENVIRONMENT_SUPPLIER);
-        modelBuildMacroSupplier = getAttributes(PROJECT_MACRO_SUPPLIER);
+        modelBuildMacroSupplier = getAttributes(PROJECT_BUILD_MACRO_SUPPLIER);
+        
+        myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(PROJECT_ENVIRONMENT_SUPPLIER);
+        myConfigurationNameProvider = (IConfigurationNameProvider) createExecutableExtension(CONFIGURATION_NAME_PROVIDER);
+        myBuildMacroSupplier = (IProjectBuildMacroSupplier) createExecutableExtension(PROJECT_BUILD_MACRO_SUPPLIER);
 
         // Load the configuration children
         IConfigurationElement[] configs = element.getChildren(IConfiguration.CONFIGURATION_ELEMENT_NAME);
@@ -90,45 +90,11 @@ public class ProjectType extends BuildObject implements IProjectType {
         //            }
         //
         //        }
-        try {
-            resolveFields();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
 
     }
 
-    private void resolveFields() throws Exception {
 
-        myIisAbstract = Boolean.parseBoolean(modelIsAbstract[SUPER]);
-        myIsTest = Boolean.parseBoolean(modelIsTest[SUPER]);
-
-        if (modelEnvironmentVariableSupplier[SUPER] != null) {
-            try {
-                //TOFIX JABA something is not right here
-                if (myEnvironmentVariableSupplierElement.getAttribute(PROJECT_ENVIRONMENT_SUPPLIER) != null) {
-                    myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) myEnvironmentVariableSupplierElement
-                            .createExecutableExtension(PROJECT_ENVIRONMENT_SUPPLIER);
-                }
-            } catch (CoreException e) {
-                Activator.log(e);
-            }
-        }
-
-        if (!modelConfigurationNameProvider[SUPER].isEmpty()) {
-            //TOFIX JABA something is not right here
-            if (myConfigurationNameProviderElement.getAttribute(CONFIGURATION_NAME_PROVIDER) != null) {
-                myConfigurationNameProvider = (IConfigurationNameProvider) myConfigurationNameProviderElement
-                        .createExecutableExtension(CONFIGURATION_NAME_PROVIDER);
-            }
-        }
-        if (myBuildMacroSupplierElement.getAttribute(PROJECT_MACRO_SUPPLIER) != null) {
-            myBuildMacroSupplier = (IProjectBuildMacroSupplier) myBuildMacroSupplierElement
-                    .createExecutableExtension(PROJECT_MACRO_SUPPLIER);
-        }
-
-    }
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -158,9 +124,7 @@ public class ProjectType extends BuildObject implements IProjectType {
      * Adds the Configuration to the Configuration list and map
      */
     public void addConfiguration(Configuration configuration) {
-        if (!configuration.isTemporary()) {
             myConfigMap.put(configuration.getId(), configuration);
-        }
     }
 
     @Override
@@ -203,15 +167,6 @@ public class ProjectType extends BuildObject implements IProjectType {
         return myConfigurationNameProvider;
     }
 
-    /**
-     * Returns the plugin.xml element of the projectEnvironmentSupplier extension or
-     * <code>null</code> if none.
-     *
-     * @return IConfigurationElement
-     */
-    public IConfigurationElement getEnvironmentVariableSupplierElement() {
-        return myEnvironmentVariableSupplierElement;
-    }
 
     /*
      * (non-Javadoc)

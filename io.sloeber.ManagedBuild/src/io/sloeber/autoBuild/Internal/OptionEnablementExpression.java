@@ -359,93 +359,14 @@ public class OptionEnablementExpression extends AndExpression {
         return adjustmentNeeded(cfg.getRootFolderInfo(), null, null);
     }
 
-    public static boolean adjustToolChain(IFolderInfo info, IToolChain tChain, String attrbute, String value,
-            boolean extensionAdjustment) {
 
-        if (value == null && tChain.isExtensionElement())
-            return false;
 
-        boolean adjusted = true;
 
-        if (IToolChain.TARGET_TOOL.equals(attrbute)) {
-            tChain.setTargetToolIds(value);
-        } else {
-            adjusted = false;
-        }
 
-        return adjusted;
-    }
 
-    public boolean adjustToolChain(IFolderInfo info, IToolChain tChain, AdjustmentContext context,
-            boolean extensionAdjustment) {
-        if (!canPerformAdjustment(extensionAdjustment))
-            return false;
 
-        boolean needed = adjustmentNeeded(info, tChain);
 
-        if (context != null)
-            context.addAdjustedState(fAttribute, needed);
 
-        if (needed)
-            return adjustToolChain(info, tChain, fAttribute, fValue, extensionAdjustment);
-        return false;
-    }
-
-    public static boolean adjustTool(IResourceInfo info, ITool tool, String attribute, String value,
-            boolean extensionAdjustment) {
-
-        if (value == null && tool.isExtensionElement())
-            return false;
-
-        return false;
-    }
-
-    public boolean adjustTool(IResourceInfo info, ITool tool, AdjustmentContext context, boolean extensionAdjustment) {
-        if (!canPerformAdjustment(extensionAdjustment))
-            return false;
-
-        boolean needed = adjustmentNeeded(info, tool);
-
-        if (context != null)
-            context.addAdjustedState(fAttribute, needed);
-
-        if (needed)
-            return adjustTool(info, tool, fAttribute, fValue, extensionAdjustment);
-        return false;
-    }
-
-    public static boolean adjustConfiguration(IConfiguration cfg, String attribute, String value,
-            boolean extensionAdjustment) {
-
-        if (value == null && cfg.isExtensionElement())
-            return false;
-
-        boolean adjusted = true;
-
-        if (IConfiguration.EXTENSION.equals(attribute)) {
-            cfg.setArtifactExtension(value);
-        } else if (IConfiguration.ARTIFACT_NAME.equals(attribute)) {
-            cfg.setArtifactName(value);
-        } else {
-            adjusted = false;
-        }
-
-        return adjusted;
-    }
-
-    public boolean adjustConfiguration(IConfiguration cfg, AdjustmentContext context, boolean extensionAdjustment) {
-        if (!canPerformAdjustment(extensionAdjustment))
-            return false;
-
-        boolean needed = adjustmentNeeded(cfg);
-
-        if (context != null)
-            context.addAdjustedState(fAttribute, needed);
-
-        if (needed)
-            return adjustConfiguration(cfg, fAttribute, fValue, extensionAdjustment);
-        return false;
-    }
 
     public boolean canPerformAdjustment(boolean extensionAdjustment) {
         return fIsExtensionAdjustment == extensionAdjustment && checkFlags(FLAG_CONTAINER_ATTRIBUTE);

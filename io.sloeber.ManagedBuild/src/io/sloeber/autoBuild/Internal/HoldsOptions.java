@@ -19,9 +19,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
@@ -58,15 +61,13 @@ import io.sloeber.autoBuild.core.Activator;
  */
 public abstract class HoldsOptions extends BuildObject implements IHoldsOptions {
 
-    private static final IOptionCategory[] EMPTY_CATEGORIES = new IOptionCategory[0];
+    private static final List<IOptionCategory> EMPTY_CATEGORIES = new LinkedList<>();
 
     //  Members that are to be shared with the derived class
     protected IHoldsOptions superClass;
-    //  Members that must have the same values on creation as the derived class
-    private boolean resolved;
     //  Parent and children
-    private Vector<String> categoryIds;
-    private Map<String, IOptionCategory> categoryMap;
+    protected Set<String> categoryIds= new HashSet<>();
+    protected Map<String, IOptionCategory> categoryMap =new HashMap<>();
     private List<IOptionCategory> childOptionCategories;
     private Map<String, Option> optionMap;
     //  Miscellaneous
@@ -76,15 +77,11 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      *  C O N S T R U C T O R S
      */
 
-    @SuppressWarnings("unused")
-    private HoldsOptions() {
+    HoldsOptions() {
         // prevent accidental construction of class without setting up
         // resolved
     }
 
-    protected HoldsOptions(boolean resolved) {
-        this.resolved = resolved;
-    }
 
     /**
      * Copies children of <code>HoldsOptions</code>. Helper function for
@@ -195,51 +192,16 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      *  M E T H O D S   M O V E D   F R O M   I T O O L   I N   3 . 0
      */
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#createOption(IOption, String, String, boolean)
-     */
-    @Override
-    public IOption createOption(IOption superClass, String Id, String name, boolean isExtensionElement) {
-        Option option = new Option(this, superClass, Id, name, isExtensionElement);
-        addOption(option);
-        return option;
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#createOptions(IHoldsOptions)
-     */
-    @Override
-    public void createOptions(IHoldsOptions superClass) {
-        for (Option optionChild : ((HoldsOptions) superClass).getOptionCollection()) {
-            int nnn = ManagedBuildManager.getRandomNumber();
-            String subId = optionChild.getId() + "." + nnn; //$NON-NLS-1$
-            createOption(optionChild, subId, optionChild.getName(), false);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#removeOption(IOption)
-     */
-    @Override
-    public void removeOption(IOption option) {
-        if (option.getParent() != this)
-            return;
-        //			throw new IllegalArgumentException();
-
-        getOptionMap().remove(option.getId());
-
-        if (!isExtensionElement()) {
-            NotificationManager.getInstance().optionRemoved(getParentResourceInfo(), this, option);
-        }
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getOptions()
      */
     @Override
-    public IOption[] getOptions() {
-        Collection<IOption> opts = doGetOptions().values();
-        return opts.toArray(new IOption[opts.size()]);
+    public List<IOption> getOptions() {
+        List<IOption> opts =new LinkedList<>();
+        opts.addAll( doGetOptions().values());
+        return opts;
     }
 
     /**
@@ -291,67 +253,26 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
         return opt.isValid() ? opt : null;
     }
 
-    /* (non-Javadoc)
-     * org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getOptionBySuperClassId(java.lang.String)
-     */
-    @Override
-    public IOption getOptionBySuperClassId(String optionId) {
-        if (optionId == null)
-            return null;
-
-        // 1. Try a quick look-up - at first iteration in the recursion, this will yield nothing, but once
-        //    we go into recursion (step 3), this look-up would efficiently find non-overridden options.
-        IOption option = getOptionMap().get(optionId);
-        if (option != null) {
-            return option;
-        }
-
-        //        // 2. Try to find the option among those that we override.
-        //        for (Option ourOpt : getOptionCollection()) {
-        //            for (IOption superOpt = ourOpt.getSuperClass(); superOpt != null; superOpt = superOpt.getSuperClass()) {
-        //                if (optionId.equals(superOpt.getId())) {
-        //                    return ourOpt.isValid() ? ourOpt : null;
-        //                }
-        //            }
-        //        }
-        //
-        //        // 3. If not found in step 2, recurse into superClass.
-        //        if (this.superClass != null) {
-        //            return this.superClass.getOptionBySuperClassId(optionId);
-        //        }
-
-        return null;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getChildCategories()
      */
     @Override
-    public IOptionCategory[] getChildCategories() {
-        IOptionCategory[] superCats = EMPTY_CATEGORIES;
-        IOptionCategory[] ourCats = EMPTY_CATEGORIES;
+    public List<IOptionCategory> getChildCategories() {
+        List<IOptionCategory> retCats =   new LinkedList<>();;
         // Merge our option categories with our superclass' option categories.
         // Note that these are two disjoint sets of categories because
         // categories do not use derivation AND object Id's are unique. Thus
         // they are merely sequentially added.
         if (superClass != null) {
-            superCats = superClass.getChildCategories();
+        	retCats.addAll( superClass.getChildCategories());
         }
         if (childOptionCategories != null) {
-            ourCats = childOptionCategories.toArray(new IOptionCategory[childOptionCategories.size()]);
+            retCats.addAll( childOptionCategories);
         }
-        // Add the two arrays together;
-        if (superCats.length > 0 || ourCats.length > 0) {
-            IOptionCategory[] allCats = new IOptionCategory[superCats.length + ourCats.length];
-            int j;
-            for (j = 0; j < superCats.length; j++)
-                allCats[j] = superCats[j];
-            for (j = 0; j < ourCats.length; j++)
-                allCats[j + superCats.length] = ourCats[j];
-            return allCats;
-        }
+
         // Nothing found, return EMPTY_CATEGORIES
-        return EMPTY_CATEGORIES;
+        return retCats;
     }
 
     /*
@@ -361,10 +282,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     /**
      * Memory-safe way to access the vector of category IDs
      */
-    private Vector<String> getCategoryIds() {
-        if (categoryIds == null) {
-            categoryIds = new Vector<>();
-        }
+    private Set<String> getCategoryIds() {
         return categoryIds;
     }
 
@@ -410,17 +328,6 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     }
 
     /* (non-Javadoc)
-     * org.eclipse.cdt.managedbuilder.core.IHoldsOptions#addOptionCategory()
-     */
-    @Override
-    public void addOptionCategory(IOptionCategory category) {
-        // To preserve the order of the categories, record the ids in the order they are read
-        getCategoryIds().add(category.getId());
-        // Map the categories by ID for resolution later
-        getCategoryMap().put(category.getId(), category);
-    }
-
-    /* (non-Javadoc)
      * org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getOptionCategory()
      */
     @Override
@@ -444,7 +351,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     public IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException {
         //  IOption setOption = null;
         // start changes
-        if (option.getOptionHolder() != this) {
+//        if (option.getOptionHolder() != this) {
             // option = getOptionBySuperClassId(option.getId());
             //            IOption op = getOptionBySuperClassId(option.getId());
             //            if (op == null && option.getSuperClass() != null) {
@@ -460,15 +367,15 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
             //                    option = op;
             //            } else
             //                option = op;
-            IOption op = getOptionBySuperClassId(option.getId());
-            if (op == null) {
-                Activator.log(
-                        new Status(IStatus.ERROR, Activator.getId(), IStatus.OK, "Cannot get OptionToSet for option " + //$NON-NLS-1$
-                                option.getId() + " @ holder " + //$NON-NLS-1$
-                                option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
-                                getId(), null));
-            }
-            return op;
+//            IOption op = getOptionBySuperClassId(option.getId());
+//            if (op == null) {
+//                Activator.log(
+//                        new Status(IStatus.ERROR, Activator.getId(), IStatus.OK, "Cannot get OptionToSet for option " + //$NON-NLS-1$
+//                                option.getId() + " @ holder " + //$NON-NLS-1$
+//                                option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
+//                                getId(), null));
+//            }
+//            return op;
             //        }
             //        // end changes
             //
@@ -499,7 +406,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
             //                    ((Option) setOption).setAdjusted(true);
             //                    setOption.setValueType(option.getValueType());
             //                }
-        }
+//        }
         //        } else {
         if (!option.isExtensionElement()) {
             return option;

@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import java.util.List;
+
 /**
  * Implements the functionality that is needed to hold options and option
  * categories. The functionality has been moved from ITool to here in CDT 3.0.
@@ -32,27 +34,6 @@ public interface IHoldsOptions extends IBuildObject {
      *  M E T H O D S   M O V E D   F R O M   I T O O L   I N   3 . 0
      */
 
-    /**
-     * Creates a child Option
-     *
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The id for the new option
-     * @param name
-     *            The name for the new option
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a managed
-     *            project element
-     *
-     * @return IOption
-     */
-    public IOption createOption(IOption superClass, String Id, String name, boolean isExtensionElement);
-
-    /**
-     * Removes an option.
-     */
-    public void removeOption(IOption option);
 
     /**
      * Get the <code>IOption</code> in the receiver with the specified
@@ -70,21 +51,6 @@ public interface IHoldsOptions extends IBuildObject {
      */
     public IOption getOptionById(String id);
 
-    /**
-     * Get the <code>IOption</code> in the receiver with the specified
-     * ID, or an option with a superclass with this id.
-     *
-     * <p>
-     * If the receiver does not have an option with that ID, the method
-     * returns <code>null</code>. It is the responsibility of the caller to
-     * verify the return value.
-     *
-     * @param id
-     *            unique identifier of the option to search for
-     * @return <code>IOption</code>
-     * @since 3.0
-     */
-    public IOption getOptionBySuperClassId(String id);
 
     /**
      * Returns the complete list of options that are available for this object.
@@ -94,27 +60,19 @@ public interface IHoldsOptions extends IBuildObject {
      *
      * @return IOption[]
      */
-    public IOption[] getOptions();
+    public List< IOption> getOptions();
 
     /**
      * Returns the option category children of this tool.
      *
      * @return IOptionCategory[]
      */
-    public IOptionCategory[] getChildCategories();
+    public List<IOptionCategory> getChildCategories();
 
     /*
      *  M E T H O D S   M O V E D   F R O M   T O O L   I N   3 . 0
      */
 
-    /**
-     * Adds the <code>IOptionCategory</code> to this Option Holder's
-     * list of Option Categories.
-     *
-     * @param category
-     *            The option category to be added
-     */
-    public void addOptionCategory(IOptionCategory category);
 
     /*
      *  N E W   M E T H O D S   A D D E D   I N   3 . 0
@@ -131,16 +89,6 @@ public interface IHoldsOptions extends IBuildObject {
      */
     public IOptionCategory getOptionCategory(String id);
 
-    /**
-     * Creates options from the superclass and adds it to this class.
-     * Each individual option in superclass, will become the superclass for
-     * the new option.
-     *
-     * @param superClass
-     *            The superClass
-     * @since 3.0
-     */
-    public void createOptions(IHoldsOptions superClass);
 
     /**
      * 

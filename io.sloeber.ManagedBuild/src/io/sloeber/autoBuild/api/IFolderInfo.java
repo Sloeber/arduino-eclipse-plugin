@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import java.util.List;
+
 import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 
 /**
@@ -22,13 +24,11 @@ import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 public interface IFolderInfo extends IResourceInfo {
     public final static String FOLDER_INFO_ELEMENT_NAME = "folderInfo"; //$NON-NLS-1$
 
-    ITool[] getFilteredTools();
+   List<ITool> getFilteredTools();
 
     IToolChain getToolChain();
 
     ITool getTool(String id);
-
-    ITool[] getToolsBySuperClassId(String id);
 
     CFolderData getFolderData();
 
