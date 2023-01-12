@@ -68,11 +68,11 @@ public class BooleanExpressionApplicabilityCalculator implements IOptionApplicab
 
     public static IResourceInfo rcInfoFromConfiguration(IBuildObject configuration) {
         if (configuration instanceof IFolderInfo)
-            return (IFolderInfo) configuration;
+            return (IResourceInfo) ((IFolderInfo) configuration).getConfiguration();
         if (configuration instanceof IFileInfo)
             return (IFileInfo) configuration;
         if (configuration instanceof IConfiguration)
-            return ((IConfiguration) configuration).getRootFolderInfo();
+            return (IResourceInfo) ((IConfiguration) configuration);
         return null;
     }
 

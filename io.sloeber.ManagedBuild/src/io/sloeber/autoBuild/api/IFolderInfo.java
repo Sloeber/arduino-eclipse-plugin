@@ -13,48 +13,25 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
-import java.util.List;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 
-import org.eclipse.cdt.core.settings.model.extension.CFolderData;
+import io.sloeber.autoBuild.Internal.Configuration;
+import io.sloeber.autoBuild.Internal.ToolChain;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IFolderInfo extends IResourceInfo {
+public interface IFolderInfo extends IBuildObject {
     public final static String FOLDER_INFO_ELEMENT_NAME = "folderInfo"; //$NON-NLS-1$
+    public final static String RESOURCEPATH = "resourcePath"; //$NON-NLS-1$
+    public final static String EXCLUDE = "exclude"; //$NON-NLS-1$
 
-   List<ITool> getFilteredTools();
+    boolean isExcluded(IFile file);
 
-    IToolChain getToolChain();
+	public Configuration getConfiguration() ;
 
-    ITool getTool(String id);
-
-    CFolderData getFolderData();
-
-    /**
-     * Returns a <code>ITool</code> for the tool associated with the
-     * output extension.
-     *
-     * @param extension
-     *            the file extension of the output file
-     * @return ITool
-     *
-     * @since 3.1
-     */
-    ITool getToolFromOutputExtension(String extension);
-
-    /**
-     * Returns a <code>ITool</code> for the tool associated with the
-     * input extension.
-     *
-     * @param sourceExtension
-     *            the file extension of the input file
-     * @return ITool
-     *
-     * @since 3.1
-     */
-    ITool getToolFromInputExtension(String sourceExtension);
-
-    boolean isHeaderFile(String ext);
+	public ToolChain getToolChain() ;
+	public IPath getPath();
 }

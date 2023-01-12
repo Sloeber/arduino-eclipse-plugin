@@ -550,7 +550,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
                 nextConfigChanged.setValue(false);
                 try {
-                    IBuilder builder = cfg.getEditableBuilder();
+                    IBuilder builder = cfg.getBuilder();
                     //					CfgBuildInfo bInfo = new CfgBuildInfo(builder, false);
 
                     if (VERBOSE)
@@ -1079,7 +1079,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         if (shouldBuild(CLEAN_BUILD, bInfo.getBuilder())) {
             IConfiguration cfg = bInfo.getConfiguration();
 
-            if (!cfg.getEditableBuilder().isManagedBuildOn()) {
+            if (!cfg.getBuilder().isManagedBuildOn()) {
                 performExternalClean(bInfo, false, monitor);
             } else {
                 boolean programmatically = true;
@@ -1345,7 +1345,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         if (info != null) {
             if (args == null) {
                 IConfiguration cfg = info.getDefaultConfiguration();
-                IBuilder builder = cfg.getEditableBuilder();
+                IBuilder builder = cfg.getBuilder();
                 builders = new IBuilder[] { builder };
 
             } else {
@@ -1354,7 +1354,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     IConfiguration cfg = info.getDefaultConfiguration();
                     IBuilder builder;
                     if (args.size() == 0) {
-                        builder = cfg.getEditableBuilder();
+                        builder = cfg.getBuilder();
                     } else {
                         builder = createBuilder(cfg, args, true);
                     }
@@ -1377,7 +1377,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     if (cfgs.length != 0) {
                         List<IBuilder> list = new ArrayList<>(cfgs.length);
                         for (int i = 0; i < cfgs.length; i++) {
-                            list.add(cfgs[i].getEditableBuilder());
+                            list.add(cfgs[i].getBuilder());
                         }
                         builders = list.toArray(new IBuilder[list.size()]);
                     }
@@ -1389,7 +1389,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                      * build-command, and will be going through the "args == null" condition above.
                      */
                     IConfiguration cfg = info.getDefaultConfiguration();
-                    IBuilder builder = cfg.getEditableBuilder();
+                    IBuilder builder = cfg.getBuilder();
                     builders = new IBuilder[] { builder };
 
                 } /*else if (CONTENTS_BUILDER_CUSTOMIZATION.equals(type)){

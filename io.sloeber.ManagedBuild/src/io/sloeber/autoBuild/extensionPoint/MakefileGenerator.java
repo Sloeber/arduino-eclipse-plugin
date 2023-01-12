@@ -368,7 +368,7 @@ public class MakefileGenerator implements IMakefileGenerator {
 		// Save the project so we can get path and member information
 		this.project = cfg.getOwner().getProject();
 		if (builder == null) {
-			builder = cfg.getEditableBuilder();
+			builder = cfg.getBuilder();
 		}
 
 		// Save the monitor reference for reporting back to the user

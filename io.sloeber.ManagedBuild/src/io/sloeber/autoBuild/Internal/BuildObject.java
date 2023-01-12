@@ -45,11 +45,11 @@ public abstract class BuildObject implements IBuildObject {
         name = element.getAttribute(NAME);
         mySuperClassID = element.getAttribute(SUPERCLASS);
         myConfigurationSuperClassElement = getSuperClassConfigurationElement();
-        if (myConfigurationSuperClassElement == null) {
-            ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-                    mySuperClassID, "option", //$NON-NLS-1$
-                    getId());
-        }
+//        if (myConfigurationSuperClassElement == null) {
+//            ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
+//                    mySuperClassID, "option", //$NON-NLS-1$
+//                    getId());
+//        }
     }
 
     protected void loadNameAndID(ICStorageElement element) {
@@ -60,10 +60,10 @@ public abstract class BuildObject implements IBuildObject {
         mySuperClassID = element.getAttribute(SUPERCLASS);
         if (mySuperClassID != null && mySuperClassID.length() > 0) {
             myStorageSuperClassElement = getSuperClassSorageElement();
-            if (myStorageSuperClassElement == null) {
-                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
-                        getId());
-            }
+//            if (myStorageSuperClassElement == null) {
+//                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
+//                        getId());
+//            }
         }
     }
 
@@ -118,58 +118,7 @@ public abstract class BuildObject implements IBuildObject {
         }
     }
 
-    /**
-     * @return Returns the managedBuildRevision.
-     */
-    @Override
-    public String getManagedBuildRevision() {
-        return managedBuildRevision;
-    }
 
-    /**
-     * @return Returns the version.
-     */
-    @Override
-    public Version getVersion() {
-        return version;
-    }
-
-    /**
-     * @param version
-     *            The version to set.
-     */
-    @Override
-    public void setVersion(Version version) {
-        this.version = version;
-    }
-
-    public Version getVersionFromId() {
-        String versionNumber = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-
-        if (versionNumber == null) {
-            // It means, Tool Integrator either not provided version information in 'id' or  provided in wrong format,
-            // So get the default version based on 'managedBuildRevision' attribute.
-
-            if (getManagedBuildRevision() != null) {
-                Version tmpManagedBuildRevision = new Version(getManagedBuildRevision());
-                if (tmpManagedBuildRevision.equals(new Version("1.2.0"))) //$NON-NLS-1$
-                    versionNumber = "0.0.1"; //$NON-NLS-1$
-                else if (tmpManagedBuildRevision.equals(new Version("2.0.0"))) //$NON-NLS-1$
-                    versionNumber = "0.0.2"; //$NON-NLS-1$
-                else if (tmpManagedBuildRevision.equals(new Version("2.1.0"))) //$NON-NLS-1$
-                    versionNumber = "0.0.3"; //$NON-NLS-1$
-                else
-                    versionNumber = "0.0.4"; //$NON-NLS-1$
-            } else {
-                versionNumber = "0.0.0"; //$NON-NLS-1$
-            }
-        }
-        return new Version(versionNumber);
-    }
-
-    public void setManagedBuildRevision(String managedBuildRevision) {
-        this.managedBuildRevision = managedBuildRevision;
-    }
 
     private IConfigurationElement getSuperClassConfigurationElement() {
         // TODO Auto-generated method stub

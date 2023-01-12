@@ -50,32 +50,21 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IConfiguration extends IBuildObject {
-    public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
-    public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
+	public static final String CONFIGURATION_ELEMENT_NAME = "configuration"; //$NON-NLS-1$
+    
+	public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
+	public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
+    public static final String EXTENSION = "artifactExtension"; //$NON-NLS-1$
+    public static final String ERROR_PARSERS = "errorParsers"; //$NON-NLS-1$
+    public static final String LANGUAGE_SETTINGS_PROVIDERS = "languageSettingsProviders"; //$NON-NLS-1$
+    public static final String DESCRIPTION = "description"; //$NON-NLS-1$
+    public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
+    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
     public static final String PREBUILD_STEP = "prebuildStep"; //$NON-NLS-1$
     public static final String POSTBUILD_STEP = "postbuildStep"; //$NON-NLS-1$
     public static final String PREANNOUNCEBUILD_STEP = "preannouncebuildStep"; //$NON-NLS-1$
     public static final String POSTANNOUNCEBUILD_STEP = "postannouncebuildStep"; //$NON-NLS-1$
-    // Schema element names
-    public static final String CONFIGURATION_ELEMENT_NAME = "configuration"; //$NON-NLS-1$
-    public static final String ERROR_PARSERS = "errorParsers"; //$NON-NLS-1$
-    /** @since 8.1 */
-    public static final String LANGUAGE_SETTINGS_PROVIDERS = "languageSettingsProviders"; //$NON-NLS-1$
-    public static final String EXTENSION = "artifactExtension"; //$NON-NLS-1$
-    public static final String PARENT = "parent"; //$NON-NLS-1$
-
-    public static final String DESCRIPTION = "description"; //$NON-NLS-1$
-
-    public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
-    /**
-     * @since 8.6
-     */
-    public static final String OPTIONAL_BUILD_PROPERTIES = "optionalBuildProperties"; //$NON-NLS-1$
-    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
-    // public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
-
-    public static final String SOURCE_ENTRIES = "sourceEntries"; //$NON-NLS-1$
-
+  
     /**
      * Returns the description of the configuration.
      *
@@ -218,22 +207,22 @@ public interface IConfiguration extends IBuildObject {
      */
     public IProjectType getProjectType();
 
-    /**
-     * @param path
-     *            - path of the resource
-     *
-     * @return the resource configuration child of this configuration
-     *         that is associated with the project resource, or <code>null</code> if
-     *         none.
-     */
-    public IResourceConfiguration getResourceConfiguration(String path);
+//    /**
+//     * @param path
+//     *            - path of the resource
+//     *
+//     * @return the resource configuration child of this configuration
+//     *         that is associated with the project resource, or <code>null</code> if
+//     *         none.
+//     */
+//    public IResourceConfiguration getResourceConfiguration(String path);
 
-    /**
-     * Returns the resource configuration children of this configuration.
-     *
-     * @return IResourceConfigurations[]
-     */
-    public List<IResourceConfiguration> getResourceConfigurations();
+//    /**
+//     * Returns the resource configuration children of this configuration.
+//     *
+//     * @return IResourceConfigurations[]
+//     */
+//    public List<IResourceConfiguration> getResourceConfigurations();
 
     /**
      * Returns the <code>ITool</code> in this configuration's tool-chain with
@@ -344,35 +333,13 @@ public interface IConfiguration extends IBuildObject {
      */
     public ITool calculateTargetTool();
 
-    /**
-     * Returns a <code>ITool</code> for the tool associated with the
-     * output extension.
-     *
-     * @param extension
-     *            the file extension of the output file
-     * @return ITool
-     *
-     * @since 3.1
-     */
-    public ITool getToolFromOutputExtension(String extension);
 
-    /**
-     * Returns a <code>ITool</code> for the tool associated with the
-     * input extension.
-     *
-     * @param sourceExtension
-     *            the file extension of the input file
-     * @return ITool
-     *
-     * @since 3.1
-     */
-    public ITool getToolFromInputExtension(String sourceExtension);
 
-    IResourceInfo getResourceInfo(IPath path, boolean exactPath);
+//    IResourceInfo getResourceInfo(IPath path, boolean exactPath);
 
-    List<IResourceInfo> getResourceInfos();
+//    List<IResourceInfo> getResourceInfos();
 
-    IResourceInfo getResourceInfoById(String id);
+//    IResourceInfo getResourceInfoById(String id);
 
     IFolderInfo getRootFolderInfo();
 
@@ -384,13 +351,7 @@ public interface IConfiguration extends IBuildObject {
 
     IBuilder getBuilder();
 
-    IBuilder getEditableBuilder();
-
     String getOutputFlag(String outputExt);
-
-    List<String> getUserObjects(String extension);
-
-    List<String> getLibs(String extension);
 
     boolean supportsBuild(boolean managed);
 

@@ -356,13 +356,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return paths.toArray(new String[paths.size()]);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getLibsForConfiguration(java.lang.String)
-     */
-    @Override
-    public List<String> getLibsForConfiguration(String extension) {
-        return getDefaultConfiguration().getLibs(extension);
-    }
+
 
     private HashMap<String, String> getMacroPathEntries() {
         HashMap<String, String> macros = new HashMap<>();
@@ -488,31 +482,10 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolFromInputExtension(java.lang.String)
-     */
-    @Override
-    public ITool getToolFromInputExtension(String sourceExtension) {
-        IConfiguration config = getDefaultConfiguration();
-        return config.getToolFromInputExtension(sourceExtension);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolFromOutputExtension(java.lang.String)
-     */
-    @Override
-    public ITool getToolFromOutputExtension(String extension) {
-        IConfiguration config = getDefaultConfiguration();
-        return config.getToolFromOutputExtension(extension);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getUserObjectsForConfiguration(java.lang.String)
-     */
-    @Override
-    public List<String> getUserObjectsForConfiguration(String extension) {
-        return getDefaultConfiguration().getUserObjects(extension);
-    }
+
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getVersion()

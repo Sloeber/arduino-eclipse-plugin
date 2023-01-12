@@ -66,6 +66,7 @@ import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileContextBuildMacroValues;
+import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.IResourceInfo;
@@ -74,6 +75,7 @@ import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.BuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 
 public class Builder extends HoldsOptions implements IBuilder {
@@ -115,7 +117,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     private Boolean isAbstract;
     private String command;
     private String args;
-    private IConfigurationElement buildFileGeneratorElement;
     private String versionsSupported;
     private String convertToId;
     //    private FileContextBuildMacroValues fileContextBuildMacroValues;
@@ -151,6 +152,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     private IBuildRunner fBuildRunner = null;
     private IConfigurationElement fBuildRunnerElement = null;
     private String[] reservedMacroNames;
+	private IMakefileGenerator buildFileGeneratorElement;
 
     /*
      *  C O N S T R U C T O R S
@@ -177,7 +179,7 @@ public class Builder extends HoldsOptions implements IBuilder {
         modelsAbstract = getAttributes(IS_ABSTRACT);
         modelcommand = getAttributes(COMMAND);
         modelarguments = getAttributes(ARGUMENTS);
-        modelbuildfileGenerator = getAttributes(BUILDFILEGEN_ID);
+        modelbuildfileGenerator = getAttributes(MAKEGEN_ID);
         modelvariableFormat = getAttributes(VARIABLE_FORMAT);
         modelreservedMacroNames = getAttributes(RESERVED_MACRO_NAMES);
         modelreservedMacro = getAttributes(RESERVED_MACRO_NAME_SUPPLIER);
@@ -193,15 +195,19 @@ public class Builder extends HoldsOptions implements IBuilder {
         modelcommandLauncher = getAttributes(ATTRIBUTE_COMMAND_LAUNCHER);
         modelbuildRunner = getAttributes(ATTRIBUTE_BUILD_RUNNER);
 
-        IConfigurationElement[] children = element.getChildren();
-        for (IConfigurationElement child : children) {
-            loadChild(root, child);
-        }
+        
+		IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
+		for (IConfigurationElement optionElement : optionElements) {
+			Option newOption= new Option(this, root, optionElement);
+			myOptionMap.put(newOption.getName(), newOption);
+		}
+		
+		
+		buildFileGeneratorElement=(IMakefileGenerator)createExecutableExtension(MAKEGEN_ID);
+		
 
         resolveFields();
 
-        // Hook me up to the Managed Build Manager
-        //   ManagedBuildManager.addExtensionBuilder(this);
     }
 
     public Builder(IToolChain parent, Map<String, String> args2, String managedBuildRevision) {
@@ -1019,52 +1025,17 @@ public class Builder extends HoldsOptions implements IBuilder {
         }
     }
 
-    //@Override
-    public IConfigurationElement getBuildFileGeneratorElement() {
-        if (buildFileGeneratorElement == null) {
-            if (superClass != null) {
-                return ((Builder) superClass).getBuildFileGeneratorElement();
-            }
-        }
-        return buildFileGeneratorElement;
-    }
+
 
     @Override
     public IMakefileGenerator getBuildFileGenerator() {
-        IConfigurationElement element = getBuildFileGeneratorElement();
-        if (element != null) {
-            try {
-                if (element.getName().equalsIgnoreCase("target")) { //$NON-NLS-1$
-                    if (element.getAttribute(Activator.MAKEGEN_ID) != null) {
-                        return (IMakefileGenerator) element.createExecutableExtension(Activator.MAKEGEN_ID);
-                    }
-                } else {
-                    if (element.getAttribute(IBuilder.BUILDFILEGEN_ID) != null) {
-                        return (IMakefileGenerator) element.createExecutableExtension(IBuilder.BUILDFILEGEN_ID);
-                    }
-                }
-            } catch (CoreException e) {
-            } catch (ClassCastException e) {
-            }
-
-        }
-        return null;
+        return buildFileGeneratorElement;
         //return new GnuMakefileGenerator();
-    }
-
-    //@Override
-    public void setBuildFileGeneratorElement(IConfigurationElement element) {
-        buildFileGeneratorElement = element;
     }
 
     /*
      *  O B J E C T   S T A T E   M A I N T E N A N C E
      */
-
-    @Override
-    public boolean isExtensionElement() {
-        return false;
-    }
 
     @Override
     public IFileContextBuildMacroValues getFileContextBuildMacroValues() {

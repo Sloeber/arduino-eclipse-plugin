@@ -93,7 +93,7 @@ public class OptionContextData implements IOptionContextData {
             tCh = ((IConfiguration) buildObj).getToolChain();
         else if (buildObj instanceof IFolderInfo) {
             folderInfo = (IFolderInfo) buildObj;
-            rcInfo = folderInfo;
+           // rcInfo = folderInfo;
             tCh = folderInfo.getToolChain();
         }
 

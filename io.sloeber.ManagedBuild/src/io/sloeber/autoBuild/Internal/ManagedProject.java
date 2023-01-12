@@ -78,7 +78,6 @@ public class ManagedProject extends BuildObject implements IManagedProject {
         id = (owner.getName() + "." + projectType.getId() + "." + randomNumber); //$NON-NLS-1$ //$NON-NLS-2$
         name = (projectType.getName());
 
-        setManagedBuildRevision(projectType.getManagedBuildRevision());
 
         // Hook me up
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(owner);
@@ -113,7 +112,6 @@ public class ManagedProject extends BuildObject implements IManagedProject {
             String managedBuildRevision) {
         this(buildInfo.getOwner());
 
-        setManagedBuildRevision(managedBuildRevision);
 
         // Initialize from the XML attributes
         if (loadFromProject(element)) {
@@ -402,23 +400,7 @@ public class ManagedProject extends BuildObject implements IManagedProject {
         this.isValid = isValid;
     }
 
-    /**
-     * @return Returns the version.
-     */
-    @Override
-    public Version getVersion() {
-        if (version == null) {
-            if (getProjectType() != null) {
-                return getProjectType().getVersion();
-            }
-        }
-        return version;
-    }
 
-    @Override
-    public void setVersion(Version version) {
-        // Do nothing
-    }
 
     /*
      * this method is called by the UserDefinedMacroSupplier to obtain user-defined
@@ -449,7 +431,4 @@ public class ManagedProject extends BuildObject implements IManagedProject {
         }
     }
 
-    public void applyConfiguration(Configuration cfg) {
-        cfg.applyToManagedProject(this);
-    }
 }

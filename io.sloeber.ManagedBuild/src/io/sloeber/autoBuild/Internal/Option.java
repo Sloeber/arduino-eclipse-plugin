@@ -1943,44 +1943,44 @@ public class Option extends BuildObject implements IOption {
         valueHandlerElement = element;
     }
 
-    @Override
-    public IManagedOptionValueHandler getValueHandler() {
-        if (valueHandler != null) {
-            return valueHandler;
-        }
-        IConfigurationElement element = getValueHandlerElement();
-        if (element != null) {
-            try {
-                if (element.getAttribute(VALUE_HANDLER) != null) {
-                    valueHandler = (IManagedOptionValueHandler) element.createExecutableExtension(VALUE_HANDLER);
-                    return valueHandler;
-                }
-            } catch (CoreException e) {
-                ManagedBuildManager.optionValueHandlerError(element.getAttribute(VALUE_HANDLER), getId());
-                // Assign the default handler to avoid further error messages
-                valueHandler = ManagedOptionValueHandler.getManagedOptionValueHandler();
-                return valueHandler;
-            }
-        }
-        // If no handler is provided, then use the default handler
-        return ManagedOptionValueHandler.getManagedOptionValueHandler();
-    }
-
-    @Override
-    public String getValueHandlerExtraArgument() {
-        return valueHandlerExtraArgument[SUPER];
-    }
-
-    @Override
-    public void setValueHandlerExtraArgument(String extraArgument) {
-        //        if (extraArgument == null && valueHandlerExtraArgument == null) {
-        //            return;
-        //        }
-        //        if (extraArgument == null || valueHandlerExtraArgument == null
-        //                || !extraArgument.equals(valueHandlerExtraArgument)) {
-        //            valueHandlerExtraArgument = extraArgument;
-        //        }
-    }
+//    @Override
+//    public IManagedOptionValueHandler getValueHandler() {
+//        if (valueHandler != null) {
+//            return valueHandler;
+//        }
+//        IConfigurationElement element = getValueHandlerElement();
+//        if (element != null) {
+//            try {
+//                if (element.getAttribute(VALUE_HANDLER) != null) {
+//                    valueHandler = (IManagedOptionValueHandler) element.createExecutableExtension(VALUE_HANDLER);
+//                    return valueHandler;
+//                }
+//            } catch (CoreException e) {
+//                ManagedBuildManager.optionValueHandlerError(element.getAttribute(VALUE_HANDLER), getId());
+//                // Assign the default handler to avoid further error messages
+//                valueHandler = ManagedOptionValueHandler.getManagedOptionValueHandler();
+//                return valueHandler;
+//            }
+//        }
+//        // If no handler is provided, then use the default handler
+//        return ManagedOptionValueHandler.getManagedOptionValueHandler();
+//    }
+//
+//    @Override
+//    public String getValueHandlerExtraArgument() {
+//        return valueHandlerExtraArgument[SUPER];
+//    }
+//
+//    @Override
+//    public void setValueHandlerExtraArgument(String extraArgument) {
+//        //        if (extraArgument == null && valueHandlerExtraArgument == null) {
+//        //            return;
+//        //        }
+//        //        if (extraArgument == null || valueHandlerExtraArgument == null
+//        //                || !extraArgument.equals(valueHandlerExtraArgument)) {
+//        //            valueHandlerExtraArgument = extraArgument;
+//        //        }
+//    }
 
     @Override
     public String getFieldEditorId() {
@@ -2007,10 +2007,6 @@ public class Option extends BuildObject implements IOption {
      *  O B J E C T   S T A T E   M A I N T E N A N C E
      */
 
-    @Override
-    public boolean isExtensionElement() {
-        return isExtensionOption;
-    }
 
     public boolean isDirty() {
         return false;
@@ -2019,18 +2015,7 @@ public class Option extends BuildObject implements IOption {
     public void setDirty(boolean isDirty) {
     }
 
-    /**
-     * @return Returns the managedBuildRevision.
-     */
-    @Override
-    public String getManagedBuildRevision() {
-        if (managedBuildRevision == null) {
-            if (getParent() != null) {
-                return getParent().getManagedBuildRevision();
-            }
-        }
-        return managedBuildRevision;
-    }
+
 
     /* (non-Javadoc)
      * For now implement this method just as a utility to make code
@@ -2104,23 +2089,6 @@ public class Option extends BuildObject implements IOption {
         wasOptRef = was;
     }
 
-    /**
-     * @return Returns the version.
-     */
-    @Override
-    public Version getVersion() {
-        if (version == null) {
-            if (getParent() != null) {
-                return getParent().getVersion();
-            }
-        }
-        return version;
-    }
-
-    @Override
-    public void setVersion(Version version) {
-        // Do nothing
-    }
 
     public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator(boolean isExtensionAdjustment) {
         return booleanExpressionCalculator;

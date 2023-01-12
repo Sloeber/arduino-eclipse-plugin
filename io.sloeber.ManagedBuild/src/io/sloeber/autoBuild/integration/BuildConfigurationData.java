@@ -90,13 +90,14 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public CResourceData[] getResourceDatas() {
-        List<IResourceInfo> infos = fCfg.getResourceInfos();
-        return infos.toArray( new CResourceData[infos.size()]);
+//        List<IResourceInfo> infos = fCfg.getResourceInfos();
+//        return infos.toArray( new CResourceData[infos.size()]);
+    	return null; //TOFIX JABA the storage of the selected options must be implmented
     }
 
     @Override
     public CFolderData getRootFolderData() {
-        return fCfg.getRootFolderInfo().getFolderData();
+        return null;//fCfg.getRootFolderInfo().getFolderData();
     }
 
 //    @Override

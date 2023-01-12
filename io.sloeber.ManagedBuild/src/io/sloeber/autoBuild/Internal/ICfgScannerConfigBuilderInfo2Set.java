@@ -31,13 +31,12 @@ public interface ICfgScannerConfigBuilderInfo2Set {
 
     Map<CfgInfoContext, IScannerConfigBuilderInfo2> getInfoMap();
 
-    CfgInfoContext[] getContexts();
-
-    IScannerConfigBuilderInfo2 getInfo(CfgInfoContext context);
-
-    IScannerConfigBuilderInfo2 applyInfo(CfgInfoContext context, IScannerConfigBuilderInfo2 base) throws CoreException;
 
     IConfiguration getConfiguration();
 
     boolean isProfileSupported(CfgInfoContext context, String profileId);
+
+	IScannerConfigBuilderInfo2 getInfo(CfgInfoContext context);
+
+	IScannerConfigBuilderInfo2 applyInfo(CfgInfoContext context, IScannerConfigBuilderInfo2 base);
 }

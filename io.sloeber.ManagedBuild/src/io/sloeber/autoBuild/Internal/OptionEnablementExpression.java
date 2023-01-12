@@ -178,6 +178,32 @@ public class OptionEnablementExpression extends AndExpression {
         return checkFlags(flags) ? evaluate(rcInfo, holder, option) : bDefault;
     }
 
+    public boolean checkFlags(int flags) {
+        return (fEnablementFlags & flags) == flags;
+    }
+
+    public int getFlags() {
+        return fEnablementFlags;
+    }
+    
+    public boolean adjustmentNeeded(IResourceInfo rcInfo, IHoldsOptions holder, IOption option) {
+        return evaluate(rcInfo, holder, option, FLAG_CONTAINER_ATTRIBUTE);
+    }
+
+
+    public boolean canPerformAdjustment(boolean extensionAdjustment) {
+        return fIsExtensionAdjustment == extensionAdjustment && checkFlags(FLAG_CONTAINER_ATTRIBUTE);
+    }
+
+    public static boolean getBooleanValue(String value) {
+        if (TRUE.equalsIgnoreCase(value))
+            return true;
+        else if (YES.equalsIgnoreCase(value))
+            return true;
+        return false;
+    }
+
+
     /*	public boolean evaluate(IBuildObject configuration,
             IHoldsOptions holder,
             IOption option) {
@@ -186,14 +212,6 @@ public class OptionEnablementExpression extends AndExpression {
     		return super.evaluate(configuration,holder,option);
     	}
     */
-    public boolean checkFlags(int flags) {
-        return (fEnablementFlags & flags) == flags;
-    }
-
-    public int getFlags() {
-        return fEnablementFlags;
-    }
-
     /*	public boolean performAdjustment(IBuildObject configuration,
             IHoldsOptions holder,
             IOption option,
@@ -343,40 +361,5 @@ public class OptionEnablementExpression extends AndExpression {
     //        return false;
     //    }
 
-    private boolean adjustmentNeeded(IResourceInfo rcInfo, IHoldsOptions holder, IOption option) {
-        return evaluate(rcInfo, holder, option, FLAG_CONTAINER_ATTRIBUTE);
-    }
 
-    private boolean adjustmentNeeded(IFolderInfo info, IToolChain tChain) {
-        return adjustmentNeeded(info, tChain, null);
-    }
-
-    private boolean adjustmentNeeded(IResourceInfo info, ITool tool) {
-        return adjustmentNeeded(info, tool, null);
-    }
-
-    private boolean adjustmentNeeded(IConfiguration cfg) {
-        return adjustmentNeeded(cfg.getRootFolderInfo(), null, null);
-    }
-
-
-
-
-
-
-
-
-
-
-    public boolean canPerformAdjustment(boolean extensionAdjustment) {
-        return fIsExtensionAdjustment == extensionAdjustment && checkFlags(FLAG_CONTAINER_ATTRIBUTE);
-    }
-
-    public static boolean getBooleanValue(String value) {
-        if (TRUE.equalsIgnoreCase(value))
-            return true;
-        else if (YES.equalsIgnoreCase(value))
-            return true;
-        return false;
-    }
 }

@@ -76,12 +76,7 @@ public interface ITool extends IHoldsOptions {
      */
     public IBuildObject getParent();
 
-    /**
-     * Removes an InputType from the tool's list.
-     *
-     * @since 3.0
-     */
-    public void removeInputType(IInputType type);
+
 
     /**
      * Returns the complete list of input types that are available for this tool.
@@ -118,30 +113,8 @@ public interface ITool extends IHoldsOptions {
      */
     public IPath[] getAdditionalDependencies();
 
-    /**
-     * Creates a child OutputType for this tool.
-     *
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The id for the new OutputType
-     * @param name
-     *            The name for the new OutputType
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a managed
-     *            project element
-     *
-     * @return IOutputType
-     * @since 3.0
-     */
-    public IOutputType createOutputType(IOutputType superClass, String Id, String name, boolean isExtensionElement);
 
-    /**
-     * Removes an OutputType from the tool's list.
-     *
-     * @since 3.0
-     */
-    public void removeOutputType(IOutputType type);
+
 
     /**
      * Returns the complete list of output types that are available for this tool.
@@ -187,13 +160,6 @@ public interface ITool extends IHoldsOptions {
      */
     public IOutputType getOutputType(String outputExtension);
 
-    /**
-     * Returns the <code>ITool</code> that is the superclass of this
-     * tool, or <code>null</code> if the attribute was not specified.
-     *
-     * @return ITool
-     */
-    public ITool getSuperClass();
 
     /**
      * Returns whether this element is abstract. Returns <code>false</code>
@@ -203,19 +169,7 @@ public interface ITool extends IHoldsOptions {
      */
     public boolean isAbstract();
 
-    /**
-     * Sets the isAbstract attribute of the tool-chain.
-     */
-    public void setIsAbstract(boolean b);
 
-    /**
-     * Returns a semi-colon delimited list of child Ids of the superclass'
-     * children that should not be automatically inherited by this element.
-     * Returns an empty string if the attribute was not specified.
-     * 
-     * @return String
-     */
-    public String getUnusedChildren();
 
     /**
      * Returns the semicolon separated list of unique IDs of the error parsers
@@ -235,10 +189,6 @@ public interface ITool extends IHoldsOptions {
      */
     public String[] getErrorParserList();
 
-    /**
-     * Sets the semicolon separated list of error parser ids
-     */
-    public void setErrorParserIds(String ids);
 
     /**
      * Returns the array of valid primary source extensions this tool knows how to
@@ -301,13 +251,7 @@ public interface ITool extends IHoldsOptions {
      */
     public String[] getOutputsAttribute();
 
-    /**
-     * Sets all of the output extensions that the receiver can build,
-     * into the outputs attribute. Note that the outputs attribute is
-     * ignored when one or more outputTypes are specified.
-     */
-    public void setOutputsAttribute(String extensions);
-
+ 
     /**
      * Answers the argument that must be passed to a specific tool in order to
      * control the name of the output artifact. For example, the GCC compile and
@@ -326,12 +270,6 @@ public interface ITool extends IHoldsOptions {
      */
     public boolean getAdvancedInputCategory();
 
-    /**
-     * Sets whether the Tool wants the MBS to display the Advanced
-     * Input category that allows the user to specify additional input resources and
-     * dependencies.
-     */
-    public void setAdvancedInputCategory(boolean display);
 
     /**
      * Returns <code>true</code> if the Tool represents a user-define custom build
@@ -341,10 +279,6 @@ public interface ITool extends IHoldsOptions {
      */
     public boolean getCustomBuildStep();
 
-    /**
-     * Sets whether the Tool represents a user-define custom build step.
-     */
-    public void setCustomBuildStep(boolean customBuildStep);
 
     /**
      * Returns the announcement string for this tool
@@ -353,10 +287,7 @@ public interface ITool extends IHoldsOptions {
      */
     public String getAnnouncement();
 
-    /**
-     * Sets the announcement string for this tool
-     */
-    public void setAnnouncement(String announcement);
+
 
     /**
      * Answers the command-line invocation defined for the receiver.
@@ -372,10 +303,7 @@ public interface ITool extends IHoldsOptions {
      */
     public String getCommandLinePattern();
 
-    /**
-     * Sets the command line pattern for this tool
-     */
-    public void setCommandLinePattern(String pattern);
+
 
     /**
      * Returns the command line generator specified for this tool
@@ -384,18 +312,7 @@ public interface ITool extends IHoldsOptions {
      */
     public IManagedCommandLineGenerator getCommandLineGenerator();
 
-    /**
-     * Returns a class instance that implements an interface to generate
-     * source-level dependencies for the tool specified in the argument.
-     * This method may return <code>null</code> in which case, the receiver
-     * should assume that the tool does not require dependency information
-     * when the project is built.
-     *
-     * @param sourceExt
-     *            source file extension
-     * @return IManagedDependencyGeneratorType
-     */
-    //public IManagedDependencyGeneratorType getDependencyGeneratorForExtension(String sourceExt);
+
 
     /**
      * Returns an array of command line arguments that have been specified for
@@ -457,29 +374,7 @@ public interface ITool extends IHoldsOptions {
      */
     public boolean isExtensionElement();
 
-    /**
-     * Returns the 'versionsSupported' of this tool
-     *
-     * @return String
-     */
-    public String getVersionsSupported();
 
-    /**
-     * Returns the 'convertToId' of this tool
-     *
-     * @return String
-     */
-    public String getConvertToId();
-
-    /**
-     * Sets the 'versionsSupported' attribute of the tool.
-     */
-    public void setVersionsSupported(String versionsSupported);
-
-    /**
-     * Sets the 'convertToId' attribute of the tool.
-     */
-    public void setConvertToId(String convertToId);
 
     /**
      * Returns an array of the Environment Build Path variable descriptors
@@ -517,10 +412,6 @@ public interface ITool extends IHoldsOptions {
      */
     boolean isHidden();
 
-    /**
-     * @since 8.4
-     */
-    void setHidden(boolean hidden);
 
     String getUniqueRealName();
 

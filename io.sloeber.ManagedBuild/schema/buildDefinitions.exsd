@@ -651,7 +651,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="parent" type="string">
+         <attribute name="superClass" type="string">
             <annotation>
                <documentation>
                   The configuration that this configuration was cloned from.
@@ -672,6 +672,13 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="cleanCommand" type="string">
+            <annotation>
+               <documentation>
+                  This attribute maintains the command that removes the intermediate and output files for a particular configuration. For example, on POSIX platforms like Linuc, Solaris, or Cygwin, the command would be &lt;code&gt;rm -rf&lt;/code&gt; whereas on Win32 platforms it would be &lt;code&gt;del /F /S /Q&lt;/code&gt;
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="errorParsers" type="string">
             <annotation>
                <documentation>
@@ -686,6 +693,40 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
 This field could be amended with toolchain-level providers list by using ${Toolchain} keyword.  Provider ID can be prefixed with &quot;-&quot; which will cause id to be removed from the preceeding list including providers defined with ${Toolchain} keyword.
 If this field is not specified, &quot;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider&quot; (MBS Language Settings Provider) is used by default.
                </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="prebuildStep" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the pre-build command, which runs prior to the standard MBS build.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="postbuildStep" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the post-build command, which runs after the standard MBS build.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="preannouncebuildStep" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the string to be displayed when the pre-build command step is run.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="postannouncebuildStep" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the string to be displayed when the post-build command step is run.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="description" type="string">
@@ -1505,7 +1546,7 @@ Default is true (leaf nodes only).
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="buildfileGenerator" type="string">
+         <attribute name="makefileGenerator" type="string">
             <annotation>
                <documentation>
                   Allows you to supply a custom build file generator that conforms to the &lt;code&gt;IManagedBuilderMakefileGenerator&lt;/code&gt; interface.
@@ -2154,7 +2195,6 @@ The way the value is specified and treated depends on the value of the isRegex a
       </annotation>
       <complexType>
          <sequence>
-            <element ref="toolChain"/>
          </sequence>
          <attribute name="resourcePath" type="string" use="required">
             <annotation>

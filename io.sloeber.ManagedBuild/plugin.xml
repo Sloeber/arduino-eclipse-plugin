@@ -55,7 +55,7 @@
            name="%configuration.name">
         <toolChain
               archList="all"
-              configurationEnvironmentSupplier="io.sloeber.autoBuild.core.DefaultConfigurationEnvironmentVariableSupplier"
+              environmentSupplier="io.sloeber.autoBuild.core.DefaultConfigurationEnvironmentVariableSupplier"
               id="io.sloeber.core.toolChain.release"
               isAbstract="false"
               languageSettingsProviders="io.sloeber.languageSettingsProvider"

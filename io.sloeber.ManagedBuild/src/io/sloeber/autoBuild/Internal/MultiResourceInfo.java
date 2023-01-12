@@ -166,8 +166,8 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
 
 
 
-    private IOption setOption(IHoldsOptions parent, IOption option, Object value, int mode) throws BuildException {
-        IOption op = null;
+//    private IOption setOption(IHoldsOptions parent, IOption option, Object value, int mode) throws BuildException {
+//        IOption op = null;
 //        String ext = parent instanceof ITool ? ((ITool) parent).getDefaultInputExtension() : null;
 //
 //        String sid = getSuperClassId(option);
@@ -203,8 +203,8 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
 //                }
 //            }
 //        }
-        return op;
-    }
+//        return op;
+//    }
 
 
 
@@ -226,13 +226,7 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return fRis[curr].getId();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#getManagedBuildRevision()
-     */
-    @Override
-    public String getManagedBuildRevision() {
-        return fRis[curr].getManagedBuildRevision();
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#getName()
@@ -242,22 +236,6 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return fRis[curr].getName();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#getVersion()
-     */
-    @Override
-    public Version getVersion() {
-        return fRis[curr].getVersion();
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#setVersion(org.eclipse.core.runtime.PluginVersionIdentifier)
-     */
-    @Override
-    public void setVersion(Version version) {
-        for (int i = 0; i < fRis.length; i++)
-            fRis[i].setVersion(version);
-    }
 
     @Override
     public Object[] getItems() {

@@ -28,6 +28,7 @@ public interface IOptionCategory extends IBuildObject {
     // Schema element names
     public static final String OWNER = "owner"; //$NON-NLS-1$
     public static final String ICON = "icon"; //$NON-NLS-1$
+    public static final String APPLICABILITY_CALCULATOR = "applicabilityCalculator";
 
     //	 Resource Filter type
     public static final int FILTER_ALL = 0;
@@ -36,10 +37,6 @@ public interface IOptionCategory extends IBuildObject {
     public static final int FILTER_PROJECT = 2;
     public static final String PROJECT = "project"; //$NON-NLS-1$
 
-    /**
-     * Returns the list of children of this node in the option category tree
-     */
-    public List<IOptionCategory> getChildCategories();
 
     /**
      * Returns the category that owns this category, or null if this is the
@@ -47,20 +44,7 @@ public interface IOptionCategory extends IBuildObject {
      */
     public IOptionCategory getOwner();
 
-    /**
-     * Returns the holder (parent) of this category. This may be an object
-     * implementing ITool or IToolChain, which both extend IHoldsOptions.
-     * The call can return null, for example the top option category of a tool
-     * will return null.
-     *
-     * Note that the name getOptionHolder() has been choosen, because Tool
-     * implements
-     * both ITool and IOptionCategory and ITool.getParent() exists already.
-     *
-     * @return IHoldsOptions
-     * @since 3.0
-     */
-    public IHoldsOptions getOptionHolder();
+
 
     /**
      * Get the path name of an alternative icon for the option group.

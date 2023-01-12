@@ -34,7 +34,8 @@ public class BuildFolderData extends CFolderData {
 
     @Override
     public CLanguageData[] getLanguageDatas() {
-        return fFolderInfo.getCLanguageDatas();
+    	return new CLanguageData[0];
+      // return fFolderInfo.getCLanguageDatas();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class BuildFolderData extends CFolderData {
 
     @Override
     public boolean isValid() {
-        return fFolderInfo.isValid();
+        return true;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class BuildFolderData extends CFolderData {
 
     @Override
     public boolean hasCustomSettings() {
-        return fFolderInfo.hasCustomSettings();
+        return true;
     }
 
     public void clearCachedData() {
@@ -86,12 +87,13 @@ public class BuildFolderData extends CFolderData {
         }
     }
 
+    private boolean myContainsScannerInfo=true;
     public boolean containsScannerInfo() {
-        return fFolderInfo.containsDiscoveredScannerInfo();
+        return myContainsScannerInfo;
     }
 
     public void setContainsDiscoveredScannerInfo(boolean contains) {
-        fFolderInfo.setContainsDiscoveredScannerInfo(contains);
+    	myContainsScannerInfo=contains;
     }
 
 	@Override

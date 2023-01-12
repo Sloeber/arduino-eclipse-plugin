@@ -368,7 +368,7 @@ public class MakeRule {
         // Get the tool command line options
         try {
 
-            IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
+            //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
             flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile.getLocation(), outputFile.getLocation())));
 
             //TOFIX add dependency falgs if needed

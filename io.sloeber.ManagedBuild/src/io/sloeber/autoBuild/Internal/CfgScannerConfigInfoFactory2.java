@@ -69,11 +69,7 @@ public class CfgScannerConfigInfoFactory2 {
             //			init();
         }
 
-        @Override
-        public CfgInfoContext[] getContexts() {
-            Map<CfgInfoContext, IScannerConfigBuilderInfo2> map = createMap();
-            return map.keySet().toArray(new CfgInfoContext[map.size()]);
-        }
+
 
         @Override
         public IScannerConfigBuilderInfo2 getInfo(CfgInfoContext context) {
@@ -178,116 +174,116 @@ public class CfgScannerConfigInfoFactory2 {
 
                     Map<CfgInfoContext, IScannerConfigBuilderInfo2> configMap = getConfigInfoMap(baseMap);
 
-                    List<IResourceInfo> rcInfos = cfg.getResourceInfos();
-                    for (IResourceInfo rcInfo : rcInfos) {
-                        List<ITool> tools;
-                        if (rcInfo instanceof IFolderInfo) {
-                            tools = ((IFolderInfo) rcInfo).getFilteredTools();
-                        } else {
-                            tools = ((IFileInfo) rcInfo).getToolsToInvoke();
-                        }
-                        for (ITool tool : tools) {
-                            IInputType types[] = tool.getInputTypes();
-                            if (types.length != 0) {
-                                for (IInputType inputType : types) {
-                                    CfgInfoContext context = new CfgInfoContext(rcInfo, tool, inputType);
-                                    context = CfgScannerConfigUtil.adjustPerRcTypeContext(context);
-                                    if (context != null && context.getResourceInfo() != null) {
-                                        IScannerConfigBuilderInfo2 info = configMap.get(context);
-                                        if (info == null //&& !inputType.isExtensionElement()
-                                                && inputType.getSuperClass() != null) {
-                                            CfgInfoContext superContext = new CfgInfoContext(rcInfo, tool,
-                                                    inputType.getSuperClass());
-                                            superContext = CfgScannerConfigUtil.adjustPerRcTypeContext(superContext);
-                                            if (superContext != null && superContext.getResourceInfo() != null) {
-                                                info = configMap.get(superContext);
-                                            }
-
-                                            // Scanner discovery options aren't settable on a file-per-file basis. Thus
-                                            // files with custom properties don't have a persisted entry in the config
-                                            // info map; we create an ephemeral entry instead. We need to assign that file
-                                            // the scanner profile that's used for non-custom files of the same
-                                            // inputType/tool (and configuration, of course). Unfortunately, identifying
-                                            // a match is inefficient, but in practice, projects don't have tons of
-                                            // customized files. See Bug 354194
-                                            String id = null;
-                                            for (Entry<CfgInfoContext, IScannerConfigBuilderInfo2> entry : configMap
-                                                    .entrySet()) {
-                                                CfgInfoContext cfgInfoCxt = entry.getKey();
-                                                if (match(cfgInfoCxt.getInputType(), context.getInputType())
-                                                        && match(cfgInfoCxt.getTool(),
-                                                                context.getTool().getSuperClass())
-                                                        && cfgInfoCxt.getConfiguration()
-                                                                .equals(context.getConfiguration())) {
-                                                    id = entry.getValue().getSelectedProfileId();
-                                                }
-                                            }
-                                            if (id == null) {
-                                                // Language Settings Providers are meant to replace legacy scanner discovery
-                                                // so do not try to find default profile
-                                                ICConfigurationDescription cfgDescription = ManagedBuildManager
-                                                        .getDescriptionForConfiguration(cfg);
-                                                if (ScannerDiscoveryLegacySupport
-                                                        .isLegacyScannerDiscoveryOn(cfgDescription)) {
-                                                    id = CfgScannerConfigUtil.getDefaultProfileId(context, true);
-                                                }
-                                            }
-
-                                            InfoContext baseContext = context.toInfoContext();
-                                            if (info == null) {
-                                                if (id != null) {
-                                                    info = container.createInfo(baseContext, id);
-                                                } else {
-                                                    info = container.createInfo(baseContext);
-                                                }
-                                            } else {
-                                                if (id != null) {
-                                                    info = container.createInfo(baseContext, info, id);
-                                                } else {
-                                                    info = container.createInfo(baseContext, info);
-                                                }
-                                            }
-                                            // Make sure to remove the ephemeral info map entry from the
-                                            // container, otherwise it will not be ephemeral but rather a
-                                            // permanent and stagnant part of the project description. It was
-                                            // added to the container only so we could obtain an
-                                            // IScannerConfigBuilderInfo2. Now that we have the info object,
-                                            // revert the container. See Bug 354194. Note that the permanent
-                                            // entry for the project's root folder resource info gets created
-                                            // by us shortly after project creation; thus we have to make an
-                                            // exception for that rcinfo.
-                                            if (!(rcInfo instanceof IFolderInfo && rcInfo.getPath().isEmpty())) {
-                                                container.removeInfo(context.toInfoContext());
-                                            }
-                                        }
-                                        if (info != null) {
-                                            map.put(context, info);
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (cfg.isPreference())
-                                    continue;
-                                CfgInfoContext context = new CfgInfoContext(rcInfo, tool, null);
-                                context = CfgScannerConfigUtil.adjustPerRcTypeContext(context);
-                                if (context != null && context.getResourceInfo() != null) {
-                                    IScannerConfigBuilderInfo2 info = configMap.get(context);
-                                    if (info == null) {
-                                        String id = CfgScannerConfigUtil.getDefaultProfileId(context, true);
-                                        InfoContext baseContext = context.toInfoContext();
-                                        if (id != null) {
-                                            info = container.createInfo(baseContext, id);
-                                        } else {
-                                            info = container.createInfo(baseContext);
-                                        }
-                                    }
-                                    if (info != null) {
-                                        map.put(context, info);
-                                    }
-                                }
-                            }
-                        }
-                    }
+//                    List<IResourceInfo> rcInfos = cfg.getResourceInfos();
+//                    for (IResourceInfo rcInfo : rcInfos) {
+//                        List<ITool> tools;
+//                        if (rcInfo instanceof IFolderInfo) {
+//                            tools = ((IFolderInfo) rcInfo).getFilteredTools();
+//                        } else {
+//                            tools = ((IFileInfo) rcInfo).getToolsToInvoke();
+//                        }
+//                        for (ITool tool : tools) {
+//                            IInputType types[] = tool.getInputTypes();
+//                            if (types.length != 0) {
+//                                for (IInputType inputType : types) {
+//                                    CfgInfoContext context = new CfgInfoContext(rcInfo, tool, inputType);
+//                                    context = CfgScannerConfigUtil.adjustPerRcTypeContext(context);
+//                                    if (context != null && context.getResourceInfo() != null) {
+//                                        IScannerConfigBuilderInfo2 info = configMap.get(context);
+//                                        if (info == null //&& !inputType.isExtensionElement()
+//                                                && inputType.getSuperClass() != null) {
+//                                            CfgInfoContext superContext = new CfgInfoContext(rcInfo, tool,
+//                                                    inputType.getSuperClass());
+//                                            superContext = CfgScannerConfigUtil.adjustPerRcTypeContext(superContext);
+//                                            if (superContext != null && superContext.getResourceInfo() != null) {
+//                                                info = configMap.get(superContext);
+//                                            }
+//
+//                                            // Scanner discovery options aren't settable on a file-per-file basis. Thus
+//                                            // files with custom properties don't have a persisted entry in the config
+//                                            // info map; we create an ephemeral entry instead. We need to assign that file
+//                                            // the scanner profile that's used for non-custom files of the same
+//                                            // inputType/tool (and configuration, of course). Unfortunately, identifying
+//                                            // a match is inefficient, but in practice, projects don't have tons of
+//                                            // customized files. See Bug 354194
+//                                            String id = null;
+//                                            for (Entry<CfgInfoContext, IScannerConfigBuilderInfo2> entry : configMap
+//                                                    .entrySet()) {
+//                                                CfgInfoContext cfgInfoCxt = entry.getKey();
+//                                                if (match(cfgInfoCxt.getInputType(), context.getInputType())
+//                                                        && match(cfgInfoCxt.getTool(),
+//                                                                context.getTool().getSuperClass())
+//                                                        && cfgInfoCxt.getConfiguration()
+//                                                                .equals(context.getConfiguration())) {
+//                                                    id = entry.getValue().getSelectedProfileId();
+//                                                }
+//                                            }
+//                                            if (id == null) {
+//                                                // Language Settings Providers are meant to replace legacy scanner discovery
+//                                                // so do not try to find default profile
+//                                                ICConfigurationDescription cfgDescription = ManagedBuildManager
+//                                                        .getDescriptionForConfiguration(cfg);
+//                                                if (ScannerDiscoveryLegacySupport
+//                                                        .isLegacyScannerDiscoveryOn(cfgDescription)) {
+//                                                    id = CfgScannerConfigUtil.getDefaultProfileId(context, true);
+//                                                }
+//                                            }
+//
+//                                            InfoContext baseContext = context.toInfoContext();
+//                                            if (info == null) {
+//                                                if (id != null) {
+//                                                    info = container.createInfo(baseContext, id);
+//                                                } else {
+//                                                    info = container.createInfo(baseContext);
+//                                                }
+//                                            } else {
+//                                                if (id != null) {
+//                                                    info = container.createInfo(baseContext, info, id);
+//                                                } else {
+//                                                    info = container.createInfo(baseContext, info);
+//                                                }
+//                                            }
+//                                            // Make sure to remove the ephemeral info map entry from the
+//                                            // container, otherwise it will not be ephemeral but rather a
+//                                            // permanent and stagnant part of the project description. It was
+//                                            // added to the container only so we could obtain an
+//                                            // IScannerConfigBuilderInfo2. Now that we have the info object,
+//                                            // revert the container. See Bug 354194. Note that the permanent
+//                                            // entry for the project's root folder resource info gets created
+//                                            // by us shortly after project creation; thus we have to make an
+//                                            // exception for that rcinfo.
+//                                            if (!(rcInfo instanceof IFolderInfo && rcInfo.getPath().isEmpty())) {
+//                                                container.removeInfo(context.toInfoContext());
+//                                            }
+//                                        }
+//                                        if (info != null) {
+//                                            map.put(context, info);
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                if (cfg.isPreference())
+//                                    continue;
+//                                CfgInfoContext context = new CfgInfoContext(rcInfo, tool, null);
+//                                context = CfgScannerConfigUtil.adjustPerRcTypeContext(context);
+//                                if (context != null && context.getResourceInfo() != null) {
+//                                    IScannerConfigBuilderInfo2 info = configMap.get(context);
+//                                    if (info == null) {
+//                                        String id = CfgScannerConfigUtil.getDefaultProfileId(context, true);
+//                                        InfoContext baseContext = context.toInfoContext();
+//                                        if (id != null) {
+//                                            info = container.createInfo(baseContext, id);
+//                                        } else {
+//                                            info = container.createInfo(baseContext);
+//                                        }
+//                                    }
+//                                    if (info != null) {
+//                                        map.put(context, info);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
 
                     if (!configMap.isEmpty()) {
                         for (Entry<CfgInfoContext, IScannerConfigBuilderInfo2> entry : configMap.entrySet()) {
@@ -409,24 +405,5 @@ public class CfgScannerConfigInfoFactory2 {
         }
     }
 
-    private static boolean match(ITool t1, ITool t2) {
-        if (t1 == null || t2 == null)
-            return false;
-        if (t1.getId().equals(t2.getId())) {
-            return true;
-        }
-
-        return match(t1.getSuperClass(), t2.getSuperClass());
-    }
-
-    private static boolean match(IInputType i1, IInputType i2) {
-        if (i1 == null || i2 == null)
-            return false;
-        if (i1.getId().equals(i2.getId())) {
-            return true;
-        }
-
-        return match(i1.getSuperClass(), i2.getSuperClass());
-    }
 
 }

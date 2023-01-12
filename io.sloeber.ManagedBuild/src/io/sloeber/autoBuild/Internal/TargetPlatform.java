@@ -139,7 +139,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
             boolean isExtensionElement) {
         this.parent = parent;
         this.superClass = superClass;
-        setManagedBuildRevision(parent.getManagedBuildRevision());
         if (this.superClass != null) {
             superClassId = this.superClass.getId();
         }
@@ -163,7 +162,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         isExtensionTargetPlatform = false;
         fTargetPlatformData = new BuildTargetPlatformData(this);
 
-        setManagedBuildRevision(managedBuildRevision);
         // Initialize from the XML attributes
 
         // id (unique, do not intern)
@@ -566,23 +564,8 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         }
     }
 
-    /**
-     * @return Returns the version.
-     */
-    @Override
-    public Version getVersion() {
-        if (version == null) {
-            if (getParent() != null) {
-                return getParent().getVersion();
-            }
-        }
-        return version;
-    }
 
-    @Override
-    public void setVersion(Version version) {
-        // Do nothing
-    }
+
 
     @Override
     public CTargetPlatformData getTargetPlatformData() {

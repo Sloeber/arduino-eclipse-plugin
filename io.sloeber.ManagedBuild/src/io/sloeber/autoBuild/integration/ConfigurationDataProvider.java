@@ -120,7 +120,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 		rootElement.setAttribute(VERSION_ATTRIBUTE, ManagedBuildManager.getVersion().toString());
 		ICStorageElement cfgElemen = rootElement.createChild(IConfiguration.CONFIGURATION_ELEMENT_NAME);
 		Configuration cfg = (Configuration) appliedCfg.getConfiguration();
-		Builder b = (Builder) cfg.getEditableBuilder();
+		Builder b = (Builder) cfg.getBuilder();
 		// Need to ensure that build macro supplier can get the description for this
 		// configuration during the write...
 		cfg.setConfigurationDescription(cfgDescription);
@@ -181,7 +181,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 
 			IManagedBuildInfo info = getBuildInfo(cfgDescription);
 			ManagedProject mProj = (ManagedProject) info.getManagedProject();
-			mProj.applyConfiguration((Configuration) appliedCfgData.getConfiguration());
+			//mProj.applyConfiguration((Configuration) appliedCfgData.getConfiguration());
 			writeManagedProjectInfo(cfgDescription.getProjectDescription(), mProj);
 			if (baseCfgDescription instanceof ILanguageSettingsProvidersKeeper) {
 				String[] defaultIds = ((ILanguageSettingsProvidersKeeper) baseCfgDescription)
@@ -231,7 +231,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 
 		if (cfgDescription.isActive()) {
 			IConfiguration cfg = appliedCfgData.getConfiguration();
-			IBuilder builder = cfg.getEditableBuilder();
+			IBuilder builder = cfg.getBuilder();
 			IProject project = context.getProject();
 			IProjectDescription eDes = context.getEclipseProjectDescription();
 			switch (BuilderFactory.applyBuilder(eDes, builder)) {
@@ -442,12 +442,12 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 		ILanguageDescriptor dess[] = mngr.getLanguageDescriptors();
 		Map<String, ILanguageDescriptor[]> map = mngr.getContentTypeIdToLanguageDescriptionsMap();
 
-		List<IResourceInfo> rcInfos = cfg.getResourceInfos();
-		for (IResourceInfo rcInfo : rcInfos) {
-			if (rcInfo instanceof IFolderInfo) {
-				adjustFolderInfo((IFolderInfo) rcInfo, dess, new HashMap<Object, ILanguageDescriptor[]>(map));
-			}
-		}
+//		List<IResourceInfo> rcInfos = cfg.getResourceInfos();
+//		for (IResourceInfo rcInfo : rcInfos) {
+//			if (rcInfo instanceof IFolderInfo) {
+//				adjustFolderInfo((IFolderInfo) rcInfo, dess, new HashMap<Object, ILanguageDescriptor[]>(map));
+//			}
+//		}
 
 		return cfg;
 	}
@@ -494,26 +494,6 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 //        }
 	}
 
-	private static InputType adjustInputType(Tool tool, InputType type, ILanguageDescriptor des) {
-		String[] cTypeIds = des.getContentTypeIds();
-		String srcIds[] = type.getSourceContentTypeIds();
-		String hIds[] = null;// type.getHeaderContentTypeIds();
-
-		Set<String> landTypes = new HashSet<>(Arrays.asList(cTypeIds));
-		landTypes.removeAll(Arrays.asList(srcIds));
-		landTypes.removeAll(Arrays.asList(hIds));
-
-		if (landTypes.size() != 0) {
-			List<String> srcList = new ArrayList<>();
-			srcList.addAll(landTypes);
-			type = (InputType) tool.getEditableInputType(type);
-		}
-
-		if (!des.getId().equals(type.getLanguageId(tool))) {
-			type = (InputType) tool.getEditableInputType(type);
-		}
-		return type;
-	}
 
 	private static Configuration createEmptyPrefConfiguration(String id, String name) {
 		return null;

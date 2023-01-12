@@ -69,9 +69,8 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     protected Set<String> categoryIds= new HashSet<>();
     protected Map<String, IOptionCategory> categoryMap =new HashMap<>();
     private List<IOptionCategory> childOptionCategories;
-    private Map<String, Option> optionMap;
+    protected Map<String, Option> myOptionMap=new HashMap<>();
     //  Miscellaneous
-    private boolean rebuildState;
 
     /*
      *  C O N S T R U C T O R S
@@ -150,43 +149,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
      */
 
-    /**
-     * Load child element from XML element if it is of the correct type
-     *
-     * @param element
-     *            which is loaded as child only iff it is of the correct type
-     * @return true when a child has been loaded, false otherwise
-     */
-    protected boolean loadChild(ICStorageElement element) {
-        if (element.getName().equals(IHoldsOptions.OPTION)) {
-            Option option = new Option(this, element);
-            addOption(option);
-            return true;
-        } else if (element.getName().equals(IHoldsOptions.OPTION_CAT)) {
-            new OptionCategory(this, element);
-            return true;
-        }
-        return false;
-    }
 
-    /**
-     * Load child element from configuration element if it is of the correct type
-     *
-     * @param element
-     *            which is loaded as child only iff it is of the correct type
-     * @return true when a child has been loaded, false otherwise
-     */
-    protected boolean loadChild(IExtensionPoint root, IConfigurationElement element) {
-        if (element.getName().equals(IHoldsOptions.OPTION)) {
-            Option option = new Option(this, root, element);
-            addOption(option);
-            return true;
-        } else if (element.getName().equals(IHoldsOptions.OPTION_CAT)) {
-            new OptionCategory(this, root, element);
-            return true;
-        }
-        return false;
-    }
 
     /*
      *  M E T H O D S   M O V E D   F R O M   I T O O L   I N   3 . 0
@@ -279,30 +242,12 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      *  M E T H O D S   M O V E D   F R O M   T O O L   I N   3 . 0
      */
 
-    /**
-     * Memory-safe way to access the vector of category IDs
-     */
-    private Set<String> getCategoryIds() {
-        return categoryIds;
-    }
 
-    public void addChildCategory(IOptionCategory category) {
-        if (childOptionCategories == null)
-            childOptionCategories = new ArrayList<>();
-        childOptionCategories.add(category);
-    }
-
-    public void addOption(Option option) {
-        getOptionMap().put(option.getId(), option);
-    }
 
     /**
      * Memory-safe way to access the map of category IDs to categories
      */
     private Map<String, IOptionCategory> getCategoryMap() {
-        if (categoryMap == null) {
-            categoryMap = new HashMap<>();
-        }
         return categoryMap;
     }
 
@@ -310,21 +255,14 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      * Memory-safe way to access the list of options
      */
     private Collection<Option> getOptionCollection() {
-        // no need to store all the options twice, get them out of the map
-        if (optionMap != null)
-            return optionMap.values();
-        else
-            return Collections.emptyList();
+            return myOptionMap.values();
     }
 
     /**
      * Memory-safe way to access the list of IDs to options
      */
     private Map<String, Option> getOptionMap() {
-        if (optionMap == null) {
-            optionMap = new LinkedHashMap<>();
-        }
-        return optionMap;
+        return myOptionMap;
     }
 
     /* (non-Javadoc)
@@ -332,12 +270,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      */
     @Override
     public IOptionCategory getOptionCategory(String id) {
-        IOptionCategory cat = getCategoryMap().get(id);
-        if (cat == null && superClass != null) {
-            // Look up the holders superclasses to find the category
-            return superClass.getOptionCategory(id);
-        }
-        return cat;
+        return categoryMap.get(id);
     }
 
     /*
@@ -408,8 +341,8 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
             //                }
 //        }
         //        } else {
-        if (!option.isExtensionElement()) {
-            return option;
+//        if (!option.isExtensionElement()) {
+//            return option;
             //            } else {
             //                IOption newSuperClass = option;
             //                for (; newSuperClass != null
@@ -429,7 +362,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
             //                setOption = createOption(newSuperClass, subId, null, false);
             //                setOption.setValueType(option.getValueType());
             //            }
-        }
+//        }
         return null;
     }
 
@@ -447,20 +380,11 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     //        }
     //    }
 
-    public abstract boolean isExtensionElement();
+//    public abstract boolean isExtensionElement();
 
     protected abstract IResourceInfo getParentResourceInfo();
 
     boolean hasCustomSettings() {
-        if (superClass == null)
-            return true;
-
-        if (optionMap != null && optionMap.size() != 0) {
-            for (Option option : getOptionCollection())
-                if (option.hasCustomSettings())
-                    return true;
-        }
-
-        return false;
+        return ( myOptionMap.size() != 0) ;
     }
 }

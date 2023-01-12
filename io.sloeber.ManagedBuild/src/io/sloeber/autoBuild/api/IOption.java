@@ -587,24 +587,8 @@ public interface IOption extends IBuildObject {
      */
     public void setValueType(int type);
 
-    /**
-     * @return the value handler specified for this tool.
-     * @since 3.0
-     */
-    public IManagedOptionValueHandler getValueHandler();
 
-    /**
-     * @return the value handlers extra argument specified for this tool
-     * @since 3.0
-     */
-    public String getValueHandlerExtraArgument();
 
-    /**
-     * Sets the value handlers extra argument specified for this tool
-     * 
-     * @since 3.0
-     */
-    public void setValueHandlerExtraArgument(String extraArgument);
 
     /**
      * @return the custom field-editor ID for this build-option. This ID should
@@ -633,12 +617,6 @@ public interface IOption extends IBuildObject {
      */
     public void setFieldEditorExtraArgument(String extraArgument);
 
-    /**
-     * @return <code>true</code> if this option was loaded from a manifest file,
-     *         and <code>false</code> if it was loaded from a project (.cdtbuild)
-     *         file.
-     */
-    public boolean isExtensionElement();
 
     /**
      * @return <code>true</code> if this option is valid and <code>false</code>

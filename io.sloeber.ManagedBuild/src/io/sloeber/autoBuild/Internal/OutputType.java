@@ -399,36 +399,7 @@ public class OutputType extends BuildObject implements IOutputType {
     //        }
     //    }
 
-    /**
-     * @return Returns the managedBuildRevision.
-     */
-    @Override
-    public String getManagedBuildRevision() {
-        if (managedBuildRevision == null) {
-            if (getParent() != null) {
-                return getParent().getManagedBuildRevision();
-            }
-        }
-        return managedBuildRevision;
-    }
 
-    /**
-     * @return Returns the version.
-     */
-    @Override
-    public Version getVersion() {
-        if (version == null) {
-            if (getParent() != null) {
-                return getParent().getVersion();
-            }
-        }
-        return version;
-    }
-
-    @Override
-    public void setVersion(Version version) {
-        // Do nothing
-    }
 
     public boolean needsRebuild() {
         return rebuildState;

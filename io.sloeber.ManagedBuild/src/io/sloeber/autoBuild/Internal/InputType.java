@@ -19,30 +19,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
-
 import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
-import org.eclipse.cdt.core.model.ILanguage;
-import org.eclipse.cdt.core.model.LanguageManager;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
-import org.osgi.framework.Version;
-
 import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IProjectType;
-import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.extensionPoint.ILanguageInfoCalculator;
@@ -73,16 +62,16 @@ public class InputType extends BuildObject implements IInputType {
     private boolean isExtensionInputType = false;
 
     // read from model
-    private String[] modelSourceContentType = new String[2];
-    private String[] modelExtensions = new String[2];
-    private String[] modelOutputTypeID = new String[2];
-    private String[] modelOption = new String[2];
-    private String[] modelAssignToOption = new String[2];
-    private String[] modelDependencyContentType = new String[2];
-    private String[] modelDependencyExtensions = new String[2];
-    private String[] modelScannerConfigDiscoveryProfileID = new String[2];
-    private String[] modelLanguageID = new String[2];
-    private String[] modelLanguageInfoCalculator = new String[2];
+    private String[] modelSourceContentType;
+    private String[] modelExtensions ;
+    private String[] modelOutputTypeID ;
+    private String[] modelOption ;
+    private String[] modelAssignToOption;
+    private String[] modelDependencyContentType ;
+    private String[] modelDependencyExtensions ;
+    private String[] modelScannerConfigDiscoveryProfileID;
+    private String[] modelLanguageID ;
+    private String[] modelLanguageInfoCalculator ;
     private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
 
     /*
@@ -299,20 +288,7 @@ public class InputType extends BuildObject implements IInputType {
         //        }
     }
 
-    /*
-     * E L E M E N T A T T R I B U T E R E A D E R S A N D W R I T E R S
-     */
 
-    private String composeString(List<String> list, String separator) {
-        StringBuilder buf = new StringBuilder();
-        String mySeperator = "";
-        for (String entry : list) {
-            buf.append(mySeperator).append(entry);
-            mySeperator = separator;
-        }
-
-        return buf.toString();
-    }
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -617,94 +593,16 @@ public class InputType extends BuildObject implements IInputType {
     //        }
     //    }
 
-    /**
-     * @return Returns the managedBuildRevision.
-     */
-    @Override
-    public String getManagedBuildRevision() {
-        if (managedBuildRevision == null) {
-            if (getParent() != null) {
-                return getParent().getManagedBuildRevision();
-            }
-        }
-        return managedBuildRevision;
-    }
-
-    /**
-     * @return Returns the version.
-     */
-    @Override
-    public Version getVersion() {
-        if (version == null) {
-            if (getParent() != null) {
-                return getParent().getVersion();
-            }
-        }
-        return version;
-    }
-
-    @Override
-    public void setVersion(Version version) {
-        // Do nothing
-    }
-
-    public IResourceInfo getRcInfo(ITool tool) {
-        IBuildObject parent = tool.getParent();
-        if (parent instanceof IFileInfo)
-            return (IFileInfo) parent;
-        else if (parent instanceof IToolChain)
-            return ((IToolChain) parent).getParentFolderInfo();
-        return null;
-    }
-
-    private ILanguageInfoCalculator getLanguageInfoCalculator() {
-        if (languageInfoCalculator == null) {
-            if (languageInfoCalculatorElement != null) {
-                try {
-                    Object ex = languageInfoCalculatorElement.createExecutableExtension(LANGUAGE_INFO_CALCULATOR);
-                    if (ex instanceof ILanguageInfoCalculator)
-                        languageInfoCalculator = (ILanguageInfoCalculator) ex;
-                } catch (CoreException e) {
-                }
-            }
-
-            // if(languageInfoCalculator == null)
-            // languageInfoCalculator = new DefaultLanguageInfoCalculator();
-        }
-        return languageInfoCalculator;
-    }
-
-    @Override
-    public String getLanguageId(ITool tool) {
-        IResourceInfo rcInfo = getRcInfo(tool);
-        String langId = modelLanguageID[SUPER];
-        if (langId == null || isExtensionInputType) {
-            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
-            if (calc != null)
-                langId = calc.getLanguageId(rcInfo, tool, this);
-        }
-
-        if (langId == null) {
-            IContentType contentType = getSourceContentType();
-            if (contentType != null) {
-                ILanguage language = LanguageManager.getInstance().getLanguage(contentType);
-                if (language != null)
-                    langId = language.getId();
-            }
-        }
-
-        return langId;
-    }
-
+  
     @Override
     public String getLanguageName(ITool tool) {
-        IResourceInfo rcInfo = getRcInfo(tool);
+//        IResourceInfo rcInfo = getRcInfo(tool);
         String langName = null;
-        if (langName == null || isExtensionInputType) {
-            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
-            if (calc != null)
-                langName = calc.getLanguageName(rcInfo, tool, this);
-        }
+//        if (langName == null || isExtensionInputType) {
+//            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
+//            if (calc != null)
+//                langName = calc.getLanguageName(rcInfo, tool, this);
+//        }
 
         if (langName == null) {
             langName = getName();

@@ -49,6 +49,7 @@ import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IFolderInfo;
+import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.api.IOutputType;
@@ -96,14 +97,15 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
 	private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
-	private List<ToolChain> identicalList;
+//	private List<ToolChain> identicalList;
 
 	private PathInfoCache discoveredInfo;
 	private Boolean isRcTypeBasedDiscovery;
 
 	private List<OptionEnablementExpression> myEnablements = new ArrayList<>();
 	private IFolderInfo parent;
-	private IFolderInfo parentFolderInfo=null;
+	private IFolderInfo parentFolderInfo = null;
+	private List<OptionCategory> myCategories = new ArrayList<>();
 
 	/**
 	 * This constructor is called to create a tool-chain defined by an extension
@@ -135,41 +137,45 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myEnablements);
 
 		IConfigurationElement[] targetPlatforms = element.getChildren(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME);
-		if (targetPlatforms.length < 1 || targetPlatforms.length > 1) {
-			System.err.println("Targetplatforms of toolchain " + name + " has wrong cardinality");
-		}
-		if (targetPlatforms.length > 0) {
+		if (targetPlatforms.length == 1) {
 			targetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
+		} else {
+			System.err.println("Targetplatforms of toolchain " + name + " has wrong cardinality");
 		}
 
 		// Load the Builder child
 		IConfigurationElement[] builders = element.getChildren(IBuilder.BUILDER_ELEMENT_NAME);
-		if (builders.length < 1 || builders.length > 1) {
+		if (builders.length == 1) {
+			builder = new Builder(this, root, builders[0]);
+		} else {
 			System.err.println("builders of toolchain " + name + " has wrong cardinality");
 		}
-		if (builders.length > 0) {
-			builder = new Builder(this, root, builders[0]);
-		}
 
-		IConfigurationElement[] supportedProperties = element.getChildren(SupportedProperties.SUPPORTED_PROPERTIES);
-		if (supportedProperties.length < 1 || supportedProperties.length > 1) {
+		IConfigurationElement[] supportedPropertiesElement = element
+				.getChildren(SupportedProperties.SUPPORTED_PROPERTIES);
+		if (supportedPropertiesElement.length == 1) {
+			supportedProperties = new SupportedProperties(supportedPropertiesElement[0]);
+		} else {
 			System.err.println("supportedProperties of toolchain " + name + " has wrong cardinality");
 		}
-		if (supportedProperties.length > 0) {
-			loadProperties(supportedProperties[0]);
+
+		IConfigurationElement[] toolChainElements = element.getChildren(ITool.TOOL_ELEMENT_NAME);
+		for (IConfigurationElement toolChainElement : toolChainElements) {
+			Tool toolChild = new Tool(this, root, toolChainElement);
+			toolMap.put(toolChild.id, toolChild);
 		}
 
-		// Load children
-		IConfigurationElement[] toolChainElements = element.getChildren();
-		for (IConfigurationElement toolChainElement : toolChainElements) {
-			if (loadChild(root, toolChainElement)) {
-				// do nothing
-			} else if (toolChainElement.getName().equals(ITool.TOOL_ELEMENT_NAME)) {
-				Tool toolChild = new Tool(this, root, toolChainElement);
-			//	addTool(toolChild);
-				toolMap.put(toolChild.id,toolChild);
-			}
+		IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
+		for (IConfigurationElement optionElement : optionElements) {
+			Option newOption = new Option(this, root, optionElement);
+			myOptionMap.put(newOption.getName(), newOption);
 		}
+
+		IConfigurationElement[] categoryElements = element.getChildren(IHoldsOptions.OPTION_CAT);
+		for (IConfigurationElement categoryElement : categoryElements) {
+			myCategories.add(new OptionCategory(this, root, categoryElement));
+		}
+
 		IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
 		for (IConfigurationElement curEnablement : enablements) {
 			myEnablements.add(new OptionEnablementExpression(curEnablement));
@@ -639,7 +645,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
 	@Override
 	public IConfiguration getParent() {
-		return parent.getParent();
+		return null;//parent.getParent();
 	}
 
 	@Override
@@ -662,7 +668,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		return builder;
 	}
 
-
 	@Override
 	public List<ITool> getTools() {
 		return new LinkedList<ITool>(getAllTools(false));
@@ -680,7 +685,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 	}
 
 	public List<Tool> getAllTools(boolean includeCurrentUnused) {
-		return new LinkedList<>(toolMap.values()); //TOFIX jaba  maybe the stuff below will need to be in the resolve fields stuff
+		return new LinkedList<>(toolMap.values()); // TOFIX jaba maybe the stuff below will need to be in the resolve
+													// fields stuff
 //		// Merge our tools with our superclass' tools
 //		if (getSuperClass() != null) {
 //			tools = ((ToolChain) getSuperClass()).getAllTools(false);
@@ -784,10 +790,10 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		int i = 0;
 		while (tok.hasMoreElements()) {
 			String id = tok.nextToken();
-			for (ITool tool: tools) {
+			for (ITool tool : tools) {
 				IOutputType type = tool.getOutputTypeById(id);
 				if (type != null) {
-					types.add(type) ;
+					types.add(type);
 					break;
 				}
 			}
@@ -884,13 +890,13 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		}
 
 		if (includeChildren) {
-			List<ITool> tools = info.getFilteredTools();
-			//set = info.contributeErrorParsers(tools, set);
+			//List<ITool> tools = info.getFilteredTools();
+			// set = info.contributeErrorParsers(tools, set);
 
-			if (info.isRoot()) {
-				Builder builder = (Builder) getBuilder();
-				set = builder.contributeErrorParsers(set);
-			}
+//			if (info.isRoot()) {
+//				Builder builder = (Builder) getBuilder();
+//				set = builder.contributeErrorParsers(set);
+//			}
 		}
 		return set;
 	}
@@ -963,9 +969,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 	 * Do not inline! This method needs to call itself recursively.
 	 */
 	private String getScannerConfigDiscoveryProfileIdInternal() {
-		 return modelScannerConfigDiscoveryProfileID[SUPER];
+		return modelScannerConfigDiscoveryProfileID[SUPER];
 	}
-
 
 	/**
 	 * @return the pathconverterElement
@@ -989,41 +994,13 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 				}
 			} catch (CoreException e) {
 			}
-		} 
+		}
 		return null;
 	}
 
 	/*
 	 * O B J E C T S T A T E M A I N T E N A N C E
 	 */
-
-	@Override
-	public boolean isExtensionElement() {
-		return false;
-	}
-
-	/**
-	 * Normalize the list of output extensions,for all tools in the toolchain by
-	 * populating the list with an empty string for those tools which have no
-	 * explicit output extension (as defined in the manifest file. In a post 2.1
-	 * manifest, all tools must have a specifed output extension, even if it is "")
-	 */
-	public void normalizeOutputExtensions() {
-		List<ITool> tools = getTools();
-		if (tools != null) {
-			for (ITool tool: tools) {
-				String[] extensions = tool.getOutputsAttribute();
-				if (extensions == null) {
-					tool.setOutputsAttribute(""); //$NON-NLS-1$
-					continue;
-				}
-				if (extensions.length == 0) {
-					tool.setOutputsAttribute(""); //$NON-NLS-1$
-					continue;
-				}
-			}
-		}
-	}
 
 
 
@@ -1158,9 +1135,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		return null;
 	}
 
-
-
-
 	@Override
 	public IFolderInfo getParentFolderInfo() {
 		return parentFolderInfo;
@@ -1207,10 +1181,9 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
 	@Override
 	protected IResourceInfo getParentResourceInfo() {
-		return getParentFolderInfo();
+		//return getParentFolderInfo();
+		return null;
 	}
-
-
 
 	@Override
 	public boolean supportsBuild(boolean managed) {
@@ -1220,14 +1193,13 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 			return false;
 
 		List<ITool> tools = getTools();
-		for (ITool tool: tools) {
+		for (ITool tool : tools) {
 			if (!tool.supportsBuild(managed))
 				return false;
 		}
 
 		return true;
 	}
-
 
 	@Override
 	public boolean isSystemObject() {
@@ -1246,14 +1218,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		return name;
 	}
 
-
-	private void loadProperties(IConfigurationElement el) {
-		supportedProperties = new SupportedProperties(el);
-	}
-
-
-
-
 	@Override
 	public String getUniqueRealName() {
 		String name = getName();
@@ -1271,11 +1235,11 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		return name;
 	}
 
-	void resolveProjectReferences(boolean onLoad) {
-		for (Tool tool : getToolList()) {
-			tool.resolveProjectReferences(onLoad);
-		}
-	}
+//	void resolveProjectReferences(boolean onLoad) {
+//		for (Tool tool : getToolList()) {
+//			tool.resolveProjectReferences(onLoad);
+//		}
+//	}
 
 	public boolean hasScannerConfigSettings() {
 
@@ -1347,7 +1311,5 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 //		}
 //		return false;
 //	}
-
-
 
 }

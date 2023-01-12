@@ -40,61 +40,12 @@ public class BuildSettingsUtil {
             IOption.LIBRARIES, IOption.OBJECTS, IOption.INCLUDE_FILES, IOption.LIBRARY_PATHS, IOption.LIBRARY_FILES,
             IOption.MACRO_FILES, };
 
-    public static void disconnectDepentents(IConfiguration cfg, List<ITool> tools) {
-        for (ITool tool: tools) {
-            disconnectDepentents(cfg, tool);
-        }
-    }
 
-    public static void disconnectDepentents(IConfiguration cfg, ITool tool) {
-        ITool deps[] = getDependentTools(cfg, tool);
-        for (int i = 0; i < deps.length; i++) {
-            disconnect(deps[i], tool);
-        }
-    }
 
-    private static void disconnect(ITool child, ITool superClass) {
-        ITool directChild = child;
-        for (; directChild != null; directChild = directChild.getSuperClass()) {
-            if (superClass.equals(directChild.getSuperClass()))
-                break;
-        }
 
-        if (directChild == null)
-            return;
 
-        //		TOFFIX JABA Why do a copy on a disconnect?
-        //		((Tool) directChild).copyNonoverriddenSettings((Tool) superClass);
-        //		((Tool) directChild).setSuperClass(superClass.getSuperClass());
-    }
 
-    public static ITool[] getDependentTools(IConfiguration cfg, ITool tool) {
-        List<IResourceInfo> rcInfos= cfg.getResourceInfos();
-        List<ITool> list = new ArrayList<>();
-        for (IResourceInfo rcInfo: rcInfos) {
-            calcDependentTools(rcInfo, tool, list);
-        }
-        return list.toArray(new Tool[list.size()]);
-    }
 
-    private static List<ITool> calcDependentTools(IResourceInfo info, ITool tool, List<ITool> list) {
-        return calcDependentTools(info.getTools(), tool, list);
-    }
-
-    public static List<ITool> calcDependentTools(List<ITool> tools, ITool tool, List<ITool> list) {
-        if (list == null)
-            list = new ArrayList<>();
-
-        for (ITool superTool: tools) {
-            for (; superTool != null; superTool = superTool.getSuperClass()) {
-                if (superTool.equals(tool)) {
-                    list.add(superTool);
-                }
-            }
-        }
-
-        return list;
-    }
 
 
 
@@ -144,21 +95,4 @@ public class BuildSettingsUtil {
         CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, des, flags, null);
     }
 
-    public static ITool[] getToolsBySuperClassId(ITool[] tools, String id) {
-        List<ITool> retTools = new ArrayList<>();
-        if (id != null) {
-            for (int i = 0; i < tools.length; i++) {
-                ITool targetTool = tools[i];
-                ITool tool = targetTool;
-                do {
-                    if (id.equals(tool.getId())) {
-                        retTools.add(targetTool);
-                        break;
-                    }
-                    tool = tool.getSuperClass();
-                } while (tool != null);
-            }
-        }
-        return retTools.toArray(new ITool[retTools.size()]);
-    }
-}
+ }

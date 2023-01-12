@@ -204,10 +204,10 @@ public class CfgScannerConfigUtil {
             }
         }
 
-        ITool superClass = tool.getSuperClass();
-        if (superClass != null) {
-            profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
-        }
+//        ITool superClass = tool.getSuperClass();
+//        if (superClass != null) {
+//            profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
+//        }
         return profiles;
     }
 

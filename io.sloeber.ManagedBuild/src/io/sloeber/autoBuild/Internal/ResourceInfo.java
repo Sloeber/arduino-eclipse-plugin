@@ -90,7 +90,7 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
 	}
 
 	ResourceInfo(FolderInfo base, IPath path, String newID, String newName) {
-		config = (Configuration) base.getParent();
+		config =  base.getConfiguration();
 
 		id = newID;
 		name = newName;
@@ -232,25 +232,9 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
 		return path.makeRelative();
 	}
 
-	public ResourceInfo getParentResourceInfo() {
-		if (isRoot())
-			return null;
 
-		IPath path = getPath();
-		path = path.removeLastSegments(1);
-		return (ResourceInfo) getParent().getResourceInfo(path, false);
-	}
 
-	public IFolderInfo getParentFolderInfo() {
-		ResourceInfo parentRc = getParentResourceInfo();
-		for (; parentRc != null && !parentRc.isFolderInfo(); parentRc = parentRc.getParentResourceInfo()) {
-			// empty body, loop is to find parent only
-		}
-
-		return (IFolderInfo) parentRc;
-	}
-
-	abstract void resolveProjectReferences(boolean onLoad);
+//	abstract void resolveProjectReferences(boolean onLoad);
 
 	abstract public boolean hasCustomSettings();
 

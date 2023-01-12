@@ -141,10 +141,6 @@ public interface IManagedBuildInfo {
 
     //	public IManagedDependencyGeneratorType getDependencyGenerator(String sourceExtension);
 
-    /**
-     * Answers the libraries the project links in.
-     */
-    public List<String> getLibsForConfiguration(String extension);
 
     /**
      * Returns the ManagedProject associated with this build info
@@ -184,34 +180,8 @@ public interface IManagedBuildInfo {
     public String getToolForConfiguration(String extension);
 
 
-    /**
-     * Returns a <code>ITool</code> for the tool associated with the
-     * input extension.
-     *
-     * @param extension
-     *            the file extension of the input file
-     * @return ITool
-     */
-    public ITool getToolFromInputExtension(String extension);
 
-    /**
-     * Returns a <code>ITool</code> for the tool associated with the
-     * output extension.
-     *
-     * @param extension
-     *            the file extension of the output file
-     * @return ITool
-     */
-    public ITool getToolFromOutputExtension(String extension);
 
-    /**
-     * @param extension
-     *            the file extension of the build target
-     *
-     * @return a <code>String</code> array containing the contents of the
-     *         user objects option, if one is defined for the target.
-     */
-    public List<String> getUserObjectsForConfiguration(String extension);
 
     /**
      * Answers the version of the build information in the format

@@ -93,7 +93,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                     config.setConfigurationDescription(cfgDes);
                     config.exportArtifactInfo();
 
-                    IBuilder bld = config.getEditableBuilder();
+                    IBuilder bld = config.getBuilder();
                     if (bld != null) {
                         bld.setManagedBuildOn(true);
                     }

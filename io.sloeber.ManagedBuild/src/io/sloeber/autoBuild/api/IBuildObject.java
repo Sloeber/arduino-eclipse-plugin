@@ -13,8 +13,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
-import org.osgi.framework.Version;
-
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
@@ -33,11 +31,4 @@ public interface IBuildObject {
 
     public String getName();
 
-    /** @since 8.0 */
-    public Version getVersion();
-
-    /** @since 8.0 */
-    public void setVersion(Version version);
-
-    public String getManagedBuildRevision();
 }

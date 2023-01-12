@@ -149,7 +149,7 @@ public class BuildLanguageData extends CLanguageData {
     */
     @Override
     public String getLanguageId() {
-        return fInputType != null ? fInputType.getLanguageId(fTool) : null;
+        return  null;
     }
 
     @Override

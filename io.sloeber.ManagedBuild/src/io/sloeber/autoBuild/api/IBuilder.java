@@ -45,8 +45,8 @@ public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
 
     public static final String COMMAND = "command"; //$NON-NLS-1$
     public static final String ARGUMENTS = "arguments"; //$NON-NLS-1$
-    public static final String BUILDFILEGEN_ID = "buildfileGenerator"; //$NON-NLS-1$
-    //error parsers was missing
+    public static final String MAKEGEN_ID = "makefileGenerator"; //$NON-NLS-1$
+    //error parsers was missing                   makefileGenerator
     public static final String VARIABLE_FORMAT = "variableFormat"; //$NON-NLS-1$
     public static final String RESERVED_MACRO_NAMES = "reservedMacroNames"; //$NON-NLS-1$
     public static final String RESERVED_MACRO_NAME_SUPPLIER = "reservedMacroNameSupplier"; //$NON-NLS-1$
@@ -173,7 +173,7 @@ public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
      *
      * @return boolean
      */
-    public boolean isExtensionElement();
+//    public boolean isExtensionElement();
 
     /**
      * 

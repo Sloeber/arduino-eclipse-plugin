@@ -1023,46 +1023,46 @@ public class ManagedBuildManager extends AbstractCExtension {
 		// Get global options directly under Toolchain (not associated with a particular
 		// tool)
 		// This has to be sent to all the Options associated with this configuration.
-		for (IOption option : options) {
-			// Ignore invalid options
-			if (option.isValid()) {
-				// Call the handler
-				if (option.getValueHandler().handleValue(config, toolChain, option,
-						option.getValueHandlerExtraArgument(), event)) {
-					// TODO : Event is handled successfully and returned true.
-					// May need to do something here say logging a message.
-				} else {
-					// Event handling Failed.
-				}
-			}
-		}
+//		for (IOption option : options) {
+//			// Ignore invalid options
+//			if (option.isValid()) {
+//				// Call the handler
+//				if (option.getValueHandler().handleValue(config, toolChain, option,
+//						option.getValueHandlerExtraArgument(), event)) {
+//					// TODO : Event is handled successfully and returned true.
+//					// May need to do something here say logging a message.
+//				} else {
+//					// Event handling Failed.
+//				}
+//			}
+//		}
 
 		// Get options associated with tools under toolChain
-		List<ITool> tools = config.getFilteredTools();
-		for (ITool tool : tools) {
-			List<IOption> toolOptions = tool.getOptions();
-			for (IOption toolOption : toolOptions) {
-				// Ignore invalid options
-				if (toolOption.isValid()) {
-					// Call the handler
-					if (toolOption.getValueHandler().handleValue(config, tool, toolOption,
-							toolOption.getValueHandlerExtraArgument(), event)) {
-						// TODO : Event is handled successfully and returned true.
-						// May need to do something here say logging a message.
-					} else {
-						// Event handling Failed.
-					}
-				}
-			}
-		}
+//		List<ITool> tools = config.getFilteredTools();
+//		for (ITool tool : tools) {
+//			List<IOption> toolOptions = tool.getOptions();
+//			for (IOption toolOption : toolOptions) {
+//				// Ignore invalid options
+//				if (toolOption.isValid()) {
+//					// Call the handler
+//					if (toolOption.getValueHandler().handleValue(config, tool, toolOption,
+//							toolOption.getValueHandlerExtraArgument(), event)) {
+//						// TODO : Event is handled successfully and returned true.
+//						// May need to do something here say logging a message.
+//					} else {
+//						// Event handling Failed.
+//					}
+//				}
+//			}
+//		}
 
 		// Call backs for Resource Configurations associated with this config.
-		if (doChildren == true) {
-			List<IResourceConfiguration> resConfigs = config.getResourceConfigurations();
-			for (IResourceConfiguration resConfig : resConfigs) {
-				ManagedBuildManager.performValueHandlerEvent(resConfig, event);
-			}
-		}
+//		if (doChildren == true) {
+//			List<IResourceConfiguration> resConfigs = config.getResourceConfigurations();
+//			for (IResourceConfiguration resConfig : resConfigs) {
+//				ManagedBuildManager.performValueHandlerEvent(resConfig, event);
+//			}
+//		}
 	}
 
 	/**
@@ -1078,24 +1078,24 @@ public class ManagedBuildManager extends AbstractCExtension {
 		// Note: Resource configurations have no toolchain options
 
 		// Get options associated with the resource configuration
-		List<ITool> tools = config instanceof IFileInfo ? ((IFileInfo) config).getToolsToInvoke()
-				: ((IFolderInfo) config).getFilteredTools();
-		for (ITool tool : tools) {
-			List<IOption> toolOptions = tool.getOptions();
-			for (IOption toolOption : toolOptions) {
-				// Ignore invalid options
-				if (toolOption.isValid()) {
-					// Call the handler
-					if (toolOption.getValueHandler().handleValue(config, tool, toolOption,
-							toolOption.getValueHandlerExtraArgument(), event)) {
-						// TODO : Event is handled successfully and returned true.
-						// May need to do something here say logging a message.
-					} else {
-						// Event handling Failed.
-					}
-				}
-			}
-		}
+//		List<ITool> tools = config instanceof IFileInfo ? ((IFileInfo) config).getToolsToInvoke()
+//				: ((IFolderInfo) config).getFilteredTools();
+//		for (ITool tool : tools) {
+//			List<IOption> toolOptions = tool.getOptions();
+//			for (IOption toolOption : toolOptions) {
+//				// Ignore invalid options
+//				if (toolOption.isValid()) {
+//					// Call the handler
+//					if (toolOption.getValueHandler().handleValue(config, tool, toolOption,
+//							toolOption.getValueHandlerExtraArgument(), event)) {
+//						// TODO : Event is handled successfully and returned true.
+//						// May need to do something here say logging a message.
+//					} else {
+//						// Event handling Failed.
+//					}
+//				}
+//			}
+//		}
 	}
 
 	private static IBuildObject invokeConverter(ManagedBuildInfo bi, IBuildObject buildObject,
@@ -1712,7 +1712,7 @@ public class ManagedBuildManager extends AbstractCExtension {
 	public static IBuilder getRealBuilder(IBuilder builder) {
 		IBuilder extBuilder = builder;
 		IBuilder realBuilder = null;
-		for (; extBuilder != null && !extBuilder.isExtensionElement(); extBuilder = extBuilder.getSuperClass()) {
+		for (; extBuilder != null /*&& !extBuilder.isExtensionElement()*/; extBuilder = extBuilder.getSuperClass()) {
 			// empty body
 		}
 
@@ -1742,9 +1742,9 @@ public class ManagedBuildManager extends AbstractCExtension {
 			return null;
 		ITool extTool = tool;
 		ITool realTool = null;
-		for (; extTool != null && !extTool.isExtensionElement(); extTool = extTool.getSuperClass()) {
-			// empty body
-		}
+//		for (; extTool != null && !extTool.isExtensionElement(); extTool = extTool.getSuperClass()) {
+//			// empty body
+//		}
 		//
 		// if (extTool != null) {
 		// List<Tool> list = findIdenticalElements((Tool) extTool, fToolSorter);

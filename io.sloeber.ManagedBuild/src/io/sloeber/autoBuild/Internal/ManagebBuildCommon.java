@@ -181,7 +181,8 @@ public class ManagebBuildCommon {
      */
     static public boolean populateDummyTargets(IConfiguration cfg, IFile makefile, boolean force)
             throws CoreException, IOException {
-        return populateDummyTargets(cfg.getRootFolderInfo(), makefile, force);
+        //return populateDummyTargets(cfg.getRootFolderInfo(), makefile, force);
+    	return populateDummyTargets(cfg, makefile, force);
     }
 
     static public boolean populateDummyTargets(IResourceInfo rcInfo, IFile makefile, boolean force)
@@ -330,20 +331,20 @@ public class ManagebBuildCommon {
         IFolderInfo fo = null;
         if (rcInfo instanceof IFolderInfo) {
             fo = (IFolderInfo) rcInfo;
-        } else {
-            IConfiguration c = rcInfo.getParent();
-            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
+//        } else {
+//            IConfiguration c = rcInfo.getParent();
+//            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
         }
         // Dummy targets to add to the makefile
         for (String dummy : deps) {
             IPath dep = new Path(dummy);
             String extension = dep.getFileExtension();
-            if (fo.isHeaderFile(extension)) {
-                /*
-                 * The formatting here is <dummy_target>:
-                 */
-                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
-            }
+//            if (fo.isHeaderFile(extension)) {
+//                /*
+//                 * The formatting here is <dummy_target>:
+//                 */
+//                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
+//            }
         }
         // Write them out to the makefile
         if (save) {

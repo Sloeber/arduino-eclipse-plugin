@@ -146,12 +146,12 @@ public final class CfgInfoContext {
             rcInfoId = ids[1];
         }
 
-        if (rcInfoId != null) {
-            rcInfo = cfg.getResourceInfoById(rcInfoId);
-            if (rcInfo == null) {
-                return null;
-            }
-        }
+//        if (rcInfoId != null) {
+//            rcInfo = cfg.getResourceInfoById(rcInfoId);
+//            if (rcInfo == null) {
+//                return null;
+//            }
+//        }
 
         if (toolId != null) {
             tool = rcInfo.getToolById(toolId);

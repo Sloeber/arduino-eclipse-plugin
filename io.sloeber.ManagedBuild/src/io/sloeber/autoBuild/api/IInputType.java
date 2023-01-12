@@ -167,7 +167,6 @@ public interface IInputType extends IBuildObject {
      */
     public String getBuildVariable();
 
-    String getLanguageId(ITool tool);
 
     String getLanguageName(ITool tool);
 

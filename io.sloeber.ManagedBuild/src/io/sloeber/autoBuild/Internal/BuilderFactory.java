@@ -322,7 +322,7 @@ public class BuilderFactory {
     @SuppressWarnings("deprecation")
     private static IBuilder createBuilder(IConfiguration cfg, Map<String, String> args, boolean customization) {
         IToolChain tCh = cfg.getToolChain();
-        IBuilder cfgBuilder = cfg.getEditableBuilder();
+        IBuilder cfgBuilder = cfg.getBuilder();
 
         Builder builder;
         if (customization) {
@@ -364,7 +364,7 @@ public class BuilderFactory {
         if (info != null) {
             if (args == null) {
                 IConfiguration cfg = info.getDefaultConfiguration();
-                IBuilder builder = cfg.getEditableBuilder();
+                IBuilder builder = cfg.getBuilder();
                 builders = new IBuilder[] { builder };
 
             } else {
@@ -373,7 +373,7 @@ public class BuilderFactory {
                     IConfiguration cfg = info.getDefaultConfiguration();
                     IBuilder builder;
                     if (args.size() == 0) {
-                        builder = cfg.getEditableBuilder();
+                        builder = cfg.getBuilder();
                     } else {
                         builder = createBuilder(cfg, args, true);
                     }
@@ -396,7 +396,7 @@ public class BuilderFactory {
                     if (cfgs.length != 0) {
                         List<IBuilder> list = new ArrayList<>(cfgs.length);
                         for (int i = 0; i < cfgs.length; i++) {
-                            list.add(cfgs[i].getEditableBuilder());
+                            list.add(cfgs[i].getBuilder());
                         }
                         builders = list.toArray(new IBuilder[list.size()]);
                     }
@@ -408,7 +408,7 @@ public class BuilderFactory {
                      * build-command, and will be going through the "args == null" condition above.
                      */
                     IConfiguration cfg = info.getDefaultConfiguration();
-                    IBuilder builder = cfg.getEditableBuilder();
+                    IBuilder builder = cfg.getBuilder();
                     builders = new IBuilder[] { builder };
 
                 } /*else if (CONTENTS_BUILDER_CUSTOMIZATION.equals(type)){
