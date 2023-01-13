@@ -25,16 +25,13 @@ import io.sloeber.autoBuild.api.IConfiguration;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface ICfgScannerConfigBuilderInfo2Set {
-    boolean isPerRcTypeDiscovery();
 
-    void setPerRcTypeDiscovery(boolean on);
 
     Map<CfgInfoContext, IScannerConfigBuilderInfo2> getInfoMap();
 
 
     IConfiguration getConfiguration();
 
-    boolean isProfileSupported(CfgInfoContext context, String profileId);
 
 	IScannerConfigBuilderInfo2 getInfo(CfgInfoContext context);
 

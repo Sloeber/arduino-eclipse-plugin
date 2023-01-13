@@ -126,40 +126,40 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 //
 //    }
 
-    public ResourceConfiguration(FolderInfo folderInfo, ITool baseTool, String id, String resourceName, IPath path) {
-        super(folderInfo, path, id, resourceName);
-        // setParentFolder(folderInfo);
-        // setParentFolderId(folderInfo.getId());
-
-        //        isExtensionResourceConfig = folderInfo.isExtensionElement();
-        //        if (!isExtensionResourceConfig)
-        IFile theFile = null; //TOFIX jaba how to convert the path to a file
-        setResourceData(new BuildFileData(this));
-
-
-        toolsToInvoke = ""; //$NON-NLS-1$
-        rcbsApplicability = KIND_DISABLE_RCBS_TOOL;
-
-        // Get file extension.
-        if (baseTool != null) {
-            if (baseTool.getParentResourceInfo() != folderInfo)
-                baseTool = null;
-        }
-        // Add the resource specific tools to this resource.
-//        List<ITool> tools = folderInfo.getFilteredTools();
-        String subId = ""; //$NON-NLS-1$
-//        for (ITool tool: tools) {
-//            if (tool.buildsFileType(theFile)) {
-//                baseTool = tool;
-//                break;
-//            }
+//    public ResourceConfiguration(FolderInfo folderInfo, ITool baseTool, String id, String resourceName, IPath path) {
+//        super(folderInfo, path, id, resourceName);
+//        // setParentFolder(folderInfo);
+//        // setParentFolderId(folderInfo.getId());
+//
+//        //        isExtensionResourceConfig = folderInfo.isExtensionElement();
+//        //        if (!isExtensionResourceConfig)
+//        IFile theFile = null; //TOFIX jaba how to convert the path to a file
+//        setResourceData(new BuildFileData(this));
+//
+//
+//        toolsToInvoke = ""; //$NON-NLS-1$
+//        rcbsApplicability = KIND_DISABLE_RCBS_TOOL;
+//
+//        // Get file extension.
+//        if (baseTool != null) {
+//            if (baseTool.getParentResourceInfo() != folderInfo)
+//                baseTool = null;
 //        }
-
-        if (baseTool != null) {
-            subId = ManagedBuildManager.calculateChildId(baseTool.getId(), null);
-            createTool(baseTool, subId, baseTool.getName(), false);
-        }
-    }
+//        // Add the resource specific tools to this resource.
+////        List<ITool> tools = folderInfo.getFilteredTools();
+//        String subId = ""; //$NON-NLS-1$
+////        for (ITool tool: tools) {
+////            if (tool.buildsFileType(theFile)) {
+////                baseTool = tool;
+////                break;
+////            }
+////        }
+//
+//        if (baseTool != null) {
+//            subId = ManagedBuildManager.calculateChildId(baseTool.getId(), null);
+//            createTool(baseTool, subId, baseTool.getName(), false);
+//        }
+//    }
 
     /**
      * Create a new resource configuration based on one already defined.
@@ -644,12 +644,12 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
   //      setPath(p);
     }
 
-    @Override
-    public ITool createTool(ITool superClass, String id, String name, boolean isExtensionElement) {
-        Tool tool = new Tool(this, superClass, id, name, isExtensionElement);
-        addTool(tool);
-        return tool;
-    }
+//    @Override
+//    public ITool createTool(ITool superClass, String id, String name, boolean isExtensionElement) {
+//        Tool tool = new Tool(this, superClass, id, name, isExtensionElement);
+//        addTool(tool);
+//        return tool;
+//    }
 
 
 

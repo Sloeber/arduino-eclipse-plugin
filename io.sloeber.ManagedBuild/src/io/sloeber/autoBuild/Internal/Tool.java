@@ -397,28 +397,28 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
      *            project element
      */
 
-    public Tool(ResourceConfiguration parent, ITool superClass, String Id, String name, boolean isExtensionElement) {
-        //        this.parent = parent;
-        //        setSuperClassInternal(superClass);
-        //        setManagedBuildRevision(parent.getManagedBuildRevision());
-        //        if (getSuperClass() != null) {
-        //            superClassId = getSuperClass().getId();
-        //        }
-        //        setId(Id);
-        //        setName(name);
-        //        setVersion(getVersionFromId());
-        //
-        //        isExtensionTool = isExtensionElement;
-        //        //		if(superClass != null && !superClass.isExtensionElement()){
-        //        //			((Tool)superClass).updateScannerInfoSettingsToInputTypes();
-        //        //		}
-        //        if (isExtensionElement) {
-        //            // Hook me up to the Managed Build Manager
-        //            //            ManagedBuildManager.addExtensionTool(this);
-        //        } else {
-        //            setRebuildState(true);
-        //        }
-    }
+//    public Tool(ResourceConfiguration parent, ITool superClass, String Id, String name, boolean isExtensionElement) {
+//        //        this.parent = parent;
+//        //        setSuperClassInternal(superClass);
+//        //        setManagedBuildRevision(parent.getManagedBuildRevision());
+//        //        if (getSuperClass() != null) {
+//        //            superClassId = getSuperClass().getId();
+//        //        }
+//        //        setId(Id);
+//        //        setName(name);
+//        //        setVersion(getVersionFromId());
+//        //
+//        //        isExtensionTool = isExtensionElement;
+//        //        //		if(superClass != null && !superClass.isExtensionElement()){
+//        //        //			((Tool)superClass).updateScannerInfoSettingsToInputTypes();
+//        //        //		}
+//        //        if (isExtensionElement) {
+//        //            // Hook me up to the Managed Build Manager
+//        //            //            ManagedBuildManager.addExtensionTool(this);
+//        //        } else {
+//        //            setRebuildState(true);
+//        //        }
+//    }
 
     /**
      * Create a <code>Tool</code> based on the specification stored in the

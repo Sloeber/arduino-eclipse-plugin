@@ -53,18 +53,18 @@ public interface IConfiguration extends IBuildObject {
 	public static final String CONFIGURATION_ELEMENT_NAME = "configuration"; //$NON-NLS-1$
     
 	public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
-	public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
-    public static final String EXTENSION = "artifactExtension"; //$NON-NLS-1$
+    public static final String ARTIFACT_EXTENSION = "artifactExtension"; //$NON-NLS-1$
+    public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
     public static final String ERROR_PARSERS = "errorParsers"; //$NON-NLS-1$
     public static final String LANGUAGE_SETTINGS_PROVIDERS = "languageSettingsProviders"; //$NON-NLS-1$
-    public static final String DESCRIPTION = "description"; //$NON-NLS-1$
-    public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
-    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
     public static final String PREBUILD_STEP = "prebuildStep"; //$NON-NLS-1$
     public static final String POSTBUILD_STEP = "postbuildStep"; //$NON-NLS-1$
     public static final String PREANNOUNCEBUILD_STEP = "preannouncebuildStep"; //$NON-NLS-1$
     public static final String POSTANNOUNCEBUILD_STEP = "postannouncebuildStep"; //$NON-NLS-1$
-  
+    public static final String DESCRIPTION = "description"; //$NON-NLS-1$
+    public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
+    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
+    
     /**
      * Returns the description of the configuration.
      *
@@ -155,7 +155,7 @@ public interface IConfiguration extends IBuildObject {
      *
      * @return String[]
      */
-    public List<String> getErrorParserList();
+    public String[] getErrorParserList();
 
     /**
      * Returns default language settings providers IDs specified for the
@@ -192,12 +192,7 @@ public interface IConfiguration extends IBuildObject {
      */
     public IResource getOwner();
 
-    /**
-     * Returns the configuration that this configuration is based on.
-     *
-     * @return IConfiguration
-     */
-    public IConfiguration getParent();
+
 
     /**
      * Returns the project-type parent of this configuration, if this is an
@@ -351,7 +346,6 @@ public interface IConfiguration extends IBuildObject {
 
     IBuilder getBuilder();
 
-    String getOutputFlag(String outputExt);
 
     boolean supportsBuild(boolean managed);
 

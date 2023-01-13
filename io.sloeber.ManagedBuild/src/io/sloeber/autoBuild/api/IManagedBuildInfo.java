@@ -151,13 +151,7 @@ public interface IManagedBuildInfo {
 
 
 
-    /**
-     * Answers the flag to be passed to the build tool to produce a specific output
-     * or an empty <code>String</code> if there is no special flag. For example, the
-     * GCC tools use the '-o' flag to produce a named output, for example
-     * gcc -c foo.c -o foo.o
-     */
-    public String getOutputFlag(String outputExt);
+ 
 
 
 

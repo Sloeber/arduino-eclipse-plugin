@@ -139,7 +139,7 @@ public interface IResourceConfiguration extends IResourceInfo {
      *
      * @return ITool
      */
-    public ITool createTool(ITool superClass, String Id, String name, boolean isExtensionElement);
+//    public ITool createTool(ITool superClass, String Id, String name, boolean isExtensionElement);
 
 
     /**

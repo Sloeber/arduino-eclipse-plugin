@@ -23,15 +23,18 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.IBuilder;
+import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 
 public class BuildBuildData extends CBuildData {
     private Builder fBuilder;
     private Configuration fCfg;
 
-    public BuildBuildData(IBuilder builder) {
-        fBuilder = (Builder) builder;
-        fCfg = (Configuration) fBuilder.getParent().getParent();
+    public BuildBuildData(Configuration fCfg2) {
+    	 fCfg = fCfg2;
+    	IToolChain toolchain=fCfg.getToolChain();
+        fBuilder = (Builder) toolchain.getBuilder();
+       
     }
 
     @Override
@@ -47,7 +50,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public String[] getErrorParserIDs() {
-        return fCfg.getErrorParserList().toArray(new String[0]);
+        return fCfg.getErrorParserList();
     }
 
     @Override

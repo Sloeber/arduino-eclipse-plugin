@@ -103,7 +103,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 	private Boolean isRcTypeBasedDiscovery;
 
 	private List<OptionEnablementExpression> myEnablements = new ArrayList<>();
-	private IFolderInfo parent;
+	private IBuildObject parent;
 	private IFolderInfo parentFolderInfo = null;
 	private List<OptionCategory> myCategories = new ArrayList<>();
 
@@ -118,8 +118,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 	 *                             or a dynamic element provider
 	 * @param managedBuildRevision the fileVersion of Managed Build System
 	 */
-	public ToolChain(IFolderInfo parentFldInfo, IExtensionPoint root, IConfigurationElement element) {
-		this.parent = parentFldInfo;
+	public ToolChain(IBuildObject parent, IExtensionPoint root, IConfigurationElement element) {
+		this.parent = parent;
 		loadNameAndID(root, element);
 		modelIsAbstract = getAttributes(IS_ABSTRACT);
 		modelOsList = getAttributes(OS_LIST);
@@ -156,7 +156,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		if (supportedPropertiesElement.length == 1) {
 			supportedProperties = new SupportedProperties(supportedPropertiesElement[0]);
 		} else {
-			System.err.println("supportedProperties of toolchain " + name + " has wrong cardinality");
+			System.err.println("supportedProperties of toolchain " + name + " has wrong cardinality: "+supportedPropertiesElement.length);
 		}
 
 		IConfigurationElement[] toolChainElements = element.getChildren(ITool.TOOL_ELEMENT_NAME);
@@ -727,9 +727,9 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 //		return filterUsedTools(tools, true);
 	}
 
-	private Tool[] filterUsedTools(Tool tools[], boolean used) {
-		return used ? tools : new Tool[0];
-	}
+//	private Tool[] filterUsedTools(Tool tools[], boolean used) {
+//		return used ? tools : new Tool[0];
+//	}
 
 	@Override
 	public ITool getTool(String id) {
@@ -787,7 +787,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 		String ids = modelSecondaryOutputs[SUPER];
 		StringTokenizer tok = new StringTokenizer(ids, ";"); //$NON-NLS-1$
 		List<ITool> tools = getTools();
-		int i = 0;
 		while (tok.hasMoreElements()) {
 			String id = tok.nextToken();
 			for (ITool tool : tools) {

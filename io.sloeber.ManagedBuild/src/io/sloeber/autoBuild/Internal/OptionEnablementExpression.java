@@ -52,7 +52,7 @@ public class OptionEnablementExpression extends AndExpression {
 
     private static final String fSupportedToolChainAttributes[] = { IToolChain.TARGET_TOOL, };
 
-    private static final String fSupportedConfigurationAttributes[] = { IConfiguration.EXTENSION,
+    private static final String fSupportedConfigurationAttributes[] = { IConfiguration.ARTIFACT_EXTENSION,
             IConfiguration.ARTIFACT_NAME, };
 
     public static final int FLAG_UI_VISIBILITY = 0x01;

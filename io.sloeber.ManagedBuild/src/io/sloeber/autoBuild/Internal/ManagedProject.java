@@ -361,27 +361,7 @@ public class ManagedProject extends BuildObject implements IManagedProject {
         return CdtVariableResolver.createVariableReference(CdtVariableResolver.VAR_PROJ_NAME);
     }
 
-    /* (non-Javadoc)
-     *  Resolve the element IDs to interface references
-     */
-    public boolean resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            // Resolve project-type
-            if (projectTypeId != null && projectTypeId.length() > 0) {
-                projectType = null;//TOFIX JABA ManagedBuildManager.getExtensionProjectType(projectTypeId);
-                if (projectType == null) {
-                    return false;
-                }
-            }
-
-            // call resolve references on any children
-            for (Configuration cfg : getConfigurationCollection())
-                cfg.resolveReferences();
-        }
-        return true;
-    }
-
+  
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedProject#isValid()
      */

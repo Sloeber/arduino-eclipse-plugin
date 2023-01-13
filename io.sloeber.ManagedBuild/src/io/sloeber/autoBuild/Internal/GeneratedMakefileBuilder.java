@@ -974,8 +974,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             }
 
             // Hook up an error parser manager
-            List<String> errorParsers = info.getDefaultConfiguration().getErrorParserList();
-            ErrorParserManager epm = new ErrorParserManager(getProject(), workingDirectoryURI, this, errorParsers.toArray(new String[errorParsers.size()]));
+            String[] errorParsers = info.getDefaultConfiguration().getErrorParserList();
+            ErrorParserManager epm = new ErrorParserManager(getProject(), workingDirectoryURI, this, errorParsers);
             epm.setOutputStream(consoleOutStream);
             // This variable is necessary to ensure that the EPM stream stay open
             // until we explicitly close it. See bug#123302.
@@ -1183,199 +1183,6 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         }
     }
 
-    /**
-     * called to invoke the MBS Internal Builder for building the given
-     * configuration
-     *
-     * @param cfg
-     *            configuration to be built
-     * @param buildIncrementaly
-     *            if true, incremental build will be performed,
-     *            only files that need rebuild will be built.
-     *            If false, full rebuild will be performed
-     * @param resumeOnErr
-     *            if true, build will continue in case of error while building.
-     *            If false the build will stop on the first error
-     * @param monitor
-     *            monitor
-     */
-    protected void invokeInternalBuilder(IConfiguration cfg, boolean buildIncrementaly, boolean resumeOnErr,
-            IProgressMonitor monitor) {
-
-        boolean isParallel = ((Configuration) cfg).getParallelDef();
-
-        // Get the project and make sure there's a monitor to cancel the build
-        IProject project = cfg.getOwner().getProject();
-        IFile buildFolder = project.getFile(cfg.getName());
-        if (monitor == null) {
-            monitor = new NullProgressMonitor();
-        }
-
-        String[] msgs = new String[2];
-        msgs[0] = ManagedMakeBuilder_message_internal_builder;
-        msgs[1] = project.getName();
-
-        ConsoleOutputStream consoleOutStream = null;
-        IConsole console = null;
-        OutputStream epmOutputStream = null;
-        try {
-            int flags = 0;
-            IResourceDelta delta = null;
-
-            if (buildIncrementaly) {
-                //                flags = BuildDescriptionManager.REBUILD | BuildDescriptionManager.REMOVED
-                //                        | BuildDescriptionManager.DEPS;
-                delta = getDelta(project);
-            }
-
-            //            IBuildDescription des = BuildDescriptionManager.createBuildDescription(cfg, delta, flags);
-
-            //            DescriptionBuilder builder = null;
-            //            if (!isParallel)
-            //                builder = new DescriptionBuilder(des, buildIncrementaly, resumeOnErr, null);
-
-            // Get a build console for the project
-            StringBuilder buf = new StringBuilder();
-            console = CCorePlugin.getDefault().getConsole();
-            console.start(project);
-            consoleOutStream = console.getOutputStream();
-            String[] consoleHeader = new String[3];
-            if (buildIncrementaly)
-                consoleHeader[0] = ManagedMakeBuider_type_incremental;
-            else
-                consoleHeader[0] = ManagedMakeBuider_type_rebuild;
-
-            consoleHeader[1] = cfg.getName();
-            consoleHeader[2] = project.getName();
-            buf.append(NEWLINE);
-            buf.append(MessageFormat.format(ManagedMakeBuilder_message_console_header, consoleHeader)).append(NEWLINE);
-            buf.append(NEWLINE);
-
-            buf.append(ManagedMakeBuilder_message_internal_builder_header_note);
-            buf.append("\n"); //$NON-NLS-1$
-
-            if (!cfg.isSupported()) {
-                String msg = MessageFormat.format(WARNING_UNSUPPORTED_CONFIGURATION,
-                        new String[] { cfg.getName(), cfg.getToolChain().getName() });
-                buf.append(msg).append(NEWLINE);
-                buf.append(NEWLINE);
-            }
-            consoleOutStream.write(buf.toString().getBytes());
-            consoleOutStream.flush();
-
-            //if (isParallel || builder.getNumCommands() > 0) {
-            if (isParallel) {
-                // Remove all markers for this project
-                removeAllMarkers(project);
-
-                // Hook up an error parser manager
-                List<String> errorParsers = cfg.getErrorParserList();
-                ErrorParserManager epm = new ErrorParserManager(getProject(), buildFolder.getLocationURI(), this,
-                        errorParsers.toArray(new String[errorParsers.size()]));
-                epm.setOutputStream(consoleOutStream);
-                // This variable is necessary to ensure that the EPM stream stay open
-                // until we explicitly close it. See bug#123302.
-                epmOutputStream = epm.getOutputStream();
-
-                int status = 0;
-
-                long t1 = System.currentTimeMillis();
-                //                if (isParallel)
-                //                    status = ParallelBuilder.build(des, null, null, epmOutputStream, epmOutputStream, monitor,
-                //                            resumeOnErr, buildIncrementaly);
-                //                else
-                //                    status = builder.build(epmOutputStream, epmOutputStream, monitor);
-                long t2 = System.currentTimeMillis();
-
-                // Report either the success or failure of our mission
-                buf = new StringBuilder();
-
-                switch (status) {
-                //                case IBuildModelBuilder.STATUS_OK:
-                //                    buf.append(MessageFormat.format(ManagedMakeBuilder_message_finished, project.getName()));
-                //                    break;
-                //                case IBuildModelBuilder.STATUS_CANCELLED:
-                //                    buf.append(ManagedMakeBuilder_message_cancelled);
-                //                    break;
-                //                case IBuildModelBuilder.STATUS_ERROR_BUILD:
-                //                    String msg = resumeOnErr ? ManagedMakeBuilder_message_finished_with_errs
-                //                            : ManagedMakeBuilder_message_stopped_error;
-                //                    buf.append(msg);
-                //                    break;
-                //                case IBuildModelBuilder.STATUS_ERROR_LAUNCH:
-                default:
-                    buf.append(ManagedMakeBuilder_message_internal_builder_error);
-                    break;
-                }
-                buf.append(NEWLINE);
-
-                // Report time and number of threads used
-                //				buf.append("Time consumed: ");
-                //				buf.append(t2 - t1);
-                //				buf.append(" ms.  ");
-                //				if (isParallel) {
-                //					buf.append("Parallel threads used: ");
-                //					buf.append(ParallelBuilder.lastThreadsUsed);
-                //				}
-                //				buf.append("\n");
-
-                // Report time and number of threads used
-                buf.append(MessageFormat.format(CommonBuilder_6, Integer.toString((int) (t2 - t1))));
-                //				buf.append(t2 - t1);
-                //				buf.append(" ms.  ");
-                //                if (isParallel) {
-                //                    buf.append(
-                //                            MessageFormat.format(CommonBuilder_7, Integer.toString(ParallelBuilder.lastThreadsUsed)));
-                //                    //					buf.append(ParallelBuilder.lastThreadsUsed);
-                //                }
-                buf.append(NEWLINE);
-
-                // Write message on the console
-                consoleOutStream.write(buf.toString().getBytes());
-                consoleOutStream.flush();
-                epmOutputStream.close();
-                epmOutputStream = null;
-                // Generate any error markers that the build has discovered
-                monitor.subTask(ManagedMakeBuilder_message_creating_markers);
-                addBuilderMarkers(epm);
-            } else {
-                buf = new StringBuilder();
-                buf.append(MessageFormat.format(ManagedMakeBuilder_message_no_build, getProject().getName()))
-                        .append(NEWLINE);
-                consoleOutStream.write(buf.toString().getBytes());
-                consoleOutStream.flush();
-            }
-
-        } catch (Exception e) {
-            if (consoleOutStream != null) {
-                StringBuilder buf = new StringBuilder();
-                buf.append(ManagedMakeBuilder_message_error).append(NEWLINE);
-                buf.append("(").append(e.getLocalizedMessage()).append(")").append(NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
-
-                try {
-                    consoleOutStream.write(buf.toString().getBytes());
-                    consoleOutStream.flush();
-                } catch (IOException e1) {
-                }
-            }
-            forgetLastBuiltState();
-        } finally {
-            if (epmOutputStream != null) {
-                try {
-                    epmOutputStream.close();
-                } catch (IOException e) {
-                }
-            }
-            if (consoleOutStream != null) {
-                try {
-                    consoleOutStream.close();
-                } catch (IOException e) {
-                }
-            }
-            getGenerationProblems().clear();
-            monitor.done();
-        }
-    }
 
     private Map<IProject, List<IFile>> arrangeFilesByProject(List<IFile> files) {
         Map<IProject, List<IFile>> projectMap = new HashMap<>();
@@ -1414,8 +1221,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
 
             //IBuildDescription des = BuildDescriptionManager.createBuildDescription(configuration, null, 0);
 
-            List<String> errorParsers = configuration.getErrorParserList();
-            ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), this, errorParsers.toArray(new String[errorParsers.size()]));
+            String[] errorParsers = configuration.getErrorParserList();
+            ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), this, errorParsers);
 
             buildRunnerHelper.prepareStreams(epm, null, console,
                     new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
@@ -1554,9 +1361,9 @@ public class GeneratedMakefileBuilder extends ACBuilder {
 
             //IBuildDescription des = BuildDescriptionManager.createBuildDescription(configuration, delta, flags);
 
-            List<String> errorParsers = configuration.getErrorParserList();
+            String[] errorParsers = configuration.getErrorParserList();
             ErrorParserManager epm = new ErrorParserManager(project, buildLocation.getLocationURI(), this,
-                    errorParsers.toArray(new String [errorParsers.size()]));
+                    errorParsers);
             buildRunnerHelper.prepareStreams(epm, null, console,
                     new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
 

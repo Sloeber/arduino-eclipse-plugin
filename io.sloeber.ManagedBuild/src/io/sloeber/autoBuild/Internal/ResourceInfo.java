@@ -193,11 +193,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
 
 	public abstract boolean isFolderInfo();
 
-	private ResourceInfoContainer getRcInfo() {
-		if (rcInfo == null)
-			rcInfo = (config).getRcInfoContainer(this);
-		return rcInfo;
-	}
 
 	@Override
 	public CResourceData getResourceData() {
@@ -256,18 +251,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
 		return pairs;
 	}
 
-	public IResourceInfo[] getDirectChildResourceInfos() {
-		ResourceInfoContainer cr = getRcInfo();
-		return cr.getDirectChildResourceInfos();
-	}
 
-	public List<IResourceInfo> getChildResourceInfos() {
-		ResourceInfoContainer cr = getRcInfo();
-		return cr.getResourceInfos();
-	}
-
-	public List<IResourceInfo> getChildResourceInfoList(boolean includeCurrent) {
-		return getRcInfo().getRcInfoList(ICSettingBase.SETTING_FILE | ICSettingBase.SETTING_FOLDER, includeCurrent);
-	}
 
 }

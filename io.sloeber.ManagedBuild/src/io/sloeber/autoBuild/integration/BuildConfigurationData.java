@@ -13,6 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
@@ -26,62 +27,41 @@ import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.Internal.BuildBuildData;
 import io.sloeber.autoBuild.Internal.BuildFileData;
 import io.sloeber.autoBuild.Internal.BuildFolderData;
 import io.sloeber.autoBuild.Internal.BuildLanguageData;
+import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
+import io.sloeber.autoBuild.Internal.TargetPlatform;
+import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IResourceInfo;
+import io.sloeber.autoBuild.api.ITargetPlatform;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 
 public class BuildConfigurationData extends CConfigurationData {
     private Configuration fCfg;
+    private IProject myProject;
 
     //	private BuildVariablesContributor fCdtVars;
-    public BuildConfigurationData(IConfiguration cfg) {
+    public BuildConfigurationData(IConfiguration cfg, IProject project) {
         fCfg = (Configuration) cfg;
+        myProject=project;
     }
 
     public IConfiguration getConfiguration() {
         return fCfg;
     }
-
-//    @Override
-//    public CFileData createFileData(IPath path, CFileData base) throws CoreException {
-//        String id = ManagedBuildManager.calculateChildId(fCfg.getId(), null);
-//        IFileInfo info = fCfg.createFileInfo(path, ((BuildFileData) base).getFileInfo(), id, path.lastSegment());
-//        return info.getFileData();
-//    }
-//
-//    @Override
-//    public CFileData createFileData(IPath path, CFolderData base, CLanguageData baseLangData) throws CoreException {
-//        String id = ManagedBuildManager.calculateChildId(fCfg.getId(), null);
-//        ITool baseTool;
-//        if (baseLangData instanceof BuildLanguageData) {
-//            baseTool = ((BuildLanguageData) baseLangData).getTool();
-//        } else {
-//            baseTool = null;
-//        }
-//        IFileInfo info = fCfg.createFileInfo(path, ((BuildFolderData) base).getFolderInfo(), baseTool, id,
-//                path.lastSegment());
-//        return info.getFileData();
-//    }
-//
-//    @Override
-//    public CFolderData createFolderData(IPath path, CFolderData base) throws CoreException {
-//        String id = ManagedBuildManager.calculateChildId(fCfg.getId(), null);
-//        IFolderInfo folderInfo = fCfg.createFolderInfo(path, ((BuildFolderData) base).getFolderInfo(), id,
-//                base.getName());
-//        return folderInfo.getFolderData();
-//    }
 
     @Override
     public String getDescription() {
@@ -90,9 +70,9 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public CResourceData[] getResourceDatas() {
-//        List<IResourceInfo> infos = fCfg.getResourceInfos();
-//        return infos.toArray( new CResourceData[infos.size()]);
-    	return null; //TOFIX JABA the storage of the selected options must be implmented
+    	//TOFIX configuration storage must be added here
+        List<IResourceInfo> infos = new LinkedList<>();
+        return infos.toArray( new CResourceData[infos.size()]);
     }
 
     @Override
@@ -100,15 +80,7 @@ public class BuildConfigurationData extends CConfigurationData {
         return null;//fCfg.getRootFolderInfo().getFolderData();
     }
 
-//    @Override
-//    public void removeResourceData(CResourceData data) throws CoreException {
-//        fCfg.removeResourceInfo(data.getPath());
-//    }
-//
-//    @Override
-//    public void setDescription(String description) {
-//        fCfg.setDescription(description);
-//    }
+
 
     @Override
     public String getId() {
@@ -120,10 +92,7 @@ public class BuildConfigurationData extends CConfigurationData {
         return fCfg.getName();
     }
 
-//    @Override
-//    public void setName(String name) {
-//        fCfg.setName(name);
-//    }
+
 
     @Override
     public boolean isValid() {
@@ -132,22 +101,18 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public CTargetPlatformData getTargetPlatformData() {
-        return fCfg.getToolChain().getTargetPlatformData();
+    	IToolChain toolchain =fCfg.getToolChain();
+    	TargetPlatform targetPlatform=(TargetPlatform)toolchain.getTargetPlatform();
+    	return new BuildTargetPlatformData(targetPlatform);
+  //      return fCfg.getToolChain().getTargetPlatformData();
     }
 
-//    @Override
-//    public ICSourceEntry[] getSourceEntries() {
-//        return fCfg.getSourceEntries();
-//    }
-//
-//    @Override
-//    public void setSourceEntries(ICSourceEntry[] entries) {
-//        fCfg.setSourceEntries(entries);
-//    }
+
 
     @Override
     public CBuildData getBuildData() {
-        return fCfg.getBuildData();
+
+    	return new BuildBuildData(fCfg);
     }
 
     @Override
@@ -243,4 +208,58 @@ public class BuildConfigurationData extends CConfigurationData {
 		// TODO Auto-generated method stub
 		
 	}
+	
+//  @Override
+//  public CFileData createFileData(IPath path, CFileData base) throws CoreException {
+//      String id = ManagedBuildManager.calculateChildId(fCfg.getId(), null);
+//      IFileInfo info = fCfg.createFileInfo(path, ((BuildFileData) base).getFileInfo(), id, path.lastSegment());
+//      return info.getFileData();
+//  }
+//
+//  @Override
+//  public CFileData createFileData(IPath path, CFolderData base, CLanguageData baseLangData) throws CoreException {
+//      String id = ManagedBuildManager.calculateChildId(fCfg.getId(), null);
+//      ITool baseTool;
+//      if (baseLangData instanceof BuildLanguageData) {
+//          baseTool = ((BuildLanguageData) baseLangData).getTool();
+//      } else {
+//          baseTool = null;
+//      }
+//      IFileInfo info = fCfg.createFileInfo(path, ((BuildFolderData) base).getFolderInfo(), baseTool, id,
+//              path.lastSegment());
+//      return info.getFileData();
+//  }
+//
+//  @Override
+//  public CFolderData createFolderData(IPath path, CFolderData base) throws CoreException {
+//      String id = ManagedBuildManager.calculateChildId(fCfg.getId(), null);
+//      IFolderInfo folderInfo = fCfg.createFolderInfo(path, ((BuildFolderData) base).getFolderInfo(), id,
+//              base.getName());
+//      return folderInfo.getFolderData();
+//  }
+	
+//  @Override
+//  public ICSourceEntry[] getSourceEntries() {
+//      return fCfg.getSourceEntries();
+//  }
+//
+//  @Override
+//  public void setSourceEntries(ICSourceEntry[] entries) {
+//      fCfg.setSourceEntries(entries);
+//  }
+	
+//  @Override
+//  public void removeResourceData(CResourceData data) throws CoreException {
+//      fCfg.removeResourceInfo(data.getPath());
+//  }
+//
+//  @Override
+//  public void setDescription(String description) {
+//      fCfg.setDescription(description);
+//  }
+	
+//  @Override
+//  public void setName(String name) {
+//      fCfg.setName(name);
+//  }
 }

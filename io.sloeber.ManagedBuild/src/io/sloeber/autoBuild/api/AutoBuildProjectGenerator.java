@@ -32,6 +32,7 @@ import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.Internal.ManagedProject;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildNature;
+import io.sloeber.autoBuild.integration.BuildConfigurationData;
 
 public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
@@ -77,26 +78,26 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
                 IProjectType sloeberProjType = ManagedBuildManager.getProjectType(
                         "io.sloeber.autoBuild.buildDefinitions", "io.sloeber.builddef", "io.sloeber.core.sketch", true); //$NON-NLS-1$
-                IConfiguration[] configs = sloeberProjType.getConfigurations();
-                Configuration cf = (Configuration) configs[0];
+                IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
+                Configuration cf = (Configuration) modelConfigs[0];
                 ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
                 info.setManagedProject((IManagedProject) mProj);
-                for (IConfiguration cfinter : configs) {
+                for (IConfiguration iConfig : modelConfigs) {
                     //        for (CfgHolder cfg : cfgs) {
-                    cf = (Configuration) cfinter;
-                    String id = ManagedBuildManager.calculateChildId(cf.getId(), null);
-                    Configuration config = new Configuration(mProj, cf, id, false, true);
-                    CConfigurationData data = config.getConfigurationData();
+                	Configuration config = (Configuration) iConfig;
+                    //String id = ManagedBuildManager.calculateChildId(config.getId(), null);
+                   // Configuration config = new Configuration(mProj, cf, id, false, true);
+                    CConfigurationData data =  new BuildConfigurationData(config,myProject);
                     assert(data!=null);
-                    ICConfigurationDescription cfgDes = des
-                            .createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-                    config.setConfigurationDescription(cfgDes);
-                    config.exportArtifactInfo();
+                    //ICConfigurationDescription cfgDes = 
+                    		des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
+//                    config.setConfigurationDescription(cfgDes);
+//                    config.exportArtifactInfo();
 
-                    IBuilder bld = config.getBuilder();
-                    if (bld != null) {
-                        bld.setManagedBuildOn(true);
-                    }
+//                    IBuilder bld = config.getBuilder();
+//                    if (bld != null) {
+//                        bld.setManagedBuildOn(true);
+//                    }
 
 
                 }

@@ -90,10 +90,7 @@ public class CfgScannerConfigInfoFactory2 {
             //			return info;
         }
 
-        @Override
-        public boolean isPerRcTypeDiscovery() {
-            return cfg.isPerRcTypeDiscovery();
-        }
+
 
         private IScannerConfigBuilderInfo2Set getContainer() throws CoreException {
             IScannerConfigBuilderInfo2Set container = fContainer != null ? fContainer.get() : null;
@@ -326,10 +323,7 @@ public class CfgScannerConfigInfoFactory2 {
             return createMap();
         }
 
-        @Override
-        public void setPerRcTypeDiscovery(boolean on) {
-            cfg.setPerRcTypeDiscovery(on);
-        }
+
 
         @Override
         public IScannerConfigBuilderInfo2 applyInfo(CfgInfoContext context, IScannerConfigBuilderInfo2 base) {
@@ -357,13 +351,7 @@ public class CfgScannerConfigInfoFactory2 {
             return cfg;
         }
 
-        @Override
-        public boolean isProfileSupported(CfgInfoContext context, String profileId) {
-            if (!isPerRcTypeDiscovery())
-                return true;
 
-            return CfgScannerConfigProfileManager.isPerFileProfile(profileId);
-        }
     }
 
     public static ICfgScannerConfigBuilderInfo2Set create(IConfiguration cfg) {

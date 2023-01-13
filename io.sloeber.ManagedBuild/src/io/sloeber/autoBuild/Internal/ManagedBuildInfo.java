@@ -113,30 +113,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         rebuildNeeded = true;
     }
 
-    /**
-     * Reads the build information from the project file and creates the
-     * internal representation of the build settings for the project.
-     */
-    public ManagedBuildInfo(IResource owner, ICStorageElement element, boolean loadConfigs,
-            String managedBuildRevision) {
-        this(owner);
-
-        // Recreate the managed build project element and its children
-        ICStorageElement projNodes[] = element.getChildren();
-        // TODO:  There should only be 1?
-        for (int projIndex = projNodes.length - 1; projIndex >= 0; --projIndex) {
-            if (IManagedProject.MANAGED_PROJECT_ELEMENT_NAME.equals(projNodes[projIndex].getName())) {
-                ManagedProject proj = new ManagedProject(this, projNodes[projIndex], loadConfigs, managedBuildRevision);
-                if (!proj.resolveReferences())
-                    proj.setValid(false);
-            }
-        }
-
-        // Switch the rebuild off since this is an existing project
-        rebuildNeeded = false;
-
-        version = managedBuildRevision;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#setManagedProject(IManagedProject)
@@ -453,10 +429,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return name;
     }
 
-    @Override
-    public String getOutputFlag(String outputExt) {
-        return getDefaultConfiguration().getOutputFlag(outputExt);
-    }
+
 
     /**
      * @return IResource owner
