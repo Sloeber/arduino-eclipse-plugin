@@ -1007,10 +1007,11 @@ public class BoardDescription {
             String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
             int counter = 1;
             String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
-            while (null != vars.get(hookVarName)) { // $NON-NLS-1$
-                envVarString = envVarString + preSeparator + hookVarName + postSeparator;
-                hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(++counter)));
-            }
+            for (int curIndex = 1; curIndex < 10; curIndex++)
+                if (null != vars.get(hookVarName)) { // $NON-NLS-1$
+                    envVarString = envVarString + preSeparator + hookVarName + postSeparator;
+                    hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(++counter)));
+                }
         }
         if (!envVarString.isEmpty()) {
             extraVars.put(varName, envVarString);
