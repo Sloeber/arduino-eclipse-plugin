@@ -36,6 +36,8 @@ public class MyPreferences {
 	// Serial monitor keys
 	private static final String KEY_SERIAL_RATE = "Serial monitor last selected rate"; //$NON-NLS-1$
 	private static final String KEY_SERIAL_PORT = "Serial monitor last selected Port"; //$NON-NLS-1$
+	private static final String KEY_SERIAL_DTR = "Serial monitor last selected DTR"; //$NON-NLS-1$
+
 	private static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index"; //$NON-NLS-1$
 	private static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting"; //$NON-NLS-1$
 	private static final String KEY_RXTX_LAST_USED_TIMESTAMPS = "Serial Monitor Last Used show timestamps setting"; //$NON-NLS-1$
@@ -248,6 +250,10 @@ public class MyPreferences {
 		setGlobalValue(KEY_SERIAL_RATE, text);
 	}
 
+	public static void setLastUsedSerialDTR(boolean dtr) {
+		setGlobalValue(KEY_SERIAL_DTR, dtr);
+	}
+
 	public static void setLastUsedPort(String selectedPort) {
 		setGlobalValue(KEY_SERIAL_PORT, selectedPort);
 
@@ -255,6 +261,10 @@ public class MyPreferences {
 
 	public static String getLastUsedRate() {
 		return getGlobalString(KEY_SERIAL_RATE, ""); //$NON-NLS-1$
+	}
+
+	public static boolean getLastUsedSerialDTR() {
+		return getGlobalBoolean(KEY_SERIAL_DTR, false);
 	}
 
 	public static String getLastUsedPort() {
