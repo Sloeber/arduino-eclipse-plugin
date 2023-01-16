@@ -789,7 +789,7 @@ public class BoardDescription {
         String architecture = getArchitecture();
         IPath coreHardwarePath = getreferencedCoreHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        allVars.put(ENV_KEY_HARDWARE_PATH, coreHardwarePath.removeLastSegments(1).toOSString());
+        allVars.put(ENV_KEY_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toOSString());
         allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
         allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
 
