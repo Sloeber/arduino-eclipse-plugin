@@ -18,6 +18,8 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -72,11 +74,11 @@ public class Shared {
         ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
         ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
 
-        IPath resultPath = project.getLocation().append(activeConfig.getName());
+        IFolder buildFolder = project.getFolder(activeConfig.getName());
         String projName=project.getName() ;
         String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",projName+".exe","application.axf"};
         for(String validOutput:validOutputss) {   
-            File validFile = resultPath.append( validOutput).toFile();
+            IFile validFile = buildFolder.getFile( validOutput);
             if (validFile.exists()) {
                 return false;
             }
