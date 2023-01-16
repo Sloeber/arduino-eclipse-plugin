@@ -1300,8 +1300,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(ALL_TARGET))
                     .append(NEWLINE);
             buffer.append(defaultTarget).append(NEWLINE);
-            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(PREBUILD)
-                    .append(NEWLINE);
+            // the ||: is from here https://stackoverflow.com/questions/11871921/suppress-and-ignore-output-for-makefile
+            buffer.append(TAB).append(DASH).append(prebuildStep).append(" ||:").append(NEWLINE);
             buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
                     .append(NEWLINE);
             buffer.append(NEWLINE);
@@ -1397,14 +1397,14 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         buffer.append(addTargetsRules(targetTool, outputVarsAdditionsList, managedProjectOutputs,
                 (postbuildStep.length() > 0)));
         // Add the prebuild step target, if specified
-        if (prebuildStep.length() > 0) {
-            buffer.append(PREBUILD).append(COLON).append(NEWLINE);
-            if (preannouncebuildStep.length() > 0) {
-                buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(preannouncebuildStep));
-            }
-            buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
-            buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
-        }
+        //        if (prebuildStep.length() > 0) {
+        //            buffer.append(PREBUILD).append(COLON).append(NEWLINE);
+        //            if (preannouncebuildStep.length() > 0) {
+        //                buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(preannouncebuildStep));
+        //            }
+        //            buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
+        //            buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+        //        }
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {
             buffer.append(POSTBUILD).append(COLON).append(NEWLINE);
