@@ -25,6 +25,7 @@ public class Const {
     public static final String EMPTY = "";
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
+    public static final String SPACE = " ";
 
     // arduino txt basic keys
     public static final String VARIANT = "variant";

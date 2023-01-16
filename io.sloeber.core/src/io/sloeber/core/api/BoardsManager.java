@@ -162,6 +162,7 @@ public class BoardsManager {
      *            the platforms after this platform are skipped
      */
     public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
+        String DEPRECATED = "DEPRECATED"; //$NON-NLS-1$
         if (!isReady()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
@@ -173,11 +174,21 @@ public class BoardsManager {
         for (ArduinoPackage curPackage : allPackages) {
             Collection<ArduinoPlatform> latestPlatforms = curPackage.getPlatforms();
             for (ArduinoPlatform curPlatform : latestPlatforms) {
-                if (currPlatformIndex > fromIndex) {
-                    install(curPlatform.getNewestVersion(), monitor);
+                if (!curPlatform.getName().toUpperCase().contains(DEPRECATED)) {
+                    if (currPlatformIndex > fromIndex) {
+                        ArduinoPlatformVersion latestPlatformVersion = curPlatform.getNewestVersion();
+                        if (!latestPlatformVersion.getName().toUpperCase().contains(DEPRECATED)) {
+                            install(latestPlatformVersion, monitor);
+                        } else {
+                            System.out.println("skipping platform " + latestPlatformVersion.toString()); //$NON-NLS-1$
+                        }
+                    }
+                    if (currPlatformIndex++ > toIndex) {
+                        return;
+                    }
+                } else {
+                    System.out.println("skipping platform " + curPlatform.toString()); //$NON-NLS-1$
                 }
-                if (currPlatformIndex++ > toIndex)
-                    return;
             }
         }
     }
@@ -219,12 +230,12 @@ public class BoardsManager {
         String version = platformVersion.getVersion().toString();
         // Check if we're installed already
         if (platformVersion.isInstalled()) {
-            System.out.println("reusing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            System.out.println("reusing platform " + platformVersion.toString()); //$NON-NLS-1$
             return Status.OK_STATUS;
         }
 
         // Download platform archive
-        System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        System.out.println("start installing platform " + platformVersion.toString()); //$NON-NLS-1$
 
         MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platformVersion.getName()); //$NON-NLS-1$
         mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion, forceDownload, monitor));
@@ -269,7 +280,7 @@ public class BoardsManager {
 
         WorkAround.applyKnownWorkArounds(platformVersion);
 
-        System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        System.out.println("done installing platform " + platformVersion.toString()); //$NON-NLS-1$ 
         return mstatus;
     }
 

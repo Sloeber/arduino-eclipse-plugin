@@ -8,6 +8,7 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.core.common.Const.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -115,4 +116,8 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return name + SPACE + architecture;
+    }
 }
