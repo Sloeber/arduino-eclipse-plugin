@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.00.test 09 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.01.test 01 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -271,6 +271,14 @@ public class WorkAround extends Const {
 
         // for ESP32 remove the build options fix for arduino ide #1390
         platformTXT = platformTXT.replace(" \"@{build.opt.path}\" ", " ");
+        platformTXT = platformTXT.replace(" \"@{build.opt.path}\"", "");
+        platformTXT = platformTXT.replace("\"@{build.opt.path}\" ", "");
+        platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
+        // for esp8266
+        platformTXT = platformTXT.replace(" \"@{build.opt.fqfn}\" ", " ");
+        platformTXT = platformTXT.replace("\"@{build.opt.fqfn}\" ", "");
+        platformTXT = platformTXT.replace(" \"@{build.opt.fqfn}\"", "");
+        platformTXT = platformTXT.replace("\"@{build.opt.fqfn}\"", "");
 
         return platformTXT;
     }
