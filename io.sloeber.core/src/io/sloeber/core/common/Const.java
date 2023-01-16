@@ -25,6 +25,7 @@ public class Const {
     public static final String EMPTY = "";
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
+    public static final String SPACE = " ";
 
     // arduino txt basic keys
     public static final String VARIANT = "variant";
@@ -67,6 +68,7 @@ public class Const {
     public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
     public static final String SLOEBER_HOME = "SLOEBER_HOME";
+    public static final String RUNTIME_IDE_PATH = "runtime.ide.path";
     public static final String LOCAL = "local";
 
     // Folder and file Information

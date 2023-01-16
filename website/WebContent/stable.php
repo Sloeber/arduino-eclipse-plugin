@@ -58,9 +58,15 @@ if (isset ( $_GET ["OS"] ))
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
 		<p>The product is the only supported setup!</p>
-		<p>Sloeber needs java 10 or higher and lower than 16 ! Other java versions will not work!</p>
-		<P>Download a java from <a href="https://adoptium.net/" >https://adoptium.net/</a>
-		<?php	if($os=="win"){echo "<p>The product includes java.</p>";}; ?>
+		<p>Sloeber needs java 17 or higher but is now included in the release!</p>
+		<?php	if($os=="linux"){echo "<p>Due to new security a simple download and extract will not work.</p>";}; ?>
+		<?php	if($os=="linux"){echo "<p>After  the download run.</p>";}; ?>
+		<?php	if($os=="linux"){echo "<p>chmod u+x sloeber-ide</p>";}; ?>
+		<?php	if($os=="linux"){echo "<p>Start Sloeber; then run</p>";}; ?>
+		<?php	if($os=="linux"){echo "chmod +x plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_*/jre/bin/*";}; ?>
+		<?php	if($os=="linux"){echo "<p></p>";}; ?>
+		
+		
 		<?php	if($os=="mac"){echo "<p>Due to mac new security approach a simple download and extract will not work.</p>";}; ?>
 		<?php	if($os=="mac"){echo "<p>Follow following steps to install.</p>";}; ?>
 		<?php	if($os=="mac"){echo "<p>1)download with mac browser.</p>";}; ?>

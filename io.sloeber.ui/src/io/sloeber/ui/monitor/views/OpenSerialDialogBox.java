@@ -14,60 +14,61 @@ import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class OpenSerialDialogBox extends Dialog {
-    private LabelCombo mySerialPorts;
-    private LabelCombo myBaudRates;
-    private Button myDtrCheckbox;
-    private String mySelectedPort;
-    private int mySelectedRate;
-    private boolean mySelectedDtr;
+	private LabelCombo mySerialPorts;
+	private LabelCombo myBaudRates;
+	private Button myDtrCheckbox;
+	private String mySelectedPort;
+	private int mySelectedRate;
+	private boolean mySelectedDtr;
 
-    protected OpenSerialDialogBox(Shell parentShell) {
-	super(parentShell);
-    }
+	protected OpenSerialDialogBox(Shell parentShell) {
+		super(parentShell);
+	}
 
-    @Override
-    protected void okPressed() {
-	// I need to save these values in local variables as the GUI stuff is
-	// deleted after he close
-	mySelectedRate = Integer.parseInt(myBaudRates.getText());
-	mySelectedPort = mySerialPorts.getText();
-	mySelectedDtr = myDtrCheckbox.getSelection();
-	MyPreferences.setLastUsedBaudRate(myBaudRates.getText());
-	MyPreferences.setLastUsedPort(mySelectedPort);
-	super.okPressed();
-    }
+	@Override
+	protected void okPressed() {
+		// I need to save these values in local variables as the GUI stuff is
+		// deleted after he close
+		mySelectedRate = Integer.parseInt(myBaudRates.getText());
+		mySelectedPort = mySerialPorts.getText();
+		mySelectedDtr = myDtrCheckbox.getSelection();
+		MyPreferences.setLastUsedBaudRate(myBaudRates.getText());
+		MyPreferences.setLastUsedPort(mySelectedPort);
+		MyPreferences.setLastUsedSerialDTR(mySelectedDtr);
+		super.okPressed();
+	}
 
-    @Override
-    protected Control createDialogArea(Composite parent) {
-	GridLayout layout = new GridLayout();
-	layout.numColumns = 2;
-	parent.setLayout(layout);
-	mySerialPorts = new LabelCombo(parent, Messages.openSerialDialogBoxSerialPortToConnectTo, 1, false);
-	mySerialPorts.setItems(SerialManager.listComPorts());
-	mySerialPorts.setText(MyPreferences.getLastUsedPort());
+	@Override
+	protected Control createDialogArea(Composite parent) {
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		parent.setLayout(layout);
+		mySerialPorts = new LabelCombo(parent, Messages.openSerialDialogBoxSerialPortToConnectTo, 1, false);
+		mySerialPorts.setItems(SerialManager.listComPorts());
+		mySerialPorts.setText(MyPreferences.getLastUsedPort());
 
-	myBaudRates = new LabelCombo(parent, Messages.openSerialDialogBoxSelectTheBautRate, 1, false);
-	myBaudRates.setItems(SerialManager.listBaudRates());
-	myBaudRates.setText(MyPreferences.getLastUsedRate());
+		myBaudRates = new LabelCombo(parent, Messages.openSerialDialogBoxSelectTheBautRate, 1, false);
+		myBaudRates.setItems(SerialManager.listBaudRates());
+		myBaudRates.setText(MyPreferences.getLastUsedRate());
 
-	myDtrCheckbox = new Button(parent, SWT.CHECK);
-	myDtrCheckbox.setText(Messages.openSerialDialogBoxDtr);
-	myDtrCheckbox.setSelection(true);
+		myDtrCheckbox = new Button(parent, SWT.CHECK);
+		myDtrCheckbox.setText(Messages.openSerialDialogBoxDtr);
+		myDtrCheckbox.setSelection(MyPreferences.getLastUsedSerialDTR());
 
-	return parent;
+		return parent;
 
-    }
+	}
 
-    public String GetComPort() {
-	return mySelectedPort;
-    }
+	public String GetComPort() {
+		return mySelectedPort;
+	}
 
-    public int GetBaudRate() {
-	return mySelectedRate;
-    }
+	public int GetBaudRate() {
+		return mySelectedRate;
+	}
 
-    public boolean GetDtr() {
-	return mySelectedDtr;
-    }
+	public boolean GetDtr() {
+		return mySelectedDtr;
+	}
 
 }

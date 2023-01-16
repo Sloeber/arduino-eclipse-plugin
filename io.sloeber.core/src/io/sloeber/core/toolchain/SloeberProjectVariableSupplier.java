@@ -18,8 +18,6 @@ import io.sloeber.core.common.Common;
 //SloeberConfigurationVariableSupplier
 public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariableSupplier {
 
-
-
     private static BuildEnvironmentVariable get_EXTRA_TIME_UTC() {
         Date d = new Date();
         long current = d.getTime() / 1000;
@@ -51,6 +49,9 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
         return new BuildEnvironmentVariable(SLOEBER_HOME, Common.sloeberHome);
     }
 
+    private static BuildEnvironmentVariable get_RUNTIME_IDE_PATH() {
+        return new BuildEnvironmentVariable(RUNTIME_IDE_PATH, Common.sloeberHome);
+    }
 
     @Override
     public IBuildEnvironmentVariable getVariable(String variableName, IManagedProject project,
@@ -66,6 +67,8 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
             return get_EXTRA_TIME_DTS();
         case SLOEBER_HOME:
             return get_SLOEBER_HOME();
+        case RUNTIME_IDE_PATH:
+            return get_RUNTIME_IDE_PATH();
         }
         return null;
     }
@@ -78,6 +81,8 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
         retValues.put(EXTRA_TIME_ZONE, get_EXTRA_TIME_ZONE());
         retValues.put(EXTRA_TIME_DTS, get_EXTRA_TIME_DTS());
         retValues.put(SLOEBER_HOME, get_SLOEBER_HOME());
+        retValues.put(RUNTIME_IDE_PATH, get_RUNTIME_IDE_PATH());
+
         return retValues.values().toArray(new BuildEnvironmentVariable[retValues.size()]);
     }
 

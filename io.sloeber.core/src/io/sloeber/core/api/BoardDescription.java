@@ -789,7 +789,7 @@ public class BoardDescription {
         String architecture = getArchitecture();
         IPath coreHardwarePath = getreferencedCoreHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        allVars.put(ENV_KEY_HARDWARE_PATH, coreHardwarePath.removeLastSegments(1).toOSString());
+        allVars.put(ENV_KEY_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toOSString());
         allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
         allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
 
@@ -1005,12 +1005,14 @@ public class BoardDescription {
         }
         for (int numDigits = 1; numDigits <= 2; numDigits++) {
             String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
-            int counter = 1;
-            String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
-            while (null != vars.get(hookVarName)) { // $NON-NLS-1$
-                envVarString = envVarString + preSeparator + hookVarName + postSeparator;
-                hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(++counter)));
+            int max = 10;
+            for (int counter = 1; counter < max; counter++) {
+                String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
+                if (null != vars.get(hookVarName)) { // $NON-NLS-1$
+                    envVarString = envVarString + preSeparator + hookVarName + postSeparator;
+                }
             }
+            max = 100;
         }
         if (!envVarString.isEmpty()) {
             extraVars.put(varName, envVarString);

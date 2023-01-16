@@ -86,8 +86,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	static private final int MY_MAX_SERIAL_PORTS = 6;
 	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
 
-
-	// These StringBuilders are used to create discrete lines of text when in timestamp
+	// These StringBuilders are used to create discrete lines of text when in
+	// timestamp
 	// mode.
 	static private final StringBuilder[] lineBuffer = new StringBuilder[MY_MAX_SERIAL_PORTS];
 
@@ -169,7 +169,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * This constructor should only be called by Eclipse or {@link #getSerialMonitor()}.
+	 * This constructor should only be called by Eclipse or
+	 * {@link #getSerialMonitor()}.
 	 *
 	 * It is only public because Eclipse needs to call it.
 	 */
@@ -222,8 +223,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 	@Override
 	public void createPartControl(Composite parent1) {
@@ -276,8 +276,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				MyPreferences
-						.setLastUsedSerialLineEnd(lineTerminator.getCombo().getSelectionIndex());
+				MyPreferences.setLastUsedSerialLineEnd(lineTerminator.getCombo().getSelectionIndex());
 			}
 		});
 
@@ -345,7 +344,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 						if (selectedProject != null) {
 
 							try {
-                                ICConfigurationDescription activeCfg=CoreModel.getDefault().getProjectDescription(selectedProject).getActiveConfiguration();
+								ICConfigurationDescription activeCfg = CoreModel.getDefault()
+										.getProjectDescription(selectedProject).getActiveConfiguration();
 								String activeConfigName = activeCfg.getName();
 								IPath buildFolder = selectedProject.findMember(activeConfigName).getLocation();
 								File dumpFile = buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
@@ -372,8 +372,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * GetSelectedSerial is a wrapper class that returns the serial port
-	 * selected in the combobox
+	 * GetSelectedSerial is a wrapper class that returns the serial port selected in
+	 * the combobox
 	 *
 	 * @return the serial port selected in the combobox
 	 */
@@ -384,10 +384,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	/**
 	 * Looks in the open com ports with a port with the name as provided.
 	 *
-	 * @param comName
-	 *            the name of the comport you are looking for
-	 * @return the serial port opened in the serial monitor with the name equal
-	 *         to Comname of found. null if not found
+	 * @param comName the name of the comport you are looking for
+	 * @return the serial port opened in the serial monitor with the name equal to
+	 *         Comname of found. null if not found
 	 */
 	private Serial GetSerial(String comName) {
 		for (Entry<Serial, SerialListener> entry : serialConnections.entrySet()) {
@@ -425,7 +424,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(parent.getShell());
 				comportSelector.create();
 				if (comportSelector.open() == Window.OK) {
-					connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate());
+					connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate(),
+							comportSelector.GetDtr());
 
 				}
 			}
@@ -503,11 +503,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	/**
 	 * The listener calls this method to report that serial data has arrived
 	 *
-	 * @param stInfo
-	 *            The serial data that has arrived
-	 * @param style
-	 *            The style that should be used to report the data; Actually
-	 *            this is the index number of the opened port
+	 * @param stInfo The serial data that has arrived
+	 * @param style  The style that should be used to report the data; Actually this
+	 *               is the index number of the opened port
 	 */
 	public void ReportSerialActivity(String stInfo, int style) {
 		String text = stInfo;
@@ -583,15 +581,17 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		}
 	}
 
+	public void connectSerial(String comPort, int baudRate) {
+		connectSerial(comPort, baudRate, false);
+	}
+
 	/**
 	 * Connect to a serial port and sets the listener
 	 *
-	 * @param comPort
-	 *            the name of the com port to connect to
-	 * @param baudRate
-	 *            the baud rate to connect to the com port
+	 * @param comPort  the name of the com port to connect to
+	 * @param baudRate the baud rate to connect to the com port
 	 */
-	public void connectSerial(String comPort, int baudRate) {
+	public void connectSerial(String comPort, int baudRate, boolean dtr) {
 		if (serialConnections.size() < MY_MAX_SERIAL_PORTS) {
 			int colorindex = -1;
 			for (int idx = 0; idx < serialPortAllocated.length; idx++) {
@@ -602,18 +602,16 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			}
 
 			if (colorindex < 0) {
-				log(new Status(IStatus.ERROR, PLUGIN_ID,
-						Messages.serialMonitorNoMoreSerialPortsSupported,
-						null));
+				log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.serialMonitorNoMoreSerialPortsSupported, null));
 			}
 
-			Serial newSerial = new Serial(comPort, baudRate);
+			Serial newSerial = new Serial(comPort, baudRate, dtr);
 			if (newSerial.IsConnected()) {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				theListener.event(newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
-						+ newLine);
+				theListener.event(newLine + Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort)
+						.replace(Messages.BAUD, Integer.toString(baudRate)) + newLine);
 				serialConnections.put(newSerial, theListener);
 				SerialPortsUpdated();
 
@@ -623,9 +621,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				return;
 			}
 		} else {
-			log(new Status(IStatus.ERROR, PLUGIN_ID,
-					Messages.serialMonitorNoMoreSerialPortsSupported,
-					null));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.serialMonitorNoMoreSerialPortsSupported, null));
 		}
 
 	}
@@ -667,10 +663,10 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * PauzePort is called when the monitor needs to disconnect from a port for
-	 * a short while. For instance when a upload is started to a com port the
-	 * serial monitor will get a pauzeport for this com port. When the upload is
-	 * done ResumePort will be called
+	 * PauzePort is called when the monitor needs to disconnect from a port for a
+	 * short while. For instance when a upload is started to a com port the serial
+	 * monitor will get a pauzeport for this com port. When the upload is done
+	 * ResumePort will be called
 	 */
 	@Override
 	public boolean pausePort(String portName) {
