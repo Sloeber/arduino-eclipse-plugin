@@ -59,12 +59,12 @@ if (isset ( $_GET ["OS"] ))
 			Arduino eclipse IDE!</p>
 		<p>The product is the only supported setup!</p>
 		<p>Sloeber needs java 17 or higher but is now included in the release!</p>
-		<?php	if($os=="linux"){echo "<p>Due to new security a simple download and extract will not work.</p>";}; ?>
-		<?php	if($os=="linux"){echo "<p>After  the download run.</p>";}; ?>
-		<?php	if($os=="linux"){echo "<p>chmod u+x sloeber-ide</p>";}; ?>
-		<?php	if($os=="linux"){echo "<p>Start Sloeber; then run</p>";}; ?>
-		<?php	if($os=="linux"){echo "chmod +x plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_*/jre/bin/*";}; ?>
-		<?php	if($os=="linux"){echo "<p></p>";}; ?>
+		<?php	if($os=="lin"){echo "<p>Due to new security a simple download and extract will not work.</p>";}; ?>
+		<?php	if($os=="lin"){echo "<p>After  the download run.</p>";}; ?>
+		<?php	if($os=="lin"){echo "<p>chmod u+x sloeber-ide</p>";}; ?>
+		<?php	if($os=="lin"){echo "<p>Start Sloeber; then run</p>";}; ?>
+		<?php	if($os=="lin"){echo "chmod +x plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_*/jre/bin/*";}; ?>
+		<?php	if($os=="lin"){echo "<p></p>";}; ?>
 		
 		
 		<?php	if($os=="mac"){echo "<p>Due to mac new security approach a simple download and extract will not work.</p>";}; ?>
