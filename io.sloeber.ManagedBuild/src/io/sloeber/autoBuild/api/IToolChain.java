@@ -51,7 +51,6 @@ public interface IToolChain extends IHoldsOptions {
     public static final String IS_TOOL_CHAIN_SUPPORTED = "isToolChainSupported"; //$NON-NLS-1$
     public static final String CONFIGURATION_ENVIRONMENT_SUPPLIER = "environmentSupplier"; //$NON-NLS-1$
     public static final String CONFIGURATION_MACRO_SUPPLIER = "buildMacroSupplier"; //$NON-NLS-1$
-    
 
     /**
      * Returns the configuration that is the parent of this tool-chain.
@@ -67,33 +66,12 @@ public interface IToolChain extends IHoldsOptions {
      */
     public ITargetPlatform getTargetPlatform();
 
-
-
-    /**
-     * Creates the <code>Builder</code> child of this tool-chain.
-     *
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The id for the new tool chain
-     * @param name
-     *            The name for the new tool chain
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a managed
-     *            project element
-     *
-     * @return IBuilder
-     */
-    public IBuilder createBuilder(IBuilder superClass, String Id, String name, boolean isExtensionElement);
-
-
     /**
      * Returns the builder child of this tool-chain.
      *
      * @return IBuilder
      */
     public IBuilder getBuilder();
-
 
     /**
      * Returns an array of tool children of this tool-chain
@@ -112,8 +90,6 @@ public interface IToolChain extends IHoldsOptions {
      */
     public ITool getTool(String id);
 
-
-
     /**
      * Returns whether this element is abstract. Returns <code>false</code>
      * if the attribute was not specified.
@@ -129,14 +105,12 @@ public interface IToolChain extends IHoldsOptions {
      */
     public List<String> getOSList();
 
-
     /**
      * Returns an array of architectures the tool-chain outputs can run on.
      *
      * @return String[]
      */
     public List<String> getArchList();
-
 
     /**
      * Returns the semicolon separated list of unique IDs of the error parsers
@@ -163,7 +137,6 @@ public interface IToolChain extends IHoldsOptions {
      */
     public List<String> getErrorParserList();
 
-
     /**
      * Returns the default language settings providers IDs.
      *
@@ -181,7 +154,6 @@ public interface IToolChain extends IHoldsOptions {
      */
     public String getScannerConfigDiscoveryProfileId();
 
-
     /**
      * Returns the sem-colon separated list of Tool ids containing each
      * tool that can create the final build artifact (the end target of
@@ -193,8 +165,6 @@ public interface IToolChain extends IHoldsOptions {
      * @return String
      */
     public String getTargetToolIds();
-
-
 
     /**
      * Returns the list of Tool ids containing each
@@ -216,8 +186,6 @@ public interface IToolChain extends IHoldsOptions {
      * @return IOutputType[]
      */
     public List<IOutputType> getSecondaryOutputs();
-
-
 
     /**
      * Returns <code>true</code> if the tool-chain support is installed on the

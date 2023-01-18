@@ -152,7 +152,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     private IBuildRunner fBuildRunner = null;
     private IConfigurationElement fBuildRunnerElement = null;
     private String[] reservedMacroNames;
-	private IMakefileGenerator buildFileGeneratorElement;
+    private IMakefileGenerator buildFileGeneratorElement;
 
     /*
      *  C O N S T R U C T O R S
@@ -195,63 +195,16 @@ public class Builder extends HoldsOptions implements IBuilder {
         modelcommandLauncher = getAttributes(ATTRIBUTE_COMMAND_LAUNCHER);
         modelbuildRunner = getAttributes(ATTRIBUTE_BUILD_RUNNER);
 
-        
-		IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
-		for (IConfigurationElement optionElement : optionElements) {
-			Option newOption= new Option(this, root, optionElement);
-			myOptionMap.put(newOption.getName(), newOption);
-		}
-		
-		
-		buildFileGeneratorElement=(IMakefileGenerator)createExecutableExtension(MAKEGEN_ID);
-		
+        IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
+        for (IConfigurationElement optionElement : optionElements) {
+            Option newOption = new Option(this, root, optionElement);
+            myOptionMap.put(newOption.getName(), newOption);
+        }
+
+        buildFileGeneratorElement = (IMakefileGenerator) createExecutableExtension(MAKEGEN_ID);
 
         resolveFields();
 
-    }
-
-    public Builder(IToolChain parent, Map<String, String> args2, String managedBuildRevision) {
-        //        this.parent = parent;
-        //
-        //        loadFromMap(args2, null);
-
-    }
-
-    /**
-     * This constructor is called to create a Builder whose attributes and children
-     * will be
-     * added by separate calls.
-     *
-     * @param parent
-     *            The parent of the builder, if any
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The id for the new Builder
-     * @param name
-     *            The name for the new Builder
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a managed
-     *            project element
-     */
-    public Builder(ToolChain parent, IBuilder superClass, String Id, String name, boolean isExtensionElement) {
-        //        this.parent = parent;
-        //        this.superClass = superClass;
-        //        setManagedBuildRevision(parent.getManagedBuildRevision());
-        //        if (this.superClass != null) {
-        //            superClassId = this.superClass.getId();
-        //        }
-        //        setId(Id);
-        //        setName(name);
-        //        setVersion(getVersionFromId());
-        //
-        //        isExtensionBuilder = isExtensionElement;
-        //        //        if (isExtensionElement) {
-        //        //            // Hook me up to the Managed Build Manager
-        //        //            ManagedBuildManager.addExtensionBuilder(this);
-        //        //        } else {
-        //        //            fBuildData = new BuildBuildData(this);
-        //        //        }
     }
 
     /**
@@ -1024,8 +977,6 @@ public class Builder extends HoldsOptions implements IBuilder {
             args = newArgs;
         }
     }
-
-
 
     @Override
     public IMakefileGenerator getBuildFileGenerator() {
@@ -2014,7 +1965,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     private ICOutputEntry[] getDefaultOutputSettings() {
         Configuration cfg = (Configuration) getConfguration();
-        if (cfg == null || cfg.isPreference() ) {
+        if (cfg == null || cfg.isPreference()) {
             return new ICOutputEntry[] { new COutputEntry(Path.EMPTY, null,
                     ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
         }

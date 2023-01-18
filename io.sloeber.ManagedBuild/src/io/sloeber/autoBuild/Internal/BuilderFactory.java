@@ -263,26 +263,6 @@ public class BuilderFactory {
         return createBuilder(cfg, args, cfg.getBuilder() != null);
     }
 
-    public static IBuilder createBuilderForEclipseBuilder(IConfiguration cfg, String eclipseBuilderID)
-            throws CoreException {
-        IProject project = cfg.getOwner().getProject();
-        ICommand command = getBuildSpec(project.getDescription(), eclipseBuilderID);
-        if (command == null) {
-            throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), -1,
-                    //TOFIX ManagedMakeMessages.getResourceString("BuildInfoFactory.Missing_Builder") + eclipseBuilderID, //$NON-NLS-1$
-                    "BuildInfoFactory.Missing_Builder" + eclipseBuilderID, //$NON-NLS-1$
-                    null));
-        }
-
-        return createBuilderFromCommand(cfg, command);
-        //		Map args = command.getArguments();
-        //		if(!args.containsKey(IBuilder.ID)){
-        //			args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(eclipseBuilderID, null));
-        //		}
-        //
-        //		return createBuilder(cfg, args);
-    }
-
     /**
      * Creates a new build-command containing data dynamically obtained from the
      * Builder.
