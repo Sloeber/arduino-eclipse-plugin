@@ -71,7 +71,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public ICOutputEntry[] getOutputDirectories() {
-        return fBuilder.getOutputEntries();
+        return fBuilder.getOutputEntries(myProject);
     }
 
     @Override

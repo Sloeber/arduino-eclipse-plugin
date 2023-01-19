@@ -38,6 +38,7 @@ import io.sloeber.autoBuild.Internal.BuildLanguageData;
 import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.autoBuild.Internal.ICfgScannerConfigBuilderInfo2Set;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
+import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
@@ -49,6 +50,7 @@ import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.FolderInfo;
+import io.sloeber.schema.internal.ManagedProject;
 import io.sloeber.schema.internal.TargetPlatform;
 
 public class BuildConfigurationData extends CConfigurationData {
@@ -58,6 +60,10 @@ public class BuildConfigurationData extends CConfigurationData {
     private CFolderData myFolderData;
 
 
+    public ManagedProject getManagedProject() {
+    	IManagedBuildInfo buildInfo =ManagedBuildManager.getBuildInfo(myProject);
+    	return buildInfo.getManagedProject();
+    }
     //	private BuildVariablesContributor fCdtVars;
     public BuildConfigurationData(Configuration cfg, IProject project) {
         fCfg =  cfg;

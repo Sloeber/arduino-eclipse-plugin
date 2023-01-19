@@ -54,6 +54,7 @@ import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ManagedProject;
 
 /**
  * This class allows specifying BuildObject-specific persisted properties
@@ -322,9 +323,14 @@ public class PropertyManager {
 
         storeString(cfg, str);
     }
+    private Preferences getPreferences() {
+    	IProject project =fLoaddedInfo.getProject();
+    	ManagedProject managedproject=ManagedBuildManager.getBuildInfo(project).getManagedProject();
+        return  getNode(managedproject);
+    }
 
     protected void storeString(IConfiguration cfg, String str) {
-        Preferences prefs = getNode(cfg.getManagedProject());
+        Preferences prefs = getPreferences();
         if (prefs != null) {
             if (str != null)
                 prefs.put(cfg.getId(), str);
@@ -338,14 +344,14 @@ public class PropertyManager {
     }
 
     protected String loadString(IConfiguration cfg) {
+    	Preferences prefs = getPreferences();
         String str = null;
-        Preferences prefs = getNode(cfg.getManagedProject());
         if (prefs != null)
             str = prefs.get(cfg.getId(), null);
         return str;
     }
 
-    protected Preferences getNode(IManagedProject mProject) {
+    protected Preferences getNode(ManagedProject mProject) {
         //		return getProjNode(mProject);
         return getInstNode(mProject);
     }
@@ -361,7 +367,7 @@ public class PropertyManager {
         return null;
     }
 
-    protected Preferences getInstNode(IManagedProject mProject) {
+    protected Preferences getInstNode(ManagedProject mProject) {
         Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.getId());
         if (prefs != null) {
             prefs = prefs.node(NODE_NAME);
@@ -488,7 +494,7 @@ public class PropertyManager {
         return getProperty(getConfiguration(builder), builder, key);
     }
 
-    public void clearProperties(IManagedProject mProject) {
+    public void clearProperties(ManagedProject mProject) {
         if (mProject == null)
             return;
 

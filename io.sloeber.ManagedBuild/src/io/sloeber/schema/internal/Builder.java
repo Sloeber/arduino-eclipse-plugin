@@ -1138,62 +1138,6 @@ public class Builder extends HoldsOptions implements IBuilder {
         //        return;
     }
 
-    private void getConverter(String convertToId) {
-
-        String fromId = null;
-        String toId = null;
-
-        // Get the Converter Extension Point
-        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(
-                "org.eclipse.cdt.managedbuilder.core", //$NON-NLS-1$
-                "projectConverter"); //$NON-NLS-1$
-        if (extensionPoint != null) {
-            // Get the extensions
-            IExtension[] extensions = extensionPoint.getExtensions();
-            for (int i = 0; i < extensions.length; i++) {
-                // Get the configuration elements of each extension
-                IConfigurationElement[] configElements = extensions[i].getConfigurationElements();
-                for (int j = 0; j < configElements.length; j++) {
-
-                    IConfigurationElement element = configElements[j];
-
-                    if (element.getName().equals("converter")) { //$NON-NLS-1$
-
-                        fromId = element.getAttribute("fromId"); //$NON-NLS-1$
-                        toId = element.getAttribute("toId"); //$NON-NLS-1$
-                        // Check whether the current converter can be used for
-                        // the selected builder
-
-                        if (fromId.equals(getSuperClass().getId()) && toId.equals(convertToId)) {
-                            // If it matches
-                            String mbsVersion = element.getAttribute("mbsVersion"); //$NON-NLS-1$
-                            Version currentMbsVersion = ManagedBuildManager.getBuildInfoVersion();
-
-                            // set the converter element based on the MbsVersion
-                            if (currentMbsVersion.compareTo(new Version(mbsVersion)) > 0) {
-                                previousMbsVersionConversionElement = element;
-                            } else {
-                                currentMbsVersionConversionElement = element;
-                            }
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        // If control comes here, it means 'Tool Integrator' specified
-        // 'convertToId' attribute in toolchain definition file, but
-        // has not provided any converter.
-        // So, make the project is invalid
-
-        IToolChain parent = getParent();
-        IConfiguration parentConfig = parent.getParent();
-        IManagedProject managedProject = parentConfig.getManagedProject();
-        if (managedProject != null) {
-            managedProject.setValid(false);
-        }
-    }
 
     public IConfigurationElement getPreviousMbsVersionConversionElement() {
         return previousMbsVersionConversionElement;
@@ -1216,7 +1160,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public String[] getErrorParsers() {
-        return null;
+        return new String[0];
     }
 
     public String[] getCustomizedErrorParserIds() {
@@ -1954,25 +1898,19 @@ public class Builder extends HoldsOptions implements IBuilder {
         return name;
     }
 
-    public ICOutputEntry[] getOutputEntries() {
-        if (isManagedBuildOn()) {
-            return getDefaultOutputSettings();
-        }
-        ICOutputEntry[] entries = getOutputEntrySettings();
-        if (entries == null || entries.length == 0) {
-            entries = getDefaultOutputSettings();
-        }
-        return entries;
+    public ICOutputEntry[] getOutputEntries(IProject project) {
+            return getDefaultOutputSettings( project);
     }
 
-    private ICOutputEntry[] getDefaultOutputSettings() {
+    private ICOutputEntry[] getDefaultOutputSettings(IProject project) {
         Configuration cfg = (Configuration) getConfguration();
         if (cfg == null || cfg.isPreference()) {
             return new ICOutputEntry[] { new COutputEntry(Path.EMPTY, null,
                     ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
         }
 
-        IFolder BuildFolder = ManagedBuildManager.getBuildFolder(cfg, this);
+        //IFolder BuildFolder = ManagedBuildManager.getBuildFolder(cfg, this);
+        IFolder BuildFolder =project.getFolder(cfg.getName());
         return new ICOutputEntry[] { new COutputEntry(BuildFolder, null,
                 ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
     }

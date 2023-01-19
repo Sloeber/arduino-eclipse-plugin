@@ -22,11 +22,8 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.internal.core.cdtvariables.StorableCdtVariables;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.core.resources.IResource;
-import org.osgi.framework.Version;
-
 import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
@@ -35,7 +32,7 @@ import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
 
-public class ManagedProject extends BuildObject implements IManagedProject {
+public class ManagedProject implements IManagedProject {
 
     //  Parent and children
     private IProjectType projectType;
@@ -48,6 +45,8 @@ public class ManagedProject extends BuildObject implements IManagedProject {
     private boolean isDirty = false;
     private boolean isValid = true;
     private boolean resolved = true;
+	private String id;
+	private String name;
 
     /*
      *  C O N S T R U C T O R S
@@ -412,4 +411,10 @@ public class ManagedProject extends BuildObject implements IManagedProject {
         }
     }
 
+    public String getId() {
+    	return id;
+    }
+   public String getName() {
+    	return name;
+    }
 }

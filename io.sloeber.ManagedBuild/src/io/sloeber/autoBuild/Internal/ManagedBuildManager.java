@@ -847,8 +847,8 @@ public class ManagedBuildManager extends AbstractCExtension {
 	 * @return IManagedBuildInfo The build information object for the resource, or
 	 *         null if it doesn't exist
 	 */
-	public static IManagedBuildInfo getBuildInfo(IResource resource) {
-		return getBuildInfo(resource, true);
+	public static ManagedBuildInfo getBuildInfo(IResource resource) {
+		return  getBuildInfo(resource, true);
 	}
 
 	/**
@@ -862,7 +862,7 @@ public class ManagedBuildManager extends AbstractCExtension {
 	 *                  is not loaded currently.
 	 * @return IManagedBuildInfo The build information object for the resource.
 	 */
-	public static IManagedBuildInfo getBuildInfo(IResource resource, boolean forceLoad) {
+	public static ManagedBuildInfo getBuildInfo(IResource resource, boolean forceLoad) {
 		return findBuildInfo(resource.getProject(), forceLoad);
 	}
 
@@ -1527,29 +1527,8 @@ public class ManagedBuildManager extends AbstractCExtension {
 		return buf.append("${").append("workspace_loc:").append(path).append("}").toString(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
-	public static IFolder getBuildFolder(IConfiguration cfg, IBuilder builder) {
-		if (cfg.getOwner() == null) {
-			// This should never happen
-			return null;
-		}
-
-		IProject project = cfg.getOwner().getProject();
-		return project.getFolder(cfg.getName());
-		// IPath buildDirectory = builder.getBuildLocation();
-		// if (buildDirectory != null && !buildDirectory.isEmpty()) {
-		// IResource res = project.getParent().findMember(buildDirectory);
-		// if (res instanceof IContainer && res.exists()) {
-		// buildDirectory = res.getLocation();
-		// }
-		// } else {
-		// buildDirectory = getPathForResource(project);
-		//
-		// if (buildDirectory != null) {
-		// if (builder.isManagedBuildOn())
-		// buildDirectory = buildDirectory.append(cfg.getName());
-		// }
-		// }
-		// return buildDirectory;
+	public static IFolder getBuildFolder(IConfiguration cfg, IProject project) {
+		return cfg.getBuildFolder(project);
 	}
 
 	// public static IBuilder[] createBuilders(IProject project, Map<String, String>

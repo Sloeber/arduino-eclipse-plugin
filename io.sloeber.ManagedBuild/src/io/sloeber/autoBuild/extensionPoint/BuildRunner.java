@@ -114,7 +114,7 @@ public class BuildRunner extends IBuildRunner {
 
                 String[] args = getCommandArguments(builder, targets);
 
-                IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, builder);
+                IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, project);
 
                 Map<String, String> envMap = getEnvironment(builder);
                 String[] envp = BuildRunnerHelper.envMapToEnvp(envMap);
@@ -162,7 +162,7 @@ public class BuildRunner extends IBuildRunner {
             }
         } catch (Exception e) {
             //TODO
-            String msg = "ManagedMakeMessages.getFormattedString(\"ManagedMakeBuilder.message.error.build"; //$NON-NLS-1$
+            String msg = "ManagedMakeMessages.getFormattedString(\"ManagedMakeBuilder.message.error.build\")"; //$NON-NLS-1$
             //new String[] { project.getName(), configuration.getName() });
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
         } finally {

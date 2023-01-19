@@ -55,15 +55,8 @@ public class BuildVariablesContributor implements ICdtVariablesContributor {
 		public IVariableContextInfo getNext() {
 			switch (getContextType()) {
 			case IBuildMacroProvider.CONTEXT_CONFIGURATION: {
-				Object data = getContextData();
-				IConfiguration configuration = null;
-				if (data instanceof IBuilder)
-					configuration = ((IBuilder) data).getParent().getParent();
-				else if (data instanceof IConfiguration)
-					configuration = (IConfiguration) data;
-
-				if (configuration != null) {
-					IManagedProject managedProject = configuration.getManagedProject();
+				if (fCfgData != null) {
+					IManagedProject managedProject = fCfgData.getManagedProject();
 					if (managedProject != null)
 						return new ContributorMacroContextInfo(fMngr, fCfgDes, IBuildMacroProvider.CONTEXT_PROJECT,
 								managedProject);

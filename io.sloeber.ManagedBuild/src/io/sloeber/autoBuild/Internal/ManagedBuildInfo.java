@@ -79,6 +79,7 @@ import io.sloeber.schema.api.IResourceConfiguration;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ManagedProject;
 
 /**
  * Concrete IManagedBuildInfo storing runtime ManagedProject metadata with
@@ -92,7 +93,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     //	private static final QualifiedName defaultConfigProperty = new QualifiedName(ManagedBuilderCorePlugin.getUniqueIdentifier(), DEFAULT_CONFIGURATION);
     //private static final QualifiedName defaultTargetProperty = new QualifiedName(ManagedBuilderCorePlugin.getUniqueIdentifier(), DEFAULT_TARGET);
 
-    private volatile IManagedProject managedProject;
+    private volatile ManagedProject managedProject;
     private volatile ICProject cProject;
     private volatile boolean isValid = false;
     private volatile IResource owner;
@@ -118,7 +119,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#setManagedProject(IManagedProject)
      */
     @Override
-    public void setManagedProject(IManagedProject managedProject) {
+    public void setManagedProject(ManagedProject managedProject) {
         this.managedProject = managedProject;
         //setDirty(true);  - It is primarily up to the ManagedProject to maintain the dirty state
     }
@@ -127,7 +128,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getManagedProject()
      */
     @Override
-    public IManagedProject getManagedProject() {
+    public ManagedProject getManagedProject() {
         return managedProject;
     }
 
@@ -241,13 +242,15 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
 
     }
 
-    private IConfiguration findExistingDefaultConfiguration(ICProjectDescription des) {
+    private IConfiguration findExistingDefaultConfiguration(ICProjectDescription in_des) {
+    	ICProjectDescription des=in_des;
         if (des == null)
             des = CoreModel.getDefault().getProjectDescription(getOwner().getProject(), false);
         IConfiguration activeCfg = null;
         if (des != null) {
             ICConfigurationDescription cfgDes = des.getActiveConfiguration();
-            activeCfg = managedProject.getConfiguration(cfgDes.getName());
+            activeCfg =managedProject.getProjectType().getConfiguration(cfgDes.getName());
+            //activeCfg = managedProject.getConfiguration(cfgDes.getName());
         }
 
         return activeCfg;

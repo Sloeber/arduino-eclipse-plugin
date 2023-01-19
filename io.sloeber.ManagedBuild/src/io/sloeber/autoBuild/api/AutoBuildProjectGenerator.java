@@ -84,7 +84,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
                 ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
-                info.setManagedProject((IManagedProject) mProj);
+                info.setManagedProject( mProj);
                 for (IConfiguration iConfig : modelConfigs) {
                     //        for (CfgHolder cfg : cfgs) {
                 	Configuration config = (Configuration) iConfig;

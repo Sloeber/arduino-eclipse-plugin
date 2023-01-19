@@ -341,7 +341,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 	}
 
 	private static IManagedProject createManagedProject(IManagedBuildInfo info, ICProjectDescription prjDescription) {
-		IManagedProject mProj = null;
+		ManagedProject mProj = null;
 		try {
 			ICStorageElement rootElem = prjDescription.getStorage(BUILD_SYSTEM_DATA_MODULE_NAME, false);
 			if (rootElem != null) {

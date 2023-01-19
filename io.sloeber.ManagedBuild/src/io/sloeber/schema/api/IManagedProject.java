@@ -43,8 +43,7 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IManagedProject
-        extends IBuildObject {
+public interface IManagedProject {
     public static final String MANAGED_PROJECT_ELEMENT_NAME = "project"; //$NON-NLS-1$
     public static final String PROJECTTYPE = "projectType"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$

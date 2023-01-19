@@ -2187,63 +2187,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         envVarBuildPathList.add(path);
     }
 
-    private void getConverter(String convertToId) {
-
-        String fromId = null;
-        String toId = null;
-
-        // Get the Converter Extension Point
-        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(
-                "org.eclipse.cdt.managedbuilder.core", //$NON-NLS-1$
-                "projectConverter"); //$NON-NLS-1$
-        if (extensionPoint != null) {
-            // Get the extensions
-            IExtension[] extensions = extensionPoint.getExtensions();
-            for (IExtension extension : extensions) {
-                // Get the configuration elements of each extension
-                IConfigurationElement[] configElements = extension.getConfigurationElements();
-                for (IConfigurationElement element : configElements) {
-
-                    if (element.getName().equals("converter")) { //$NON-NLS-1$
-
-                        fromId = element.getAttribute("fromId"); //$NON-NLS-1$
-                        toId = element.getAttribute("toId"); //$NON-NLS-1$
-                        // Check whether the current converter can be used for
-                        // the selected tool
-
-//                        if (fromId.equals(getSuperClass().getId()) && toId.equals(convertToId)) {
-//                            // If it matches
-//                            String mbsVersion = element.getAttribute("mbsVersion"); //$NON-NLS-1$
-//                            Version currentMbsVersion = ManagedBuildManager.getBuildInfoVersion();
-//
-//                            // set the converter element based on the MbsVersion
-//                            if (currentMbsVersion.compareTo(new Version(mbsVersion)) > 0) {
-//                                previousMbsVersionConversionElement = element;
-//                            } else {
-//                                currentMbsVersionConversionElement = element;
-//                            }
-//                            return;
-//                        }
-                    }
-                }
-            }
-        }
-
-        // If control comes here, it means 'Tool Integrator' specified
-        // 'convertToId' attribute in toolchain definition file, but
-        // has not provided any converter.
-        // So, make the project is invalid
-
-        // It means there are no entries in the map for the given id.
-        // make the project is invalid
-        IToolChain parent = (IToolChain) getParent();
-        IConfiguration parentConfig = parent.getParent();
-        IManagedProject managedProject = parentConfig.getManagedProject();
-        if (managedProject != null) {
-            managedProject.setValid(false);
-        }
-        return;
-    }
 
     public IConfigurationElement getPreviousMbsVersionConversionElement() {
         return previousMbsVersionConversionElement;

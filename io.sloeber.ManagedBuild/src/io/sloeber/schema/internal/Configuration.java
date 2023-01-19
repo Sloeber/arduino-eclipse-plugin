@@ -74,7 +74,6 @@ public class Configuration extends BuildObject implements IConfiguration {
 
 	// Parent and children
 	private ProjectType projectType;
-	private ManagedProject managedProject;
 	private List<String> defaultLanguageSettingsProviderIds;
 
 	//private FolderInfo rootFolderInfo=null;
@@ -692,21 +691,16 @@ public class Configuration extends BuildObject implements IConfiguration {
 
 	@Override
 	public IResource getOwner() {
-		if (managedProject != null)
-			return managedProject.getOwner();
-		else {
+//		if (managedProject != null)
+//			return managedProject.getOwner();
+//		else {
 			return null; // Extension configurations don't have an "owner"
-		}
+//		}
 	}
 
 	// @Override
 	public IProjectType getProjectType() {
 		return projectType;
-	}
-
-	@Override
-	public IManagedProject getManagedProject() {
-		return (IManagedProject) managedProject;
 	}
 
 

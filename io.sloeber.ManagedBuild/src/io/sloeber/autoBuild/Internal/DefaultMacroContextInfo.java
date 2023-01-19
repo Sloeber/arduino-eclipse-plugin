@@ -159,12 +159,12 @@ public class DefaultMacroContextInfo implements IMacroContextInfo {
 			} else if (fData instanceof IBuilder) {
 				configuration = ((IBuilder) fData).getParent().getParent();
 			}
-
-			if (configuration != null) {
-				IManagedProject managedProject = configuration.getManagedProject();
-				if (managedProject != null)
-					return new DefaultMacroContextInfo(IBuildMacroProvider.CONTEXT_PROJECT, managedProject);
-			}
+//JABA removed the lines below to continue working as he saw the lines above won't work anyway :-(
+//			if (configuration != null) {
+//				IManagedProject managedProject = configuration.getManagedProject();
+//				if (managedProject != null)
+//					return new DefaultMacroContextInfo(IBuildMacroProvider.CONTEXT_PROJECT, managedProject);
+//			}
 			break;
 		case IBuildMacroProvider.CONTEXT_PROJECT:
 			if (fData instanceof IManagedProject) {

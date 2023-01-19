@@ -69,6 +69,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
@@ -83,6 +84,7 @@ import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Builder;
 import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.ManagedProject;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 
@@ -163,10 +165,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         private final IBuilder fBuilder;
         private IConsole fConsole;
 
-        CfgBuildInfo(IBuilder builder, boolean isForegound) {
+        CfgBuildInfo( IProject project,IBuilder builder, boolean isForegound) {
             this.fBuilder = builder;
             this.fCfg = builder.getParent().getParent();
-            this.fProject = this.fCfg.getOwner().getProject();
+            this.fProject = project;
             this.fBuildInfo = ManagedBuildManager.getBuildInfo(this.fProject);
         }
 
@@ -211,7 +213,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             this.project = cfg.getOwner().getProject();
             buildPaths = new IPath[allConfigs.length];
             for (int i = 0; i < buildPaths.length; i++) {
-                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], allConfigs[i].getBuilder())
+                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], project)
                         .getLocation();
             }
             String ext = cfg.getArtifactExtension();
@@ -328,7 +330,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                 new Path(".settings"), //$NON-NLS-1$
         };
 
-        OtherConfigVerifier(IBuilder builders[], IConfiguration allCfgs[]) {
+        OtherConfigVerifier(ManagedBuildInfo info, IBuilder builders[], IConfiguration allCfgs[]) {
             Set<IConfiguration> buildCfgSet = new HashSet<>();
             for (IBuilder builder : builders) {
                 buildCfgSet.add(builder.getParent().getParent());
@@ -342,8 +344,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
             List<IPath> list = new ArrayList<>(builders.length);
             //			buildFullPaths = new IPath[builders.length];
+            IProject project = info.getCProject().getProject();
             for (IBuilder builder : builders) {
-                IPath path = ManagedBuildManager.getBuildFolder(builder.getParent().getParent(), builder).getLocation();
+                IPath path = ManagedBuildManager.getBuildFolder(builder.getParent().getParent(), project).getLocation();
                 if (path != null)
                     list.add(path);
                 //				buildFullPaths[i] = ManagedBuildManager.getBuildFullPath(builders[i].getParent().getParent(), builders[i]);
@@ -481,7 +484,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return project.getReferencedProjects();
 
         int num = builders.length;
-        IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project);
+        ManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project);
         IConfiguration activeCfg = info.getDefaultConfiguration();
         IProject[] refProjects = project.getReferencedProjects();
         if (num != 0) {
@@ -509,17 +512,17 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                         IResourceDelta delta = getDelta(project);
                         if (delta != null && delta.getAffectedChildren().length > 0) { //project resource has changed within Eclipse, need to build this configuration
                             isBuild.setValue(true);
-                            build(kind, new CfgBuildInfo(builders[i], isForeground),
+                            build(kind, new CfgBuildInfo(project,builders[i], isForeground),
                                     new SubProgressMonitor(monitor, 1));
                         } else if (isBuild.getValue()) { //one of its dependencies have rebuilt, need to rebuild this configuration
-                            build(kind, new CfgBuildInfo(builders[i], isForeground),
+                            build(kind, new CfgBuildInfo(project,builders[i], isForeground),
                                     new SubProgressMonitor(monitor, 1));
                         }
                     } else { //the default behaviour: 'make' is invoked on all configurations and incremental build is handled by 'make'
-                        build(kind, new CfgBuildInfo(builders[i], isForeground), new SubProgressMonitor(monitor, 1));
+                        build(kind, new CfgBuildInfo(project,builders[i], isForeground), new SubProgressMonitor(monitor, 1));
                     }
                 } else { //FULL_BUILD or CLEAN
-                    build(kind, new CfgBuildInfo(builders[i], isForeground), new SubProgressMonitor(monitor, 1));
+                    build(kind, new CfgBuildInfo(project,builders[i], isForeground), new SubProgressMonitor(monitor, 1));
                 }
             }
 
@@ -673,9 +676,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return status;
     }
 
-    private void updateOtherConfigs(IManagedBuildInfo info, IBuilder builders[], int buildKind) {
+    private void updateOtherConfigs(ManagedBuildInfo info, IBuilder builders[], int buildKind) {
         IConfiguration allCfgs[] = info.getManagedProject().getConfigurations();
-        new OtherConfigVerifier(builders, allCfgs).updateOtherConfigs(
+        new OtherConfigVerifier(info,builders, allCfgs).updateOtherConfigs(
                 buildKind == FULL_BUILD ? null : getDelta(info.getManagedProject().getOwner().getProject()));
     }
 
@@ -729,6 +732,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     + " with builder " + bInfo.getBuilder().getName()); //$NON-NLS-1$
         IBuilder builder = bInfo.getBuilder();
         BuildStatus status = new BuildStatus(builder);
+        ManagedProject mProject=bInfo.getBuildInfo().getManagedProject();
 
         if (!shouldBuild(kind, builder)) {
             return;
@@ -1056,7 +1060,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         IBuilder[] builders = createBuilders(curProject, args);
         for (IBuilder builder : builders) {
-            CfgBuildInfo bInfo = new CfgBuildInfo(builder, true);
+            CfgBuildInfo bInfo = new CfgBuildInfo(curProject,builder, true);
             clean(bInfo, monitor);
         }
     }
@@ -1083,7 +1087,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                 performExternalClean(bInfo, false, monitor);
             } else {
                 boolean programmatically = true;
-                IFolder rc = ManagedBuildManager.getBuildFolder(cfg, bInfo.getBuilder());
+                IFolder rc = ManagedBuildManager.getBuildFolder(cfg, bInfo.getProject());
 
                 if (rc != null) {
 
@@ -1229,7 +1233,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         IBuilder builder = bInfo.getBuilder();
         IConfiguration configuration = bInfo.getConfiguration();
 
-        IFolder buildDir = ManagedBuildManager.getBuildFolder(configuration, builder);
+        IFolder buildDir = ManagedBuildManager.getBuildFolder(configuration, project);
         if (buildDir != null) {
 
             if (!buildDir.isAccessible()) {

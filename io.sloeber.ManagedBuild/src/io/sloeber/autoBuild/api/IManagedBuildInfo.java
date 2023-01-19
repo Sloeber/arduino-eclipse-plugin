@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IPath;
 import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.internal.ManagedProject;
 
 /**
  * There is a ManagedBuildInfo per CDT managed build project. Here are
@@ -149,7 +150,7 @@ public interface IManagedBuildInfo {
      *
      * @return IManagedProject
      */
-    public IManagedProject getManagedProject();
+    public ManagedProject getManagedProject();
 
 
 
@@ -249,7 +250,7 @@ public interface IManagedBuildInfo {
     /**
      * Sets the ManagedProject associated with this build info
      */
-    public void setManagedProject(IManagedProject project);
+    public void setManagedProject(ManagedProject project);
 
 
     /**

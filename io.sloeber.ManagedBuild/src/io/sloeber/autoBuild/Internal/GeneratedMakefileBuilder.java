@@ -223,9 +223,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
 
         OtherConfigVerifier(IConfiguration cfg) {
             config = cfg;
-            configs = cfg.getManagedProject().getConfigurations();
+            configs = cfg.getProjectType().getConfigurations();
             otherConfigs = new HashSet<Configuration>();
-            int counter = 0;
             for (IConfiguration curConfig : configs) {
                 if (curConfig != config)
                     otherConfigs.add((Configuration) curConfig);

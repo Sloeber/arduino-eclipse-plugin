@@ -107,7 +107,7 @@ public class InternalBuildRunner extends IBuildRunner {
             String toolchainName = configuration.getToolChain().getName();
             boolean isConfigurationSupported = configuration.isSupported();
 
-            IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, builder);
+            IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, project);
 
             String[] errorParsers = builder.getErrorParsers();
             ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,

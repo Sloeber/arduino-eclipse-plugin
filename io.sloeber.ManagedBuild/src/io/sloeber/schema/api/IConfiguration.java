@@ -181,13 +181,7 @@ public interface IConfiguration extends IBuildObject {
      */
     List<ITool> getFilteredTools();
 
-    /**
-     * Returns the managed-project parent of this configuration, if this is a
-     * project configuration. Otherwise, returns <code>null</code>.
-     *
-     * @return IManagedProject
-     */
-    public IManagedProject getManagedProject();
+
 
     /**
      * Returns the Eclipse project that owns the configuration.

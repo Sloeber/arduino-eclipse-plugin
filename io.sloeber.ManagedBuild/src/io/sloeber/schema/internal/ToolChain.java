@@ -642,7 +642,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
     @Override
     public IConfiguration getParent() {
-        return null;//parent.getParent();
+        return (IConfiguration)parent;
     }
 
     @Override
