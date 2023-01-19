@@ -42,18 +42,18 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
-import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IResourceConfiguration;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IResourceConfiguration;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.IBuildObject;
 
 /**
  * This class allows specifying BuildObject-specific persisted properties

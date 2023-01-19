@@ -15,7 +15,7 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import io.sloeber.autoBuild.api.IBuildMacro;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.schema.api.IConfiguration;
 
 //import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 

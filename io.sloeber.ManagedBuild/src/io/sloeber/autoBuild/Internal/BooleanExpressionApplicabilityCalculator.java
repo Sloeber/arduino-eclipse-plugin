@@ -22,20 +22,20 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFileInfo;
-import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IOutputType;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IFileInfo;
+import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptionCategory;
+import io.sloeber.schema.api.IOutputType;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.IBuildObject;
 
 public class BooleanExpressionApplicabilityCalculator implements IOptionApplicability, IOptionCategoryApplicability {
     private List<OptionEnablementExpression> fExpressions;

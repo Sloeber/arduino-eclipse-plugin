@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import io.sloeber.schema.internal.BuildObject;
+
 //import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 
 public class MatchKey<T extends BuildObject> {

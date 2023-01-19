@@ -21,9 +21,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.MultiStatus;
 
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
 
 /**
  * @since 11.0

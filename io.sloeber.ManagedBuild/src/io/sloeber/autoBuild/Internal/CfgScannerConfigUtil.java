@@ -20,10 +20,13 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.Assert;
 
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.InputType;
+import io.sloeber.schema.internal.Tool;
+import io.sloeber.schema.internal.ToolChain;
 
 public class CfgScannerConfigUtil {
 

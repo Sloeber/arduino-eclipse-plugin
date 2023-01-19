@@ -2,7 +2,8 @@ package io.sloeber.autoBuild.Internal;
 
 import java.util.List;
 
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.ResourceInfo;
 
 public class ToolChainModificationHelper {
 

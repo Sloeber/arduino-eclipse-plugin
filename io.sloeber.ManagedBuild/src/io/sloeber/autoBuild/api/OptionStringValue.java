@@ -21,6 +21,8 @@ import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.core.runtime.IConfigurationElement;
 
+import io.sloeber.schema.api.IOption;
+
 public final class OptionStringValue {
     private static final String ATTR_SRC_PATH = "srcPath"; //$NON-NLS-1$
     private static final String ATTR_SRC_ROOT_PATH = "srcRootPath"; //$NON-NLS-1$

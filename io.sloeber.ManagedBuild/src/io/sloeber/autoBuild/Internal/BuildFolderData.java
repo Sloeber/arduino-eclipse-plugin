@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IFolder;
 //import org.eclipse.cdt.managedbuilder.internal.core.FolderInfo;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IFolderInfo;
+import io.sloeber.schema.api.IFolderInfo;
 
 public class BuildFolderData extends CFolderData {
     private IFolder myFolder;

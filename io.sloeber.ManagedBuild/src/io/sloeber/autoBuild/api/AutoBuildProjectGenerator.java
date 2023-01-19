@@ -26,13 +26,16 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.core.IGenerator;
 
-import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.Internal.ManagedProject;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildNature;
 import io.sloeber.autoBuild.integration.BuildConfigurationData;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.ManagedProject;
 
 public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;

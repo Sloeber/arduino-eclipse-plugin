@@ -13,9 +13,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IOption;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.internal.IBuildObject;
 
 /**
  * This interface represents an option value handler in the managed build

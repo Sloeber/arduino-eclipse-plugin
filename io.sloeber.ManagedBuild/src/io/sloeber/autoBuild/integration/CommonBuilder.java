@@ -69,20 +69,20 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
-import io.sloeber.autoBuild.Internal.Builder;
-import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.buildProperties.PropertyManager;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.Builder;
+import io.sloeber.schema.internal.Configuration;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 

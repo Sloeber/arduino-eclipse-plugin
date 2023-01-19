@@ -17,6 +17,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 //import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 
 import io.sloeber.autoBuild.Internal.IEnvironmentBuildPathsChangeListener;
+import io.sloeber.schema.api.IConfiguration;
 
 /**
  * this interface represent the environment variable provider - the main

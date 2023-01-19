@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 
+import io.sloeber.schema.api.ITool;
+
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.

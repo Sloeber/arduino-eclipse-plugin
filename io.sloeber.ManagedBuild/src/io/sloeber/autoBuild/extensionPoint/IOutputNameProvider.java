@@ -6,9 +6,9 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.ITool;
 
 public interface IOutputNameProvider {
 	/***********

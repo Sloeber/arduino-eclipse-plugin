@@ -24,8 +24,13 @@ import org.eclipse.cdt.make.core.scannerconfig.InfoContext;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.content.IContentType;
 
-import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.IBuildObject;
 
 public final class CfgInfoContext {
     private static final String DELIMITER = ";"; //$NON-NLS-1$

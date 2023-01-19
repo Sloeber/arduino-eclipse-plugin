@@ -85,11 +85,12 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.internal.Configuration;
 
 /**
  * This is the incremental builder associated with a managed build project. It

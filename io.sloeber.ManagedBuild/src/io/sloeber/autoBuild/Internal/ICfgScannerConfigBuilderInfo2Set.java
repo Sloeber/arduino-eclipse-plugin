@@ -18,7 +18,7 @@ import java.util.Map;
 import org.eclipse.cdt.make.core.scannerconfig.IScannerConfigBuilderInfo2;
 import org.eclipse.core.runtime.CoreException;
 
-import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.schema.api.IConfiguration;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

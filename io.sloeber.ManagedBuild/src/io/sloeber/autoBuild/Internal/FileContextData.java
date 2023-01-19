@@ -19,8 +19,8 @@ package io.sloeber.autoBuild.Internal;
 //import org.eclipse.cdt.managedbuilder.macros.IOptionContextData;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IOption;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.internal.IBuildObject;
 
 /**
  * This is a trivial implementation of the IFileContextData used internaly by

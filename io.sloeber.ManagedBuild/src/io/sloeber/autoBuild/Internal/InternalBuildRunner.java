@@ -51,10 +51,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
 
 /**
  * The build runner for the internal builder.

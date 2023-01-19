@@ -21,6 +21,8 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
 
 /**
  * There is a ManagedBuildInfo per CDT managed build project. Here are

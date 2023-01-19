@@ -28,13 +28,13 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 
 import io.sloeber.autoBuild.Internal.BuildMacroProvider;
-import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.Internal.DefaultMacroContextInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IManagedProject;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.internal.Configuration;
 
 public class BuildVariablesContributor implements ICdtVariablesContributor {
 	private BuildConfigurationData fCfgData;

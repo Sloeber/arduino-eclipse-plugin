@@ -27,13 +27,15 @@ import org.eclipse.cdt.core.settings.model.util.IKindBasedInfo;
 import org.eclipse.cdt.core.settings.model.util.KindBasedStore;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.InputType;
+import io.sloeber.schema.internal.ResourceConfiguration;
 
 /**
  * This class holds the language data for managed build tool

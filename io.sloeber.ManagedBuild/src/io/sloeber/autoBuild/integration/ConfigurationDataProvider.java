@@ -14,14 +14,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
@@ -41,28 +36,21 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.core.runtime.content.IContentType;
-
-import io.sloeber.autoBuild.Internal.Builder;
 import io.sloeber.autoBuild.Internal.BuilderFactory;
 import io.sloeber.autoBuild.Internal.CfgScannerConfigInfoFactory2;
-import io.sloeber.autoBuild.Internal.Configuration;
-import io.sloeber.autoBuild.Internal.InputType;
 import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.Internal.ManagedProject;
-import io.sloeber.autoBuild.Internal.Tool;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.Builder;
+import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.ManagedProject;
 
 /**
  * The main hook ManagedBuild uses to connect to cdt.core's project model.

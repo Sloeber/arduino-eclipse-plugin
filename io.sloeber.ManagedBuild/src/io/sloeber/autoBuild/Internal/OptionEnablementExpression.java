@@ -19,13 +19,13 @@ import java.util.List;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
 
 public class OptionEnablementExpression extends AndExpression {
     public static final String NAME = "enablement"; //$NON-NLS-1$

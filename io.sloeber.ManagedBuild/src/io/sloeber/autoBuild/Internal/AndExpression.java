@@ -16,10 +16,10 @@ package io.sloeber.autoBuild.Internal;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IResourceInfo;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptionCategory;
+import io.sloeber.schema.api.IResourceInfo;
 
 public class AndExpression extends CompositeExpression {
     public static final String NAME = "and"; //$NON-NLS-1$

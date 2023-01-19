@@ -7,6 +7,8 @@ package io.sloeber.autoBuild.api;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 
+import io.sloeber.schema.api.IConfiguration;
+
 import java.util.Map;
 
 /**

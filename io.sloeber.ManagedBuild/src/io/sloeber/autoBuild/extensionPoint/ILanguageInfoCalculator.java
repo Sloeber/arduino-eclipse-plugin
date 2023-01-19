@@ -13,9 +13,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
 
 public interface ILanguageInfoCalculator {
 	String getLanguageName(IResourceInfo rcInfo, ITool tool, IInputType type);

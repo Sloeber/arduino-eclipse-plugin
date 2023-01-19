@@ -18,8 +18,8 @@ import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
-import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.extensionPoint.IBuildPathResolver;
+import io.sloeber.schema.api.ITool;
 
 public class EnvVarBuildPath implements IEnvVarBuildPath {
 

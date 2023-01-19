@@ -12,9 +12,9 @@ import java.util.Set;
 //import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.core.resources.IFile;
 
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IOutputType;
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOutputType;
+import io.sloeber.schema.api.ITool;
 
 public class MakeRules {
     private Set<MakeRule> myMakeRules = new LinkedHashSet<>();

@@ -19,14 +19,14 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IResourceConfiguration;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IResourceConfiguration;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.IBuildObject;
 
 /**
  * This is the default implementation of the IMacroContextInfo

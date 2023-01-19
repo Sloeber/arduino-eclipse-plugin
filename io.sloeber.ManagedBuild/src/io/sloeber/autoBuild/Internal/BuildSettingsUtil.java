@@ -26,14 +26,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
 
 public class BuildSettingsUtil {
     private static final int[] COMMON_SETTINGS_IDS = new int[] { IOption.INCLUDE_PATH, IOption.PREPROCESSOR_SYMBOLS,

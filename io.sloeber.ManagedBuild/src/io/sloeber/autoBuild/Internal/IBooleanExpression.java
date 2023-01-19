@@ -14,10 +14,10 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IResourceInfo;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptionCategory;
+import io.sloeber.schema.api.IResourceInfo;
 
 //import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
 //import org.eclipse.cdt.managedbuilder.core.IOption;

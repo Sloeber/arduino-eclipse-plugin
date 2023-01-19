@@ -40,10 +40,10 @@ import io.sloeber.autoBuild.Internal.SrcMakeGenerator;
 import io.sloeber.autoBuild.Internal.SubDirMakeGenerator;
 import io.sloeber.autoBuild.Internal.TopMakeFileGenerator;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
 
 /**
  * This is a specialized makefile generator that takes advantage of the

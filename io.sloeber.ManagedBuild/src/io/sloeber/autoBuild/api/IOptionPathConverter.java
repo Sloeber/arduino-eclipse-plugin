@@ -13,6 +13,9 @@ package io.sloeber.autoBuild.api;
 
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.ITool;
+
 /**
  * An IOptionPathConverter converts between tool-specific paths
  * and their platform locations

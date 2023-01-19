@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.Internal;
 
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.ITool;
 
 public class ToolListModificationInfo {
 

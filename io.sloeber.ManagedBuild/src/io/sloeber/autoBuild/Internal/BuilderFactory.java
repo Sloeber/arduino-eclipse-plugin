@@ -30,13 +30,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.CommonBuilder;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.Builder;
 
 public class BuilderFactory {
 
@@ -259,8 +260,7 @@ public class BuilderFactory {
             args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(command.getBuilderName(), null));
         }
 
-        //TODO: do we need a to check for the non-customization case ?
-        return createBuilder(cfg, args, cfg.getBuilder() != null);
+        return createBuilder(cfg, args);
     }
 
     /**
@@ -299,41 +299,40 @@ public class BuilderFactory {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
-    private static IBuilder createBuilder(IConfiguration cfg, Map<String, String> args, boolean customization) {
+    private static IBuilder createBuilder(IConfiguration cfg, Map<String, String> args) {
         IToolChain tCh = cfg.getToolChain();
         IBuilder cfgBuilder = cfg.getBuilder();
 
         Builder builder;
-        if (customization) {
-            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
-
-            //adjusting settings
-            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
-            if (tmp != null && tmp.length() == 0)
-                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
-
-            tmp = args.get(USE_DEFAULT_BUILD_CMD);
-            if (tmp != null) {
-                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
-                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
-                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
-                } else {
-                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
-                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
-                }
-            }
-            //end adjusting settings
-
-            MapStorageElement el = new BuildArgsStorageElement(args, null);
-            builder.loadFromProject(el);
-        } else {
+//        if (customization) {
+//            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
+//
+//            //adjusting settings
+//            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
+//            if (tmp != null && tmp.length() == 0)
+//                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
+//
+//            tmp = args.get(USE_DEFAULT_BUILD_CMD);
+//            if (tmp != null) {
+//                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
+//                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
+//                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
+//                } else {
+//                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
+//                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
+//                }
+//            }
+//            //end adjusting settings
+//
+//            MapStorageElement el = new BuildArgsStorageElement(args, null);
+//            builder.loadFromProject(el);
+//        } else {
             if (args.get(IBuilder.ID) == null) {
                 args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
             }
             MapStorageElement el = new BuildArgsStorageElement(args, null);
             builder = new Builder(tCh, el, ManagedBuildManager.getVersion().toString());
-        }
+//        }
 
         return builder;
     }
@@ -349,22 +348,23 @@ public class BuilderFactory {
 
             } else {
                 String type = args.get(CONTENTS);
-                if (type == null || CONTENTS_BUILDER_CUSTOMIZATION.equals(type)) {
-                    IConfiguration cfg = info.getDefaultConfiguration();
-                    IBuilder builder;
-                    if (args.size() == 0) {
-                        builder = cfg.getBuilder();
-                    } else {
-                        builder = createBuilder(cfg, args, true);
-                    }
-                    builders = new IBuilder[] { builder };
-
-                } else if (CONTENTS_BUILDER.equals(type)) {
+//                if (type == null || CONTENTS_BUILDER_CUSTOMIZATION.equals(type)) {
+//                    IConfiguration cfg = info.getDefaultConfiguration();
+//                    IBuilder builder;
+//                    if (args.size() == 0) {
+//                        builder = cfg.getBuilder();
+//                    } else {
+//                        builder = createBuilder(cfg, args, true);
+//                    }
+//                    builders = new IBuilder[] { builder };
+//
+//                } else
+                	if (CONTENTS_BUILDER.equals(type)) {
                     IConfiguration cfgs[] = configsFromMap(args, info);
                     if (cfgs.length != 0) {
                         List<IBuilder> list = new ArrayList<>(cfgs.length);
                         for (int i = 0; i < cfgs.length; i++) {
-                            IBuilder builder = createBuilder(cfgs[i], args, false);
+                            IBuilder builder = createBuilder(cfgs[i], args);
                             if (builder != null)
                                 list.add(builder);
                         }

@@ -15,7 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.schema.api.IConfiguration;
 
 public class SrcMakeGenerator {
 

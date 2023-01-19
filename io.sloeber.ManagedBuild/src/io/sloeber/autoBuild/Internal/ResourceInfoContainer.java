@@ -24,9 +24,9 @@ import org.eclipse.cdt.core.settings.model.util.PathSettingsContainer;
 //import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IFileInfo;
-import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IResourceInfo;
+import io.sloeber.schema.api.IFileInfo;
+import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IResourceInfo;
 
 public class ResourceInfoContainer {
     private PathSettingsContainer fRcDataContainer;

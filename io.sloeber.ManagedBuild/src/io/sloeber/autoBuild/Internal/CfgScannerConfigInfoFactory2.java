@@ -32,14 +32,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.QualifiedName;
 
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFileInfo;
-import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.BuildConfigurationData;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IFileInfo;
+import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.Configuration;
 
 public class CfgScannerConfigInfoFactory2 {
     private static final QualifiedName CONTAINER_INFO_PROPERTY = new QualifiedName(Activator.getId(),

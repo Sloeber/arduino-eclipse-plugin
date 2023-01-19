@@ -19,7 +19,8 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 //import org.eclipse.cdt.managedbuilder.internal.core.ResourceConfiguration;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IFileInfo;
+import io.sloeber.schema.api.IFileInfo;
+import io.sloeber.schema.internal.ResourceConfiguration;
 
 public class BuildFileData extends CFileData {
     private ResourceConfiguration fFileInfo;

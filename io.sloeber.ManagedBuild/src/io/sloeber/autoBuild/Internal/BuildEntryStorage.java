@@ -56,11 +56,12 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.Option;
 
 /**
  * BuildEntryStorage has a handle back to the BuildLanguageData

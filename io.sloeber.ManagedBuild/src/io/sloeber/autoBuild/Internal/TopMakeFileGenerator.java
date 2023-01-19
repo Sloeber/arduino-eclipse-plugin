@@ -30,11 +30,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IOutputType;
-import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOutputType;
+import io.sloeber.schema.api.ITool;
 
 public class TopMakeFileGenerator {
 	private MakefileGenerator caller = null;

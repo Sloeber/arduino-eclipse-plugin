@@ -14,7 +14,7 @@
 
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.autoBuild.api.IOption;
+import io.sloeber.schema.api.IOption;
 
 /**
  * This interface can be implemented by clients to contribute custom defaultValue-generator for a

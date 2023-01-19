@@ -43,12 +43,12 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.IOutputType;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IOutputType;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 
 @SuppressWarnings("nls")

@@ -15,6 +15,8 @@ package io.sloeber.autoBuild.Internal;
 
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 
+import io.sloeber.schema.internal.TargetPlatform;
+
 public class BuildTargetPlatformData extends CTargetPlatformData {
     private TargetPlatform fTargetPlatform;
 

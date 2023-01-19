@@ -31,11 +31,13 @@ import org.eclipse.core.runtime.IPath;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.ResourceInfo;
 
 /**
  * This class holds a number of IResourceInfo objects

@@ -67,18 +67,18 @@ import org.eclipse.core.runtime.Path;
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
-import io.sloeber.autoBuild.api.IResourceConfiguration;
-import io.sloeber.autoBuild.api.ITool;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IResourceConfiguration;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.IBuildObject;
 
 /**
  * Concrete IManagedBuildInfo storing runtime ManagedProject metadata with

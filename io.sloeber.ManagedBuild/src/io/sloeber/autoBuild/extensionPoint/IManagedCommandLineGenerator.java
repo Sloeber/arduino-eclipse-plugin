@@ -14,7 +14,7 @@
 package io.sloeber.autoBuild.extensionPoint;
 
 import io.sloeber.autoBuild.api.IManagedCommandLineInfo;
-import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.schema.api.ITool;
 
 public interface IManagedCommandLineGenerator {
 	public IManagedCommandLineInfo generateCommandLineInfo(ITool tool, String commandName, String[] flags,

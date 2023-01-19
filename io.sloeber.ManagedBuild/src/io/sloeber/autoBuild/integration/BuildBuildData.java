@@ -24,12 +24,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.Internal.BuildEnvironmentContributor;
-import io.sloeber.autoBuild.Internal.Builder;
 import io.sloeber.autoBuild.Internal.BuilderFactory;
-import io.sloeber.autoBuild.Internal.Configuration;
-import io.sloeber.autoBuild.api.IBuilder;
-import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.Builder;
+import io.sloeber.schema.internal.Configuration;
 
 public class BuildBuildData extends CBuildData {
     private Builder fBuilder;

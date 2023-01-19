@@ -18,11 +18,11 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 
-import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.integration.BuildBuildData;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IProjectType;
 
 public class BuildEnvironmentContributor implements IEnvironmentContributor {
 	private BuildBuildData fBuildData;
