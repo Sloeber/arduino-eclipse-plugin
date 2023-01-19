@@ -27,16 +27,18 @@ import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.Internal.BuildBuildData;
 import io.sloeber.autoBuild.Internal.BuildFileData;
 import io.sloeber.autoBuild.Internal.BuildFolderData;
 import io.sloeber.autoBuild.Internal.BuildLanguageData;
 import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.autoBuild.Internal.Configuration;
+import io.sloeber.autoBuild.Internal.FolderInfo;
+import io.sloeber.autoBuild.Internal.ICfgScannerConfigBuilderInfo2Set;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.Internal.TargetPlatform;
 import io.sloeber.autoBuild.api.IBuilder;
@@ -52,11 +54,15 @@ import io.sloeber.autoBuild.core.Activator;
 public class BuildConfigurationData extends CConfigurationData {
     private Configuration fCfg;
     private IProject myProject;
+    private ICfgScannerConfigBuilderInfo2Set cfgScannerInfo;
+    private CFolderData myFolderData;
+
 
     //	private BuildVariablesContributor fCdtVars;
-    public BuildConfigurationData(IConfiguration cfg, IProject project) {
-        fCfg = (Configuration) cfg;
+    public BuildConfigurationData(Configuration cfg, IProject project) {
+        fCfg =  cfg;
         myProject=project;
+        myFolderData=new BuildFolderData(myProject.getFolder("test"));
     }
 
     public IConfiguration getConfiguration() {
@@ -77,7 +83,7 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public CFolderData getRootFolderData() {
-        return null;//fCfg.getRootFolderInfo().getFolderData();
+        return myFolderData;
     }
 
 
@@ -96,7 +102,7 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public boolean isValid() {
-        return fCfg != null;
+        return (fCfg != null)&&(myProject!=null);
     }
 
     @Override
@@ -112,7 +118,7 @@ public class BuildConfigurationData extends CConfigurationData {
     @Override
     public CBuildData getBuildData() {
 
-    	return new BuildBuildData(fCfg);
+    	return new BuildBuildData(fCfg,myProject);
     }
 
     @Override
@@ -121,14 +127,7 @@ public class BuildConfigurationData extends CConfigurationData {
     }
 
     void clearCachedData() {
-        fCfg.clearCachedData();
-        CResourceData[] datas = getResourceDatas();
-        CResourceData data;
-        //		BuildLanguageData lData;
-        //		BuildLanguageData[] lDatas;
-
-        for (int i = 0; i < datas.length; i++) {
-            data = datas[i];
+        for (CResourceData data:  getResourceDatas()) {
             if (data.getType() == ICSettingBase.SETTING_FOLDER) {
                 ((BuildFolderData) data).clearCachedData();
             } else {
@@ -208,6 +207,15 @@ public class BuildConfigurationData extends CConfigurationData {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public ICfgScannerConfigBuilderInfo2Set getCfgScannerConfigInfo() {
+		return cfgScannerInfo;
+	}
+
+	public void setCfgScannerConfigInfo(ICfgScannerConfigBuilderInfo2Set info) {
+		cfgScannerInfo = info;
+	}
+
 	
 //  @Override
 //  public CFileData createFileData(IPath path, CFileData base) throws CoreException {

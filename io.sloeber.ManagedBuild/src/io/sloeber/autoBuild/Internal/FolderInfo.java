@@ -52,76 +52,71 @@ import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 
-public class FolderInfo implements IFolderInfo {
+public class FolderInfo extends BuildObject implements IFolderInfo {
+	private BuildFolderData myBuildFolderData;
+	private String id;
+	private String name;
+	private Configuration myParent;
+	private boolean myIsExcluded;
+	
+	String[] modelResourcePath;
+	String[] modelExclude;
 
+	public FolderInfo(IConfiguration parent, IExtensionPoint root, IConfigurationElement element) {
 
+		myParent = (Configuration) parent;
+		
+		loadNameAndID(root, element);
 
-    public FolderInfo(IConfiguration parent, IExtensionPoint root, IConfigurationElement element, boolean hasBody) {
+		modelResourcePath = getAttributes(RESOURCEPATH);
+		modelExclude = getAttributes(EXCLUDE);
+		
+		
+		
+//		IConfigurationElement tcEl = null;
+//		if (!hasBody) {
+//			// setPath(Path.ROOT);
+//			id = (ManagedBuildManager.calculateChildId(parent.getId(), null));
+//			name = ("/"); //$NON-NLS-1$
+//			tcEl = element;
+//		} else {
+//			IConfigurationElement children[] = element.getChildren(IToolChain.TOOL_CHAIN_ELEMENT_NAME);
+//			if (children.length > 0)
+//				tcEl = children[0];
+//		}
 
-//        isExtensionElement = true;
-//        IConfigurationElement tcEl = null;
-//        if (!hasBody) {
-//            //setPath(Path.ROOT);
-//            id = (ManagedBuildManager.calculateChildId(parent.getId(), null));
-//            name = ("/"); //$NON-NLS-1$
-//            tcEl = element;
-//        } else {
-//            IConfigurationElement children[] = element.getChildren(IToolChain.TOOL_CHAIN_ELEMENT_NAME);
-//            if (children.length > 0)
-//                tcEl = children[0];
-//        }
-//
 //        if (tcEl != null)
 //            toolChain = new ToolChain(this, root, tcEl);
 
-    }
-
-
+	}
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return id;
 	}
-
-
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
-
-
 
 	@Override
 	public boolean isExcluded(IFile file) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-
-
 	public Configuration getConfiguration() {
-		// TODO Auto-generated method stub
-		return null;
+		return myParent;
 	}
-
-
 
 	public ToolChain getToolChain() {
-		// TODO Auto-generated method stub
-		return null;
+		return (ToolChain) myParent.getToolChain();
 	}
-
-
 
 	public IPath getPath() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
 
 //    private boolean conflictsWithRootTools(ITool tool) {
 //        IFolderInfo rf = getParent().getRootFolderInfo();
@@ -248,9 +243,9 @@ public class FolderInfo implements IFolderInfo {
 //    }
 
 //    @Override
-//    public CFolderData getFolderData() {
-//        return (CFolderData) getResourceData();
-//    }
+	public CFolderData getFolderData() {
+		return myBuildFolderData;
+	}
 //
 //    @Override
 //    public CLanguageData[] getCLanguageDatas() {
@@ -392,11 +387,11 @@ public class FolderInfo implements IFolderInfo {
 //        //		return true;
 //    }
 
-    //    void setUpdatedToolChain(ToolChain tch) {
-    //        tch.copyNonoverriddenSettings(toolChain);
-    //        toolChain = tch;
-    //        tch.updateParentFolderInfo(this);
-    //    }
+	// void setUpdatedToolChain(ToolChain tch) {
+	// tch.copyNonoverriddenSettings(toolChain);
+	// toolChain = tch;
+	// tch.updateParentFolderInfo(this);
+	// }
 
 //    private String[] getConflictingInputExts(ITool tool1, ITool tool2) {
 //        IProject project = getParent().getOwner().getProject();
@@ -411,33 +406,7 @@ public class FolderInfo implements IFolderInfo {
 //        return result.toArray(new String[result.size()]);
 //    }
 
-
-
-
 }
-
-//public FolderInfo(IConfiguration parent, ICStorageElement element, String managedBuildRevision, boolean hasBody) {
-//super(parent, element, hasBody);
-//
-//        isExtensionElement = false;
-//        setResourceData(new BuildFolderData(this));
-//        ICStorageElement tcEl = null;
-//        if (!hasBody) {
-//            setPath(Path.ROOT);
-//            id = (ManagedBuildManager.calculateChildId(parent.getId(), null));
-//            name = ("/"); //$NON-NLS-1$
-//            tcEl = element;
-//        } else {
-//            ICStorageElement nodes[] = element.getChildren();
-//            for (ICStorageElement node : nodes) {
-//                if (IToolChain.TOOL_CHAIN_ELEMENT_NAME.equals(node.getName()))
-//                    tcEl = node;
-//            }
-//        }
-//
-//        if (tcEl != null)
-//            toolChain = new ToolChain(this, tcEl, managedBuildRevision);
-//}
 
 ///*
 //* TODO public FolderInfo(FolderInfo base, IPath path, String id, String name) {

@@ -2203,7 +2203,7 @@ The way the value is specified and treated depends on the value of the isRegex a
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="exclude" type="boolean">
+         <attribute name="exclude" type="boolean" use="default" value="false">
             <annotation>
                <documentation>
                   Specifies whether the resource is excluded from building in the parent configuration.  The default is false.  The resourceConfiguration element retains its tool children, if any exist, even when excluded from the build.

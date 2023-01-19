@@ -212,13 +212,13 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 					((ILanguageSettingsProvidersKeeper) cfgDescription).setLanguageSettingProviders(providers);
 				}
 			}
-
-			try {
-				CfgScannerConfigInfoFactory2.save(appliedCfgData, cfgDescription.getProjectDescription(),
-						baseCfgDescription.getProjectDescription(), !isPersistedCfg(cfgDescription));
-			} catch (CoreException e) {
-				Activator.log(e);
-			}
+//JABA disabled save
+//			try {
+//				CfgScannerConfigInfoFactory2.save(appliedCfgData, cfgDescription.getProjectDescription(),
+//						baseCfgDescription.getProjectDescription(), !isPersistedCfg(cfgDescription));
+//			} catch (CoreException e) {
+//				Activator.log(e);
+//			}
 			info.setValid(true);
 			// Update the ManagedBuildInfo in the ManagedBuildManager map. Doing this
 			// creates a barrier for subsequent

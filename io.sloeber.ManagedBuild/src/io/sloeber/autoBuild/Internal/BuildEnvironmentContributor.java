@@ -16,11 +16,13 @@ import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IProjectType;
+import io.sloeber.autoBuild.integration.BuildBuildData;
 
 public class BuildEnvironmentContributor implements IEnvironmentContributor {
 	private BuildBuildData fBuildData;
@@ -28,16 +30,17 @@ public class BuildEnvironmentContributor implements IEnvironmentContributor {
 	private ICConfigurationDescription fCfgDes;
 	IEnvironmentVariableSupplier myProjectEnvironmentVariableProvider = null;
 	IEnvironmentVariableSupplier myConfigurationEnvironmentVariableProvider = null;
-	IManagedProject myProject;
+	IProject myProject;
 
 	public BuildEnvironmentContributor(BuildBuildData buildData) {
 		fBuildData = buildData;
 
-		fCfg = fBuildData.getBuilder().getParent().getParent();
+		fCfg = fBuildData.getConfiguration();
+		myProject = fBuildData.getProject();
 		fCfgDes = ManagedBuildManager.getDescriptionForConfiguration(fCfg);
 
-		myProject = fCfg.getManagedProject();
-		IProjectType pType = myProject.getProjectType();
+		
+		IProjectType pType = fCfg.getProjectType();
 		if (pType != null) {
 			myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableSupplier();
 		}

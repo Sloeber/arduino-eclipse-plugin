@@ -15,6 +15,7 @@ package io.sloeber.autoBuild.Internal;
 
 import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
+import org.eclipse.core.resources.IFolder;
 //import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
 //import org.eclipse.cdt.managedbuilder.internal.core.FolderInfo;
 import org.eclipse.core.runtime.IPath;
@@ -22,15 +23,14 @@ import org.eclipse.core.runtime.IPath;
 import io.sloeber.autoBuild.api.IFolderInfo;
 
 public class BuildFolderData extends CFolderData {
-    private FolderInfo fFolderInfo;
+    private IFolder myFolder;
+    private String myID;
 
-    public BuildFolderData(IFolderInfo folderInfo) {
-        fFolderInfo = (FolderInfo) folderInfo;
+    public BuildFolderData(IFolder folder) {
+    	myFolder=folder;
+    	myID = Integer.toString(ManagedBuildManager.getRandomNumber());
     }
 
-    public IFolderInfo getFolderInfo() {
-        return fFolderInfo;
-    }
 
     @Override
     public CLanguageData[] getLanguageDatas() {
@@ -40,23 +40,20 @@ public class BuildFolderData extends CFolderData {
 
     @Override
     public IPath getPath() {
-        return fFolderInfo.getPath();
+        return myFolder.getFullPath();
     }
 
 
     @Override
     public String getId() {
-        return fFolderInfo.getId();
+        return myID;
     }
 
     @Override
     public String getName() {
-        return fFolderInfo.getName();
+        return myFolder.toString();
     }
 
-    public void setName(String name) {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public boolean isValid() {

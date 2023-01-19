@@ -9,7 +9,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
-
+/***
+ * JABA
+ * This is the old Sloeber stuff
+ * So should be foregotten for now
+ * @author gast1
+ *
+ */
 public class AutoBuildBuildRunner {//extends ExternalBuildRunner {
 
     //@Override

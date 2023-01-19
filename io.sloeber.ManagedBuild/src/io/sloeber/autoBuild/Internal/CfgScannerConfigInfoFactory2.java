@@ -149,9 +149,9 @@ public class CfgScannerConfigInfoFactory2 {
 
                         IScannerConfigBuilderInfo2 prefInfo = null;
                         if (!cfg.isPreference()) {
-                            IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
-                            ICfgScannerConfigBuilderInfo2Set prefContainer = create(prefCfg);
-                            prefInfo = prefContainer.getInfo(new CfgInfoContext(prefCfg));
+//                            IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
+//                            ICfgScannerConfigBuilderInfo2Set prefContainer = create(prefCfg);
+//                            prefInfo = prefContainer.getInfo(new CfgInfoContext(prefCfg));
                         }
                         if (prefInfo == null) {
                             if (id != null)
@@ -354,43 +354,43 @@ public class CfgScannerConfigInfoFactory2 {
 
     }
 
-    public static ICfgScannerConfigBuilderInfo2Set create(IConfiguration cfg) {
-        Configuration c = (Configuration) cfg;
-        ICfgScannerConfigBuilderInfo2Set container = c.getCfgScannerConfigInfo();
-        if (container == null) {
-            container = new CfgInfo(c);
-            c.setCfgScannerConfigInfo(container);
-        }
-        return container;
-    }
+//    public static ICfgScannerConfigBuilderInfo2Set create(IConfiguration cfg) {
+//        Configuration c = (Configuration) cfg;
+//        ICfgScannerConfigBuilderInfo2Set container = c.getCfgScannerConfigInfo();
+//        if (container == null) {
+//            container = new CfgInfo(c);
+//            c.setCfgScannerConfigInfo(container);
+//        }
+//        return container;
+//    }
 
     public static void save(BuildConfigurationData data, ICProjectDescription des, ICProjectDescription baseDescription,
             boolean force) throws CoreException {
-        ContainerInfo info = (ContainerInfo) des.getSessionProperty(CONTAINER_INFO_PROPERTY);
-        if (info != null) {
-            if (info.matches(baseDescription)) {
-                IScannerConfigBuilderInfo2Set baseContainer = info.fContainer;
-                baseContainer.save();
-            }
-            des.setSessionProperty(CONTAINER_INFO_PROPERTY, null);
-        } else if (force) {
-            Configuration cfg = (Configuration) data.getConfiguration();
-            CfgInfo cfgInfo = new CfgInfo(cfg);
-            cfg.setCfgScannerConfigInfo(cfgInfo);
-            cfgInfo.getInfoMap();
-            cfgInfo.getContainer().save();
-            des.setSessionProperty(CONTAINER_INFO_PROPERTY, null);
-        }
+//        ContainerInfo info = (ContainerInfo) des.getSessionProperty(CONTAINER_INFO_PROPERTY);
+//        if (info != null) {
+//            if (info.matches(baseDescription)) {
+//                IScannerConfigBuilderInfo2Set baseContainer = info.fContainer;
+//                baseContainer.save();
+//            }
+//            des.setSessionProperty(CONTAINER_INFO_PROPERTY, null);
+//        } else if (force) {
+//            Configuration cfg = (Configuration) data.getConfiguration();
+//            CfgInfo cfgInfo = new CfgInfo(cfg);
+//            cfg.setCfgScannerConfigInfo(cfgInfo);
+//            cfgInfo.getInfoMap();
+//            cfgInfo.getContainer().save();
+//            des.setSessionProperty(CONTAINER_INFO_PROPERTY, null);
+//        }
     }
 
     public static void savePreference(IConfiguration cfg) throws CoreException {
-        ICfgScannerConfigBuilderInfo2Set container = ((Configuration) cfg).getCfgScannerConfigInfo();
-        if (container != null) {
-            IScannerConfigBuilderInfo2Set baseContainer = ((CfgInfo) container).getContainer();
-            if (baseContainer != null) {
-                baseContainer.save();
-            }
-        }
+//        ICfgScannerConfigBuilderInfo2Set container = ((Configuration) cfg).getCfgScannerConfigInfo();
+//        if (container != null) {
+//            IScannerConfigBuilderInfo2Set baseContainer = ((CfgInfo) container).getContainer();
+//            if (baseContainer != null) {
+//                baseContainer.save();
+//            }
+//        }
     }
 
 

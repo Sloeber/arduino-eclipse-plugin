@@ -77,6 +77,7 @@ import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
+import io.sloeber.autoBuild.integration.BuildBuildData;
 
 public class Builder extends HoldsOptions implements IBuilder {
     public static final int UNLIMITED_JOBS = Integer.MAX_VALUE;

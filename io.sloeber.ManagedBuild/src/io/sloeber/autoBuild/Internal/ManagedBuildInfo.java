@@ -247,7 +247,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         IConfiguration activeCfg = null;
         if (des != null) {
             ICConfigurationDescription cfgDes = des.getActiveConfiguration();
-            activeCfg = managedProject.getConfiguration(cfgDes.getId());
+            activeCfg = managedProject.getConfiguration(cfgDes.getName());
         }
 
         return activeCfg;

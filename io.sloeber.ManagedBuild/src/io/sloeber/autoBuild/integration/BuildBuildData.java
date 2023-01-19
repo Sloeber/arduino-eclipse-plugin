@@ -12,16 +12,21 @@
  * Intel Corporation - Initial API and implementation
  * Baltasar Belyavsky (Texas Instruments) - bug 340219: Project metadata files are saved unnecessarily
  *******************************************************************************/
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.integration;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import io.sloeber.autoBuild.Internal.BuildEnvironmentContributor;
+import io.sloeber.autoBuild.Internal.Builder;
+import io.sloeber.autoBuild.Internal.BuilderFactory;
+import io.sloeber.autoBuild.Internal.Configuration;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
@@ -29,17 +34,28 @@ import io.sloeber.autoBuild.core.Activator;
 public class BuildBuildData extends CBuildData {
     private Builder fBuilder;
     private Configuration fCfg;
+    private IProject myProject;
 
-    public BuildBuildData(Configuration fCfg2) {
+    public BuildBuildData(Configuration fCfg2, IProject project) {
     	 fCfg = fCfg2;
     	IToolChain toolchain=fCfg.getToolChain();
         fBuilder = (Builder) toolchain.getBuilder();
+        myProject=project;
        
+    }
+    
+    public Configuration getConfiguration() {
+    	return fCfg;
+    }
+    
+    public IProject getProject() {
+    	return myProject;
     }
 
     @Override
     public IPath getBuilderCWD() {
-        return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
+    	return fCfg.getBuildFolder(myProject).getLocation();
+       // return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
     }
 
     //	private IPath createAbsolutePathFromWorkspacePath(IPath path){

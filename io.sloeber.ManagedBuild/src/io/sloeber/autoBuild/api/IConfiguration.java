@@ -25,6 +25,8 @@ import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 //import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 //import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
@@ -202,22 +204,6 @@ public interface IConfiguration extends IBuildObject {
      */
     public IProjectType getProjectType();
 
-//    /**
-//     * @param path
-//     *            - path of the resource
-//     *
-//     * @return the resource configuration child of this configuration
-//     *         that is associated with the project resource, or <code>null</code> if
-//     *         none.
-//     */
-//    public IResourceConfiguration getResourceConfiguration(String path);
-
-//    /**
-//     * Returns the resource configuration children of this configuration.
-//     *
-//     * @return IResourceConfigurations[]
-//     */
-//    public List<IResourceConfiguration> getResourceConfigurations();
 
     /**
      * Returns the <code>ITool</code> in this configuration's tool-chain with
@@ -336,7 +322,7 @@ public interface IConfiguration extends IBuildObject {
 
 //    IResourceInfo getResourceInfoById(String id);
 
-    IFolderInfo getRootFolderInfo();
+//    IFolderInfo getRootFolderInfo();
 
     CConfigurationData getConfigurationData();
 
@@ -345,6 +331,8 @@ public interface IConfiguration extends IBuildObject {
     CBuildData getBuildData();
 
     IBuilder getBuilder();
+    
+    IFolder getBuildFolder(IProject project);
 
 
     boolean supportsBuild(boolean managed);

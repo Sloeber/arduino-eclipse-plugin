@@ -335,50 +335,26 @@
         <folderInfo
               exclude="true"
               resourcePath="libraries/?*/**/?xamples/**">
-           <toolChain
-                 id="io.sloeber.core.toolChain1"
-                 isAbstract="false">
-           </toolChain>
         </folderInfo>
         <folderInfo
               exclude="true"
               resourcePath="libraries/?*/**/?xtras/**">
-           <toolChain
-                 id="io.sloeber.core.toolChain2"
-                 isAbstract="false">
-           </toolChain>
         </folderInfo>
         <folderInfo
               exclude="true"
               resourcePath="libraries/?*/**/test*/**">
-           <toolChain
-                 id="io.sloeber.core.toolChain3"
-                 isAbstract="false">
-           </toolChain>
         </folderInfo>
         <folderInfo
               exclude="true"
               resourcePath="libraries/?*/**/third-party/**">
-           <toolChain
-                 id="io.sloeber.core.toolChain4"
-                 isAbstract="false">
-           </toolChain>
         </folderInfo>
         <folderInfo
               exclude="true"
               resourcePath="libraries/**/._*">
-           <toolChain
-                 id="io.sloeber.core.toolChain5"
-                 isAbstract="false">
-           </toolChain>
         </folderInfo>
         <folderInfo
               exclude="true"
               resourcePath="libraries/?*/utility/*/*">
-           <toolChain
-                 id="io.sloeber.core.toolChain6"
-                 isAbstract="false">
-           </toolChain>
         </folderInfo>
      </configuration>
   </projectType>

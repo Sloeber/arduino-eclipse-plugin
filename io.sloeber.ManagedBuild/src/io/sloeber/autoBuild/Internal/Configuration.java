@@ -29,6 +29,7 @@ import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -74,10 +75,10 @@ public class Configuration extends BuildObject implements IConfiguration {
 	private ManagedProject managedProject;
 	private List<String> defaultLanguageSettingsProviderIds;
 
-	private FolderInfo rootFolderInfo=null;
+	//private FolderInfo rootFolderInfo=null;
 	private BuildConfigurationData fCfgData;
 	private ICConfigurationDescription fCfgDes;
-	private ICfgScannerConfigBuilderInfo2Set cfgScannerInfo;
+	
 	private boolean isPreferenceConfig;
 	private String[] myErrorParserIDs;
 
@@ -118,8 +119,7 @@ public class Configuration extends BuildObject implements IConfiguration {
 				break;
 			}
 			case IFolderInfo.FOLDER_INFO_ELEMENT_NAME:{
-				assert (rootFolderInfo==null);
-				myFolderInfo.add( new FolderInfo(this, root, configElement, true));
+				myFolderInfo.add( new FolderInfo(this, root, configElement));
 				break;
 			}
 			}
@@ -935,12 +935,6 @@ public class Configuration extends BuildObject implements IConfiguration {
 
 
 	@Override
-	public IFolderInfo getRootFolderInfo() {
-		return rootFolderInfo;
-	}
-
-
-	@Override
 	public CConfigurationData getConfigurationData() {
 		return fCfgData;
 	}
@@ -1046,28 +1040,18 @@ public class Configuration extends BuildObject implements IConfiguration {
 
 
 	public boolean isPerRcTypeDiscovery() {
-		ToolChain tc = (ToolChain) getRootFolderInfo().getToolChain();
+		ToolChain tc =(ToolChain) getToolChain();
 		return tc.isPerRcTypeDiscovery();
 	}
 
 
 
 	public String getDiscoveryProfileId() {
-		ToolChain tc = (ToolChain) getRootFolderInfo().getToolChain();
+		ToolChain tc = (ToolChain) getToolChain();
 		return tc.getScannerConfigDiscoveryProfileId();
 	}
 
-	public ICfgScannerConfigBuilderInfo2Set getCfgScannerConfigInfo() {
-		return cfgScannerInfo;
-	}
 
-	public void setCfgScannerConfigInfo(ICfgScannerConfigBuilderInfo2Set info) {
-		cfgScannerInfo = info;
-	}
-
-	public void clearCachedData() {
-		cfgScannerInfo = null;
-	}
 
 	public boolean isPreference() {
 		return isPreferenceConfig;
@@ -1091,6 +1075,11 @@ public class Configuration extends BuildObject implements IConfiguration {
 	@Override
 	public String getPostannouncebuildStep() {
 		return modelpostannouncebuildStep[SUPER];
+	}
+
+	@Override
+	public IFolder getBuildFolder(IProject project) {
+		return project.getFolder(name);
 	}
 
 }
