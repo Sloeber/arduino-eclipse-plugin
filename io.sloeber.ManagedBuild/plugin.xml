@@ -36,6 +36,7 @@
         macroOutputFileExtValue="$(suffix $(notdir $@)"
         macroOutputFileNameValue="$(notdir $@)"
         macroOutputFileRelPathValue="$@"
+        makefileGenerator="io.sloeber.autoBuild.extensionPoint.MakefileGenerator"
         name="%toolchain.builder.name"
         parallelBuildCmd="-j*"
         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"

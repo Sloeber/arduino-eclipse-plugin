@@ -114,7 +114,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         rebuildNeeded = true;
     }
 
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#setManagedProject(IManagedProject)
      */
@@ -243,13 +242,13 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     }
 
     private IConfiguration findExistingDefaultConfiguration(ICProjectDescription in_des) {
-    	ICProjectDescription des=in_des;
+        ICProjectDescription des = in_des;
         if (des == null)
             des = CoreModel.getDefault().getProjectDescription(getOwner().getProject(), false);
         IConfiguration activeCfg = null;
         if (des != null) {
             ICConfigurationDescription cfgDes = des.getActiveConfiguration();
-            activeCfg =managedProject.getProjectType().getConfiguration(cfgDes.getName());
+            activeCfg = managedProject.getProjectType().getConfiguration(cfgDes.getName());
             //activeCfg = managedProject.getConfiguration(cfgDes.getName());
         }
 
@@ -334,8 +333,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         ArrayList<String> paths = getIncludePathEntries();
         return paths.toArray(new String[paths.size()]);
     }
-
-
 
     private HashMap<String, String> getMacroPathEntries() {
         HashMap<String, String> macros = new HashMap<>();
@@ -432,8 +429,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return name;
     }
 
-
-
     /**
      * @return IResource owner
      */
@@ -441,27 +436,22 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return owner;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolForConfiguration(java.lang.String)
-     */
-    @Override
-    public String getToolForConfiguration(String extension) {
-        // Treat a null argument as an empty string
-        String ext = extension == null ? "" : extension; //$NON-NLS-1$
-        // Get all the tools for the current config
-        List<ITool> tools = getFilteredTools();
-        for (ITool tool: tools) {
-            if (tool.producesFileType(ext)) {
-                return tool.getToolCommand();
-            }
-        }
-        return null;
-    }
-
-
-
-
-
+    //    /* (non-Javadoc)
+    //     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolForConfiguration(java.lang.String)
+    //     */
+    //    @Override
+    //    public String getToolForConfiguration(String extension) {
+    //        // Treat a null argument as an empty string
+    //        String ext = extension == null ? "" : extension; //$NON-NLS-1$
+    //        // Get all the tools for the current config
+    //        List<ITool> tools = getFilteredTools();
+    //        for (ITool tool : tools) {
+    //            if (tool.producesFileType(ext)) {
+    //                return tool.getToolCommand();
+    //            }
+    //        }
+    //        return null;
+    //    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getVersion()
@@ -519,9 +509,9 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         if (rebuildNeeded)
             return true;
 
-//        if (getDefaultConfiguration() != null) {
-//            return getDefaultConfiguration().needsRebuild();
-//        }
+        //        if (getDefaultConfiguration() != null) {
+        //            return getDefaultConfiguration().needsRebuild();
+        //        }
         return false;
     }
 
@@ -625,9 +615,9 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     public void setRebuildState(boolean rebuild) {
         // TODO:  Is the appropriate?  Should the rebuild state be stored in the project file?
         // and in the managed project
-//        if (getDefaultConfiguration() != null) {
-//            getDefaultConfiguration().setRebuildState(rebuild);
-//        }
+        //        if (getDefaultConfiguration() != null) {
+        //            getDefaultConfiguration().setRebuildState(rebuild);
+        //        }
         // Reset the status here
         rebuildNeeded = rebuild;
     }
@@ -710,12 +700,12 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
                             if (obj instanceof OptionContextData) {
                                 OptionContextData optionContext = (OptionContextData) obj;
                                 IBuildObject buildObject = optionContext.getParent();
-                                IOptionPathConverter optionPathConverter = getPathConverter(buildObject);
-                                if (null != optionPathConverter) {
-                                    IPath platformPath = optionPathConverter.convertToPlatformLocation(paths[i], null,
-                                            null);
-                                    paths[i] = platformPath.toOSString();
-                                }
+                                //                                IOptionPathConverter optionPathConverter = getPathConverter(buildObject);
+                                //                                if (null != optionPathConverter) {
+                                //                                    IPath platformPath = optionPathConverter.convertToPlatformLocation(paths[i], null,
+                                //                                            null);
+                                //                                    paths[i] = platformPath.toOSString();
+                                //                                }
                             }
                             list.add(checkPath(paths[i]));
                         }
@@ -729,14 +719,14 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return list;
     }
 
-    private IOptionPathConverter getPathConverter(IBuildObject buildObject) {
-        IOptionPathConverter converter = null;
-        if (buildObject instanceof ITool) {
-            ITool tool = (ITool) buildObject;
-            converter = tool.getOptionPathConverter();
-        }
-        return converter;
-    }
+    //    private IOptionPathConverter getPathConverter(IBuildObject buildObject) {
+    //        IOptionPathConverter converter = null;
+    //        if (buildObject instanceof ITool) {
+    //            ITool tool = (ITool) buildObject;
+    //            converter = tool.getOptionPathConverter();
+    //        }
+    //        return converter;
+    //    }
 
     private String checkPath(String p) {
         final String QUOTE = "\""; //$NON-NLS-1$
@@ -889,7 +879,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      */
     private List<IPathEntry> readToolsOptions(int entryType, List<IPathEntry> entries, boolean builtIns,
             IBuildObject obj) {
-       List< ITool> t = null;
+        List<ITool> t = null;
         IPath resPath = Path.EMPTY;
 
         // check that entryType is correct
@@ -919,13 +909,12 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
 
         // process all tools and all their options
         for (ITool i : t) {
-        	List< IOption> options = i.getOptions();
-            for (IOption op: options) {
+            List<IOption> options = i.getOptions();
+            for (IOption op : options) {
 
                 // check to see if the option has an applicability calculator
                 IOptionApplicability applicabilityCalculator = op.getApplicabilityCalculator();
-                if (applicabilityCalculator != null
-                        && !applicabilityCalculator.isOptionUsedInCommandLine(obj, i, op))
+                if (applicabilityCalculator != null && !applicabilityCalculator.isOptionUsedInCommandLine(obj, i, op))
                     continue;
 
                 try {
@@ -937,8 +926,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
                         OptionContextData ocd = new OptionContextData(op, i);
                         addLibraries(entries, builtIns ? op.getBuiltIns() : op.getLibraries(), resPath,
                                 IBuildMacroProvider.CONTEXT_OPTION, ocd);
-                    } else if (entryType == IPathEntry.CDT_MACRO
-                            && op.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
+                    } else if (entryType == IPathEntry.CDT_MACRO && op.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
                         OptionContextData ocd = new OptionContextData(op, i);
                         addSymbols(entries, builtIns ? op.getBuiltIns() : op.getDefinedSymbols(), resPath,
                                 IBuildMacroProvider.CONTEXT_OPTION, ocd);

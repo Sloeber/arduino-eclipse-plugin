@@ -43,12 +43,15 @@ public abstract class BuildObject implements IBuildObject {
         id = element.getAttribute(ID);
         name = element.getAttribute(NAME);
         mySuperClassID = element.getAttribute(SUPERCLASS);
-        myConfigurationSuperClassElement = getSuperClassConfigurationElement();
-//        if (myConfigurationSuperClassElement == null) {
-//            ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-//                    mySuperClassID, "option", //$NON-NLS-1$
-//                    getId());
-//        }
+        if (mySuperClassID != null) {
+            myConfigurationSuperClassElement = getSuperClassConfigurationElement(element.getName(), mySuperClassID,
+                    root);
+        }
+        //        if (myConfigurationSuperClassElement == null) {
+        //            ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
+        //                    mySuperClassID, "option", //$NON-NLS-1$
+        //                    getId());
+        //        }
     }
 
     protected void loadNameAndID(ICStorageElement element) {
@@ -59,10 +62,10 @@ public abstract class BuildObject implements IBuildObject {
         mySuperClassID = element.getAttribute(SUPERCLASS);
         if (mySuperClassID != null && mySuperClassID.length() > 0) {
             myStorageSuperClassElement = getSuperClassSorageElement();
-//            if (myStorageSuperClassElement == null) {
-//                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
-//                        getId());
-//            }
+            //            if (myStorageSuperClassElement == null) {
+            //                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
+            //                        getId());
+            //            }
         }
     }
 
@@ -80,21 +83,22 @@ public abstract class BuildObject implements IBuildObject {
         }
         return ret;
     }
-    
-    protected Object createExecutableExtension(String attributeName) {
-    	try {
-    		if(myConfigurationElement.getAttribute(attributeName)!=null) {
-			return myConfigurationElement.createExecutableExtension(attributeName);
-    		}
-    		if(myConfigurationSuperClassElement!=null && myConfigurationSuperClassElement.getAttribute(attributeName)!=null) {
-			return myConfigurationSuperClassElement.createExecutableExtension(attributeName);
-    		}
 
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+    protected Object createExecutableExtension(String attributeName) {
+        try {
+            if (myConfigurationElement.getAttribute(attributeName) != null) {
+                return myConfigurationElement.createExecutableExtension(attributeName);
+            }
+            if (myConfigurationSuperClassElement != null
+                    && myConfigurationSuperClassElement.getAttribute(attributeName) != null) {
+                return myConfigurationSuperClassElement.createExecutableExtension(attributeName);
+            }
+
+        } catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -112,15 +116,32 @@ public abstract class BuildObject implements IBuildObject {
     public String toString() {
         if (name != null) {
             return name;
-        } else {
-            return "id=" + id;
         }
+        return "id=" + id;
     }
 
+    private IConfigurationElement getSuperClassConfigurationElement(String elementName, String id,
+            IExtensionPoint root) {
+        for (IConfigurationElement curElement : root.getConfigurationElements()) {
+            IConfigurationElement foundElement = recursiveSearchElement(elementName, id, curElement);
+            if (foundElement != null) {
+                return foundElement;
+            }
+        }
+        return null;
+    }
 
-
-    private IConfigurationElement getSuperClassConfigurationElement() {
-        // TODO Auto-generated method stub
+    private IConfigurationElement recursiveSearchElement(String elementName, String id, IConfigurationElement element) {
+        if (id.equals(element.getAttribute(ID)) && elementName.equals(element.getName())) {
+            int a;
+            return element;
+        }
+        for (IConfigurationElement curElement : element.getChildren()) {
+            IConfigurationElement foundElement = recursiveSearchElement(elementName, id, curElement);
+            if (foundElement != null) {
+                return foundElement;
+            }
+        }
         return null;
     }
 

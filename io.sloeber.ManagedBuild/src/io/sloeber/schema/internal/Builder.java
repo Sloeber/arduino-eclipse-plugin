@@ -154,7 +154,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     private IBuildRunner fBuildRunner = null;
     private IConfigurationElement fBuildRunnerElement = null;
     private String[] reservedMacroNames;
-    private IMakefileGenerator buildFileGeneratorElement;
+    private IMakefileGenerator myMakeFileGenerator;
 
     /*
      *  C O N S T R U C T O R S
@@ -203,7 +203,7 @@ public class Builder extends HoldsOptions implements IBuilder {
             myOptionMap.put(newOption.getName(), newOption);
         }
 
-        buildFileGeneratorElement = (IMakefileGenerator) createExecutableExtension(MAKEGEN_ID);
+        myMakeFileGenerator = (IMakefileGenerator) createExecutableExtension(MAKEGEN_ID);
 
         resolveFields();
 
@@ -982,7 +982,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public IMakefileGenerator getBuildFileGenerator() {
-        return buildFileGeneratorElement;
+        return myMakeFileGenerator;
         //return new GnuMakefileGenerator();
     }
 

@@ -13,6 +13,7 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ToolChain;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -38,36 +40,19 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface ITool extends IHoldsOptions {
+    public static final String TOOL_ELEMENT_NAME = "tool"; //$NON-NLS-1$
     // Schema element names
+    public static final String OUTPUT_FLAG = "outputFlag"; //$NON-NLS-1$
+    public static final String NATURE = "natureFilter"; //$NON-NLS-1$
     public static final String COMMAND = "command"; //$NON-NLS-1$
     public static final String COMMAND_LINE_PATTERN = "commandLinePattern"; //$NON-NLS-1$
     public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator"; //$NON-NLS-1$
-    public static final String DEP_CALC_ID = "dependencyCalculator"; //$NON-NLS-1$
-    public static final String INTERFACE_EXTS = "headerExtensions"; //$NON-NLS-1$
-    public static final String NATURE = "natureFilter"; //$NON-NLS-1$
-    public static final String OUTPUT_FLAG = "outputFlag"; //$NON-NLS-1$
-    public static final String INPUT_TYPE = "inputType"; //$NON-NLS-1$
-    public static final String OUTPUT_TYPE = "outputType"; //$NON-NLS-1$
-    public static final String OUTPUT_PREFIX = "outputPrefix"; //$NON-NLS-1$
-    public static final String OUTPUTS = "outputs"; //$NON-NLS-1$
-    public static final String SOURCES = "sources"; //$NON-NLS-1$
-    public static final String ADVANCED_INPUT_CATEGORY = "advancedInputCategory"; //$NON-NLS-1$
+    public static final String ERROR_PARSERS = ToolChain.ERROR_PARSERS;
     public static final String CUSTOM_BUILD_STEP = "customBuildStep"; //$NON-NLS-1$
     public static final String ANNOUNCEMENT = "announcement"; //$NON-NLS-1$
-    public static final String TOOL_ELEMENT_NAME = "tool"; //$NON-NLS-1$
-    public static final String WHITE_SPACE = " "; //$NON-NLS-1$
-    public static final String EMPTY_STRING = ""; //$NON-NLS-1$
-    //public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
-    /**
-     * @since 8.4
-     */
+    //public static final String ICON = IOptionCategory.ICON;
+    //  public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
     public static final String IS_HIDDEN = "isHidden"; //$NON-NLS-1$
-
-    public static final String VERSIONS_SUPPORTED = "versionsSupported"; //$NON-NLS-1$
-    public static final String CONVERT_TO_ID = "convertToId"; //$NON-NLS-1$
-    public static final String OPTIONPATHCONVERTER = "optionPathConverter"; //$NON-NLS-1$
-
-    public static final String SUPPORTS_MANAGED_BUILD = "supportsManagedBuild"; //$NON-NLS-1$
 
     public static final int FILTER_C = 0;
     public static final int FILTER_CC = 1;
@@ -81,8 +66,6 @@ public interface ITool extends IHoldsOptions {
      */
     public IBuildObject getParent();
 
-
-
     /**
      * Returns the complete list of input types that are available for this tool.
      * The list is a merging of the input types specified for this tool with the
@@ -93,7 +76,8 @@ public interface ITool extends IHoldsOptions {
      * @return IInputType[]
      * @since 3.0
      */
-    public IInputType[] getInputTypes();
+    public List<IInputType> getInputTypes();
+
     public IInputType getInputTypeByID(String id);
 
     /**
@@ -107,7 +91,7 @@ public interface ITool extends IHoldsOptions {
      * @return <code>IInputType</code>
      * @since 3.0
      */
-    public IInputType getPrimaryInputType();
+    //    public IInputType getPrimaryInputType();
 
     /**
      * Returns all of the additional dependency resources of all InputType children.
@@ -116,10 +100,7 @@ public interface ITool extends IHoldsOptions {
      *
      * @return IPath[]
      */
-    public IPath[] getAdditionalDependencies();
-
-
-
+    //    public IPath[] getAdditionalDependencies();
 
     /**
      * Returns the complete list of output types that are available for this tool.
@@ -131,7 +112,7 @@ public interface ITool extends IHoldsOptions {
      * @return IOutputType[]
      * @since 3.0
      */
-    public IOutputType[] getOutputTypes();
+    public List<IOutputType> getOutputTypes();
 
     /**
      * Get the <code>IOutputType</code> in the receiver with the specified
@@ -149,22 +130,21 @@ public interface ITool extends IHoldsOptions {
      */
     public IOutputType getOutputTypeById(String id);
 
-    /**
-     * Returns the <code>IOutputType</code> in the tool that creates the
-     * specified extension.
-     *
-     * <p>
-     * If the receiver does not have an OutputType that creates the extension,
-     * the method returns <code>null</code>. It is the responsibility of the
-     * caller to verify the return value.
-     *
-     * @param outputExtension
-     *            File extension
-     * @return <code>IOutputType</code>
-     * @since 3.0
-     */
-    public IOutputType getOutputType(String outputExtension);
-
+    //    /**
+    //     * Returns the <code>IOutputType</code> in the tool that creates the
+    //     * specified extension.
+    //     *
+    //     * <p>
+    //     * If the receiver does not have an OutputType that creates the extension,
+    //     * the method returns <code>null</code>. It is the responsibility of the
+    //     * caller to verify the return value.
+    //     *
+    //     * @param outputExtension
+    //     *            File extension
+    //     * @return <code>IOutputType</code>
+    //     * @since 3.0
+    //     */
+    //    public IOutputType getOutputType(String outputExtension);
 
     /**
      * Returns whether this element is abstract. Returns <code>false</code>
@@ -173,8 +153,6 @@ public interface ITool extends IHoldsOptions {
      * @return boolean
      */
     public boolean isAbstract();
-
-
 
     /**
      * Returns the semicolon separated list of unique IDs of the error parsers
@@ -194,7 +172,6 @@ public interface ITool extends IHoldsOptions {
      */
     public String[] getErrorParserList();
 
-
     /**
      * Returns the array of valid primary source extensions this tool knows how to
      * build.
@@ -202,7 +179,7 @@ public interface ITool extends IHoldsOptions {
      *
      * @return String[]
      */
-    public String[] getPrimaryInputExtensions();
+    public List<String> getPrimaryInputExtensions();
 
     /**
      * Returns the array of all valid source extensions this tool knows how to
@@ -211,14 +188,14 @@ public interface ITool extends IHoldsOptions {
      *
      * @return String[]
      */
-    public String[] getAllInputExtensions();
+    //   public String[] getAllInputExtensions();
 
     /**
      * Returns the default input extension for the primary input of the tool
      *
      * @return String
      */
-    public String getDefaultInputExtension();
+    // public String getDefaultInputExtension();
 
     /**
      * Returns the array of all valid dependency extensions for this tool's inputs.
@@ -226,7 +203,7 @@ public interface ITool extends IHoldsOptions {
      *
      * @return String[]
      */
-    public String[] getAllDependencyExtensions();
+    ///  public String[] getAllDependencyExtensions();
 
     /**
      * Answers a constant corresponding to the project nature the tool should be
@@ -254,9 +231,8 @@ public interface ITool extends IHoldsOptions {
      *
      * @return <code>String[]</code> of extensions
      */
-    public String[] getOutputsAttribute();
+    //  public String[] getOutputsAttribute();
 
- 
     /**
      * Answers the argument that must be passed to a specific tool in order to
      * control the name of the output artifact. For example, the GCC compile and
@@ -267,16 +243,6 @@ public interface ITool extends IHoldsOptions {
     public String getOutputFlag();
 
     /**
-     * Returns <code>true</code> if the Tool wants the MBS to display the Advanced
-     * Input category that allows the user to specify additional input resources and
-     * dependencies, else <code>false</code>.
-     *
-     * @return boolean
-     */
-    public boolean getAdvancedInputCategory();
-
-
-    /**
      * Returns <code>true</code> if the Tool represents a user-define custom build
      * step, else <code>false</code>.
      *
@@ -284,15 +250,12 @@ public interface ITool extends IHoldsOptions {
      */
     public boolean getCustomBuildStep();
 
-
     /**
      * Returns the announcement string for this tool
      * 
      * @return String
      */
     public String getAnnouncement();
-
-
 
     /**
      * Answers the command-line invocation defined for the receiver.
@@ -308,16 +271,12 @@ public interface ITool extends IHoldsOptions {
      */
     public String getCommandLinePattern();
 
-
-
     /**
      * Returns the command line generator specified for this tool
      * 
      * @return IManagedCommandLineGenerator
      */
     public IManagedCommandLineGenerator getCommandLineGenerator();
-
-
 
     /**
      * Returns an array of command line arguments that have been specified for
@@ -350,15 +309,15 @@ public interface ITool extends IHoldsOptions {
      */
     public boolean buildsFileType(IFile file);
 
-    /**
-     * Answers <code>true</code> if the tool considers the file extension to be
-     * one associated with a header file.
-     *
-     * @param ext
-     *            file extension of the source
-     * @return boolean
-     */
-    public boolean isHeaderFile(String ext);
+    //    /**
+    //     * Answers <code>true</code> if the tool considers the file extension to be
+    //     * one associated with a header file.
+    //     *
+    //     * @param ext
+    //     *            file extension of the source
+    //     * @return boolean
+    //     */
+    //    public boolean isHeaderFile(String ext);
 
     /**
      * Answers <code>true</code> if the receiver builds a file with the extension
@@ -369,7 +328,7 @@ public interface ITool extends IHoldsOptions {
      *            extension of the file being produced by a tool
      * @return boolean
      */
-    public boolean producesFileType(String outputExtension);
+    //public boolean producesFileType(String outputExtension);
 
     /**
      * Returns <code>true</code> if this tool was loaded from a manifest file,
@@ -377,9 +336,7 @@ public interface ITool extends IHoldsOptions {
      *
      * @return boolean
      */
-    public boolean isExtensionElement();
-
-
+    // public boolean isExtensionElement();
 
     /**
      * Returns an array of the Environment Build Path variable descriptors
@@ -392,7 +349,7 @@ public interface ITool extends IHoldsOptions {
      * Returns an IOptionPathConverter implementation for this tool
      * or null, if no conversion is required
      */
-    public IOptionPathConverter getOptionPathConverter();
+    ///public IOptionPathConverter getOptionPathConverter();
 
     CLanguageData getCLanguageData(IInputType type);
 
@@ -400,15 +357,15 @@ public interface ITool extends IHoldsOptions {
 
     IInputType getInputTypeForCLanguageData(CLanguageData data);
 
-    IResourceInfo getParentResourceInfo();
+    //IResourceInfo getParentResourceInfo();
 
-    IInputType getEditableInputType(IInputType base);
+    // IInputType getEditableInputType(IInputType base);
 
-    boolean isEnabled();
+    // boolean isEnabled();
 
-    boolean supportsBuild(boolean managed);
+    // boolean supportsBuild(boolean managed);
 
-    boolean matches(ITool tool);
+    //boolean matches(ITool tool);
 
     boolean isSystemObject();
 
@@ -417,14 +374,13 @@ public interface ITool extends IHoldsOptions {
      */
     boolean isHidden();
 
-
     String getUniqueRealName();
 
     /**
      * @since 9.4
      */
-    default public String[] getExtraFlags(int optionType) {
-        return new String[0];
+    default public List<String> getExtraFlags(int optionType) {
+        return new LinkedList<>();
     }
 
     /**
@@ -442,4 +398,7 @@ public interface ITool extends IHoldsOptions {
      * @return
      */
     public List<IInputType> getMatchingInputTypes(IFile file, String macroName);
+
+    //JABA TOFIX remove this later
+    public IResourceInfo getParentResourceInfo();
 }

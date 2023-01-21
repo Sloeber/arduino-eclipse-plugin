@@ -420,13 +420,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="GeneratesDependencies" type="boolean">
-            <annotation>
-               <documentation>
-                  Does this tool generate dependency files.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="errorParsers" type="string">
             <annotation>
                <documentation>
@@ -459,13 +452,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                <appinfo>
                   <meta.attribute kind="resource"/>
                </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="supportsManagedBuild" type="boolean">
-            <annotation>
-               <documentation>
-                  Specifies whether or not the tool supports Auto build. Default value is true.
-               </documentation>
             </annotation>
          </attribute>
          <attribute name="isSystem" type="boolean">
@@ -1549,10 +1535,10 @@ Default is true (leaf nodes only).
          <attribute name="makefileGenerator" type="string">
             <annotation>
                <documentation>
-                  Allows you to supply a custom build file generator that conforms to the &lt;code&gt;IManagedBuilderMakefileGenerator&lt;/code&gt; interface.
+                  Allows you to supply a custom build file generator that conforms to the &lt;code&gt;io.sloeber.autoBuild.extensionPoint.IMakefileGenerator&lt;/code&gt; interface.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IManagedBuilderMakefileGenerator2"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IMakefileGenerator"/>
                </appinfo>
             </annotation>
          </attribute>

@@ -28,7 +28,7 @@ public interface IOptionCategory extends IBuildObject {
 
     // Schema element names
     public static final String OWNER = "owner"; //$NON-NLS-1$
-    public static final String ICON = "icon"; //$NON-NLS-1$
+    // public static final String ICON = "icon"; //$NON-NLS-1$
     public static final String APPLICABILITY_CALCULATOR = "applicabilityCalculator";
 
     //	 Resource Filter type
@@ -38,14 +38,11 @@ public interface IOptionCategory extends IBuildObject {
     public static final int FILTER_PROJECT = 2;
     public static final String PROJECT = "project"; //$NON-NLS-1$
 
-
     /**
      * Returns the category that owns this category, or null if this is the
      * top category for a tool.
      */
     public IOptionCategory getOwner();
-
-
 
     /**
      * Get the path name of an alternative icon for the option group.

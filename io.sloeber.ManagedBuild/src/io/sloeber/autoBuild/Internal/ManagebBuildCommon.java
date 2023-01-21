@@ -182,7 +182,7 @@ public class ManagebBuildCommon {
     static public boolean populateDummyTargets(IConfiguration cfg, IFile makefile, boolean force)
             throws CoreException, IOException {
         //return populateDummyTargets(cfg.getRootFolderInfo(), makefile, force);
-    	return populateDummyTargets(cfg, makefile, force);
+        return populateDummyTargets(cfg, makefile, force);
     }
 
     static public boolean populateDummyTargets(IResourceInfo rcInfo, IFile makefile, boolean force)
@@ -331,20 +331,20 @@ public class ManagebBuildCommon {
         IFolderInfo fo = null;
         if (rcInfo instanceof IFolderInfo) {
             fo = (IFolderInfo) rcInfo;
-//        } else {
-//            IConfiguration c = rcInfo.getParent();
-//            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
+            //        } else {
+            //            IConfiguration c = rcInfo.getParent();
+            //            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
         }
         // Dummy targets to add to the makefile
         for (String dummy : deps) {
             IPath dep = new Path(dummy);
             String extension = dep.getFileExtension();
-//            if (fo.isHeaderFile(extension)) {
-//                /*
-//                 * The formatting here is <dummy_target>:
-//                 */
-//                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
-//            }
+            //            if (fo.isHeaderFile(extension)) {
+            //                /*
+            //                 * The formatting here is <dummy_target>:
+            //                 */
+            //                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
+            //            }
         }
         // Write them out to the makefile
         if (save) {
@@ -527,8 +527,8 @@ public class ManagebBuildCommon {
      * Adds a file to an entry in a map of macro names to entries. File additions
      * look like: example.c, \
      */
-    static public void addMacroAdditionFile(MakefileGenerator caller, HashMap<String, String> map,
-            String macroName, String relativePath, IPath sourceLocation, boolean generatedSource) {
+    static public void addMacroAdditionFile(MakefileGenerator caller, HashMap<String, String> map, String macroName,
+            String relativePath, IPath sourceLocation, boolean generatedSource) {
         // Add the source file path to the makefile line that adds source files
         // to the build variable
         IProject project = caller.getProject();
@@ -592,9 +592,7 @@ public class ManagebBuildCommon {
 
     }
 
- 
-
-    static public String GetNiceFileName(IFile buildPath, IFile path) {
+    static public String GetNiceFileName(IFolder buildPath, IFile path) {
         return GetNiceFileName(buildPath.getLocation(), path.getLocation()).toOSString();
     }
 

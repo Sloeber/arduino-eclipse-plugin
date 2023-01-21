@@ -108,27 +108,23 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
         }
 
         protected String[] getConfigurationReservedNames(IConfiguration configuration) {
-           List< ITool> tools = configuration.getFilteredTools();
+            List<ITool> tools = configuration.getFilteredTools();
             if (tools != null) {
                 Set<String> set = new HashSet<>();
-                for (ITool tool: tools) {
-                    IOutputType ots[] = tool.getOutputTypes();
-                    if (ots != null) {
-                        for (int j = 0; j < ots.length; j++) {
-                            String varName = ots[j].getBuildVariable();
-                            if (varName != null) {
-                                set.add(varName);
-                            }
+                for (ITool tool : tools) {
+                    List<IOutputType> ots = tool.getOutputTypes();
+                    for (IOutputType curOutputType : ots) {
+                        String varName = curOutputType.getBuildVariable();
+                        if (varName != null) {
+                            set.add(varName);
                         }
                     }
 
-                    IInputType its[] = tool.getInputTypes();
-                    if (its != null) {
-                        for (int j = 0; j < its.length; j++) {
-                            String varName = its[j].getBuildVariable();
-                            if (varName != null) {
-                                set.add(varName);
-                            }
+                    List<IInputType> its = tool.getInputTypes();
+                    for (IInputType inputType : its) {
+                        String varName = inputType.getBuildVariable();
+                        if (varName != null) {
+                            set.add(varName);
                         }
                     }
 

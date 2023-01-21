@@ -90,15 +90,15 @@ public class BuildLanguageData extends CLanguageData {
         //		fDiscoveredInfo = new ProfileInfoProvider(this);
     }
 
-    private void obtainEditableInputType() {
-        if (fInputType != null) {
-            //			IInputType old = fInputType;
-            fInputType = fTool.getEditableInputType(fInputType);
-            //			if(old != fInputType){
-            //				fDiscoveredInfo.checkUpdateInputType(fInputType);
-            //			}
-        }
-    }
+    //    private void obtainEditableInputType() {
+    //        if (fInputType != null) {
+    //            //			IInputType old = fInputType;
+    //            fInputType = fTool.getEditableInputType(fInputType);
+    //            //			if(old != fInputType){
+    //            //				fDiscoveredInfo.checkUpdateInputType(fInputType);
+    //            //			}
+    //        }
+    //    }
 
     @Override
     public void setEntries(int kind, ICLanguageSettingEntry entries[]) {
@@ -151,7 +151,7 @@ public class BuildLanguageData extends CLanguageData {
     */
     @Override
     public String getLanguageId() {
-        return  null;
+        return null;
     }
 
     @Override
@@ -201,7 +201,9 @@ public class BuildLanguageData extends CLanguageData {
 
     @Override
     public String[] getSourceExtensions() {
-        return fInputType != null ? fInputType.getSourceExtensions(fTool) : fTool.getPrimaryInputExtensions();
+        List<String> ret = fInputType != null ? fInputType.getSourceExtensions(fTool)
+                : fTool.getPrimaryInputExtensions();
+        return ret.toArray(new String[ret.size()]);
     }
 
     @Override
@@ -241,7 +243,7 @@ public class BuildLanguageData extends CLanguageData {
     private void calculateKindToOptionArrayStore() {
         fKindToOptionArrayStore.clear();
         Map<Integer, List<IOption>> kindToOptionList = new HashMap<>();
-        List<IOption >options = fTool.getOptions();
+        List<IOption> options = fTool.getOptions();
         for (final IOption option : options) {
             try {
                 Integer entryKind = ManagedBuildManager.optionTypeToEntryKind(option.getValueType());
@@ -322,12 +324,12 @@ public class BuildLanguageData extends CLanguageData {
 
     @Override
     public void setLanguageId(String id) {
-    	//TODO JABA Should be dead code
-//        if (Objects.equals(id, fInputType.getLanguageId(fTool))) {
-//            //			fInputType = fTool.getEdtableInputType(fInputType);
-//            obtainEditableInputType();
-//            fInputType.setLanguageIdAttribute(id);
-//        }
+        //TODO JABA Should be dead code
+        //        if (Objects.equals(id, fInputType.getLanguageId(fTool))) {
+        //            //			fInputType = fTool.getEdtableInputType(fInputType);
+        //            obtainEditableInputType();
+        //            fInputType.setLanguageIdAttribute(id);
+        //        }
     }
 
     @Override
@@ -396,39 +398,39 @@ public class BuildLanguageData extends CLanguageData {
 
     @Override
     public void setSourceContentTypeIds(String[] ids) {
-    	//TODO JABA should be dead code
-//        String[] headerIds = fInputType.getHeaderContentTypeIds();
-//
-//        List<String> newSrc = new ArrayList<>(ids.length);
-//        List<String> newHeaders = new ArrayList<>(ids.length);
-//        for (int i = 0; i < ids.length; i++) {
-//            String id = ids[i];
-//            int j = 0;
-//            for (; j < headerIds.length; j++) {
-//                if (id.equals(headerIds[j])) {
-//                    newHeaders.add(id);
-//                    break;
-//                }
-//            }
-//            if (j == headerIds.length) {
-//                newSrc.add(id);
-//            }
-//        }
-//
-//        String newSrcIds[] = newSrc.toArray(new String[newSrc.size()]);
-//        String newHeaderIds[] = newHeaders.toArray(new String[newHeaders.size()]);
-//
-//        if (!Arrays.equals(newSrcIds, fInputType.getSourceContentTypeIds())) {
-//            //			fInputType = fTool.getEdtableInputType(fInputType);
-//            obtainEditableInputType();
-//            fInputType.setSourceContentTypeIds(newSrcIds);
-//        }
-//
-//        if (!Arrays.equals(newHeaderIds, fInputType.getHeaderContentTypeIds())) {
-//            //			fInputType = fTool.getEdtableInputType(fInputType);
-//            obtainEditableInputType();
-//            fInputType.setHeaderContentTypeIds(newHeaderIds);
-//        }
+        //TODO JABA should be dead code
+        //        String[] headerIds = fInputType.getHeaderContentTypeIds();
+        //
+        //        List<String> newSrc = new ArrayList<>(ids.length);
+        //        List<String> newHeaders = new ArrayList<>(ids.length);
+        //        for (int i = 0; i < ids.length; i++) {
+        //            String id = ids[i];
+        //            int j = 0;
+        //            for (; j < headerIds.length; j++) {
+        //                if (id.equals(headerIds[j])) {
+        //                    newHeaders.add(id);
+        //                    break;
+        //                }
+        //            }
+        //            if (j == headerIds.length) {
+        //                newSrc.add(id);
+        //            }
+        //        }
+        //
+        //        String newSrcIds[] = newSrc.toArray(new String[newSrc.size()]);
+        //        String newHeaderIds[] = newHeaders.toArray(new String[newHeaders.size()]);
+        //
+        //        if (!Arrays.equals(newSrcIds, fInputType.getSourceContentTypeIds())) {
+        //            //			fInputType = fTool.getEdtableInputType(fInputType);
+        //            obtainEditableInputType();
+        //            fInputType.setSourceContentTypeIds(newSrcIds);
+        //        }
+        //
+        //        if (!Arrays.equals(newHeaderIds, fInputType.getHeaderContentTypeIds())) {
+        //            //			fInputType = fTool.getEdtableInputType(fInputType);
+        //            obtainEditableInputType();
+        //            fInputType.setHeaderContentTypeIds(newHeaderIds);
+        //        }
 
     }
 

@@ -93,7 +93,7 @@ public class OptionContextData implements IOptionContextData {
             tCh = ((IConfiguration) buildObj).getToolChain();
         else if (buildObj instanceof IFolderInfo) {
             folderInfo = (IFolderInfo) buildObj;
-           // rcInfo = folderInfo;
+            // rcInfo = folderInfo;
             tCh = folderInfo.getToolChain();
         }
 
@@ -105,40 +105,40 @@ public class OptionContextData implements IOptionContextData {
             IHoldsOptions tmp = option.getOptionHolder();
 
             List<ITool> tools = null;
-//            if (tCh != null) {
-//                for (IToolChain cur = tCh; cur != null; cur = cur.getSuperClass()) {
-//                    if (cur == tmp)
-//                        return tCh;
-//                }
-//                tools = tCh.getTools();
-//            } else 
-            	if (rcInfo != null) {
+            //            if (tCh != null) {
+            //                for (IToolChain cur = tCh; cur != null; cur = cur.getSuperClass()) {
+            //                    if (cur == tmp)
+            //                        return tCh;
+            //                }
+            //                tools = tCh.getTools();
+            //            } else 
+            if (rcInfo != null) {
                 tools = rcInfo.getTools();
             }
 
-//            if (tools != null) {
-//                for (int i = 0; i < tools.length; i++) {
-//                    for (ITool cur = tools[i]; cur != null; cur = cur.getSuperClass()) {
-//                        if (cur == tmp) {
-//                            ITool tool = tools[i];
-//                            if (!tool.isExtensionElement() && tool.getParent() != null) {
-//                                ho = tools[i];
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            //            if (tools != null) {
+            //                for (int i = 0; i < tools.length; i++) {
+            //                    for (ITool cur = tools[i]; cur != null; cur = cur.getSuperClass()) {
+            //                        if (cur == tmp) {
+            //                            ITool tool = tools[i];
+            //                            if (!tool.isExtensionElement() && tool.getParent() != null) {
+            //                                ho = tools[i];
+            //                                break;
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
 
             if (ho == null && tmp != null) {
                 if (tmp instanceof ITool) {
                     ITool tool = (ITool) tmp;
-                    if (!tool.isExtensionElement() && tool.getParent() != null) {
+                    if (tool.getParent() != null) {
                         ho = tmp;
                     }
                 } else if (tmp instanceof IToolChain) {
                     IToolChain tChain = (IToolChain) tmp;
-                    if ( tChain.getParent() != null) {
+                    if (tChain.getParent() != null) {
                         ho = tmp;
                     }
                 }

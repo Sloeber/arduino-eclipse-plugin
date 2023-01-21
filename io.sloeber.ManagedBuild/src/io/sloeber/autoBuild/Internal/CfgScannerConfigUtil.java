@@ -30,24 +30,19 @@ import io.sloeber.schema.internal.ToolChain;
 
 public class CfgScannerConfigUtil {
 
-
     public static String getFirstProfileId(List<ITool> tools) {
         String id = null;
-        for (ITool tool: tools) {
-            IInputType[] types = tool.getInputTypes();
-
-            if (types.length != 0) {
-                for (int k = 0; k < types.length; k++) {
-                    id = types[k].getDiscoveryProfileId(tool);
-                    if (id != null)
-                        break;
-                }
-            } else {
-                id = ((Tool) tool).getDiscoveryProfileId();
+        for (ITool tool : tools) {
+            List<IInputType> types = tool.getInputTypes();
+            for (IInputType inputType : types) {
+                id = inputType.getDiscoveryProfileId(tool);
+                if (id != null)
+                    return id;
             }
-
-            if (id != null)
-                break;
+            //            id = ((Tool) tool).getDiscoveryProfileId();
+            //
+            //            if (id != null)
+            //                return id;
         }
 
         return id;
@@ -81,10 +76,10 @@ public class CfgScannerConfigUtil {
             for (ITool tool : tools) {
                 profiles.addAll(getAllScannerDiscoveryProfileIds(tool));
             }
-//            IToolChain superClass = toolchain.getSuperClass();
-//            if (superClass != null) {
-//                profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
-//            }
+            //            IToolChain superClass = toolchain.getSuperClass();
+            //            if (superClass != null) {
+            //                profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
+            //            }
         }
 
         return profiles;
@@ -117,10 +112,10 @@ public class CfgScannerConfigUtil {
             }
         }
 
-//        ITool superClass = tool.getSuperClass();
-//        if (superClass != null) {
-//            profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
-//        }
+        //        ITool superClass = tool.getSuperClass();
+        //        if (superClass != null) {
+        //            profiles.addAll(getAllScannerDiscoveryProfileIds(superClass));
+        //        }
         return profiles;
     }
 

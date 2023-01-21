@@ -81,7 +81,7 @@ public interface IInputType extends IBuildObject {
      *
      * @return String[]
      */
-    public String[] getSourceExtensionsAttribute();
+    public List<String> getSourceExtensionsAttribute();
 
     /**
      * Returns the list of valid source extensions for this input type.
@@ -93,7 +93,7 @@ public interface IInputType extends IBuildObject {
      *            the tool that contains the input-type
      * @return String[]
      */
-    public String[] getSourceExtensions(ITool tool);
+    public List<String> getSourceExtensions(ITool tool);
 
     /**
      * Returns the Eclipse <code>IContentType</code> that describes the
@@ -168,7 +168,6 @@ public interface IInputType extends IBuildObject {
      * @return String
      */
     public String getBuildVariable();
-
 
     String getLanguageName(ITool tool);
 

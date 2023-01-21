@@ -400,8 +400,6 @@ public class OutputType extends BuildObject implements IOutputType {
     //        }
     //    }
 
-
-
     public boolean needsRebuild() {
         return rebuildState;
     }
@@ -416,8 +414,8 @@ public class OutputType extends BuildObject implements IOutputType {
     }
 
     public boolean isEnabled(ITool tool) {
-        if (tool.isExtensionElement())
-            return true;
+        //        if (tool.isExtensionElement())
+        //            return true;
 
         BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator();
         if (calc == null)

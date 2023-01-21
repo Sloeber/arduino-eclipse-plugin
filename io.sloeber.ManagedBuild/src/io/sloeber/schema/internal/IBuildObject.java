@@ -26,6 +26,7 @@ public interface IBuildObject {
     public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
     public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
     public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
+    public static final String ICON = "icon"; //$NON-NLS-1$
 
     public String getId();
 

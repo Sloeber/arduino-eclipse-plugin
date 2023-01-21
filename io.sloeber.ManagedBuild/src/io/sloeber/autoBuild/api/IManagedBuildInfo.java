@@ -51,7 +51,6 @@ public interface IManagedBuildInfo {
      *        or earlier managed build project file (.cdtbuild)
      */
 
-
     /**
      * Answers a <code>String</code> containing the arguments to be passed to make.
      * For example, if the user has selected a build that keeps going on error, the
@@ -144,19 +143,12 @@ public interface IManagedBuildInfo {
 
     //	public IManagedDependencyGeneratorType getDependencyGenerator(String sourceExtension);
 
-
     /**
      * Returns the ManagedProject associated with this build info
      *
      * @return IManagedProject
      */
     public ManagedProject getManagedProject();
-
-
-
- 
-
-
 
     /**
      * Returns the currently selected configuration. This is used while the project
@@ -166,19 +158,17 @@ public interface IManagedBuildInfo {
      */
     public IConfiguration getSelectedConfiguration();
 
-    /**
-     * Returns a <code>String</code> containing the command-line invocation
-     * for the tool associated with the output extension.
-     *
-     * @param extension
-     *            the file extension of the output file
-     * @return a String containing the command line invocation for the tool
-     */
-    public String getToolForConfiguration(String extension);
-
-
-
-
+    //    /**
+    //     * Returns a <code>String</code> containing the command-line invocation
+    //     * for the tool associated with the output extension.
+    //     *
+    //     * @param extension
+    //     *            the file extension of the output file
+    //     * @return a String containing the command line invocation for the tool
+    //     */
+    //    public String getToolForConfiguration(String extension);
+    //
+    //
 
     /**
      * Answers the version of the build information in the format
@@ -187,7 +177,6 @@ public interface IManagedBuildInfo {
      *         version
      */
     public String getVersion();
-
 
     /**
      * Answers <code>true</code> if the extension matches one of the special
@@ -198,7 +187,6 @@ public interface IManagedBuildInfo {
      * @return boolean
      */
     public boolean isHeaderFile(String ext);
-
 
     /**
      * Gets the "valid" status of Managed Build Info. Managed Build Info is invalid
@@ -240,8 +228,6 @@ public interface IManagedBuildInfo {
      */
     public boolean setDefaultConfiguration(String configName);
 
-
-
     /**
      * Sets the valid flag for the build model to the value of the argument.
      */
@@ -251,7 +237,6 @@ public interface IManagedBuildInfo {
      * Sets the ManagedProject associated with this build info
      */
     public void setManagedProject(ManagedProject project);
-
 
     /**
      * Sets the rebuild state in the receiver to the value of the argument.

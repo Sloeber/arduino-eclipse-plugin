@@ -142,7 +142,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
             System.err.println("builders of toolchain " + name + " has wrong cardinality");
         }
 
-
         IConfigurationElement[] toolChainElements = element.getChildren(ITool.TOOL_ELEMENT_NAME);
         for (IConfigurationElement toolChainElement : toolChainElements) {
             Tool toolChild = new Tool(this, root, toolChainElement);
@@ -642,7 +641,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
     @Override
     public IConfiguration getParent() {
-        return (IConfiguration)parent;
+        return (IConfiguration) parent;
     }
 
     @Override
@@ -969,24 +968,24 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         return pathconverterElement;
     }
 
-    @Override
-    public IOptionPathConverter getOptionPathConverter() {
-        if (optionPathConverter != null) {
-            return optionPathConverter;
-        }
-        IConfigurationElement element = getPathconverterElement();
-        if (element != null) {
-            try {
-                if (element.getAttribute(ITool.OPTIONPATHCONVERTER) != null) {
-                    optionPathConverter = (IOptionPathConverter) element
-                            .createExecutableExtension(ITool.OPTIONPATHCONVERTER);
-                    return optionPathConverter;
-                }
-            } catch (CoreException e) {
-            }
-        }
-        return null;
-    }
+    //    @Override
+    //    public IOptionPathConverter getOptionPathConverter() {
+    //        if (optionPathConverter != null) {
+    //            return optionPathConverter;
+    //        }
+    //        IConfigurationElement element = getPathconverterElement();
+    //        if (element != null) {
+    //            try {
+    //                if (element.getAttribute(ITool.OPTIONPATHCONVERTER) != null) {
+    //                    optionPathConverter = (IOptionPathConverter) element
+    //                            .createExecutableExtension(ITool.OPTIONPATHCONVERTER);
+    //                    return optionPathConverter;
+    //                }
+    //            } catch (CoreException e) {
+    //            }
+    //        }
+    //        return null;
+    //    }
 
     /*
      * O B J E C T S T A T E M A I N T E N A N C E
@@ -1176,15 +1175,15 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     @Override
     public boolean supportsBuild(boolean managed) {
 
-        IBuilder builder = getBuilder();
-        if (builder != null && !builder.supportsBuild(managed))
-            return false;
-
-        List<ITool> tools = getTools();
-        for (ITool tool : tools) {
-            if (!tool.supportsBuild(managed))
-                return false;
-        }
+        //        IBuilder builder = getBuilder();
+        //        if (builder != null && !builder.supportsBuild(managed))
+        //            return false;
+        //
+        //        List<ITool> tools = getTools();
+        //        for (ITool tool : tools) {
+        //            if (!tool.supportsBuild(managed))
+        //                return false;
+        //        }
 
         return true;
     }

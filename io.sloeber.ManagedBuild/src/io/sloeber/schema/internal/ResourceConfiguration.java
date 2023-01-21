@@ -89,70 +89,70 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     }
 
-//    /**
-//     * Create a <code>ResourceConfiguration</code> based on the specification stored
-//     * in the project file (.cdtbuild).
-//     *
-//     * @param parent
-//     *            The <code>IConfiguration</code> the resource configuration
-//     *            will be added to.
-//     * @param element
-//     *            The XML element that contains the resource configuration
-//     *            settings.
-//     */
-//    public ResourceConfiguration(IConfiguration parent, ICStorageElement element, String managedBuildRevision) {
-//        super(parent, element, true);
-//        setResourceData(new BuildFileData(this));
-//
-//        // Initialize from the XML attributes
-//        loadFromProject(element);
-//
-//        // Load children
-//        ICStorageElement configElements[] = element.getChildren();
-//        for (int i = 0; i < configElements.length; ++i) {
-//            ICStorageElement configElement = configElements[i];
-//            if (configElement.getName().equals(ITool.TOOL_ELEMENT_NAME)) {
-//                Tool tool = new Tool(this, configElement, getManagedBuildRevision());
-//                addTool(tool);
-//            }
-//        }
-//
-//    }
+    //    /**
+    //     * Create a <code>ResourceConfiguration</code> based on the specification stored
+    //     * in the project file (.cdtbuild).
+    //     *
+    //     * @param parent
+    //     *            The <code>IConfiguration</code> the resource configuration
+    //     *            will be added to.
+    //     * @param element
+    //     *            The XML element that contains the resource configuration
+    //     *            settings.
+    //     */
+    //    public ResourceConfiguration(IConfiguration parent, ICStorageElement element, String managedBuildRevision) {
+    //        super(parent, element, true);
+    //        setResourceData(new BuildFileData(this));
+    //
+    //        // Initialize from the XML attributes
+    //        loadFromProject(element);
+    //
+    //        // Load children
+    //        ICStorageElement configElements[] = element.getChildren();
+    //        for (int i = 0; i < configElements.length; ++i) {
+    //            ICStorageElement configElement = configElements[i];
+    //            if (configElement.getName().equals(ITool.TOOL_ELEMENT_NAME)) {
+    //                Tool tool = new Tool(this, configElement, getManagedBuildRevision());
+    //                addTool(tool);
+    //            }
+    //        }
+    //
+    //    }
 
-//    public ResourceConfiguration(FolderInfo folderInfo, ITool baseTool, String id, String resourceName, IPath path) {
-//        super(folderInfo, path, id, resourceName);
-//        // setParentFolder(folderInfo);
-//        // setParentFolderId(folderInfo.getId());
-//
-//        //        isExtensionResourceConfig = folderInfo.isExtensionElement();
-//        //        if (!isExtensionResourceConfig)
-//        IFile theFile = null; //TOFIX jaba how to convert the path to a file
-//        setResourceData(new BuildFileData(this));
-//
-//
-//        toolsToInvoke = ""; //$NON-NLS-1$
-//        rcbsApplicability = KIND_DISABLE_RCBS_TOOL;
-//
-//        // Get file extension.
-//        if (baseTool != null) {
-//            if (baseTool.getParentResourceInfo() != folderInfo)
-//                baseTool = null;
-//        }
-//        // Add the resource specific tools to this resource.
-////        List<ITool> tools = folderInfo.getFilteredTools();
-//        String subId = ""; //$NON-NLS-1$
-////        for (ITool tool: tools) {
-////            if (tool.buildsFileType(theFile)) {
-////                baseTool = tool;
-////                break;
-////            }
-////        }
-//
-//        if (baseTool != null) {
-//            subId = ManagedBuildManager.calculateChildId(baseTool.getId(), null);
-//            createTool(baseTool, subId, baseTool.getName(), false);
-//        }
-//    }
+    //    public ResourceConfiguration(FolderInfo folderInfo, ITool baseTool, String id, String resourceName, IPath path) {
+    //        super(folderInfo, path, id, resourceName);
+    //        // setParentFolder(folderInfo);
+    //        // setParentFolderId(folderInfo.getId());
+    //
+    //        //        isExtensionResourceConfig = folderInfo.isExtensionElement();
+    //        //        if (!isExtensionResourceConfig)
+    //        IFile theFile = null; //TOFIX jaba how to convert the path to a file
+    //        setResourceData(new BuildFileData(this));
+    //
+    //
+    //        toolsToInvoke = ""; //$NON-NLS-1$
+    //        rcbsApplicability = KIND_DISABLE_RCBS_TOOL;
+    //
+    //        // Get file extension.
+    //        if (baseTool != null) {
+    //            if (baseTool.getParentResourceInfo() != folderInfo)
+    //                baseTool = null;
+    //        }
+    //        // Add the resource specific tools to this resource.
+    ////        List<ITool> tools = folderInfo.getFilteredTools();
+    //        String subId = ""; //$NON-NLS-1$
+    ////        for (ITool tool: tools) {
+    ////            if (tool.buildsFileType(theFile)) {
+    ////                baseTool = tool;
+    ////                break;
+    ////            }
+    ////        }
+    //
+    //        if (baseTool != null) {
+    //            subId = ManagedBuildManager.calculateChildId(baseTool.getId(), null);
+    //            createTool(baseTool, subId, baseTool.getName(), false);
+    //        }
+    //    }
 
     /**
      * Create a new resource configuration based on one already defined.
@@ -169,139 +169,138 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
     public ResourceConfiguration(IConfiguration cfg, ResourceConfiguration cloneConfig, String id,
             Map<IPath, Map<String, String>> superClassIdMap, boolean cloneChildren) {
         super(cfg, cloneConfig, id);
-//
-//        //        isExtensionResourceConfig = cfg.isExtensionElement();
-//        //        if (!cloneConfig.isExtensionResourceConfig)
-//        cloneChildren = true;
-//
-//        //        if (!isExtensionResourceConfig)
-//        setResourceData(new BuildFileData(this));
-//
-//        setManagedBuildRevision(cloneConfig.getManagedBuildRevision());
-//
-//        // Copy the remaining attributes
-//        if (cloneConfig.toolsToInvoke != null) {
-//            toolsToInvoke = cloneConfig.toolsToInvoke;
-//        }
-//        if (cloneConfig.rcbsApplicability != null) {
-//            rcbsApplicability = cloneConfig.rcbsApplicability;
-//        }
-//
-//        boolean copyIds = cloneChildren && id.equals(cloneConfig.id);
-//        // Clone the resource configuration's tool children
-//        if (cloneConfig.toolList != null) {
-//            for (ITool toolChild : cloneConfig.getToolList()) {
-//                String subId = null;
-//                String subName;
-//
-//                Map<String, String> curIdMap = superClassIdMap.get(cloneConfig.getPath());
-//                ITool extTool = null; //JAVA toFix ManagedBuildManager.getExtensionTool(toolChild);
-//                if (curIdMap != null) {
-//                    if (extTool != null) {
-//                        subId = curIdMap.get(extTool.getId());
-//                    }
-//                }
-//
-//                subName = toolChild.getName();
-//
-//                if (subId == null) {
-//                    if (extTool != null) {
-//                        subId = copyIds ? toolChild.getId()
-//                                : ManagedBuildManager.calculateChildId(extTool.getId(), null);
-//                        // subName = toolChild.getSuperClass().getName();
-//                    } else {
-//                        subId = copyIds ? toolChild.getId()
-//                                : ManagedBuildManager.calculateChildId(toolChild.getId(), null);
-//                        // subName = toolChild.getName();
-//                    }
-//                }
-//
-//                // The superclass for the cloned tool is not the same as the one from the tool
-//                // being cloned.
-//                // The superclasses reside in different configurations.
-//                ITool toolSuperClass = null;
-//                String superId = null;
-//                // Search for the tool in this configuration that has the same grand-superClass
-//                // as the
-//                // tool being cloned
-////                ITool otherSuperTool = toolChild.getSuperClass();
-////                if (otherSuperTool != null) {
-////                    if (otherSuperTool.isExtensionElement()) {
-////                        toolSuperClass = otherSuperTool;
-////                    } else {
-////                        IResourceInfo otherRcInfo = otherSuperTool.getParentResourceInfo();
-////                        IResourceInfo thisRcInfo = null;//TOFIX JABA cfg.getResourceInfo(otherRcInfo.getPath(), true);
-////                        ITool otherExtTool = null;//JABA TOFIX  ManagedBuildManager.getExtensionTool(otherSuperTool);
-////                        if (otherExtTool != null) {
-////                            if (thisRcInfo != null) {
-////                                List<ITool> tools = thisRcInfo.getTools();
-////                                for (ITool tool: tools) {
-////                                    ITool thisExtTool = null;//TOFIX JABA  ManagedBuildManager.getExtensionTool(tool);
-////                                    if (otherExtTool.equals(thisExtTool)) {
-////                                        toolSuperClass =tool;
-////                                        superId = toolSuperClass.getId();
-////                                        break;
-////                                    }
-////                                }
-////                            } else {
-////                                superId = copyIds ? otherSuperTool.getId()
-////                                        : ManagedBuildManager.calculateChildId(otherExtTool.getId(), null);
-////                                Map<String, String> idMap = superClassIdMap.get(otherRcInfo.getPath());
-////                                if (idMap == null) {
-////                                    idMap = new HashMap<>();
-////                                    superClassIdMap.put(otherRcInfo.getPath(), idMap);
-////                                }
-////                                idMap.put(otherExtTool.getId(), superId);
-////                            }
-////                        }
-////                    }
-////                }
-//                // IToolChain tCh = cloneConfig.getBaseToolChain();
-//                // if(tCh != null){
-//                // if(!tCh.isExtensionElement()){
-//                // IFolderInfo fo = tCh.getParentFolderInfo();
-//                // IPath path = fo.getPath();
-//                // IResourceInfo baseFo = cfg.getResourceInfo(path, false);
-//                // if(baseFo instanceof IFileInfo)
-//                // baseFo = cfg.getResourceInfo(path.removeLastSegments(1), false);
-//                // tCh = ((IFolderInfo)baseFo).getToolChain();
-//                //
-//                // }
-//                // ITool[] tools = tCh.getTools();
-//                // for (int i=0; i<tools.length; i++) {
-//                // ITool configTool = tools[i];
-//                // if (toolChild.getSuperClass() != null
-//                // && configTool.getSuperClass() == toolChild.getSuperClass().getSuperClass())
-//                // {
-//                // toolSuperClass = configTool;
-//                // break;
-//                // }
-//                // }
-//                // } else {
-//                // //TODO:
-//                // }
-//
-//                Tool newTool = null;
-//                if (toolSuperClass != null)
-//                    newTool = new Tool(this, toolSuperClass, subId, subName, (Tool) toolChild);
-//                else
-//                    newTool = new Tool(this, superId, subId, subName, (Tool) toolChild);
-//
-//                addTool(newTool);
-//            }
-//        }
-//
-//        if (copyIds) {
-//            isDirty = cloneConfig.isDirty;
-//            needsRebuild = cloneConfig.needsRebuild;
-//        }
+        //
+        //        //        isExtensionResourceConfig = cfg.isExtensionElement();
+        //        //        if (!cloneConfig.isExtensionResourceConfig)
+        //        cloneChildren = true;
+        //
+        //        //        if (!isExtensionResourceConfig)
+        //        setResourceData(new BuildFileData(this));
+        //
+        //        setManagedBuildRevision(cloneConfig.getManagedBuildRevision());
+        //
+        //        // Copy the remaining attributes
+        //        if (cloneConfig.toolsToInvoke != null) {
+        //            toolsToInvoke = cloneConfig.toolsToInvoke;
+        //        }
+        //        if (cloneConfig.rcbsApplicability != null) {
+        //            rcbsApplicability = cloneConfig.rcbsApplicability;
+        //        }
+        //
+        //        boolean copyIds = cloneChildren && id.equals(cloneConfig.id);
+        //        // Clone the resource configuration's tool children
+        //        if (cloneConfig.toolList != null) {
+        //            for (ITool toolChild : cloneConfig.getToolList()) {
+        //                String subId = null;
+        //                String subName;
+        //
+        //                Map<String, String> curIdMap = superClassIdMap.get(cloneConfig.getPath());
+        //                ITool extTool = null; //JAVA toFix ManagedBuildManager.getExtensionTool(toolChild);
+        //                if (curIdMap != null) {
+        //                    if (extTool != null) {
+        //                        subId = curIdMap.get(extTool.getId());
+        //                    }
+        //                }
+        //
+        //                subName = toolChild.getName();
+        //
+        //                if (subId == null) {
+        //                    if (extTool != null) {
+        //                        subId = copyIds ? toolChild.getId()
+        //                                : ManagedBuildManager.calculateChildId(extTool.getId(), null);
+        //                        // subName = toolChild.getSuperClass().getName();
+        //                    } else {
+        //                        subId = copyIds ? toolChild.getId()
+        //                                : ManagedBuildManager.calculateChildId(toolChild.getId(), null);
+        //                        // subName = toolChild.getName();
+        //                    }
+        //                }
+        //
+        //                // The superclass for the cloned tool is not the same as the one from the tool
+        //                // being cloned.
+        //                // The superclasses reside in different configurations.
+        //                ITool toolSuperClass = null;
+        //                String superId = null;
+        //                // Search for the tool in this configuration that has the same grand-superClass
+        //                // as the
+        //                // tool being cloned
+        ////                ITool otherSuperTool = toolChild.getSuperClass();
+        ////                if (otherSuperTool != null) {
+        ////                    if (otherSuperTool.isExtensionElement()) {
+        ////                        toolSuperClass = otherSuperTool;
+        ////                    } else {
+        ////                        IResourceInfo otherRcInfo = otherSuperTool.getParentResourceInfo();
+        ////                        IResourceInfo thisRcInfo = null;//TOFIX JABA cfg.getResourceInfo(otherRcInfo.getPath(), true);
+        ////                        ITool otherExtTool = null;//JABA TOFIX  ManagedBuildManager.getExtensionTool(otherSuperTool);
+        ////                        if (otherExtTool != null) {
+        ////                            if (thisRcInfo != null) {
+        ////                                List<ITool> tools = thisRcInfo.getTools();
+        ////                                for (ITool tool: tools) {
+        ////                                    ITool thisExtTool = null;//TOFIX JABA  ManagedBuildManager.getExtensionTool(tool);
+        ////                                    if (otherExtTool.equals(thisExtTool)) {
+        ////                                        toolSuperClass =tool;
+        ////                                        superId = toolSuperClass.getId();
+        ////                                        break;
+        ////                                    }
+        ////                                }
+        ////                            } else {
+        ////                                superId = copyIds ? otherSuperTool.getId()
+        ////                                        : ManagedBuildManager.calculateChildId(otherExtTool.getId(), null);
+        ////                                Map<String, String> idMap = superClassIdMap.get(otherRcInfo.getPath());
+        ////                                if (idMap == null) {
+        ////                                    idMap = new HashMap<>();
+        ////                                    superClassIdMap.put(otherRcInfo.getPath(), idMap);
+        ////                                }
+        ////                                idMap.put(otherExtTool.getId(), superId);
+        ////                            }
+        ////                        }
+        ////                    }
+        ////                }
+        //                // IToolChain tCh = cloneConfig.getBaseToolChain();
+        //                // if(tCh != null){
+        //                // if(!tCh.isExtensionElement()){
+        //                // IFolderInfo fo = tCh.getParentFolderInfo();
+        //                // IPath path = fo.getPath();
+        //                // IResourceInfo baseFo = cfg.getResourceInfo(path, false);
+        //                // if(baseFo instanceof IFileInfo)
+        //                // baseFo = cfg.getResourceInfo(path.removeLastSegments(1), false);
+        //                // tCh = ((IFolderInfo)baseFo).getToolChain();
+        //                //
+        //                // }
+        //                // ITool[] tools = tCh.getTools();
+        //                // for (int i=0; i<tools.length; i++) {
+        //                // ITool configTool = tools[i];
+        //                // if (toolChild.getSuperClass() != null
+        //                // && configTool.getSuperClass() == toolChild.getSuperClass().getSuperClass())
+        //                // {
+        //                // toolSuperClass = configTool;
+        //                // break;
+        //                // }
+        //                // }
+        //                // } else {
+        //                // //TODO:
+        //                // }
+        //
+        //                Tool newTool = null;
+        //                if (toolSuperClass != null)
+        //                    newTool = new Tool(this, toolSuperClass, subId, subName, (Tool) toolChild);
+        //                else
+        //                    newTool = new Tool(this, superId, subId, subName, (Tool) toolChild);
+        //
+        //                addTool(newTool);
+        //            }
+        //        }
+        //
+        //        if (copyIds) {
+        //            isDirty = cloneConfig.isDirty;
+        //            needsRebuild = cloneConfig.needsRebuild;
+        //        }
     }
 
     public ResourceConfiguration(ResourceConfiguration baseInfo, IPath path, String id, String name) {
         super(baseInfo, path, id, name);
 
         setResourceData(new BuildFileData(this));
-
 
         // Copy the remaining attributes
         toolsToInvoke = baseInfo.toolsToInvoke;
@@ -313,7 +312,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             for (ITool toolChild : baseInfo.getToolList()) {
                 ITool superTool = null;
                 String subId = ManagedBuildManager.calculateChildId(toolChild.getId(), null);
-//                addTool(new Tool(this, superTool, subId, toolChild.getName(), (Tool) toolChild));
+                //                addTool(new Tool(this, superTool, subId, toolChild.getName(), (Tool) toolChild));
             }
         }
 
@@ -387,7 +386,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
      */
     @Override
     public List<ITool> getTools() {
-        return  getToolList();
+        return getToolList();
     }
 
     /*
@@ -504,7 +503,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
          */
         String t_ToolsToInvoke = ""; //$NON-NLS-1$
         List<ITool> resConfigTools;
-        List<ITool> tools=new LinkedList<>();
+        List<ITool> tools = new LinkedList<>();
 
         resConfigTools = getTools();
 
@@ -518,88 +517,88 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
          * If no tools are currently defined, return a zero lengh array of ITool.
          */
         if (resConfigTools.size() == 0) {
-        	toolsToInvoke="";
+            toolsToInvoke = "";
             return resConfigTools;
         }
 
         /*
          * See if there is an rcbs tool defined. There should only be one at most.
          */
-        String rcbsToolId = null;
-        ITool rcbsToolIdx = null;
-        for (ITool resConfigTool: resConfigTools) {
-            if (resConfigTool.getCustomBuildStep() && !resConfigTool.isExtensionElement()) {
-                rcbsToolId = resConfigTool.getId();
-                rcbsToolIdx = resConfigTool;
-                break;
-            }
-        }
-        if (rcbsToolId!=null) {
-            /*
-             * Here if an rcbs tool is defined. Apply the tools according to the current
-             * rcbsApplicability setting.
-             */
-            switch (rcbsApplicability.intValue()) {
-            case KIND_APPLY_RCBS_TOOL_AS_OVERRIDE:
-                toolsToInvoke = rcbsToolId;
-                tools.add(rcbsToolIdx);
-                return tools;
-            case KIND_APPLY_RCBS_TOOL_AFTER:
-                for (ITool curtool: resConfigTools) {
-                    if (curtool.getId() != rcbsToolId) {
-                        t_ToolsToInvoke += curtool.getId() + ";"; //$NON-NLS-1$
-                        tools.add(curtool);
-                    }
-                }
-                t_ToolsToInvoke += rcbsToolId;
-                tools.add(rcbsToolIdx);
-                toolsToInvoke = t_ToolsToInvoke;
-                return tools;
-            case KIND_APPLY_RCBS_TOOL_BEFORE:
-                t_ToolsToInvoke = rcbsToolId ;
-                tools.add(rcbsToolIdx);
-                for (ITool curtool: resConfigTools) {
-                    if (curtool.getId() != rcbsToolId) {
-                        t_ToolsToInvoke +=  ";"+curtool.getId() ; //$NON-NLS-1$
-                        tools.add(curtool);
-                    }
-                }
-                toolsToInvoke = t_ToolsToInvoke;
-                return tools;
-            case KIND_DISABLE_RCBS_TOOL:
-                /*
-                 * If the rcbs tool is the only tool and the user has disabled it, there are no
-                 * tools to invoke in the resource configuration.
-                 */
-                if (resConfigTools.size() == 1) {
-                    toolsToInvoke = ""; //$NON-NLS-1$
-                    
-                }else {
-                String prepend="";
-                for (ITool curtool: resConfigTools) {
-                	if (curtool.getId() != rcbsToolId) {
-                        t_ToolsToInvoke += prepend +curtool.getId() ; //$NON-NLS-1$
-                        prepend=";";
-                        tools.add(curtool);
-                    }
-                }
-                toolsToInvoke = t_ToolsToInvoke;}
-                return tools;
-            default:
-                /*
-                 * If we get an unexpected value, apply all tools in the order found.
-                 */
-                
-            }
-        } 
-        String prepend="";
-        for (ITool curtool: resConfigTools) {
-        	if (curtool.getId() != rcbsToolId) {
-                t_ToolsToInvoke += prepend +curtool.getId() ; //$NON-NLS-1$
-                prepend=";";
-                tools.add(curtool);
-            }
-        }
+        //        String rcbsToolId = null;
+        //        ITool rcbsToolIdx = null;
+        //        for (ITool resConfigTool: resConfigTools) {
+        //            if (resConfigTool.getCustomBuildStep() && !resConfigTool.isExtensionElement()) {
+        //                rcbsToolId = resConfigTool.getId();
+        //                rcbsToolIdx = resConfigTool;
+        //                break;
+        //            }
+        //        }
+        //        if (rcbsToolId!=null) {
+        //            /*
+        //             * Here if an rcbs tool is defined. Apply the tools according to the current
+        //             * rcbsApplicability setting.
+        //             */
+        //            switch (rcbsApplicability.intValue()) {
+        //            case KIND_APPLY_RCBS_TOOL_AS_OVERRIDE:
+        //                toolsToInvoke = rcbsToolId;
+        //                tools.add(rcbsToolIdx);
+        //                return tools;
+        //            case KIND_APPLY_RCBS_TOOL_AFTER:
+        //                for (ITool curtool: resConfigTools) {
+        //                    if (curtool.getId() != rcbsToolId) {
+        //                        t_ToolsToInvoke += curtool.getId() + ";"; //$NON-NLS-1$
+        //                        tools.add(curtool);
+        //                    }
+        //                }
+        //                t_ToolsToInvoke += rcbsToolId;
+        //                tools.add(rcbsToolIdx);
+        //                toolsToInvoke = t_ToolsToInvoke;
+        //                return tools;
+        //            case KIND_APPLY_RCBS_TOOL_BEFORE:
+        //                t_ToolsToInvoke = rcbsToolId ;
+        //                tools.add(rcbsToolIdx);
+        //                for (ITool curtool: resConfigTools) {
+        //                    if (curtool.getId() != rcbsToolId) {
+        //                        t_ToolsToInvoke +=  ";"+curtool.getId() ; //$NON-NLS-1$
+        //                        tools.add(curtool);
+        //                    }
+        //                }
+        //                toolsToInvoke = t_ToolsToInvoke;
+        //                return tools;
+        //            case KIND_DISABLE_RCBS_TOOL:
+        //                /*
+        //                 * If the rcbs tool is the only tool and the user has disabled it, there are no
+        //                 * tools to invoke in the resource configuration.
+        //                 */
+        //                if (resConfigTools.size() == 1) {
+        //                    toolsToInvoke = ""; //$NON-NLS-1$
+        //                    
+        //                }else {
+        //                String prepend="";
+        //                for (ITool curtool: resConfigTools) {
+        //                	if (curtool.getId() != rcbsToolId) {
+        //                        t_ToolsToInvoke += prepend +curtool.getId() ; //$NON-NLS-1$
+        //                        prepend=";";
+        //                        tools.add(curtool);
+        //                    }
+        //                }
+        //                toolsToInvoke = t_ToolsToInvoke;}
+        //                return tools;
+        //            default:
+        //                /*
+        //                 * If we get an unexpected value, apply all tools in the order found.
+        //                 */
+        //                
+        //            }
+        //        } 
+        //        String prepend="";
+        //        for (ITool curtool: resConfigTools) {
+        //        	if (curtool.getId() != rcbsToolId) {
+        //                t_ToolsToInvoke += prepend +curtool.getId() ; //$NON-NLS-1$
+        //                prepend=";";
+        //                tools.add(curtool);
+        //            }
+        //        }
         toolsToInvoke = t_ToolsToInvoke;
         return tools;
     }
@@ -634,17 +633,15 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         if (path == null)
             return;
         IPath p = new Path(path).removeFirstSegments(1);
-  //      setPath(p);
+        //      setPath(p);
     }
 
-//    @Override
-//    public ITool createTool(ITool superClass, String id, String name, boolean isExtensionElement) {
-//        Tool tool = new Tool(this, superClass, id, name, isExtensionElement);
-//        addTool(tool);
-//        return tool;
-//    }
-
-
+    //    @Override
+    //    public ITool createTool(ITool superClass, String id, String name, boolean isExtensionElement) {
+    //        Tool tool = new Tool(this, superClass, id, name, isExtensionElement);
+    //        addTool(tool);
+    //        return tool;
+    //    }
 
     // private IBuildObject getHoldersParent(IOption option) {
     // IHoldsOptions holder = option.getOptionHolder();
@@ -661,9 +658,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         return getParent().getOwner();
     }
 
-
-
-
     @Override
     public final int getKind() {
         return ICSettingBase.SETTING_FILE;
@@ -676,7 +670,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public CLanguageData[] getCLanguageDatas() {
-        List<ITool> tools= getTools/* ToInvoke */();
+        List<ITool> tools = getTools/* ToInvoke */();
         List<CLanguageData> list = new ArrayList<>();
         for (ITool tool : tools) {
             CLanguageData datas[] = tool.getCLanguageDatas();
@@ -689,76 +683,75 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public IToolChain getBaseToolChain() {
-    	return null;
-//    	List<ITool> tools = getToolsToInvoke();
-//        ITool baseTool = null;
-//        for (ITool tool:tools) {
-//            ITool superTool = tool.getSuperClass();
-//            if (superTool != null) {
-//                baseTool = superTool;
-//                if (!superTool.isExtensionElement()) {
-//                    break;
-//                }
-//            }
-//        }
-//
-//        IToolChain baseTc = null;
-//        if (baseTool != null) {
-//            IBuildObject parent = baseTool.getParent();
-//            if (parent instanceof IToolChain) {
-//                baseTc = (IToolChain) parent;
-//            } else if (parent instanceof ResourceConfiguration) {
-//                baseTc = ((ResourceConfiguration) parent).getBaseToolChain();
-//            }
-//        }
-//
-//        return baseTc;
+        return null;
+        //    	List<ITool> tools = getToolsToInvoke();
+        //        ITool baseTool = null;
+        //        for (ITool tool:tools) {
+        //            ITool superTool = tool.getSuperClass();
+        //            if (superTool != null) {
+        //                baseTool = superTool;
+        //                if (!superTool.isExtensionElement()) {
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //
+        //        IToolChain baseTc = null;
+        //        if (baseTool != null) {
+        //            IBuildObject parent = baseTool.getParent();
+        //            if (parent instanceof IToolChain) {
+        //                baseTc = (IToolChain) parent;
+        //            } else if (parent instanceof ResourceConfiguration) {
+        //                baseTc = ((ResourceConfiguration) parent).getBaseToolChain();
+        //            }
+        //        }
+        //
+        //        return baseTc;
     }
 
     @Override
     public boolean supportsBuild(boolean managed) {
-    	List<ITool> tools = getToolsToInvoke();
-        for (ITool tool: tools) {
-            if (!tool.supportsBuild(managed))
-                return false;
-        }
+        //    	List<ITool> tools = getToolsToInvoke();
+        //        for (ITool tool: tools) {
+        //            if (!tool.supportsBuild(managed))
+        //                return false;
+        //        }
 
         return true;
     }
 
-
     @Override
     public boolean hasCustomSettings() {
-    	return true;
-//        IResourceInfo parentRc = getParentResourceInfo();
-//        if (parentRc instanceof FolderInfo) {
-//            IPath path = getPath();
-//            String ext = path.getFileExtension();
-//            if (ext == null)
-//                ext = ""; //$NON-NLS-1$
-//            ITool otherTool = ((FolderInfo) parentRc).getToolFromInputExtension(ext);
-//            if (otherTool == null)
-//                return true;
-//
-//            List<ITool> tti = getToolsToInvoke();
-//            if (tti.size() != 1)
-//                return true;
-//
-//            return ((Tool) tti[0]).hasCustomSettings((Tool) otherTool);
-//        }
-//        List<ITool> tools = getTools();
-//        List<ITool>  otherTools = ((IFileInfo) parentRc).getTools();
-//        if (tools.size() != otherTools.size())
-//            return true;
-//
-////        for (int i = 0; i < tools.length; i++) {
-////            Tool tool = (Tool) tools[i];
-////            Tool otherTool = (Tool) otherTools[i];
-////            if (tool.hasCustomSettings(otherTool))
-//                return true;
-////        }
-//
-//        return false;
+        return true;
+        //        IResourceInfo parentRc = getParentResourceInfo();
+        //        if (parentRc instanceof FolderInfo) {
+        //            IPath path = getPath();
+        //            String ext = path.getFileExtension();
+        //            if (ext == null)
+        //                ext = ""; //$NON-NLS-1$
+        //            ITool otherTool = ((FolderInfo) parentRc).getToolFromInputExtension(ext);
+        //            if (otherTool == null)
+        //                return true;
+        //
+        //            List<ITool> tti = getToolsToInvoke();
+        //            if (tti.size() != 1)
+        //                return true;
+        //
+        //            return ((Tool) tti[0]).hasCustomSettings((Tool) otherTool);
+        //        }
+        //        List<ITool> tools = getTools();
+        //        List<ITool>  otherTools = ((IFileInfo) parentRc).getTools();
+        //        if (tools.size() != otherTools.size())
+        //            return true;
+        //
+        ////        for (int i = 0; i < tools.length; i++) {
+        ////            Tool tool = (Tool) tools[i];
+        ////            Tool otherTool = (Tool) otherTools[i];
+        ////            if (tool.hasCustomSettings(otherTool))
+        //                return true;
+        ////        }
+        //
+        //        return false;
     }
 
     @Override
@@ -774,16 +767,16 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
 
     @Override
     public boolean isSupported() {
-//        IFolderInfo foInfo = getParentFolderInfo();
-//        if (foInfo == null) {
-//            IConfiguration cfg = getParent();
-//            if (cfg != null) {
-//                foInfo = cfg.getRootFolderInfo();
-//            }
-//        }
-//
-//        if (foInfo != null)
-//            return foInfo.isSupported();
+        //        IFolderInfo foInfo = getParentFolderInfo();
+        //        if (foInfo == null) {
+        //            IConfiguration cfg = getParent();
+        //            if (cfg != null) {
+        //                foInfo = cfg.getRootFolderInfo();
+        //            }
+        //        }
+        //
+        //        if (foInfo != null)
+        //            return foInfo.isSupported();
         return false;
     }
 

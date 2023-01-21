@@ -25,6 +25,7 @@ public class Const {
     public static final String EMPTY = "";
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
+    public static final String BLANK = " ";
 
     // arduino txt basic keys
     public static final String VARIANT = "variant";
@@ -124,7 +125,7 @@ public class Const {
     public static final String SAM = "sam";
     public static final String SAMD = "samd";
 
-	public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
-	public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";
+    public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
+    public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";
 
 }

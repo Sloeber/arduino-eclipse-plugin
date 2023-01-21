@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -33,6 +34,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 //import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 //import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyInfo;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.BuildException;
@@ -241,7 +243,7 @@ public class MakeRule {
         }
     }
 
-    private String enumTargets(IFile buildFolder) {
+    private String enumTargets(IFolder buildFolder) {
         String ret = new String();
         for (Set<IFile> curFiles : myTargets.values()) {
             for (IFile curFile : curFiles) {
@@ -251,7 +253,7 @@ public class MakeRule {
         return ret;
     }
 
-    private String enumPrerequisites(IFile buildFolder) {
+    private String enumPrerequisites(IFolder buildFolder) {
         String ret = new String();
         for (Set<IFile> curFiles : myPrerequisites.values()) {
             for (IFile curFile : curFiles) {
@@ -262,7 +264,7 @@ public class MakeRule {
     }
 
     //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
-    public StringBuffer getRule(IProject project, IFile niceBuildFolder, IConfiguration config) {
+    public StringBuffer getRule(IProject project, IFolder niceBuildFolder, IConfiguration config) {
         //ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
@@ -301,8 +303,8 @@ public class MakeRule {
         needExplicitRuleForFile = resourceNameRequiresExplicitRule;
 
         String outflag = myTool.getOutputFlag();
-        String buildCmd = cmd + WHITESPACE + flags.toString().trim() + WHITESPACE + outflag + WHITESPACE
-                 + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
+        String buildCmd = cmd + WHITESPACE + flags.toString().trim() + WHITESPACE + outflag + WHITESPACE + OUT_MACRO
+                + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
         if (needExplicitRuleForFile || needExplicitDependencyCommands) {
             buildCmd = expandCommandLinePattern(cmd, flags, outflag, OUT_MACRO + otherPrimaryOutputs, niceNameList,
                     getToolCommandLinePattern(config, myTool));
@@ -363,7 +365,7 @@ public class MakeRule {
         return buffer;
     }
 
-    private Set<String> getBuildFlags(IFile buildFolder, IConfiguration config, IFile sourceFile, IFile outputFile) {
+    private Set<String> getBuildFlags(IFolder buildFolder, IConfiguration config, IFile sourceFile, IFile outputFile) {
         Set<String> flags = new LinkedHashSet<>();
         // Get the tool command line options
         try {
@@ -372,7 +374,7 @@ public class MakeRule {
             flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile.getLocation(), outputFile.getLocation())));
 
             //TOFIX add dependency falgs if needed
-            IInputType[] inputTypes = myTool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
+            List<IInputType> inputTypes = myTool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
             //            for (IInputType inputType : inputTypes) {
             //                IManagedDependencyGeneratorType t = inputType.getDependencyGenerator();
             //                if (t != null) {
@@ -453,7 +455,7 @@ public class MakeRule {
         command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
         command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
         command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
-       // command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
+        // command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
         command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
         command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
 

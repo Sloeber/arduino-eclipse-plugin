@@ -65,15 +65,15 @@ public class InputType extends BuildObject implements IInputType {
 
     // read from model
     private String[] modelSourceContentType;
-    private String[] modelExtensions ;
-    private String[] modelOutputTypeID ;
-    private String[] modelOption ;
+    private String[] modelExtensions;
+    private String[] modelOutputTypeID;
+    private String[] modelOption;
     private String[] modelAssignToOption;
-    private String[] modelDependencyContentType ;
-    private String[] modelDependencyExtensions ;
+    private String[] modelDependencyContentType;
+    private String[] modelDependencyExtensions;
     private String[] modelScannerConfigDiscoveryProfileID;
-    private String[] modelLanguageID ;
-    private String[] modelLanguageInfoCalculator ;
+    private String[] modelLanguageID;
+    private String[] modelLanguageInfoCalculator;
     private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
 
     /*
@@ -289,8 +289,6 @@ public class InputType extends BuildObject implements IInputType {
         //            setRebuildState(true);
         //        }
     }
-
-
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -521,16 +519,16 @@ public class InputType extends BuildObject implements IInputType {
      * org.eclipse.cdt.core.build.managed.IInputType#getSourceExtensionsAttribute()
      */
     @Override
-    public String[] getSourceExtensionsAttribute() {
-        if (inputExtensions == null) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return superClass.getSourceExtensionsAttribute();
-            }
-
-            return new String[0];
-        }
-        return inputExtensions.toArray(new String[inputExtensions.size()]);
+    public List<String> getSourceExtensionsAttribute() {
+        //        if (inputExtensions == null) {
+        //            // If I have a superClass, ask it
+        //            if (superClass != null) {
+        //                return superClass.getSourceExtensionsAttribute();
+        //            }
+        //
+        //            return new String[0];
+        //        }
+        return inputExtensions;//.toArray(new String[inputExtensions.size()]);
     }
 
     /*
@@ -539,11 +537,11 @@ public class InputType extends BuildObject implements IInputType {
      * @see org.eclipse.cdt.core.build.managed.IInputType#getSourceExtensions()
      */
     @Override
-    public String[] getSourceExtensions(ITool tool) {
+    public List<String> getSourceExtensions(ITool tool) {
         return getSourceExtensions(tool, ((Tool) tool).getProject());
     }
 
-    public String[] getSourceExtensions(ITool tool, IProject project) {
+    public List<String> getSourceExtensions(ITool tool, IProject project) {
         // Use content type if specified and registered with Eclipse
         List<IContentType> types = getSourceContentTypes();
         if (!types.isEmpty()) {
@@ -551,7 +549,7 @@ public class InputType extends BuildObject implements IInputType {
             for (IContentType type : types) {
                 list.addAll(Arrays.asList(((Tool) tool).getContentTypeFileSpecs(type, project)));
             }
-            return list.toArray(new String[list.size()]);
+            return list;
         }
         return getSourceExtensionsAttribute();
     }
@@ -595,16 +593,15 @@ public class InputType extends BuildObject implements IInputType {
     //        }
     //    }
 
-  
     @Override
     public String getLanguageName(ITool tool) {
-//        IResourceInfo rcInfo = getRcInfo(tool);
+        //        IResourceInfo rcInfo = getRcInfo(tool);
         String langName = null;
-//        if (langName == null || isExtensionInputType) {
-//            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
-//            if (calc != null)
-//                langName = calc.getLanguageName(rcInfo, tool, this);
-//        }
+        //        if (langName == null || isExtensionInputType) {
+        //            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
+        //            if (calc != null)
+        //                langName = calc.getLanguageName(rcInfo, tool, this);
+        //        }
 
         if (langName == null) {
             langName = getName();
@@ -622,9 +619,9 @@ public class InputType extends BuildObject implements IInputType {
     @Override
     public String getDiscoveryProfileId(ITool tool) {
         String id = getDiscoveryProfileIdAttribute();
-        if (id == null) {
-            id = ((Tool) tool).getDiscoveryProfileId();
-        }
+        //        if (id == null) {
+        //            id = ((Tool) tool).getDiscoveryProfileId();
+        //        }
         // if there is more than one ('|'-separated), return the first one
         // TODO: expand interface with String[] getDiscoveryProfileIds(ITool tool)
         if (null != id) {

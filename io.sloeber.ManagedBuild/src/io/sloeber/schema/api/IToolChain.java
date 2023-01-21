@@ -220,7 +220,7 @@ public interface IToolChain extends IHoldsOptions {
      * Returns an IOptionPathConverter implementation for this toolchain
      * or null, if no conversion is required
      */
-    public IOptionPathConverter getOptionPathConverter();
+    //    public IOptionPathConverter getOptionPathConverter();
 
     IFolderInfo getParentFolderInfo();
 

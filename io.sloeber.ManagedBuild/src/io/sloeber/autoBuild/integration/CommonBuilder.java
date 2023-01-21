@@ -165,7 +165,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         private final IBuilder fBuilder;
         private IConsole fConsole;
 
-        CfgBuildInfo( IProject project,IBuilder builder, boolean isForegound) {
+        CfgBuildInfo(IProject project, IBuilder builder, boolean isForegound) {
             this.fBuilder = builder;
             this.fCfg = builder.getParent().getParent();
             this.fProject = project;
@@ -213,8 +213,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             this.project = cfg.getOwner().getProject();
             buildPaths = new IPath[allConfigs.length];
             for (int i = 0; i < buildPaths.length; i++) {
-                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], project)
-                        .getLocation();
+                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], project).getLocation();
             }
             String ext = cfg.getArtifactExtension();
             //try to resolve build macros in the build artifact extension
@@ -389,9 +388,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         }
 
         private void setResourceChangeStateForOtherConfigs() {
-//            for (Configuration otherConfig : otherConfigs) {
-//                otherConfig.addResourceChangeState(resourceChangeState);
-//            }
+            //            for (Configuration otherConfig : otherConfigs) {
+            //                otherConfig.addResourceChangeState(resourceChangeState);
+            //            }
         }
 
         private boolean isResourceValuable(IResource rc) {
@@ -444,7 +443,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         IProject project = getProject();
 
         if (!isCdtProjectCreated(project)) {
-        	System.err.println("The build is cancelled as the project has not yet ben created.");
+            System.err.println("The build is cancelled as the project has not yet ben created.");
             return project.getReferencedProjects();
         }
 
@@ -512,17 +511,19 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                         IResourceDelta delta = getDelta(project);
                         if (delta != null && delta.getAffectedChildren().length > 0) { //project resource has changed within Eclipse, need to build this configuration
                             isBuild.setValue(true);
-                            build(kind, new CfgBuildInfo(project,builders[i], isForeground),
+                            build(kind, new CfgBuildInfo(project, builders[i], isForeground),
                                     new SubProgressMonitor(monitor, 1));
                         } else if (isBuild.getValue()) { //one of its dependencies have rebuilt, need to rebuild this configuration
-                            build(kind, new CfgBuildInfo(project,builders[i], isForeground),
+                            build(kind, new CfgBuildInfo(project, builders[i], isForeground),
                                     new SubProgressMonitor(monitor, 1));
                         }
                     } else { //the default behaviour: 'make' is invoked on all configurations and incremental build is handled by 'make'
-                        build(kind, new CfgBuildInfo(project,builders[i], isForeground), new SubProgressMonitor(monitor, 1));
+                        build(kind, new CfgBuildInfo(project, builders[i], isForeground),
+                                new SubProgressMonitor(monitor, 1));
                     }
                 } else { //FULL_BUILD or CLEAN
-                    build(kind, new CfgBuildInfo(project,builders[i], isForeground), new SubProgressMonitor(monitor, 1));
+                    build(kind, new CfgBuildInfo(project, builders[i], isForeground),
+                            new SubProgressMonitor(monitor, 1));
                 }
             }
 
@@ -678,7 +679,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     private void updateOtherConfigs(ManagedBuildInfo info, IBuilder builders[], int buildKind) {
         IConfiguration allCfgs[] = info.getManagedProject().getConfigurations();
-        new OtherConfigVerifier(info,builders, allCfgs).updateOtherConfigs(
+        new OtherConfigVerifier(info, builders, allCfgs).updateOtherConfigs(
                 buildKind == FULL_BUILD ? null : getDelta(info.getManagedProject().getOwner().getProject()));
     }
 
@@ -732,7 +733,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     + " with builder " + bInfo.getBuilder().getName()); //$NON-NLS-1$
         IBuilder builder = bInfo.getBuilder();
         BuildStatus status = new BuildStatus(builder);
-        ManagedProject mProject=bInfo.getBuildInfo().getManagedProject();
+        ManagedProject mProject = bInfo.getBuildInfo().getManagedProject();
 
         if (!shouldBuild(kind, builder)) {
             return;
@@ -772,15 +773,15 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                             bInfo.getConfiguration(), builder, bInfo.getConsole(), this, this, monitor);
                     if (isClean) {
                         forgetLastBuiltState();
-                       //cfg.setRebuildState(true);
+                        //cfg.setRebuildState(true);
                     } else {
                         if (status.isManagedBuildOn()) {
                             performPostbuildGeneration(kind, bInfo, status, monitor);
                         }
-                       // cfg.setRebuildState(false);
+                        // cfg.setRebuildState(false);
                     }
                 } catch (CoreException e) {
-                   // cfg.setRebuildState(true);
+                    // cfg.setRebuildState(true);
                     throw e;
                 }
 
@@ -873,7 +874,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         buildStatus = performCleanning(kind, bInfo, buildStatus, monitor);
         IMakefileGenerator generator = builder.getBuildFileGenerator();
         if (generator != null) {
-            initializeGenerator(generator, kind, bInfo, monitor);
+            generator.initialize(kind, bInfo.getProject(), bInfo.getConfiguration(), bInfo.getBuilder(), monitor);
             buildStatus.setMakeGen(generator);
 
             MultiStatus result = performMakefileGeneration(bInfo, generator, buildStatus, monitor);
@@ -1031,17 +1032,6 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     //				null);
     //	}
 
-    protected void initializeGenerator(IMakefileGenerator generator, int kind, CfgBuildInfo bInfo,
-            IProgressMonitor monitor) {
-        if (generator instanceof IMakefileGenerator) {
-            IMakefileGenerator gen2 = (IMakefileGenerator) generator;
-            gen2.initialize(kind, bInfo.getConfiguration(), bInfo.getBuilder(), monitor);
-        } else {
-            generator.initialize(bInfo.getProject(), bInfo.getBuildInfo(), monitor);
-        }
-
-    }
-
     @Override
     protected final void clean(IProgressMonitor monitor) throws CoreException {
         throw new IllegalStateException(
@@ -1060,7 +1050,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         IBuilder[] builders = createBuilders(curProject, args);
         for (IBuilder builder : builders) {
-            CfgBuildInfo bInfo = new CfgBuildInfo(curProject,builder, true);
+            CfgBuildInfo bInfo = new CfgBuildInfo(curProject, builder, true);
             clean(bInfo, monitor);
         }
     }

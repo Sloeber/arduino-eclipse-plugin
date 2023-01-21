@@ -70,9 +70,9 @@ public interface IMakefileGenerator {
     /**
      * This method initializes the makefile generator
      */
-    public void initialize(IProject project, IManagedBuildInfo info, IProgressMonitor monitor);
 
-    public void initialize(int buildKind, IConfiguration cfg, IBuilder builder, IProgressMonitor monitor);
+    public void initialize(int buildKind, IProject iProject, IConfiguration cfg, IBuilder builder,
+            IProgressMonitor monitor);
 
     public void generateDependencies() throws CoreException;
 

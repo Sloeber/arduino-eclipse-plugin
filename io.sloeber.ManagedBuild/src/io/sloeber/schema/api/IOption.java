@@ -35,6 +35,7 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IOption extends IBuildObject {
+    public static final String ELEMENT_NAME = "option"; //$NON-NLS-1$
     // Type for the value of the option
     public static final int BOOLEAN = 0;
     public static final int ENUMERATED = 1;
@@ -106,7 +107,7 @@ public interface IOption extends IBuildObject {
     /**
      * @since 8.1
      */
-    public static final String ICON = "icon"; //$NON-NLS-1$
+    //public static final String ICON = "icon"; //$NON-NLS-1$
     /**
      * @since 8.1
      */
@@ -590,9 +591,6 @@ public interface IOption extends IBuildObject {
      */
     public void setValueType(int type);
 
-
-
-
     /**
      * @return the custom field-editor ID for this build-option. This ID should
      *         match a custom-field editor
@@ -619,7 +617,6 @@ public interface IOption extends IBuildObject {
      * @since 8.0
      */
     public void setFieldEditorExtraArgument(String extraArgument);
-
 
     /**
      * @return <code>true</code> if this option is valid and <code>false</code>
