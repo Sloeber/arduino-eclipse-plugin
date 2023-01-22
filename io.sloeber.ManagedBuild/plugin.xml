@@ -16,7 +16,7 @@
 -->
 		<builder
         autoBuildTarget="all"
-        buildRunner="io.sloeber.autoBuild.extensionPoint.BuildRunner"
+        buildRunner="io.sloeber.autoBuild.extensionPoint.providers.BuildRunner"
         buildfileGenerator="io.sloeber.autoBuild.extensionPoint.MakefileGenerator"
         cleanBuildTarget="clean"
         command="${MAKE_HOME}make"
@@ -36,7 +36,7 @@
         macroOutputFileExtValue="$(suffix $(notdir $@)"
         macroOutputFileNameValue="$(notdir $@)"
         macroOutputFileRelPathValue="$@"
-        makefileGenerator="io.sloeber.autoBuild.extensionPoint.MakefileGenerator"
+        makefileGenerator="io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator"
         name="%toolchain.builder.name"
         parallelBuildCmd="-j*"
         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
@@ -113,7 +113,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.cpp.sketch.link.output"
                     name="%outputType.CPP.link.name"
-                    nameProvider="io.sloeber.autoBuild.Internal.LinkNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.LinkObjectNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
@@ -121,7 +121,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.cpp.ar.output"
                     name="%outputType.CPP.AR.name"
-                    nameProvider="io.sloeber.autoBuild.Internal.ArchiveNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveObjectNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
@@ -232,6 +232,7 @@
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.archiver.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveNameProvider"
                     outputNames="${archive_file_path}"
                     outputs="ar"
                     primaryOutput="true">
@@ -395,7 +396,7 @@
           isConfigurable="false"
           supportsConfigurations="true">
        <run
-             class="io.sloeber.autoBuild.integration.CommonBuilder">
+             class="io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder">
        </run>
     </builder>
  </extension>

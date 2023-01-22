@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.integration.CommonBuilder;
+import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;

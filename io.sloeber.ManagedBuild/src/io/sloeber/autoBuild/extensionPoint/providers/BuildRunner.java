@@ -14,7 +14,7 @@
  *   Andrew Gvozdev
  *   IBM Corporation
  *******************************************************************************/
-package io.sloeber.autoBuild.extensionPoint;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
 import java.io.IOException;
 import java.net.URI;
@@ -61,6 +61,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFileInfo;

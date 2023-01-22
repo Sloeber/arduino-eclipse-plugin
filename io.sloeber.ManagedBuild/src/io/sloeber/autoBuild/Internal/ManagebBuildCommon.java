@@ -43,13 +43,13 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 
 @SuppressWarnings("nls")
 public class ManagebBuildCommon {
@@ -593,18 +593,18 @@ public class ManagebBuildCommon {
     }
 
     static public String GetNiceFileName(IFolder buildPath, IFile path) {
-        return GetNiceFileName(buildPath.getLocation(), path.getLocation()).toOSString();
+        return GetNiceFileName(buildPath.getLocation(), path.getLocation());
     }
 
-    static public IPath GetNiceFileName(IPath buildPath, IPath filePath) {
+    static public String GetNiceFileName(IPath buildPath, IPath filePath) {
         if (buildPath.isPrefixOf(filePath)) {
-            return filePath.makeRelativeTo(buildPath);
+            return filePath.makeRelativeTo(buildPath).toOSString();
         }
         if (buildPath.removeLastSegments(1).isPrefixOf(filePath)) {
-            return filePath.makeRelativeTo(buildPath);
+            return filePath.makeRelativeTo(buildPath).toOSString();
 
         }
-        return filePath;
+        return filePath.toOSString();
     }
 
     static public String makeVariable(String variableName) {

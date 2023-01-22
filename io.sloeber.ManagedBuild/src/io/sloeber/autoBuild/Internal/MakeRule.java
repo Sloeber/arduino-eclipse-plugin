@@ -39,7 +39,7 @@ import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;

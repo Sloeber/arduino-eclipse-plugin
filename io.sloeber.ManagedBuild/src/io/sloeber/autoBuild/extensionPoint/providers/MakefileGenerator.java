@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.extensionPoint;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.ManagebBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
@@ -43,6 +43,7 @@ import io.sloeber.autoBuild.Internal.TopMakeFileGenerator;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -181,8 +182,8 @@ public class MakefileGenerator implements IMakefileGenerator {
         return null;
     }
 
-    public IPath getBuildFolder() {
-        return topBuildDir.getLocation();
+    public IFolder getBuildFolder() {
+        return topBuildDir;
     }
 
     /*
@@ -355,13 +356,6 @@ public class MakefileGenerator implements IMakefileGenerator {
             monitor.subTask(msg);
             monitor.worked(1);
         }
-    }
-
-    /**
-     * Return the configuration's top build directory as an absolute path
-     */
-    public IFolder getTopBuildDir() {
-        return topBuildDir;
     }
 
     @Override

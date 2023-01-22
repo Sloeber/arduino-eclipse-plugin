@@ -18,7 +18,7 @@
  * Umair Sair (Mentor Graphics) - Setting current project for markers creation (bug 545976)
  * Torbjörn Svensson (STMicroelectronics) - bug #571134
  *******************************************************************************/
-package io.sloeber.autoBuild.integration;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.core.Messages.*;
 

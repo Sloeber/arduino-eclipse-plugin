@@ -25,7 +25,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -112,12 +112,8 @@ public class SubDirMakeGenerator {
         return caller.getBuildWorkingDir();
     }
 
-    private IPath getBuildFolder() {
+    private IFolder getBuildFolder() {
         return caller.getBuildFolder();
-    }
-
-    private IFolder getTopBuildDir() {
-        return caller.getTopBuildDir();
     }
 
     private IConfiguration getConfig() {
@@ -147,7 +143,7 @@ public class SubDirMakeGenerator {
 
     private StringBuffer GenerateMacros() {
         StringBuffer buffer = new StringBuffer();
-        IFolder buildRoot = getTopBuildDir();
+        IFolder buildRoot = getBuildFolder();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_module_variables)
                 .append(NEWLINE);
@@ -179,7 +175,7 @@ public class SubDirMakeGenerator {
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules) {
-            buffer.append(makeRule.getRule(getProject(), getTopBuildDir(), config));
+            buffer.append(makeRule.getRule(getProject(), getBuildFolder(), config));
         }
 
         return buffer;
@@ -190,7 +186,7 @@ public class SubDirMakeGenerator {
         myMakeRules.clear();
         IConfiguration config = getConfig();
         IProject project = getProject();
-        IPath buildPath = getBuildFolder();
+        IFolder buildFolder = getBuildFolder();
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
 
@@ -218,7 +214,7 @@ public class SubDirMakeGenerator {
                             continue;
                         }
                         for (IOutputType outputType : tool.getOutputTypes()) {
-                            IFile outputFile = outputType.getOutputName(inputFile, confDesc, inputType);
+                            IFile outputFile = outputType.getOutputName(buildFolder, inputFile, confDesc, inputType);
                             if (outputFile == null) {
                                 continue;
                             }

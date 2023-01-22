@@ -80,7 +80,7 @@ import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
-import io.sloeber.autoBuild.integration.CommonBuilder;
+import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
 import io.sloeber.buildProperties.BuildPropertyManager;
 import io.sloeber.buildProperties.IBuildPropertyManager;
 import io.sloeber.schema.api.IBuilder;

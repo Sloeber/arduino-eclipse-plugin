@@ -13,6 +13,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.integration.Const.*;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -95,7 +96,7 @@ public abstract class BuildObject implements IBuildObject {
             }
 
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
+            System.err.println("failed to resolve executable " + attributeName + " for " + name + BLANK + id); //$NON-NLS-1$ //$NON-NLS-2$
             e.printStackTrace();
         }
         return null;
@@ -117,7 +118,7 @@ public abstract class BuildObject implements IBuildObject {
         if (name != null) {
             return name;
         }
-        return "id=" + id;
+        return "id=" + id; //$NON-NLS-1$
     }
 
     private IConfigurationElement getSuperClassConfigurationElement(String elementName, String id,

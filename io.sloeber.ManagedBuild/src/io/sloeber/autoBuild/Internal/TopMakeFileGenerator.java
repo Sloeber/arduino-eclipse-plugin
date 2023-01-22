@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -53,7 +53,7 @@ public class TopMakeFileGenerator {
         return caller.getProject();
     }
 
-    private IPath getBuildFolder() {
+    private IFolder getBuildFolder() {
         return caller.getBuildFolder();
     }
 
@@ -224,7 +224,7 @@ public class TopMakeFileGenerator {
 
     private StringBuffer getMakeTopTargets() {
         IConfiguration config = getConfig();
-        IPath buildFolder = getBuildFolder();
+        IFolder buildFolder = getBuildFolder();
 
         StringBuffer buffer = new StringBuffer();
 
@@ -233,7 +233,7 @@ public class TopMakeFileGenerator {
         if (targetTool != null) {
             Set<IFile> allTargets = myMakeRules.getTargetsForTool(targetTool);
             for (IFile curTarget : allTargets) {
-                String targetString = GetNiceFileName(buildFolder, curTarget.getLocation()).toOSString();
+                String targetString = GetNiceFileName(buildFolder, curTarget);
                 buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
                 buffer.append(WHITESPACE);
             }
@@ -300,6 +300,7 @@ public class TopMakeFileGenerator {
         MakeRules makeRules = new MakeRules();
         IConfiguration config = getConfig();
         IProject project = getProject();
+        IFolder buildFolder = getBuildFolder();
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
 
@@ -313,7 +314,7 @@ public class TopMakeFileGenerator {
                     List<IInputType> matchingInputTypes = tool.getMatchingInputTypes(file, macroName);
                     for (IInputType inputType : matchingInputTypes) {
                         for (IOutputType outputType : tool.getOutputTypes()) {
-                            IFile outputFile = outputType.getOutputName(null, confDesc, inputType);
+                            IFile outputFile = outputType.getOutputName(buildFolder, file, confDesc, inputType);
 
                             if (outputFile != null) {
                                 makeRules.addRule(tool, inputType, macroName, files, outputType, outputFile);
@@ -329,7 +330,7 @@ public class TopMakeFileGenerator {
 
     private StringBuffer getMakeMacros() {
         StringBuffer buffer = new StringBuffer();
-        IFolder buildRoot = caller.getTopBuildDir();
+        IFolder buildRoot = getBuildFolder();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_module_variables).append(NEWLINE);
 
@@ -354,7 +355,7 @@ public class TopMakeFileGenerator {
         StringBuffer buffer = new StringBuffer();
         IProject project = getProject();
         IConfiguration config = getConfig();
-        IFolder topBuildDir = caller.getTopBuildDir();
+        IFolder topBuildDir = getBuildFolder();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 

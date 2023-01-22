@@ -15,6 +15,7 @@ package io.sloeber.schema.api;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.content.IContentType;
 
@@ -32,6 +33,7 @@ import io.sloeber.schema.internal.IBuildObject;
  */
 public interface IOutputType extends IBuildObject {
     public static final String OUTPUT_TYPE_ELEMENT_NAME = "outputType"; //$NON-NLS-1$
+
     public static final String OUTPUT_CONTENT_TYPE = "outputContentType"; //$NON-NLS-1$
     public static final String OPTION = "option"; //$NON-NLS-1$
     public static final String OUTPUT_PREFIX = "outputPrefix"; //$NON-NLS-1$
@@ -42,21 +44,6 @@ public interface IOutputType extends IBuildObject {
     public static final String BUILD_VARIABLE = "buildVariable"; //$NON-NLS-1$
 
     /**
-     * Returns the tool defining this OutputType.
-     *
-     * @return ITool
-     */
-    public ITool getParent();
-
-    /**
-     * Returns the <code>IOutputType</code> that is the superclass of this
-     * OutputType, or <code>null</code> if the attribute was not specified.
-     *
-     * @return IInputType
-     */
-    public IOutputType getSuperClass();
-
-    /**
      * Returns the Eclipse <code>IContentType</code> that describes this
      * output type. If both the outputs attribute and the outputContentType
      * attribute are specified, the outputContentType will be used if it
@@ -64,7 +51,7 @@ public interface IOutputType extends IBuildObject {
      *
      * @return IContentType
      */
-   // public IContentType getOutputContentType();
+    // public IContentType getOutputContentType();
 
     /**
      * Sets the Eclipse <code>IContentType</code> that describes this
@@ -73,7 +60,7 @@ public interface IOutputType extends IBuildObject {
      * @param contentType
      *            The Eclipse content type
      */
-  //  public void setOutputContentType(IContentType contentType);
+    //  public void setOutputContentType(IContentType contentType);
 
     /**
      * Returns the list of valid output extensions from the
@@ -84,7 +71,7 @@ public interface IOutputType extends IBuildObject {
      *
      * @return <code>String[]</code> of extensions
      */
-  //  public String[] getOutputExtensionsAttribute();
+    //  public String[] getOutputExtensionsAttribute();
 
     /**
      * Sets all of the output extensions that the receiver can build.
@@ -92,7 +79,7 @@ public interface IOutputType extends IBuildObject {
      * output content type is specified and is registered with
      * Eclipse.
      */
-   // public void setOutputExtensionsAttribute(String extensions);
+    // public void setOutputExtensionsAttribute(String extensions);
 
     /**
      * Returns the list of the output extensions that the receiver can build.
@@ -104,7 +91,7 @@ public interface IOutputType extends IBuildObject {
      *            the tool that contains the output-type
      * @return String[]
      */
-  //  public String[] getOutputExtensions(ITool tool);
+    //  public String[] getOutputExtensions(ITool tool);
 
     /**
      * Answers <code>true</code> if the output type considers the file extension to
@@ -135,7 +122,7 @@ public interface IOutputType extends IBuildObject {
      * Sets the id of the option that is associated with this
      * output type on the command line.
      */
-   // public void setOptionId(String optionId);
+    // public void setOptionId(String optionId);
 
     /**
      * Returns <code>true</code> if this outputType creates multiple output
@@ -143,7 +130,7 @@ public interface IOutputType extends IBuildObject {
      *
      * @return boolean
      */
-   // public boolean getMultipleOfType();
+    // public boolean getMultipleOfType();
 
     /**
      * Sets whether this outputType can create multiple output resources in
@@ -157,13 +144,13 @@ public interface IOutputType extends IBuildObject {
      *
      * @return IInputType
      */
-   // public IInputType getPrimaryInputType();
+    // public IInputType getPrimaryInputType();
 
     /**
      * Sets the input type that is used in determining the default
      * names of this output type.
      */
-   // public void setPrimaryInputType(IInputType contentType);
+    // public void setPrimaryInputType(IInputType contentType);
 
     /**
      * Returns <code>true</code> if this is considered the primary output
@@ -171,12 +158,12 @@ public interface IOutputType extends IBuildObject {
      *
      * @return boolean
      */
-   // public boolean getPrimaryOutput();
+    // public boolean getPrimaryOutput();
 
     /**
      * Sets whether this is the primary output of the tool.
      */
-   // public void setPrimaryOutput(boolean primary);
+    // public void setPrimaryOutput(boolean primary);
 
     /**
      * Returns the prefix that the tool should prepend to the name of the build
@@ -185,14 +172,14 @@ public interface IOutputType extends IBuildObject {
      * 
      * @return String
      */
-   // public String getOutputPrefix();
+    // public String getOutputPrefix();
 
     /**
      * Sets the prefix that the tool should prepend to the name of the build
      * artifact.
      * For example, a librarian usually prepends 'lib' to the target.a
      */
-   // public void setOutputPrefix(String prefix);
+    // public void setOutputPrefix(String prefix);
 
     /**
      * Returns the file names of the complete set of output files for this
@@ -205,7 +192,7 @@ public interface IOutputType extends IBuildObject {
     /**
      * Sets the complete set of output file names for this outputType
      */
-   // public void setOutputNames(String names);
+    // public void setOutputNames(String names);
 
     /**
      * Returns the pattern, using the Gnu pattern rule syntax, for deriving the
@@ -214,14 +201,14 @@ public interface IOutputType extends IBuildObject {
      *
      * @return String
      */
-   // public String getNamePattern();
+    // public String getNamePattern();
 
     /**
      * Sets the pattern, using the Gnu pattern rule syntax, for deriving the
      * output resource name from the input resource name.
      *
      */
-   //public void setNamePattern(String pattern);
+    //public void setNamePattern(String pattern);
 
     /**
      * Returns the IManagedOutputNameProvider interface as specified by the
@@ -229,7 +216,7 @@ public interface IOutputType extends IBuildObject {
      *
      * @return IManagedOutputNameProvider
      */
-   // public IOutputNameProvider getNameProvider();
+    // public IOutputNameProvider getNameProvider();
 
     /**
      * Returns the name of the build variable associated this this output type's
@@ -258,7 +245,7 @@ public interface IOutputType extends IBuildObject {
      *
      * @return boolean
      */
-  //  public boolean isDirty();
+    //  public boolean isDirty();
 
     /**
      * Returns <code>true</code> if this OutputType was loaded from a manifest file,
@@ -266,25 +253,30 @@ public interface IOutputType extends IBuildObject {
      *
      * @return boolean
      */
-   // public boolean isExtensionElement();
+    // public boolean isExtensionElement();
 
     /**
      * Sets the element's "dirty" (have I been modified?) flag.
      */
-   // public void setDirty(boolean isDirty);
+    // public void setDirty(boolean isDirty);
 
     /**
-     * Fiven a file, configurationdescription, and inputtype  
+     * Fiven a file, configurationdescription, and inputtype
      * provide the filename that will be created during the build.
-     *  <p>
-     * Note that configurationdescription, a inputtype are provided as information for advanced name provider functionality
+     * <p>
+     * Note that configurationdescription, a inputtype are provided as information
+     * for advanced name provider functionality
      * Therefore these can be null for convenience reasons.
-     *  <p>
-     * @param config The configuration this is asked for or null
-     * @param inputType The input type that leads to this name provider or null
+     * <p>
+     * 
+     * @param config
+     *            The configuration this is asked for or null
+     * @param inputType
+     *            The input type that leads to this name provider or null
      * @param inputFile
      * @return The file that will be created by the build.
      */
-    public IFile getOutputName(IFile inputFile, ICConfigurationDescription config, IInputType inputType);
+    public IFile getOutputName(IFolder buildFolder, IFile inputFile, ICConfigurationDescription config,
+            IInputType inputType);
 
 }
