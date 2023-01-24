@@ -81,11 +81,11 @@ import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
+import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.buildProperties.BuildPropertyManager;
 import io.sloeber.buildProperties.IBuildPropertyManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFileInfo;
 import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IInputType;
@@ -94,7 +94,6 @@ import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.IResourceConfiguration;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
@@ -129,8 +128,6 @@ public class ManagedBuildManager extends AbstractCExtension {
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_EXE = "org.eclipse.cdt.build.core.buildArtefactType.exe"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_STATICLIB = "org.eclipse.cdt.build.core.buildArtefactType.staticLib"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_SHAREDLIB = "org.eclipse.cdt.build.core.buildArtefactType.sharedLib"; //$NON-NLS-1$
-
-    public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".ConfigurationDataProvider"; //$NON-NLS-1$
 
     private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
 
@@ -364,38 +361,38 @@ public class ManagedBuildManager extends AbstractCExtension {
         return null;
     }
 
-    private static void notifyListeners(IResourceInfo resConfig, IOption option) {
-        // Continue if change is something that effect the scanreser
-        try {
-            if (/*resConfig.getParent().isTemporary() ||*/ (option != null
-                    && option.getValueType() != IOption.INCLUDE_PATH
-                    && option.getValueType() != IOption.PREPROCESSOR_SYMBOLS
-                    && option.getValueType() != IOption.INCLUDE_FILES && option.getValueType() != IOption.LIBRARY_PATHS
-                    && option.getValueType() != IOption.LIBRARY_FILES && option.getValueType() != IOption.MACRO_FILES
-                    && option.getValueType() != IOption.UNDEF_INCLUDE_PATH
-                    && option.getValueType() != IOption.UNDEF_PREPROCESSOR_SYMBOLS
-                    && option.getValueType() != IOption.UNDEF_INCLUDE_FILES
-                    && option.getValueType() != IOption.UNDEF_LIBRARY_PATHS
-                    && option.getValueType() != IOption.UNDEF_LIBRARY_FILES
-                    && option.getValueType() != IOption.UNDEF_MACRO_FILES && !option.isForScannerDiscovery())) {
-                return;
-            }
-        } catch (BuildException e) {
-            Activator.log(e);
-            return;
-        }
-
-        // Figure out if there is a listener for this change
-        IResource resource = resConfig.getParent().getOwner();
-        List<IScannerInfoChangeListener> listeners = getBuildModelListeners().get(resource);
-        if (listeners == null) {
-            return;
-        }
-        ListIterator<IScannerInfoChangeListener> iter = listeners.listIterator();
-        while (iter.hasNext()) {
-            iter.next().changeNotification(resource, (IScannerInfo) getBuildInfo(resource));
-        }
-    }
+    //    private static void notifyListeners(IResourceInfo resConfig, IOption option) {
+    //        // Continue if change is something that effect the scanreser
+    //        try {
+    //            if (/*resConfig.getParent().isTemporary() ||*/ (option != null
+    //                    && option.getValueType() != IOption.INCLUDE_PATH
+    //                    && option.getValueType() != IOption.PREPROCESSOR_SYMBOLS
+    //                    && option.getValueType() != IOption.INCLUDE_FILES && option.getValueType() != IOption.LIBRARY_PATHS
+    //                    && option.getValueType() != IOption.LIBRARY_FILES && option.getValueType() != IOption.MACRO_FILES
+    //                    && option.getValueType() != IOption.UNDEF_INCLUDE_PATH
+    //                    && option.getValueType() != IOption.UNDEF_PREPROCESSOR_SYMBOLS
+    //                    && option.getValueType() != IOption.UNDEF_INCLUDE_FILES
+    //                    && option.getValueType() != IOption.UNDEF_LIBRARY_PATHS
+    //                    && option.getValueType() != IOption.UNDEF_LIBRARY_FILES
+    //                    && option.getValueType() != IOption.UNDEF_MACRO_FILES && !option.isForScannerDiscovery())) {
+    //                return;
+    //            }
+    //        } catch (BuildException e) {
+    //            Activator.log(e);
+    //            return;
+    //        }
+    //
+    //        // Figure out if there is a listener for this change
+    //        IResource resource = resConfig.getParent().getOwner();
+    //        List<IScannerInfoChangeListener> listeners = getBuildModelListeners().get(resource);
+    //        if (listeners == null) {
+    //            return;
+    //        }
+    //        ListIterator<IScannerInfoChangeListener> iter = listeners.listIterator();
+    //        while (iter.hasNext()) {
+    //            iter.next().changeNotification(resource, (IScannerInfo) getBuildInfo(resource));
+    //        }
+    //    }
 
     /**
      * Set the string array value for an option for a given resource config.
@@ -943,13 +940,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         ManagedBuildManager.outputManifestError(MessageFormat.format(ManagedBuildManager_error_manifest_icon, msgs));
     }
 
-    // /**
-    // * @return the instance of the Environment Variable Provider
-    // */
-    public static IEnvironmentVariableProvider getEnvironmentVariableProvider() {
-        return EnvironmentVariableProvider.getDefault();
-    }
-
     /**
      * @return the version, if 'id' contains a valid version or {@code null}
      *         otherwise.
@@ -1484,53 +1474,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return 0;
     }
 
-    public static ICConfigurationDescription getDescriptionForConfiguration(IConfiguration cfg) {
-        return getDescriptionForConfiguration(cfg, TEST_CONSISTENCE);
-    }
-
-    private static ICConfigurationDescription getDescriptionForConfiguration(IConfiguration cfg,
-            boolean checkConsistance) {
-        //		if (cfg.isExtensionElement())
-        //			return null;
-        ICConfigurationDescription des = ((Configuration) cfg).getConfigurationDescription();
-        if (des == null) {
-            if (checkConsistance)
-                throw new IllegalStateException();
-            if (((Configuration) cfg).isPreference()) {
-                try {
-                    des = CCorePlugin.getDefault().getPreferenceConfiguration(CFG_DATA_PROVIDER_ID);
-                } catch (CoreException e) {
-                    Activator.log(e);
-                }
-            } else {
-                IProject project = cfg.getOwner().getProject();
-                ICProjectDescription projDes = CoreModel.getDefault().getProjectDescription(project, false);
-                if (projDes != null) {
-                    des = projDes.getConfigurationById(cfg.getId());
-                }
-            }
-        }
-        if (checkConsistance) {
-            if (cfg != getConfigurationForDescription(des, false)) {
-                throw new IllegalStateException();
-            }
-        }
-        return des;
-    }
-
-    /**
-     * Returns a string representing the workspace relative path with
-     * ${workspace_loc: stripped or null if the String path doesn't contain
-     * workspace_loc
-     * 
-     * @param path
-     *            String path to have workspace_loc removed
-     * @return workspace path or null
-     *
-     * @deprecated as of CDT 8.3. This method is useless as API as it does something
-     *             very specfic to {@link BuildEntryStorage}. It was moved there as
-     *             private method {@link BuildEntryStorage#locationToFullPath}.
-     */
     @Deprecated
     public static String locationToFullPath(String path) {
         Assert.isLegal(false, "Do not use this method"); //$NON-NLS-1$
@@ -1800,132 +1743,6 @@ public class ManagedBuildManager extends AbstractCExtension {
     }
 
     /**
-     * Returns the configurations referenced by this configuration. Returns an empty
-     * array if there are no referenced configurations.
-     *
-     * @see CoreModelUtil#getReferencedConfigurationDescriptions(ICConfigurationDescription,
-     *      boolean)
-     * @return an array of IConfiguration objects referenced by this IConfiguration
-     */
-    public static IConfiguration[] getReferencedConfigurations(IConfiguration config) {
-        ICConfigurationDescription cfgDes = getDescriptionForConfiguration(config);
-        if (cfgDes != null) {
-            ICConfigurationDescription[] descs = CoreModelUtil.getReferencedConfigurationDescriptions(cfgDes, false);
-            List<IConfiguration> result = new ArrayList<>();
-            for (ICConfigurationDescription desc : descs) {
-                IConfiguration cfg = getConfigurationForDescription(desc);
-                if (cfg != null) {
-                    result.add(cfg);
-                }
-            }
-            return result.toArray(new IConfiguration[result.size()]);
-        }
-
-        return new Configuration[0];
-    }
-
-    /**
-     * Build the specified build configurations
-     * 
-     * @param configs
-     *            - configurations to build
-     * @param monitor
-     *            - progress monitor
-     */
-    public static void buildConfigurations(IConfiguration[] configs, IProgressMonitor monitor) throws CoreException {
-        buildConfigurations(configs, null, monitor);
-    }
-
-    /**
-     * Build the specified build configurations
-     * 
-     * @param configs
-     *            - configurations to build
-     * @param builder
-     *            - builder to retrieve build arguments
-     * @param monitor
-     *            - progress monitor
-     */
-    public static void buildConfigurations(IConfiguration[] configs, IBuilder builder, IProgressMonitor monitor)
-            throws CoreException {
-        buildConfigurations(configs, builder, monitor, true);
-    }
-
-    /**
-     * Build the specified build configurations.
-     *
-     * @param configs
-     *            - configurations to build
-     * @param builder
-     *            - builder to retrieve build arguments
-     * @param monitor
-     *            - progress monitor
-     * @param allBuilders
-     *            - {@code true} if all builders need to be building or
-     *            {@code false} to build with {@link CommonBuilder}
-     */
-    public static void buildConfigurations(IConfiguration[] configs, IBuilder builder, IProgressMonitor monitor,
-            boolean allBuilders) throws CoreException {
-        buildConfigurations(configs, builder, monitor, allBuilders, IncrementalProjectBuilder.FULL_BUILD);
-    }
-
-    /**
-     * Build the specified build configurations.
-     *
-     * @param configs
-     *            - configurations to build
-     * @param builder
-     *            - builder to retrieve build arguments
-     * @param monitor
-     *            - progress monitor
-     * @param allBuilders
-     *            - {@code true} if all builders need to be building or
-     *            {@code false} to build with {@link CommonBuilder}
-     * @param buildKind
-     *            - one of
-     *            <li>{@link IncrementalProjectBuilder#CLEAN_BUILD}</li>
-     *            <li>{@link IncrementalProjectBuilder#INCREMENTAL_BUILD}</li>
-     *            <li>{@link IncrementalProjectBuilder#FULL_BUILD}</li>
-     *
-     * @since 7.0
-     */
-    public static void buildConfigurations(IConfiguration[] configs, IBuilder builder, IProgressMonitor monitor,
-            boolean allBuilders, int buildKind) throws CoreException {
-
-        Map<IProject, IConfiguration[]> map = sortConfigs(configs);
-        for (Entry<IProject, IConfiguration[]> entry : map.entrySet()) {
-            IProject proj = entry.getKey();
-            IConfiguration[] cfgs = entry.getValue();
-            buildConfigurations(proj, cfgs, builder, monitor, allBuilders, buildKind);
-        }
-    }
-
-    private static Map<IProject, IConfiguration[]> sortConfigs(IConfiguration cfgs[]) {
-        Map<IProject, Set<IConfiguration>> cfgSetMap = new HashMap<>();
-        for (IConfiguration cfg : cfgs) {
-            IProject proj = cfg.getOwner().getProject();
-            Set<IConfiguration> set = cfgSetMap.get(proj);
-            if (set == null) {
-                set = new HashSet<>();
-                cfgSetMap.put(proj, set);
-            }
-            set.add(cfg);
-        }
-
-        Map<IProject, IConfiguration[]> cfgArrayMap = new HashMap<>();
-        if (cfgSetMap.size() != 0) {
-            Set<Entry<IProject, Set<IConfiguration>>> entrySet = cfgSetMap.entrySet();
-            for (Entry<IProject, Set<IConfiguration>> entry : entrySet) {
-                IProject key = entry.getKey();
-                Set<IConfiguration> set = entry.getValue();
-                cfgArrayMap.put(key, set.toArray(new Configuration[set.size()]));
-            }
-        }
-
-        return cfgArrayMap;
-    }
-
-    /**
      * Build the specified build configurations for a given project.
      *
      * @param project
@@ -2034,8 +1851,8 @@ public class ManagedBuildManager extends AbstractCExtension {
 
     public static IConfiguration getPreferenceConfiguration(boolean write) {
         try {
-            ICConfigurationDescription des = CCorePlugin.getDefault().getPreferenceConfiguration(CFG_DATA_PROVIDER_ID,
-                    write);
+            ICConfigurationDescription des = CCorePlugin.getDefault()
+                    .getPreferenceConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, write);
             if (des != null)
                 return getConfigurationForDescription(des);
         } catch (CoreException e) {

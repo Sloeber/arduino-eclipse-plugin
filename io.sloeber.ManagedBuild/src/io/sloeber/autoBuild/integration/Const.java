@@ -22,12 +22,13 @@ public class Const {
     public static final String FALSE = "FALSE";
     public static final String TRUE = "TRUE";
     public static final String COLON = ":";
-    public static final String EMPTY = "";
+    public static final String SEMICOLON = ";";
+    public static final String COMMA = ",";
+    public static final String EMPTY_STRING = "";
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
     public static final String BLANK = " ";
-
-    // arduino txt basic keys
+    public static final String ALL = "all";
     public static final String VARIANT = "variant";
     public static final String CORE = "core";
     public static final String CORES = "cores";

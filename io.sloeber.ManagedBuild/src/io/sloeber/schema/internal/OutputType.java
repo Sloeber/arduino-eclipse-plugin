@@ -14,6 +14,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,6 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.osgi.framework.Version;
 
-import io.sloeber.autoBuild.Internal.BooleanExpressionApplicabilityCalculator;
-import io.sloeber.autoBuild.Internal.OptionEnablementExpression;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -39,7 +38,7 @@ import io.sloeber.schema.api.ITool;
 
 public class OutputType extends BuildObject implements IOutputType {
 
-    private String[] modelOutputContentType;
+    private String[] modelOutputContentType;//Not yet implemented
     private String[] modelOption;
     private String[] modelOutputPrefix;
     private String[] modelOutputExtension;
@@ -51,9 +50,9 @@ public class OutputType extends BuildObject implements IOutputType {
     private IOutputNameProvider nameProvider = null;
     private String buildVariable;
 
-    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
-
-    private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
+    //    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
+    //
+    //    private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
 
     /*
      *  C O N S T R U C T O R S
@@ -87,12 +86,12 @@ public class OutputType extends BuildObject implements IOutputType {
         // buildVariable
         buildVariable = element.getAttribute(IOutputType.BUILD_VARIABLE);
 
-        myOptionEnablementExpression.clear();
-        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        for (IConfigurationElement curEnablement : enablements) {
-            myOptionEnablementExpression.add(new OptionEnablementExpression(curEnablement));
-        }
-        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
+        //        myOptionEnablementExpression.clear();
+        //        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
+        //        for (IConfigurationElement curEnablement : enablements) {
+        //            myOptionEnablementExpression.add(new OptionEnablementExpression(curEnablement));
+        //        }
+        //        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
 
         if (modelBuildVariable[SUPER].isBlank()) {
             buildVariable = name.toUpperCase().replaceAll("\\W", "_"); //$NON-NLS-1$  //$NON-NLS-2$
@@ -124,17 +123,17 @@ public class OutputType extends BuildObject implements IOutputType {
         return modelOption[SUPER];
     }
 
-    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
-        return booleanExpressionCalculator;
-    }
-
-    public boolean isEnabled(ITool tool) {
-        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator();
-        if (calc == null)
-            return true;
-
-        return calc.isOutputTypeEnabled(tool, this);
-    }
+    //    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
+    //        return booleanExpressionCalculator;
+    //    }
+    //
+    //    public boolean isEnabled(ITool tool) {
+    //        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator();
+    //        if (calc == null)
+    //            return true;
+    //
+    //        return calc.isOutputTypeEnabled(tool, this);
+    //    }
 
     @Override
     public IFile getOutputName(IFolder buildFolder, IFile inputFile, ICConfigurationDescription config,
@@ -152,12 +151,12 @@ public class OutputType extends BuildObject implements IOutputType {
 
         if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isEmpty()) {
             return getOutputFile(buildFolder, inputFile,
-                    modelOutputPrefix[SUPER] + inputFile.getName() + "." + modelOutputExtension[SUPER]);
+                    modelOutputPrefix[SUPER] + inputFile.getName() + DOT + modelOutputExtension[SUPER]);
         }
         return null;
     }
 
-    private IFile getOutputFile(IFolder buildFolder, IFile inputFile, String outputFile) {
+    private static IFile getOutputFile(IFolder buildFolder, IFile inputFile, String outputFile) {
         IFolder fileBuldFolder = buildFolder.getFolder(inputFile.getParent().getProjectRelativePath());
         return fileBuldFolder.getFile(outputFile);
     }

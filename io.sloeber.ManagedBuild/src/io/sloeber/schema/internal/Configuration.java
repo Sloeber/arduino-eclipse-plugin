@@ -16,10 +16,15 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICLibraryPathEntry;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;
@@ -41,7 +46,6 @@ import org.eclipse.core.runtime.Platform;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.integration.BuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
@@ -77,11 +81,12 @@ public class Configuration extends BuildObject implements IConfiguration {
     private List<String> defaultLanguageSettingsProviderIds;
 
     //private FolderInfo rootFolderInfo=null;
-    private BuildConfigurationData fCfgData;
+    //private BuildConfigurationData fCfgData;
     private ICConfigurationDescription fCfgDes;
 
     private boolean isPreferenceConfig;
     private String[] myErrorParserIDs;
+    private ICSourceEntry[] sourceEntries;
 
     /**
      * Create an extension configuration from the project manifest file element.
@@ -124,36 +129,12 @@ public class Configuration extends BuildObject implements IConfiguration {
                 break;
             }
             }
-            //			if (configElement.getName().equals(IToolChain.TOOL_CHAIN_ELEMENT_NAME)) {
-            //				
-            //			} else if (IFolderInfo.FOLDER_INFO_ELEMENT_NAME.equals(configElement.getName())) {
-            //				
-            ////			} else if (IFileInfo.FILE_INFO_ELEMENT_NAME.equals(configElement.getName())
-            ////					|| IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(configElement.getName())) {
-            ////				resConfig.add( new ResourceConfiguration(this, root, configElement));
-            //			} else if (SourcePath.ELEMENT_NAME.equals(configElement.getName())) {
-            //				SourcePath p = new SourcePath(configElement);
-            //				if (p.getPath() != null)
-            //					srcPathList.add(p.getPath());
-            //			} else if (configElement.getName().equals(SupportedProperties.SUPPORTED_PROPERTIES)) {
-            //				loadProperties(configElement);
-            //				// } else if (SOURCE_ENTRIES.equals(configElement.getName())) {
-            //				// List<ICSettingEntry> seList = LanguageSettingEntriesSerializer
-            //				// .loadEntriesList(new ManagedConfigStorageElement(configElement),
-            //				// ICSettingEntry.SOURCE_PATH);
-            //				// sourceEntries = seList.toArray(new ICSourceEntry[seList.size()]);
-            //			}
         }
-
-        //
-        //        if (rootFolderInfo == null)
-        //            createRootFolderInfo();
-
         resolveFields();
     }
 
     private void resolveFields() {
-        myErrorParserIDs = modelerrorParsers[SUPER].split(";");
+        myErrorParserIDs = modelerrorParsers[SUPER].split(SEMICOLON);
         if (modelcleanCommand[SUPER].isBlank()) {
             if (Platform.getOS().equals(Platform.OS_WIN32)) {
                 modelcleanCommand[SUPER] = "del"; //$NON-NLS-1$
@@ -166,13 +147,13 @@ public class Configuration extends BuildObject implements IConfiguration {
             if (!modellanguageSettingsProviders[SUPER].isBlank()) {
                 List<String> ids = new ArrayList<>();
                 String[] defaultIds = modellanguageSettingsProviders[SUPER].split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER);
-                for (String id : defaultIds) {
-                    if (id != null && !id.isEmpty()) {
-                        if (id.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
-                            id = id.substring(1);
-                            ids.remove(id);
-                        } else if (!ids.contains(id)) {
-                            if (id.contains($TOOLCHAIN)) {
+                for (String defeultID : defaultIds) {
+                    if (defeultID != null && !defeultID.isEmpty()) {
+                        if (defeultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
+                            defeultID = defeultID.substring(1);
+                            ids.remove(defeultID);
+                        } else if (!ids.contains(defeultID)) {
+                            if (defeultID.contains($TOOLCHAIN)) {
                                 IToolChain toolchain = getToolChain();
                                 if (toolchain != null) {
                                     String toolchainProvidersIds = toolchain.getDefaultLanguageSettingsProviderIds();
@@ -182,7 +163,7 @@ public class Configuration extends BuildObject implements IConfiguration {
                                     }
                                 }
                             } else {
-                                ids.add(id);
+                                ids.add(defeultID);
                             }
                         }
                     }
@@ -696,20 +677,7 @@ public class Configuration extends BuildObject implements IConfiguration {
         // }
     }
 
-    /*
-     * P A R E N T A N D C H I L D H A N D L I N G
-     */
-
     @Override
-    public IResource getOwner() {
-        //		if (managedProject != null)
-        //			return managedProject.getOwner();
-        //		else {
-        return null; // Extension configurations don't have an "owner"
-        //		}
-    }
-
-    // @Override
     public IProjectType getProjectType() {
         return projectType;
     }
@@ -928,10 +896,10 @@ public class Configuration extends BuildObject implements IConfiguration {
         return tool;
     }
 
-    @Override
-    public CConfigurationData getConfigurationData() {
-        return fCfgData;
-    }
+    //    @Override
+    //    public CConfigurationData getConfigurationData() {
+    //        return fCfgData;
+    //    }
 
     @Override
     public List<ICSourceEntry> getSourceEntries() {
@@ -946,10 +914,10 @@ public class Configuration extends BuildObject implements IConfiguration {
         //                return sourceEntries.clone();
     }
 
-    @Override
-    public CBuildData getBuildData() {
-        return getBuilder().getBuildData();
-    }
+    //    @Override
+    //    public CBuildData getBuildData() {
+    //        return getBuilder().getBuildData();
+    //    }
 
     @Override
     public IBuilder getBuilder() {
@@ -962,50 +930,6 @@ public class Configuration extends BuildObject implements IConfiguration {
 
     public void setConfigurationDescription(ICConfigurationDescription cfgDes) {
         fCfgDes = cfgDes;
-    }
-
-    /**
-     * Responsible for contributing 'external' settings back to the core for use by
-     * referenced projects.
-     *
-     * In this case it returns Include, Library path & Library File settings to be
-     * used be references for linking the output of this library project
-     */
-    public void exportArtifactInfo() {
-
-        ICConfigurationDescription des = ManagedBuildManager.getDescriptionForConfiguration(this);
-        if (des != null && !des.isReadOnly()) {
-            ICOutputEntry entries[] = getConfigurationData().getBuildData().getOutputDirectories();
-            IPath path = getOwner().getFullPath();
-
-            List<ICSettingEntry> list = new ArrayList<>(entries.length + 1);
-
-            // Add project level include path
-            list.add(CDataUtil.createCIncludePathEntry(path.toString(), ICSettingEntry.VALUE_WORKSPACE_PATH));
-
-            // Add Build output path as an exported library path
-            entries = CDataUtil.resolveEntries(entries, des);
-            for (int i = 0; i < entries.length; i++) {
-                ICOutputEntry out = entries[i];
-                String value = out.getValue();
-
-                IPath p = new Path(value);
-                if (!p.isAbsolute())
-                    value = getOwner().getFullPath().append(value).toString();
-                ICLibraryPathEntry lib = CDataUtil.createCLibraryPathEntry(value,
-                        out.getFlags() & (~ICSettingEntry.RESOLVED));
-                list.add(lib);
-            }
-
-            // Add 'libs' artifact names themselves
-            ICSettingEntry[] unresolved = new ICSettingEntry[] {
-                    CDataUtil.createCLibraryFileEntry(getArtifactName(), 0) };
-            ICSettingEntry[] libFiles = CDataUtil.resolveEntries(unresolved, des);
-            list.add(libFiles[0]);
-
-            // Contribute the settings back as 'exported'
-            des.createExternalSetting(null, null, null, list.toArray(new ICSettingEntry[list.size()]));
-        }
     }
 
     @Override
@@ -1219,3 +1143,46 @@ public class Configuration extends BuildObject implements IConfiguration {
 * 
 * }
 */
+//    /**
+//     * Responsible for contributing 'external' settings back to the core for use by
+//     * referenced projects.
+//     *
+//     * In this case it returns Include, Library path & Library File settings to be
+//     * used be references for linking the output of this library project
+//     */
+//    public void exportArtifactInfo() {
+//
+//        ICConfigurationDescription des = ManagedBuildManager.getDescriptionForConfiguration(this);
+//        if (des != null && !des.isReadOnly()) {
+//            ICOutputEntry entries[] = getConfigurationData().getBuildData().getOutputDirectories();
+//            IPath path = getOwner().getFullPath();
+//
+//            List<ICSettingEntry> list = new ArrayList<>(entries.length + 1);
+//
+//            // Add project level include path
+//            list.add(CDataUtil.createCIncludePathEntry(path.toString(), ICSettingEntry.VALUE_WORKSPACE_PATH));
+//
+//            // Add Build output path as an exported library path
+//            entries = CDataUtil.resolveEntries(entries, des);
+//            for (int i = 0; i < entries.length; i++) {
+//                ICOutputEntry out = entries[i];
+//                String value = out.getValue();
+//
+//                IPath p = new Path(value);
+//                if (!p.isAbsolute())
+//                    value = getOwner().getFullPath().append(value).toString();
+//                ICLibraryPathEntry lib = CDataUtil.createCLibraryPathEntry(value,
+//                        out.getFlags() & (~ICSettingEntry.RESOLVED));
+//                list.add(lib);
+//            }
+//
+//            // Add 'libs' artifact names themselves
+//            ICSettingEntry[] unresolved = new ICSettingEntry[] {
+//                    CDataUtil.createCLibraryFileEntry(getArtifactName(), 0) };
+//            ICSettingEntry[] libFiles = CDataUtil.resolveEntries(unresolved, des);
+//            list.add(libFiles[0]);
+//
+//            // Contribute the settings back as 'exported'
+//            des.createExternalSetting(null, null, null, list.toArray(new ICSettingEntry[list.size()]));
+//        }
+//    }

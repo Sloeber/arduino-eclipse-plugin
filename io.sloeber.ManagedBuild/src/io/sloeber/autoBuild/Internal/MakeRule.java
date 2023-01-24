@@ -264,10 +264,9 @@ public class MakeRule {
     }
 
     //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
-    public StringBuffer getRule(IProject project, IFolder niceBuildFolder, IConfiguration config) {
+    public StringBuffer getRule(IProject project, IFolder niceBuildFolder, ICConfigurationDescription confDesc) {
         //ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
 
         String cmd = myTool.getToolCommand();
         //For now assume 1 target with 1 or more prerequisites
@@ -295,7 +294,7 @@ public class MakeRule {
         final String fileName = sourceLocation.getFullPath().removeFileExtension().lastSegment();
         final String inputExtension = sourceLocation.getFileExtension();
 
-        Set<String> flags = getBuildFlags(niceBuildFolder, config, sourceLocation, outputLocation);
+        Set<String> flags = getBuildFlags(niceBuildFolder, confDesc, sourceLocation, outputLocation);
 
         boolean needExplicitRuleForFile = false;
         boolean needExplicitDependencyCommands = false;
@@ -307,10 +306,10 @@ public class MakeRule {
                 + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
         if (needExplicitRuleForFile || needExplicitDependencyCommands) {
             buildCmd = expandCommandLinePattern(cmd, flags, outflag, OUT_MACRO + otherPrimaryOutputs, niceNameList,
-                    getToolCommandLinePattern(config, myTool));
+                    getToolCommandLinePattern(confDesc, myTool));
         } else {
-            buildCmd = expandCommandLinePattern(config, inputExtension, flags, outflag, OUT_MACRO + otherPrimaryOutputs,
-                    niceNameList, sourceLocation, outputLocation);
+            buildCmd = expandCommandLinePattern(confDesc, inputExtension, flags, outflag,
+                    OUT_MACRO + otherPrimaryOutputs, niceNameList, sourceLocation, outputLocation);
         }
         // resolve any remaining macros in the command after it has been
         // generated
@@ -365,13 +364,14 @@ public class MakeRule {
         return buffer;
     }
 
-    private Set<String> getBuildFlags(IFolder buildFolder, IConfiguration config, IFile sourceFile, IFile outputFile) {
+    private Set<String> getBuildFlags(IFolder buildFolder, ICConfigurationDescription confDesc, IFile sourceFile,
+            IFile outputFile) {
         Set<String> flags = new LinkedHashSet<>();
         // Get the tool command line options
         try {
 
             //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
-            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile.getLocation(), outputFile.getLocation())));
+            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile, outputFile)));
 
             //TOFIX add dependency falgs if needed
             List<IInputType> inputTypes = myTool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
@@ -398,13 +398,9 @@ public class MakeRule {
         return flags;
     }
 
-    private String expandCommandLinePattern(IConfiguration config, String sourceExtension, Set<String> flags,
-            String outputFlag, String outputName, Set<String> inputResources, IFile inputLocation,
+    private String expandCommandLinePattern(ICConfigurationDescription confDesc, String sourceExtension,
+            Set<String> flags, String outputFlag, String outputName, Set<String> inputResources, IFile inputLocation,
             IFile outputLocation) {
-        //        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(inputLocation.getProject());
-        ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
-
         String cmd = myTool.getToolCommand();
         // try to resolve the build macros in the tool command
         String resolvedCommand = null;
@@ -419,7 +415,7 @@ public class MakeRule {
         if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
             cmd = resolvedCommand;
         return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
-                getToolCommandLinePattern(config, myTool));
+                getToolCommandLinePattern(confDesc, myTool));
     }
 
     private String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag, String outputName,

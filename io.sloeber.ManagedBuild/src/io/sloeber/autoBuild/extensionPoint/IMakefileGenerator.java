@@ -13,6 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -71,7 +72,7 @@ public interface IMakefileGenerator {
      * This method initializes the makefile generator
      */
 
-    public void initialize(int buildKind, IProject iProject, IConfiguration cfg, IBuilder builder,
+    public void initialize(int buildKind, IProject iProject, ICConfigurationDescription cfg, IBuilder builder,
             IProgressMonitor monitor);
 
     public void generateDependencies() throws CoreException;

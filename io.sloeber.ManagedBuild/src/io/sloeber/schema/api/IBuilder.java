@@ -14,6 +14,8 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.util.Map;
+
 import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
@@ -22,8 +24,10 @@ import org.eclipse.core.resources.IFolder;
 //import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
 //import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IFileContextBuildMacroValues;
+import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
@@ -41,7 +45,7 @@ import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
+public interface IBuilder extends IHoldsOptions {
     public static final String BUILDER_ELEMENT_NAME = "builder"; //$NON-NLS-1$
 
     public static final String COMMAND = "command"; //$NON-NLS-1$
@@ -73,6 +77,14 @@ public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
     public static final String ATTRIBUTE_COMMAND_LAUNCHER = "commandLauncher"; //$NON-NLS-1$
     public static final String ATTRIBUTE_BUILD_RUNNER = "buildRunner"; //$NON-NLS-1$
 
+    public final static String ARGS_PREFIX = Activator.getId();
+
+    public final static String BUILD_LOCATION = ARGS_PREFIX + ".build.location"; //$NON-NLS-1$
+    public final static String BUILD_COMMAND = ARGS_PREFIX + ".build.command"; //$NON-NLS-1$
+    public final static String BUILD_ARGUMENTS = ARGS_PREFIX + ".build.arguments"; //$NON-NLS-1$
+    public final static String BUILD_TARGET_INCREMENTAL = ARGS_PREFIX + ".build.target.inc"; //$NON-NLS-1$
+    public final static String BUILD_TARGET_AUTO = ARGS_PREFIX + ".build.target.auto"; //$NON-NLS-1$
+    public final static String BUILD_TARGET_CLEAN = ARGS_PREFIX + ".build.target.clean"; //$NON-NLS-1$
     //   
     //    public static final String VERSIONS_SUPPORTED = "versionsSupported"; //$NON-NLS-1$
     //    public static final String CONVERT_TO_ID = "convertToId"; //$NON-NLS-1$
@@ -174,7 +186,7 @@ public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
      *
      * @return boolean
      */
-//    public boolean isExtensionElement();
+    //    public boolean isExtensionElement();
 
     /**
      * 
@@ -212,8 +224,6 @@ public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
      */
     public IReservedMacroNameSupplier getReservedMacroNameSupplier();
 
-    public CBuildData getBuildData();
-
     public boolean isCustomBuilder();
 
     public boolean supportsCustomizedBuild();
@@ -244,5 +254,118 @@ public interface IBuilder extends IMakeBuilderInfo, IHoldsOptions {
     public IBuildRunner getBuildRunner() throws CoreException;
 
     public void setManagedBuildOn(boolean b);
+
+    void setIncrementalBuildTarget(String target) throws CoreException;
+
+    void setFullBuildTarget(String target) throws CoreException;
+
+    void setAppendEnvironment(boolean append) throws CoreException;
+
+    void setIncrementalBuildEnable(boolean enabled) throws CoreException;
+
+    void setBuildLocation(IPath location) throws CoreException;
+
+    IPath getBuildLocation();
+
+    boolean appendEnvironment();
+
+    boolean supportsStopOnError(boolean on);
+
+    boolean supportsParallelBuild();
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param jobs
+     *            - maximum number of jobs. There are 2 special cases:
+     *            <br>
+     *            - any number <=0 is interpreted as setting "optimal" property,
+     *            the value of the number itself is ignored in this case
+     *            <br>
+     *            - value 1 will turn parallel mode off.
+     */
+    void setParallelizationNum(int jobs) throws CoreException;
+
+    int getParallelizationNum();
+
+    void setFullBuildEnable(boolean enabled) throws CoreException;
+
+    void setCleanBuildTarget(String target) throws CoreException;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param on
+     *            - the flag to enable or disable parallel mode.
+     *            <br>
+     *            {@code true} to enable, in this case the maximum number of jobs
+     *            will be set to "optimal" number, see
+     *            {@link #getOptimalParallelJobNum()}.
+     *            <br>
+     *            {@code false} to disable, the number of jobs will be set to 1.
+     */
+    void setParallelBuildOn(boolean on) throws CoreException;
+
+    String getCleanBuildTarget();
+
+    String getFullBuildTarget();
+
+    String getIncrementalBuildTarget();
+
+    boolean isAutoBuildEnable();
+
+    boolean isCleanBuildEnabled();
+
+    boolean isFullBuildEnabled();
+
+    boolean isIncrementalBuildEnabled();
+
+    void setAutoBuildEnable(boolean enabled) throws CoreException;
+
+    void setAutoBuildTarget(String target) throws CoreException;
+
+    void setCleanBuildEnable(boolean enabled) throws CoreException;
+
+    boolean isParallelBuildOn();
+
+    void setErrorParsers(String[] parsers) throws CoreException;
+
+    String getAutoBuildTarget();
+
+    void setBuildAttribute(String name, String value) throws CoreException;
+
+    void setBuildCommand(IPath command) throws CoreException;
+
+    void setEnvironment(Map<String, String> env) throws CoreException;
+
+    void setStopOnError(boolean on) throws CoreException;
+
+    void setUseDefaultBuildArgsOnly(boolean on) throws CoreException;
+
+    void setUseDefaultBuildCmd(boolean on) throws CoreException;
+
+    void setUseDefaultBuildCmdOnly(boolean on) throws CoreException;
+
+    boolean supportsBuild(boolean managed);
+
+    IPath getBuildCommand();
+
+    Map<String, String> getEnvironment();
+
+    String[] getErrorParsers();
+
+    boolean isDefaultBuildArgsOnly();
+
+    boolean isDefaultBuildCmd();
+
+    boolean isDefaultBuildCmdOnly();
+
+    boolean isManagedBuildOn();
+
+    boolean isStopOnError();
+
+    void setBuildArguments(String args) throws CoreException;
+
+    String getBuildArguments();
 
 }

@@ -29,6 +29,7 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOption;
@@ -39,15 +40,6 @@ public class BuildSettingsUtil {
     private static final int[] COMMON_SETTINGS_IDS = new int[] { IOption.INCLUDE_PATH, IOption.PREPROCESSOR_SYMBOLS,
             IOption.LIBRARIES, IOption.OBJECTS, IOption.INCLUDE_FILES, IOption.LIBRARY_PATHS, IOption.LIBRARY_FILES,
             IOption.MACRO_FILES, };
-
-
-
-
-
-
-
-
-
 
     public static ICProjectDescription checkSynchBuildInfo(IProject project) throws CoreException {
         IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project, false);
@@ -85,7 +77,7 @@ public class BuildSettingsUtil {
             throws CoreException {
         ICConfigurationDescription[] cfgs = des.getConfigurations();
         for (int i = 0; i < cfgs.length; i++) {
-            if (!ManagedBuildManager.CFG_DATA_PROVIDER_ID.equals(cfgs[i].getBuildSystemId()))
+            if (!ConfigurationDataProvider.CFG_DATA_PROVIDER_ID.equals(cfgs[i].getBuildSystemId()))
                 des.removeConfiguration(cfgs[i]);
         }
 
@@ -95,4 +87,4 @@ public class BuildSettingsUtil {
         CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, des, flags, null);
     }
 
- }
+}

@@ -55,20 +55,20 @@ public abstract class BuildObject implements IBuildObject {
         //        }
     }
 
-    protected void loadNameAndID(ICStorageElement element) {
-        myStorageElement = element;
-        id = element.getAttribute(IBuildObject.ID);
-        name = element.getAttribute(IBuildObject.NAME);
-        // superClass
-        mySuperClassID = element.getAttribute(SUPERCLASS);
-        if (mySuperClassID != null && mySuperClassID.length() > 0) {
-            myStorageSuperClassElement = getSuperClassSorageElement();
-            //            if (myStorageSuperClassElement == null) {
-            //                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
-            //                        getId());
-            //            }
-        }
-    }
+    //    protected void loadNameAndID(ICStorageElement element) {
+    //        myStorageElement = element;
+    //        id = element.getAttribute(IBuildObject.ID);
+    //        name = element.getAttribute(IBuildObject.NAME);
+    //        // superClass
+    //        mySuperClassID = element.getAttribute(SUPERCLASS);
+    //        if (mySuperClassID != null && mySuperClassID.length() > 0) {
+    //            myStorageSuperClassElement = getSuperClassSorageElement();
+    //            //            if (myStorageSuperClassElement == null) {
+    //            //                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
+    //            //                        getId());
+    //            //            }
+    //        }
+    //    }
 
     protected String[] getAttributes(String attributeName) {
         String[] ret = new String[2];
@@ -77,10 +77,10 @@ public abstract class BuildObject implements IBuildObject {
             ret[SUPER] = myConfigurationSuperClassElement.getAttribute(attributeName);
         }
         if (ret[SUPER] == null) {
-            ret[SUPER] = EMPTY;
+            ret[SUPER] = EMPTY_STRING;
         }
         if (ret[ORIGINAL] == null) {
-            ret[ORIGINAL] = EMPTY;
+            ret[ORIGINAL] = EMPTY_STRING;
         }
         return ret;
     }
@@ -112,7 +112,6 @@ public abstract class BuildObject implements IBuildObject {
         return name;
     }
 
-    @SuppressWarnings("nls")
     @Override
     public String toString() {
         if (name != null) {
@@ -121,10 +120,10 @@ public abstract class BuildObject implements IBuildObject {
         return "id=" + id; //$NON-NLS-1$
     }
 
-    private IConfigurationElement getSuperClassConfigurationElement(String elementName, String id,
+    private IConfigurationElement getSuperClassConfigurationElement(String elementName, String inID,
             IExtensionPoint root) {
         for (IConfigurationElement curElement : root.getConfigurationElements()) {
-            IConfigurationElement foundElement = recursiveSearchElement(elementName, id, curElement);
+            IConfigurationElement foundElement = recursiveSearchElement(elementName, inID, curElement);
             if (foundElement != null) {
                 return foundElement;
             }
@@ -132,13 +131,13 @@ public abstract class BuildObject implements IBuildObject {
         return null;
     }
 
-    private IConfigurationElement recursiveSearchElement(String elementName, String id, IConfigurationElement element) {
-        if (id.equals(element.getAttribute(ID)) && elementName.equals(element.getName())) {
-            int a;
+    private IConfigurationElement recursiveSearchElement(String elementName, String inID,
+            IConfigurationElement element) {
+        if (inID.equals(element.getAttribute(ID)) && elementName.equals(element.getName())) {
             return element;
         }
         for (IConfigurationElement curElement : element.getChildren()) {
-            IConfigurationElement foundElement = recursiveSearchElement(elementName, id, curElement);
+            IConfigurationElement foundElement = recursiveSearchElement(elementName, inID, curElement);
             if (foundElement != null) {
                 return foundElement;
             }
@@ -146,8 +145,8 @@ public abstract class BuildObject implements IBuildObject {
         return null;
     }
 
-    private ICStorageElement getSuperClassSorageElement() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    //    private ICStorageElement getSuperClassSorageElement() {
+    //        // TODO Auto-generated method stub
+    //        return null;
+    //    }
 }

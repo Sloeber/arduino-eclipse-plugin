@@ -66,10 +66,10 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     //  Members that are to be shared with the derived class
     protected IHoldsOptions superClass;
     //  Parent and children
-    protected Set<String> categoryIds= new HashSet<>();
-    protected Map<String, IOptionCategory> categoryMap =new HashMap<>();
+    protected Set<String> categoryIds = new HashSet<>();
+    protected Map<String, IOptionCategory> categoryMap = new HashMap<>();
     private List<IOptionCategory> childOptionCategories;
-    protected Map<String, Option> myOptionMap=new HashMap<>();
+    protected Map<String, Option> myOptionMap = new HashMap<>();
     //  Miscellaneous
 
     /*
@@ -80,7 +80,6 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
         // prevent accidental construction of class without setting up
         // resolved
     }
-
 
     /**
      * Copies children of <code>HoldsOptions</code>. Helper function for
@@ -149,21 +148,17 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
      */
 
-
-
     /*
      *  M E T H O D S   M O V E D   F R O M   I T O O L   I N   3 . 0
      */
-
-
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getOptions()
      */
     @Override
     public List<IOption> getOptions() {
-        List<IOption> opts =new LinkedList<>();
-        opts.addAll( doGetOptions().values());
+        List<IOption> opts = new LinkedList<>();
+        opts.addAll(doGetOptions().values());
         return opts;
     }
 
@@ -216,22 +211,22 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
         return opt.isValid() ? opt : null;
     }
 
-
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getChildCategories()
      */
     @Override
     public List<IOptionCategory> getChildCategories() {
-        List<IOptionCategory> retCats =   new LinkedList<>();;
+        List<IOptionCategory> retCats = new LinkedList<>();
+        ;
         // Merge our option categories with our superclass' option categories.
         // Note that these are two disjoint sets of categories because
         // categories do not use derivation AND object Id's are unique. Thus
         // they are merely sequentially added.
         if (superClass != null) {
-        	retCats.addAll( superClass.getChildCategories());
+            retCats.addAll(superClass.getChildCategories());
         }
         if (childOptionCategories != null) {
-            retCats.addAll( childOptionCategories);
+            retCats.addAll(childOptionCategories);
         }
 
         // Nothing found, return EMPTY_CATEGORIES
@@ -241,8 +236,6 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     /*
      *  M E T H O D S   M O V E D   F R O M   T O O L   I N   3 . 0
      */
-
-
 
     /**
      * Memory-safe way to access the map of category IDs to categories
@@ -255,7 +248,7 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
      * Memory-safe way to access the list of options
      */
     private Collection<Option> getOptionCollection() {
-            return myOptionMap.values();
+        return myOptionMap.values();
     }
 
     /**
@@ -284,85 +277,85 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     public IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException {
         //  IOption setOption = null;
         // start changes
-//        if (option.getOptionHolder() != this) {
-            // option = getOptionBySuperClassId(option.getId());
-            //            IOption op = getOptionBySuperClassId(option.getId());
-            //            if (op == null && option.getSuperClass() != null) {
-            //                op = getOptionBySuperClassId(option.getSuperClass().getId());
-            //                if (op == null) {
-            //                    Activator.log(new Status(IStatus.ERROR, Activator.getId(), IStatus.OK,
-            //                            "Cannot get OptionToSet for option " + //$NON-NLS-1$
-            //                                    option.getId() + " @ holder " + //$NON-NLS-1$
-            //                                    option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
-            //                                    getId(),
-            //                            null));
-            //                } else
-            //                    option = op;
-            //            } else
-            //                option = op;
-//            IOption op = getOptionBySuperClassId(option.getId());
-//            if (op == null) {
-//                Activator.log(
-//                        new Status(IStatus.ERROR, Activator.getId(), IStatus.OK, "Cannot get OptionToSet for option " + //$NON-NLS-1$
-//                                option.getId() + " @ holder " + //$NON-NLS-1$
-//                                option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
-//                                getId(), null));
-//            }
-//            return op;
-            //        }
-            //        // end changes
-            //
-            //        if (adjustExtension) {
-            //            for (; option != null && !option.isExtensionElement(); option = option.getSuperClass()) {
-            //            }
-            //
-            //            if (option != null) {
-            //                IHoldsOptions holder = option.getOptionHolder();
-            //                if (holder == this)
-            //                    setOption = option;
-            //                else {
-            //                    IOption newSuperClass = option;
-            //                    if (((Option) option).wasOptRef()) {
-            //                        newSuperClass = option.getSuperClass();
-            //                    }
-            //                    //  Create a new extension Option element
-            //                    String subId;
-            //                    String version = ManagedBuildManager.getVersionFromIdAndVersion(newSuperClass.getId());
-            //                    String baseId = ManagedBuildManager.getIdFromIdAndVersion(newSuperClass.getId());
-            //                    if (version != null) {
-            //                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()) + "_" //$NON-NLS-1$//$NON-NLS-2$
-            //                                + version;
-            //                    } else {
-            //                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()); //$NON-NLS-1$
-            //                    }
-            //                    setOption = createOption(newSuperClass, subId, null, true);
-            //                    ((Option) setOption).setAdjusted(true);
-            //                    setOption.setValueType(option.getValueType());
-            //                }
-//        }
+        //        if (option.getOptionHolder() != this) {
+        // option = getOptionBySuperClassId(option.getId());
+        //            IOption op = getOptionBySuperClassId(option.getId());
+        //            if (op == null && option.getSuperClass() != null) {
+        //                op = getOptionBySuperClassId(option.getSuperClass().getId());
+        //                if (op == null) {
+        //                    Activator.log(new Status(IStatus.ERROR, Activator.getId(), IStatus.OK,
+        //                            "Cannot get OptionToSet for option " + //$NON-NLS-1$
+        //                                    option.getId() + " @ holder " + //$NON-NLS-1$
+        //                                    option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
+        //                                    getId(),
+        //                            null));
+        //                } else
+        //                    option = op;
+        //            } else
+        //                option = op;
+        //            IOption op = getOptionBySuperClassId(option.getId());
+        //            if (op == null) {
+        //                Activator.log(
+        //                        new Status(IStatus.ERROR, Activator.getId(), IStatus.OK, "Cannot get OptionToSet for option " + //$NON-NLS-1$
+        //                                option.getId() + " @ holder " + //$NON-NLS-1$
+        //                                option.getOptionHolder().getId() + "\nI'm holder " + //$NON-NLS-1$
+        //                                getId(), null));
+        //            }
+        //            return op;
+        //        }
+        //        // end changes
+        //
+        //        if (adjustExtension) {
+        //            for (; option != null && !option.isExtensionElement(); option = option.getSuperClass()) {
+        //            }
+        //
+        //            if (option != null) {
+        //                IHoldsOptions holder = option.getOptionHolder();
+        //                if (holder == this)
+        //                    setOption = option;
+        //                else {
+        //                    IOption newSuperClass = option;
+        //                    if (((Option) option).wasOptRef()) {
+        //                        newSuperClass = option.getSuperClass();
+        //                    }
+        //                    //  Create a new extension Option element
+        //                    String subId;
+        //                    String version = ManagedBuildManager.getVersionFromIdAndVersion(newSuperClass.getId());
+        //                    String baseId = ManagedBuildManager.getIdFromIdAndVersion(newSuperClass.getId());
+        //                    if (version != null) {
+        //                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()) + "_" //$NON-NLS-1$//$NON-NLS-2$
+        //                                + version;
+        //                    } else {
+        //                        subId = baseId + ".adjusted." + Integer.toString(ManagedBuildManager.getRandomNumber()); //$NON-NLS-1$
+        //                    }
+        //                    setOption = createOption(newSuperClass, subId, null, true);
+        //                    ((Option) setOption).setAdjusted(true);
+        //                    setOption.setValueType(option.getValueType());
+        //                }
+        //        }
         //        } else {
-//        if (!option.isExtensionElement()) {
-//            return option;
-            //            } else {
-            //                IOption newSuperClass = option;
-            //                for (; newSuperClass != null
-            //                        && !newSuperClass.isExtensionElement(); newSuperClass = newSuperClass.getSuperClass()) {
-            //                }
-            //
-            //                if (((Option) newSuperClass).wasOptRef()) {
-            //                    newSuperClass = newSuperClass.getSuperClass();
-            //                }
-            //
-            //                if (((Option) newSuperClass).isAdjustedExtension()) {
-            //                    newSuperClass = newSuperClass.getSuperClass();
-            //                }
-            //                //  Create an Option element for the managed build project file (.CDTBUILD)
-            //                String subId;
-            //                subId = ManagedBuildManager.calculateChildId(newSuperClass.getId(), null);
-            //                setOption = createOption(newSuperClass, subId, null, false);
-            //                setOption.setValueType(option.getValueType());
-            //            }
-//        }
+        //        if (!option.isExtensionElement()) {
+        //            return option;
+        //            } else {
+        //                IOption newSuperClass = option;
+        //                for (; newSuperClass != null
+        //                        && !newSuperClass.isExtensionElement(); newSuperClass = newSuperClass.getSuperClass()) {
+        //                }
+        //
+        //                if (((Option) newSuperClass).wasOptRef()) {
+        //                    newSuperClass = newSuperClass.getSuperClass();
+        //                }
+        //
+        //                if (((Option) newSuperClass).isAdjustedExtension()) {
+        //                    newSuperClass = newSuperClass.getSuperClass();
+        //                }
+        //                //  Create an Option element for the managed build project file (.CDTBUILD)
+        //                String subId;
+        //                subId = ManagedBuildManager.calculateChildId(newSuperClass.getId(), null);
+        //                setOption = createOption(newSuperClass, subId, null, false);
+        //                setOption.setValueType(option.getValueType());
+        //            }
+        //        }
         return null;
     }
 
@@ -380,11 +373,9 @@ public abstract class HoldsOptions extends BuildObject implements IHoldsOptions 
     //        }
     //    }
 
-//    public abstract boolean isExtensionElement();
-
-    protected abstract IResourceInfo getParentResourceInfo();
+    //    public abstract boolean isExtensionElement();
 
     boolean hasCustomSettings() {
-        return ( myOptionMap.size() != 0) ;
+        return (myOptionMap.size() != 0);
     }
 }

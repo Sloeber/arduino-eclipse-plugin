@@ -24,6 +24,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 //import org.eclipse.cdt.managedbuilder.core.IBuilder;
 //import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -45,10 +48,10 @@ import org.osgi.service.prefs.Preferences;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
-import io.sloeber.schema.api.IResourceConfiguration;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
@@ -72,18 +75,27 @@ public class PropertyManager {
 
     private static class LoaddedInfo {
         private final IProject fProject;
+        private final ICConfigurationDescription fConfigDesc;
         private final String fCfgId;
+        private final IConfiguration config;
         // one of Map<String, String> or Map<String, Map<String, Properties>>
         private final Map<String, Object> fCfgPropertyMap;
 
-        LoaddedInfo(IProject project, String cfgId, Map<String, Object> cfgPropertyMap) {
-            fProject = project;
-            fCfgId = cfgId;
+        LoaddedInfo(ICConfigurationDescription ConfigDesc, Map<String, Object> cfgPropertyMap) {
+            fConfigDesc = ConfigDesc;
+            fProject = ConfigDesc.getProjectDescription().getProject();
             fCfgPropertyMap = cfgPropertyMap;
+            AutoBuildConfigurationData autoConfig = (AutoBuildConfigurationData) fConfigDesc.getConfigurationData();
+            config = autoConfig.getConfiguration();
+            fCfgId = config.getId();
         }
 
         public IConfiguration getConfiguration() {
-            return PropertyManager.getConfigurationFromId(fProject, fCfgId);
+            return config;
+        }
+
+        public ICConfigurationDescription getConfigurationDescription() {
+            return fConfigDesc;
         }
 
         public IProject getProject() {
@@ -98,14 +110,14 @@ public class PropertyManager {
             return fCfgPropertyMap;
         }
 
-        public boolean cfgMatch(IConfiguration cfg) {
+        public boolean cfgMatch(ICConfigurationDescription cfg) {
             if (fCfgId == null || fProject == null)
                 return false;
 
             if (!fCfgId.equals(cfg.getId()))
                 return false;
 
-            if (!fProject.equals(PropertyManager.getProject(cfg)))
+            if (!fProject.equals(cfg.getProjectDescription().getProject()))
                 return false;
 
             return true;
@@ -121,7 +133,7 @@ public class PropertyManager {
         return fInstance;
     }
 
-    protected void setProperty(IConfiguration cfg, IBuildObject bo, String prop, String value) {
+    protected void setProperty(ICConfigurationDescription cfg, IBuildObject bo, String prop, String value) {
         if (((Configuration) cfg).isPreference())
             return;
         Properties props = getProperties(cfg, bo);
@@ -130,7 +142,7 @@ public class PropertyManager {
         }
     }
 
-    protected String getProperty(IConfiguration cfg, IBuildObject bo, String prop) {
+    protected String getProperty(ICConfigurationDescription cfg, IBuildObject bo, String prop) {
         if (((Configuration) cfg).isPreference())
             return null;
         Properties props = getProperties(cfg, bo);
@@ -139,7 +151,7 @@ public class PropertyManager {
         return null;
     }
 
-    protected Properties getProperties(IConfiguration cfg, IBuildObject bo) {
+    protected Properties getProperties(ICConfigurationDescription cfg, IBuildObject bo) {
         return loadProperties(cfg, bo);
     }
 
@@ -151,7 +163,7 @@ public class PropertyManager {
         fLoaddedInfo = info;
     }
 
-    protected Map<String, Object> getLoaddedData(IConfiguration cfg) {
+    protected Map<String, Object> getLoaddedData(ICConfigurationDescription cfg) {
         LoaddedInfo info = getLoaddedInfo();
         if (info == null)
             return null;
@@ -179,7 +191,7 @@ public class PropertyManager {
         //		return map;
     }
 
-    protected synchronized void clearLoaddedData(IConfiguration cfg) {
+    protected synchronized void clearLoaddedData(ICConfigurationDescription cfg) {
         if (((Configuration) cfg).isPreference())
             return;
 
@@ -196,12 +208,12 @@ public class PropertyManager {
         //		}
     }
 
-    private static IProject getProject(IConfiguration cfg) {
-        IResource rc = cfg.getOwner();
-        return rc != null ? rc.getProject() : null;
-    }
+    //    private static IProject getProject(IConfiguration cfg) {
+    //        IResource rc = cfg.getOwner();
+    //        return rc != null ? rc.getProject() : null;
+    //    }
 
-    protected Properties loadProperties(IConfiguration cfg, IBuildObject bo) {
+    protected Properties loadProperties(ICConfigurationDescription cfg, IBuildObject bo) {
         Map<String, Object> map = getData(cfg);
 
         return getPropsFromData(map, bo);
@@ -227,7 +239,7 @@ public class PropertyManager {
         }
     }
 
-    protected void storeData(IConfiguration cfg) {
+    protected void storeData(ICConfigurationDescription cfg) {
         Map<String, Object> map = getLoaddedData(cfg);
 
         if (map != null)
@@ -315,7 +327,7 @@ public class PropertyManager {
         return props;
     }
 
-    protected void storeData(IConfiguration cfg, Map<String, Object> map) {
+    protected void storeData(ICConfigurationDescription cfg, Map<String, Object> map) {
         String str = null;
         Properties props = mapToProps(map);
 
@@ -323,13 +335,13 @@ public class PropertyManager {
 
         storeString(cfg, str);
     }
+
     private Preferences getPreferences() {
-    	IProject project =fLoaddedInfo.getProject();
-    	ManagedProject managedproject=ManagedBuildManager.getBuildInfo(project).getManagedProject();
-        return  getNode(managedproject);
+        IProject project = fLoaddedInfo.getProject();
+        return getNode(CCorePlugin.getDefault().getProjectDescription(project));
     }
 
-    protected void storeString(IConfiguration cfg, String str) {
+    protected void storeString(ICConfigurationDescription cfg, String str) {
         Preferences prefs = getPreferences();
         if (prefs != null) {
             if (str != null)
@@ -339,23 +351,31 @@ public class PropertyManager {
             try {
                 prefs.flush();
             } catch (BackingStoreException e) {
+                Activator.log(e);
             }
         }
     }
 
-    protected String loadString(IConfiguration cfg) {
-    	Preferences prefs = getPreferences();
+    protected String loadString(ICConfigurationDescription cfg) {
+        Preferences prefs = getPreferences();
         String str = null;
         if (prefs != null)
             str = prefs.get(cfg.getId(), null);
         return str;
     }
 
-    protected Preferences getNode(ManagedProject mProject) {
-        //		return getProjNode(mProject);
-        return getInstNode(mProject);
+    @SuppressWarnings("static-method")
+    protected Preferences getNode(ICProjectDescription projectDescription) {
+        Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.getId());
+        if (prefs != null) {
+            prefs = prefs.node(NODE_NAME);
+            if (prefs != null)
+                prefs = prefs.node(projectDescription.getId());
+        }
+        return prefs;
     }
 
+    @SuppressWarnings("static-method")
     protected Preferences getProjNode(IManagedProject mProject) {
         IProject project = mProject.getOwner().getProject();
         if (project == null || !project.exists() || !project.isOpen())
@@ -367,17 +387,7 @@ public class PropertyManager {
         return null;
     }
 
-    protected Preferences getInstNode(ManagedProject mProject) {
-        Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.getId());
-        if (prefs != null) {
-            prefs = prefs.node(NODE_NAME);
-            if (prefs != null)
-                prefs = prefs.node(mProject.getId());
-        }
-        return prefs;
-    }
-
-    protected Map<String, Object> getData(IConfiguration cfg) {
+    protected Map<String, Object> getData(ICConfigurationDescription cfg) {
         Map<String, Object> map = getLoaddedData(cfg);
 
         if (map == null) {
@@ -389,7 +399,7 @@ public class PropertyManager {
         return map;
     }
 
-    protected Map<String, Object> loadData(IConfiguration cfg) {
+    protected Map<String, Object> loadData(ICConfigurationDescription cfg) {
         Map<String, Object> map = null;
         String str = loadString(cfg);
 
@@ -403,6 +413,7 @@ public class PropertyManager {
         return map;
     }
 
+    @SuppressWarnings("static-method")
     protected Map<String, Object> propsToMap(Properties props) {
         if (props != null) {
             @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -427,82 +438,43 @@ public class PropertyManager {
         return cfg;
     }
 
-    protected void setLoaddedData(IConfiguration cfg, Map<String, Object> data) {
-        if (cfg.getOwner() == null)
-            return;
-
+    protected void setLoaddedData(ICConfigurationDescription cfg, Map<String, Object> data) {
         LoaddedInfo info = getLoaddedInfo();
 
         if (info != null) {
             if (info.cfgMatch(cfg)) {
-                info = new LoaddedInfo(info.getProject(), info.getConfigurationId(), data);
+                info = new LoaddedInfo(info.getConfigurationDescription(), data);
                 setLoaddedInfo(info);
                 return;
             }
 
-            IConfiguration oldCfg = info.getConfiguration();
+            ICConfigurationDescription oldCfg = info.getConfigurationDescription();
             if (oldCfg != null) {
                 storeData(oldCfg, info.getProperties());
             }
         }
 
-        IProject proj = cfg.getOwner().getProject();
-        info = new LoaddedInfo(proj, cfg.getId(), data);
+        IProject proj = cfg.getProjectDescription().getProject();
+        info = new LoaddedInfo(cfg, data);
         setLoaddedInfo(info);
     }
 
-    public void setProperty(IConfiguration cfg, String key, String value) {
-        setProperty(cfg, cfg, key, value);
-    }
+    //    public void setProperty(ITool tool, String key, String value) {
+    //        Configuration cfg = (Configuration) getConfiguration(tool);
+    //        if (cfg.isPreference())
+    //            return;
+    //        setProperty(cfg, tool, key, value);
+    //    }
 
-    public void setProperty(IResourceInfo rcInfo, String key, String value) {
-        setProperty(rcInfo.getParent(), rcInfo, key, value);
-    }
-
-    public void setProperty(IToolChain tc, String key, String value) {
-        setProperty(tc.getParent(), tc, key, value);
-    }
-
-    public void setProperty(ITool tool, String key, String value) {
-        Configuration cfg = (Configuration) getConfiguration(tool);
-        if (cfg.isPreference())
-            return;
-        setProperty(cfg, tool, key, value);
-    }
-
-    public void setProperty(IBuilder builder, String key, String value) {
-        setProperty(getConfiguration(builder), builder, key, value);
-    }
-
-    public String getProperty(IConfiguration cfg, String key) {
-        return getProperty(cfg, cfg, key);
-    }
-
-    public String getProperty(IResourceInfo rcInfo, String key) {
-        return getProperty(rcInfo.getParent(), rcInfo, key);
-    }
-
-    public String getProperty(IToolChain tc, String key) {
-        return getProperty(tc.getParent(), tc, key);
-    }
-
-    public String getProperty(ITool tool, String key) {
-        return getProperty(getConfiguration(tool), tool, key);
-    }
-
-    public String getProperty(IBuilder builder, String key) {
-        return getProperty(getConfiguration(builder), builder, key);
-    }
-
-    public void clearProperties(ManagedProject mProject) {
-        if (mProject == null)
+    public void clearProperties(ICProjectDescription projectDescription) {
+        if (projectDescription == null)
             return;
 
-        IConfiguration cfgs[] = mProject.getConfigurations();
+        ICConfigurationDescription[] cfgs = projectDescription.getConfigurations();
         for (int i = 0; i < cfgs.length; i++)
             clearLoaddedData(cfgs[i]);
 
-        Preferences prefs = getNode(mProject);
+        Preferences prefs = getNode(projectDescription);
         if (prefs != null) {
             try {
                 Preferences parent = prefs.parent();
@@ -510,18 +482,17 @@ public class PropertyManager {
                 if (parent != null)
                     parent.flush();
             } catch (BackingStoreException e) {
+                Activator.log(e);
             }
         }
     }
 
-    public void clearProperties(IConfiguration cfg) {
-        if (cfg.getOwner() == null)
-            return;
-
+    public void clearProperties(ICConfigurationDescription cfg) {
         clearLoaddedData(cfg);
         storeData(cfg, null);
     }
 
+    @SuppressWarnings("static-method")
     private IConfiguration getConfiguration(IBuilder builder) {
         IToolChain tc = builder.getParent();
         if (tc != null)
@@ -529,27 +500,24 @@ public class PropertyManager {
         return null;
     }
 
-    private IConfiguration getConfiguration(ITool tool) {
-        IBuildObject p = tool.getParent();
-        IConfiguration cfg = null;
-        if (p instanceof IToolChain) {
-            cfg = ((IToolChain) p).getParent();
-        } else if (p instanceof IResourceConfiguration) {
-            cfg = ((IResourceConfiguration) p).getParent();
-        }
-        return cfg;
-    }
+    //    private IConfiguration getConfiguration(ITool tool) {
+    //        IBuildObject p = tool.getParent();
+    //        IConfiguration cfg = null;
+    //        if (p instanceof IToolChain) {
+    //            cfg = ((IToolChain) p).getParent();
+    //        } else if (p instanceof IResourceConfiguration) {
+    //            cfg = ((IResourceConfiguration) p).getParent();
+    //        }
+    //        return cfg;
+    //    }
 
-    public void serialize(IConfiguration cfg) {
-        if (/*cfg.isTemporary() || */cfg.getOwner() == null)
-            return;
-
+    public void serialize(ICConfigurationDescription cfg) {
         storeData(cfg);
     }
 
     public void serialize() {
         LoaddedInfo info = getLoaddedInfo();
-        IConfiguration cfg = info.getConfiguration();
+        ICConfigurationDescription cfg = info.getConfigurationDescription();
         if (cfg != null) {
             serialize(cfg);
 

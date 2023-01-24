@@ -25,48 +25,45 @@ import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
 
 public class BuildEnvironmentContributor implements IEnvironmentContributor {
-	private BuildBuildData fBuildData;
-	private IConfiguration fCfg;
-	private ICConfigurationDescription fCfgDes;
-	IEnvironmentVariableSupplier myProjectEnvironmentVariableProvider = null;
-	IEnvironmentVariableSupplier myConfigurationEnvironmentVariableProvider = null;
-	IProject myProject;
+    private BuildBuildData fBuildData;
+    private IConfiguration fCfg;
+    private ICConfigurationDescription fCfgDes;
+    IEnvironmentVariableSupplier myProjectEnvironmentVariableProvider = null;
+    IEnvironmentVariableSupplier myConfigurationEnvironmentVariableProvider = null;
 
-	public BuildEnvironmentContributor(BuildBuildData buildData) {
-		fBuildData = buildData;
+    public BuildEnvironmentContributor(BuildBuildData buildData) {
+        fBuildData = buildData;
 
-		fCfg = fBuildData.getConfiguration();
-		myProject = fBuildData.getProject();
-		fCfgDes = ManagedBuildManager.getDescriptionForConfiguration(fCfg);
+        fCfg = fBuildData.getConfiguration();
+        fCfgDes = fBuildData.getCdtConfigurationDescription();
 
-		
-		IProjectType pType = fCfg.getProjectType();
-		if (pType != null) {
-			myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableSupplier();
-		}
-		myConfigurationEnvironmentVariableProvider = fCfg.getEnvironmentVariableSupplier();
-	}
+        IProjectType pType = fCfg.getProjectType();
+        if (pType != null) {
+            myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableSupplier();
+        }
+        myConfigurationEnvironmentVariableProvider = fCfg.getEnvironmentVariableSupplier();
+    }
 
-	@Override
-	public IEnvironmentVariable getVariable(String name, IEnvironmentVariableManager provider) {
-		return internalGetVariables(provider).get(name);
-	}
+    @Override
+    public IEnvironmentVariable getVariable(String name, IEnvironmentVariableManager provider) {
+        return internalGetVariables(provider).get(name);
+    }
 
-	@Override
-	public IEnvironmentVariable[] getVariables(IEnvironmentVariableManager provider) {
-		return internalGetVariables(provider).values().toArray(new EnvironmentVariable[0]);
-	}
+    @Override
+    public IEnvironmentVariable[] getVariables(IEnvironmentVariableManager provider) {
+        return internalGetVariables(provider).values().toArray(new EnvironmentVariable[0]);
+    }
 
-	private Map<String, IEnvironmentVariable> internalGetVariables(IEnvironmentVariableManager provider) {
-		Map<String, IEnvironmentVariable> allVars = new HashMap<>();
-		if (myProjectEnvironmentVariableProvider != null) {
-			allVars.putAll(myProjectEnvironmentVariableProvider.getVariables(fCfg));
-		}
-		if (myConfigurationEnvironmentVariableProvider != null) {
-			allVars.putAll(myConfigurationEnvironmentVariableProvider.getVariables(fCfg));
-		}
+    private Map<String, IEnvironmentVariable> internalGetVariables(IEnvironmentVariableManager provider) {
+        Map<String, IEnvironmentVariable> allVars = new HashMap<>();
+        if (myProjectEnvironmentVariableProvider != null) {
+            allVars.putAll(myProjectEnvironmentVariableProvider.getVariables(fCfg));
+        }
+        if (myConfigurationEnvironmentVariableProvider != null) {
+            allVars.putAll(myConfigurationEnvironmentVariableProvider.getVariables(fCfg));
+        }
 
-		return allVars;
-	}
+        return allVars;
+    }
 
 }

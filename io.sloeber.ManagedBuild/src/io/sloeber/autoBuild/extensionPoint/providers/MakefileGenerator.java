@@ -20,7 +20,6 @@ import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -41,9 +40,9 @@ import io.sloeber.autoBuild.Internal.SrcMakeGenerator;
 import io.sloeber.autoBuild.Internal.SubDirMakeGenerator;
 import io.sloeber.autoBuild.Internal.TopMakeFileGenerator;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -107,6 +106,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     String buildTargetName;
     String buildTargetExt;
     IConfiguration config;
+    ICConfigurationDescription myCConfigurationDescription;
     /** Collection of Folders in which sources files have been modified */
     private IProgressMonitor monitor;
     private IProject project;
@@ -351,6 +351,10 @@ public class MakefileGenerator implements IMakefileGenerator {
         return config;
     }
 
+    public ICConfigurationDescription getCConfigurationDescription() {
+        return myCConfigurationDescription;
+    }
+
     private void updateMonitor(String msg) {
         if (monitor != null && !monitor.isCanceled()) {
             monitor.subTask(msg);
@@ -359,25 +363,28 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize(int buildKind, IProject project, IConfiguration cfg, IBuilder builder,
+    public void initialize(int buildKind, IProject project, ICConfigurationDescription cfg, IBuilder builder,
             IProgressMonitor monitor) {
         // Save the project so we can get path and member information
         this.project = project;
+        myCConfigurationDescription = cfg;
+        AutoBuildConfigurationData autoBuildData = (AutoBuildConfigurationData) cfg.getConfigurationData();
+        config = autoBuildData.getConfiguration();
 
         // Save the monitor reference for reporting back to the user
         this.monitor = monitor;
         // Get the build info for the project
         // info = info;
         // Get the name of the build target
-        buildTargetName = cfg.getArtifactName();
+        buildTargetName = config.getArtifactName();
         // Get its extension
-        buildTargetExt = cfg.getArtifactExtension();
+        buildTargetExt = config.getArtifactExtension();
         // try to resolve the build macros in the target extension
         buildTargetExt = resolveValueToMakefileFormat(buildTargetExt, "", " ",
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, builder);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
         // try to resolve the build macros in the target name
         String resolved = resolveValueToMakefileFormat(buildTargetName, "", " ",
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, builder);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
         if (resolved != null) {
             resolved = resolved.trim();
             if (resolved.length() > 0)
@@ -386,11 +393,9 @@ public class MakefileGenerator implements IMakefileGenerator {
         if (buildTargetExt == null) {
             buildTargetExt = "";
         }
-        // Cache the build tools
-        config = cfg;
         // initToolInfos();
         // set the top build dir path
-        topBuildDir = cfg.getBuildFolder(project);// project.getFile(cfg.getName());
+        topBuildDir = config.getBuildFolder(project);// project.getFile(cfg.getName());
         srcEntries = config.getSourceEntries();
         if (srcEntries.size() == 0) {
             //            srcEntries = new LinkedList<ICSourceEntry>();

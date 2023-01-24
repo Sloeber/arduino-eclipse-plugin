@@ -49,6 +49,10 @@ public class TopMakeFileGenerator {
         return caller.getConfig();
     }
 
+    private ICConfigurationDescription getCConfigurationDescription() {
+        return caller.getCConfigurationDescription();
+    }
+
     private IProject getProject() {
         return caller.getProject();
     }
@@ -150,7 +154,7 @@ public class TopMakeFileGenerator {
         buffer.append("RM := ");
         // support macros in the clean command
         String cleanCommand = resolveValueToMakefileFormat(config.getCleanCommand(), EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
         buffer.append(cleanCommand).append(NEWLINE);
         buffer.append(NEWLINE);
 
@@ -180,7 +184,7 @@ public class TopMakeFileGenerator {
         // "sloeber.prebuild",
         // new String(), false);
         String sketchPrebuild = resolveValueToMakefileFormat("sloeber.prebuild", EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
                 prebuildStep = prebuildStep + "\n\t" + sketchPrebuild;
@@ -191,7 +195,7 @@ public class TopMakeFileGenerator {
         // end off JABA issue927
         // try to resolve the build macros in the prebuild step
         prebuildStep = resolveValueToMakefileFormat(prebuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
         return prebuildStep.trim();
     }
 
@@ -260,7 +264,7 @@ public class TopMakeFileGenerator {
 
         String postbuildStep = config.getPostbuildStep();
         postbuildStep = resolveValueToMakefileFormat(postbuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
         postbuildStep = postbuildStep.trim();
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {
@@ -354,13 +358,12 @@ public class TopMakeFileGenerator {
     private StringBuffer getMakeRules() {
         StringBuffer buffer = new StringBuffer();
         IProject project = getProject();
-        IConfiguration config = getConfig();
         IFolder topBuildDir = getBuildFolder();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules.getMakeRules()) {
-            buffer.append(makeRule.getRule(project, topBuildDir, config));
+            buffer.append(makeRule.getRule(project, topBuildDir, getCConfigurationDescription()));
         }
         return buffer;
     }

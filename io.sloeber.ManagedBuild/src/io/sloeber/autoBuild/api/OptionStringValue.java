@@ -15,10 +15,10 @@
 package io.sloeber.autoBuild.api;
 
 import java.util.Objects;
+import static io.sloeber.autoBuild.integration.Const.*;
 
 import org.eclipse.cdt.core.settings.model.ICLibraryFileEntry;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import io.sloeber.schema.api.IOption;
@@ -45,7 +45,7 @@ public final class OptionStringValue {
         srcRootPath = el.getAttribute(ATTR_SRC_ROOT_PATH);
         srcPrefixMapping = el.getAttribute(ATTR_SRC_PREFIX_MAPPING);
         if (value == null)
-            value = IOption.EMPTY_STRING;
+            value = EMPTY_STRING;
     }
 
     public OptionStringValue(IConfigurationElement el) {
@@ -54,12 +54,12 @@ public final class OptionStringValue {
         } else {
             isBuiltIn = false;
         }
-        value = SafeStringInterner.safeIntern(el.getAttribute(IOption.LIST_ITEM_VALUE));
-        srcPath = SafeStringInterner.safeIntern(el.getAttribute(ATTR_SRC_PATH));
-        srcRootPath = SafeStringInterner.safeIntern(el.getAttribute(ATTR_SRC_ROOT_PATH));
-        srcPrefixMapping = SafeStringInterner.safeIntern(el.getAttribute(ATTR_SRC_PREFIX_MAPPING));
+        value = el.getAttribute(IOption.LIST_ITEM_VALUE);
+        srcPath = el.getAttribute(ATTR_SRC_PATH);
+        srcRootPath = el.getAttribute(ATTR_SRC_ROOT_PATH);
+        srcPrefixMapping = el.getAttribute(ATTR_SRC_PREFIX_MAPPING);
         if (value == null)
-            value = IOption.EMPTY_STRING;
+            value = EMPTY_STRING;
     }
 
     public OptionStringValue(OptionStringValue base) {
@@ -84,10 +84,8 @@ public final class OptionStringValue {
      */
     public OptionStringValue(String value, boolean isBuiltIn, String srcPath, String srcRootPath,
             String srcPrefixMapping) {
-        if (value == null)
-            value = IOption.EMPTY_STRING;
         this.isBuiltIn = isBuiltIn;
-        this.value = value;
+        this.value = value == null ? EMPTY_STRING : value;
         this.srcPath = srcPath;
         this.srcRootPath = srcRootPath;
         this.srcPrefixMapping = srcPrefixMapping;

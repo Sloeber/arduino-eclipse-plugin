@@ -92,9 +92,9 @@ public interface IOption extends IBuildObject {
 
     // Resource Filter type
     public static final int FILTER_ALL = 0;
-    public static final String ALL = "all"; //$NON-NLS-1$
     public static final int FILTER_FILE = 1;
     public static final int FILTER_PROJECT = 2;
+    public static final int FILTER_NONE = 1;
     public static final String PROJECT = "project"; //$NON-NLS-1$
 
     // Schema attribute names for option elements
@@ -182,7 +182,6 @@ public interface IOption extends IBuildObject {
     // Schema attribute names for listOptionValue elements
     public static final String LIST_ITEM_VALUE = "value"; //$NON-NLS-1$
     public static final String LIST_ITEM_BUILTIN = "builtIn"; //$NON-NLS-1$
-    public static final String EMPTY_STRING = "";
 
     /**
      * @return the parent of this option. This is an object implementing ITool
@@ -233,60 +232,9 @@ public interface IOption extends IBuildObject {
     public int getBrowseType();
 
     /**
-     * Sets the browseType attribute.
-     *
-     * @param type
-     *            - browseType attribute
-     */
-    public void setBrowseType(int type);
-
-    /**
-     * @return the setting of the browseFilterPath attribute. For options of
-     *         {@link #BROWSE_FILE} and {@link #BROWSE_DIR} types.
-     * @since 7.0
-     */
-    public String getBrowseFilterPath();
-
-    /**
-     * Sets the browseFilterPath attribute. For options of {@link #BROWSE_FILE} and
-     * {@link #BROWSE_DIR} types.
-     * 
-     * @param path
-     *            - default filter-path for the underlying browse dialog
-     * @since 7.0
-     */
-    public void setBrowseFilterPath(String path);
-
-    /**
-     * @return the setting of the browseFilterExtensions attribute. For options of
-     *         {@link #BROWSE_FILE} type.
-     * @since 7.0
-     */
-    public String[] getBrowseFilterExtensions();
-
-    /**
-     * Sets the browseFilterExtensions attribute. For options of
-     * {@link #BROWSE_FILE} type.
-     * 
-     * @param extensions
-     *            - file extensions to show in browse files dialog
-     *
-     * @since 7.0
-     */
-    public void setBrowseFilterExtensions(String[] extensions);
-
-    /**
      * @return the setting of the resourceFilter attribute
      */
     public int getResourceFilter();
-
-    /**
-     * Sets the resourceFilter attribute.
-     *
-     * @param filter
-     *            - resourceFilter attribute
-     */
-    public void setResourceFilter(int filter);
 
     /**
      * @return an instance of the class that calculates whether the option is
@@ -309,11 +257,6 @@ public interface IOption extends IBuildObject {
     public IOptionCategory getCategory();
 
     /**
-     * Sets the category for this option.
-     */
-    public void setCategory(IOptionCategory category);
-
-    /**
      * @return a <code>String</code> containing the actual command line
      *         option associated with the option
      */
@@ -327,30 +270,11 @@ public interface IOption extends IBuildObject {
     public IOptionCommandGenerator getCommandGenerator();
 
     /**
-     * Sets a <code>String</code> containing the actual command line
-     * option associated with the option
-     *
-     * @param command
-     *            - the actual command line option
-     */
-    public void setCommand(String command);
-
-    /**
      * @return {@code String} containing the actual command line
      *         option associated with a Boolean option when the value is
      *         {@code false}
      */
     public String getCommandFalse();
-
-    /**
-     * Sets a <code>String</code> containing the actual command line
-     * option associated with a Boolean option when the value is {@code false}
-     *
-     * @param commandFalse
-     *            - the actual command line option associated
-     *            with a Boolean option when the value is {@code false}
-     */
-    public void setCommandFalse(String commandFalse);
 
     /**
      * @return a <code>String</code> containing the tooltip
@@ -359,27 +283,10 @@ public interface IOption extends IBuildObject {
     public String getToolTip();
 
     /**
-     * Sets a <code>String</code> containing the tooltip associated with the option
-     *
-     * @param tooltip
-     *            - the tooltip associated with the option
-     */
-    public void setToolTip(String tooltip);
-
-    /**
      * @return a <code>String</code> containing the contextId
      *         associated with the option
      */
     public String getContextId();
-
-    /**
-     * Sets a <code>String</code> containing the contextId associated with the
-     * option
-     *
-     * @param id
-     *            - the contextId associated with the option
-     */
-    public void setContextId(String id);
 
     /**
      * @return the user-defined preprocessor symbols.
@@ -548,50 +455,6 @@ public interface IOption extends IBuildObject {
     public int getValueType() throws BuildException;
 
     /**
-     * Sets the boolean value of the receiver to the value specified in the
-     * argument.
-     * If the receiver is not a reference to a boolean option, method will throw an
-     * exception.
-     */
-    public void setValue(boolean value) throws BuildException;
-
-    /**
-     * Sets the string value of the receiver to the value specified in the argument.
-     */
-    public void setValue(String value) throws BuildException;
-
-    /**
-     * Sets the value of the receiver to be an array of strings.
-     *
-     * @param value
-     *            An array of strings to place in the option reference.
-     */
-    public void setValue(String[] value) throws BuildException;
-
-    /**
-     * Sets the raw value of this option.
-     *
-     * @param v
-     *            The Object that contains the raw value of the option. The type
-     *            of Object is specific to the option type.
-     */
-    public void setValue(Object v);
-
-    /**
-     * Sets the default value of this option.
-     *
-     * @param v
-     *            The Object that contains the default value of the option. The type
-     *            of Object is specific to the option type.
-     */
-    public void setDefaultValue(Object v);
-
-    /**
-     * Sets the value-type of this option. Use with care.
-     */
-    public void setValueType(int type);
-
-    /**
      * @return the custom field-editor ID for this build-option. This ID should
      *         match a custom-field editor
      *         contributed through the {@code <fieldEditor>} element of the
@@ -607,16 +470,6 @@ public interface IOption extends IBuildObject {
      * @since 8.0
      */
     public String getFieldEditorExtraArgument();
-
-    /**
-     * Sets the optional extra argument for the field-editor.
-     * 
-     * @param extraArgument
-     *            free-form extra argument to be interpreted by the
-     *            {@link #getFieldEditorId() field-editor}
-     * @since 8.0
-     */
-    public void setFieldEditorExtraArgument(String extraArgument);
 
     /**
      * @return <code>true</code> if this option is valid and <code>false</code>
@@ -731,7 +584,7 @@ public interface IOption extends IBuildObject {
          *            will be used.
          * @return the newly added node.
          */
-        ITreeOption addNode(String id, String name, String category, Integer order);
+        ITreeOption addNode(String id, String name, String category, int order);
     }
 
     /**

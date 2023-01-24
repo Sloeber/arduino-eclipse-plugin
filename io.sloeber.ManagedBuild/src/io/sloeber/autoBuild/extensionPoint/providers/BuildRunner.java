@@ -62,13 +62,14 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFileInfo;
 import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.Builder;
 
 /**
  * @author dschaefer
@@ -82,11 +83,14 @@ public class BuildRunner extends IBuildRunner {
     private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
     @Override
-    public boolean invokeBuild(int kind, IProject project, IConfiguration configuration, IBuilder builder,
-            IConsole console, IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder,
-            IProgressMonitor inMonitor) throws CoreException {
+    public boolean invokeBuild(int kind, IProject project, ICConfigurationDescription icConfigurationDescription,
+            IBuilder builder, IConsole console, IMarkerGenerator markerGenerator,
+            IncrementalProjectBuilder projectBuilder, IProgressMonitor inMonitor) throws CoreException {
 
         boolean isClean = false;
+        AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) icConfigurationDescription
+                .getConfigurationData();
+        IConfiguration configuration = autoData.getConfiguration();
 
         BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
         try {
@@ -117,7 +121,7 @@ public class BuildRunner extends IBuildRunner {
 
                 IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, project);
 
-                Map<String, String> envMap = getEnvironment(builder);
+                Map<String, String> envMap = getEnvironment(icConfigurationDescription, builder);
                 String[] envp = BuildRunnerHelper.envMapToEnvp(envMap);
 
                 String[] errorParsers = builder.getErrorParsers();
@@ -205,11 +209,10 @@ public class BuildRunner extends IBuildRunner {
         return targetsArray;
     }
 
-    protected Map<String, String> getEnvironment(IBuilder builder) throws CoreException {
+    protected Map<String, String> getEnvironment(ICConfigurationDescription cfgDes, IBuilder builder)
+            throws CoreException {
         Map<String, String> envMap = new HashMap<>();
         if (builder.appendEnvironment()) {
-            ICConfigurationDescription cfgDes = ManagedBuildManager
-                    .getDescriptionForConfiguration(builder.getParent().getParent());
             IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
             IEnvironmentVariable[] vars = mngr.getVariables(cfgDes, true);
             for (IEnvironmentVariable var : vars) {
@@ -218,7 +221,7 @@ public class BuildRunner extends IBuildRunner {
         }
 
         // Add variables from build info
-        Map<String, String> builderEnv = builder.getExpandedEnvironment();
+        Map<String, String> builderEnv = ((Builder) builder).getExpandedEnvironment(cfgDes);
         if (builderEnv != null)
             envMap.putAll(builderEnv);
 

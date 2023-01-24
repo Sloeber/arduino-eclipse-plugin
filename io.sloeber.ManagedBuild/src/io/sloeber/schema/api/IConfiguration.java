@@ -54,9 +54,9 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IConfiguration extends IBuildObject {
-	public static final String CONFIGURATION_ELEMENT_NAME = "configuration"; //$NON-NLS-1$
-    
-	public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
+    public static final String CONFIGURATION_ELEMENT_NAME = "configuration"; //$NON-NLS-1$
+
+    public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
     public static final String ARTIFACT_EXTENSION = "artifactExtension"; //$NON-NLS-1$
     public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
     public static final String ERROR_PARSERS = "errorParsers"; //$NON-NLS-1$
@@ -68,7 +68,7 @@ public interface IConfiguration extends IBuildObject {
     public static final String DESCRIPTION = "description"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
-    
+
     /**
      * Returns the description of the configuration.
      *
@@ -77,9 +77,9 @@ public interface IConfiguration extends IBuildObject {
     public String getDescription();
 
     /**
-
-
-    /**
+     * 
+     * 
+     * /**
      * Returns the extension that should be applied to build artifacts created by
      * this configuration.
      *
@@ -181,17 +181,6 @@ public interface IConfiguration extends IBuildObject {
      */
     List<ITool> getFilteredTools();
 
-
-
-    /**
-     * Returns the Eclipse project that owns the configuration.
-     *
-     * @return IResource
-     */
-    public IResource getOwner();
-
-
-
     /**
      * Returns the project-type parent of this configuration, if this is an
      * extension configuration. Otherwise, returns <code>null</code>.
@@ -199,7 +188,6 @@ public interface IConfiguration extends IBuildObject {
      * @return IProjectType
      */
     public IProjectType getProjectType();
-
 
     /**
      * Returns the <code>ITool</code> in this configuration's tool-chain with
@@ -210,7 +198,6 @@ public interface IConfiguration extends IBuildObject {
      * @return ITool
      */
     public ITool getTool(String id);
-
 
     /**
      * Returns the <code>IToolChain</code> child of this configuration.
@@ -270,8 +257,6 @@ public interface IConfiguration extends IBuildObject {
      */
     public boolean isHeaderFile(String ext);
 
-
-
     /**
      * Returns <code>true</code> if the configuration's tool-chain is supported on
      * the system
@@ -299,8 +284,6 @@ public interface IConfiguration extends IBuildObject {
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
 
-
-
     /**
      * Calculates the configuration target tool.
      *
@@ -310,28 +293,12 @@ public interface IConfiguration extends IBuildObject {
      */
     public ITool calculateTargetTool();
 
-
-
-//    IResourceInfo getResourceInfo(IPath path, boolean exactPath);
-
-//    List<IResourceInfo> getResourceInfos();
-
-//    IResourceInfo getResourceInfoById(String id);
-
-//    IFolderInfo getRootFolderInfo();
-
-    CConfigurationData getConfigurationData();
-
     List<ICSourceEntry> getSourceEntries();
 
-    CBuildData getBuildData();
-
     IBuilder getBuilder();
-    
+
     IFolder getBuildFolder(IProject project);
 
-
     boolean supportsBuild(boolean managed);
-
 
 }

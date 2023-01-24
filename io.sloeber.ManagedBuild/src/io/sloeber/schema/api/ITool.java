@@ -47,7 +47,7 @@ public interface ITool extends IHoldsOptions {
     public static final String COMMAND = "command"; //$NON-NLS-1$
     public static final String COMMAND_LINE_PATTERN = "commandLinePattern"; //$NON-NLS-1$
     public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator"; //$NON-NLS-1$
-    public static final String ERROR_PARSERS = ToolChain.ERROR_PARSERS;
+    public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;
     public static final String CUSTOM_BUILD_STEP = "customBuildStep"; //$NON-NLS-1$
     public static final String ANNOUNCEMENT = "announcement"; //$NON-NLS-1$
     //public static final String ICON = IOptionCategory.ICON;
@@ -64,7 +64,7 @@ public interface ITool extends IHoldsOptions {
      *
      * @return IBuildObject
      */
-    public IBuildObject getParent();
+    public IToolChain getParent();
 
     /**
      * Returns the complete list of input types that are available for this tool.
@@ -288,7 +288,7 @@ public interface ITool extends IHoldsOptions {
      * the environment macro references converted to the buildfile variable format,
      * all other macro references are resolved
      */
-    public String[] getToolCommandFlags(IPath inputFileLocation, IPath outputFileLocation) throws BuildException;
+    public String[] getToolCommandFlags(IFile inputFile, IFile outputFile) throws BuildException;
 
     /**
      * Options are organized into categories for UI purposes.
@@ -355,7 +355,7 @@ public interface ITool extends IHoldsOptions {
 
     CLanguageData[] getCLanguageDatas();
 
-    IInputType getInputTypeForCLanguageData(CLanguageData data);
+    // IInputType getInputTypeForCLanguageData(CLanguageData data);
 
     //IResourceInfo getParentResourceInfo();
 
@@ -399,6 +399,4 @@ public interface ITool extends IHoldsOptions {
      */
     public List<IInputType> getMatchingInputTypes(IFile file, String macroName);
 
-    //JABA TOFIX remove this later
-    public IResourceInfo getParentResourceInfo();
 }

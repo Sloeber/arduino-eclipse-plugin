@@ -45,6 +45,7 @@ import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
@@ -136,93 +137,18 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
         }
     }
 
-    //	public BuildfileMacroSubstitutor(int contextType, Object contextData, String inexistentMacroValue, String listDelimiter){
-    //		super(contextType, contextData, inexistentMacroValue, listDelimiter);
-    //		init();
-    //	}
-
-    public BuildfileMacroSubstitutor(IBuilder builder, IMacroContextInfo contextInfo, String inexistentMacroValue,
-            String listDelimiter) {
+    public BuildfileMacroSubstitutor(ICConfigurationDescription CfgDes, IMacroContextInfo contextInfo,
+            String inexistentMacroValue, String listDelimiter) {
         super(contextInfo, inexistentMacroValue, listDelimiter);
-        init(builder, contextInfo);
+        init(CfgDes);
     }
 
-    public BuildfileMacroSubstitutor(IMacroContextInfo contextInfo, String inexistentMacroValue, String listDelimiter) {
-        this(null, contextInfo, inexistentMacroValue, listDelimiter);
-    }
-
-    private void init(IBuilder builder, IMacroContextInfo contextInfo) {
-        if (contextInfo == null)
-            return;
-
+    private void init(ICConfigurationDescription CfgDes) {
+        fCfgDes = CfgDes;
         fVarMngr = CCorePlugin.getDefault().getCdtVariableManager();
-
-        if (builder != null) {
-            fBuilder = builder;
-            fConfiguration = builder.getParent().getParent();
-        } else {
-            IBuildObject[] bos = findConfigurationAndBuilderFromContext(contextInfo);
-            if (bos != null) {
-                fConfiguration = (IConfiguration) bos[0];
-                fBuilder = (IBuilder) bos[1];
-            }
-        }
-
-        if (fConfiguration != null) {
-            fCfgDes = ManagedBuildManager.getDescriptionForConfiguration(fConfiguration);
-        }
-    }
-
-    static IBuildObject[] findConfigurationAndBuilderFromContext(IMacroContextInfo contextInfo) {
-        int type = contextInfo.getContextType();
-        IConfiguration cfg = null;
-        IBuilder builder = null;
-        switch (type) {
-        case IBuildMacroProvider.CONTEXT_FILE:
-            contextInfo = (IMacroContextInfo) contextInfo.getNext();
-            if (contextInfo == null)
-                break;
-        case IBuildMacroProvider.CONTEXT_OPTION:
-            contextInfo = (IMacroContextInfo) contextInfo.getNext();
-            if (contextInfo == null)
-                break;
-        case IBuildMacroProvider.CONTEXT_CONFIGURATION: {
-            Object contextData = contextInfo.getContextData();
-            if (contextData instanceof IConfiguration) {
-                cfg = (IConfiguration) contextData;
-                builder = cfg.getBuilder();
-            } else if (contextData instanceof IBuilder) {
-                builder = (IBuilder) contextData;
-                cfg = builder.getParent().getParent();
-            } else if (contextData instanceof ITool) {
-                ITool tool = (ITool) contextData;
-                IResourceInfo rcInfo = tool.getParentResourceInfo();
-                if (rcInfo != null) {
-                    cfg = rcInfo.getParent();
-                    if (cfg != null) {
-                        builder = cfg.getBuilder();
-                    }
-                }
-            }
-        }
-            break;
-        case IBuildMacroProvider.CONTEXT_PROJECT: {
-            Object contextData = contextInfo.getContextData();
-            if (contextData instanceof IManagedProject) {
-                IResource rc = ((IManagedProject) contextData).getOwner();
-                if (rc != null) {
-                    IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(rc);
-                    cfg = info.getDefaultConfiguration();
-                    builder = cfg.getBuilder();
-                }
-            }
-        }
-            break;
-        }
-
-        if (cfg != null && builder != null)
-            return new IBuildObject[] { cfg, builder };
-        return null;
+        AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) CfgDes.getConfigurationData();
+        fConfiguration = autoData.getConfiguration();
+        fBuilder = fConfiguration.getBuilder();
     }
 
     /* (non-Javadoc)
@@ -283,8 +209,6 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
     @Override
     public void setMacroContextInfo(IVariableContextInfo info) throws CdtVariableException {
         super.setMacroContextInfo(info);
-        if (info instanceof IMacroContextInfo)
-            init(null, (IMacroContextInfo) info);
     }
 
     /* (non-Javadoc)

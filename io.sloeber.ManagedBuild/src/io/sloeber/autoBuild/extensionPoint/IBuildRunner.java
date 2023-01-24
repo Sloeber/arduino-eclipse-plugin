@@ -16,6 +16,7 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -32,20 +33,29 @@ import io.sloeber.schema.api.IConfiguration;
  */
 public abstract class IBuildRunner {
 
-	/**
-	 * Perform the build.
-	 *
-	 * @param kind - kind from the IncrementalProjectBuilder
-	 * @param project - project being built
-	 * @param configuration - configuration being built
-	 * @param console - console to use for build output
-	 * @param markerGenerator - generator to add markers for build problems
-	 * @param monitor - progress monitor in the initial state where {@link IProgressMonitor#beginTask(String, int)}
-	 *    has not been called yet.
-	 * @throws CoreException standard core exception if something goes wrong
-	 */
-	public abstract boolean invokeBuild(int kind, IProject project, IConfiguration configuration, IBuilder builder,
-			IConsole console, IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder,
-			IProgressMonitor monitor) throws CoreException;
+    /**
+     * Perform the build.
+     *
+     * @param kind
+     *            - kind from the IncrementalProjectBuilder
+     * @param project
+     *            - project being built
+     * @param icConfigurationDescription
+     *            - configuration being built
+     * @param console
+     *            - console to use for build output
+     * @param markerGenerator
+     *            - generator to add markers for build problems
+     * @param monitor
+     *            - progress monitor in the initial state where
+     *            {@link IProgressMonitor#beginTask(String, int)}
+     *            has not been called yet.
+     * @throws CoreException
+     *             standard core exception if something goes wrong
+     */
+    public abstract boolean invokeBuild(int kind, IProject project,
+            ICConfigurationDescription icConfigurationDescription, IBuilder builder, IConsole console,
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor monitor)
+            throws CoreException;
 
 }

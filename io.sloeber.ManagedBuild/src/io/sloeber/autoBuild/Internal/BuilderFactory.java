@@ -266,9 +266,10 @@ public class BuilderFactory {
     /**
      * Creates a new build-command containing data dynamically obtained from the
      * Builder.
+     * 
+     * @param project
      */
-    public static ICommand createCommandFromBuilder(IBuilder builder) throws CoreException {
-        IProject project = builder.getParent().getParent().getOwner().getProject();
+    public static ICommand createCommandFromBuilder(IProject project, IBuilder builder) throws CoreException {
         ICommand command = getBuildSpec(project.getDescription(), CommonBuilder.BUILDER_ID);
         if (command == null)
             return null;
@@ -304,35 +305,35 @@ public class BuilderFactory {
         IBuilder cfgBuilder = cfg.getBuilder();
 
         Builder builder;
-//        if (customization) {
-//            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
-//
-//            //adjusting settings
-//            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
-//            if (tmp != null && tmp.length() == 0)
-//                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
-//
-//            tmp = args.get(USE_DEFAULT_BUILD_CMD);
-//            if (tmp != null) {
-//                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
-//                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
-//                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
-//                } else {
-//                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
-//                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
-//                }
-//            }
-//            //end adjusting settings
-//
-//            MapStorageElement el = new BuildArgsStorageElement(args, null);
-//            builder.loadFromProject(el);
-//        } else {
-            if (args.get(IBuilder.ID) == null) {
-                args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
-            }
-            MapStorageElement el = new BuildArgsStorageElement(args, null);
-            builder = new Builder(tCh, el, ManagedBuildManager.getVersion().toString());
-//        }
+        //        if (customization) {
+        //            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
+        //
+        //            //adjusting settings
+        //            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
+        //            if (tmp != null && tmp.length() == 0)
+        //                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
+        //
+        //            tmp = args.get(USE_DEFAULT_BUILD_CMD);
+        //            if (tmp != null) {
+        //                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
+        //                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
+        //                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
+        //                } else {
+        //                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
+        //                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
+        //                }
+        //            }
+        //            //end adjusting settings
+        //
+        //            MapStorageElement el = new BuildArgsStorageElement(args, null);
+        //            builder.loadFromProject(el);
+        //        } else {
+        if (args.get(IBuilder.ID) == null) {
+            args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
+        }
+        MapStorageElement el = new BuildArgsStorageElement(args, null);
+        builder = new Builder(tCh, el, ManagedBuildManager.getVersion().toString());
+        //        }
 
         return builder;
     }
@@ -348,18 +349,18 @@ public class BuilderFactory {
 
             } else {
                 String type = args.get(CONTENTS);
-//                if (type == null || CONTENTS_BUILDER_CUSTOMIZATION.equals(type)) {
-//                    IConfiguration cfg = info.getDefaultConfiguration();
-//                    IBuilder builder;
-//                    if (args.size() == 0) {
-//                        builder = cfg.getBuilder();
-//                    } else {
-//                        builder = createBuilder(cfg, args, true);
-//                    }
-//                    builders = new IBuilder[] { builder };
-//
-//                } else
-                	if (CONTENTS_BUILDER.equals(type)) {
+                //                if (type == null || CONTENTS_BUILDER_CUSTOMIZATION.equals(type)) {
+                //                    IConfiguration cfg = info.getDefaultConfiguration();
+                //                    IBuilder builder;
+                //                    if (args.size() == 0) {
+                //                        builder = cfg.getBuilder();
+                //                    } else {
+                //                        builder = createBuilder(cfg, args, true);
+                //                    }
+                //                    builders = new IBuilder[] { builder };
+                //
+                //                } else
+                if (CONTENTS_BUILDER.equals(type)) {
                     IConfiguration cfgs[] = configsFromMap(args, info);
                     if (cfgs.length != 0) {
                         List<IBuilder> list = new ArrayList<>(cfgs.length);

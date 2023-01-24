@@ -18,18 +18,7 @@ import java.util.Vector;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.internal.core.OutputType;
-//import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -45,10 +34,8 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 
 @SuppressWarnings("nls")
@@ -393,7 +380,7 @@ public class ManagebBuildCommon {
         return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
-    public static List<String> resolvePaths(List<IPath> toResolve, IConfiguration config) {
+    public static List<String> resolvePaths(List<IPath> toResolve, ICConfigurationDescription config) {
         List<String> ret = new LinkedList<>();
         if (toResolve.isEmpty())
             return ret;
@@ -579,15 +566,12 @@ public class ManagebBuildCommon {
         return escapeWhitespaces(ensureUnquoted(path));
     }
 
-    static public String getToolCommandLinePattern(IConfiguration config, ITool tool) {
-        IProject project = config.getOwner().getProject();
+    static public String getToolCommandLinePattern(ICConfigurationDescription confDesc, ITool tool) {
         String orgPattern = tool.getCommandLinePattern();
         if (orgPattern.contains("$")) {
             //if the pattern contains a space no use to try to expand it
             return orgPattern;
         }
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
         return getBuildEnvironmentVariable(confDesc, orgPattern, orgPattern, false);
 
     }
@@ -624,10 +608,10 @@ public class ManagebBuildCommon {
     }
 
     static public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
-            int contextType, Object contextData) {
+            int contextType, ICConfigurationDescription confdesc) {
         try {
             return ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(value,
-                    nonexistentMacrosValue, listDelimiter, contextType, contextData);
+                    nonexistentMacrosValue, listDelimiter, contextType, confdesc);
         } catch (BuildMacroException e) {
             return value;
         }

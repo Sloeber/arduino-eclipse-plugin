@@ -23,20 +23,14 @@ import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySu
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 
-import io.sloeber.autoBuild.Internal.BooleanExpressionApplicabilityCalculator;
-import io.sloeber.autoBuild.Internal.OptionEnablementExpression;
-import io.sloeber.autoBuild.extensionPoint.ILanguageInfoCalculator;
-import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.api.IToolChain;
 
 public class InputType extends BuildObject implements IInputType {
 
@@ -51,17 +45,9 @@ public class InputType extends BuildObject implements IInputType {
     // Managed Build model attributes
     private List<IContentType> mySourceContentTypes = new ArrayList<>();
 
-    private List<IContentType> headerContentTypes = new ArrayList<>();
     private List<String> inputExtensions = new ArrayList<>();
     private IContentType dependencyContentType;
     private List<String> dependencyExtensions = new ArrayList<>();
-    private ILanguageInfoCalculator languageInfoCalculator;
-    private IConfigurationElement languageInfoCalculatorElement;
-
-    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
-
-    // Miscellaneous
-    private boolean isExtensionInputType = false;
 
     // read from model
     private String[] modelSourceContentType;
@@ -74,7 +60,8 @@ public class InputType extends BuildObject implements IInputType {
     private String[] modelScannerConfigDiscoveryProfileID;
     private String[] modelLanguageID;
     private String[] modelLanguageInfoCalculator;
-    private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
+    //    private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
+    //    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
     /*
      * C O N S T R U C T O R S
@@ -92,7 +79,6 @@ public class InputType extends BuildObject implements IInputType {
      */
     public InputType(ITool parent, IExtensionPoint root, IConfigurationElement element) {
         this.parent = parent;
-        isExtensionInputType = true;
 
         loadNameAndID(root, element);
         modelSourceContentType = getAttributes(SOURCE_CONTENT_TYPE);
@@ -106,11 +92,11 @@ public class InputType extends BuildObject implements IInputType {
         modelLanguageID = getAttributes(LANGUAGE_ID);
         modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
 
-        myOptionEnablementExpression.clear();
-        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        for (IConfigurationElement curEnablement : enablements) {
-            myOptionEnablementExpression.add(new OptionEnablementExpression(curEnablement));
-        }
+        //        myOptionEnablementExpression.clear();
+        //        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
+        //        for (IConfigurationElement curEnablement : enablements) {
+        //            myOptionEnablementExpression.add(new OptionEnablementExpression(curEnablement));
+        //        }
 
         try {
             resolveFields();
@@ -345,42 +331,14 @@ public class InputType extends BuildObject implements IInputType {
      */
     @Override
     public IContentType getDependencyContentType() {
-        if (dependencyContentType == null) {
-            if (superClass != null) {
-                return superClass.getDependencyContentType();
-            } else {
-                return null;
-            }
-        }
         return dependencyContentType;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#
-     * getDependencyExtensionsAttribute()
-     */
     @Override
     public String[] getDependencyExtensionsAttribute() {
-        if (dependencyExtensions == null || dependencyExtensions.size() == 0) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return superClass.getDependencyExtensionsAttribute();
-            } else {
-                if (dependencyExtensions == null) {
-                    dependencyExtensions = new ArrayList<>();
-                }
-            }
-        }
         return dependencyExtensions.toArray(new String[dependencyExtensions.size()]);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#getDependencyExtensions()
-     */
     @Override
     public String[] getDependencyExtensions(ITool tool) {
         // Use content type if specified and registered with Eclipse
@@ -502,43 +460,17 @@ public class InputType extends BuildObject implements IInputType {
 
     @Override
     public List<IContentType> getSourceContentTypes() {
-        if (mySourceContentTypes == null) {
-            if (superClass != null) {
-                return superClass.getSourceContentTypes();
-            }
-
-            return new ArrayList<IContentType>();
-        }
         return mySourceContentTypes;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.eclipse.cdt.core.build.managed.IInputType#getSourceExtensionsAttribute()
-     */
     @Override
     public List<String> getSourceExtensionsAttribute() {
-        //        if (inputExtensions == null) {
-        //            // If I have a superClass, ask it
-        //            if (superClass != null) {
-        //                return superClass.getSourceExtensionsAttribute();
-        //            }
-        //
-        //            return new String[0];
-        //        }
-        return inputExtensions;//.toArray(new String[inputExtensions.size()]);
+        return inputExtensions;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#getSourceExtensions()
-     */
     @Override
     public List<String> getSourceExtensions(ITool tool) {
-        return getSourceExtensions(tool, ((Tool) tool).getProject());
+        return getSourceExtensions(tool, null);//((Tool) tool).getProject());
     }
 
     public List<String> getSourceExtensions(ITool tool, IProject project) {
@@ -618,42 +550,18 @@ public class InputType extends BuildObject implements IInputType {
 
     @Override
     public String getDiscoveryProfileId(ITool tool) {
-        String id = getDiscoveryProfileIdAttribute();
+        String discoveryid = getDiscoveryProfileIdAttribute();
         //        if (id == null) {
         //            id = ((Tool) tool).getDiscoveryProfileId();
         //        }
         // if there is more than one ('|'-separated), return the first one
         // TODO: expand interface with String[] getDiscoveryProfileIds(ITool tool)
-        if (null != id) {
-            int nPos = id.indexOf('|');
+        if (null != discoveryid) {
+            int nPos = discoveryid.indexOf('|');
             if (nPos > 0)
-                id = id.substring(0, nPos);
+                discoveryid = discoveryid.substring(0, nPos);
         }
-        return id;
-    }
-
-    /**
-     * Check if legacy scanner discovery profiles should be used.
-     */
-    private boolean useLegacyScannerDiscoveryProfiles() {
-        boolean useLegacy = true;
-        ITool tool = getParent();
-        if (tool != null) {
-            IBuildObject toolchain = tool.getParent();
-            if (toolchain instanceof IToolChain
-                    && ((IToolChain) toolchain).getDefaultLanguageSettingsProviderIds() != null) {
-                IConfiguration cfg = ((IToolChain) toolchain).getParent();
-                if (cfg != null && cfg.getDefaultLanguageSettingsProviderIds() != null) {
-                    IResource rc = cfg.getOwner();
-                    if (rc != null) {
-                        IProject project = rc.getProject();
-                        useLegacy = !ScannerDiscoveryLegacySupport
-                                .isLanguageSettingsProvidersFunctionalityEnabled(project);
-                    }
-                }
-            }
-        }
-        return useLegacy;
+        return discoveryid;
     }
 
     /**
@@ -673,22 +581,12 @@ public class InputType extends BuildObject implements IInputType {
     }
 
     public String getDiscoveryProfileIdAttribute() {
-        String discoveryProfileAttribute = modelScannerConfigDiscoveryProfileID[SUPER];
-        if (discoveryProfileAttribute == null && useLegacyScannerDiscoveryProfiles()) {
-            discoveryProfileAttribute = getLegacyDiscoveryProfileIdAttribute();
-        }
-
-        return discoveryProfileAttribute;
+        return modelScannerConfigDiscoveryProfileID[SUPER];
     }
 
-    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
-        if (booleanExpressionCalculator == null) {
-            if (superClass != null) {
-                return ((InputType) superClass).getBooleanExpressionCalculator();
-            }
-        }
-        return booleanExpressionCalculator;
-    }
+    //    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
+    //        return booleanExpressionCalculator;
+    //    }
 
     public boolean hasScannerConfigSettings() {
 
@@ -752,8 +650,32 @@ public class InputType extends BuildObject implements IInputType {
             }
         }
 
-        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
+        //      booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
 
     }
 
 }
+
+///**
+//* Check if legacy scanner discovery profiles should be used.
+//*/
+//private boolean useLegacyScannerDiscoveryProfiles() {
+// boolean useLegacy = true;
+// ITool tool = getParent();
+// if (tool != null) {
+//     IBuildObject toolchain = tool.getParent();
+//     if (toolchain instanceof IToolChain
+//             && ((IToolChain) toolchain).getDefaultLanguageSettingsProviderIds() != null) {
+//         IConfiguration cfg = ((IToolChain) toolchain).getParent();
+//         if (cfg != null && cfg.getDefaultLanguageSettingsProviderIds() != null) {
+//             IResource rc = cfg.getOwner();
+//             if (rc != null) {
+//                 IProject project = rc.getProject();
+//                 useLegacy = !ScannerDiscoveryLegacySupport
+//                         .isLanguageSettingsProvidersFunctionalityEnabled(project);
+//             }
+//         }
+//     }
+// }
+// return useLegacy;
+//}

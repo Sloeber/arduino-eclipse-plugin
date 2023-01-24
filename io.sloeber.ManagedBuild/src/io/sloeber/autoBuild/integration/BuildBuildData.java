@@ -15,6 +15,7 @@
 package io.sloeber.autoBuild.integration;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.core.resources.ICommand;
@@ -35,27 +36,33 @@ public class BuildBuildData extends CBuildData {
     private Builder fBuilder;
     private Configuration fCfg;
     private IProject myProject;
+    ICConfigurationDescription myCdtConfigurationDescription;
+    BuildEnvironmentContributor myBuildEnvironmentContributor;
 
-    public BuildBuildData(Configuration fCfg2, IProject project) {
-    	 fCfg = fCfg2;
-    	IToolChain toolchain=fCfg.getToolChain();
-        fBuilder = (Builder) toolchain.getBuilder();
-        myProject=project;
-       
+    public BuildBuildData(IBuilder builder, ICConfigurationDescription configurationDescription) {
+        myCdtConfigurationDescription = configurationDescription;
+        myProject = myCdtConfigurationDescription.getProjectDescription().getProject();
+        fBuilder = (Builder) builder;
+        fCfg = (Configuration) fBuilder.getParent().getParent();
+        myBuildEnvironmentContributor = new BuildEnvironmentContributor(this);
     }
-    
+
+    //    public BuildBuildData(Configuration fCfg2, IProject project) {
+    //        fCfg = fCfg2;
+    //        IToolChain toolchain = fCfg.getToolChain();
+    //        fBuilder = (Builder) toolchain.getBuilder();
+    //        myProject = project;
+    //
+    //    }
+
     public Configuration getConfiguration() {
-    	return fCfg;
-    }
-    
-    public IProject getProject() {
-    	return myProject;
+        return fCfg;
     }
 
     @Override
     public IPath getBuilderCWD() {
-    	return fCfg.getBuildFolder(myProject).getLocation();
-       // return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
+        return fCfg.getBuildFolder(myProject).getLocation();
+        // return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
     }
 
     //	private IPath createAbsolutePathFromWorkspacePath(IPath path){
@@ -76,14 +83,14 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public void setBuilderCWD(IPath path) {
-    	//JABA not sure what to do here TOFIX
+        //JABA not sure what to do here TOFIX
         //fBuilder.setBuildPath(path.toString());
-    	return;
+        return;
     }
 
     @Override
     public void setErrorParserIDs(String[] ids) {
-       // fCfg.setErrorParserList(ids);
+        // fCfg.setErrorParserList(ids);
     }
 
     @Override
@@ -112,13 +119,13 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public IEnvironmentContributor getBuildEnvironmentContributor() {
-        return new BuildEnvironmentContributor(this);
+        return myBuildEnvironmentContributor;
     }
 
     @Override
     public ICommand getBuildSpecCommand() {
         try {
-            return BuilderFactory.createCommandFromBuilder(this.fBuilder);
+            return BuilderFactory.createCommandFromBuilder(myProject, this.fBuilder);
         } catch (CoreException cx) {
             Activator.log(cx);
             return null;
@@ -127,6 +134,10 @@ public class BuildBuildData extends CBuildData {
 
     public IBuilder getBuilder() {
         return fBuilder;
+    }
+
+    public ICConfigurationDescription getCdtConfigurationDescription() {
+        return myCdtConfigurationDescription;
     }
 
 }

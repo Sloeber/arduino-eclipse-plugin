@@ -36,22 +36,6 @@ public interface IResourceInfo extends IBuildObject {
 
     boolean isExcluded();
 
-    boolean canExclude(boolean exclude);
-
-    int getKind();
-
     IConfiguration getParent();
 
-    CResourceData getResourceData();
-
-    boolean isValid();
-
-    CLanguageData[] getCLanguageDatas();
-
-    List<ITool> getTools();
-    public ITool getToolById(String id);
-
-    boolean supportsBuild(boolean managed);
-
-    boolean isSupported();
 }

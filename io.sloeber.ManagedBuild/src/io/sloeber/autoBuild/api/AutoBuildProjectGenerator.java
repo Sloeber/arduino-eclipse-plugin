@@ -29,8 +29,10 @@ import org.eclipse.tools.templates.core.IGenerator;
 import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildNature;
-import io.sloeber.autoBuild.integration.BuildConfigurationData;
+import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
@@ -84,24 +86,25 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
                 ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
-                info.setManagedProject( mProj);
+                info.setManagedProject(mProj);
                 for (IConfiguration iConfig : modelConfigs) {
                     //        for (CfgHolder cfg : cfgs) {
-                	Configuration config = (Configuration) iConfig;
+                    Configuration config = (Configuration) iConfig;
                     //String id = ManagedBuildManager.calculateChildId(config.getId(), null);
-                   // Configuration config = new Configuration(mProj, cf, id, false, true);
-                    CConfigurationData data =  new BuildConfigurationData(config,myProject);
-                    assert(data!=null);
+                    // Configuration config = new Configuration(mProj, cf, id, false, true);
+                    AutoBuildConfigurationData data = new AutoBuildConfigurationData(config, myProject);
+                    assert (data != null);
                     //ICConfigurationDescription cfgDes = 
-                    		des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-//                    config.setConfigurationDescription(cfgDes);
-//                    config.exportArtifactInfo();
+                    ICConfigurationDescription cdtCfgDes = des
+                            .createConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, data);
+                    data.setCdtConfigurationDescription(cdtCfgDes);
+                    //                    config.setConfigurationDescription(cfgDes);
+                    //                    config.exportArtifactInfo();
 
-//                    IBuilder bld = config.getBuilder();
-//                    if (bld != null) {
-//                        bld.setManagedBuildOn(true);
-//                    }
-
+                    //                    IBuilder bld = config.getBuilder();
+                    //                    if (bld != null) {
+                    //                        bld.setManagedBuildOn(true);
+                    //                    }
 
                 }
                 des.setCdtProjectCreated();

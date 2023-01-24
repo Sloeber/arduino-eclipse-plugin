@@ -141,8 +141,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     private IConfigurationElement previousMbsVersionConversionElement = null;
     private IConfigurationElement currentMbsVersionConversionElement = null;
 
-    private BuildBuildData fBuildData;
-
     private Boolean fSupportsCustomizedBuild;
 
     private List<Builder> identicalList;
@@ -1138,18 +1136,12 @@ public class Builder extends HoldsOptions implements IBuilder {
         //        return;
     }
 
-
     public IConfigurationElement getPreviousMbsVersionConversionElement() {
         return previousMbsVersionConversionElement;
     }
 
     public IConfigurationElement getCurrentMbsVersionConversionElement() {
         return currentMbsVersionConversionElement;
-    }
-
-    @Override
-    public CBuildData getBuildData() {
-        return fBuildData;
     }
 
     //	public String[] getCustomizedErrorParserIds(){
@@ -1171,7 +1163,7 @@ public class Builder extends HoldsOptions implements IBuilder {
         return (Object) this;
     }
 
-    //@Override
+    @Override
     public String getBuildArguments() {
         String args = getArguments();
         IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
@@ -1271,6 +1263,7 @@ public class Builder extends HoldsOptions implements IBuilder {
                 attr = provider.resolveValue(attr, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, //$NON-NLS-1$//$NON-NLS-2$
                         getMacroContextData());
             } catch (BuildMacroException e) {
+                Activator.log(e);
             }
         }
         if (attr == null) {
@@ -1295,6 +1288,7 @@ public class Builder extends HoldsOptions implements IBuilder {
                 attr = provider.resolveValue(attr, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, //$NON-NLS-1$//$NON-NLS-2$
                         getMacroContextData());
             } catch (BuildMacroException e) {
+                Activator.log(e);
             }
         }
         if (attr == null) {
@@ -1324,6 +1318,7 @@ public class Builder extends HoldsOptions implements IBuilder {
                 attr = provider.resolveValue(attr, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, //$NON-NLS-1$//$NON-NLS-2$
                         getMacroContextData());
             } catch (BuildMacroException e) {
+                Activator.log(e);
             }
         }
         if (attr == null) {
@@ -1507,14 +1502,11 @@ public class Builder extends HoldsOptions implements IBuilder {
         return null;
     }
 
-    @Override
-    public Map<String, String> getExpandedEnvironment() throws CoreException {
+    public Map<String, String> getExpandedEnvironment(ICConfigurationDescription cfgDes) throws CoreException {
         if (customizedEnvironment != null) {
             Map<String, String> expanded = cloneMap(customizedEnvironment);
             ICdtVariableManager mngr = CCorePlugin.getDefault().getCdtVariableManager();
             String separator = CCorePlugin.getDefault().getBuildEnvironmentManager().getDefaultDelimiter();
-            ICConfigurationDescription cfgDes = ManagedBuildManager
-                    .getDescriptionForConfiguration(getParent().getParent());
             Set<Entry<String, String>> entrySet = expanded.entrySet();
             for (Entry<String, String> entry : entrySet) {
                 String value = entry.getValue();
@@ -1883,7 +1875,6 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public String getUniqueRealName() {
-        String name = getName();
         if (name == null) {
             name = getId();
         } else {
@@ -1899,20 +1890,20 @@ public class Builder extends HoldsOptions implements IBuilder {
     }
 
     public ICOutputEntry[] getOutputEntries(IProject project) {
-            return getDefaultOutputSettings( project);
+        return getDefaultOutputSettings(project);
     }
 
     private ICOutputEntry[] getDefaultOutputSettings(IProject project) {
         Configuration cfg = (Configuration) getConfguration();
         if (cfg == null || cfg.isPreference()) {
-            return new ICOutputEntry[] { new COutputEntry(Path.EMPTY, null,
-                    ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
+            return new ICOutputEntry[] {
+                    new COutputEntry(Path.EMPTY, null, ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
         }
 
         //IFolder BuildFolder = ManagedBuildManager.getBuildFolder(cfg, this);
-        IFolder BuildFolder =project.getFolder(cfg.getName());
-        return new ICOutputEntry[] { new COutputEntry(BuildFolder, null,
-                ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
+        IFolder BuildFolder = project.getFolder(cfg.getName());
+        return new ICOutputEntry[] {
+                new COutputEntry(BuildFolder, null, ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
     }
 
     public ICOutputEntry[] getOutputEntrySettings() {
@@ -1933,13 +1924,13 @@ public class Builder extends HoldsOptions implements IBuilder {
             outputEntries = null;
     }
 
-    private int getSuperClassNum() {
-        int num = 0;
-        for (IBuilder superTool = getSuperClass(); superTool != null; superTool = superTool.getSuperClass()) {
-            num++;
-        }
-        return num;
-    }
+    //    private int getSuperClassNum() {
+    //        int num = 0;
+    //        for (IBuilder superTool = getSuperClass(); superTool != null; superTool = superTool.getSuperClass()) {
+    //            num++;
+    //        }
+    //        return num;
+    //    }
 
     @Override
     public String toString() {
@@ -1979,12 +1970,6 @@ public class Builder extends HoldsOptions implements IBuilder {
             return getSuperClass().getBuildRunner();
 
         return new BuildRunner();
-    }
-
-    @Override
-    protected IResourceInfo getParentResourceInfo() {
-        // There are no resources associated with builders
-        return null;
     }
 
     @Override

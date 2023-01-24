@@ -75,7 +75,6 @@ import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IResourceConfiguration;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.IBuildObject;
@@ -293,11 +292,11 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      *
      * @return
      */
-    private List<ITool> getFilteredTools() {
-        // Get all the tools for the current config filtered by the project nature
-        IConfiguration config = getDefaultConfiguration();
-        return config.getFilteredTools();
-    }
+    //    private List<ITool> getFilteredTools() {
+    //        // Get all the tools for the current config filtered by the project nature
+    //        IConfiguration config = getDefaultConfiguration();
+    //        return config.getFilteredTools();
+    //    }
 
     private ArrayList<String> getIncludePathEntries() {
         // Extract the resolved paths from the project (if any)
@@ -316,6 +315,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
                     }
                 }
             } catch (CModelException e) {
+                Activator.log(e);
                 // Just return an empty array
                 paths.clear();
                 return paths;
@@ -346,6 +346,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
                     }
                 }
             } catch (CModelException e) {
+                Activator.log(e);
                 // return an empty map
                 macros.clear();
                 return macros;
@@ -471,6 +472,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
             IPathEntryContainer container = new ManagedBuildCPathEntryContainer(getOwner().getProject());
             CoreModel.setPathEntryContainer(new ICProject[] { cProject }, container, new NullProgressMonitor());
         } catch (CModelException e) {
+            Activator.log(e);
         }
     }
 
@@ -554,14 +556,16 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
                 des = CoreModel.getDefault().getProjectDescription(project);
             if (des != null) {
                 ICConfigurationDescription activeCfgDes = des.getConfigurationById(configuration.getId());
-                if (activeCfgDes == null) {
-                    try {
-                        activeCfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID,
-                                configuration.getConfigurationData());
-                    } catch (WriteAccessException e) {
-                    } catch (CoreException e) {
-                    }
-                }
+                //                if (activeCfgDes == null) {
+                //                    try {
+                //                        activeCfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID,
+                //                                configuration.getConfigurationData());
+                //                    } catch (WriteAccessException e) {
+                //                        Activator.log(e);
+                //                    } catch (CoreException e) {
+                //                        Activator.log(e);
+                //                    }
+                //                }
 
                 if (activeCfgDes != null) {
                     des.setActiveConfiguration(activeCfgDes);
@@ -675,49 +679,49 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
      *        or earlier managed build project file (.cdtbuild)
      */
 
-    private String getCWD() {
-        String cwd = ""; //$NON-NLS-1$
-        //        IEnvironmentVariable cwdvar = ManagedBuildManager.getEnvironmentVariableProvider().getVariable("CWD", //$NON-NLS-1$
-        //                getDefaultConfiguration(), true);
-        //        if (cwdvar != null) {
-        //            cwd = cwdvar.getValue().replace('\\', '/');
-        //        }
-        return cwd;
-    }
+    //    private String getCWD() {
+    //        String cwd = ""; //$NON-NLS-1$
+    //        //        IEnvironmentVariable cwdvar = ManagedBuildManager.getEnvironmentVariableProvider().getVariable("CWD", //$NON-NLS-1$
+    //        //                getDefaultConfiguration(), true);
+    //        //        if (cwdvar != null) {
+    //        //            cwd = cwdvar.getValue().replace('\\', '/');
+    //        //        }
+    //        return cwd;
+    //    }
 
     /**
      */
-    private List<String> processPath(List<String> list, String path, int context, Object obj) {
-        final String EMPTY = ""; //$NON-NLS-1$
-        if (path != null) {
-            if (context != 0) {
-                try {
-                    String paths[] = ManagedBuildManager.getBuildMacroProvider().resolveStringListValue(path, EMPTY,
-                            " ", context, obj); //$NON-NLS-1$
-                    if (paths != null) {
-                        for (int i = 0; i < paths.length; i++) {
-                            // Check for registered path converter
-                            if (obj instanceof OptionContextData) {
-                                OptionContextData optionContext = (OptionContextData) obj;
-                                IBuildObject buildObject = optionContext.getParent();
-                                //                                IOptionPathConverter optionPathConverter = getPathConverter(buildObject);
-                                //                                if (null != optionPathConverter) {
-                                //                                    IPath platformPath = optionPathConverter.convertToPlatformLocation(paths[i], null,
-                                //                                            null);
-                                //                                    paths[i] = platformPath.toOSString();
-                                //                                }
-                            }
-                            list.add(checkPath(paths[i]));
-                        }
-                    }
-                } catch (BuildMacroException e) {
-                }
-            } else {
-                list.add(checkPath(path));
-            }
-        }
-        return list;
-    }
+    //    private List<String> processPath(List<String> list, String path, int context, Object obj) {
+    //        final String EMPTY = ""; //$NON-NLS-1$
+    //        if (path != null) {
+    //            if (context != 0) {
+    //                try {
+    //                    String paths[] = ManagedBuildManager.getBuildMacroProvider().resolveStringListValue(path, EMPTY,
+    //                            " ", context, obj); //$NON-NLS-1$
+    //                    if (paths != null) {
+    //                        for (int i = 0; i < paths.length; i++) {
+    //                            // Check for registered path converter
+    //                            if (obj instanceof OptionContextData) {
+    //                                OptionContextData optionContext = (OptionContextData) obj;
+    //                                IBuildObject buildObject = optionContext.getParent();
+    //                                //                                IOptionPathConverter optionPathConverter = getPathConverter(buildObject);
+    //                                //                                if (null != optionPathConverter) {
+    //                                //                                    IPath platformPath = optionPathConverter.convertToPlatformLocation(paths[i], null,
+    //                                //                                            null);
+    //                                //                                    paths[i] = platformPath.toOSString();
+    //                                //                                }
+    //                            }
+    //                            list.add(checkPath(paths[i]));
+    //                        }
+    //                    }
+    //                } catch (BuildMacroException e) {
+    //                }
+    //            } else {
+    //                list.add(checkPath(path));
+    //            }
+    //        }
+    //        return list;
+    //    }
 
     //    private IOptionPathConverter getPathConverter(IBuildObject buildObject) {
     //        IOptionPathConverter converter = null;
@@ -728,298 +732,299 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     //        return converter;
     //    }
 
-    private String checkPath(String p) {
-        final String QUOTE = "\""; //$NON-NLS-1$
-        final String EMPTY = ""; //$NON-NLS-1$
+    //    private String checkPath(String p) {
+    //        final String QUOTE = "\""; //$NON-NLS-1$
+    //        final String EMPTY = ""; //$NON-NLS-1$
+    //
+    //        if (p == null)
+    //            return EMPTY;
+    //
+    //        if (p.length() > 1 && p.startsWith(QUOTE) && p.endsWith(QUOTE)) {
+    //            p = p.substring(1, p.length() - 1);
+    //        }
+    //
+    //        if (".".equals(p)) { //$NON-NLS-1$
+    //            String cwd = getCWD();
+    //            if (cwd.length() > 0) {
+    //                p = cwd;
+    //            }
+    //        }
+    //        if (!(new Path(p)).isAbsolute()) {
+    //            String cwd = getCWD();
+    //            if (cwd.length() > 0) {
+    //                p = cwd + "/" + p; //$NON-NLS-1$
+    //            }
+    //        }
+    //        return p;
+    //
+    //    }
 
-        if (p == null)
-            return EMPTY;
-
-        if (p.length() > 1 && p.startsWith(QUOTE) && p.endsWith(QUOTE)) {
-            p = p.substring(1, p.length() - 1);
-        }
-
-        if (".".equals(p)) { //$NON-NLS-1$
-            String cwd = getCWD();
-            if (cwd.length() > 0) {
-                p = cwd;
-            }
-        }
-        if (!(new Path(p)).isAbsolute()) {
-            String cwd = getCWD();
-            if (cwd.length() > 0) {
-                p = cwd + "/" + p; //$NON-NLS-1$
-            }
-        }
-        return p;
-
-    }
-
-    /**
-     * Obtain all possible Managed build values
-     * 
-     * @return IPathEntry[]
-     */
-    public IPathEntry[] getManagedBuildValues() {
-        return null;
-        //        List<IPathEntry> entries = new ArrayList<>();
-        //        int i = 0;
-        //        IPathEntry[] a = getManagedBuildValues(IPathEntry.CDT_INCLUDE);
-        //        if (a != null) {
-        //            for (i = 0; i < a.length; i++)
-        //                entries.add(a[i]);
-        //        }
-        //        a = getManagedBuildValues(IPathEntry.CDT_LIBRARY);
-        //        if (a != null) {
-        //            for (i = 0; i < a.length; i++)
-        //                entries.add(a[i]);
-        //        }
-        //        a = getManagedBuildValues(IPathEntry.CDT_MACRO);
-        //        if (a != null) {
-        //            for (i = 0; i < a.length; i++)
-        //                entries.add(a[i]);
-        //        }
-        //        return entries.toArray(new IPathEntry[entries.size()]);
-    }
-
+    //    /**
+    //     * Obtain all possible Managed build values
+    //     * 
+    //     * @return IPathEntry[]
+    //     */
+    //    public IPathEntry[] getManagedBuildValues() {
+    //        return null;
+    //        //        List<IPathEntry> entries = new ArrayList<>();
+    //        //        int i = 0;
+    //        //        IPathEntry[] a = getManagedBuildValues(IPathEntry.CDT_INCLUDE);
+    //        //        if (a != null) {
+    //        //            for (i = 0; i < a.length; i++)
+    //        //                entries.add(a[i]);
+    //        //        }
+    //        //        a = getManagedBuildValues(IPathEntry.CDT_LIBRARY);
+    //        //        if (a != null) {
+    //        //            for (i = 0; i < a.length; i++)
+    //        //                entries.add(a[i]);
+    //        //        }
+    //        //        a = getManagedBuildValues(IPathEntry.CDT_MACRO);
+    //        //        if (a != null) {
+    //        //            for (i = 0; i < a.length; i++)
+    //        //                entries.add(a[i]);
+    //        //        }
+    //        //        return entries.toArray(new IPathEntry[entries.size()]);
+    //    }
+    //
     /**
      * Obtain all possible Managed build built-ins
      * 
      * @return IPathEntry[]
      */
-    public IPathEntry[] getManagedBuildBuiltIns() {
-        List<IPathEntry> entries = new ArrayList<>();
-        int i = 0;
-        IPathEntry[] a = getManagedBuildBuiltIns(IPathEntry.CDT_INCLUDE);
-        if (a != null) {
-            for (i = 0; i < a.length; i++)
-                entries.add(a[i]);
-        }
-        a = getManagedBuildBuiltIns(IPathEntry.CDT_LIBRARY);
-        if (a != null) {
-            for (i = 0; i < a.length; i++)
-                entries.add(a[i]);
-        }
-        a = getManagedBuildBuiltIns(IPathEntry.CDT_MACRO);
-        if (a != null) {
-            for (i = 0; i < a.length; i++)
-                entries.add(a[i]);
-        }
-        return entries.toArray(new IPathEntry[entries.size()]);
-    }
+    //    public IPathEntry[] getManagedBuildBuiltIns() {
+    //        List<IPathEntry> entries = new ArrayList<>();
+    //        int i = 0;
+    //        IPathEntry[] a = getManagedBuildBuiltIns(IPathEntry.CDT_INCLUDE);
+    //        if (a != null) {
+    //            for (i = 0; i < a.length; i++)
+    //                entries.add(a[i]);
+    //        }
+    //        a = getManagedBuildBuiltIns(IPathEntry.CDT_LIBRARY);
+    //        if (a != null) {
+    //            for (i = 0; i < a.length; i++)
+    //                entries.add(a[i]);
+    //        }
+    //        a = getManagedBuildBuiltIns(IPathEntry.CDT_MACRO);
+    //        if (a != null) {
+    //            for (i = 0; i < a.length; i++)
+    //                entries.add(a[i]);
+    //        }
+    //        return entries.toArray(new IPathEntry[entries.size()]);
+    //    }
 
-    public IPathEntry[] getManagedBuildValues(int entryType) {
-        return null;
-        //        // obtain option values
-        //        List<IPathEntry> entries = getOptionValues(entryType, false);
-        //
-        //        // for includes, get env variables values; useless for other entry types
-        //        if (entryType == IPathEntry.CDT_INCLUDE) {
-        //            IEnvironmentVariableProvider env = ManagedBuildManager.getEnvironmentVariableProvider();
-        //            entries = addIncludes(entries,
-        //                    env.getBuildPaths(getDefaultConfiguration(), IEnvVarBuildPath.BUILDPATH_INCLUDE), Path.EMPTY, 0,
-        //                    null);
-        //        }
-        //        return entries.toArray(new IPathEntry[entries.size()]);
-    }
+    //    public IPathEntry[] getManagedBuildValues(int entryType) {
+    //        return null;
+    //        //        // obtain option values
+    //        //        List<IPathEntry> entries = getOptionValues(entryType, false);
+    //        //
+    //        //        // for includes, get env variables values; useless for other entry types
+    //        //        if (entryType == IPathEntry.CDT_INCLUDE) {
+    //        //            IEnvironmentVariableProvider env = ManagedBuildManager.getEnvironmentVariableProvider();
+    //        //            entries = addIncludes(entries,
+    //        //                    env.getBuildPaths(getDefaultConfiguration(), IEnvVarBuildPath.BUILDPATH_INCLUDE), Path.EMPTY, 0,
+    //        //                    null);
+    //        //        }
+    //        //        return entries.toArray(new IPathEntry[entries.size()]);
+    //    }
 
-    public IPathEntry[] getManagedBuildBuiltIns(int entryType) {
-        List<IPathEntry> entries = getOptionValues(entryType, true);
-        return entries.toArray(new IPathEntry[entries.size()]);
-    }
+    //    public IPathEntry[] getManagedBuildBuiltIns(int entryType) {
+    //        List<IPathEntry> entries = getOptionValues(entryType, true);
+    //        return entries.toArray(new IPathEntry[entries.size()]);
+    //    }
 
-    /**
-     *
-     * @param entryType
-     *            - data type to be scanned for
-     * @param builtIns
-     *            - return either values or built-in's
-     * @return list of strings which contains all found values
-     */
-    private List<IPathEntry> getOptionValues(int entryType, boolean builtIns) {
-        List<IPathEntry> entries = new ArrayList<>();
-        IConfiguration cfg = getDefaultConfiguration();
+    //    /**
+    //     *
+    //     * @param entryType
+    //     *            - data type to be scanned for
+    //     * @param builtIns
+    //     *            - return either values or built-in's
+    //     * @return list of strings which contains all found values
+    //     */
+    //    private List<IPathEntry> getOptionValues(int entryType, boolean builtIns) {
+    //        List<IPathEntry> entries = new ArrayList<>();
+    //        IConfiguration cfg = getDefaultConfiguration();
+    //
+    //        // process config toolchain's options
+    //        entries = readToolsOptions(entryType, entries, builtIns, cfg);
+    //
+    //        // code below (obtaining of resource config values)
+    //        // is now commented because resource-related include
+    //        // paths are displayed by UI together with config-
+    //        // related includes, so paths are duplicated in
+    //        // project's "includes" folder.
+    //        //
+    //        // Uncomment following code after UI problem fix.
+    //        /*
+    //        		// process resource configurations
+    //        IResourceConfiguration[] rescfgs = cfg.getResourceConfigurations();
+    //        		if (rescfgs != null) {
+    //        			for (int i=0; i<rescfgs.length; i++) {
+    //        				entries = readToolsOptions(
+    //        							entryType,
+    //        							entries,
+    //        							builtIns,
+    //        							rescfgs[i]);
+    //        			}
+    //        		}
+    //        */
+    //        return entries;
+    //    }
 
-        // process config toolchain's options
-        entries = readToolsOptions(entryType, entries, builtIns, cfg);
+    //    /**
+    //     *
+    //     * @param entryType
+    //     *            - data type: include | library | symbols
+    //     * @param entries
+    //     *            - list to be affected
+    //     * @param builtIns
+    //     *            - whether get actual values or builtins
+    //     * @param obj
+    //     *            - object to be processed (ResCfg | Cfg)
+    //     */
+    //    private List<IPathEntry> readToolsOptions(int entryType, List<IPathEntry> entries, boolean builtIns,
+    //            IBuildObject obj) {
+    //        List<ITool> t = null;
+    //        IPath resPath = Path.EMPTY;
+    //
+    //        // check that entryType is correct
+    //        if (entryType != IPathEntry.CDT_INCLUDE &&
+    //        //TODO: we need to implement the proper CDT_LIBRARY handling
+    //        //calculating the CDT_LIBRARY entries from the managed build
+    //        //options is disabled for now, we need to define a new option type
+    //        //that will represent library paths
+    //        //see bug# 100844
+    //        //			entryType != IPathEntry.CDT_LIBRARY &&
+    //                entryType != IPathEntry.CDT_MACRO) {
+    //            return entries;
+    //        }
+    //
+    //        // calculate parameters depending of object type
+    //        if (obj instanceof IResourceConfiguration) {
+    //            resPath = new Path(((IResourceConfiguration) obj).getResourcePath()).removeFirstSegments(1);
+    //            t = ((IResourceConfiguration) obj).getToolsToInvoke();
+    //        } else if (obj instanceof IConfiguration) {
+    //            t = ((IConfiguration) obj).getFilteredTools();
+    //        } else {
+    //            return entries;
+    //        } // wrong object passed
+    //        if (t == null) {
+    //            return entries;
+    //        }
+    //
+    //        // process all tools and all their options
+    //        for (ITool i : t) {
+    //            List<IOption> options = i.getOptions();
+    //            for (IOption op : options) {
+    //
+    //                // check to see if the option has an applicability calculator
+    //                IOptionApplicability applicabilityCalculator = op.getApplicabilityCalculator();
+    //                if (applicabilityCalculator != null && !applicabilityCalculator.isOptionUsedInCommandLine(obj, i, op))
+    //                    continue;
+    //
+    //                try {
+    //                    if (entryType == IPathEntry.CDT_INCLUDE && op.getValueType() == IOption.INCLUDE_PATH) {
+    //                        OptionContextData ocd = new OptionContextData(op, i);
+    //                        addIncludes(entries, builtIns ? op.getBuiltIns() : op.getIncludePaths(), resPath,
+    //                                IBuildMacroProvider.CONTEXT_OPTION, ocd);
+    //                    } else if (entryType == IPathEntry.CDT_LIBRARY && op.getValueType() == IOption.LIBRARIES) {
+    //                        OptionContextData ocd = new OptionContextData(op, i);
+    //                        addLibraries(entries, builtIns ? op.getBuiltIns() : op.getLibraries(), resPath,
+    //                                IBuildMacroProvider.CONTEXT_OPTION, ocd);
+    //                    } else if (entryType == IPathEntry.CDT_MACRO && op.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
+    //                        OptionContextData ocd = new OptionContextData(op, i);
+    //                        addSymbols(entries, builtIns ? op.getBuiltIns() : op.getDefinedSymbols(), resPath,
+    //                                IBuildMacroProvider.CONTEXT_OPTION, ocd);
+    //                    } else {
+    //                        continue;
+    //                    }
+    //                } catch (BuildException e) {
+    //                }
+    //            }
+    //        }
+    //        return entries;
+    //    }
 
-        // code below (obtaining of resource config values)
-        // is now commented because resource-related include
-        // paths are displayed by UI together with config-
-        // related includes, so paths are duplicated in
-        // project's "includes" folder.
-        //
-        // Uncomment following code after UI problem fix.
-        /*
-        		// process resource configurations
-        IResourceConfiguration[] rescfgs = cfg.getResourceConfigurations();
-        		if (rescfgs != null) {
-        			for (int i=0; i<rescfgs.length; i++) {
-        				entries = readToolsOptions(
-        							entryType,
-        							entries,
-        							builtIns,
-        							rescfgs[i]);
-        			}
-        		}
-        */
-        return entries;
-    }
+    //    protected List<IPathEntry> addIncludes(List<IPathEntry> entries, String[] values, IPath resPath, int context,
+    //            Object obj) {
+    //        return addPaths(entries, values, resPath, context, obj, IPathEntry.CDT_INCLUDE);
+    //    }
 
-    /**
-     *
-     * @param entryType
-     *            - data type: include | library | symbols
-     * @param entries
-     *            - list to be affected
-     * @param builtIns
-     *            - whether get actual values or builtins
-     * @param obj
-     *            - object to be processed (ResCfg | Cfg)
-     */
-    private List<IPathEntry> readToolsOptions(int entryType, List<IPathEntry> entries, boolean builtIns,
-            IBuildObject obj) {
-        List<ITool> t = null;
-        IPath resPath = Path.EMPTY;
+    //    protected List<IPathEntry> addPaths(List<IPathEntry> entries, String[] values, IPath resPath, int context,
+    //            Object obj, int type) {
+    //        if (values != null && values.length > 0) {
+    //            List<String> list = new ArrayList<>();
+    //            for (int k = 0; k < values.length; k++) {
+    //                processPath(list, values[k], context, obj);
+    //            }
+    //
+    //            Iterator<String> iter = list.iterator();
+    //            while (iter.hasNext()) {
+    //                IPathEntry entry = null;
+    //                switch (type) {
+    //                case IPathEntry.CDT_INCLUDE:
+    //                    entry = CoreModel.newIncludeEntry(resPath, Path.EMPTY, new Path(iter.next()), true);
+    //                    break;
+    //                case IPathEntry.CDT_LIBRARY:
+    //                    entry = CoreModel.newLibraryEntry(resPath, Path.EMPTY, new Path(iter.next()), null, null, null,
+    //                            true);
+    //                    break;
+    //                }
+    //                if (entry != null && !entries.contains(entry)) {
+    //                    entries.add(entry);
+    //                }
+    //            }
+    //        }
+    //        return entries;
+    //    }
 
-        // check that entryType is correct
-        if (entryType != IPathEntry.CDT_INCLUDE &&
-        //TODO: we need to implement the proper CDT_LIBRARY handling
-        //calculating the CDT_LIBRARY entries from the managed build
-        //options is disabled for now, we need to define a new option type
-        //that will represent library paths
-        //see bug# 100844
-        //			entryType != IPathEntry.CDT_LIBRARY &&
-                entryType != IPathEntry.CDT_MACRO) {
-            return entries;
-        }
+    //    protected List<IPathEntry> addLibraries(List<IPathEntry> entries, String[] values, IPath resPath, int context,
+    //            Object obj) {
+    //        return addPaths(entries, values, resPath, context, obj, IPathEntry.CDT_LIBRARY);
+    //    }
 
-        // calculate parameters depending of object type
-        if (obj instanceof IResourceConfiguration) {
-            resPath = new Path(((IResourceConfiguration) obj).getResourcePath()).removeFirstSegments(1);
-            t = ((IResourceConfiguration) obj).getToolsToInvoke();
-        } else if (obj instanceof IConfiguration) {
-            t = ((IConfiguration) obj).getFilteredTools();
-        } else {
-            return entries;
-        } // wrong object passed
-        if (t == null) {
-            return entries;
-        }
+    //    protected static List<IPathEntry> addSymbols(List<IPathEntry> entries, String[] values, IPath resPath, int context,
+    //            Object obj) {
+    //        if (values == null)
+    //            return entries;
+    //        for (int i = 0; i < values.length; i++) {
+    //            try {
+    //                String res[] = ManagedBuildManager.getBuildMacroProvider().resolveStringListValue(values[i], "", " ", //$NON-NLS-1$//$NON-NLS-2$
+    //                        context, obj);
+    //                if (res != null) {
+    //                    for (int k = 0; k < res.length; k++)
+    //                        createMacroEntry(entries, res[k], resPath);
+    //                }
+    //            } catch (BuildMacroException e) {
+    //                Activator.log(e);
+    //            }
+    //        }
+    //        return entries;
+    //    }
 
-        // process all tools and all their options
-        for (ITool i : t) {
-            List<IOption> options = i.getOptions();
-            for (IOption op : options) {
-
-                // check to see if the option has an applicability calculator
-                IOptionApplicability applicabilityCalculator = op.getApplicabilityCalculator();
-                if (applicabilityCalculator != null && !applicabilityCalculator.isOptionUsedInCommandLine(obj, i, op))
-                    continue;
-
-                try {
-                    if (entryType == IPathEntry.CDT_INCLUDE && op.getValueType() == IOption.INCLUDE_PATH) {
-                        OptionContextData ocd = new OptionContextData(op, i);
-                        addIncludes(entries, builtIns ? op.getBuiltIns() : op.getIncludePaths(), resPath,
-                                IBuildMacroProvider.CONTEXT_OPTION, ocd);
-                    } else if (entryType == IPathEntry.CDT_LIBRARY && op.getValueType() == IOption.LIBRARIES) {
-                        OptionContextData ocd = new OptionContextData(op, i);
-                        addLibraries(entries, builtIns ? op.getBuiltIns() : op.getLibraries(), resPath,
-                                IBuildMacroProvider.CONTEXT_OPTION, ocd);
-                    } else if (entryType == IPathEntry.CDT_MACRO && op.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
-                        OptionContextData ocd = new OptionContextData(op, i);
-                        addSymbols(entries, builtIns ? op.getBuiltIns() : op.getDefinedSymbols(), resPath,
-                                IBuildMacroProvider.CONTEXT_OPTION, ocd);
-                    } else {
-                        continue;
-                    }
-                } catch (BuildException e) {
-                }
-            }
-        }
-        return entries;
-    }
-
-    protected List<IPathEntry> addIncludes(List<IPathEntry> entries, String[] values, IPath resPath, int context,
-            Object obj) {
-        return addPaths(entries, values, resPath, context, obj, IPathEntry.CDT_INCLUDE);
-    }
-
-    protected List<IPathEntry> addPaths(List<IPathEntry> entries, String[] values, IPath resPath, int context,
-            Object obj, int type) {
-        if (values != null && values.length > 0) {
-            List<String> list = new ArrayList<>();
-            for (int k = 0; k < values.length; k++) {
-                processPath(list, values[k], context, obj);
-            }
-
-            Iterator<String> iter = list.iterator();
-            while (iter.hasNext()) {
-                IPathEntry entry = null;
-                switch (type) {
-                case IPathEntry.CDT_INCLUDE:
-                    entry = CoreModel.newIncludeEntry(resPath, Path.EMPTY, new Path(iter.next()), true);
-                    break;
-                case IPathEntry.CDT_LIBRARY:
-                    entry = CoreModel.newLibraryEntry(resPath, Path.EMPTY, new Path(iter.next()), null, null, null,
-                            true);
-                    break;
-                }
-                if (entry != null && !entries.contains(entry)) {
-                    entries.add(entry);
-                }
-            }
-        }
-        return entries;
-    }
-
-    protected List<IPathEntry> addLibraries(List<IPathEntry> entries, String[] values, IPath resPath, int context,
-            Object obj) {
-        return addPaths(entries, values, resPath, context, obj, IPathEntry.CDT_LIBRARY);
-    }
-
-    protected List<IPathEntry> addSymbols(List<IPathEntry> entries, String[] values, IPath resPath, int context,
-            Object obj) {
-        if (values == null)
-            return entries;
-        for (int i = 0; i < values.length; i++) {
-            try {
-                String res[] = ManagedBuildManager.getBuildMacroProvider().resolveStringListValue(values[i], "", " ", //$NON-NLS-1$//$NON-NLS-2$
-                        context, obj);
-                if (res != null) {
-                    for (int k = 0; k < res.length; k++)
-                        createMacroEntry(entries, res[k], resPath);
-                }
-            } catch (BuildMacroException e) {
-            }
-        }
-        return entries;
-    }
-
-    private List<IPathEntry> createMacroEntry(List<IPathEntry> entries, String val, IPath resPath) {
-        if (val != null && val.length() != 0) {
-
-            String[] tokens = val.split("="); //$NON-NLS-1$
-            String key = tokens[0].trim();
-            String value = (tokens.length > 1) ? tokens[1].trim() : ""; //$NON-NLS-1$
-            // Make sure the current entries do not contain a duplicate
-            boolean add = true;
-            Iterator<IPathEntry> entryIter = entries.listIterator();
-            while (entryIter.hasNext()) {
-                IPathEntry entry = entryIter.next();
-                if (entry.getEntryKind() == IPathEntry.CDT_MACRO) {
-                    if (((IMacroEntry) entry).getMacroName().equals(key)
-                            && ((IMacroEntry) entry).getMacroValue().equals(value)) {
-                        add = false;
-                        break;
-                    }
-                }
-            }
-            if (add) {
-                entries.add(CoreModel.newMacroEntry(resPath, key, value));
-            }
-        }
-        return entries;
-    }
+    //    private static List<IPathEntry> createMacroEntry(List<IPathEntry> entries, String val, IPath resPath) {
+    //        if (val != null && val.length() != 0) {
+    //
+    //            String[] tokens = val.split("="); //$NON-NLS-1$
+    //            String key = tokens[0].trim();
+    //            String value = (tokens.length > 1) ? tokens[1].trim() : ""; //$NON-NLS-1$
+    //            // Make sure the current entries do not contain a duplicate
+    //            boolean add = true;
+    //            Iterator<IPathEntry> entryIter = entries.listIterator();
+    //            while (entryIter.hasNext()) {
+    //                IPathEntry entry = entryIter.next();
+    //                if (entry.getEntryKind() == IPathEntry.CDT_MACRO) {
+    //                    if (((IMacroEntry) entry).getMacroName().equals(key)
+    //                            && ((IMacroEntry) entry).getMacroValue().equals(value)) {
+    //                        add = false;
+    //                        break;
+    //                    }
+    //                }
+    //            }
+    //            if (add) {
+    //                entries.add(CoreModel.newMacroEntry(resPath, key, value));
+    //            }
+    //        }
+    //        return entries;
+    //    }
 
 }

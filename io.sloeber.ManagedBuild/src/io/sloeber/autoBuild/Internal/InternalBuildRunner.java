@@ -53,6 +53,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -70,12 +71,15 @@ public class InternalBuildRunner extends IBuildRunner {
     private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
     @Override
-    public boolean invokeBuild(int kind, IProject project, IConfiguration configuration, IBuilder builder,
+    public boolean invokeBuild(int kind, IProject project, ICConfigurationDescription cfgDescription, IBuilder builder,
             IConsole console, IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder,
             IProgressMonitor monitor) throws CoreException {
 
         SubMonitor parentMon = SubMonitor.convert(monitor);
         BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
+        AutoBuildConfigurationData autoBuildConfData = (AutoBuildConfigurationData) cfgDescription
+                .getConfigurationData();
+        IConfiguration configuration = autoBuildConfData.getConfiguration();
 
         try {
             if (monitor == null) {
@@ -99,11 +103,8 @@ public class InternalBuildRunner extends IBuildRunner {
             //			}
             boolean buildIncrementaly = delta != null;
 
-            ICConfigurationDescription cfgDescription = ManagedBuildManager
-                    .getDescriptionForConfiguration(configuration);
-
             // Prepare launch parameters for BuildRunnerHelper
-            String cfgName = configuration.getName();
+            String cfgName = cfgDescription.getName();
             String toolchainName = configuration.getToolChain().getName();
             boolean isConfigurationSupported = configuration.isSupported();
 

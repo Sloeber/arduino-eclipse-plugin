@@ -23,7 +23,6 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 import static io.sloeber.autoBuild.core.Messages.*;
 
 import java.io.IOException;
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,56 +34,40 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ConsoleOutputStream;
-import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.ProblemMarkerInfo;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.resources.ACBuilder;
 import org.eclipse.cdt.core.resources.IConsole;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.util.ListComparator;
-import org.eclipse.cdt.internal.core.BuildRunnerHelper;
-import org.eclipse.cdt.make.core.IMakeCommonBuildInfo;
 import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IIncrementalProjectBuilder2;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.api.BuildMacroException;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.buildProperties.PropertyManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IManagedProject;
-import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.Builder;
-import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.ManagedProject;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 
@@ -95,15 +78,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     private static final String TRACE_HEADER = "automakefileBuilder trace ["; //$NON-NLS-1$
     public static boolean VERBOSE = false;
 
-    private static final int PROGRESS_MONITOR_SCALE = 100;
-    private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
-    private static final int TICKS_EXECUTE_COMMAND = 1 * PROGRESS_MONITOR_SCALE;
-    private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
-    private static final int TICKS_DELETE_OUTPUTS = 1 * PROGRESS_MONITOR_SCALE;
-
     private static CfgBuildSet fBuildSet = new CfgBuildSet();
 
-    private boolean fBuildErrOccured;
     private Set<String> builtRefConfigIds = new HashSet<>();
     private Set<String> scheduledConfigIds = new HashSet<>();
 
@@ -160,16 +136,14 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     private static class CfgBuildInfo {
         private final IProject fProject;
-        private final IManagedBuildInfo fBuildInfo;
-        private final IConfiguration fCfg;
+        private final ICConfigurationDescription fCfg;
         private final IBuilder fBuilder;
         private IConsole fConsole;
 
-        CfgBuildInfo(IProject project, IBuilder builder, boolean isForegound) {
+        CfgBuildInfo(ICConfigurationDescription cfgDesc, IBuilder builder, boolean isForegound) {
             this.fBuilder = builder;
-            this.fCfg = builder.getParent().getParent();
-            this.fProject = project;
-            this.fBuildInfo = ManagedBuildManager.getBuildInfo(this.fProject);
+            this.fCfg = cfgDesc;
+            this.fProject = cfgDesc.getProjectDescription().getProject();
         }
 
         public IProject getProject() {
@@ -192,218 +166,13 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return fBuilder;
         }
 
-        public IConfiguration getConfiguration() {
+        public ICConfigurationDescription getConfiguration() {
             return fCfg;
         }
 
-        public IManagedBuildInfo getBuildInfo() {
-            return fBuildInfo;
-        }
     }
 
-    public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
-        private String buildGoalName;
-        private final IProject project;
-        private final IPath buildPaths[];
-        private boolean incrBuildNeeded = false;
-        private boolean fullBuildNeeded = false;
-        private final List<String> reservedNames;
-
-        public ResourceDeltaVisitor(IConfiguration cfg, IConfiguration allConfigs[]) {
-            this.project = cfg.getOwner().getProject();
-            buildPaths = new IPath[allConfigs.length];
-            for (int i = 0; i < buildPaths.length; i++) {
-                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], project).getLocation();
-            }
-            String ext = cfg.getArtifactExtension();
-            //try to resolve build macros in the build artifact extension
-            try {
-                ext = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(ext, "", //$NON-NLS-1$
-                        " ", //$NON-NLS-1$
-                        IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
-            } catch (BuildMacroException e) {
-            }
-
-            String name = cfg.getArtifactName();
-            //try to resolve build macros in the build artifact name
-            try {
-                String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(name, "", //$NON-NLS-1$
-                        " ", //$NON-NLS-1$
-                        IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
-                if ((resolved = resolved.trim()).length() > 0)
-                    name = resolved;
-            } catch (BuildMacroException e) {
-            }
-
-            buildGoalName = name;
-
-            reservedNames = Arrays.asList(new String[] { ".cdtbuild", ".cdtproject", ".project" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
-
-        private boolean isGeneratedResource(IResource resource) {
-            // Is this a generated directory ...
-            IPath path = resource.getFullPath();
-            for (IPath buildPath : buildPaths) {
-                if (buildPath != null && buildPath.isPrefixOf(path)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private boolean isProjectFile(IResource resource) {
-            return reservedNames.contains(resource.getName());
-        }
-
-        public boolean shouldBuildIncr() {
-            return incrBuildNeeded;
-        }
-
-        public boolean shouldBuildFull() {
-            return fullBuildNeeded;
-        }
-
-        @Override
-        public boolean visit(IResourceDelta delta) throws CoreException {
-            IResource resource = delta.getResource();
-            // If the project has changed, then a build is needed and we can stop
-            if (resource != null && resource.getProject() == project) {
-                switch (resource.getType()) {
-                case IResource.FILE:
-                    String name = resource.getName();
-                    if ((!name.equals(buildGoalName) &&
-                    // TODO:  Also need to check for secondary outputs
-                            (resource.isDerived() || (isProjectFile(resource)) || (isGeneratedResource(resource))))) {
-                        // The resource that changed has attributes which make it uninteresting,
-                        // so don't do anything
-                    } else {
-                        //  TODO:  Should we do extra checks here to determine if a build is really needed,
-                        //         or do you just do exclusion checks like above?
-                        //         We could check for:
-                        //         o  The build goal name
-                        //         o  A secondary output
-                        //         o  An input file to a tool:
-                        //            o  Has an extension of a source file used by a tool
-                        //            o  Has an extension of a header file used by a tool
-                        //            o  Has the name of an input file specified in an InputType via:
-                        //               o  An Option
-                        //               o  An AdditionalInput
-                        //
-                        //if (resourceName.equals(buildGoalName) ||
-                        //	(buildInfo.buildsFileType(ext) || buildInfo.isHeaderFile(ext))) {
-
-                        // We need to do an incremental build, at least
-                        incrBuildNeeded = true;
-                        if (delta.getKind() == IResourceDelta.REMOVED) {
-                            // If a meaningful resource was removed, then force a full build
-                            // This is required because an incremental build will trigger make to
-                            // do nothing for a missing source, since the state after the file
-                            // removal is uptodate, as far as make is concerned
-                            // A full build will clean, and ultimately trigger a relink without
-                            // the object generated from the deleted source, which is what we want
-                            fullBuildNeeded = true;
-                            // There is no point in checking anything else since we have
-                            // decided to do a full build anyway
-                            break;
-                        }
-
-                        //}
-                    }
-
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    private static class OtherConfigVerifier implements IResourceDeltaVisitor {
-        IPath buildFullPaths[];
-        //		IConfiguration buildConfigs[];
-        Configuration otherConfigs[];
-        int resourceChangeState;
-
-        private static final IPath[] ignoreList = { new Path(".cdtproject"), //$NON-NLS-1$
-                new Path(".cproject"), //$NON-NLS-1$
-                new Path(".cdtbuild"), //$NON-NLS-1$
-                new Path(".settings"), //$NON-NLS-1$
-        };
-
-        OtherConfigVerifier(ManagedBuildInfo info, IBuilder builders[], IConfiguration allCfgs[]) {
-            Set<IConfiguration> buildCfgSet = new HashSet<>();
-            for (IBuilder builder : builders) {
-                buildCfgSet.add(builder.getParent().getParent());
-            }
-            @SuppressWarnings("unchecked")
-            List<Configuration> othersList = ListComparator.getAdded(allCfgs, buildCfgSet.toArray());
-            if (othersList != null)
-                otherConfigs = othersList.toArray(new Configuration[othersList.size()]);
-            else
-                otherConfigs = new Configuration[0];
-
-            List<IPath> list = new ArrayList<>(builders.length);
-            //			buildFullPaths = new IPath[builders.length];
-            IProject project = info.getCProject().getProject();
-            for (IBuilder builder : builders) {
-                IPath path = ManagedBuildManager.getBuildFolder(builder.getParent().getParent(), project).getLocation();
-                if (path != null)
-                    list.add(path);
-                //				buildFullPaths[i] = ManagedBuildManager.getBuildFullPath(builders[i].getParent().getParent(), builders[i]);
-            }
-            buildFullPaths = list.toArray(new IPath[list.size()]);
-
-        }
-
-        @Override
-        public boolean visit(IResourceDelta delta) throws CoreException {
-
-            IResource rc = delta.getResource();
-            if (rc.getType() == IResource.FILE) {
-                if (isResourceValuable(rc))
-                    resourceChangeState |= delta.getKind();
-                return false;
-            }
-
-            if (!isResourceValuable(rc))
-                return false;
-            for (IPath buildFullPath : buildFullPaths) {
-                if (buildFullPath.isPrefixOf(rc.getFullPath()))
-                    return false;
-            }
-            return true;
-        }
-
-        public void updateOtherConfigs(IResourceDelta delta) {
-            if (delta == null)
-                resourceChangeState = ~0;
-            else {
-                try {
-                    delta.accept(this);
-                } catch (CoreException e) {
-                    resourceChangeState = ~0;
-                }
-            }
-
-            setResourceChangeStateForOtherConfigs();
-        }
-
-        private void setResourceChangeStateForOtherConfigs() {
-            //            for (Configuration otherConfig : otherConfigs) {
-            //                otherConfig.addResourceChangeState(resourceChangeState);
-            //            }
-        }
-
-        private boolean isResourceValuable(IResource rc) {
-            IPath path = rc.getProjectRelativePath();
-            for (IPath ignoredPath : ignoreList) {
-                if (ignoredPath.equals(path))
-                    return false;
-            }
-            return true;
-        }
-    }
-
-    protected boolean isCdtProjectCreated(IProject project) {
+    private static boolean isCdtProjectCreated(IProject project) {
         ICProjectDescription des = CoreModel.getDefault().getProjectDescription(project, false);
         return des != null && !des.isCdtProjectCreating();
     }
@@ -443,26 +212,25 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         IProject project = getProject();
 
         if (!isCdtProjectCreated(project)) {
-            System.err.println("The build is cancelled as the project has not yet ben created.");
+            System.err.println("The build is cancelled as the project has not yet ben created."); //$NON-NLS-1$
             return project.getReferencedProjects();
         }
 
         if (VERBOSE)
             outputTrace(project.getName(), ">>build requested, type = " + kind); //$NON-NLS-1$
 
+        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
+
         IProject[] projects = null;
         if (needAllConfigBuild()) {
-            IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project);
-            IConfiguration[] cfgs = info.getManagedProject().getConfigurations();
-            IConfiguration defCfg = info.getDefaultConfiguration();
-            for (IConfiguration cfg : cfgs) {
-                info.setDefaultConfiguration(cfg);
-                IBuilder builders[] = createBuilders(project, args);
+            ICConfigurationDescription[] cfgs = cdtProjectDescription.getConfigurations();
+            for (ICConfigurationDescription cfg : cfgs) {
+                IBuilder builders[] = createBuilders(project, cfg, args);
                 projects = build(kind, project, builders, true, monitor, new MyBoolean(false));
             }
-            info.setDefaultConfiguration(defCfg);
         } else {
-            IBuilder builders[] = createBuilders(project, args);
+            ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
+            IBuilder builders[] = createBuilders(project, cdtConfigurationDescription, args);
             projects = build(kind, project, builders, true, monitor, new MyBoolean(false));
         }
 
@@ -483,16 +251,14 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return project.getReferencedProjects();
 
         int num = builders.length;
-        ManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project);
-        IConfiguration activeCfg = info.getDefaultConfiguration();
+        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
+        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
+
         IProject[] refProjects = project.getReferencedProjects();
         if (num != 0) {
-            MultiStatus status = checkBuilders(builders, activeCfg);
-            if (status.getSeverity() != IStatus.OK)
-                throw new CoreException(status);
 
-            scheduledConfigIds.add(activeCfg.getId());
-            IConfiguration rcfgs[] = getReferencedConfigs(builders);
+            scheduledConfigIds.add(cdtConfigurationDescription.getId());
+            ICConfigurationDescription[] rcfgs = getReferencedConfigurations(cdtConfigurationDescription);
 
             monitor.beginTask("", num + rcfgs.length); //$NON-NLS-1$
 
@@ -511,41 +277,44 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                         IResourceDelta delta = getDelta(project);
                         if (delta != null && delta.getAffectedChildren().length > 0) { //project resource has changed within Eclipse, need to build this configuration
                             isBuild.setValue(true);
-                            build(kind, new CfgBuildInfo(project, builders[i], isForeground),
+                            build(kind, new CfgBuildInfo(cdtConfigurationDescription, builders[i], isForeground),
                                     new SubProgressMonitor(monitor, 1));
                         } else if (isBuild.getValue()) { //one of its dependencies have rebuilt, need to rebuild this configuration
-                            build(kind, new CfgBuildInfo(project, builders[i], isForeground),
+                            build(kind, new CfgBuildInfo(cdtConfigurationDescription, builders[i], isForeground),
                                     new SubProgressMonitor(monitor, 1));
                         }
                     } else { //the default behaviour: 'make' is invoked on all configurations and incremental build is handled by 'make'
-                        build(kind, new CfgBuildInfo(project, builders[i], isForeground),
+                        build(kind, new CfgBuildInfo(cdtConfigurationDescription, builders[i], isForeground),
                                 new SubProgressMonitor(monitor, 1));
                     }
                 } else { //FULL_BUILD or CLEAN
-                    build(kind, new CfgBuildInfo(project, builders[i], isForeground),
+                    build(kind, new CfgBuildInfo(cdtConfigurationDescription, builders[i], isForeground),
                             new SubProgressMonitor(monitor, 1));
                 }
             }
 
-            scheduledConfigIds.remove(activeCfg.getId());
+            scheduledConfigIds.remove(cdtConfigurationDescription.getId());
         }
 
-        if (isForeground)
-            updateOtherConfigs(info, builders, kind);
+        //        if (isForeground)
+        //            updateOtherConfigs(info, builders, kind);
 
         monitor.done();
         return refProjects;
     }
 
-    private Set<IProject> buildReferencedConfigs(IConfiguration[] cfgs, IProgressMonitor monitor,
+    private Set<IProject> buildReferencedConfigs(ICConfigurationDescription[] cfgs, IProgressMonitor monitor,
             MyBoolean refConfigChanged) {
         Set<IProject> projSet = getProjectsSet(cfgs);
         cfgs = filterConfigsToBuild(cfgs);
         MyBoolean nextConfigChanged = new MyBoolean(false);
 
         if (cfgs.length != 0) {
-            monitor.beginTask(CommonBuilder_22, cfgs.length); //$NON-NLS-1$
-            for (IConfiguration cfg : cfgs) {
+            monitor.beginTask(CommonBuilder_22, cfgs.length);
+            for (ICConfigurationDescription cfg : cfgs) {
+                AutoBuildConfigurationData autoBuildConfData = (AutoBuildConfigurationData) cfg.getConfigurationData();
+                IBuilder builder = autoBuildConfData.getConfiguration().getBuilder();
+                IProject project = cfg.getProjectDescription().getProject();
                 IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
                 if (builtRefConfigIds.contains(cfg.getId())) {
                     subMonitor.done();
@@ -554,19 +323,15 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
                 nextConfigChanged.setValue(false);
                 try {
-                    IBuilder builder = cfg.getBuilder();
-                    //					CfgBuildInfo bInfo = new CfgBuildInfo(builder, false);
 
                     if (VERBOSE)
-                        outputTrace(cfg.getOwner().getProject().getName(),
-                                ">>>>building reference cfg " + cfg.getName()); //$NON-NLS-1$
+                        outputTrace(project.getName(), ">>>>building reference cfg " + cfg.getName()); //$NON-NLS-1$
 
-                    IProject[] projs = build(INCREMENTAL_BUILD, cfg.getOwner().getProject(), new IBuilder[] { builder },
-                            false, subMonitor, nextConfigChanged);
+                    IProject[] projs = build(INCREMENTAL_BUILD, project, new IBuilder[] { builder }, false, subMonitor,
+                            nextConfigChanged);
 
                     if (VERBOSE)
-                        outputTrace(cfg.getOwner().getProject().getName(),
-                                "<<<<done building reference cfg " + cfg.getName()); //$NON-NLS-1$
+                        outputTrace(project.getName(), "<<<<done building reference cfg " + cfg.getName()); //$NON-NLS-1$
 
                     projSet.addAll(Arrays.asList(projs));
                 } catch (CoreException e) {
@@ -584,10 +349,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return projSet;
     }
 
-    private IConfiguration[] filterConfigsToBuild(IConfiguration[] cfgs) {
-        List<IConfiguration> cfgList = new ArrayList<>(cfgs.length);
-        for (IConfiguration cfg : cfgs) {
-            IProject project = cfg.getOwner().getProject();
+    private ICConfigurationDescription[] filterConfigsToBuild(ICConfigurationDescription[] cfgs) {
+        List<ICConfigurationDescription> cfgList = new ArrayList<>(cfgs.length);
+        for (ICConfigurationDescription cfg : cfgs) {
+            IProject project = cfg.getProjectDescription().getProject();
             fBuildSet.getCfgIdSet(project, true).add(cfg.getId());
 
             if (scheduledConfigIds.contains(cfg.getId())) {
@@ -598,19 +363,18 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
             if (!builtRefConfigIds.contains(cfg.getId())) {
                 if (VERBOSE) {
-                    outputTrace(cfg.getOwner().getProject().getName(),
-                            "set: adding cfg " + cfg.getName() + " ( id=" + cfg.getId() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    outputTrace(cfg.getOwner().getProject().getName(),
+                    outputTrace(project.getName(), "set: adding cfg " + cfg.getName() + " ( id=" + cfg.getId() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    outputTrace(project.getName(),
                             "filtering regs: adding cfg " + cfg.getName() + " ( id=" + cfg.getId() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
                 cfgList.add(cfg);
             } else if (VERBOSE)
-                outputTrace(cfg.getOwner().getProject().getName(),
+                outputTrace(project.getName(),
                         "filtering regs: excluding cfg " + cfg.getName() + " ( id=" + cfg.getId() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         }
-        return cfgList.toArray(new IConfiguration[cfgList.size()]);
+        return cfgList.toArray(new ICConfigurationDescription[cfgList.size()]);
     }
 
     @Override
@@ -619,68 +383,31 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     }
 
-    private IConfiguration[] getReferencedConfigs(IBuilder[] builders) {
-        Set<IConfiguration> set = new HashSet<>();
-        for (IBuilder builder : builders) {
-            IConfiguration cfg = builder.getParent().getParent();
-            IConfiguration refs[] = ManagedBuildManager.getReferencedConfigurations(cfg);
-            for (IConfiguration ref : refs) {
-                set.add(ref);
-            }
+    /**
+     * Returns the configurations referenced by this configuration. Returns an empty
+     * array if there are no referenced configurations.
+     *
+     * @see CoreModelUtil#getReferencedConfigurationDescriptions(ICConfigurationDescription,
+     *      boolean)
+     * @return an array of IConfiguration objects referenced by this IConfiguration
+     */
+    private static ICConfigurationDescription[] getReferencedConfigurations(ICConfigurationDescription cfgDes) {
+        if (cfgDes != null) {
+            return CoreModelUtil.getReferencedConfigurationDescriptions(cfgDes, false);
         }
-        return set.toArray(new Configuration[set.size()]);
+        return new ICConfigurationDescription[0];
     }
 
-    private Set<IProject> getProjectsSet(IConfiguration[] cfgs) {
+    private static Set<IProject> getProjectsSet(ICConfigurationDescription[] cfgs) {
         if (cfgs.length == 0)
             return new HashSet<>(0);
 
         Set<IProject> set = new HashSet<>();
-        for (IConfiguration cfg : cfgs) {
-            set.add(cfg.getOwner().getProject());
+        for (ICConfigurationDescription cfg : cfgs) {
+            set.add(cfg.getProjectDescription().getProject());
         }
 
         return set;
-    }
-
-    protected MultiStatus checkBuilders(IBuilder builders[], IConfiguration activeCfg) {
-        MultiStatus status = null;
-        for (IBuilder builder : builders) {
-            boolean supportsCustomization = builder.supportsCustomizedBuild();
-            boolean isManagedBuildOn = builder.isManagedBuildOn();
-            if (isManagedBuildOn && !supportsCustomization) {
-                if (builder.isCustomBuilder()) {
-                    if (status == null) {
-                        status = new MultiStatus(Activator.getId(), IStatus.ERROR, "", //$NON-NLS-1$
-                                null);
-                    }
-
-                    status.add(new Status(IStatus.ERROR, Activator.getId(), 0, CommonBuilder_1, null));
-
-                } else if (builder.getParent().getParent() != activeCfg) {
-                    if (status == null) {
-                        status = new MultiStatus(Activator.getId(), IStatus.ERROR, "", //$NON-NLS-1$
-                                null);
-                    }
-
-                    status.add(new Status(IStatus.ERROR, Activator.getId(), 0, CommonBuilder_2, null));
-
-                }
-            }
-        }
-
-        if (status == null) {
-            status = new MultiStatus(Activator.getId(), IStatus.OK, "", //$NON-NLS-1$
-                    null);
-        }
-
-        return status;
-    }
-
-    private void updateOtherConfigs(ManagedBuildInfo info, IBuilder builders[], int buildKind) {
-        IConfiguration allCfgs[] = info.getManagedProject().getConfigurations();
-        new OtherConfigVerifier(info, builders, allCfgs).updateOtherConfigs(
-                buildKind == FULL_BUILD ? null : getDelta(info.getManagedProject().getOwner().getProject()));
     }
 
     protected class BuildStatus {
@@ -733,25 +460,13 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     + " with builder " + bInfo.getBuilder().getName()); //$NON-NLS-1$
         IBuilder builder = bInfo.getBuilder();
         BuildStatus status = new BuildStatus(builder);
-        ManagedProject mProject = bInfo.getBuildInfo().getManagedProject();
 
         if (!shouldBuild(kind, builder)) {
             return;
         }
-        //		if (kind == IncrementalProjectBuilder.AUTO_BUILD) {
-        //			IResourceDelta delta = getDelta(getProject());
-        //			if (delta != null) {
-        //				IResource res = delta.getResource();
-        //				if (res != null) {
-        //					bPerformBuild = res.getProject().equals(getProject());
-        //				}
-        //			} else {
-        //				bPerformBuild = false;
-        //			}
-        //		}
 
         if (status.isBuild()) {
-            IConfiguration cfg = bInfo.getConfiguration();
+            ICConfigurationDescription cfg = bInfo.getConfiguration();
 
             if (!builder.isCustomBuilder()) {
                 Set<String> set = fBuildSet.getCfgIdSet(bInfo.getProject(), true);
@@ -793,7 +508,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         checkCancel(monitor);
     }
 
-    private String concatMessages(List<String> msgs) {
+    private static String concatMessages(List<String> msgs) {
         int size = msgs.size();
         if (size == 0) {
             return ""; //$NON-NLS-1$
@@ -816,7 +531,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * @param status
      * @param configName
      */
-    private String createNoSourceMessage(int buildType, IStatus status, CfgBuildInfo bInfo) throws CoreException {
+    private static String createNoSourceMessage(int buildType, IStatus status, CfgBuildInfo bInfo)
+            throws CoreException {
         StringBuilder buf = new StringBuilder();
         String[] consoleHeader = new String[3];
         String configName = bInfo.getConfiguration().getName();
@@ -838,10 +554,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return buf.toString();
     }
 
-    private void emitMessage(CfgBuildInfo info, String msg) throws CoreException {
-        try {
-            IConsole console = info.getConsole();
-            ConsoleOutputStream consoleOutStream = console.getOutputStream();
+    private static void emitMessage(CfgBuildInfo info, String msg) throws CoreException {
+        IConsole console = info.getConsole();
+        try (ConsoleOutputStream consoleOutStream = console.getOutputStream();) {
             // Report a successful clean
             consoleOutStream.write(msg.getBytes());
             consoleOutStream.flush();
@@ -854,9 +569,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         }
     }
 
-    protected BuildStatus performPostbuildGeneration(int kind, CfgBuildInfo bInfo, BuildStatus buildStatus,
+    private static BuildStatus performPostbuildGeneration(int kind, CfgBuildInfo bInfo, BuildStatus buildStatus,
             IProgressMonitor monitor) throws CoreException {
-        IBuilder builder = bInfo.getBuilder();
 
         if (buildStatus.isRebuild()) {
             buildStatus.getMakeGen().regenerateDependencies(false);
@@ -867,7 +581,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return buildStatus;
     }
 
-    protected BuildStatus performPrebuildGeneration(int kind, CfgBuildInfo bInfo, BuildStatus buildStatus,
+    private BuildStatus performPrebuildGeneration(int kind, CfgBuildInfo bInfo, BuildStatus buildStatus,
             IProgressMonitor monitor) throws CoreException {
         IBuilder builder = bInfo.getBuilder();
 
@@ -911,7 +625,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     buf.append(message).append(NEWLINE);
                 }
 
-                buf.append(CommonBuilder_24).append(NEWLINE); //$NON-NLS-1$
+                buf.append(CommonBuilder_24).append(NEWLINE);
                 message = buf.toString();
                 buildStatus.getConsoleMessagesList().add(message);
                 buildStatus.cancelBuild();
@@ -924,10 +638,6 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         } else {
             buildStatus.cancelBuild();
         }
-
-        //		if(messages == null){
-        //			messages = createMultiStatus(IStatus.OK);
-        //		}
 
         return buildStatus;
     }
@@ -1047,10 +757,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         if (!isCdtProjectCreated(curProject))
             return;
-
-        IBuilder[] builders = createBuilders(curProject, args);
+        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(curProject, false);
+        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
+        IBuilder[] builders = createBuilders(curProject, cdtConfigurationDescription, args);
         for (IBuilder builder : builders) {
-            CfgBuildInfo bInfo = new CfgBuildInfo(curProject, builder, true);
+            CfgBuildInfo bInfo = new CfgBuildInfo(cdtConfigurationDescription, builder, true);
             clean(bInfo, monitor);
         }
     }
@@ -1058,43 +769,21 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     @Override
     public void addMarker(IResource file, int lineNumber, String errorDesc, int severity, String errorVar) {
         super.addMarker(file, lineNumber, errorDesc, severity, errorVar);
-        if (severity == IStatus.ERROR)
-            fBuildErrOccured = true;
     }
 
     @Override
     public void addMarker(ProblemMarkerInfo problemMarkerInfo) {
         super.addMarker(problemMarkerInfo);
-        if (problemMarkerInfo.severity == IStatus.ERROR)
-            fBuildErrOccured = true;
     }
 
     protected void clean(CfgBuildInfo bInfo, IProgressMonitor monitor) throws CoreException {
         if (shouldBuild(CLEAN_BUILD, bInfo.getBuilder())) {
-            IConfiguration cfg = bInfo.getConfiguration();
-
-            if (!cfg.getBuilder().isManagedBuildOn()) {
-                performExternalClean(bInfo, false, monitor);
-            } else {
-                boolean programmatically = true;
-                IFolder rc = ManagedBuildManager.getBuildFolder(cfg, bInfo.getProject());
-
-                if (rc != null) {
-
-                    if (programmatically) {
-                        try {
-                            cleanWithInternalBuilder(bInfo, monitor);
-                        } catch (CoreException e) {
-                            cleanProgrammatically(bInfo, monitor);
-                        }
-                    }
-                }
-            }
+            performExternalClean(bInfo, false, monitor);
         }
 
     }
 
-    protected void performExternalClean(final CfgBuildInfo bInfo, boolean separateJob, IProgressMonitor monitor)
+    private void performExternalClean(final CfgBuildInfo bInfo, boolean separateJob, IProgressMonitor monitor)
             throws CoreException {
         IResourceRuleFactory ruleFactory = ResourcesPlugin.getWorkspace().getRuleFactory();
         final ISchedulingRule rule = ruleFactory.modifyRule(bInfo.getProject());
@@ -1138,153 +827,16 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     }
 
-    protected boolean shouldCleanProgrammatically(CfgBuildInfo bInfo) {
-        if (!bInfo.getBuilder().isManagedBuildOn())
-            return false;
-        return true;
-        //		IConfiguration cfg = builder.getParent().getParent();
-        //		IPath path = ManagedBuildManager.getBuildFullPath(cfg, builder);
-        //		if(path == null)
-        //			return false;
-        //
-        //		return cfg.getOwner().getProject().getFullPath().isPrefixOf(path);
-    }
-
-    protected void cleanWithInternalBuilder(CfgBuildInfo bInfo, IProgressMonitor monitor) throws CoreException {
-        //		referencedProjects = getProject().getReferencedProjects();
-        //        IProject project = bInfo.getProject();
-        //        outputTrace(project.getName(), "Clean build with Internal Builder requested"); //$NON-NLS-1$
-        //        IConfiguration configuration = bInfo.getConfiguration();
-        //        int flags = BuildDescriptionManager.DEPFILES;
-        //        BuildDescription des = (BuildDescription) BuildDescriptionManager.createBuildDescription(configuration, null,
-        //                null, flags);
-        //
-        //        IBuildStep cleanStep = des.getCleanStep();
-        //
-        //        StepBuilder sBuilder = new StepBuilder(cleanStep, null, null);
-        //
-        //        BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
-        //        try {
-        //            if (monitor == null) {
-        //                monitor = new NullProgressMonitor();
-        //            }
-        //            monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_EXECUTE_COMMAND + TICKS_REFRESH_PROJECT); //$NON-NLS-1$
-        //
-        //            IConsole console = bInfo.getConsole();
-        //
-        //            IBuilder builder = bInfo.getBuilder();
-        //            String[] errorParsers = builder.getErrorParsers();
-        //            URI workingDirectoryURI = ManagedBuildManager.getBuildLocationURI(configuration, builder);
-        //            ErrorParserManager epm = new ErrorParserManager(project, workingDirectoryURI, this, errorParsers);
-        //
-        //            buildRunnerHelper.prepareStreams(epm, null, console,
-        //                    new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
-        //            OutputStream stdout = buildRunnerHelper.getOutputStream();
-        //            OutputStream stderr = buildRunnerHelper.getErrorStream();
-        //
-        //            String cfgName = configuration.getName();
-        //            String toolchainName = configuration.getToolChain().getName();
-        //            boolean isConfigurationSupported = configuration.isSupported();
-        //
-        //            buildRunnerHelper.greeting(CLEAN_BUILD, cfgName, toolchainName, isConfigurationSupported);
-        //            int status = sBuilder.build(stdout, stderr, new SubProgressMonitor(monitor, TICKS_EXECUTE_COMMAND));
-        //            buildRunnerHelper.close();
-        //            buildRunnerHelper.goodbye();
-        //
-        //            if (status != ICommandLauncher.ILLEGAL_COMMAND) {
-        //                buildRunnerHelper.refreshProject(cfgName, new SubProgressMonitor(monitor, TICKS_REFRESH_PROJECT));
-        //            }
-        //
-        //            //Throw a core exception indicating that the clean command failed
-        //            if (status == IBuildModelBuilder.STATUS_ERROR_LAUNCH) {
-        //                Status st = new Status(IStatus.INFO, ManagedBuilderCorePlugin.PLUGIN_ID,
-        //                        "Failed to execute delete command"); //$NON-NLS-1$
-        //                throw new CoreException(st);
-        //            }
-        //        } catch (Exception e) {
-        //            String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
-        //                    new String[] { project.getName(), configuration.getName() });
-        //            throw new CoreException(new Status(IStatus.ERROR, ManagedBuilderCorePlugin.PLUGIN_ID, msg, e));
-        //        } finally {
-        //            try {
-        //                buildRunnerHelper.close();
-        //            } catch (IOException e) {
-        //                Activator.log(e);
-        //            }
-        //            monitor.done();
-        //        }
-
-    }
-
-    protected void cleanProgrammatically(CfgBuildInfo bInfo, IProgressMonitor monitor) throws CoreException {
-        //		referencedProjects = getProject().getReferencedProjects();
-        IProject project = bInfo.getProject();
-        outputTrace(project.getName(), "Clean build requested"); //$NON-NLS-1$
-        IBuilder builder = bInfo.getBuilder();
-        IConfiguration configuration = bInfo.getConfiguration();
-
-        IFolder buildDir = ManagedBuildManager.getBuildFolder(configuration, project);
-        if (buildDir != null) {
-
-            if (!buildDir.isAccessible()) {
-                outputError(buildDir.getName(), "Could not delete the build directory"); //$NON-NLS-1$
-                throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), CommonBuilder_13));
-            }
-
-            BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
-            try {
-                if (monitor == null) {
-                    monitor = new NullProgressMonitor();
-                }
-                monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_OUTPUTS); //$NON-NLS-1$
-
-                // try the brute force approach first
-                String status = MessageFormat.format(ManagedMakeBuilder_message_clean_deleting_output,
-                        buildDir.toString());
-                monitor.subTask(status);
-
-                IConsole console = bInfo.getConsole();
-
-                String[] errorParsers = builder.getErrorParsers();
-
-                ErrorParserManager epm = new ErrorParserManager(project, buildDir.getLocationURI(), this, errorParsers);
-
-                buildRunnerHelper.prepareStreams(epm, null, console,
-                        new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
-
-                String cfgName = configuration.getName();
-                String toolchainName = configuration.getToolChain().getName();
-                boolean isConfigurationSupported = configuration.isSupported();
-
-                buildRunnerHelper.greeting(CLEAN_BUILD, cfgName, toolchainName, isConfigurationSupported);
-                buildDir.delete(true, monitor);
-                buildRunnerHelper.close();
-                buildRunnerHelper.goodbye();
-
-            } catch (Exception e) {
-                String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
-                        new String[] { project.getName(), configuration.getName() });
-                throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), msg, e));
-            } finally {
-                try {
-                    buildRunnerHelper.close();
-                } catch (IOException e) {
-                    Activator.log(e);
-                }
-                monitor.done();
-            }
-        }
-    }
-
+    // 
     /**
      * Check whether the build has been canceled.
      */
-    public void checkCancel(IProgressMonitor monitor) {
+    private static void checkCancel(IProgressMonitor monitor) {
         if (monitor != null && monitor.isCanceled())
             throw new OperationCanceledException();
     }
 
-    protected boolean shouldBuild(int kind, IMakeBuilderInfo info) {
+    private static boolean shouldBuild(int kind, IBuilder info) {
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:
             return info.isAutoBuildEnable();
@@ -1301,17 +853,20 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * Only lock the workspace is this is a ManagedBuild, or this project references
      * others.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public ISchedulingRule getRule(int trigger, Map args) {
         IResource WR_rule = ResourcesPlugin.getWorkspace().getRoot();
         if (needAllConfigBuild() || !isCdtProjectCreated(getProject()))
             return WR_rule;
 
+        IProject buildProject = getProject();
+        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(buildProject,
+                false);
+        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
         // Get the builders to run
-        IBuilder builders[] = createBuilders(getProject(), args);
+        IBuilder builders[] = createBuilders(buildProject, cdtConfigurationDescription, args);
         // Be pessimistic if we referenced other configs
-        if (getReferencedConfigs(builders).length > 0)
+        if (getReferencedConfigurations(cdtConfigurationDescription).length > 0)
             return WR_rule;
         // If any builder isManaged => pessimistic
         for (IBuilder builder : builders) {
@@ -1323,181 +878,325 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return null;
     }
 
-    //The stuff below is copied over from buildfactory of managed make
-    static private final String PREFIX = Activator.getId();
-    static private final String CONTENTS = PREFIX + ".contents"; //$NON-NLS-1$
-    static private final String CONTENTS_BUILDER_CUSTOMIZATION = PREFIX + ".builderCustomization"; //$NON-NLS-1$
-    static private final String CONTENTS_BUILDER = PREFIX + ".builder"; //$NON-NLS-1$
-    static private final String CONTENTS_CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
-    static private final IBuilder[] EMPTY_BUILDERS_ARRAY = new IBuilder[0];
-    static private final String USE_DEFAULT_BUILD_CMD = PREFIX + ".useDefaultBuildCmd"; //$NON-NLS-1$
-    static private final String CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
+    private static IBuilder[] createBuilders(IProject project, ICConfigurationDescription cdtConfigurationDescription,
+            Map<String, String> args) {
 
-    private static IBuilder[] createBuilders(IProject project, Map<String, String> args) {
-        IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project);
-        IBuilder[] builders = null;
-        if (info != null) {
-            if (args == null) {
-                IConfiguration cfg = info.getDefaultConfiguration();
-                IBuilder builder = cfg.getBuilder();
-                builders = new IBuilder[] { builder };
-
-            } else {
-                String type = args.get(CONTENTS);
-                if (type == null || CONTENTS_BUILDER_CUSTOMIZATION.equals(type)) {
-                    IConfiguration cfg = info.getDefaultConfiguration();
-                    IBuilder builder;
-                    if (args.size() == 0) {
-                        builder = cfg.getBuilder();
-                    } else {
-                        builder = createBuilder(cfg, args, true);
-                    }
-                    builders = new IBuilder[] { builder };
-
-                } else if (CONTENTS_BUILDER.equals(type)) {
-                    IConfiguration cfgs[] = configsFromMap(args, info);
-                    if (cfgs.length != 0) {
-                        List<IBuilder> list = new ArrayList<>(cfgs.length);
-                        for (int i = 0; i < cfgs.length; i++) {
-                            IBuilder builder = createBuilder(cfgs[i], args, false);
-                            if (builder != null)
-                                list.add(builder);
-                        }
-                        builders = list.toArray(new IBuilder[list.size()]);
-                    }
-
-                } else if (CONTENTS_CONFIGURATION_IDS.equals(type)) {
-                    IConfiguration cfgs[] = configsFromMap(args, info);
-                    if (cfgs.length != 0) {
-                        List<IBuilder> list = new ArrayList<>(cfgs.length);
-                        for (int i = 0; i < cfgs.length; i++) {
-                            list.add(cfgs[i].getBuilder());
-                        }
-                        builders = list.toArray(new IBuilder[list.size()]);
-                    }
-
-                } else if ("org.eclipse.cdt.make.core.activeConfigSettings".equals(type)) { //$NON-NLS-1$
-                    /* NOTE: Here, only for backwards-compatibility support, since bug 340219 was fixed.
-                     * Existing projects will still be going through this execution path, but new
-                     * projects will no longer store the active-configuration's builder-arguments in the
-                     * build-command, and will be going through the "args == null" condition above.
-                     */
-                    IConfiguration cfg = info.getDefaultConfiguration();
-                    IBuilder builder = cfg.getBuilder();
-                    builders = new IBuilder[] { builder };
-
-                } /*else if (CONTENTS_BUILDER_CUSTOMIZATION.equals(type)){
-                    String idsString = (String)args.get(CONFIGURATION_IDS);
-                    if(idsString != null){
-                        String[] ids = CDataUtil.stringToArray(idsString, SEPARATOR);
-                        if(ids.length != 0){
-                            IManagedProject mProj = info.getManagedProject();
-                            List list = new ArrayList(ids.length);
-                            for(int i = 0; i < ids.length; i++){
-                                IConfiguration cfg = mProj.getConfiguration(ids[i]);
-                                if(cfg != null){
-                                    IBuilder builder = customizeBuilder(cfg.getEditableBuilder(), args);
-                                    if(builder != null)
-                                        list.add(builder);
-                                }
-                            }
-                            builders = (IBuilder[])list.toArray(new IBuilder[list.size()]);
-                        }
-                    }
-                    }*/
-            }
-        }
-
-        if (builders != null)
-            return builders;
-        return EMPTY_BUILDERS_ARRAY;
+        AutoBuildConfigurationData autoBuildConfData = (AutoBuildConfigurationData) cdtConfigurationDescription
+                .getConfigurationData();
+        return new IBuilder[] { autoBuildConfData.getConfiguration().getBuilder() };
     }
 
-    static final IConfiguration[] EMPTY_CFG_ARAY = new IConfiguration[0];
+    //   static final IConfiguration[] EMPTY_CFG_ARAY = new IConfiguration[0];
 
-    private static Set<String> cfgIdsFromMap(Map<String, String> map) {
-        HashSet<String> ret = new HashSet<String>();
-        String idsString = map.get(CONFIGURATION_IDS);
-        if (idsString != null) {
-            ret.add(idsString);
-            //return MapStorageElement.decodeList(idsString);
-        }
-        return ret;
-    }
-
-    private static IConfiguration[] configsFromMap(Map<String, String> map, IManagedBuildInfo info) {
-        Set<String> ids = cfgIdsFromMap(map);
-        if (ids.size() == 0) {
-            IConfiguration cfg = info.getDefaultConfiguration();
-            if (cfg != null)
-                return new IConfiguration[] { cfg };
-            return EMPTY_CFG_ARAY;
-        }
-        IManagedProject mProj = info.getManagedProject();
-        if (mProj != null)
-            return idsToConfigurations(ids, mProj.getConfigurations());
-        return EMPTY_CFG_ARAY;
-    }
-
-    private static IBuilder createBuilder(IConfiguration cfg, Map<String, String> args, boolean customization) {
-        return null;
-        //        IToolChain tCh = cfg.getToolChain();
-        //        IBuilder cfgBuilder = cfg.getEditableBuilder();
-        //
-        //        Builder builder;
-        //        if (customization) {
-        //            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
-        //
-        //            //adjusting settings
-        //            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
-        //            if (tmp != null && tmp.length() == 0)
-        //                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
-        //
-        //            tmp = args.get(USE_DEFAULT_BUILD_CMD);
-        //            if (tmp != null) {
-        //                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
-        //                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
-        //                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
-        //                } else {
-        //                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
-        //                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
-        //                }
-        //            }
-        //            //end adjusting settings
-        //
-        //            builder.loadFromMap(args, null);
-        //        } else {
-        //            if (args.get(IBuilder.ID) == null) {
-        //                args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
-        //            }
-        //            builder = new Builder(tCh, args, ManagedBuildManager.getVersion().toString());
-        //        }
-        //
-        //        return builder;
-    }
-
-    private static IBuilder createCustomBuilder(IConfiguration cfg, IBuilder base) {
-        String subId;
-        String subName = base.getName();
-        if (base.getSuperClass() != null) {
-            subId = ManagedBuildManager.calculateChildId(base.getSuperClass().getId(), null);
-        } else {
-            subId = ManagedBuildManager.calculateChildId(base.getId(), null);
-        }
-
-        return new Builder(cfg.getToolChain(), subId, subName, (Builder) base);
-    }
-
-    private static IConfiguration[] idsToConfigurations(Set<String> ids, IConfiguration allCfgs[]) {
-        HashSet<IConfiguration> list = new HashSet<IConfiguration>();
-        for (String id : ids) {
-            for (IConfiguration jcurCfg : allCfgs) {
-                if (jcurCfg.getId().equals(id)) {
-                    list.add(jcurCfg);
-                    break;
-                }
-            }
-        }
-        return list.toArray(new IConfiguration[list.size()]);
-    }
 }
+
+//private static Set<String> cfgIdsFromMap(Map<String, String> map) {
+//HashSet<String> ret = new HashSet<String>();
+//String idsString = map.get(CONFIGURATION_IDS);
+//if (idsString != null) {
+//  ret.add(idsString);
+//  //return MapStorageElement.decodeList(idsString);
+//}
+//return ret;
+//}
+
+//private static IConfiguration[] configsFromMap(Map<String, String> map, IManagedBuildInfo info) {
+//Set<String> ids = cfgIdsFromMap(map);
+//if (ids.size() == 0) {
+//  IConfiguration cfg = info.getDefaultConfiguration();
+//  if (cfg != null)
+//      return new IConfiguration[] { cfg };
+//  return EMPTY_CFG_ARAY;
+//}
+//IManagedProject mProj = info.getManagedProject();
+//if (mProj != null)
+//  return idsToConfigurations(ids, mProj.getConfigurations());
+//return EMPTY_CFG_ARAY;
+//}
+
+//private static IBuilder createBuilder(IConfiguration cfg, Map<String, String> args, boolean customization) {
+//return null;
+////        IToolChain tCh = cfg.getToolChain();
+////        IBuilder cfgBuilder = cfg.getEditableBuilder();
+////
+////        Builder builder;
+////        if (customization) {
+////            builder = (Builder) createCustomBuilder(cfg, cfgBuilder);
+////
+////            //adjusting settings
+////            String tmp = args.get(ErrorParserManager.PREF_ERROR_PARSER);
+////            if (tmp != null && tmp.length() == 0)
+////                args.remove(ErrorParserManager.PREF_ERROR_PARSER);
+////
+////            tmp = args.get(USE_DEFAULT_BUILD_CMD);
+////            if (tmp != null) {
+////                if (Boolean.valueOf(tmp).equals(Boolean.TRUE)) {
+////                    args.remove(IMakeCommonBuildInfo.BUILD_COMMAND);
+////                    args.remove(IMakeCommonBuildInfo.BUILD_ARGUMENTS);
+////                } else {
+////                    args.put(IBuilder.ATTRIBUTE_IGNORE_ERR_CMD, ""); //$NON-NLS-1$
+////                    args.put(IBuilder.ATTRIBUTE_PARALLEL_BUILD_CMD, ""); //$NON-NLS-1$
+////                }
+////            }
+////            //end adjusting settings
+////
+////            builder.loadFromMap(args, null);
+////        } else {
+////            if (args.get(IBuilder.ID) == null) {
+////                args.put(IBuilder.ID, ManagedBuildManager.calculateChildId(cfg.getId(), null));
+////            }
+////            builder = new Builder(tCh, args, ManagedBuildManager.getVersion().toString());
+////        }
+////
+////        return builder;
+//}
+//
+//private static IBuilder createCustomBuilder(IConfiguration cfg, IBuilder base) {
+//String subId;
+//String subName = base.getName();
+//if (base.getSuperClass() != null) {
+//  subId = ManagedBuildManager.calculateChildId(base.getSuperClass().getId(), null);
+//} else {
+//  subId = ManagedBuildManager.calculateChildId(base.getId(), null);
+//}
+//
+//return new Builder(cfg.getToolChain(), subId, subName, (Builder) base);
+//}
+
+//private static IConfiguration[] idsToConfigurations(Set<String> ids, IConfiguration allCfgs[]) {
+//HashSet<IConfiguration> list = new HashSet<IConfiguration>();
+//for (String id : ids) {
+//  for (IConfiguration jcurCfg : allCfgs) {
+//      if (jcurCfg.getId().equals(id)) {
+//          list.add(jcurCfg);
+//          break;
+//      }
+//  }
+//}
+//return list.toArray(new IConfiguration[list.size()]);
+//}
+
+//private static boolean shouldCleanProgrammatically(CfgBuildInfo bInfo) {
+//if (!bInfo.getBuilder().isManagedBuildOn())
+//  return false;
+//return true;
+////        IConfiguration cfg = builder.getParent().getParent();
+////        IPath path = ManagedBuildManager.getBuildFullPath(cfg, builder);
+////        if(path == null)
+////            return false;
+////
+////        return cfg.getOwner().getProject().getFullPath().isPrefixOf(path);
+//}
+
+//    private static class OtherConfigVerifier implements IResourceDeltaVisitor {
+//        IPath buildFullPaths[];
+//        //        IConfiguration buildConfigs[];
+//        Configuration otherConfigs[];
+//        int resourceChangeState;
+//
+//        private static final IPath[] ignoreList = { new Path(".cdtproject"), //$NON-NLS-1$
+//                new Path(".cproject"), //$NON-NLS-1$
+//                new Path(".cdtbuild"), //$NON-NLS-1$
+//                new Path(".settings"), //$NON-NLS-1$
+//        };
+//
+//        OtherConfigVerifier(AutoBuildConfigurationData autoBuildConfData, IBuilder builders[],
+//                IConfiguration allCfgs[]) {
+//            Set<IConfiguration> buildCfgSet = new HashSet<>();
+//            for (IBuilder builder : builders) {
+//                buildCfgSet.add(builder.getParent().getParent());
+//            }
+//            @SuppressWarnings("unchecked")
+//            List<Configuration> othersList = ListComparator.getAdded(allCfgs, buildCfgSet.toArray());
+//            if (othersList != null)
+//                otherConfigs = othersList.toArray(new Configuration[othersList.size()]);
+//            else
+//                otherConfigs = new Configuration[0];
+//
+//            List<IPath> list = new ArrayList<>(builders.length);
+//            //            buildFullPaths = new IPath[builders.length];
+//            IProject project = autoBuildConfData.getProject();
+//            for (IBuilder builder : builders) {
+//                //builder.getBuildLocation();
+//                IPath path = autoBuildConfData.getConfiguration().getBuildFolder(project).getLocation();
+//                //IPath path = ManagedBuildManager.getBuildFolder(builder.getParent().getParent(), project).getLocation();
+//                if (path != null)
+//                    list.add(path);
+//                //                buildFullPaths[i] = ManagedBuildManager.getBuildFullPath(builders[i].getParent().getParent(), builders[i]);
+//            }
+//            buildFullPaths = list.toArray(new IPath[list.size()]);
+//
+//        }
+//
+//        @Override
+//        public boolean visit(IResourceDelta delta) throws CoreException {
+//
+//            IResource rc = delta.getResource();
+//            if (rc.getType() == IResource.FILE) {
+//                if (isResourceValuable(rc))
+//                    resourceChangeState |= delta.getKind();
+//                return false;
+//            }
+//
+//            if (!isResourceValuable(rc))
+//                return false;
+//            for (IPath buildFullPath : buildFullPaths) {
+//                if (buildFullPath.isPrefixOf(rc.getFullPath()))
+//                    return false;
+//            }
+//            return true;
+//        }
+//
+//        public void updateOtherConfigs(IResourceDelta delta) {
+//            if (delta == null)
+//                resourceChangeState = ~0;
+//            else {
+//                try {
+//                    delta.accept(this);
+//                } catch (CoreException e) {
+//                    resourceChangeState = ~0;
+//                }
+//            }
+//
+//            setResourceChangeStateForOtherConfigs();
+//        }
+//
+//        private void setResourceChangeStateForOtherConfigs() {
+//                        for (Configuration otherConfig : otherConfigs) {
+//                            otherConfig.addResourceChangeState(resourceChangeState);
+//                        }
+//        }
+//
+//        private boolean isResourceValuable(IResource rc) {
+//            IPath path = rc.getProjectRelativePath();
+//            for (IPath ignoredPath : ignoreList) {
+//                if (ignoredPath.equals(path))
+//                    return false;
+//            }
+//            return true;
+//        }
+//    }
+//
+//    private void updateOtherConfigs(ManagedBuildInfo info, IBuilder builders[], int buildKind) {
+//        IConfiguration allCfgs[] = info.getManagedProject().getConfigurations();
+//        new OtherConfigVerifier(info, builders, allCfgs).updateOtherConfigs(
+//                buildKind == FULL_BUILD ? null : getDelta(info.getManagedProject().getOwner().getProject()));
+//    }
+
+//    public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
+//        private String buildGoalName;
+//        private final IProject project;
+//        private final IPath buildPaths[];
+//        private boolean incrBuildNeeded = false;
+//        private boolean fullBuildNeeded = false;
+//        private final List<String> reservedNames;
+//
+//        public ResourceDeltaVisitor(IProject project, IConfiguration cfg, IConfiguration allConfigs[]) {
+//            this.project = project;
+//            buildPaths = new IPath[allConfigs.length];
+//            for (int i = 0; i < buildPaths.length; i++) {
+//                buildPaths[i] = cfg.getBuildFolder(project).getLocation();
+//            }
+//            //            String ext = cfg.getArtifactExtension();
+//            //            //try to resolve build macros in the build artifact extension
+//            //            try {
+//            //                ext = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(ext, "", //$NON-NLS-1$
+//            //                        " ", //$NON-NLS-1$
+//            //                        IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
+//            //            } catch (BuildMacroException e) {
+//            //                Activator.log(e);
+//            //            }
+//
+//            String name = cfg.getArtifactName();
+//            //try to resolve build macros in the build artifact name
+//            try {
+//                String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(name, "", //$NON-NLS-1$
+//                        " ", //$NON-NLS-1$
+//                        IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
+//                if ((resolved = resolved.trim()).length() > 0)
+//                    name = resolved;
+//            } catch (BuildMacroException e) {
+//                Activator.log(e);
+//            }
+//
+//            buildGoalName = name;
+//
+//            reservedNames = Arrays.asList(new String[] { ".cdtbuild", ".cdtproject", ".project" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//        }
+//
+//        private boolean isGeneratedResource(IResource resource) {
+//            // Is this a generated directory ...
+//            IPath path = resource.getFullPath();
+//            for (IPath buildPath : buildPaths) {
+//                if (buildPath != null && buildPath.isPrefixOf(path)) {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//
+//        private boolean isProjectFile(IResource resource) {
+//            return reservedNames.contains(resource.getName());
+//        }
+//
+//        public boolean shouldBuildIncr() {
+//            return incrBuildNeeded;
+//        }
+//
+//        public boolean shouldBuildFull() {
+//            return fullBuildNeeded;
+//        }
+//
+//        @Override
+//        public boolean visit(IResourceDelta delta) throws CoreException {
+//            IResource resource = delta.getResource();
+//            // If the project has changed, then a build is needed and we can stop
+//            if (resource != null && resource.getProject() == project) {
+//                switch (resource.getType()) {
+//                case IResource.FILE:
+//                    String name = resource.getName();
+//                    if ((!name.equals(buildGoalName) &&
+//                    // TODO:  Also need to check for secondary outputs
+//                            (resource.isDerived() || (isProjectFile(resource)) || (isGeneratedResource(resource))))) {
+//                        // The resource that changed has attributes which make it uninteresting,
+//                        // so don't do anything
+//                    } else {
+//                        //  TODO:  Should we do extra checks here to determine if a build is really needed,
+//                        //         or do you just do exclusion checks like above?
+//                        //         We could check for:
+//                        //         o  The build goal name
+//                        //         o  A secondary output
+//                        //         o  An input file to a tool:
+//                        //            o  Has an extension of a source file used by a tool
+//                        //            o  Has an extension of a header file used by a tool
+//                        //            o  Has the name of an input file specified in an InputType via:
+//                        //               o  An Option
+//                        //               o  An AdditionalInput
+//                        //
+//                        //if (resourceName.equals(buildGoalName) ||
+//                        //    (buildInfo.buildsFileType(ext) || buildInfo.isHeaderFile(ext))) {
+//
+//                        // We need to do an incremental build, at least
+//                        incrBuildNeeded = true;
+//                        if (delta.getKind() == IResourceDelta.REMOVED) {
+//                            // If a meaningful resource was removed, then force a full build
+//                            // This is required because an incremental build will trigger make to
+//                            // do nothing for a missing source, since the state after the file
+//                            // removal is uptodate, as far as make is concerned
+//                            // A full build will clean, and ultimately trigger a relink without
+//                            // the object generated from the deleted source, which is what we want
+//                            fullBuildNeeded = true;
+//                            // There is no point in checking anything else since we have
+//                            // decided to do a full build anyway
+//                            break;
+//                        }
+//
+//                        //}
+//                    }
+//
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//    }

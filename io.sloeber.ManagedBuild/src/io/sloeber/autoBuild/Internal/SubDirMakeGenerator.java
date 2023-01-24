@@ -124,6 +124,10 @@ public class SubDirMakeGenerator {
         return caller.getProject();
     }
 
+    private ICConfigurationDescription getCConfigurationDescription() {
+        return caller.getCConfigurationDescription();
+    }
+
     /*************************************************************************
      * M A K E F I L E S P O P U L A T I O N M E T H O D S
      ************************************************************************/
@@ -175,7 +179,7 @@ public class SubDirMakeGenerator {
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules) {
-            buffer.append(makeRule.getRule(getProject(), getBuildFolder(), config));
+            buffer.append(makeRule.getRule(getProject(), getBuildFolder(), getCConfigurationDescription()));
         }
 
         return buffer;
