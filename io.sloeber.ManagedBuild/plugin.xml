@@ -385,6 +385,9 @@
     <requires-nature
           id="org.eclipse.cdt.core.cnature">
     </requires-nature>
+    <requires-nature
+          id="org.eclipse.cdt.environmentVars.Nature">
+    </requires-nature>
  </extension>
  <extension
        id="io.sloeber.autoBuild.AutoMakeBuilder"

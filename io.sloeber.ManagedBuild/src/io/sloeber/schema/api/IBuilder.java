@@ -51,21 +51,10 @@ public interface IBuilder extends IHoldsOptions {
     public static final String COMMAND = "command"; //$NON-NLS-1$
     public static final String ARGUMENTS = "arguments"; //$NON-NLS-1$
     public static final String MAKEGEN_ID = "makefileGenerator"; //$NON-NLS-1$
-    //error parsers was missing                   makefileGenerator
+    public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;
     public static final String VARIABLE_FORMAT = "variableFormat"; //$NON-NLS-1$
     public static final String RESERVED_MACRO_NAMES = "reservedMacroNames"; //$NON-NLS-1$
     public static final String RESERVED_MACRO_NAME_SUPPLIER = "reservedMacroNameSupplier"; //$NON-NLS-1$
-    // macroInputFileNameValue was missing  
-    //macroInputFileExtValue was missing
-    //macroInputFileBaseNameValue was missing
-    //macroInputFileRelPathValue was missing
-    //macroInputDirRelPathValue was missing
-    //macroOutputFileNameValue was missing
-    //macroOutputFileExtValue was missing
-    //macroOutputFileBaseNameValue was missing
-    //macroOutputFileRelPathValue was missing 
-    //macroOutputDirRelPathValue was missing
-    public static final String ATTRIBUTE_SUPORTS_MANAGED_BUILD = "supportsManagedBuild"; //$NON-NLS-1$
     public static final String ATTRIBUTE_TARGET_AUTO = "autoBuildTarget"; //$NON-NLS-1$
     public static final String ATTRIBUTE_TARGET_INCREMENTAL = "incrementalBuildTarget"; //$NON-NLS-1$
     public static final String ATTRIBUTE_TARGET_CLEAN = "cleanBuildTarget"; //$NON-NLS-1$
@@ -85,37 +74,6 @@ public interface IBuilder extends IHoldsOptions {
     public final static String BUILD_TARGET_INCREMENTAL = ARGS_PREFIX + ".build.target.inc"; //$NON-NLS-1$
     public final static String BUILD_TARGET_AUTO = ARGS_PREFIX + ".build.target.auto"; //$NON-NLS-1$
     public final static String BUILD_TARGET_CLEAN = ARGS_PREFIX + ".build.target.clean"; //$NON-NLS-1$
-    //   
-    //    public static final String VERSIONS_SUPPORTED = "versionsSupported"; //$NON-NLS-1$
-    //    public static final String CONVERT_TO_ID = "convertToId"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_CLEAN_ENABLED = "enableCleanBuild"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_INCREMENTAL_ENABLED = "enabledIncrementalBuild"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_AUTO_ENABLED = "enableAutoBuild"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_ENVIRONMENT = "environment"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_APPEND_ENVIRONMENT = "appendEnvironment"; //$NON-NLS-1$
-    //
-    //    static final String ATTRIBUTE_MANAGED_BUILD_ON = "managedBuildOn"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_KEEP_ENV = "keepEnvironmentInBuildfile"; //$NON-NLS-1$
-    //    
-    //
-    //    static final String ATTRIBUTE_CUSTOMIZED_ERROR_PARSERS = "customizedErrorParsers"; //$NON-NLS-1$
-    //    static final String ATTRIBUTE_CUSTOM_PROPS = "customBuilderProperties"; //$NON-NLS-1$
-    //
-    //    static final String ATTRIBUTE_STOP_ON_ERR = "stopOnErr"; //$NON-NLS-1$
-    //
-    //    /** @since 8.1 */
-    //    static final String VALUE_OPTIMAL = "optimal"; //$NON-NLS-1$
-    //    /** @since 8.1 */
-    //    static final String VALUE_UNLIMITED = "unlimited"; //$NON-NLS-1$
-    //    static final String PARALLEL_PATTERN_NUM = "*"; //$NON-NLS-1$
-    //    static final String PARALLEL_PATTERN_NUM_START = "["; //$NON-NLS-1$
-    //    static final String PARALLEL_PATTERN_NUM_END = "]"; //$NON-NLS-1$
-    //
-    //    static final String OUTPUT_ENTRIES = "outputEntries"; //$NON-NLS-1$
-    //
-    //    static final String DEFAULT_TARGET_INCREMENTAL = "all"; //$NON-NLS-1$
-    //    static final String DEFAULT_TARGET_CLEAN = "clean"; //$NON-NLS-1$
-    //    static final String DEFAULT_TARGET_AUTO = "all"; //$NON-NLS-1$
 
     /**
      * Returns the command line arguments to pass to the build/make utility used
@@ -165,28 +123,12 @@ public interface IBuilder extends IHoldsOptions {
     public IToolChain getParent();
 
     /**
-     * Returns the <code>IBuilder</code> that is the superclass of this
-     * target platform, or <code>null</code> if the attribute was not specified.
-     *
-     * @return IBuilder
-     */
-    public IBuilder getSuperClass();
-
-    /**
      * Returns whether this element is abstract. Returns <code>false</code>
      * if the attribute was not specified.
      *
      * @return boolean
      */
     public boolean isAbstract();
-
-    /**
-     * Returns <code>true</code> if this builder was loaded from a manifest file,
-     * and <code>false</code> if it was loaded from a project (.cdtbuild) file.
-     *
-     * @return boolean
-     */
-    //    public boolean isExtensionElement();
 
     /**
      * 
@@ -198,13 +140,13 @@ public interface IBuilder extends IHoldsOptions {
      */
     public IFileContextBuildMacroValues getFileContextBuildMacroValues();
 
-    /**
-     * Returns String representing the build variable pattern to be used while
-     * makefile generation
-     *
-     * @return String
-     */
-    public String getBuilderVariablePattern();
+    //    /**
+    //     * Returns String representing the build variable pattern to be used while
+    //     * makefile generation
+    //     *
+    //     * @return String
+    //     */
+    //    public String getBuilderVariablePattern();
 
     /**
      * Returns an array of Strings representing the patterns of the
@@ -215,55 +157,17 @@ public interface IBuilder extends IHoldsOptions {
      */
     public String[] getReservedMacroNames();
 
-    /**
-     * Returns the tool-integrator defined implementation of the
-     * IReservedMacroNameSupplier
-     * to be used for detecting the builder/buildfile-generator reserved variables
-     * 
-     * @return IReservedMacroNameSupplier
-     */
     public IReservedMacroNameSupplier getReservedMacroNameSupplier();
 
     public boolean isCustomBuilder();
-
-    public boolean supportsCustomizedBuild();
-
-    boolean isInternalBuilder();
-
-    boolean matches(IBuilder builder);
 
     boolean isSystemObject();
 
     String getUniqueRealName();
 
-    /**
-     * Returns the ICommandLauncher which should be used to launch the builder
-     * command.
-     *
-     * @return ICommandLauncher
-     * @since 6.0
-     */
     public ICommandLauncher getCommandLauncher();
 
-    /**
-     * Returns the build runner for this builder.
-     *
-     * @return build runner
-     * @since 8.0
-     */
     public IBuildRunner getBuildRunner() throws CoreException;
-
-    public void setManagedBuildOn(boolean b);
-
-    void setIncrementalBuildTarget(String target) throws CoreException;
-
-    void setFullBuildTarget(String target) throws CoreException;
-
-    void setAppendEnvironment(boolean append) throws CoreException;
-
-    void setIncrementalBuildEnable(boolean enabled) throws CoreException;
-
-    void setBuildLocation(IPath location) throws CoreException;
 
     IPath getBuildLocation();
 
@@ -273,42 +177,9 @@ public interface IBuilder extends IHoldsOptions {
 
     boolean supportsParallelBuild();
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param jobs
-     *            - maximum number of jobs. There are 2 special cases:
-     *            <br>
-     *            - any number <=0 is interpreted as setting "optimal" property,
-     *            the value of the number itself is ignored in this case
-     *            <br>
-     *            - value 1 will turn parallel mode off.
-     */
-    void setParallelizationNum(int jobs) throws CoreException;
-
     int getParallelizationNum();
 
-    void setFullBuildEnable(boolean enabled) throws CoreException;
-
-    void setCleanBuildTarget(String target) throws CoreException;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param on
-     *            - the flag to enable or disable parallel mode.
-     *            <br>
-     *            {@code true} to enable, in this case the maximum number of jobs
-     *            will be set to "optimal" number, see
-     *            {@link #getOptimalParallelJobNum()}.
-     *            <br>
-     *            {@code false} to disable, the number of jobs will be set to 1.
-     */
-    void setParallelBuildOn(boolean on) throws CoreException;
-
     String getCleanBuildTarget();
-
-    String getFullBuildTarget();
 
     String getIncrementalBuildTarget();
 
@@ -320,52 +191,14 @@ public interface IBuilder extends IHoldsOptions {
 
     boolean isIncrementalBuildEnabled();
 
-    void setAutoBuildEnable(boolean enabled) throws CoreException;
-
-    void setAutoBuildTarget(String target) throws CoreException;
-
-    void setCleanBuildEnable(boolean enabled) throws CoreException;
-
     boolean isParallelBuildOn();
-
-    void setErrorParsers(String[] parsers) throws CoreException;
 
     String getAutoBuildTarget();
 
-    void setBuildAttribute(String name, String value) throws CoreException;
-
-    void setBuildCommand(IPath command) throws CoreException;
-
-    void setEnvironment(Map<String, String> env) throws CoreException;
-
-    void setStopOnError(boolean on) throws CoreException;
-
-    void setUseDefaultBuildArgsOnly(boolean on) throws CoreException;
-
-    void setUseDefaultBuildCmd(boolean on) throws CoreException;
-
-    void setUseDefaultBuildCmdOnly(boolean on) throws CoreException;
-
     boolean supportsBuild(boolean managed);
-
-    IPath getBuildCommand();
-
-    Map<String, String> getEnvironment();
 
     String[] getErrorParsers();
 
-    boolean isDefaultBuildArgsOnly();
-
-    boolean isDefaultBuildCmd();
-
-    boolean isDefaultBuildCmdOnly();
-
-    boolean isManagedBuildOn();
-
     boolean isStopOnError();
-
-    void setBuildArguments(String args) throws CoreException;
-
-    String getBuildArguments();
 
 }

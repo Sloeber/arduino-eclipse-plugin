@@ -418,7 +418,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         private IMakefileGenerator fMakeGen;
 
         public BuildStatus(IBuilder builder) {
-            fManagedBuildOn = builder.isManagedBuildOn();
+            fManagedBuildOn = true;
         }
 
         public void setRebuild() {
@@ -868,11 +868,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         // Be pessimistic if we referenced other configs
         if (getReferencedConfigurations(cdtConfigurationDescription).length > 0)
             return WR_rule;
-        // If any builder isManaged => pessimistic
-        for (IBuilder builder : builders) {
-            if (builder.isManagedBuildOn())
-                return WR_rule;
-        }
+        //        // If any builder isManaged => pessimistic
+        //        for (IBuilder builder : builders) {
+        //            if (builder.isManagedBuildOn())
+        //                return WR_rule;
+        //        }
 
         // Success!
         return null;

@@ -16,23 +16,13 @@ package io.sloeber.autoBuild.Internal;
 
 import static io.sloeber.autoBuild.core.Messages.*;
 
-import java.io.IOException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.eclipse.cdt.core.AbstractCExtension;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.IConsoleParser;
@@ -42,8 +32,6 @@ import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvide
 import org.eclipse.cdt.core.language.settings.providers.IWorkingDirectoryTracker;
 import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.CoreModelUtil;
-import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.IScannerInfoChangeListener;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -58,7 +46,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -69,43 +56,30 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
-import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
 import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.buildProperties.BuildPropertyManager;
 import io.sloeber.buildProperties.IBuildPropertyManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IHoldsOptions;
-import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.IResourceInfo;
-import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.Builder;
-import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.IBuildObject;
 import io.sloeber.schema.internal.ManagedProject;
 import io.sloeber.schema.internal.ProjectType;
-import io.sloeber.schema.internal.TargetPlatform;
-import io.sloeber.schema.internal.Tool;
-import io.sloeber.schema.internal.ToolChain;
 
 /**
  * This is the main entry point for getting at the build information for the
@@ -1653,34 +1627,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return null;
     }
 
-    public static IBuilder getRealBuilder(IBuilder builder) {
-        IBuilder extBuilder = builder;
-        IBuilder realBuilder = null;
-        for (; extBuilder != null /*&& !extBuilder.isExtensionElement()*/; extBuilder = extBuilder.getSuperClass()) {
-            // empty body
-        }
-
-        // if (extBuilder != null) {
-        // List<Builder> list = findIdenticalElements((Builder) extBuilder,
-        // fBuilderSorter);
-        // if (list.size() == 0) {
-        realBuilder = extBuilder;
-        // } else {
-        // for (IBuilder realBldr : getRealBuilders()) {
-        // List<Builder> rList = findIdenticalElements((Builder) realBldr,
-        // fBuilderSorter);
-        // if (rList == list) {
-        // realBuilder = realBldr;
-        // break;
-        // }
-        // }
-        // }
-        // } else {
-        // //TODO:
-        // }
-        return realBuilder;
-    }
-
     public static ITool getRealTool(ITool tool) {
         if (tool == null)
             return null;
@@ -1882,3 +1828,31 @@ public class ManagedBuildManager extends AbstractCExtension {
         }
     }
 }
+//
+//public static IBuilder getRealBuilder(IBuilder builder) {
+//  IBuilder extBuilder = builder;
+//  IBuilder realBuilder = null;
+//  for (; extBuilder != null /*&& !extBuilder.isExtensionElement()*/; extBuilder = extBuilder.getSuperClass()) {
+//      // empty body
+//  }
+//
+//  // if (extBuilder != null) {
+//  // List<Builder> list = findIdenticalElements((Builder) extBuilder,
+//  // fBuilderSorter);
+//  // if (list.size() == 0) {
+//  realBuilder = extBuilder;
+//  // } else {
+//  // for (IBuilder realBldr : getRealBuilders()) {
+//  // List<Builder> rList = findIdenticalElements((Builder) realBldr,
+//  // fBuilderSorter);
+//  // if (rList == list) {
+//  // realBuilder = realBldr;
+//  // break;
+//  // }
+//  // }
+//  // }
+//  // } else {
+//  // //TODO:
+//  // }
+//  return realBuilder;
+//}

@@ -830,35 +830,6 @@ public class Configuration extends BuildObject implements IConfiguration {
      */
 
     @Override
-    public boolean hasOverriddenBuildCommand() {
-        IBuilder builder = getToolChain().getBuilder();
-        if (builder != null) {
-            IBuilder superB = builder.getSuperClass();
-            if (superB != null) {
-                String command = builder.getCommand();
-                if (command != null) {
-                    String superC = superB.getCommand();
-                    if (superC != null) {
-                        if (!command.equals(superC)) {
-                            return true;
-                        }
-                    }
-                }
-                String args = builder.getArguments();
-                if (args != null) {
-                    String superA = superB.getArguments();
-                    if (superA != null) {
-                        if (!args.equals(superA)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
     public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
         IToolChain toolChain = getToolChain();
         if (toolChain != null)
@@ -1186,3 +1157,33 @@ public class Configuration extends BuildObject implements IConfiguration {
 //            des.createExternalSetting(null, null, null, list.toArray(new ICSettingEntry[list.size()]));
 //        }
 //    }
+
+//
+//@Override
+//public boolean hasOverriddenBuildCommand() {
+//  IBuilder builder = getToolChain().getBuilder();
+//  if (builder != null) {
+//      IBuilder superB = builder.getSuperClass();
+//      if (superB != null) {
+//          String command = builder.getCommand();
+//          if (command != null) {
+//              String superC = superB.getCommand();
+//              if (superC != null) {
+//                  if (!command.equals(superC)) {
+//                      return true;
+//                  }
+//              }
+//          }
+//          String args = builder.getArguments();
+//          if (args != null) {
+//              String superA = superB.getArguments();
+//              if (superA != null) {
+//                  if (!args.equals(superA)) {
+//                      return true;
+//                  }
+//              }
+//          }
+//      }
+//  }
+//  return false;
+//}

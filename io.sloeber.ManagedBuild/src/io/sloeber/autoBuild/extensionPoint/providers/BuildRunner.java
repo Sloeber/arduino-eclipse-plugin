@@ -16,38 +16,28 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
+import static io.sloeber.autoBuild.integration.Const.*;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-//TODO find out why the scanner config is needed here
-//Jaba Would not know why the scanner should be part of the build runner
-//import org.eclipse.cdt.build.core.scannerconfig.CfgInfoContext;
-//import org.eclipse.cdt.build.core.scannerconfig.ICfgScannerConfigBuilderInfo2Set;
-//import org.eclipse.cdt.build.internal.core.scannerconfig2.CfgScannerConfigProfileManager;
-//import org.eclipse.cdt.make.core.scannerconfig.IScannerConfigBuilderInfo2;
-//import org.eclipse.cdt.make.core.scannerconfig.IScannerInfoConsoleParser;
-//import org.eclipse.cdt.make.internal.core.scannerconfig.ScannerInfoConsoleParserFactory;
-// end TODO
-
+import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
+import org.eclipse.cdt.utils.cdtvariables.IVariableSubstitutor;
+import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
+import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
-import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.internal.core.BuildRunnerHelper;
-
+import org.eclipse.cdt.internal.core.cdtvariables.DefaultVariableContextInfo;
 import org.eclipse.cdt.utils.CommandLineUtil;
-import org.eclipse.cdt.utils.EFSExtensionManager;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -65,11 +55,6 @@ import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IResourceInfo;
-import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.internal.Builder;
 
 /**
  * @author dschaefer
@@ -87,7 +72,7 @@ public class BuildRunner extends IBuildRunner {
             IBuilder builder, IConsole console, IMarkerGenerator markerGenerator,
             IncrementalProjectBuilder projectBuilder, IProgressMonitor inMonitor) throws CoreException {
 
-        boolean isClean = false;
+        boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
         AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) icConfigurationDescription
                 .getConfigurationData();
         IConfiguration configuration = autoData.getConfiguration();
@@ -104,20 +89,17 @@ public class BuildRunner extends IBuildRunner {
                     TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND
                             + TICKS_REFRESH_PROJECT);
 
-            IPath buildCommand = builder.getBuildCommand();
-            if (buildCommand != null) {
+            String buildCommand = resolve(builder.getCommand(), icConfigurationDescription);
+            if (!buildCommand.isBlank()) {
                 String cfgName = configuration.getName();
                 String toolchainName = configuration.getToolChain().getName();
                 boolean isSupported = configuration.isSupported();
 
                 ICommandLauncher launcher = builder.getCommandLauncher();
 
-                String[] targets = getTargets(kind, builder);
-                if (targets.length != 0 && targets[targets.length - 1].equals(builder.getCleanBuildTarget()))
-                    isClean = true;
-                //             boolean isOnlyClean = isClean && (targets.length == 1);
+                String[] targets = getTargets(kind, builder, icConfigurationDescription);
 
-                String[] args = getCommandArguments(builder, targets);
+                String[] args = getCommandArguments(builder, targets, icConfigurationDescription);
 
                 IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, project);
 
@@ -139,7 +121,8 @@ public class BuildRunner extends IBuildRunner {
                 //                    }
                 //                }
 
-                buildRunnerHelper.setLaunchParameters(launcher, buildCommand, args, buildFolder.getLocationURI(), envp);
+                buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand), args,
+                        buildFolder.getLocationURI(), envp);
                 buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
 
                 buildRunnerHelper.removeOldMarkers(project, monitor);
@@ -181,26 +164,48 @@ public class BuildRunner extends IBuildRunner {
         return isClean;
     }
 
-    private String[] getCommandArguments(IBuilder builder, String[] targets) {
-        String[] builderArgs = CommandLineUtil.argumentsToArray(builder.getBuildArguments());
+    private static String[] getCommandArguments(IBuilder builder, String[] targets,
+            ICConfigurationDescription icConfigurationDescription) {
+        String builderArguments = resolve(builder.getArguments(), icConfigurationDescription);
+        String[] builderArgs = CommandLineUtil.argumentsToArray(builderArguments);
         String[] args = new String[targets.length + builderArgs.length];
         System.arraycopy(builderArgs, 0, args, 0, builderArgs.length);
         System.arraycopy(targets, 0, args, builderArgs.length, targets.length);
         return args;
     }
 
-    protected String[] getTargets(int kind, IBuilder builder) {
-        String targets = ""; //$NON-NLS-1$
+    private static String resolve(String unresolved, ICConfigurationDescription icConfigurationDescription) {
+        DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
+                DefaultVariableContextInfo.CONTEXT_CONFIGURATION, icConfigurationDescription);
+        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, EMPTY_STRING, EMPTY_STRING);
+        try {
+            return CdtVariableResolver.resolveToString(unresolved, varSubs);
+        } catch (CdtVariableException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return EMPTY_STRING;
+        //        IEnvironmentVariableManager buildEnvironmentManger = CCorePlugin.getDefault().getBuildEnvironmentManager();
+        //        IEnvironmentVariable var = buildEnvironmentManger.getVariable(buildArguments, icConfigurationDescription, true);
+        //        if (var == null) {
+        //            return EMPTY_STRING;
+        //        }
+        //        return var.getValue();
+    }
+
+    private static String[] getTargets(int kind, IBuilder builder,
+            ICConfigurationDescription icConfigurationDescription) {
+        String targets = EMPTY_STRING;
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:
-            targets = builder.getAutoBuildTarget();
+            targets = resolve(builder.getAutoBuildTarget(), icConfigurationDescription);
             break;
         case IncrementalProjectBuilder.INCREMENTAL_BUILD: // now treated as the same!
         case IncrementalProjectBuilder.FULL_BUILD:
-            targets = builder.getIncrementalBuildTarget();
+            targets = resolve(builder.getIncrementalBuildTarget(), icConfigurationDescription);
             break;
         case IncrementalProjectBuilder.CLEAN_BUILD:
-            targets = builder.getCleanBuildTarget();
+            targets = resolve(builder.getCleanBuildTarget(), icConfigurationDescription);
             break;
         }
 
@@ -209,8 +214,7 @@ public class BuildRunner extends IBuildRunner {
         return targetsArray;
     }
 
-    protected Map<String, String> getEnvironment(ICConfigurationDescription cfgDes, IBuilder builder)
-            throws CoreException {
+    private static Map<String, String> getEnvironment(ICConfigurationDescription cfgDes, IBuilder builder) {
         Map<String, String> envMap = new HashMap<>();
         if (builder.appendEnvironment()) {
             IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
@@ -220,87 +224,83 @@ public class BuildRunner extends IBuildRunner {
             }
         }
 
-        // Add variables from build info
-        Map<String, String> builderEnv = ((Builder) builder).getExpandedEnvironment(cfgDes);
-        if (builderEnv != null)
-            envMap.putAll(builderEnv);
-
         return envMap;
     }
 
-    //    @Deprecated
-    //    protected static String[] getEnvStrings(Map<String, String> env) {
-    //        // Convert into env strings
-    //        List<String> strings = new ArrayList<>(env.size());
-    //        for (Entry<String, String> entry : env.entrySet()) {
-    //            StringBuilder buffer = new StringBuilder(entry.getKey());
-    //            buffer.append('=').append(entry.getValue());
-    //            strings.add(buffer.toString());
-    //        }
-    //
-    //        return strings.toArray(new String[strings.size()]);
-    //    }
-
-    //    private static void collectScannerInfoConsoleParsers(IProject project, IConfiguration cfg, URI workingDirectoryURI,
-    //            IMarkerGenerator markerGenerator, List<IConsoleParser> parsers) {
-    //        ICfgScannerConfigBuilderInfo2Set container = CfgScannerConfigProfileManager.getCfgScannerConfigBuildInfo(cfg);
-    //        Map<CfgInfoContext, IScannerConfigBuilderInfo2> map = container.getInfoMap();
-    //
-    //        String pathFromURI = EFSExtensionManager.getDefault().getPathFromURI(workingDirectoryURI);
-    //        if (pathFromURI == null) {
-    //            // fallback to CWD
-    //            pathFromURI = System.getProperty("user.dir"); //$NON-NLS-1$
-    //        }
-    //        IPath workingDirectory = new Path(pathFromURI);
-    //
-    //        int oldSize = parsers.size();
-    //
-    //        if (container.isPerRcTypeDiscovery()) {
-    //            for (IResourceInfo rcInfo : cfg.getResourceInfos()) {
-    //                ITool tools[];
-    //                if (rcInfo instanceof IFileInfo) {
-    //                    tools = ((IFileInfo) rcInfo).getToolsToInvoke();
-    //                } else {
-    //                    tools = ((IFolderInfo) rcInfo).getFilteredTools();
-    //                }
-    //                for (ITool tool : tools) {
-    //                    IInputType[] types = tool.getInputTypes();
-    //
-    //                    if (types.length != 0) {
-    //                        for (IInputType type : types) {
-    //                            CfgInfoContext context = new CfgInfoContext(rcInfo, tool, type);
-    //                            IScannerInfoConsoleParser parser = getScannerInfoConsoleParser(project, map, context,
-    //                                    workingDirectory, markerGenerator);
-    //                            if (parser != null) {
-    //                                parsers.add(parser);
-    //                            }
-    //                        }
-    //                    } else {
-    //                        CfgInfoContext context = new CfgInfoContext(rcInfo, tool, null);
-    //                        IScannerInfoConsoleParser parser = getScannerInfoConsoleParser(project, map, context,
-    //                                workingDirectory, markerGenerator);
-    //                        if (parser != null) {
-    //                            parsers.add(parser);
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //
-    //        if (parsers.size() == oldSize) {
-    //            CfgInfoContext context = new CfgInfoContext(cfg);
-    //            IScannerInfoConsoleParser parser = getScannerInfoConsoleParser(project, map, context, workingDirectory,
-    //                    markerGenerator);
-    //            if (parser != null) {
-    //                parsers.add(parser);
-    //            }
-    //        }
-    //    }
-
-    //    private static IScannerInfoConsoleParser getScannerInfoConsoleParser(IProject project,
-    //            Map<CfgInfoContext, IScannerConfigBuilderInfo2> map, CfgInfoContext context, IPath workingDirectory,
-    //            IMarkerGenerator markerGenerator) {
-    //        return ScannerInfoConsoleParserFactory.getScannerInfoConsoleParser(project, context.toInfoContext(),
-    //                workingDirectory, map.get(context), markerGenerator, null);
-    //    }
 }
+
+//    @Deprecated
+//    protected static String[] getEnvStrings(Map<String, String> env) {
+//        // Convert into env strings
+//        List<String> strings = new ArrayList<>(env.size());
+//        for (Entry<String, String> entry : env.entrySet()) {
+//            StringBuilder buffer = new StringBuilder(entry.getKey());
+//            buffer.append('=').append(entry.getValue());
+//            strings.add(buffer.toString());
+//        }
+//
+//        return strings.toArray(new String[strings.size()]);
+//    }
+
+//    private static void collectScannerInfoConsoleParsers(IProject project, IConfiguration cfg, URI workingDirectoryURI,
+//            IMarkerGenerator markerGenerator, List<IConsoleParser> parsers) {
+//        ICfgScannerConfigBuilderInfo2Set container = CfgScannerConfigProfileManager.getCfgScannerConfigBuildInfo(cfg);
+//        Map<CfgInfoContext, IScannerConfigBuilderInfo2> map = container.getInfoMap();
+//
+//        String pathFromURI = EFSExtensionManager.getDefault().getPathFromURI(workingDirectoryURI);
+//        if (pathFromURI == null) {
+//            // fallback to CWD
+//            pathFromURI = System.getProperty("user.dir"); //$NON-NLS-1$
+//        }
+//        IPath workingDirectory = new Path(pathFromURI);
+//
+//        int oldSize = parsers.size();
+//
+//        if (container.isPerRcTypeDiscovery()) {
+//            for (IResourceInfo rcInfo : cfg.getResourceInfos()) {
+//                ITool tools[];
+//                if (rcInfo instanceof IFileInfo) {
+//                    tools = ((IFileInfo) rcInfo).getToolsToInvoke();
+//                } else {
+//                    tools = ((IFolderInfo) rcInfo).getFilteredTools();
+//                }
+//                for (ITool tool : tools) {
+//                    IInputType[] types = tool.getInputTypes();
+//
+//                    if (types.length != 0) {
+//                        for (IInputType type : types) {
+//                            CfgInfoContext context = new CfgInfoContext(rcInfo, tool, type);
+//                            IScannerInfoConsoleParser parser = getScannerInfoConsoleParser(project, map, context,
+//                                    workingDirectory, markerGenerator);
+//                            if (parser != null) {
+//                                parsers.add(parser);
+//                            }
+//                        }
+//                    } else {
+//                        CfgInfoContext context = new CfgInfoContext(rcInfo, tool, null);
+//                        IScannerInfoConsoleParser parser = getScannerInfoConsoleParser(project, map, context,
+//                                workingDirectory, markerGenerator);
+//                        if (parser != null) {
+//                            parsers.add(parser);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (parsers.size() == oldSize) {
+//            CfgInfoContext context = new CfgInfoContext(cfg);
+//            IScannerInfoConsoleParser parser = getScannerInfoConsoleParser(project, map, context, workingDirectory,
+//                    markerGenerator);
+//            if (parser != null) {
+//                parsers.add(parser);
+//            }
+//        }
+//    }
+
+//    private static IScannerInfoConsoleParser getScannerInfoConsoleParser(IProject project,
+//            Map<CfgInfoContext, IScannerConfigBuilderInfo2> map, CfgInfoContext context, IPath workingDirectory,
+//            IMarkerGenerator markerGenerator) {
+//        return ScannerInfoConsoleParserFactory.getScannerInfoConsoleParser(project, context.toInfoContext(),
+//                workingDirectory, map.get(context), markerGenerator, null);
+//    }

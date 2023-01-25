@@ -34,10 +34,8 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacro;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IBuildMacroSupplier;
-import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.api.IToolChain;
 
 /**
  * The default IBuildMacroProvider implementation
@@ -249,7 +247,6 @@ public class BuildMacroProvider implements IBuildMacroProvider {
     @Override
     public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
             int contextType, ICConfigurationDescription confdesc) throws BuildMacroException {
-
         IMacroContextInfo info = getMacroContextInfo(contextType, confdesc);
         if (info != null) {
             try {
@@ -333,32 +330,6 @@ public class BuildMacroProvider implements IBuildMacroProvider {
     }
 
     /**
-     * @return whether the builder used for the given configuration is capable
-     *         of handling macros in the buildfile
-     */
-    public static boolean canKeepMacrosInBuildfile(IConfiguration cfg) {
-        if (cfg != null) {
-            IToolChain toolChain = cfg.getToolChain();
-            if (toolChain != null)
-                return canKeepMacrosInBuildfile(toolChain.getBuilder());
-        }
-        return false;
-    }
-
-    /**
-     * @return whether the given builder is capable
-     *         of handling macros in the buildfile
-     */
-    public static boolean canKeepMacrosInBuildfile(IBuilder builder) {
-        if (builder != null) {
-            String pattern = builder.getBuilderVariablePattern();
-            if (pattern != null && pattern.indexOf(PATTERN_MACRO_NAME) != -1)
-                return true;
-        }
-        return false;
-    }
-
-    /**
      * @return the array of the explicit file macros, referenced in the tool's
      *         options
      *         (Explicit file macros are the file-specific macros, whose values are
@@ -388,23 +359,47 @@ public class BuildMacroProvider implements IBuildMacroProvider {
         //        return null;
     }
 
-    //    /**
-    //     * @return the array of the explicit file macros, referenced in the given string
-    //     *         (Explicit file macros are the file-specific macros, whose values are
-    //     *         not provided
-    //     *         by the tool-integrator. As a result these macros contain explicit
-    //     *         values, but not the values
-    //     *         specified in the format of the builder automatic variables and text
-    //     *         functions)
-    //     */
-    //    public static IBuildMacro[] getReferencedExplitFileMacros(String expression, int contextType, Object contextData) {
-    //        ExplicitFileMacroCollector collector = new ExplicitFileMacroCollector(
-    //                getDefault().getMacroContextInfo(contextType, contextData));
-    //        try {
-    //            CdtVariableResolver.resolveToString(expression, collector);
-    //        } catch (CdtVariableException e) {
-    //        }
-    //        return collector.getExplicisFileMacros();
-    //    }
-
 }
+
+///**
+//* @return whether the builder used for the given configuration is capable
+//*         of handling macros in the buildfile
+//*/
+//public static boolean canKeepMacrosInBuildfile(IConfiguration cfg) {
+// if (cfg != null) {
+//     IToolChain toolChain = cfg.getToolChain();
+//     if (toolChain != null)
+//         return canKeepMacrosInBuildfile(toolChain.getBuilder());
+// }
+// return false;
+//}
+//    /**
+//     * @return the array of the explicit file macros, referenced in the given string
+//     *         (Explicit file macros are the file-specific macros, whose values are
+//     *         not provided
+//     *         by the tool-integrator. As a result these macros contain explicit
+//     *         values, but not the values
+//     *         specified in the format of the builder automatic variables and text
+//     *         functions)
+//     */
+//    public static IBuildMacro[] getReferencedExplitFileMacros(String expression, int contextType, Object contextData) {
+//        ExplicitFileMacroCollector collector = new ExplicitFileMacroCollector(
+//                getDefault().getMacroContextInfo(contextType, contextData));
+//        try {
+//            CdtVariableResolver.resolveToString(expression, collector);
+//        } catch (CdtVariableException e) {
+//        }
+//        return collector.getExplicisFileMacros();
+//    }
+///**
+//* @return whether the given builder is capable
+//*         of handling macros in the buildfile
+//*/
+//public static boolean canKeepMacrosInBuildfile(IBuilder builder) {
+// if (builder != null) {
+//     String pattern = builder.getBuilderVariablePattern();
+//     if (pattern != null && pattern.indexOf(PATTERN_MACRO_NAME) != -1)
+//         return true;
+// }
+// return false;
+//}

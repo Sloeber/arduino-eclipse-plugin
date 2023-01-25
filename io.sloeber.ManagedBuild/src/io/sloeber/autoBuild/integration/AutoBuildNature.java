@@ -18,6 +18,7 @@ public class AutoBuildNature implements IProjectNature {
 
     private static final String BUILDER_ID = "io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
     private static final String AUTO_BUILD_NATURE_ID = "io.sloeber.autoBuildNature"; //$NON-NLS-1$
+    private static final String ENVIRONMENT_VAR_NATURE_ID = "org.eclipse.cdt.environmentVars.Nature"; //$NON-NLS-1$
     private IProject myProject;
 
     public static void addNature(IProject project, IProgressMonitor monitor) throws CoreException {
@@ -31,9 +32,10 @@ public class AutoBuildNature implements IProjectNature {
                 if (AUTO_BUILD_NATURE_ID.equals(prevNature))
                     return;
             }
-            String[] newNatures = new String[prevNatures.length + 1];
+            String[] newNatures = new String[prevNatures.length + 2];
             System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-            newNatures[prevNatures.length] = AUTO_BUILD_NATURE_ID;
+            newNatures[prevNatures.length] = ENVIRONMENT_VAR_NATURE_ID;
+            newNatures[prevNatures.length + 1] = AUTO_BUILD_NATURE_ID;
             description.setNatureIds(newNatures);
             project.setDescription(description, monitor);
         }

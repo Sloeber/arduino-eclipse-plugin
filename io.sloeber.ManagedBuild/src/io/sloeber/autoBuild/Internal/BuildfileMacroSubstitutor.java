@@ -194,12 +194,12 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
         String ref = null;
         IReservedMacroNameSupplier supplier = getReservedMacroNameSupplier();
         macroName = EnvVarOperationProcessor.normalizeName(macroName);
-        if (supplier == null || !supplier.isReservedName(macroName, fConfiguration)) {
-            String pattern = fBuilder.getBuilderVariablePattern();
-            if (pattern != null && pattern.indexOf(PATTERN_MACRO_NAME) != -1) {
-                ref = pattern.replaceAll(PATTERN_MACRO_NAME, macroName);
-            }
-        }
+        //        if (supplier == null || !supplier.isReservedName(macroName, fConfiguration)) {
+        //            String pattern = fBuilder.getBuilderVariablePattern();
+        //            if (pattern != null && pattern.indexOf(PATTERN_MACRO_NAME) != -1) {
+        //                ref = pattern.replaceAll(PATTERN_MACRO_NAME, macroName);
+        //            }
+        //        }
         return ref;
     }
 
