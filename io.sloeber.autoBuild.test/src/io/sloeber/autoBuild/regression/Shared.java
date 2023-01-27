@@ -110,30 +110,20 @@ public class Shared {
 	 * @param codeDescriptor
 	 * @param compileOptions  can be null
 	 * @return true if build is successful otherwise false
-	 * @throws CoreException 
-	 * @throws Exception 
+	 * @throws CoreException
+	 * @throws Exception
 	 */
-	public static boolean BuildAndVerify(IProject theTestProject ) throws Exception, Exception {
+	public static boolean BuildAndVerify(IProject theTestProject) throws Exception, Exception {
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 
 		waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		if (hasBuildErrors(theTestProject)) {
-			waitForAllJobsToFinish(); // for the indexer
-			Thread.sleep(2000);
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (hasBuildErrors(theTestProject)) {
-				waitForAllJobsToFinish(); // for the indexer
-				Thread.sleep(2000);
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (hasBuildErrors(theTestProject)) {
-					if (closeFailedProjects) {
-						theTestProject.close(null);
-					}
-					return false;
+				if (closeFailedProjects) {
+					theTestProject.close(null);
 				}
-			}
+				return false;
 		}
 		try {
 			if (deleteProjects) {

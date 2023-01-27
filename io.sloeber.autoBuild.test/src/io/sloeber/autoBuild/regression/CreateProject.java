@@ -1,5 +1,7 @@
 package io.sloeber.autoBuild.regression;
 
+import static org.junit.Assert.fail;
+
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,7 +18,9 @@ class CreateProject {
 			throws Exception {
 
 		IProject testProject = AutoBuild.createProject(myProjectName, extensionID, extensionImpID, projectTypeID, null);
-		Shared.BuildAndVerify(testProject);
+		if(!Shared.BuildAndVerify(testProject)) {
+			fail("Project "+myProjectName+" failed to build correctly");
+		}
 	}
 
 	static Stream<Arguments> projectCreationInfoProvider() {
