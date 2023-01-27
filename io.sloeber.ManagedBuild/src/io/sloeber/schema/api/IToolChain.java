@@ -14,6 +14,7 @@
 package io.sloeber.schema.api;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 //import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
@@ -156,29 +157,14 @@ public interface IToolChain extends IHoldsOptions {
      */
     public String getScannerConfigDiscoveryProfileId();
 
-    /**
-     * Returns the sem-colon separated list of Tool ids containing each
-     * tool that can create the final build artifact (the end target of
-     * the build). MBS will use the first ID in the list that matches
-     * a Tool in the ToolChain. One reason for specifying a list, is
-     * that different versions of a tool can be selected based upon the
-     * project nature (e.g. different tool definitions for a linker for C vs. C++).
-     *
-     * @return String
-     */
-    public String getTargetToolIds();
+
 
     /**
-     * Returns the list of Tool ids containing each
-     * tool that can create the final build artifact (the end target of
-     * the build). MBS will use the first ID in the list that matches
-     * a Tool in the ToolChain. One reason for specifying a list, is
-     * that different versions of a tool can be selected based upon the
-     * project nature (e.g. different tool definitions for a linker for C vs. C++).
+     * Returns the list of Tools 
      *
      * @return String[]
      */
-    public String[] getTargetToolList();
+    public Set<ITool> getTargetTools();
 
     /**
      * Returns the OutputTypes in this tool-chain, besides the primary

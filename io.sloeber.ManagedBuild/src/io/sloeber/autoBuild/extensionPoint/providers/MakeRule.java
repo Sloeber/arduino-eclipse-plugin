@@ -1,8 +1,9 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.Internal.ManagebBuildCommon.*;
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*;
+import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,68 +14,39 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-//import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCalculator;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCommands;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGenerator2;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyInfo;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
-import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 
-public class MakeRule {
+public class MakeRule  {
 
     private Map<IOutputType, Set<IFile>> myTargets = new LinkedHashMap<>(); //Macro file target map
     private Map<IInputType, Set<IFile>> myPrerequisites = new LinkedHashMap<>();//Macro file prerequisites map
     private Map<String, Set<IFile>> myDependencies = new LinkedHashMap<>(); //Macro file target map
     private ITool myTool = null;
+    private int mySequenceGroupID=0;
 
-    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile) {
+    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile,int sequenceID) {
         addPrerequisite(inputType, inputFile);
         addTarget(outputType, outFile);
         myTool = tool;
+        mySequenceGroupID=sequenceID;
     }
 
-    public MakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile) {
-        for (IFile inputFile : inputFiles) {
-            addPrerequisite(inputType, inputFile);
-        }
+    public MakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile,int sequenceID) {
+        addPrerequisites(inputType, inputFiles);
         addTarget(outputType, outFile);
         myTool = tool;
+        mySequenceGroupID=sequenceID;
     }
 
-    public MakeRule(MakefileGenerator caller, ITool tool, IInputType inputType, Set<IFile> inputFiles,
-            IOutputType outputType, IFile outFile) {
-        for (IFile inputFile : inputFiles) {
-            addPrerequisite(inputType, inputFile);
-        }
-        addTarget(outputType, outFile);
-        myTool = tool;
-    }
 
     public void addDependencies(MakefileGenerator caller) {
         myDependencies.clear();
@@ -115,28 +87,7 @@ public class MakeRule {
         //        }
     }
 
-    //    /**
-    //     * Returns the dependency <code>IPath</code>s relative to the build directory
-    //     *
-    //     * @param depCalculator
-    //     *            the dependency calculator
-    //     * @return IPath[] that are relative to the build directory
-    //     */
-    //    private IPath[] calculateDependenciesForSource(ArduinoGnuMakefileGenerator caller,
-    //            IManagedDependencyCalculator depCalculator) {
-    //        IPath[] addlDeps = depCalculator.getDependencies();
-    //        if (addlDeps != null) {
-    //            for (int i = 0; i < addlDeps.length; i++) {
-    //                if (!addlDeps[i].isAbsolute()) {
-    //                    // Convert from project relative to build directory relative
-    //                    IPath absolutePath = caller.getProject().getLocation().append(addlDeps[i]);
-    //                    addlDeps[i] = ManagedBuildManager.calculateRelativePath(caller.getTopBuildDir().getLocation(),
-    //                            absolutePath);
-    //                }
-    //            }
-    //        }
-    //        return addlDeps;
-    //    }
+
 
     public Set<IFile> getPrerequisiteFiles() {
         HashSet<IFile> ret = new HashSet<>();
@@ -190,6 +141,7 @@ public class MakeRule {
         for (IInputType cur : myPrerequisites.keySet()) {
             ret.add(cur.getBuildVariable());
         }
+        ret.remove(EMPTY_STRING);
         return ret;
     }
 
@@ -265,10 +217,11 @@ public class MakeRule {
 
     //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
     public StringBuffer getRule(IProject project, IFolder niceBuildFolder, ICConfigurationDescription confDesc) {
-        //ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 
         String cmd = myTool.getToolCommand();
+//        if(!cmd.contains(BLANK)) {
+//        	cmd=
+//        }
         //For now assume 1 target with 1 or more prerequisites
         // if there is more than 1 prerequisite we take the flags of the first prerequisite only
         Set<IFile> local_targets = getTargetFiles();
@@ -501,4 +454,47 @@ public class MakeRule {
         return myTool.getName().equals(targetTool.getName());
     }
 
+	public int getSequenceGroupID() {
+		return mySequenceGroupID;
+	}
+
+	public void setSequenceGroupID(int mySequenceGroupID) {
+		this.mySequenceGroupID = mySequenceGroupID;
+	}
+
+	public boolean isForFolder(IFolder folder) {
+		for(Set<IFile> files:myPrerequisites.values()) {
+			for(IFile file:files) {
+				if(file.getParent().equals(folder)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 }
+//    /**
+//     * Returns the dependency <code>IPath</code>s relative to the build directory
+//     *
+//     * @param depCalculator
+//     *            the dependency calculator
+//     * @return IPath[] that are relative to the build directory
+//     */
+//    private IPath[] calculateDependenciesForSource(ArduinoGnuMakefileGenerator caller,
+//            IManagedDependencyCalculator depCalculator) {
+//        IPath[] addlDeps = depCalculator.getDependencies();
+//        if (addlDeps != null) {
+//            for (int i = 0; i < addlDeps.length; i++) {
+//                if (!addlDeps[i].isAbsolute()) {
+//                    // Convert from project relative to build directory relative
+//                    IPath absolutePath = caller.getProject().getLocation().append(addlDeps[i]);
+//                    addlDeps[i] = ManagedBuildManager.calculateRelativePath(caller.getTopBuildDir().getLocation(),
+//                            absolutePath);
+//                }
+//            }
+//        }
+//        return addlDeps;
+//    }
+
+

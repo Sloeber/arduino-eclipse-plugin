@@ -383,20 +383,5 @@ public interface ITool extends IHoldsOptions {
         return new LinkedList<>();
     }
 
-    /**
-     * Find all matching inutTypes for this tool that matches the file or the macro
-     * <p>
-     * Note that there may be multiple input types that match in most cases that is
-     * not relevant
-     * as further processing is based on the output types. However advanced nae
-     * providers may filter.
-     * <p>
-     * Therefore all input types are needed.
-     * 
-     * @param file
-     * @param macroName
-     * @return
-     */
-    public List<IInputType> getMatchingInputTypes(IFile file, String macroName);
-
+  
 }

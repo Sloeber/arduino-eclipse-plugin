@@ -16,6 +16,7 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -129,7 +130,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         if (targetPlatforms.length == 1) {
             targetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
         } else {
-            System.err.println("Targetplatforms of toolchain " + name + " has wrong cardinality"); //$NON-NLS-1$ //$NON-NLS-2$
+            System.err.println("Targetplatforms of toolchain " + myName + " has wrong cardinality"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         // Load the Builder child
@@ -137,13 +138,13 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         if (builders.length == 1) {
             builder = new Builder(this, root, builders[0]);
         } else {
-            System.err.println("builders of toolchain " + name + " has wrong cardinality"); //$NON-NLS-1$ //$NON-NLS-2$
+            System.err.println("builders of toolchain " + myName + " has wrong cardinality"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         IConfigurationElement[] toolChainElements = element.getChildren(ITool.TOOL_ELEMENT_NAME);
         for (IConfigurationElement toolChainElement : toolChainElements) {
             Tool toolChild = new Tool(this, root, toolChainElement);
-            toolMap.put(toolChild.id, toolChild);
+            toolMap.put(toolChild.myID, toolChild);
         }
 
         IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
@@ -726,15 +727,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     }
 
     /**
-     * Safe accessor for the list of tools.
-     *
-     * @return List containing the tools
-     */
-    public List<Tool> getToolList() {
-        return toolList;
-    }
-
-    /**
      * Safe accessor for the map of tool ids to tools
      */
     private Map<String, Tool> getToolMap() {
@@ -743,7 +735,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
     @Override
     public String getName() {
-        return name;
+        return myName;
     }
 
     @Override
@@ -788,32 +780,18 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         return types;
     }
 
-    @Override
-    public String getTargetToolIds() {
-        return modelTargetTool[SUPER];
-    }
 
     @Override
-    public String[] getTargetToolList() {
-        String IDs = getTargetToolIds();
-        String[] targetTools;
-        if (IDs != null) {
-            // Check for an empty string
-            if (IDs.length() == 0) {
-                targetTools = new String[0];
-            } else {
-                StringTokenizer tok = new StringTokenizer(IDs, ";"); //$NON-NLS-1$
-                List<String> list = new ArrayList<>(tok.countTokens());
-                while (tok.hasMoreElements()) {
-                    list.add(tok.nextToken());
-                }
-                String[] strArr = { "" }; //$NON-NLS-1$
-                targetTools = list.toArray(strArr);
-            }
-        } else {
-            targetTools = new String[0];
+    public Set<ITool> getTargetTools() {
+    	 Set<ITool> ret=new HashSet<>();
+        Set<String> toolIDs=  new HashSet<String>();
+        toolIDs= Set.of(modelTargetTool[SUPER].split(SEMICOLON));
+        for(Tool curTool:toolMap.values()) {
+        	if(toolIDs.contains(curTool.getId())) {
+        		ret.add(curTool);
+        	}
         }
-        return targetTools;
+        return ret;
     }
 
     @Override
@@ -916,7 +894,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
      */
     public String getLegacyScannerConfigDiscoveryProfileId() {
         if (modelScannerConfigDiscoveryProfileID[SUPER].isBlank()) {
-            String profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(id);
+            String profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(myID);
             if (profileId != null) {
                 return profileId;
             }
@@ -1157,25 +1135,25 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     public String getNameAndVersion() {
         String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
         if (idVersion != null && idVersion.length() != 0) {
-            return new StringBuilder().append(name).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+            return new StringBuilder().append(myName).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        return name;
+        return myName;
     }
 
     @Override
     public String getUniqueRealName() {
-        if (name == null) {
-            name = getId();
+        if (myName == null) {
+            myName = getId();
         } else {
             String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
             if (idVersion != null) {
                 StringBuilder buf = new StringBuilder();
-                buf.append(name);
+                buf.append(myName);
                 buf.append(" (v").append(idVersion).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-                name = buf.toString();
+                myName = buf.toString();
             }
         }
-        return name;
+        return myName;
     }
 
     //	void resolveProjectReferences(boolean onLoad) {

@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 
 import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 public class InputType extends BuildObject implements IInputType {
@@ -60,8 +61,6 @@ public class InputType extends BuildObject implements IInputType {
     private String[] modelScannerConfigDiscoveryProfileID;
     private String[] modelLanguageID;
     private String[] modelLanguageInfoCalculator;
-    //    private List<OptionEnablementExpression> myOptionEnablementExpression = new ArrayList<>();;
-    //    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
     /*
      * C O N S T R U C T O R S
@@ -110,171 +109,7 @@ public class InputType extends BuildObject implements IInputType {
 
     }
 
-    /**
-     * Create an <code>InputType</code> based on the specification stored in the
-     * project file (.cdtbuild).
-     *
-     * @param parent
-     *            The <code>ITool</code> the InputType will be added to.
-     * @param element
-     *            The XML element that contains the InputType settings.
-     *
-     */
-    public InputType(ITool parent, ICStorageElement element) {
-        //        this.parent = parent;
-        //        isExtensionInputType = false;
-        //
-        //        loadNameAndID( element);
-        //        modelSourceContentType = getAttributes(SOURCE_CONTENT_TYPE);
-        //        modelExtensions = getAttributes(EXTENSIONS);
-        //        modelOutputTypeID = getAttributes(OUTPUT_TYPE_ID);
-        //        modelOption = getAttributes(OPTION);
-        //        modelAssignToOption = getAttributes(ASSIGN_TO_OPTION);
-        //        modelDependencyContentType = getAttributes(DEPENDENCY_CONTENT_TYPE);
-        //        modelDependencyExtensions = getAttributes(DEPENDENCY_EXTENSIONS);
-        //        modelScannerConfigDiscoveryProfileID = getAttributes(SCANNER_CONFIG_PROFILE_ID);
-        //        modelLanguageID = getAttributes(LANGUAGE_ID);
-        //        modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
-        //
-        //        // sourceContentType
-        //        IContentTypeManager manager = Platform.getContentTypeManager();
-        //        if (element.getAttribute(IInputType.SOURCE_CONTENT_TYPE) != null) {
-        //            String ids = element.getAttribute(IInputType.SOURCE_CONTENT_TYPE);
-        //            if (ids != null) {
-        //                StringTokenizer tokenizer = new StringTokenizer(ids, DEFAULT_SEPARATOR);
-        //                while (tokenizer.hasMoreElements()) {
-        //                    sourceContentTypeIds.add(tokenizer.nextToken());
-        //                }
-        //
-        //                for (String sourceContentTypeId : sourceContentTypeIds) {
-        //                    IContentType type = manager.getContentType(sourceContentTypeId);
-        //                    if (type != null)
-        //                        mySourceContentTypes.add(type);
-        //                }
-        //
-        //            }
-        //        }
-        //
-        //        // sources
-        //        if (element.getAttribute(IInputType.SOURCES) != null) {
-        //            String inputs = element.getAttribute(ITool.SOURCES);
-        //            if (inputs != null) {
-        //                StringTokenizer tokenizer = new StringTokenizer(inputs, DEFAULT_SEPARATOR);
-        //                while (tokenizer.hasMoreElements()) {
-        //                    inputExtensions.add(tokenizer.nextToken());
-        //                }
-        //
-        //            }
-        //        }
-        //
-        //        // dependencyContentType
-        //        if (element.getAttribute(IInputType.DEPENDENCY_CONTENT_TYPE) != null) {
-        //            dependencyContentTypeId = element.getAttribute(IInputType.DEPENDENCY_CONTENT_TYPE);
-        //            if (dependencyContentTypeId != null && dependencyContentTypeId.length() > 0) {
-        //                dependencyContentType = manager.getContentType(dependencyContentTypeId);
-        //            }
-        //        }
-        //
-        //        // dependencyExtensions
-        //        // Get the dependency (header file) extensions
-        //        if (element.getAttribute(IInputType.DEPENDENCY_EXTENSIONS) != null) {
-        //            String headers = element.getAttribute(IInputType.DEPENDENCY_EXTENSIONS);
-        //            if (headers != null) {
-        //                StringTokenizer tokenizer = new StringTokenizer(headers, DEFAULT_SEPARATOR);
-        //                while (tokenizer.hasMoreElements()) {
-        //                    getDependencyExtensionsList().add(tokenizer.nextToken());
-        //                }
-        //            }
-        //        }
-        //
-        //        // option
-        //        if (element.getAttribute(IInputType.OPTION) != null) {
-        //            optionId = element.getAttribute(IInputType.OPTION);
-        //        }
-        //
-        //        // assignToOption
-        //        if (element.getAttribute(IInputType.ASSIGN_TO_OPTION) != null) {
-        //            assignToOptionId = element.getAttribute(IInputType.ASSIGN_TO_OPTION);
-        //        }
-        //
-        //        // buildVariable
-        //        if (element.getAttribute(IInputType.BUILD_VARIABLE) != null) {
-        //            buildVariable = element.getAttribute(IInputType.BUILD_VARIABLE);
-        //        }
-        //
-        //        languageId = element.getAttribute(LANGUAGE_ID);
-        //
-        //        // Note: dependency generator cannot be specified in a project file because
-        //        // an IConfigurationElement is needed to load it!
-        //        if (element.getAttribute(ITool.DEP_CALC_ID) != null) {
-        //            // TODO: Issue warning?
-        //        }
-
-    }
-
-    /**
-     * Create an <code>InputType</code> based upon an existing InputType.
-     *
-     * @param parent
-     *            The <code>ITool</code> the InputType will be added to.
-     * @param Id
-     *            The identifier of the new InputType
-     * @param name
-     *            The name of the new InputType
-     * @param inputType
-     *            The existing InputType to clone.
-     */
-    public InputType(ITool parent, String Id, String name, InputType inputType) {
-        //JABA I'm n,ot supporting modifications on the fly
-        //        this.parent = parent;
-        //        superClass = inputType.superClass;
-        //        if (superClass != null && inputType.superClassId != null) {
-        //            superClassId = inputType.superClassId;
-        //        }
-        //        setId(Id);
-        //        setName(name);
-        //
-        //        isExtensionInputType = false;
-        //        boolean copyIds = Id.equals(inputType.id);
-        //
-        //        mySourceContentTypes.clear();
-        //        mySourceContentTypes.addAll(inputType.mySourceContentTypes);
-        //
-        //        inputExtensions.clear();
-        //        inputExtensions.addAll(inputType.inputExtensions);
-        //
-        //        headerContentTypes.clear();
-        //        headerContentTypes.addAll(inputType.headerContentTypes);
-        //
-        //        if (inputType.dependencyContentTypeId != null) {
-        //            dependencyContentTypeId = inputType.dependencyContentTypeId;
-        //        }
-        //        dependencyContentType = inputType.dependencyContentType;
-        //        if (inputType.dependencyExtensions != null) {
-        //            dependencyExtensions = new ArrayList<>(inputType.dependencyExtensions);
-        //        }
-        //        if (inputType.optionId != null) {
-        //            optionId = inputType.optionId;
-        //        }
-        //        if (inputType.assignToOptionId != null) {
-        //            assignToOptionId = inputType.assignToOptionId;
-        //        }
-        //        if (inputType.buildVariable != null) {
-        //            buildVariable = inputType.buildVariable;
-        //        }
-        //
-        //        languageId = inputType.languageId;
-        //        languageInfoCalculator = inputType.languageInfoCalculator;
-        //        languageInfoCalculatorElement = inputType.languageInfoCalculatorElement;
-        //        modelScannerConfigDiscoveryProfileID[SUPER] = inputType.modelScannerConfigDiscoveryProfileID[SUPER];
-        //
-        //        if (copyIds) {
-        //            isDirty = inputType.isDirty;
-        //            rebuildState = inputType.rebuildState;
-        //        } else {
-        //            setRebuildState(true);
-        //        }
-    }
+// 
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -290,19 +125,7 @@ public class InputType extends BuildObject implements IInputType {
         return parent;
     }
 
-    /*
-     * M O D E L A T T R I B U T E A C C E S S O R S
-     */
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.managedbuilder.core.IInputType#getSuperClass()
-     */
-    @Override
-    public IInputType getSuperClass() {
-        return superClass;
-    }
 
     /*
      * (non-Javadoc)
@@ -311,7 +134,7 @@ public class InputType extends BuildObject implements IInputType {
      */
     @Override
     public String getName() {
-        return (name == null && superClass != null) ? superClass.getName() : name;
+        return myName;
     }
 
     /*
@@ -323,6 +146,12 @@ public class InputType extends BuildObject implements IInputType {
     public String getBuildVariable() {
         return EMPTY_STRING;
     }
+    
+    @Override
+    public String getOutputTypeID() {
+        return modelOutputTypeID[SUPER];
+    }
+    
 
     /*
      * (non-Javadoc)
@@ -387,52 +216,7 @@ public class InputType extends BuildObject implements IInputType {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#getDependencyGenerator()
-     */
-    // @Override
-    // public IManagedDependencyGeneratorType getDependencyGenerator() {
-    // if (dependencyGenerator != null) {
-    // return dependencyGenerator;
-    // }
-    // IConfigurationElement element = getDependencyGeneratorElement();
-    // if (element != null) {
-    // try {
-    // if (element.getAttribute(ITool.DEP_CALC_ID) != null) {
-    // dependencyGenerator = (IManagedDependencyGeneratorType) element
-    // .createExecutableExtension(ITool.DEP_CALC_ID);
-    // return dependencyGenerator;
-    // }
-    // } catch (CoreException e) {
-    // }
-    // }
-    // return null;
-    // }
-
-    // /* (non-Javadoc)
-    // * @see
-    // org.eclipse.cdt.core.build.managed.IInputType#getDependencyGeneratorElement()
-    // */
-    // public IConfigurationElement getDependencyGeneratorElement() {
-    // if (dependencyGeneratorElement == null) {
-    // if (superClass != null) {
-    // return ((InputType) superClass).getDependencyGeneratorElement();
-    // }
-    // }
-    // return dependencyGeneratorElement;
-    // }
-
-    // /* (non-Javadoc)
-    // * @see
-    // org.eclipse.cdt.core.build.managed.IInputType#setDependencyGeneratorElement()
-    // */
-    // public void setDependencyGeneratorElement(IConfigurationElement element) {
-    // dependencyGeneratorElement = element;
-    // setDirty(true);
-    // setRebuildState(true);
-    // }
+    
 
     /*
      * (non-Javadoc)
@@ -486,44 +270,7 @@ public class InputType extends BuildObject implements IInputType {
         return getSourceExtensionsAttribute();
     }
 
-    /*
-     * O B J E C T S T A T E M A I N T E N A N C E
-     */
 
-    //    /*
-    //     * (non-Javadoc) Resolve the element IDs to interface references
-    //     */
-    //    public void resolveReferencesweg() {
-    //        if (!resolved) {
-    //            resolved = true;
-    //            // Resolve superClass
-    //            if (superClassId != null && superClassId.length() > 0) {
-    //                superClass = ManagedBuildManager.getExtensionInputType(superClassId);
-    //                if (superClass == null) {
-    //                    // Report error
-    //                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-    //                            superClassId, "inputType", //$NON-NLS-1$
-    //                            getId());
-    //                }
-    //            }
-    //
-    //            // Resolve content types
-    //            IContentTypeManager manager = Platform.getContentTypeManager();
-    //            List<IContentType> list = new ArrayList<>();
-    //            if (sourceContentTypeIds != null) {
-    //                for (String sourceContentTypeId : sourceContentTypeIds) {
-    //                    IContentType type = manager.getContentType(sourceContentTypeId);
-    //                    if (type != null)
-    //                        mySourceContentTypes.add(type);
-    //                }
-    //            }
-    //
-    //            if (dependencyContentTypeId != null && dependencyContentTypeId.length() > 0) {
-    //                dependencyContentType = manager.getContentType(dependencyContentTypeId);
-    //            }
-    //
-    //        }
-    //    }
 
     @Override
     public String getLanguageName(ITool tool) {
@@ -572,7 +319,7 @@ public class InputType extends BuildObject implements IInputType {
     public String getLegacyDiscoveryProfileIdAttribute() {
         String profileId = modelScannerConfigDiscoveryProfileID[SUPER];
         if (profileId == null) {
-            profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(id);
+            profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(myID);
             if (profileId == null && superClass instanceof InputType) {
                 profileId = ((InputType) superClass).getLegacyDiscoveryProfileIdAttribute();
             }
@@ -584,9 +331,7 @@ public class InputType extends BuildObject implements IInputType {
         return modelScannerConfigDiscoveryProfileID[SUPER];
     }
 
-    //    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
-    //        return booleanExpressionCalculator;
-    //    }
+
 
     public boolean hasScannerConfigSettings() {
 
@@ -617,6 +362,20 @@ public class InputType extends BuildObject implements IInputType {
         return false;
     }
 
+    @Override
+    public boolean isAssociatedWith(IFile file, IOutputType outputType) {
+        if(modelOutputTypeID[SUPER].equals(outputType.getId()) ||
+        		inputExtensions.contains(file.getFileExtension())) {
+            return true;
+        }
+        for (IContentType curContentType : mySourceContentTypes) {
+            if (curContentType.isAssociatedWith(file.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
     public String[] getSourceContentTypeIds() {
 
@@ -678,4 +437,267 @@ public class InputType extends BuildObject implements IInputType {
 //     }
 // }
 // return useLegacy;
+//}
+
+/**
+//* Create an <code>InputType</code> based on the specification stored in the
+//* project file (.cdtbuild).
+//*
+//* @param parent
+//*            The <code>ITool</code> the InputType will be added to.
+//* @param element
+//*            The XML element that contains the InputType settings.
+//*
+//*/
+//public InputType(ITool parent, ICStorageElement element) {
+//  //        this.parent = parent;
+//  //        isExtensionInputType = false;
+//  //
+//  //        loadNameAndID( element);
+//  //        modelSourceContentType = getAttributes(SOURCE_CONTENT_TYPE);
+//  //        modelExtensions = getAttributes(EXTENSIONS);
+//  //        modelOutputTypeID = getAttributes(OUTPUT_TYPE_ID);
+//  //        modelOption = getAttributes(OPTION);
+//  //        modelAssignToOption = getAttributes(ASSIGN_TO_OPTION);
+//  //        modelDependencyContentType = getAttributes(DEPENDENCY_CONTENT_TYPE);
+//  //        modelDependencyExtensions = getAttributes(DEPENDENCY_EXTENSIONS);
+//  //        modelScannerConfigDiscoveryProfileID = getAttributes(SCANNER_CONFIG_PROFILE_ID);
+//  //        modelLanguageID = getAttributes(LANGUAGE_ID);
+//  //        modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
+//  //
+//  //        // sourceContentType
+//  //        IContentTypeManager manager = Platform.getContentTypeManager();
+//  //        if (element.getAttribute(IInputType.SOURCE_CONTENT_TYPE) != null) {
+//  //            String ids = element.getAttribute(IInputType.SOURCE_CONTENT_TYPE);
+//  //            if (ids != null) {
+//  //                StringTokenizer tokenizer = new StringTokenizer(ids, DEFAULT_SEPARATOR);
+//  //                while (tokenizer.hasMoreElements()) {
+//  //                    sourceContentTypeIds.add(tokenizer.nextToken());
+//  //                }
+//  //
+//  //                for (String sourceContentTypeId : sourceContentTypeIds) {
+//  //                    IContentType type = manager.getContentType(sourceContentTypeId);
+//  //                    if (type != null)
+//  //                        mySourceContentTypes.add(type);
+//  //                }
+//  //
+//  //            }
+//  //        }
+//  //
+//  //        // sources
+//  //        if (element.getAttribute(IInputType.SOURCES) != null) {
+//  //            String inputs = element.getAttribute(ITool.SOURCES);
+//  //            if (inputs != null) {
+//  //                StringTokenizer tokenizer = new StringTokenizer(inputs, DEFAULT_SEPARATOR);
+//  //                while (tokenizer.hasMoreElements()) {
+//  //                    inputExtensions.add(tokenizer.nextToken());
+//  //                }
+//  //
+//  //            }
+//  //        }
+//  //
+//  //        // dependencyContentType
+//  //        if (element.getAttribute(IInputType.DEPENDENCY_CONTENT_TYPE) != null) {
+//  //            dependencyContentTypeId = element.getAttribute(IInputType.DEPENDENCY_CONTENT_TYPE);
+//  //            if (dependencyContentTypeId != null && dependencyContentTypeId.length() > 0) {
+//  //                dependencyContentType = manager.getContentType(dependencyContentTypeId);
+//  //            }
+//  //        }
+//  //
+//  //        // dependencyExtensions
+//  //        // Get the dependency (header file) extensions
+//  //        if (element.getAttribute(IInputType.DEPENDENCY_EXTENSIONS) != null) {
+//  //            String headers = element.getAttribute(IInputType.DEPENDENCY_EXTENSIONS);
+//  //            if (headers != null) {
+//  //                StringTokenizer tokenizer = new StringTokenizer(headers, DEFAULT_SEPARATOR);
+//  //                while (tokenizer.hasMoreElements()) {
+//  //                    getDependencyExtensionsList().add(tokenizer.nextToken());
+//  //                }
+//  //            }
+//  //        }
+//  //
+//  //        // option
+//  //        if (element.getAttribute(IInputType.OPTION) != null) {
+//  //            optionId = element.getAttribute(IInputType.OPTION);
+//  //        }
+//  //
+//  //        // assignToOption
+//  //        if (element.getAttribute(IInputType.ASSIGN_TO_OPTION) != null) {
+//  //            assignToOptionId = element.getAttribute(IInputType.ASSIGN_TO_OPTION);
+//  //        }
+//  //
+//  //        // buildVariable
+//  //        if (element.getAttribute(IInputType.BUILD_VARIABLE) != null) {
+//  //            buildVariable = element.getAttribute(IInputType.BUILD_VARIABLE);
+//  //        }
+//  //
+//  //        languageId = element.getAttribute(LANGUAGE_ID);
+//  //
+//  //        // Note: dependency generator cannot be specified in a project file because
+//  //        // an IConfigurationElement is needed to load it!
+//  //        if (element.getAttribute(ITool.DEP_CALC_ID) != null) {
+//  //            // TODO: Issue warning?
+//  //        }
+//
+//}
+
+/*
+ * O B J E C T S T A T E M A I N T E N A N C E
+ */
+
+//    /*
+//     * (non-Javadoc) Resolve the element IDs to interface references
+//     */
+//    public void resolveReferencesweg() {
+//        if (!resolved) {
+//            resolved = true;
+//            // Resolve superClass
+//            if (superClassId != null && superClassId.length() > 0) {
+//                superClass = ManagedBuildManager.getExtensionInputType(superClassId);
+//                if (superClass == null) {
+//                    // Report error
+//                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
+//                            superClassId, "inputType", //$NON-NLS-1$
+//                            getId());
+//                }
+//            }
+//
+//            // Resolve content types
+//            IContentTypeManager manager = Platform.getContentTypeManager();
+//            List<IContentType> list = new ArrayList<>();
+//            if (sourceContentTypeIds != null) {
+//                for (String sourceContentTypeId : sourceContentTypeIds) {
+//                    IContentType type = manager.getContentType(sourceContentTypeId);
+//                    if (type != null)
+//                        mySourceContentTypes.add(type);
+//                }
+//            }
+//
+//            if (dependencyContentTypeId != null && dependencyContentTypeId.length() > 0) {
+//                dependencyContentType = manager.getContentType(dependencyContentTypeId);
+//            }
+//
+//        }
+//    }
+
+///**
+//* Create an <code>InputType</code> based upon an existing InputType.
+//*
+//* @param parent
+//*            The <code>ITool</code> the InputType will be added to.
+//* @param Id
+//*            The identifier of the new InputType
+//* @param name
+//*            The name of the new InputType
+//* @param inputType
+//*            The existing InputType to clone.
+//*/
+//public InputType(ITool parent, String Id, String name, InputType inputType) {
+// //JABA I'm n,ot supporting modifications on the fly
+// //        this.parent = parent;
+// //        superClass = inputType.superClass;
+// //        if (superClass != null && inputType.superClassId != null) {
+// //            superClassId = inputType.superClassId;
+// //        }
+// //        setId(Id);
+// //        setName(name);
+// //
+// //        isExtensionInputType = false;
+// //        boolean copyIds = Id.equals(inputType.id);
+// //
+// //        mySourceContentTypes.clear();
+// //        mySourceContentTypes.addAll(inputType.mySourceContentTypes);
+// //
+// //        inputExtensions.clear();
+// //        inputExtensions.addAll(inputType.inputExtensions);
+// //
+// //        headerContentTypes.clear();
+// //        headerContentTypes.addAll(inputType.headerContentTypes);
+// //
+// //        if (inputType.dependencyContentTypeId != null) {
+// //            dependencyContentTypeId = inputType.dependencyContentTypeId;
+// //        }
+// //        dependencyContentType = inputType.dependencyContentType;
+// //        if (inputType.dependencyExtensions != null) {
+// //            dependencyExtensions = new ArrayList<>(inputType.dependencyExtensions);
+// //        }
+// //        if (inputType.optionId != null) {
+// //            optionId = inputType.optionId;
+// //        }
+// //        if (inputType.assignToOptionId != null) {
+// //            assignToOptionId = inputType.assignToOptionId;
+// //        }
+// //        if (inputType.buildVariable != null) {
+// //            buildVariable = inputType.buildVariable;
+// //        }
+// //
+// //        languageId = inputType.languageId;
+// //        languageInfoCalculator = inputType.languageInfoCalculator;
+// //        languageInfoCalculatorElement = inputType.languageInfoCalculatorElement;
+// //        modelScannerConfigDiscoveryProfileID[SUPER] = inputType.modelScannerConfigDiscoveryProfileID[SUPER];
+// //
+// //        if (copyIds) {
+// //            isDirty = inputType.isDirty;
+// //            rebuildState = inputType.rebuildState;
+// //        } else {
+// //            setRebuildState(true);
+// //        }
+//}
+/*
+ * (non-Javadoc)
+ * 
+ * @see org.eclipse.cdt.core.build.managed.IInputType#getDependencyGenerator()
+ */
+// @Override
+// public IManagedDependencyGeneratorType getDependencyGenerator() {
+// if (dependencyGenerator != null) {
+// return dependencyGenerator;
+// }
+// IConfigurationElement element = getDependencyGeneratorElement();
+// if (element != null) {
+// try {
+// if (element.getAttribute(ITool.DEP_CALC_ID) != null) {
+// dependencyGenerator = (IManagedDependencyGeneratorType) element
+// .createExecutableExtension(ITool.DEP_CALC_ID);
+// return dependencyGenerator;
+// }
+// } catch (CoreException e) {
+// }
+// }
+// return null;
+// }
+
+// /* (non-Javadoc)
+// * @see
+// org.eclipse.cdt.core.build.managed.IInputType#getDependencyGeneratorElement()
+// */
+// public IConfigurationElement getDependencyGeneratorElement() {
+// if (dependencyGeneratorElement == null) {
+// if (superClass != null) {
+// return ((InputType) superClass).getDependencyGeneratorElement();
+// }
+// }
+// return dependencyGeneratorElement;
+// }
+
+// /* (non-Javadoc)
+// * @see
+// org.eclipse.cdt.core.build.managed.IInputType#setDependencyGeneratorElement()
+// */
+// public void setDependencyGeneratorElement(IConfigurationElement element) {
+// dependencyGeneratorElement = element;
+// setDirty(true);
+// setRebuildState(true);
+// }
+//    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
+//        return booleanExpressionCalculator;
+//    }
+///*
+//* (non-Javadoc)
+//* 
+//* @see org.eclipse.cdt.managedbuilder.core.IInputType#getSuperClass()
+//*/
+//@Override
+//public IInputType getSuperClass() {
+// return superClass;
 //}

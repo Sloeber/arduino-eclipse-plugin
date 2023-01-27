@@ -9,14 +9,12 @@ import org.eclipse.core.runtime.Path;
 @SuppressWarnings("nls")
 public class ManagedBuildConstants {
     public static final String AT = "@";
-    public static final String COLON = ":";
     public static final int COLS_PER_LINE = 80;
     public static final String COMMENT_SYMBOL = "#";
     public static final String COMMENT_START = "# ";
     public static final String DOLLAR_SYMBOL = "$";
     public static final String DEP_EXT = "d";
     public static final String DEPFILE_NAME = "subdir.dep";
-    public static final String DOT = ".";
     public static final String DASH = "-";
     public static final String ECHO = "echo";
     public static final String IN_MACRO = "$<";
@@ -30,7 +28,6 @@ public class ManagedBuildConstants {
     public static final String NO_PRINT_DIR = "--no-print-directory";
 
     public static final String MODFILE_NAME = "subdir.mk";
-    public static final String NEWLINE = System.getProperty("line.separator");
     public static final String OBJECTS_MAKFILE = "objects.mk";
     public static final String OUT_MACRO = "$@";
     public static final String ROOT = "..";
@@ -47,7 +44,6 @@ public class ManagedBuildConstants {
 
     public static final String BUILD_TOP = COMMENT + ".build.toprules";
     public static final String BUILD_TARGETS = COMMENT + ".build.toptargets";
-    public static final String EMPTY_STRING = "";
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final String OBJS_MACRO = "OBJS";
     public static final String MACRO_ADDITION_ADDPREFIX_HEADER = "${addprefix ";

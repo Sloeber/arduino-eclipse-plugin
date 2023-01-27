@@ -111,7 +111,7 @@
               </inputType>
               <outputType
                     buildVariable="LINK_OBJ"
-                    id="io.sloeber.compiler.cpp.sketch.link.output"
+                    id="io.sloeber.compiler.cpp.link.output"
                     name="%outputType.CPP.link.name"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.LinkObjectNameProvider"
                     outputs="o"
@@ -233,6 +233,7 @@
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.archiver.name"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveNameProvider"
+                    outputExtension="ar"
                     outputNames="${archive_file_path}"
                     outputs="ar"
                     primaryOutput="true">
@@ -242,6 +243,7 @@
                     id="io.sloeber.tool.archiver.input"
                     multipleOfType="true"
                     name="%inputType.archiver.name"
+                    outputTypeID="io.sloeber.compiler.cpp.ar.output"
                     primaryInput="false"
                     sources="o">
               </inputType>
@@ -258,17 +260,19 @@
                     buildVariable="ELF"
                     id="io.sloeber.tool.combiner.output"
                     name="%outputType.elf.name"
+                    outputName="${project}.elf"
                     outputNames="${ProjName}.elf"
                     outputs="elf"
                     primaryOutput="true">
               </outputType>
                             <inputType
-                    buildVariable="LINK_OBJ"
-                    id="io.sloeber.tool.combiner.ob.input"
-                    multipleOfType="true"
-                    name="%inputType.linker.name"
-                    primaryInput="true"
-                    sources="O">
+                                  buildVariable="LINK_OBJ"
+                                  id="io.sloeber.tool.combiner.ob.input"
+                                  multipleOfType="true"
+                                  name="%inputType.linker.name"
+                                  outputTypeID="io.sloeber.compiler.cpp.link.output"
+                                  primaryInput="true"
+                                  sources="O">
               </inputType>
               <inputType
                     buildVariable="AR"
@@ -290,12 +294,11 @@
                  natureFilter="both">
               <inputType
                     buildVariable="ELF"
-                    dependencyExtensions="elf"
                     id="io.sloeber.tool.objcopy.eep.input"
                     multipleOfType="true"
                     name="%inputType.objcopy.name"
+                    outputTypeID="io.sloeber.tool.combiner.output"
                     primaryInput="true"
-                    sourceContentType="io.sloeber.tool.combiner.output"
                     sources="elf">
               </inputType>
               <outputType
@@ -303,6 +306,7 @@
                     id="io.sloeber.tool.objcopy.output"
                     multipleOfType="false"
                     name="%outputType.hexdump.name"
+                    outputExtension="objcopy"
                     outputNames="${ProjName}.hex"
                     outputs="hex">
               </outputType>
@@ -315,12 +319,10 @@
                  isAbstract="false"
                  name="%tool.printsize.name">
               <inputType
-                    buildVariable="HEX"
                     dependencyExtensions="hex"
                     id="io.sloeber.tool.size.input"
-                    multipleOfType="true"
+                    outputTypeID="io.sloeber.tool.objcopy.output"
                     primaryInput="true"
-                    sourceContentType="io.sloeber.tool.objcopy.output"
                     sources="hex">
               </inputType>
               <outputType
@@ -328,6 +330,7 @@
                     id="io.sloeber.tool.size.output"
                     multipleOfType="false"
                     name="size info"
+                    outputExtension="size"
                     outputNames="${ProjName}.size"
                     outputs="size"
                     primaryOutput="false">

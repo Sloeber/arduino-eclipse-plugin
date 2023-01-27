@@ -1,5 +1,6 @@
 package io.sloeber.autoBuild.integration;
 
+import static io.sloeber.autoBuild.integration.Const.*;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -17,7 +18,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.internal.Configuration;
 
@@ -29,13 +29,14 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     BuildBuildData myBuildBuildData;
     ICConfigurationDescription myCdtConfigurationDescription;
     private boolean isValid = false;
+    String myName=EMPTY_STRING;
 
     public AutoBuildConfigurationData(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
         myAutoBuildConfiguration = config;
         myProject = project;
         myTargetPlatformData = myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
-
+        myName=config.getName();
     }
 
     //Copy constructor
@@ -47,6 +48,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myTargetPlatformData = myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
         myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
                 myCdtConfigurationDescription);
+        myName=autoBuildConfigBase.getName();
         isValid = true;
     }
 
@@ -85,7 +87,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     @Override
     public String getName() {
         // TODO Auto-generated method stub
-        return getId();
+        return myName;
     }
 
     @Override
@@ -157,7 +159,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     @Override
     public void setName(String name) {
-        // TODO Auto-generated method stub
+    	myName=name;
 
     }
 

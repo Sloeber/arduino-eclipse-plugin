@@ -485,15 +485,15 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return isValid;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isHeaderFile(java.lang.String)
-     */
-    @Override
-    public boolean isHeaderFile(String ext) {
-        // Check to see if there is a rule to build a file with this extension
-        IConfiguration config = getDefaultConfiguration();
-        return config.isHeaderFile(ext);
-    }
+//    /* (non-Javadoc)
+//     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isHeaderFile(java.lang.String)
+//     */
+//    @Override
+//    public boolean isHeaderFile(String ext) {
+//        // Check to see if there is a rule to build a file with this extension
+//        IConfiguration config = getDefaultConfiguration();
+//        return config.isHeaderFile(ext);
+//    }
 
     /**
      *

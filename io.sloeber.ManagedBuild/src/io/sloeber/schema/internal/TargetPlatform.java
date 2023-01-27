@@ -128,7 +128,7 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
 
     @Override
     public String getName() {
-        return (name == null && superClass != null) ? superClass.getName() : name;
+        return (myName == null && superClass != null) ? superClass.getName() : myName;
     }
 
     @Override

@@ -23,37 +23,18 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuilder;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.cdt.utils.cdtvariables.IVariableContextInfo;
 import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
 import org.eclipse.cdt.utils.envvar.EnvVarOperationProcessor;
-import org.eclipse.core.resources.IResource;
-
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IManagedBuildInfo;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.internal.IBuildObject;
 
 /**
  * This substitutor resolves all macro references except for the environment
@@ -109,7 +90,7 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
         }
 
         protected String[] getConfigurationReservedNames(IConfiguration configuration) {
-            List<ITool> tools = configuration.getFilteredTools();
+            List<ITool> tools = configuration.getToolChain().getTools();
             if (tools != null) {
                 Set<String> set = new HashSet<>();
                 for (ITool tool : tools) {

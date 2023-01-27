@@ -1,8 +1,9 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.Internal.ManagebBuildCommon.*;
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*;
+import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,87 +32,86 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 public class TopMakeFileGenerator {
-    private MakefileGenerator caller = null;
-    private Set<MakeRule> mySubDirMakeRules = new LinkedHashSet<>();
+//    private MakefileGenerator caller = null;
+//    private Set<MakeRule> mySubDirMakeRules = new LinkedHashSet<>();
     private MakeRules myMakeRules = new MakeRules();
     private Collection<IContainer> myFoldersToBuild;
-    private Map<IOutputType, Set<IFile>> myAllSourceTargets = new HashMap<>();
+//    private Map<IOutputType, Set<IFile>> myAllSourceTargets = new HashMap<>();
     private Set<String> myDependencyMacros = new HashSet<>();
+//
+//    private IConfiguration getConfig() {
+//        return caller.getConfig();
+//    }
+//
+//    private ICConfigurationDescription getCConfigurationDescription() {
+//        return caller.getCConfigurationDescription();
+//    }
+//
+//    private IProject getProject() {
+//        return caller.getProject();
+//    }
+//
+//    private IFolder getBuildFolder() {
+//        return caller.getBuildFolder();
+//    }
 
-    private IConfiguration getConfig() {
-        return caller.getConfig();
+//    public TopMakeFileGenerator(MakefileGenerator theCaller, Set<MakeRule> subDirMakeRules,
+//            Collection<IContainer> foldersToBuild) {
+    public TopMakeFileGenerator() {
+//        caller = theCaller;
+//        mySubDirMakeRules = subDirMakeRules;
+//        myFoldersToBuild = foldersToBuild;
+//        for (MakeRule curMakeRule : mySubDirMakeRules) {
+//            myAllSourceTargets.putAll(curMakeRule.getTargets());
+//            myDependencyMacros.addAll(curMakeRule.getDependecyMacros());
+//        }
+//        MakeRules makeRules = new MakeRules();
+//        Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();
+//        for (MakeRule makeRule : subDirMakeRules) {
+//            Map<IOutputType, Set<IFile>> targets = makeRule.getTargets();
+//            for (Entry<IOutputType, Set<IFile>> curTarget : targets.entrySet()) {
+//                Set<IFile> esxistingTarget = generatedFiles.get(curTarget.getKey());
+//                if (esxistingTarget != null) {
+//                    esxistingTarget.addAll(curTarget.getValue());
+//                } else {
+//                    Set<IFile> copySet = new HashSet<>();
+//                    copySet.addAll(curTarget.getValue());
+//                    generatedFiles.put(curTarget.getKey(), copySet);
+//                }
+//
+//            }
+//        }
+//        int depth = 10;
+//        while (depth > 0) {
+//            makeRules = getMakeRulesFromGeneratedFiles(generatedFiles);
+//            generatedFiles.clear();
+//            if (makeRules.size() > 0) {
+//                depth--;
+//                myMakeRules.addRules(makeRules);
+//                generatedFiles.putAll(makeRules.getTargets());
+//            } else {
+//                depth = 0;
+//            }
+//        }
+
     }
 
-    private ICConfigurationDescription getCConfigurationDescription() {
-        return caller.getCConfigurationDescription();
-    }
-
-    private IProject getProject() {
-        return caller.getProject();
-    }
-
-    private IFolder getBuildFolder() {
-        return caller.getBuildFolder();
-    }
-
-    public TopMakeFileGenerator(MakefileGenerator theCaller, Set<MakeRule> subDirMakeRules,
-            Collection<IContainer> foldersToBuild) {
-        caller = theCaller;
-        mySubDirMakeRules = subDirMakeRules;
-        myFoldersToBuild = foldersToBuild;
-        for (MakeRule curMakeRule : mySubDirMakeRules) {
-            myAllSourceTargets.putAll(curMakeRule.getTargets());
-            myDependencyMacros.addAll(curMakeRule.getDependecyMacros());
-        }
-        MakeRules makeRules = new MakeRules();
-        Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();
-        for (MakeRule makeRule : subDirMakeRules) {
-            Map<IOutputType, Set<IFile>> targets = makeRule.getTargets();
-            for (Entry<IOutputType, Set<IFile>> curTarget : targets.entrySet()) {
-                Set<IFile> esxistingTarget = generatedFiles.get(curTarget.getKey());
-                if (esxistingTarget != null) {
-                    esxistingTarget.addAll(curTarget.getValue());
-                } else {
-                    Set<IFile> copySet = new HashSet<>();
-                    copySet.addAll(curTarget.getValue());
-                    generatedFiles.put(curTarget.getKey(), copySet);
-                }
-
-            }
-        }
-        int depth = 10;
-        while (depth > 0) {
-            makeRules = getMakeRulesFromGeneratedFiles(generatedFiles);
-            generatedFiles.clear();
-            if (makeRules.size() > 0) {
-                depth--;
-                myMakeRules.addRules(makeRules);
-                generatedFiles.putAll(makeRules.getTargets());
-            } else {
-                depth = 0;
-            }
-        }
-
-    }
-
-    public void generateMakefile() throws CoreException {
-        IProject project = getProject();
-        IConfiguration config = getConfig();
+    public static void generateMakefile(IFolder buildFolder,ICConfigurationDescription cfg,IConfiguration config, Collection<IFolder> myFoldersToBuild,MakeRules myMakeRules,Set<String> myDependencyMacros) throws CoreException {
+    	IProject project=cfg.getProjectDescription().getProject();
 
         StringBuffer buffer = new StringBuffer();
         buffer.append(addDefaultHeader());
 
-        buffer.append(getMakeIncludeSubDirs());
-        buffer.append(getMakeIncludeDependencies());
-        buffer.append(getMakeRMCommand());
-        buffer.append(getMakeTopTargets());// this is the include dependencies
+        buffer.append(getMakeIncludeSubDirs(myFoldersToBuild));
+        buffer.append(getMakeIncludeDependencies(config, cfg));
+        buffer.append(getMakeRMCommand( config, cfg, myDependencyMacros));
+        buffer.append(getMakeTopTargets(config, buildFolder, myMakeRules, cfg));// this is the include dependencies
         // TOFIX the content from the append below should come from a registered method
         buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n"
                 + "\t@echo trying to burn bootloader ${bootloader.tool}\n"
@@ -125,15 +125,15 @@ public class TopMakeFileGenerator {
                 + "\t${tools.${program.tool}.program.pattern}\n" + "\n" + "uploadWithProgrammerWithoutBuild: \n"
                 + "\t@echo trying to upload with programmer ${program.tool} without build\n"
                 + "\t${tools.${program.tool}.program.pattern}\n\n");
-        buffer.append(getMakeMacros());
-        buffer.append(getMakeRules());
+        buffer.append(getMakeMacros(buildFolder, myMakeRules));
+        buffer.append(getMakeRules(project, buildFolder, myMakeRules, cfg));
         buffer.append(getMakeFinalTargets("", ""));
 
-        IFile fileHandle = project.getFile(config.getName() + '/' + MAKEFILE_NAME);
+        IFile fileHandle = buildFolder.getFile( MAKEFILE_NAME);
         save(buffer, fileHandle);
     }
 
-    private StringBuffer getMakeIncludeSubDirs() {
+    private static StringBuffer getMakeIncludeSubDirs( Collection<IFolder> myFoldersToBuild) {
         StringBuffer buffer = new StringBuffer();
 
         for (IContainer subDir : myFoldersToBuild) {
@@ -145,8 +145,7 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private StringBuffer getMakeRMCommand() {
-        IConfiguration config = getConfig();
+    private static StringBuffer getMakeRMCommand(IConfiguration config,ICConfigurationDescription cfg, Set<String> myDependencyMacros ) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE);
         buffer.append(NEWLINE);
@@ -154,7 +153,7 @@ public class TopMakeFileGenerator {
         buffer.append("RM := ");
         // support macros in the clean command
         String cleanCommand = resolveValueToMakefileFormat(config.getCleanCommand(), EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
         buffer.append(cleanCommand).append(NEWLINE);
         buffer.append(NEWLINE);
 
@@ -172,8 +171,7 @@ public class TopMakeFileGenerator {
         return (buffer.append(NEWLINE));
     }
 
-    private String getPreBuildStep() {
-        IConfiguration config = getConfig();
+    private static String getPreBuildStep(IConfiguration config,ICConfigurationDescription cfg) {
         String prebuildStep = config.getPrebuildStep();
         // JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt
         // prebuild command if needed
@@ -184,7 +182,7 @@ public class TopMakeFileGenerator {
         // "sloeber.prebuild",
         // new String(), false);
         String sketchPrebuild = resolveValueToMakefileFormat("sloeber.prebuild", EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
+                IBuildMacroProvider.CONTEXT_CONFIGURATION,cfg);
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
                 prebuildStep = prebuildStep + "\n\t" + sketchPrebuild;
@@ -195,17 +193,17 @@ public class TopMakeFileGenerator {
         // end off JABA issue927
         // try to resolve the build macros in the prebuild step
         prebuildStep = resolveValueToMakefileFormat(prebuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
+                IBuildMacroProvider.CONTEXT_CONFIGURATION,cfg);
         return prebuildStep.trim();
     }
 
-    private StringBuffer getMakeIncludeDependencies() {
+    private static StringBuffer getMakeIncludeDependencies(IConfiguration config,ICConfigurationDescription cfg) {
 
         // JABA add the arduino upload/program targets
         StringBuffer buffer = new StringBuffer();
 
         String defaultTarget = "all:";
-        String prebuildStep = getPreBuildStep();
+        String prebuildStep = getPreBuildStep(config,cfg);
         if (prebuildStep.length() > 0) {
             // Add the comment for the "All" target
             buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
@@ -226,16 +224,15 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private StringBuffer getMakeTopTargets() {
-        IConfiguration config = getConfig();
-        IFolder buildFolder = getBuildFolder();
+    private static StringBuffer getMakeTopTargets(IConfiguration config,IFolder buildFolder,MakeRules myMakeRules,ICConfigurationDescription cfg) {
+
 
         StringBuffer buffer = new StringBuffer();
 
-        ITool targetTool = config.calculateTargetTool();
+        Set<ITool> targetTools = config.getToolChain().getTargetTools();
         buffer.append("all:").append(WHITESPACE);
-        if (targetTool != null) {
-            Set<IFile> allTargets = myMakeRules.getTargetsForTool(targetTool);
+        for(ITool curTargetTool:targetTools) {
+            Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
             for (IFile curTarget : allTargets) {
                 String targetString = GetNiceFileName(buildFolder, curTarget);
                 buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
@@ -250,7 +247,7 @@ public class TopMakeFileGenerator {
         }
         buffer.append(NEWLINE).append(NEWLINE);
 
-        String prebuildStep = getPreBuildStep();
+        String prebuildStep = getPreBuildStep(config, cfg);
         if (prebuildStep.length() > 0) {
 
             String preannouncebuildStep = config.getPreannouncebuildStep();
@@ -264,7 +261,7 @@ public class TopMakeFileGenerator {
 
         String postbuildStep = config.getPostbuildStep();
         postbuildStep = resolveValueToMakefileFormat(postbuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, getCConfigurationDescription());
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
         postbuildStep = postbuildStep.trim();
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {
@@ -280,7 +277,7 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private StringBuffer getMakeFinalTargets(String prebuildStep, String postbuildStep) {
+    private static StringBuffer getMakeFinalTargets(String prebuildStep, String postbuildStep) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE).append(NEWLINE);
 
@@ -299,46 +296,14 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    // Get the rules for the generated files
-    private MakeRules getMakeRulesFromGeneratedFiles(Map<IOutputType, Set<IFile>> generatedFiles) {
-        MakeRules makeRules = new MakeRules();
-        IConfiguration config = getConfig();
-        IProject project = getProject();
-        IFolder buildFolder = getBuildFolder();
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
 
-        // Visit the resources in this set
-        for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
-            IOutputType outputTypeIn = entry.getKey();
-            Set<IFile> files = entry.getValue();
-            String macroName = outputTypeIn.getBuildVariable();
-            for (ITool tool : config.getTools()) {
-                for (IFile file : files) {
-                    List<IInputType> matchingInputTypes = tool.getMatchingInputTypes(file, macroName);
-                    for (IInputType inputType : matchingInputTypes) {
-                        for (IOutputType outputType : tool.getOutputTypes()) {
-                            IFile outputFile = outputType.getOutputName(buildFolder, file, confDesc, inputType);
 
-                            if (outputFile != null) {
-                                makeRules.addRule(tool, inputType, macroName, files, outputType, outputFile);
-                                continue;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return makeRules;
-    }
-
-    private StringBuffer getMakeMacros() {
+    private static StringBuffer getMakeMacros(IFolder buildRoot,MakeRules myMakeRules) {
         StringBuffer buffer = new StringBuffer();
-        IFolder buildRoot = getBuildFolder();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_module_variables).append(NEWLINE);
 
-        for (String macroName : myMakeRules.getMacroNames()) {
+        for (String macroName : myMakeRules.getPrerequisiteMacros()) {
             Set<IFile> files = myMakeRules.getMacroElements(macroName);
             if (files.size() > 0) {
                 buffer.append(macroName).append(MAKE_ADDITION);
@@ -355,15 +320,15 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private StringBuffer getMakeRules() {
+    private static StringBuffer getMakeRules(IProject project,IFolder topBuildDir,MakeRules myMakeRules,ICConfigurationDescription cfg) {
         StringBuffer buffer = new StringBuffer();
-        IProject project = getProject();
-        IFolder topBuildDir = getBuildFolder();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules.getMakeRules()) {
-            buffer.append(makeRule.getRule(project, topBuildDir, getCConfigurationDescription()));
+        	if(makeRule.getSequenceGroupID()!=0) {
+        		buffer.append(makeRule.getRule(project, topBuildDir, cfg));
+        	}
         }
         return buffer;
     }

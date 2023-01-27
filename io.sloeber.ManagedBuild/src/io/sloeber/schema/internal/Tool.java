@@ -42,7 +42,6 @@ import io.sloeber.schema.api.IToolChain;
  */
 public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
-    private static final String EMPTY_QUOTED_STRING = "\"\""; //$NON-NLS-1$
 
     private List<IEnvVarBuildPath> envVarBuildPathList;
 
@@ -225,7 +224,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
     @Override
     public String getName() {
-        return name;
+        return myName;
     }
 
     /* (non-Javadoc)
@@ -398,69 +397,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
     }
 
-    /**
-     * Look for ${VALUE} in the command string
-     */
-    private static String evaluateCommand(String command, String values) {
-        final int DOLLAR_VALUE_LENGTH = 8;
-
-        if (command == null)
-            return values.trim();
-
-        String ret = command;
-        boolean found = false;
-        int start = 0;
-        int index;
-        int len;
-        while ((index = ret.indexOf("${", start)) >= 0 && //$NON-NLS-1$
-                (len = ret.length()) >= index + DOLLAR_VALUE_LENGTH) {
-            start = index;
-            index = index + 2;
-            int ch = ret.charAt(index);
-            if (ch == 'v' || ch == 'V') {
-                index++;
-                ch = ret.charAt(index);
-                if (ch == 'a' || ch == 'A') {
-                    index++;
-                    ch = ret.charAt(index);
-                    if (ch == 'l' || ch == 'L') {
-                        index++;
-                        ch = ret.charAt(index);
-                        if (ch == 'u' || ch == 'U') {
-                            index++;
-                            ch = ret.charAt(index);
-                            if (ch == 'e' || ch == 'E') {
-                                index++;
-                                ch = ret.charAt(index);
-                                if (ch == '}') {
-                                    String temp = ""; //$NON-NLS-1$
-                                    index++;
-                                    found = true;
-                                    if (start > 0) {
-                                        temp = ret.substring(0, start);
-                                    }
-                                    temp = temp.concat(values.trim());
-                                    if (len > index) {
-                                        start = temp.length();
-                                        ret = temp.concat(ret.substring(index));
-                                        index = start;
-                                    } else {
-                                        ret = temp;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            start = index;
-        }
-        if (found)
-            return ret.trim();
-        return (command + values).trim();
-    }
-
+// 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#getEnvVarBuildPaths()
      */
@@ -603,9 +540,9 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     public String getNameAndVersion() {
         String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
         if (idVersion != null && idVersion.length() != 0) {
-            return new StringBuilder().append(name).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+            return new StringBuilder().append(myName).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        return name;
+        return myName;
     }
 
     //    public IConfigurationElement getConverterModificationElement(ITool toTool) {
@@ -644,18 +581,18 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
     @Override
     public String getUniqueRealName() {
-        if (name == null) {
-            name = getId();
+        if (myName == null) {
+            myName = getId();
         } else {
             String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
             if (idVersion != null) {
                 StringBuilder buf = new StringBuilder();
-                buf.append(name);
+                buf.append(myName);
                 buf.append(" (v").append(idVersion).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-                name = buf.toString();
+                myName = buf.toString();
             }
         }
-        return name;
+        return myName;
     }
 
     //    public String getDiscoveryProfileIdAttribute() {
@@ -714,24 +651,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         return false;
     }
 
-    @Override
-    public List<IInputType> getMatchingInputTypes(IFile file, String macroName) {
-        String safeMacroName = macroName;
-        if (macroName == null) {
-            safeMacroName = new String();
-        }
-        List<IInputType> ret = new LinkedList<>();
-        for (InputType inputType : inputTypeMap.values()) {
-            if (inputType.isAssociatedWith(file)) {
-                ret.add(inputType);
-            } else {
-                if (safeMacroName.equals(inputType.getAssignToOptionId())) {
-                    ret.add(inputType);
-                }
-            }
-        }
-        return ret;
-    }
+
 
     @Override
     public IInputType getInputTypeByID(String id2) {
@@ -1651,3 +1571,68 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 //            return extsList.get(0);
 //        return EMPTY_STRING;
 //    }
+
+/**
+//* Look for ${VALUE} in the command string
+//*/
+//private static String evaluateCommand(String command, String values) {
+//  final int DOLLAR_VALUE_LENGTH = 8;
+//
+//  if (command == null)
+//      return values.trim();
+//
+//  String ret = command;
+//  boolean found = false;
+//  int start = 0;
+//  int index;
+//  int len;
+//  while ((index = ret.indexOf("${", start)) >= 0 && //$NON-NLS-1$
+//          (len = ret.length()) >= index + DOLLAR_VALUE_LENGTH) {
+//      start = index;
+//      index = index + 2;
+//      int ch = ret.charAt(index);
+//      if (ch == 'v' || ch == 'V') {
+//          index++;
+//          ch = ret.charAt(index);
+//          if (ch == 'a' || ch == 'A') {
+//              index++;
+//              ch = ret.charAt(index);
+//              if (ch == 'l' || ch == 'L') {
+//                  index++;
+//                  ch = ret.charAt(index);
+//                  if (ch == 'u' || ch == 'U') {
+//                      index++;
+//                      ch = ret.charAt(index);
+//                      if (ch == 'e' || ch == 'E') {
+//                          index++;
+//                          ch = ret.charAt(index);
+//                          if (ch == '}') {
+//                              String temp = ""; //$NON-NLS-1$
+//                              index++;
+//                              found = true;
+//                              if (start > 0) {
+//                                  temp = ret.substring(0, start);
+//                              }
+//                              temp = temp.concat(values.trim());
+//                              if (len > index) {
+//                                  start = temp.length();
+//                                  ret = temp.concat(ret.substring(index));
+//                                  index = start;
+//                              } else {
+//                                  ret = temp;
+//                                  break;
+//                              }
+//                          }
+//                      }
+//                  }
+//              }
+//          }
+//      }
+//      start = index;
+//  }
+//  if (found)
+//      return ret.trim();
+//  return (command + values).trim();
+//}
+
+//private static final String EMPTY_QUOTED_STRING = "\"\""; //$NON-NLS-1$

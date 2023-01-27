@@ -178,15 +178,15 @@ public interface IManagedBuildInfo {
      */
     public String getVersion();
 
-    /**
-     * Answers <code>true</code> if the extension matches one of the special
-     * file extensions the tools for the configuration consider to be a header file.
-     *
-     * @param ext
-     *            the file extension of the resource
-     * @return boolean
-     */
-    public boolean isHeaderFile(String ext);
+//    /**
+//     * Answers <code>true</code> if the extension matches one of the special
+//     * file extensions the tools for the configuration consider to be a header file.
+//     *
+//     * @param ext
+//     *            the file extension of the resource
+//     * @return boolean
+//     */
+//    public boolean isHeaderFile(String ext);
 
     /**
      * Gets the "valid" status of Managed Build Info. Managed Build Info is invalid

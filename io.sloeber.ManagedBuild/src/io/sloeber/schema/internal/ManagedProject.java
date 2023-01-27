@@ -102,44 +102,44 @@ public class ManagedProject implements IManagedProject {
         //		setDirty(true);
     }
 
-    /**
-     * Create the project instance from project file.
-     *
-     * @param managedBuildRevision
-     *            the fileVersion of Managed Build System
-     */
-    public ManagedProject(ManagedBuildInfo buildInfo, ICStorageElement element, boolean loadConfigs,
-            String managedBuildRevision) {
-        this(buildInfo.getOwner());
-
-
-        // Initialize from the XML attributes
-        if (loadFromProject(element)) {
-
-            //            // check for migration support.
-            //            boolean isSupportAvailable = projectType != null ? projectType.checkForMigrationSupport() : true;
-            //            if (isSupportAvailable == false) {
-            //                setValid(false);
-            //            }
-
-            if (loadConfigs) {
-                // Load children
-                ICStorageElement configElements[] = element.getChildren();
-                for (ICStorageElement configElement : configElements) {
-                    if (configElement.getName().equals(IConfiguration.CONFIGURATION_ELEMENT_NAME)) {
-                        Configuration config = new Configuration(this, configElement, managedBuildRevision, false);
-                    }
-
-                }
-
-            }
-        } else {
-            setValid(false);
-        }
-
-        // hook me up
-        buildInfo.setManagedProject(this);
-    }
+//    /**
+//     * Create the project instance from project file.
+//     *
+//     * @param managedBuildRevision
+//     *            the fileVersion of Managed Build System
+//     */
+//    public ManagedProject(ManagedBuildInfo buildInfo, ICStorageElement element, boolean loadConfigs,
+//            String managedBuildRevision) {
+//        this(buildInfo.getOwner());
+//
+//
+//        // Initialize from the XML attributes
+//        if (loadFromProject(element)) {
+//
+//            //            // check for migration support.
+//            //            boolean isSupportAvailable = projectType != null ? projectType.checkForMigrationSupport() : true;
+//            //            if (isSupportAvailable == false) {
+//            //                setValid(false);
+//            //            }
+//
+//            if (loadConfigs) {
+//                // Load children
+//                ICStorageElement configElements[] = element.getChildren();
+//                for (ICStorageElement configElement : configElements) {
+//                    if (configElement.getName().equals(IConfiguration.CONFIGURATION_ELEMENT_NAME)) {
+//                        Configuration config = new Configuration(this, configElement, managedBuildRevision, false);
+//                    }
+//
+//                }
+//
+//            }
+//        } else {
+//            setValid(false);
+//        }
+//
+//        // hook me up
+//        buildInfo.setManagedProject(this);
+//    }
 
     /*
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
@@ -217,26 +217,26 @@ public class ManagedProject implements IManagedProject {
         return projectType;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedProject#createConfiguration(org.eclipse.cdt.core.build.managed.IConfiguration)
-     */
-    @Override
-    public IConfiguration createConfiguration(IConfiguration parent, String id) {
-        Configuration config = new Configuration(this, (Configuration) parent, id, false, false, false);
-        ManagedBuildManager.performValueHandlerEvent(config, IManagedOptionValueHandler.EVENT_OPEN);
-        return config;
-    }
+//    /* (non-Javadoc)
+//     * @see org.eclipse.cdt.core.build.managed.IManagedProject#createConfiguration(org.eclipse.cdt.core.build.managed.IConfiguration)
+//     */
+//    @Override
+//    public IConfiguration createConfiguration(IConfiguration parent, String id) {
+//        Configuration config = new Configuration(this, (Configuration) parent, id, false, false, false);
+//        ManagedBuildManager.performValueHandlerEvent(config, IManagedOptionValueHandler.EVENT_OPEN);
+//        return config;
+//    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedProject#createConfigurationClone(org.eclipse.cdt.core.build.managed.IConfiguration)
-     */
-    @Override
-    public IConfiguration createConfigurationClone(IConfiguration parent, String id) {
-        Configuration config = new Configuration(this, (Configuration) parent, id, true, false, false);
-        // Inform all options in the configuration and all its resource configurations
-        ManagedBuildManager.performValueHandlerEvent(config, IManagedOptionValueHandler.EVENT_OPEN);
-        return config;
-    }
+//    /* (non-Javadoc)
+//     * @see org.eclipse.cdt.core.build.managed.IManagedProject#createConfigurationClone(org.eclipse.cdt.core.build.managed.IConfiguration)
+//     */
+//    @Override
+//    public IConfiguration createConfigurationClone(IConfiguration parent, String id) {
+//        Configuration config = new Configuration(this, (Configuration) parent, id, true, false, false);
+//        // Inform all options in the configuration and all its resource configurations
+//        ManagedBuildManager.performValueHandlerEvent(config, IManagedOptionValueHandler.EVENT_OPEN);
+//        return config;
+//    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IManagedProject#getConfiguration()

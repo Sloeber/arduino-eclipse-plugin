@@ -1,12 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ui
+Bundle-Name: Sloeber CDT Ui integration
 Bundle-SymbolicName: io.sloeber.autobuild.cdt.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-Vendor: Sloeber.io
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Import-Package: org.eclipse.core.runtime
-Require-Bundle: org.eclipse.cdt.managedbuilder.core;bundle-version="9.5.0",
- org.eclipse.cdt.managedbuilder.gnu.ui;bundle-version="8.5.0",
- org.eclipse.cdt.managedbuilder.ui;bundle-version="9.4.0",
+Require-Bundle: org.eclipse.cdt.managedbuilder.core;bundle-version="9.4.0",
+ org.eclipse.cdt.managedbuilder.gnu.ui;bundle-version="8.4.0",
+ org.eclipse.cdt.managedbuilder.ui;bundle-version="9.3.0",
  org.eclipse.core.resources;bundle-version="3.18.100"
 Automatic-Module-Name: io.sloeber.autobuild.cdt.ui
-Bundle-RequiredExecutionEnvironment: JavaSE-17

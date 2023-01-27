@@ -61,7 +61,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public IPath getBuilderCWD() {
-        return fCfg.getBuildFolder(myProject).getLocation();
+        return fCfg.getBuildFolder(myCdtConfigurationDescription).getLocation();
         // return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
     }
 

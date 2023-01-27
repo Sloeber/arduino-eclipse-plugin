@@ -101,7 +101,7 @@ public class BuildRunner extends IBuildRunner {
 
                 String[] args = getCommandArguments(builder, targets, icConfigurationDescription);
 
-                IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, project);
+                IFolder buildFolder = configuration.getBuildFolder(icConfigurationDescription);
 
                 Map<String, String> envMap = getEnvironment(icConfigurationDescription, builder);
                 String[] envp = BuildRunnerHelper.envMapToEnvp(envMap);

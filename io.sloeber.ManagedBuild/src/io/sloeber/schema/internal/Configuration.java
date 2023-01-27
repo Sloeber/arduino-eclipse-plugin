@@ -19,39 +19,21 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICLibraryPathEntry;
-import org.eclipse.cdt.core.settings.model.ICOutputEntry;
-import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.core.settings.model.extension.CBuildData;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
 public class Configuration extends BuildObject implements IConfiguration {
@@ -89,7 +71,7 @@ public class Configuration extends BuildObject implements IConfiguration {
     private ICSourceEntry[] sourceEntries;
 
     /**
-     * Create an extension configuration from the project manifest file element.
+     * Create an configuration from the project manifest file element.
      *
      * @param projectType
      *            The <code>ProjectType</code> the configuration will be
@@ -147,13 +129,13 @@ public class Configuration extends BuildObject implements IConfiguration {
             if (!modellanguageSettingsProviders[SUPER].isBlank()) {
                 List<String> ids = new ArrayList<>();
                 String[] defaultIds = modellanguageSettingsProviders[SUPER].split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER);
-                for (String defeultID : defaultIds) {
-                    if (defeultID != null && !defeultID.isEmpty()) {
-                        if (defeultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
-                            defeultID = defeultID.substring(1);
-                            ids.remove(defeultID);
-                        } else if (!ids.contains(defeultID)) {
-                            if (defeultID.contains($TOOLCHAIN)) {
+                for (String defaultID : defaultIds) {
+                    if (defaultID != null && !defaultID.isEmpty()) {
+                        if (defaultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
+                            defaultID = defaultID.substring(1);
+                            ids.remove(defaultID);
+                        } else if (!ids.contains(defaultID)) {
+							if (defaultID.contains($TOOLCHAIN)) {
                                 IToolChain toolchain = getToolChain();
                                 if (toolchain != null) {
                                     String toolchainProvidersIds = toolchain.getDefaultLanguageSettingsProviderIds();
@@ -163,7 +145,7 @@ public class Configuration extends BuildObject implements IConfiguration {
                                     }
                                 }
                             } else {
-                                ids.add(defeultID);
+                                ids.add(defaultID);
                             }
                         }
                     }
@@ -173,508 +155,6 @@ public class Configuration extends BuildObject implements IConfiguration {
             }
         }
 
-    }
-
-    /**
-     * Create a new extension configuration based on one already defined.
-     *
-     * @param projectType
-     *            The <code>ProjectType</code> the configuration will be
-     *            added to.
-     * @param parentConfig
-     *            The <code>IConfiguration</code> that is the parent
-     *            configuration of this configuration
-     * @param id
-     *            A unique ID for the new configuration.
-     */
-    public Configuration(ProjectType projectType, IConfiguration parentConfig, String newID) {
-        //        id = newID;
-        //        this.projectType = projectType;
-        //        isExtensionConfig = true;
-        //
-        //        if (parentConfig != null) {
-        //            name = parentConfig.getName();
-        //            // If this constructor is called to clone an existing
-        //            // configuration, the parent of the parent should be stored.
-        //            // As of 2.1, there is still one single level of inheritance to
-        //            // worry about
-        //            parent = parentConfig.getParent() == null ? parentConfig : parentConfig.getParent();
-        //        }
-        //
-        //        // Hook me up to the ProjectType
-        //        if (projectType != null) {
-        //            projectType.addConfiguration(this);
-        //            // set managedBuildRevision
-        //            setManagedBuildRevision(projectType.getManagedBuildRevision());
-        //        }
-    }
-
-    /**
-     * Create a new extension configuration and fill in the attributes and childen
-     * later.
-     *
-     * @param projectType
-     *            The <code>ProjectType</code> the configuration will be
-     *            added to.
-     * @param parentConfig
-     *            The <code>IConfiguration</code> that is the parent
-     *            configuration of this configuration
-     * @param id
-     *            A unique ID for the new configuration.
-     * @param name
-     *            A name for the new configuration.
-     */
-    public Configuration(ProjectType projectType, IConfiguration parentConfig, String newID, String newName) {
-        //        newID = (id);
-        //        newName = name;
-        //        this.projectType = projectType;
-        //        parent = parentConfig;
-        //        isExtensionConfig = true;
-        //
-        //        // Hook me up to the ProjectType
-        //        if (projectType != null) {
-        //            projectType.addConfiguration(this);
-        //            setManagedBuildRevision(projectType.getManagedBuildRevision());
-        //        }
-    }
-
-    /**
-     * Create a <code>Configuration</code> based on the specification stored in the
-     * project file (.cdtbuild).
-     *
-     * @param managedProject
-     *            The <code>ManagedProject</code> the configuration will
-     *            be added to.
-     * @param element
-     *            The XML element that contains the configuration
-     *            settings.
-     *
-     */
-    public Configuration(ManagedProject managedProject, ICStorageElement element, String managedBuildRevision,
-            boolean isPreference) {
-        //        this.managedProject = managedProject;
-        //        this.isPreferenceConfig = isPreference;
-        //        isExtensionConfig = false;
-        //        fCfgData = new BuildConfigurationData(this);
-        //
-        //        setManagedBuildRevision(managedBuildRevision);
-        //
-        //        // Initialize from the XML attributes
-        //        loadFromProject(element);
-        //
-        //        // Hook me up
-        //        if (managedProject != null)
-        //            managedProject.addConfiguration(this);
-        //
-        //        ICStorageElement configElements[] = element.getChildren();
-        //        List<IPath> srcPathList = new ArrayList<>();
-        //        excludeList = new ArrayList<>();
-        //        for (int i = 0; i < configElements.length; ++i) {
-        //            ICStorageElement configElement = configElements[i];
-        //            if (configElement.getName().equals(IToolChain.TOOL_CHAIN_ELEMENT_NAME)) {
-        //                rootFolderInfo = new FolderInfo(this, configElement, managedBuildRevision, false);
-        //                addResourceConfiguration(rootFolderInfo);
-        //            } else if (IFolderInfo.FOLDER_INFO_ELEMENT_NAME.equals(configElement.getName())) {
-        //                FolderInfo resConfig = new FolderInfo(this, configElement, managedBuildRevision, true);
-        //                addResourceConfiguration(resConfig);
-        //            } else if (IFileInfo.FILE_INFO_ELEMENT_NAME.equals(configElement.getName())
-        //                    || IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(configElement.getName())) {
-        //                ResourceConfiguration resConfig = new ResourceConfiguration(this, configElement, managedBuildRevision);
-        //                addResourceConfiguration(resConfig);
-        //            } else if (SourcePath.ELEMENT_NAME.equals(configElement.getName())) {
-        //                SourcePath p = new SourcePath(configElement);
-        //                if (p.getPath() != null)
-        //                    srcPathList.add(p.getPath());
-        //            } else if (SOURCE_ENTRIES.equals(configElement.getName())) {
-        //                List<ICSettingEntry> seList = LanguageSettingEntriesSerializer.loadEntriesList(configElement,
-        //                        ICSettingEntry.SOURCE_PATH);
-        //                sourceEntries = seList.toArray(new ICSourceEntry[seList.size()]);
-        //            }
-        //        }
-        //
-        //        resolveProjectReferences(true);
-        //
-        //        sourceEntries = createSourceEntries(sourceEntries, srcPathList, excludeList);
-        //
-        //        excludeList = null;
-        //
-        //        PropertyManager mngr = PropertyManager.getInstance();
-        //        String rebuild = mngr.getProperty(this, REBUILD_STATE);
-        //        if (rebuild == null || Boolean.valueOf(rebuild).booleanValue())
-        //            rebuildNeeded = true;
-        //
-        //        String rcChangeState = mngr.getProperty(this, RC_CHANGE_STATE);
-        //        if (rcChangeState == null)
-        //            resourceChangeState = ~0;
-        //        else {
-        //            try {
-        //                resourceChangeState = Integer.parseInt(rcChangeState);
-        //            } catch (NumberFormatException e) {
-        //                resourceChangeState = ~0;
-        //            }
-        //        }
-
-    }
-
-    public Configuration(ManagedProject managedProject, IToolChain tCh, String newID, String newName) {
-        //        id = newID;
-        //        name = newName;
-        //
-        //        //		this.description = cloneConfig.getDescription();
-        //        this.managedProject = managedProject;
-        //        isExtensionConfig = false;
-        //
-        //        if (tCh == null) {
-        //            //create configuration based upon the preference config
-        //            IConfiguration cfg = ManagedBuildManager.getPreferenceConfiguration(false);
-        //            if (cfg != null)
-        //                copySettingsFrom((Configuration) cfg, true);
-        //        } else {
-        //            Configuration baseCfg = null;//TOFIX JABA (Configuration) ManagedBuildManager.getExtensionConfiguration(EMPTY_CFG_ID);
-        //            //		this.isTemporary = temporary;
-        //            fCfgData = new BuildConfigurationData(this);
-        //
-        //            // set managedBuildRevision
-        //            setManagedBuildRevision(baseCfg.getManagedBuildRevision());
-        //
-        //            //		if(!baseCfg.isExtensionConfig)
-        //            //			cloneChildren = true;
-        //            // If this constructor is called to clone an existing
-        //            // configuration, the parent of the cloning config should be stored.
-        //            parent = baseCfg.isExtensionConfig || baseCfg.getParent() == null ? baseCfg : baseCfg.getParent();
-        //
-        //            //  Copy the remaining attributes
-        //            projectType = baseCfg.projectType;
-        //            artifactName = baseCfg.artifactName;
-        //            cleanCommand = baseCfg.cleanCommand;
-        //            artifactExtension = baseCfg.artifactExtension;
-        //            errorParserIds = baseCfg.errorParserIds;
-        //            prebuildStep = baseCfg.prebuildStep;
-        //            postbuildStep = baseCfg.postbuildStep;
-        //            preannouncebuildStep = baseCfg.preannouncebuildStep;
-        //            postannouncebuildStep = baseCfg.postannouncebuildStep;
-        //
-        //            if (baseCfg.sourceEntries != null)
-        //                sourceEntries = baseCfg.sourceEntries.clone();
-        //
-        //            defaultLanguageSettingsProvidersAttribute = baseCfg.defaultLanguageSettingsProvidersAttribute;
-        //            if (baseCfg.defaultLanguageSettingsProviderIds != null) {
-        //                defaultLanguageSettingsProviderIds = baseCfg.defaultLanguageSettingsProviderIds.clone();
-        //            }
-        //
-        //            //		enableInternalBuilder(baseCfg.isInternalBuilderEnabled());
-        //            //		setInternalBuilderIgnoreErr(baseCfg.getInternalBuilderIgnoreErr());
-        //            //		setInternalBuilderParallel(baseCfg.getInternalBuilderParallel());
-        //            //		setParallelDef(baseCfg.getParallelDef());
-        //            //		setParallelNumber(baseCfg.getParallelNumber());
-        //            //		internalBuilderEnabled = cloneConfig.internalBuilderEnabled;
-        //            //		internalBuilderIgnoreErr = cloneConfig.internalBuilderIgnoreErr;
-        //
-        //            // Clone the configuration's children
-        //            // Tool Chain
-        //
-        //            String tcId = ManagedBuildManager.calculateChildId(tCh.getId(), null);
-        //
-        //            IToolChain newChain = createToolChain(tCh, tcId, tCh.getName(), false);
-        //
-        ////            // For each option/option category child of the tool-chain that is
-        ////            // the child of the selected configuration element, create an option/
-        ////            // option category child of the cloned configuration's tool-chain element
-        ////            // that specifies the original tool element as its superClass.
-        ////            newChain.createOptions(tCh);
-        //
-        //            // For each tool element child of the tool-chain that is the child of
-        //            // the selected configuration element, create a tool element child of
-        //            // the cloned configuration's tool-chain element that specifies the
-        //            // original tool element as its superClass.
-        //            String subId;
-        //           List< ITool> tools = tCh.getTools();
-        //            for (ITool tool:tools) {
-        //                Tool toolChild = (Tool) tool;
-        //                subId = ManagedBuildManager.calculateChildId(toolChild.getId(), null);
-        //                newChain.createTool(toolChild, subId, toolChild.getName(), false);
-        //            }
-        //
-        //            ITargetPlatform tpBase = tCh.getTargetPlatform();
-        //            ITargetPlatform extTp = tpBase;
-        //            for (; extTp != null && !extTp.isExtensionElement(); extTp = extTp.getSuperClass()) {
-        //            }
-        //
-        //            TargetPlatform tp;
-        //            if (extTp != null) {
-        //                int nnn = ManagedBuildManager.getRandomNumber();
-        //                subId = extTp.getId() + "." + nnn; //$NON-NLS-1$
-        //                //				subName = tpBase.getName();
-        //                tp = new TargetPlatform(newChain, subId, tpBase.getName(), (TargetPlatform) tpBase);
-        //            } else {
-        //                subId = ManagedBuildManager.calculateChildId(getId(), null);
-        //                String subName = EMPTY_STRING;
-        //                tp = new TargetPlatform((ToolChain) newChain, null, subId, subName, false);
-        //            }
-        //
-        //            ((ToolChain) newChain).setTargetPlatform(tp);
-        //
-        //            //		if(cloneChildren){
-        //            //copy expand build macros setting
-        //            //			BuildMacroProvider macroProvider = (BuildMacroProvider)ManagedBuildManager.getBuildMacroProvider();
-        //            //			macroProvider.expandMacrosInBuildfile(this,
-        //            //						macroProvider.areMacrosExpandedInBuildfile(baseCfg));
-        //
-        //            //copy user-defined build macros
-        //            /*			UserDefinedMacroSupplier userMacros = BuildMacroProvider.fUserDefinedMacroSupplier;
-        //            			userMacros.setMacros(
-        //            					userMacros.getMacros(BuildMacroProvider.CONTEXT_CONFIGURATION,cloneConfig),
-        //            					BuildMacroProvider.CONTEXT_CONFIGURATION,
-        //            					this);
-        //            */
-        //            //copy user-defined environment
-        //            //			UserDefinedEnvironmentSupplier userEnv = EnvironmentVariableProvider.fUserSupplier;
-        //            //			userEnv.setVariables(
-        //            //					userEnv.getVariables(cloneConfig), this);
-        //
-        //            //		}
-        //
-        //            // Hook me up
-        //            managedProject.addConfiguration(this);
-        //
-        //            IBuilder builder = getEditableBuilder();
-        //            builder.setManagedBuildOn(false);
-        //
-        //        }
-        //        setRebuildState(true);
-    }
-
-    public Configuration(ManagedProject managedProject, Configuration cloneConfig, String id, boolean cloneChildren,
-            boolean temporary) {
-        //        this(managedProject, cloneConfig, id, cloneChildren, temporary, false);
-        // setArtifactName(managedProject.getDefaultArtifactName());
-    }
-
-    /**
-     * Create a new project, non-extension, configuration based on one already
-     * defined.
-     *
-     * @param managedProject
-     *            The <code>ManagedProject</code> the configuration will
-     *            be added to.
-     * @param cloneConfig
-     *            The <code>IConfiguration</code> to copy the settings
-     *            from.
-     * @param id
-     *            A unique ID for the new configuration.
-     * @param cloneChildren
-     *            If <code>true</code>, the configuration's tools are
-     *            cloned
-     */
-    public Configuration(ManagedProject managedProject, Configuration cloneConfig, String newID, boolean cloneChildren,
-            boolean temporary, boolean isPreferenceConfig) {
-        //        id = newID;
-        //        name = (cloneConfig.getName());
-        //        this.isPreferenceConfig = isPreferenceConfig;
-        //        this.managedProject = managedProject;
-        //        isExtensionConfig = false;
-        //        this.isTemporary = temporary;
-        //
-        //        copySettingsFrom(cloneConfig, cloneChildren);
-    }
-
-    //	private void copySettingsFrom(Configuration cloneConfig, boolean cloneChildren) {
-    //                fCfgData = new BuildConfigurationData(this);
-    //        
-    //                this.description = cloneConfig.getDescription();
-    //        
-    //                // set managedBuildRevision
-    //                setManagedBuildRevision(cloneConfig.getManagedBuildRevision());
-    //        
-    //                if (!cloneConfig.isExtensionConfig)
-    //                    cloneChildren = true;
-    //                // If this constructor is called to clone an existing
-    //                // configuration, the parent of the cloning config should be stored.
-    //                parent = cloneConfig.isExtensionConfig || cloneConfig.getParent() == null ? cloneConfig
-    //                        : cloneConfig.getParent();
-    //                parentId = parent.getId();
-    //        
-    //                //  Copy the remaining attributes
-    //                projectType = cloneConfig.projectType;
-    //                artifactName = cloneConfig.artifactName;
-    //                cleanCommand = cloneConfig.cleanCommand;
-    //                artifactExtension = cloneConfig.artifactExtension;
-    //                errorParserIds = cloneConfig.errorParserIds;
-    //                prebuildStep = cloneConfig.prebuildStep;
-    //                postbuildStep = cloneConfig.postbuildStep;
-    //                preannouncebuildStep = cloneConfig.preannouncebuildStep;
-    //                postannouncebuildStep = cloneConfig.postannouncebuildStep;
-    //                if (cloneConfig.sourceEntries != null) {
-    //                    sourceEntries = cloneConfig.sourceEntries.clone();
-    //                }
-    //                defaultLanguageSettingsProvidersAttribute = cloneConfig.defaultLanguageSettingsProvidersAttribute;
-    //                if (cloneConfig.defaultLanguageSettingsProviderIds != null) {
-    //                    defaultLanguageSettingsProviderIds = cloneConfig.defaultLanguageSettingsProviderIds.clone();
-    //                }
-    //        
-    //                //		enableInternalBuilder(cloneConfig.isInternalBuilderEnabled());
-    //                //		setInternalBuilderIgnoreErr(cloneConfig.getInternalBuilderIgnoreErr());
-    //                //		setInternalBuilderParallel(cloneConfig.getInternalBuilderParallel());
-    //                //		setParallelDef(cloneConfig.getParallelDef());
-    //                //		setParallelNumber(cloneConfig.getParallelNumber());
-    //                //		internalBuilderEnabled = cloneConfig.internalBuilderEnabled;
-    //                //		internalBuilderIgnoreErr = cloneConfig.internalBuilderIgnoreErr;
-    //        
-    //                // Clone the configuration's children
-    //                // Tool Chain
-    //                boolean copyIds = cloneConfig.getId().equals(id);
-    //                String subId;
-    //                //  Resource Configurations
-    //                Map<IPath, Map<String, String>> toolIdMap = new HashMap<>();
-    //                IResourceInfo infos[] = cloneConfig.rcInfos.getResourceInfos();
-    //                for (int i = 0; i < infos.length; i++) {
-    //                    if (infos[i] instanceof FolderInfo) {
-    //                        FolderInfo folderInfo = (FolderInfo) infos[i];
-    //                        subId = copyIds ? folderInfo.getId()
-    //                                : ManagedBuildManager.calculateChildId(getId(), folderInfo.getPath().toString());
-    //                        FolderInfo newFolderInfo = new FolderInfo(this, folderInfo, subId, toolIdMap, cloneChildren);
-    //                        addResourceConfiguration(newFolderInfo);
-    //                    } else {
-    //                        ResourceConfiguration fileInfo = (ResourceConfiguration) infos[i];
-    //                        subId = copyIds ? fileInfo.getId()
-    //                                : ManagedBuildManager.calculateChildId(getId(), fileInfo.getPath().toString());
-    //                        ResourceConfiguration newResConfig = new ResourceConfiguration(this, fileInfo, subId, toolIdMap,
-    //                                cloneChildren);
-    //                        addResourceConfiguration(newResConfig);
-    //        
-    //                    }
-    //                }
-    //        
-    //                resolveProjectReferences(false);
-    //        
-    //                if (cloneChildren) {
-    //                    //copy expand build macros setting
-    //                    BuildMacroProvider macroProvider = (BuildMacroProvider) ManagedBuildManager.getBuildMacroProvider();
-    //                   //TOFIX JABA  macroProvider.expandMacrosInBuildfile(this,macroProvider.areMacrosExpandedInBuildfile(cloneConfig));
-    //        
-    //                    //copy user-defined build macros
-    //                    /*			UserDefinedMacroSupplier userMacros = BuildMacroProvider.fUserDefinedMacroSupplier;
-    //                    			userMacros.setMacros(
-    //                    					userMacros.getMacros(BuildMacroProvider.CONTEXT_CONFIGURATION,cloneConfig),
-    //                    					BuildMacroProvider.CONTEXT_CONFIGURATION,
-    //                    					this);
-    //                    */
-    //                    //copy user-defined environment
-    //                    //			UserDefinedEnvironmentSupplier userEnv = EnvironmentVariableProvider.fUserSupplier;
-    //                    //			userEnv.setVariables(
-    //                    //					userEnv.getVariables(cloneConfig), this);
-    //        
-    //                }
-    //        
-    //                // Hook me up
-    //                if (managedProject != null) {
-    //                    managedProject.addConfiguration(this);
-    //                }
-    //        
-    //                if (copyIds) {
-    //                    rebuildNeeded = cloneConfig.rebuildNeeded;
-    //                    resourceChangeState = cloneConfig.resourceChangeState;
-    //                } else {
-    //                    if (cloneConfig.isExtensionConfig)
-    //                        exportArtifactInfo();
-    //                    setRebuildState(true);
-    //                }
-    //
-    //	}
-
-    //    public void applyToManagedProject(ManagedProject mProj) {
-    //        managedProject = mProj;
-    //        isPreferenceConfig = false;
-    //        isTemporary = false;
-    //        managedProject.addConfiguration(this);
-    //    }
-
-    /*
-     * E L E M E N T A T T R I B U T E R E A D E R S A N D W R I T E R S
-     */
-
-    /**
-     * Initialize the configuration information from the XML element specified in
-     * the argument
-     *
-     * @param element
-     *            An XML element containing the configuration information
-     */
-    protected void loadFromProject(ICStorageElement element) {
-
-        // // id
-        // // note: IDs are unique so no benefit to intern them
-        // setId(element.getAttribute(IBuildObject.ID));
-        //
-        // // name
-        // if (element.getAttribute(IBuildObject.NAME) != null)
-        // setName(element.getAttribute(IBuildObject.NAME));
-        //
-        // // description
-        // if (element.getAttribute(IConfiguration.DESCRIPTION) != null)
-        // description = element.getAttribute(IConfiguration.DESCRIPTION);
-        //
-        // String props = element.getAttribute(BUILD_PROPERTIES);
-        //
-        // String optionalProps = element.getAttribute(OPTIONAL_BUILD_PROPERTIES);
-        //
-        // String artType = element.getAttribute(BUILD_ARTEFACT_TYPE);
-        //
-        // if (element.getAttribute(IConfiguration.PARENT) != null) {
-        // // See if the parent belongs to the same project
-        // if (managedProject != null)
-        // parent =
-        // managedProject.getConfiguration(element.getAttribute(IConfiguration.PARENT));
-        // // If not, then try the extension configurations
-        // if (parent == null) {
-        // parent =
-        // ManagedBuildManager.getExtensionConfiguration(element.getAttribute(IConfiguration.PARENT));
-        // if (parent == null) {
-        // String message = NLS.bind(Configuration_orphaned, getId(), //$NON-NLS-1$
-        // element.getAttribute(IConfiguration.PARENT));
-        // Activator.error(message);
-        // }
-        // }
-        // }
-        //
-        // // Get the name of the build artifact associated with target (usually
-        // // in the plugin specification).
-        // if (element.getAttribute(ARTIFACT_NAME) != null) {
-        // artifactName = element.getAttribute(ARTIFACT_NAME);
-        // }
-        //
-        // // Get the semicolon separated list of IDs of the error parsers
-        // if (element.getAttribute(ERROR_PARSERS) != null) {
-        // errorParserIds = element.getAttribute(ERROR_PARSERS);
-        // }
-        //
-        // // Get the artifact extension
-        // if (element.getAttribute(EXTENSION) != null) {
-        // artifactExtension = element.getAttribute(EXTENSION);
-        // }
-        //
-        // // Get the clean command
-        // if (element.getAttribute(CLEAN_COMMAND) != null) {
-        // cleanCommand = element.getAttribute(CLEAN_COMMAND);
-        // }
-        //
-        // // Get the pre-build and post-build commands
-        // if (element.getAttribute(PREBUILD_STEP) != null) {
-        // prebuildStep = element.getAttribute(PREBUILD_STEP);
-        // }
-        //
-        // if (element.getAttribute(POSTBUILD_STEP) != null) {
-        // postbuildStep = element.getAttribute(POSTBUILD_STEP);
-        // }
-        //
-        // // Get the pre-build and post-build announcements
-        // if (element.getAttribute(PREANNOUNCEBUILD_STEP) != null) {
-        // preannouncebuildStep = element.getAttribute(PREANNOUNCEBUILD_STEP);
-        // }
-        //
-        // if (element.getAttribute(POSTANNOUNCEBUILD_STEP) != null) {
-        // postannouncebuildStep = element.getAttribute(POSTANNOUNCEBUILD_STEP);
-        // }
     }
 
     @Override
@@ -687,54 +167,10 @@ public class Configuration extends BuildObject implements IConfiguration {
         return myToolchain;
     }
 
-    @Override
-    public List<ITool> getFilteredTools() {
-        //return rootFolderInfo.getFilteredTools();
-        return null;
-    }
 
-    @Override
-    public List<ITool> getTools() {
-        return myToolchain.getTools();
-    }
 
-    @Override
-    public ITool getTool(String id) {
-        //return rootFolderInfo.getTool(id);
-        return null;
-    }
 
-    @Override
-    public ITool getTargetTool() {
-        //        String[] targetToolIds = rootFolderInfo.getToolChain().getTargetToolList();
-        //        if (targetToolIds == null || targetToolIds.length == 0)
-        //            return null;
-        //
-        //        //  For each target tool id, in list order,
-        //        //  look for a tool with this ID, or a tool with a superclass with this id.
-        //        //  Stop when we find a match
-        //        List<ITool> tools = getFilteredTools();
-        //        for (int i = 0; i < targetToolIds.length; i++) {
-        //            String targetToolId = targetToolIds[i];
-        //            for (int j = 0; j < tools.length; j++) {
-        //                ITool targetTool = tools[j];
-        //                ITool tool = targetTool;
-        //                do {
-        //                    if (targetToolId.equals(tool.getId())) {
-        //                        return tool;
-        //                    }
-        //                    tool = tool.getSuperClass();
-        //                } while (tool != null);
-        //            }
-        //        }
-        return null;
-    }
 
-    @Override
-    public String getToolCommand(ITool tool) {
-        // TODO: Do we need to verify that the tool is part of the configuration?
-        return tool.getToolCommand();
-    }
 
     /*
      * M O D E L A T T R I B U T E A C C E S S O R S
@@ -742,16 +178,11 @@ public class Configuration extends BuildObject implements IConfiguration {
 
     @Override
     public String getName() {
-        return name;
+        return myName;
     }
 
     @Override
     public String getArtifactExtension() {
-        String ext = getArtifactExtensionAttribute(true);
-        return ext != null ? ext : EMPTY_STRING;
-    }
-
-    public String getArtifactExtensionAttribute(boolean querySuperClass) {
         return modelartifactExtension[SUPER];
     }
 
@@ -760,25 +191,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         return modelartifactName[SUPER];
     }
 
-    @Override
-    public String getBuildArguments() {
-        IToolChain tc = getToolChain();
-        IBuilder builder = tc.getBuilder();
-        if (builder != null) {
-            return builder.getArguments();
-        }
-        return "-k"; //$NON-NLS-1$
-    }
-
-    @Override
-    public String getBuildCommand() {
-        IToolChain tc = getToolChain();
-        IBuilder builder = tc.getBuilder();
-        if (builder != null) {
-            return builder.getCommand();
-        }
-        return "make"; //$NON-NLS-1$
-    }
 
     @Override
     public String getDescription() {
@@ -814,16 +226,10 @@ public class Configuration extends BuildObject implements IConfiguration {
 
     @Override
     public boolean isSupported() {
-        //		IFolderInfo foInfo = getRootFolderInfo();
-        //		if (foInfo != null)
-        //			return foInfo.isSupported();
-        return false;
+        return true;
     }
 
-    @Override
-    public boolean isHeaderFile(String ext) {
-        return false;//getRootFolderInfo().isHeaderFile(ext);
-    }
+
 
     /*
      * O B J E C T S T A T E M A I N T E N A N C E
@@ -846,31 +252,7 @@ public class Configuration extends BuildObject implements IConfiguration {
 
     }
 
-    @Override
-    public ITool calculateTargetTool() {
-        ITool tool = getTargetTool();
 
-        //		if (tool == null) {
-        //			tool = getToolFromOutputExtension(getArtifactExtension());
-        //		}
-
-        //		if (tool == null) {
-        //			IConfiguration extCfg;
-        //			for (extCfg = this; extCfg != null; extCfg = extCfg.getParent()) {
-        //			}
-        //
-        //			if (extCfg != null) {
-        //				tool = getToolFromOutputExtension(extCfg.getArtifactExtension());
-        //			}
-        //		}
-
-        return tool;
-    }
-
-    //    @Override
-    //    public CConfigurationData getConfigurationData() {
-    //        return fCfgData;
-    //    }
 
     @Override
     public List<ICSourceEntry> getSourceEntries() {
@@ -885,10 +267,6 @@ public class Configuration extends BuildObject implements IConfiguration {
         //                return sourceEntries.clone();
     }
 
-    //    @Override
-    //    public CBuildData getBuildData() {
-    //        return getBuilder().getBuildData();
-    //    }
 
     @Override
     public IBuilder getBuilder() {
@@ -901,28 +279,6 @@ public class Configuration extends BuildObject implements IConfiguration {
 
     public void setConfigurationDescription(ICConfigurationDescription cfgDes) {
         fCfgDes = cfgDes;
-    }
-
-    @Override
-    public boolean supportsBuild(boolean managed) {
-        return supportsBuild(managed, true);
-    }
-
-    public boolean supportsBuild(boolean managed, boolean checkBuilder) {
-        return true;
-        // IResourceInfo[] rcs = getResourceInfos();
-        // for (int i = 0; i < rcs.length; i++) {
-        // if (!rcs[i].supportsBuild(managed))
-        // return false;
-        // }
-        //
-        // if (checkBuilder) {
-        // IBuilder builder = getBuilder();
-        // if (builder != null && !builder.supportsBuild(managed))
-        // return false;
-        // }
-        //
-        // return true;
     }
 
     public boolean isPerRcTypeDiscovery() {
@@ -960,8 +316,8 @@ public class Configuration extends BuildObject implements IConfiguration {
     }
 
     @Override
-    public IFolder getBuildFolder(IProject project) {
-        return project.getFolder(name);
+    public IFolder getBuildFolder(ICConfigurationDescription cfg) {
+        return cfg.getProjectDescription().getProject().getFolder(cfg.getName());
     }
 
 }
@@ -1186,4 +542,625 @@ public class Configuration extends BuildObject implements IConfiguration {
 //      }
 //  }
 //  return false;
+//}
+
+///**
+//* Initialize the configuration information from the XML element specified in
+//* the argument
+//*
+//* @param element
+//*            An XML element containing the configuration information
+//*/
+//protected void loadFromProject(ICStorageElement element) {
+//
+// // // id
+// // // note: IDs are unique so no benefit to intern them
+// // setId(element.getAttribute(IBuildObject.ID));
+// //
+// // // name
+// // if (element.getAttribute(IBuildObject.NAME) != null)
+// // setName(element.getAttribute(IBuildObject.NAME));
+// //
+// // // description
+// // if (element.getAttribute(IConfiguration.DESCRIPTION) != null)
+// // description = element.getAttribute(IConfiguration.DESCRIPTION);
+// //
+// // String props = element.getAttribute(BUILD_PROPERTIES);
+// //
+// // String optionalProps = element.getAttribute(OPTIONAL_BUILD_PROPERTIES);
+// //
+// // String artType = element.getAttribute(BUILD_ARTEFACT_TYPE);
+// //
+// // if (element.getAttribute(IConfiguration.PARENT) != null) {
+// // // See if the parent belongs to the same project
+// // if (managedProject != null)
+// // parent =
+// // managedProject.getConfiguration(element.getAttribute(IConfiguration.PARENT));
+// // // If not, then try the extension configurations
+// // if (parent == null) {
+// // parent =
+// // ManagedBuildManager.getExtensionConfiguration(element.getAttribute(IConfiguration.PARENT));
+// // if (parent == null) {
+// // String message = NLS.bind(Configuration_orphaned, getId(), //$NON-NLS-1$
+// // element.getAttribute(IConfiguration.PARENT));
+// // Activator.error(message);
+// // }
+// // }
+// // }
+// //
+// // // Get the name of the build artifact associated with target (usually
+// // // in the plugin specification).
+// // if (element.getAttribute(ARTIFACT_NAME) != null) {
+// // artifactName = element.getAttribute(ARTIFACT_NAME);
+// // }
+// //
+// // // Get the semicolon separated list of IDs of the error parsers
+// // if (element.getAttribute(ERROR_PARSERS) != null) {
+// // errorParserIds = element.getAttribute(ERROR_PARSERS);
+// // }
+// //
+// // // Get the artifact extension
+// // if (element.getAttribute(EXTENSION) != null) {
+// // artifactExtension = element.getAttribute(EXTENSION);
+// // }
+// //
+// // // Get the clean command
+// // if (element.getAttribute(CLEAN_COMMAND) != null) {
+// // cleanCommand = element.getAttribute(CLEAN_COMMAND);
+// // }
+// //
+// // // Get the pre-build and post-build commands
+// // if (element.getAttribute(PREBUILD_STEP) != null) {
+// // prebuildStep = element.getAttribute(PREBUILD_STEP);
+// // }
+// //
+// // if (element.getAttribute(POSTBUILD_STEP) != null) {
+// // postbuildStep = element.getAttribute(POSTBUILD_STEP);
+// // }
+// //
+// // // Get the pre-build and post-build announcements
+// // if (element.getAttribute(PREANNOUNCEBUILD_STEP) != null) {
+// // preannouncebuildStep = element.getAttribute(PREANNOUNCEBUILD_STEP);
+// // }
+// //
+// // if (element.getAttribute(POSTANNOUNCEBUILD_STEP) != null) {
+// // postannouncebuildStep = element.getAttribute(POSTANNOUNCEBUILD_STEP);
+// // }
+//}
+//	private void copySettingsFrom(Configuration cloneConfig, boolean cloneChildren) {
+//                fCfgData = new BuildConfigurationData(this);
+//        
+//                this.description = cloneConfig.getDescription();
+//        
+//                // set managedBuildRevision
+//                setManagedBuildRevision(cloneConfig.getManagedBuildRevision());
+//        
+//                if (!cloneConfig.isExtensionConfig)
+//                    cloneChildren = true;
+//                // If this constructor is called to clone an existing
+//                // configuration, the parent of the cloning config should be stored.
+//                parent = cloneConfig.isExtensionConfig || cloneConfig.getParent() == null ? cloneConfig
+//                        : cloneConfig.getParent();
+//                parentId = parent.getId();
+//        
+//                //  Copy the remaining attributes
+//                projectType = cloneConfig.projectType;
+//                artifactName = cloneConfig.artifactName;
+//                cleanCommand = cloneConfig.cleanCommand;
+//                artifactExtension = cloneConfig.artifactExtension;
+//                errorParserIds = cloneConfig.errorParserIds;
+//                prebuildStep = cloneConfig.prebuildStep;
+//                postbuildStep = cloneConfig.postbuildStep;
+//                preannouncebuildStep = cloneConfig.preannouncebuildStep;
+//                postannouncebuildStep = cloneConfig.postannouncebuildStep;
+//                if (cloneConfig.sourceEntries != null) {
+//                    sourceEntries = cloneConfig.sourceEntries.clone();
+//                }
+//                defaultLanguageSettingsProvidersAttribute = cloneConfig.defaultLanguageSettingsProvidersAttribute;
+//                if (cloneConfig.defaultLanguageSettingsProviderIds != null) {
+//                    defaultLanguageSettingsProviderIds = cloneConfig.defaultLanguageSettingsProviderIds.clone();
+//                }
+//        
+//                //		enableInternalBuilder(cloneConfig.isInternalBuilderEnabled());
+//                //		setInternalBuilderIgnoreErr(cloneConfig.getInternalBuilderIgnoreErr());
+//                //		setInternalBuilderParallel(cloneConfig.getInternalBuilderParallel());
+//                //		setParallelDef(cloneConfig.getParallelDef());
+//                //		setParallelNumber(cloneConfig.getParallelNumber());
+//                //		internalBuilderEnabled = cloneConfig.internalBuilderEnabled;
+//                //		internalBuilderIgnoreErr = cloneConfig.internalBuilderIgnoreErr;
+//        
+//                // Clone the configuration's children
+//                // Tool Chain
+//                boolean copyIds = cloneConfig.getId().equals(id);
+//                String subId;
+//                //  Resource Configurations
+//                Map<IPath, Map<String, String>> toolIdMap = new HashMap<>();
+//                IResourceInfo infos[] = cloneConfig.rcInfos.getResourceInfos();
+//                for (int i = 0; i < infos.length; i++) {
+//                    if (infos[i] instanceof FolderInfo) {
+//                        FolderInfo folderInfo = (FolderInfo) infos[i];
+//                        subId = copyIds ? folderInfo.getId()
+//                                : ManagedBuildManager.calculateChildId(getId(), folderInfo.getPath().toString());
+//                        FolderInfo newFolderInfo = new FolderInfo(this, folderInfo, subId, toolIdMap, cloneChildren);
+//                        addResourceConfiguration(newFolderInfo);
+//                    } else {
+//                        ResourceConfiguration fileInfo = (ResourceConfiguration) infos[i];
+//                        subId = copyIds ? fileInfo.getId()
+//                                : ManagedBuildManager.calculateChildId(getId(), fileInfo.getPath().toString());
+//                        ResourceConfiguration newResConfig = new ResourceConfiguration(this, fileInfo, subId, toolIdMap,
+//                                cloneChildren);
+//                        addResourceConfiguration(newResConfig);
+//        
+//                    }
+//                }
+//        
+//                resolveProjectReferences(false);
+//        
+//                if (cloneChildren) {
+//                    //copy expand build macros setting
+//                    BuildMacroProvider macroProvider = (BuildMacroProvider) ManagedBuildManager.getBuildMacroProvider();
+//                   //TOFIX JABA  macroProvider.expandMacrosInBuildfile(this,macroProvider.areMacrosExpandedInBuildfile(cloneConfig));
+//        
+//                    //copy user-defined build macros
+//                    /*			UserDefinedMacroSupplier userMacros = BuildMacroProvider.fUserDefinedMacroSupplier;
+//                    			userMacros.setMacros(
+//                    					userMacros.getMacros(BuildMacroProvider.CONTEXT_CONFIGURATION,cloneConfig),
+//                    					BuildMacroProvider.CONTEXT_CONFIGURATION,
+//                    					this);
+//                    */
+//                    //copy user-defined environment
+//                    //			UserDefinedEnvironmentSupplier userEnv = EnvironmentVariableProvider.fUserSupplier;
+//                    //			userEnv.setVariables(
+//                    //					userEnv.getVariables(cloneConfig), this);
+//        
+//                }
+//        
+//                // Hook me up
+//                if (managedProject != null) {
+//                    managedProject.addConfiguration(this);
+//                }
+//        
+//                if (copyIds) {
+//                    rebuildNeeded = cloneConfig.rebuildNeeded;
+//                    resourceChangeState = cloneConfig.resourceChangeState;
+//                } else {
+//                    if (cloneConfig.isExtensionConfig)
+//                        exportArtifactInfo();
+//                    setRebuildState(true);
+//                }
+//
+//	}
+
+//    public void applyToManagedProject(ManagedProject mProj) {
+//        managedProject = mProj;
+//        isPreferenceConfig = false;
+//        isTemporary = false;
+//        managedProject.addConfiguration(this);
+//    }
+
+/*
+ * E L E M E N T A T T R I B U T E R E A D E R S A N D W R I T E R S
+ */
+
+/**
+ * Create a new extension configuration and fill in the attributes and childen
+ * later.
+ *
+ * @param projectType
+ *            The <code>ProjectType</code> the configuration will be
+ *            added to.
+ * @param parentConfig
+ *            The <code>IConfiguration</code> that is the parent
+ *            configuration of this configuration
+ * @param id
+ *            A unique ID for the new configuration.
+ * @param name
+ *            A name for the new configuration.
+ */
+//public Configuration(ProjectType projectType, IConfiguration parentConfig, String newID, String newName) {
+//    //        newID = (id);
+//    //        newName = name;
+//    //        this.projectType = projectType;
+//    //        parent = parentConfig;
+//    //        isExtensionConfig = true;
+//    //
+//    //        // Hook me up to the ProjectType
+//    //        if (projectType != null) {
+//    //            projectType.addConfiguration(this);
+//    //            setManagedBuildRevision(projectType.getManagedBuildRevision());
+//    //        }
+//}
+//public Configuration(ManagedProject managedProject, IToolChain tCh, String newID, String newName) {
+////        id = newID;
+////        name = newName;
+////
+////        //		this.description = cloneConfig.getDescription();
+////        this.managedProject = managedProject;
+////        isExtensionConfig = false;
+////
+////        if (tCh == null) {
+////            //create configuration based upon the preference config
+////            IConfiguration cfg = ManagedBuildManager.getPreferenceConfiguration(false);
+////            if (cfg != null)
+////                copySettingsFrom((Configuration) cfg, true);
+////        } else {
+////            Configuration baseCfg = null;//TOFIX JABA (Configuration) ManagedBuildManager.getExtensionConfiguration(EMPTY_CFG_ID);
+////            //		this.isTemporary = temporary;
+////            fCfgData = new BuildConfigurationData(this);
+////
+////            // set managedBuildRevision
+////            setManagedBuildRevision(baseCfg.getManagedBuildRevision());
+////
+////            //		if(!baseCfg.isExtensionConfig)
+////            //			cloneChildren = true;
+////            // If this constructor is called to clone an existing
+////            // configuration, the parent of the cloning config should be stored.
+////            parent = baseCfg.isExtensionConfig || baseCfg.getParent() == null ? baseCfg : baseCfg.getParent();
+////
+////            //  Copy the remaining attributes
+////            projectType = baseCfg.projectType;
+////            artifactName = baseCfg.artifactName;
+////            cleanCommand = baseCfg.cleanCommand;
+////            artifactExtension = baseCfg.artifactExtension;
+////            errorParserIds = baseCfg.errorParserIds;
+////            prebuildStep = baseCfg.prebuildStep;
+////            postbuildStep = baseCfg.postbuildStep;
+////            preannouncebuildStep = baseCfg.preannouncebuildStep;
+////            postannouncebuildStep = baseCfg.postannouncebuildStep;
+////
+////            if (baseCfg.sourceEntries != null)
+////                sourceEntries = baseCfg.sourceEntries.clone();
+////
+////            defaultLanguageSettingsProvidersAttribute = baseCfg.defaultLanguageSettingsProvidersAttribute;
+////            if (baseCfg.defaultLanguageSettingsProviderIds != null) {
+////                defaultLanguageSettingsProviderIds = baseCfg.defaultLanguageSettingsProviderIds.clone();
+////            }
+////
+////            //		enableInternalBuilder(baseCfg.isInternalBuilderEnabled());
+////            //		setInternalBuilderIgnoreErr(baseCfg.getInternalBuilderIgnoreErr());
+////            //		setInternalBuilderParallel(baseCfg.getInternalBuilderParallel());
+////            //		setParallelDef(baseCfg.getParallelDef());
+////            //		setParallelNumber(baseCfg.getParallelNumber());
+////            //		internalBuilderEnabled = cloneConfig.internalBuilderEnabled;
+////            //		internalBuilderIgnoreErr = cloneConfig.internalBuilderIgnoreErr;
+////
+////            // Clone the configuration's children
+////            // Tool Chain
+////
+////            String tcId = ManagedBuildManager.calculateChildId(tCh.getId(), null);
+////
+////            IToolChain newChain = createToolChain(tCh, tcId, tCh.getName(), false);
+////
+//////            // For each option/option category child of the tool-chain that is
+//////            // the child of the selected configuration element, create an option/
+//////            // option category child of the cloned configuration's tool-chain element
+//////            // that specifies the original tool element as its superClass.
+//////            newChain.createOptions(tCh);
+////
+////            // For each tool element child of the tool-chain that is the child of
+////            // the selected configuration element, create a tool element child of
+////            // the cloned configuration's tool-chain element that specifies the
+////            // original tool element as its superClass.
+////            String subId;
+////           List< ITool> tools = tCh.getTools();
+////            for (ITool tool:tools) {
+////                Tool toolChild = (Tool) tool;
+////                subId = ManagedBuildManager.calculateChildId(toolChild.getId(), null);
+////                newChain.createTool(toolChild, subId, toolChild.getName(), false);
+////            }
+////
+////            ITargetPlatform tpBase = tCh.getTargetPlatform();
+////            ITargetPlatform extTp = tpBase;
+////            for (; extTp != null && !extTp.isExtensionElement(); extTp = extTp.getSuperClass()) {
+////            }
+////
+////            TargetPlatform tp;
+////            if (extTp != null) {
+////                int nnn = ManagedBuildManager.getRandomNumber();
+////                subId = extTp.getId() + "." + nnn; //$NON-NLS-1$
+////                //				subName = tpBase.getName();
+////                tp = new TargetPlatform(newChain, subId, tpBase.getName(), (TargetPlatform) tpBase);
+////            } else {
+////                subId = ManagedBuildManager.calculateChildId(getId(), null);
+////                String subName = EMPTY_STRING;
+////                tp = new TargetPlatform((ToolChain) newChain, null, subId, subName, false);
+////            }
+////
+////            ((ToolChain) newChain).setTargetPlatform(tp);
+////
+////            //		if(cloneChildren){
+////            //copy expand build macros setting
+////            //			BuildMacroProvider macroProvider = (BuildMacroProvider)ManagedBuildManager.getBuildMacroProvider();
+////            //			macroProvider.expandMacrosInBuildfile(this,
+////            //						macroProvider.areMacrosExpandedInBuildfile(baseCfg));
+////
+////            //copy user-defined build macros
+////            /*			UserDefinedMacroSupplier userMacros = BuildMacroProvider.fUserDefinedMacroSupplier;
+////            			userMacros.setMacros(
+////            					userMacros.getMacros(BuildMacroProvider.CONTEXT_CONFIGURATION,cloneConfig),
+////            					BuildMacroProvider.CONTEXT_CONFIGURATION,
+////            					this);
+////            */
+////            //copy user-defined environment
+////            //			UserDefinedEnvironmentSupplier userEnv = EnvironmentVariableProvider.fUserSupplier;
+////            //			userEnv.setVariables(
+////            //					userEnv.getVariables(cloneConfig), this);
+////
+////            //		}
+////
+////            // Hook me up
+////            managedProject.addConfiguration(this);
+////
+////            IBuilder builder = getEditableBuilder();
+////            builder.setManagedBuildOn(false);
+////
+////        }
+////        setRebuildState(true);
+//}
+
+//@Override
+//public boolean supportsBuild(boolean managed) {
+//  return supportsBuild(managed, true);
+//}
+//
+//public boolean supportsBuild(boolean managed, boolean checkBuilder) {
+//  return true;
+//  // IResourceInfo[] rcs = getResourceInfos();
+//  // for (int i = 0; i < rcs.length; i++) {
+//  // if (!rcs[i].supportsBuild(managed))
+//  // return false;
+//  // }
+//  //
+//  // if (checkBuilder) {
+//  // IBuilder builder = getBuilder();
+//  // if (builder != null && !builder.supportsBuild(managed))
+//  // return false;
+//  // }
+//  //
+//  // return true;
+//}
+//@Override
+//public CBuildData getBuildData() {
+//  return getBuilder().getBuildData();
+//}
+
+///**
+//* Create a new extension configuration based on one already defined.
+//*
+//* @param projectType
+//*            The <code>ProjectType</code> the configuration will be
+//*            added to.
+//* @param parentConfig
+//*            The <code>IConfiguration</code> that is the parent
+//*            configuration of this configuration
+//* @param id
+//*            A unique ID for the new configuration.
+//*/
+//public Configuration(ProjectType projectType, IConfiguration parentConfig, String newID) {
+//  //        id = newID;
+//  //        this.projectType = projectType;
+//  //        isExtensionConfig = true;
+//  //
+//  //        if (parentConfig != null) {
+//  //            name = parentConfig.getName();
+//  //            // If this constructor is called to clone an existing
+//  //            // configuration, the parent of the parent should be stored.
+//  //            // As of 2.1, there is still one single level of inheritance to
+//  //            // worry about
+//  //            parent = parentConfig.getParent() == null ? parentConfig : parentConfig.getParent();
+//  //        }
+//  //
+//  //        // Hook me up to the ProjectType
+//  //        if (projectType != null) {
+//  //            projectType.addConfiguration(this);
+//  //            // set managedBuildRevision
+//  //            setManagedBuildRevision(projectType.getManagedBuildRevision());
+//  //        }
+//}
+//
+
+///**
+//* Create a <code>Configuration</code> based on the specification stored in the
+//* project file (.cdtbuild).
+//*
+//* @param managedProject
+//*            The <code>ManagedProject</code> the configuration will
+//*            be added to.
+//* @param element
+//*            The XML element that contains the configuration
+//*            settings.
+//*
+//*/
+//public Configuration(ManagedProject managedProject, ICStorageElement element, String managedBuildRevision,
+//      boolean isPreference) {
+//  //        this.managedProject = managedProject;
+//  //        this.isPreferenceConfig = isPreference;
+//  //        isExtensionConfig = false;
+//  //        fCfgData = new BuildConfigurationData(this);
+//  //
+//  //        setManagedBuildRevision(managedBuildRevision);
+//  //
+//  //        // Initialize from the XML attributes
+//  //        loadFromProject(element);
+//  //
+//  //        // Hook me up
+//  //        if (managedProject != null)
+//  //            managedProject.addConfiguration(this);
+//  //
+//  //        ICStorageElement configElements[] = element.getChildren();
+//  //        List<IPath> srcPathList = new ArrayList<>();
+//  //        excludeList = new ArrayList<>();
+//  //        for (int i = 0; i < configElements.length; ++i) {
+//  //            ICStorageElement configElement = configElements[i];
+//  //            if (configElement.getName().equals(IToolChain.TOOL_CHAIN_ELEMENT_NAME)) {
+//  //                rootFolderInfo = new FolderInfo(this, configElement, managedBuildRevision, false);
+//  //                addResourceConfiguration(rootFolderInfo);
+//  //            } else if (IFolderInfo.FOLDER_INFO_ELEMENT_NAME.equals(configElement.getName())) {
+//  //                FolderInfo resConfig = new FolderInfo(this, configElement, managedBuildRevision, true);
+//  //                addResourceConfiguration(resConfig);
+//  //            } else if (IFileInfo.FILE_INFO_ELEMENT_NAME.equals(configElement.getName())
+//  //                    || IResourceConfiguration.RESOURCE_CONFIGURATION_ELEMENT_NAME.equals(configElement.getName())) {
+//  //                ResourceConfiguration resConfig = new ResourceConfiguration(this, configElement, managedBuildRevision);
+//  //                addResourceConfiguration(resConfig);
+//  //            } else if (SourcePath.ELEMENT_NAME.equals(configElement.getName())) {
+//  //                SourcePath p = new SourcePath(configElement);
+//  //                if (p.getPath() != null)
+//  //                    srcPathList.add(p.getPath());
+//  //            } else if (SOURCE_ENTRIES.equals(configElement.getName())) {
+//  //                List<ICSettingEntry> seList = LanguageSettingEntriesSerializer.loadEntriesList(configElement,
+//  //                        ICSettingEntry.SOURCE_PATH);
+//  //                sourceEntries = seList.toArray(new ICSourceEntry[seList.size()]);
+//  //            }
+//  //        }
+//  //
+//  //        resolveProjectReferences(true);
+//  //
+//  //        sourceEntries = createSourceEntries(sourceEntries, srcPathList, excludeList);
+//  //
+//  //        excludeList = null;
+//  //
+//  //        PropertyManager mngr = PropertyManager.getInstance();
+//  //        String rebuild = mngr.getProperty(this, REBUILD_STATE);
+//  //        if (rebuild == null || Boolean.valueOf(rebuild).booleanValue())
+//  //            rebuildNeeded = true;
+//  //
+//  //        String rcChangeState = mngr.getProperty(this, RC_CHANGE_STATE);
+//  //        if (rcChangeState == null)
+//  //            resourceChangeState = ~0;
+//  //        else {
+//  //            try {
+//  //                resourceChangeState = Integer.parseInt(rcChangeState);
+//  //            } catch (NumberFormatException e) {
+//  //                resourceChangeState = ~0;
+//  //            }
+//  //        }
+//
+//}
+//
+
+//
+//public Configuration(ManagedProject managedProject, Configuration cloneConfig, String id, boolean cloneChildren,
+//      boolean temporary) {
+//  //        this(managedProject, cloneConfig, id, cloneChildren, temporary, false);
+//  // setArtifactName(managedProject.getDefaultArtifactName());
+//}
+
+///**
+//* Create a new project, non-extension, configuration based on one already
+//* defined.
+//*
+//* @param managedProject
+//*            The <code>ManagedProject</code> the configuration will
+//*            be added to.
+//* @param cloneConfig
+//*            The <code>IConfiguration</code> to copy the settings
+//*            from.
+//* @param id
+//*            A unique ID for the new configuration.
+//* @param cloneChildren
+//*            If <code>true</code>, the configuration's tools are
+//*            cloned
+//*/
+//public Configuration(ManagedProject managedProject, Configuration cloneConfig, String newID, boolean cloneChildren,
+//      boolean temporary, boolean isPreferenceConfig) {
+//  //        id = newID;
+//  //        name = (cloneConfig.getName());
+//  //        this.isPreferenceConfig = isPreferenceConfig;
+//  //        this.managedProject = managedProject;
+//  //        isExtensionConfig = false;
+//  //        this.isTemporary = temporary;
+//  //
+//  //        copySettingsFrom(cloneConfig, cloneChildren);
+//}
+//@Override
+//public String getBuildCommand() {
+//  IToolChain tc = getToolChain();
+//  IBuilder builder = tc.getBuilder();
+//  if (builder != null) {
+//      return builder.getCommand();
+//  }
+//  return "make"; //$NON-NLS-1$
+//}
+
+//@Override
+//public List<ITool> getFilteredTools() {
+//  //return rootFolderInfo.getFilteredTools();
+//  return null;
+//}
+//@Override
+//public ITool getTool(String id) {
+//  //return rootFolderInfo.getTool(id);
+//  return null;
+//}
+//@Override
+//public List<ITool> getTools() {
+//  return myToolchain.getTools();
+//}
+//
+//@Override
+//public String getToolCommand(ITool tool) {
+//  return tool.getToolCommand();
+//}
+//@Override
+//public String getBuildArguments() {
+//  IToolChain tc = getToolChain();
+//  IBuilder builder = tc.getBuilder();
+//  if (builder != null) {
+//      return builder.getArguments();
+//  }
+//  return "-k"; //$NON-NLS-1$
+//}
+//@Override
+//public boolean isHeaderFile(String ext) {
+//  return false;//getRootFolderInfo().isHeaderFile(ext);
+//}
+//@Override
+//public ITool calculateTargetTool() {
+//  ITool tool = getTargetTool();
+//
+//  //		if (tool == null) {
+//  //			tool = getToolFromOutputExtension(getArtifactExtension());
+//  //		}
+//
+//  //		if (tool == null) {
+//  //			IConfiguration extCfg;
+//  //			for (extCfg = this; extCfg != null; extCfg = extCfg.getParent()) {
+//  //			}
+//  //
+//  //			if (extCfg != null) {
+//  //				tool = getToolFromOutputExtension(extCfg.getArtifactExtension());
+//  //			}
+//  //		}
+//
+//  return tool;
+//}
+
+//    @Override
+//    public CConfigurationData getConfigurationData() {
+//        return fCfgData;
+//    }
+//@Override
+//public ITool getTargetTool() {
+////          String[] targetToolIds = rootFolderInfo.getToolChain().getTargetToolList();
+////          if (targetToolIds == null || targetToolIds.length == 0)
+////              return null;
+////  
+////          //  For each target tool id, in list order,
+////          //  look for a tool with this ID, or a tool with a superclass with this id.
+////          //  Stop when we find a match
+////          List<ITool> tools = getFilteredTools();
+////          for (int i = 0; i < targetToolIds.length; i++) {
+////              String targetToolId = targetToolIds[i];
+////              for (int j = 0; j < tools.length; j++) {
+////                  ITool targetTool = tools[j];
+////                  ITool tool = targetTool;
+////                  do {
+////                      if (targetToolId.equals(tool.getId())) {
+////                          return tool;
+////                      }
+////                      tool = tool.getSuperClass();
+////                  } while (tool != null);
+////              }
+////          }
+//  return null;
 //}

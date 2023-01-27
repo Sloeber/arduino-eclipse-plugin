@@ -958,13 +958,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         }
     }
 
-    /**
-     * @return the instance of the Build Macro Provider
-     */
-    // TODO JABA remove this method and call BuildMacroProvider.getDefault()
-    public static IBuildMacroProvider getBuildMacroProvider() {
-        return BuildMacroProvider.getDefault();
-    }
 
     /**
      * Send event to value handlers of relevant configuration including all its
@@ -1459,69 +1452,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return buf.append("${").append("workspace_loc:").append(path).append("}").toString(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    public static IFolder getBuildFolder(IConfiguration cfg, IProject project) {
-        return cfg.getBuildFolder(project);
-    }
-
-    // public static IBuilder[] createBuilders(IProject project, Map<String, String>
-    // args) {
-    // return ManagedBuilderCorePlugin.createBuilders(project, args);
-    // }
-    //
-    // public static IBuilder createCustomBuilder(IConfiguration cfg, String
-    // builderId) throws CoreException {
-    // return ManagedBuilderCorePlugin.createCustomBuilder(cfg, builderId);
-    // }
-    //
-    // public static IBuilder createCustomBuilder(IConfiguration cfg, IBuilder base)
-    // {
-    // return ManagedBuilderCorePlugin.createCustomBuilder(cfg, base);
-    // }
-    //
-    // public static IBuilder createBuilderForEclipseBuilder(IConfiguration cfg,
-    // String eclipseBuilderID)
-    // throws CoreException {
-    // return ManagedBuilderCorePlugin.createBuilderForEclipseBuilder(cfg,
-    // eclipseBuilderID);
-    // }
-
-    /*
-     * public static IToolChain[] getExtensionsToolChains(String propertyType,
-     * String propertyValue){ List all = getSortedToolChains(); List result = new
-     * ArrayList(); for(int i = 0; i < all.size(); i++){ List list =
-     * (List)all.get(i); IToolChain tc = findToolChain(list, propertyType,
-     * propertyValue); if(tc != null) result.add(tc); } return
-     * (IToolChain[])result.toArray(new ToolChain[result.size()]); }
-     */
-    /*
-     * public static void resortToolChains(){ sortedToolChains = null;
-     * getSortedToolChains(); }
-     */
-    /*
-     * private static List getSortedToolChains(){ if(sortedToolChains == null){
-     * sortedToolChains = new ArrayList(); SortedMap map =
-     * getExtensionToolChainMapInternal(); for(Iterator iter =
-     * map.values().iterator(); iter.hasNext();){ ToolChain tc =
-     * (ToolChain)iter.next(); if(tc.isAbstract()) continue; List list =
-     * searchIdentical(sortedToolChains, tc); if(list == null){ list = new
-     * ArrayList(); sortedToolChains.add(list); } list.add(tc);
-     * tc.setIdenticalList(list); } } return sortedToolChains; }
-     */
-    // private static List findIdenticalToolChains(IToolChain tc){
-    // ToolChain tCh = (ToolChain)tc;
-    // List list = tCh.getIdenticalList();
-    // if(list == null){
-    // resortToolChains();
-    // list = tCh.getIdenticalList();
-    // if(list == null){
-    // list = new ArrayList(0);
-    // tCh.setIdenticalList(list);
-    // }
-    // }
-    //
-    // return ((ToolChain)tc).getIdenticalList();
-    // }
-
     public static IToolChain[] getExtensionToolChains(IProjectType type) {
         return null;
         // List<IToolChain> result = new ArrayList<>();
@@ -1856,3 +1786,67 @@ public class ManagedBuildManager extends AbstractCExtension {
 //  // }
 //  return realBuilder;
 //}
+
+
+//public static IFolder getBuildFolder(IConfiguration cfg, IProject project) {
+//  return cfg.getBuildFolder(cfg);
+//}
+
+// public static IBuilder[] createBuilders(IProject project, Map<String, String>
+// args) {
+// return ManagedBuilderCorePlugin.createBuilders(project, args);
+// }
+//
+// public static IBuilder createCustomBuilder(IConfiguration cfg, String
+// builderId) throws CoreException {
+// return ManagedBuilderCorePlugin.createCustomBuilder(cfg, builderId);
+// }
+//
+// public static IBuilder createCustomBuilder(IConfiguration cfg, IBuilder base)
+// {
+// return ManagedBuilderCorePlugin.createCustomBuilder(cfg, base);
+// }
+//
+// public static IBuilder createBuilderForEclipseBuilder(IConfiguration cfg,
+// String eclipseBuilderID)
+// throws CoreException {
+// return ManagedBuilderCorePlugin.createBuilderForEclipseBuilder(cfg,
+// eclipseBuilderID);
+// }
+
+/*
+* public static IToolChain[] getExtensionsToolChains(String propertyType,
+* String propertyValue){ List all = getSortedToolChains(); List result = new
+* ArrayList(); for(int i = 0; i < all.size(); i++){ List list =
+* (List)all.get(i); IToolChain tc = findToolChain(list, propertyType,
+* propertyValue); if(tc != null) result.add(tc); } return
+* (IToolChain[])result.toArray(new ToolChain[result.size()]); }
+*/
+/*
+* public static void resortToolChains(){ sortedToolChains = null;
+* getSortedToolChains(); }
+*/
+/*
+* private static List getSortedToolChains(){ if(sortedToolChains == null){
+* sortedToolChains = new ArrayList(); SortedMap map =
+* getExtensionToolChainMapInternal(); for(Iterator iter =
+* map.values().iterator(); iter.hasNext();){ ToolChain tc =
+* (ToolChain)iter.next(); if(tc.isAbstract()) continue; List list =
+* searchIdentical(sortedToolChains, tc); if(list == null){ list = new
+* ArrayList(); sortedToolChains.add(list); } list.add(tc);
+* tc.setIdenticalList(list); } } return sortedToolChains; }
+*/
+// private static List findIdenticalToolChains(IToolChain tc){
+// ToolChain tCh = (ToolChain)tc;
+// List list = tCh.getIdenticalList();
+// if(list == null){
+// resortToolChains();
+// list = tCh.getIdenticalList();
+// if(list == null){
+// list = new ArrayList(0);
+// tCh.setIdenticalList(list);
+// }
+// }
+//
+// return ((ToolChain)tc).getIdenticalList();
+// }

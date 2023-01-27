@@ -331,7 +331,7 @@ public class Option extends BuildObject implements IOption {
      *            - the superClass, if any
      * @param Id
      *            - the id for the new option
-     * @param name
+     * @param myName
      *            - the name for the new option
      * @param isExtensionElement
      *            - indicates whether this is an extension element or a managed
@@ -379,7 +379,7 @@ public class Option extends BuildObject implements IOption {
      *            The <code>IHoldsOptions</code> the option will be added to.
      * @param Id
      *            New ID for the option.
-     * @param name
+     * @param myName
      *            New name for the option.
      * @param option
      *            The existing option to clone, except for the above fields.
@@ -1199,7 +1199,7 @@ public class Option extends BuildObject implements IOption {
 
     @Override
     public String getName() {
-        return name;
+        return myName;
     }
 
     @Override

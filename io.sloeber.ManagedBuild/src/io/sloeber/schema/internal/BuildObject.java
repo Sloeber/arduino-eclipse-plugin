@@ -25,8 +25,8 @@ import io.sloeber.schema.api.IProjectType;
 
 public abstract class BuildObject implements IBuildObject {
 
-    protected String id;
-    public String name;
+    protected String myID;
+    public String myName;
     protected String mySuperClassID;
     protected IConfigurationElement myConfigurationSuperClassElement;
     protected IConfigurationElement myConfigurationElement;
@@ -41,8 +41,8 @@ public abstract class BuildObject implements IBuildObject {
 
     protected void loadNameAndID(IExtensionPoint root, IConfigurationElement element) {
         myConfigurationElement = element;
-        id = element.getAttribute(ID);
-        name = element.getAttribute(NAME);
+        myID = element.getAttribute(ID);
+        myName = element.getAttribute(NAME);
         mySuperClassID = element.getAttribute(SUPERCLASS);
         if (mySuperClassID != null) {
             myConfigurationSuperClassElement = getSuperClassConfigurationElement(element.getName(), mySuperClassID,
@@ -96,7 +96,7 @@ public abstract class BuildObject implements IBuildObject {
             }
 
         } catch (CoreException e) {
-            System.err.println("failed to resolve executable " + attributeName + " for " + name + BLANK + id); //$NON-NLS-1$ //$NON-NLS-2$
+            System.err.println("failed to resolve executable " + attributeName + " for " + myName + BLANK + myID); //$NON-NLS-1$ //$NON-NLS-2$
             e.printStackTrace();
         }
         return null;
@@ -104,20 +104,20 @@ public abstract class BuildObject implements IBuildObject {
 
     @Override
     public String getId() {
-        return id;
+        return myID;
     }
 
     @Override
     public String getName() {
-        return name;
+        return myName;
     }
 
     @Override
     public String toString() {
-        if (name != null) {
-            return name;
+        if (myName != null) {
+            return myName;
         }
-        return "id=" + id; //$NON-NLS-1$
+        return "id=" + myID; //$NON-NLS-1$
     }
 
     private IConfigurationElement getSuperClassConfigurationElement(String elementName, String inID,

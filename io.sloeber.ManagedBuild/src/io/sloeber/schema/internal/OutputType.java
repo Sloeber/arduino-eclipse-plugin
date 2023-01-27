@@ -94,7 +94,7 @@ public class OutputType extends BuildObject implements IOutputType {
         //        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
 
         if (modelBuildVariable[SUPER].isBlank()) {
-            buildVariable = name.toUpperCase().replaceAll("\\W", "_"); //$NON-NLS-1$  //$NON-NLS-2$
+            buildVariable = myName.toUpperCase().replaceAll("\\W", "_"); //$NON-NLS-1$  //$NON-NLS-2$
             buildVariable += "_OUTPUTS"; //$NON-NLS-1$
         } else {
             buildVariable = modelBuildVariable[SUPER];
@@ -149,7 +149,7 @@ public class OutputType extends BuildObject implements IOutputType {
             return getOutputFile(buildFolder, inputFile, modelOutputName[SUPER]);
         }
 
-        if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isEmpty()) {
+        if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isBlank()) {
             return getOutputFile(buildFolder, inputFile,
                     modelOutputPrefix[SUPER] + inputFile.getName() + DOT + modelOutputExtension[SUPER]);
         }

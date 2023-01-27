@@ -51,14 +51,6 @@ public interface IInputType extends IBuildObject {
     public ITool getParent();
 
     /**
-     * Returns the <code>IInputType</code> that is the superclass of this
-     * InputType, or <code>null</code> if the attribute was not specified.
-     *
-     * @return IInputType
-     */
-    public IInputType getSuperClass();
-
-    /**
      * Returns the Eclipse <code>IContentType</code> that describes this
      * input type. If both the sources attribute and the sourceContentType
      * attribute are specified, the sourceContentType will be used if it
@@ -183,5 +175,13 @@ public interface IInputType extends IBuildObject {
      * @return true if the file matches the inputType
      */
     public boolean isAssociatedWith(IFile file);
+
+    /**
+     * Get the ID of the output tye this input type processes
+     * @return an ID of a outputType or an empty string
+     */
+	public String getOutputTypeID();
+
+	public boolean isAssociatedWith(IFile file, IOutputType outputType);
 
 }

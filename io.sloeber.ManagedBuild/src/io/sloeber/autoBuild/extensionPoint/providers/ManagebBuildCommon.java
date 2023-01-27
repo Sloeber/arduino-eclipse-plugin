@@ -1,21 +1,15 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -30,15 +24,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
+import io.sloeber.autoBuild.Internal.BuildMacroProvider;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 
-@SuppressWarnings("nls")
 public class ManagebBuildCommon {
     /**
      * Answers the argument with all whitespaces replaced with an escape sequence.
@@ -172,174 +163,6 @@ public class ManagebBuildCommon {
         return populateDummyTargets(cfg, makefile, force);
     }
 
-    static public boolean populateDummyTargets(IResourceInfo rcInfo, IFile makefile, boolean force)
-            throws CoreException, IOException {
-        if (makefile == null || !makefile.exists())
-            return false;
-        // Get the contents of the dependency file
-        InputStream contentStream = makefile.getContents(false);
-        StringBuffer inBuffer = null;
-        // JABA made sure thgere are no emory leaks
-        try (Reader in = new InputStreamReader(contentStream);) {
-            int chunkSize = contentStream.available();
-            inBuffer = new StringBuffer(chunkSize);
-            char[] readBuffer = new char[chunkSize];
-            int n = in.read(readBuffer);
-            while (n > 0) {
-                inBuffer.append(readBuffer);
-                n = in.read(readBuffer);
-            }
-            contentStream.close();
-            in.close();
-        }
-        // The rest of this operation is equally expensive, so
-        // if we are doing an incremental build, only update the
-        // files that do not have a comment
-        String inBufferString = inBuffer.toString();
-        if (!force && inBufferString.startsWith(COMMENT_SYMBOL)) {
-            return false;
-        }
-        // Try to determine if this file already has dummy targets defined.
-        // If so, we will only add the comment.
-        String[] bufferLines = inBufferString.split("[\\r\\n]");
-        for (String bufferLine : bufferLines) {
-            if (bufferLine.endsWith(":")) {
-                StringBuffer outBuffer = addDefaultHeader();
-                outBuffer.append(inBuffer);
-                save(outBuffer, makefile);
-                return true;
-            }
-        }
-        // Reconstruct the buffer tokens into useful chunks of dependency
-        // information
-        Vector<String> bufferTokens = new Vector<>(Arrays.asList(inBufferString.split("\\s")));
-        Vector<String> deps = new Vector<>(bufferTokens.size());
-        Iterator<String> tokenIter = bufferTokens.iterator();
-        while (tokenIter.hasNext()) {
-            String token = tokenIter.next();
-            if (token.lastIndexOf("\\") == token.length() - 1 && token.length() > 1) {
-                // This is escaped so keep adding to the token until we find the
-                // end
-                while (tokenIter.hasNext()) {
-                    String nextToken = tokenIter.next();
-                    token += WHITESPACE + nextToken;
-                    if (!nextToken.endsWith("\\")) {
-                        break;
-                    }
-                }
-            }
-            deps.add(token);
-        }
-        deps.trimToSize();
-        // Now find the header file dependencies and make dummy targets for them
-        boolean save = false;
-        StringBuffer outBuffer = null;
-        // If we are doing an incremental build, only update the files that do
-        // not have a comment
-        String firstToken;
-        try {
-            firstToken = deps.get(0);
-        } catch (@SuppressWarnings("unused") ArrayIndexOutOfBoundsException e) {
-            // This makes no sense so bail
-            return false;
-        }
-        // Put the generated comments in the output buffer
-        if (!firstToken.startsWith(COMMENT_SYMBOL)) {
-            outBuffer = addDefaultHeader();
-        } else {
-            outBuffer = new StringBuffer();
-        }
-        // Some echo implementations misbehave and put the -n and newline in the
-        // output
-        if (firstToken.startsWith("-n")) {
-            // Now let's parse:
-            // Win32 outputs -n '<path>/<file>.d <path>/'
-            // POSIX outputs -n <path>/<file>.d <path>/
-            // Get the dep file name
-            String secondToken;
-            try {
-                secondToken = deps.get(1);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                secondToken = "";
-            }
-            if (secondToken.startsWith("'")) {
-                // This is the Win32 implementation of echo (MinGW without MSYS)
-                outBuffer.append(secondToken.substring(1)).append(WHITESPACE);
-            } else {
-                outBuffer.append(secondToken).append(WHITESPACE);
-            }
-            // The relative path to the build goal comes next
-            String thirdToken;
-            try {
-                thirdToken = deps.get(2);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                thirdToken = "";
-            }
-            int lastIndex = thirdToken.lastIndexOf("'");
-            if (lastIndex != -1) {
-                if (lastIndex == 0) {
-                    outBuffer.append(WHITESPACE);
-                } else {
-                    outBuffer.append(thirdToken.substring(0, lastIndex - 1));
-                }
-            } else {
-                outBuffer.append(thirdToken);
-            }
-            // Followed by the target output by the compiler plus ':'
-            // If we see any empty tokens here, assume they are the result of
-            // a line feed output by "echo" and skip them
-            String fourthToken;
-            int nToken = 3;
-            try {
-                do {
-                    fourthToken = deps.get(nToken++);
-                } while (fourthToken.length() == 0);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                fourthToken = "";
-            }
-            outBuffer.append(fourthToken).append(WHITESPACE);
-            // Followed by the actual dependencies
-            try {
-                for (String nextElement : deps) {
-                    if (nextElement.endsWith("\\")) {
-                        outBuffer.append(nextElement).append(NEWLINE).append(WHITESPACE);
-                    } else {
-                        outBuffer.append(nextElement).append(WHITESPACE);
-                    }
-                }
-            } catch (IndexOutOfBoundsException e) {
-                /* JABA is not going to write this code */
-            }
-        } else {
-            outBuffer.append(inBuffer);
-        }
-        outBuffer.append(NEWLINE);
-        save = true;
-        IFolderInfo fo = null;
-        if (rcInfo instanceof IFolderInfo) {
-            fo = (IFolderInfo) rcInfo;
-            //        } else {
-            //            IConfiguration c = rcInfo.getParent();
-            //            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
-        }
-        // Dummy targets to add to the makefile
-        for (String dummy : deps) {
-            IPath dep = new Path(dummy);
-            String extension = dep.getFileExtension();
-            //            if (fo.isHeaderFile(extension)) {
-            //                /*
-            //                 * The formatting here is <dummy_target>:
-            //                 */
-            //                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
-            //            }
-        }
-        // Write them out to the makefile
-        if (save) {
-            save(outBuffer, makefile);
-            return true;
-        }
-        return false;
-    }
 
     /**
      * prepend all instanced of '\' or '"' with a backslash
@@ -510,38 +333,7 @@ public class ManagebBuildCommon {
         map.put(macroName, buffer.toString());
     }
 
-    /**
-     * Adds a file to an entry in a map of macro names to entries. File additions
-     * look like: example.c, \
-     */
-    static public void addMacroAdditionFile(MakefileGenerator caller, HashMap<String, String> map, String macroName,
-            String relativePath, IPath sourceLocation, boolean generatedSource) {
-        // Add the source file path to the makefile line that adds source files
-        // to the build variable
-        IProject project = caller.getProject();
-        IPath buildWorkingDir = caller.getBuildWorkingDir();
-        String srcName;
-        IPath projectLocation = getPathForResource(project);
-        IPath dirLocation = projectLocation;
-        if (generatedSource) {
-            dirLocation = dirLocation.append(buildWorkingDir);
-        }
-        if (dirLocation.isPrefixOf(sourceLocation)) {
-            IPath srcPath = sourceLocation.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
-            if (generatedSource) {
-                srcName = DOT_SLASH_PATH.append(srcPath).toOSString();
-            } else {
-                srcName = ROOT + FILE_SEPARATOR + srcPath.toOSString();
-            }
-        } else {
-            if (generatedSource && !sourceLocation.isAbsolute()) {
-                srcName = DOT_SLASH_PATH.append(relativePath).append(sourceLocation.lastSegment()).toOSString();
-            } else {
-                srcName = sourceLocation.toOSString();
-            }
-        }
-        addMacroAdditionFile(map, macroName, srcName);
-    }
+
 
     /**
      * Process a String denoting a filepath in a way compatible for GNU Make rules,
@@ -610,7 +402,7 @@ public class ManagebBuildCommon {
     static public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
             int contextType, ICConfigurationDescription confdesc) {
         try {
-            return ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(value,
+            return BuildMacroProvider.getDefault().resolveValueToMakefileFormat(value,
                     nonexistentMacrosValue, listDelimiter, contextType, confdesc);
         } catch (BuildMacroException e) {
             return value;
@@ -629,3 +421,206 @@ public class ManagebBuildCommon {
         return defaultvalue;
     }
 }
+
+///**
+//* Adds a file to an entry in a map of macro names to entries. File additions
+//* look like: example.c, \
+//*/
+//private static  void addMacroAdditionFile(MakefileGenerator caller, HashMap<String, String> map, String macroName,
+//     String relativePath, IPath sourceLocation, boolean generatedSource) {
+// // Add the source file path to the makefile line that adds source files
+// // to the build variable
+// IProject project = caller.getProject();
+// IPath buildWorkingDir = caller.getBuildFolder().getProjectRelativePath();
+// String srcName;
+// IPath projectLocation = getPathForResource(project);
+// IPath dirLocation = projectLocation;
+// if (generatedSource) {
+//     dirLocation = dirLocation.append(buildWorkingDir);
+// }
+// if (dirLocation.isPrefixOf(sourceLocation)) {
+//     IPath srcPath = sourceLocation.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
+//     if (generatedSource) {
+//         srcName = DOT_SLASH_PATH.append(srcPath).toOSString();
+//     } else {
+//         srcName = ROOT + FILE_SEPARATOR + srcPath.toOSString();
+//     }
+// } else {
+//     if (generatedSource && !sourceLocation.isAbsolute()) {
+//         srcName = DOT_SLASH_PATH.append(relativePath).append(sourceLocation.lastSegment()).toOSString();
+//     } else {
+//         srcName = sourceLocation.toOSString();
+//     }
+// }
+// addMacroAdditionFile(map, macroName, srcName);
+//}
+
+//static public boolean populateDummyTargets(IResourceInfo rcInfo, IFile makefile, boolean force)
+//throws CoreException, IOException {
+//if (makefile == null || !makefile.exists())
+//return false;
+//// Get the contents of the dependency file
+//InputStream contentStream = makefile.getContents(false);
+//StringBuffer inBuffer = null;
+//// JABA made sure thgere are no emory leaks
+//try (Reader in = new InputStreamReader(contentStream);) {
+//int chunkSize = contentStream.available();
+//inBuffer = new StringBuffer(chunkSize);
+//char[] readBuffer = new char[chunkSize];
+//int n = in.read(readBuffer);
+//while (n > 0) {
+//  inBuffer.append(readBuffer);
+//  n = in.read(readBuffer);
+//}
+//contentStream.close();
+//in.close();
+//}
+//// The rest of this operation is equally expensive, so
+//// if we are doing an incremental build, only update the
+//// files that do not have a comment
+//String inBufferString = inBuffer.toString();
+//if (!force && inBufferString.startsWith(COMMENT_SYMBOL)) {
+//return false;
+//}
+//// Try to determine if this file already has dummy targets defined.
+//// If so, we will only add the comment.
+//String[] bufferLines = inBufferString.split("[\\r\\n]");
+//for (String bufferLine : bufferLines) {
+//if (bufferLine.endsWith(":")) {
+//  StringBuffer outBuffer = addDefaultHeader();
+//  outBuffer.append(inBuffer);
+//  save(outBuffer, makefile);
+//  return true;
+//}
+//}
+//// Reconstruct the buffer tokens into useful chunks of dependency
+//// information
+//Vector<String> bufferTokens = new Vector<>(Arrays.asList(inBufferString.split("\\s")));
+//Vector<String> deps = new Vector<>(bufferTokens.size());
+//Iterator<String> tokenIter = bufferTokens.iterator();
+//while (tokenIter.hasNext()) {
+//String token = tokenIter.next();
+//if (token.lastIndexOf("\\") == token.length() - 1 && token.length() > 1) {
+//  // This is escaped so keep adding to the token until we find the
+//  // end
+//  while (tokenIter.hasNext()) {
+//      String nextToken = tokenIter.next();
+//      token += WHITESPACE + nextToken;
+//      if (!nextToken.endsWith("\\")) {
+//          break;
+//      }
+//  }
+//}
+//deps.add(token);
+//}
+//deps.trimToSize();
+//// Now find the header file dependencies and make dummy targets for them
+//boolean save = false;
+//StringBuffer outBuffer = null;
+//// If we are doing an incremental build, only update the files that do
+//// not have a comment
+//String firstToken;
+//try {
+//firstToken = deps.get(0);
+//} catch (@SuppressWarnings("unused") ArrayIndexOutOfBoundsException e) {
+//// This makes no sense so bail
+//return false;
+//}
+//// Put the generated comments in the output buffer
+//if (!firstToken.startsWith(COMMENT_SYMBOL)) {
+//outBuffer = addDefaultHeader();
+//} else {
+//outBuffer = new StringBuffer();
+//}
+//// Some echo implementations misbehave and put the -n and newline in the
+//// output
+//if (firstToken.startsWith("-n")) {
+//// Now let's parse:
+//// Win32 outputs -n '<path>/<file>.d <path>/'
+//// POSIX outputs -n <path>/<file>.d <path>/
+//// Get the dep file name
+//String secondToken;
+//try {
+//  secondToken = deps.get(1);
+//} catch (ArrayIndexOutOfBoundsException e) {
+//  secondToken = "";
+//}
+//if (secondToken.startsWith("'")) {
+//  // This is the Win32 implementation of echo (MinGW without MSYS)
+//  outBuffer.append(secondToken.substring(1)).append(WHITESPACE);
+//} else {
+//  outBuffer.append(secondToken).append(WHITESPACE);
+//}
+//// The relative path to the build goal comes next
+//String thirdToken;
+//try {
+//  thirdToken = deps.get(2);
+//} catch (ArrayIndexOutOfBoundsException e) {
+//  thirdToken = "";
+//}
+//int lastIndex = thirdToken.lastIndexOf("'");
+//if (lastIndex != -1) {
+//  if (lastIndex == 0) {
+//      outBuffer.append(WHITESPACE);
+//  } else {
+//      outBuffer.append(thirdToken.substring(0, lastIndex - 1));
+//  }
+//} else {
+//  outBuffer.append(thirdToken);
+//}
+//// Followed by the target output by the compiler plus ':'
+//// If we see any empty tokens here, assume they are the result of
+//// a line feed output by "echo" and skip them
+//String fourthToken;
+//int nToken = 3;
+//try {
+//  do {
+//      fourthToken = deps.get(nToken++);
+//  } while (fourthToken.length() == 0);
+//} catch (ArrayIndexOutOfBoundsException e) {
+//  fourthToken = "";
+//}
+//outBuffer.append(fourthToken).append(WHITESPACE);
+//// Followed by the actual dependencies
+//try {
+//  for (String nextElement : deps) {
+//      if (nextElement.endsWith("\\")) {
+//          outBuffer.append(nextElement).append(NEWLINE).append(WHITESPACE);
+//      } else {
+//          outBuffer.append(nextElement).append(WHITESPACE);
+//      }
+//  }
+//} catch (IndexOutOfBoundsException e) {
+//  /* JABA is not going to write this code */
+//}
+//} else {
+//outBuffer.append(inBuffer);
+//}
+//outBuffer.append(NEWLINE);
+//save = true;
+//IFolderInfo fo = null;
+//if (rcInfo instanceof IFolderInfo) {
+//fo = (IFolderInfo) rcInfo;
+////        } else {
+////            IConfiguration c = rcInfo.getParent();
+////            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
+//}
+//// Dummy targets to add to the makefile
+//for (String dummy : deps) {
+//IPath dep = new Path(dummy);
+//String extension = dep.getFileExtension();
+////            if (fo.isHeaderFile(extension)) {
+////                /*
+////                 * The formatting here is <dummy_target>:
+////                 */
+////                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
+////            }
+//}
+//// Write them out to the makefile
+//if (save) {
+//save(outBuffer, makefile);
+//return true;
+//}
+//return false;
+//}
+

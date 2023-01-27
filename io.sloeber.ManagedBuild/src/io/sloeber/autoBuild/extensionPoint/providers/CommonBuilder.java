@@ -41,7 +41,6 @@ import org.eclipse.cdt.core.resources.ACBuilder;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 import org.eclipse.core.resources.IIncrementalProjectBuilder2;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -67,7 +66,6 @@ import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.buildProperties.PropertyManager;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 
@@ -573,9 +571,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             IProgressMonitor monitor) throws CoreException {
 
         if (buildStatus.isRebuild()) {
-            buildStatus.getMakeGen().regenerateDependencies(false);
+            buildStatus.getMakeGen().regenerateDependencies(false,monitor);
         } else {
-            buildStatus.getMakeGen().generateDependencies();
+            buildStatus.getMakeGen().generateDependencies(monitor);
         }
 
         return buildStatus;
@@ -588,7 +586,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         buildStatus = performCleanning(kind, bInfo, buildStatus, monitor);
         IMakefileGenerator generator = builder.getBuildFileGenerator();
         if (generator != null) {
-            generator.initialize(kind, bInfo.getProject(), bInfo.getConfiguration(), bInfo.getBuilder(), monitor);
+            generator.initialize(kind, bInfo.getProject(), bInfo.getConfiguration(), bInfo.getBuilder());
             buildStatus.setMakeGen(generator);
 
             MultiStatus result = performMakefileGeneration(bInfo, generator, buildStatus, monitor);
@@ -726,9 +724,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         MultiStatus result;
         if (buildStatus.isRebuild()) {
-            result = generator.regenerateMakefiles();
+            result = generator.regenerateMakefiles(monitor);
         } else {
-            result = generator.generateMakefiles(getDelta(curProject));
+            result = generator.generateMakefiles(getDelta(curProject),monitor);
         }
 
         return result;

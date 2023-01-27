@@ -221,7 +221,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public String getName() {
-        return (name == null && superClass != null) ? superClass.getName() : name;
+        return (myName == null && superClass != null) ? superClass.getName() : myName;
     }
 
     @Override
@@ -683,18 +683,18 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public String getUniqueRealName() {
-        if (name == null) {
-            name = getId();
+        if (myName == null) {
+            myName = getId();
         } else {
             String version = ManagedBuildManager.getVersionFromIdAndVersion(getId());
             if (version != null) {
                 StringBuilder buf = new StringBuilder();
-                buf.append(name);
+                buf.append(myName);
                 buf.append(" (v").append(version).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-                name = buf.toString();
+                myName = buf.toString();
             }
         }
-        return name;
+        return myName;
     }
 
     public ICOutputEntry[] getOutputEntries(IProject project) {

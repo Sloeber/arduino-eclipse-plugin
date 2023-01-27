@@ -67,7 +67,7 @@ public interface IManagedProject {
      *            The unique id the new configuration will have
      * @return IConfiguration of the new configuration
      */
-    public IConfiguration createConfiguration(IConfiguration parent, String id);
+//    public IConfiguration createConfiguration(IConfiguration parent, String id);
 
     /**
      * Creates a configuration for this project populated with the tools
@@ -85,7 +85,7 @@ public interface IManagedProject {
      *            The unique id the new configuration will have
      * @return IConfiguration of the new configuration
      */
-    public IConfiguration createConfigurationClone(IConfiguration parent, String id);
+//    public IConfiguration createConfigurationClone(IConfiguration parent, String id);
 
     /**
      * Removes the configuration with the ID specified in the argument.
