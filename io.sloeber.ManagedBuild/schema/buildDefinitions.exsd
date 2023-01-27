@@ -1705,13 +1705,6 @@ A positive number or value &quot;optimal&quot; or &quot;unlimited&quot; are reco
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="unusedChildren" type="string">
-            <annotation>
-               <documentation>
-                  A semi-colon separated list of child IDs of the superclass&apos; children that should not be automatically inherited by this element.  Note: This attribute is not yet implemented.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="osList" type="string">
             <annotation>
                <documentation>

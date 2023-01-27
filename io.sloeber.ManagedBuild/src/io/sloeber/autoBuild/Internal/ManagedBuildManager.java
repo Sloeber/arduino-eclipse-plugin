@@ -206,61 +206,24 @@ public class ManagedBuildManager extends AbstractCExtension {
                     IConfigurationElement[] elements = extension.getConfigurationElements();
                     for (IConfigurationElement element : elements) {
                         try {
-                            switch (element.getName()) {
-                            case IProjectType.PROJECTTYPE_ELEMENT_NAME:
+                            if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
                                 objects.add(new ProjectType(extensionPoint, element));
-                                break;
-                            //                            case IConfiguration.CONFIGURATION_ELEMENT_NAME:
-                            //                            	objects.add(  new Configuration(null, extensionPoint, element));
-                            //                                break;
-                            //                            case IToolChain.TOOL_CHAIN_ELEMENT_NAME:
-                            //                            	objects.add( new ToolChain(null, extensionPoint, element));
-                            //                                break;
-                            //                            case ITool.TOOL_ELEMENT_NAME:
-                            //                            	objects.add( new Tool(null, extensionPoint, element));
-                            //                                break;
-                            //                            case ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME:
-                            //                            	objects.add( new TargetPlatform((ToolChain) null, extensionPoint, element));
-                            //                                break;
-                            //                            case IBuilder.BUILDER_ELEMENT_NAME:
-                            //                            	objects.add( new Builder(null, extensionPoint, element));
-                            //                                break;
-                            default:
                             }
 
                         } catch (Exception ex) {
-                            // TODO: log
                             ex.printStackTrace();
                         }
                     }
-
                     myLoadedExtensions.put(key, objects);
                 }
             }
-
         } catch (Exception e) {
             Activator.log(e);
         }
     }
 
-    public static Version getVersion() {
-        return version;
-    }
 
-    /**
-     * Sets the default configuration for the project. Note that this will also
-     * update the default target if needed.
-     */
-    public static void setDefaultConfiguration(IProject project, IConfiguration newDefault) {
-        if (project == null || newDefault == null) {
-            return;
-        }
-        // Set the default in build information for the project
-        IManagedBuildInfo info = getBuildInfo(project);
-        if (info != null) {
-            info.setDefaultConfiguration(newDefault);
-        }
-    }
+
 
     /**
      * Sets the currently selected configuration. This is used while the project
@@ -1613,150 +1576,29 @@ public class ManagedBuildManager extends AbstractCExtension {
         //		// }
         //		return realToolChain;
     }
+    
+	public static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
+			IWorkingDirectoryTracker cwdTracker, List<IConsoleParser> parsers) {
+		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+			List<ILanguageSettingsProvider> lsProviders = ((ILanguageSettingsProvidersKeeper) cfgDescription)
+					.getLanguageSettingProviders();
+			for (ILanguageSettingsProvider lsProvider : lsProviders) {
+				ILanguageSettingsProvider rawProvider = LanguageSettingsManager.getRawProvider(lsProvider);
+				if (rawProvider instanceof ICBuildOutputParser) {
+					ICBuildOutputParser consoleParser = (ICBuildOutputParser) rawProvider;
+					try {
+						consoleParser.startup(cfgDescription, cwdTracker);
+						parsers.add(consoleParser);
+					} catch (CoreException e) {
+						Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+								"Language Settings Provider failed to start up", e)); //$NON-NLS-1$
+					}
+				}
+			}
+		}
+	}
 
-    public static IBuildPropertyManager getBuildPropertyManager() {
-        return BuildPropertyManager.getInstance();
-    }
 
-    /**
-     * Build the specified build configurations for a given project.
-     *
-     * @param project
-     *            - project the configurations belong to
-     * @param configs
-     *            - configurations to build
-     * @param builder
-     *            - builder to retrieve build arguments
-     * @param monitor
-     *            - progress monitor
-     * @param allBuilders
-     *            - {@code true} if all builders need to be building or
-     *            {@code false} to build with {@link CommonBuilder}
-     * @param buildKind
-     *            - one of
-     *            <li>{@link IncrementalProjectBuilder#CLEAN_BUILD}</li>
-     *            <li>{@link IncrementalProjectBuilder#INCREMENTAL_BUILD}</li>
-     *            <li>{@link IncrementalProjectBuilder#FULL_BUILD}</li>
-     *
-     * @throws CoreException
-     */
-    private static void buildConfigurations(final IProject project, final IConfiguration[] configs,
-            final IBuilder builder, final IProgressMonitor monitor, final boolean allBuilders, final int buildKind)
-            throws CoreException {
-
-        IWorkspaceRunnable op = new IWorkspaceRunnable() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see
-             * org.eclipse.core.resources.IWorkspaceRunnable#run(org.eclipse.core.runtime.
-             * IProgressMonitor)
-             */
-            @Override
-            public void run(IProgressMonitor monitor) throws CoreException {
-                int ticks = 1;
-                if (buildKind == IncrementalProjectBuilder.CLEAN_BUILD) {
-                    if (allBuilders) {
-                        ICommand[] commands = project.getDescription().getBuildSpec();
-                        ticks = commands.length;
-                    }
-                    ticks = ticks * configs.length;
-                }
-                monitor.beginTask(project.getName(), ticks);
-
-                if (buildKind == IncrementalProjectBuilder.CLEAN_BUILD) {
-                    // It is not possible to pass arguments to clean() method of a builder
-                    // So we iterate setting active configuration
-                    IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-                    IConfiguration savedCfg = buildInfo.getDefaultConfiguration();
-
-                    try {
-                        for (IConfiguration config : configs) {
-                            if (monitor.isCanceled())
-                                break;
-
-                            buildInfo.setDefaultConfiguration(config);
-                            buildProject(project, null, allBuilders, buildKind, monitor);
-                        }
-                    } finally {
-                        buildInfo.setDefaultConfiguration(savedCfg);
-                    }
-                    // } else {
-                    // // configuration IDs are passed in args to CDT builder
-                    // Map<String, String> args = builder != null ?
-                    // BuilderFactory.createBuildArgs(configs, builder)
-                    // : BuilderFactory.createBuildArgs(configs);
-                    // buildProject(project, args, allBuilders, buildKind, monitor);
-                }
-
-                monitor.done();
-            }
-
-            private void buildProject(IProject project, Map<String, String> args, boolean allBuilders, int buildKind,
-                    IProgressMonitor monitor) throws CoreException {
-
-                if (allBuilders) {
-                    ICommand[] commands = project.getDescription().getBuildSpec();
-                    for (ICommand command : commands) {
-                        if (monitor.isCanceled())
-                            break;
-
-                        String builderName = command.getBuilderName();
-                        Map<String, String> newArgs = null;
-                        // if (buildKind != IncrementalProjectBuilder.CLEAN_BUILD) {
-                        // newArgs = new HashMap<>(args);
-                        // if (!builderName.equals(CommonBuilder.BUILDER_ID)) {
-                        // newArgs.putAll(command.getArguments());
-                        // }
-                        // }
-                        project.build(buildKind, builderName, newArgs, new SubProgressMonitor(monitor, 1));
-                    }
-                } else {
-                    // project.build(buildKind, CommonBuilder.BUILDER_ID, args, new
-                    // SubProgressMonitor(monitor, 1));
-                }
-            }
-        };
-
-        try {
-            ResourcesPlugin.getWorkspace().run(op, monitor);
-        } finally {
-            monitor.done();
-        }
-    }
-
-    public static IConfiguration getPreferenceConfiguration(boolean write) {
-        try {
-            ICConfigurationDescription des = CCorePlugin.getDefault()
-                    .getPreferenceConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, write);
-            if (des != null)
-                return getConfigurationForDescription(des);
-        } catch (CoreException e) {
-            Activator.log(e);
-        }
-        return null;
-    }
-
-    /* package */ public static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
-            IWorkingDirectoryTracker cwdTracker, List<IConsoleParser> parsers) {
-        if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-            List<ILanguageSettingsProvider> lsProviders = ((ILanguageSettingsProvidersKeeper) cfgDescription)
-                    .getLanguageSettingProviders();
-            for (ILanguageSettingsProvider lsProvider : lsProviders) {
-                ILanguageSettingsProvider rawProvider = LanguageSettingsManager.getRawProvider(lsProvider);
-                if (rawProvider instanceof ICBuildOutputParser) {
-                    ICBuildOutputParser consoleParser = (ICBuildOutputParser) rawProvider;
-                    try {
-                        consoleParser.startup(cfgDescription, cwdTracker);
-                        parsers.add(consoleParser);
-                    } catch (CoreException e) {
-                        Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-                                "Language Settings Provider failed to start up", e)); //$NON-NLS-1$
-                    }
-                }
-            }
-        }
-    }
 }
 //
 //public static IBuilder getRealBuilder(IBuilder builder) {
@@ -1850,3 +1692,141 @@ public class ManagedBuildManager extends AbstractCExtension {
 //
 // return ((ToolChain)tc).getIdenticalList();
 // }
+///**
+//* Sets the default configuration for the project. Note that this will also
+//* update the default target if needed.
+//*/
+//public static void setDefaultConfiguration(IProject project, IConfiguration newDefault) {
+// if (project == null || newDefault == null) {
+//     return;
+// }
+// // Set the default in build information for the project
+// IManagedBuildInfo info = getBuildInfo(project);
+// if (info != null) {
+//     info.setDefaultConfiguration(newDefault);
+// }
+//}
+//private static void buildConfigurations(final IProject project, final IConfiguration[] configs,
+//final IBuilder builder, final IProgressMonitor monitor, final boolean allBuilders, final int buildKind)
+//throws CoreException {
+//
+//IWorkspaceRunnable op = new IWorkspaceRunnable() {
+///*
+//* (non-Javadoc)
+//*
+//* @see
+//* org.eclipse.core.resources.IWorkspaceRunnable#run(org.eclipse.core.runtime.
+//* IProgressMonitor)
+//*/
+//@Override
+//public void run(IProgressMonitor monitor) throws CoreException {
+//  int ticks = 1;
+//  if (buildKind == IncrementalProjectBuilder.CLEAN_BUILD) {
+//      if (allBuilders) {
+//          ICommand[] commands = project.getDescription().getBuildSpec();
+//          ticks = commands.length;
+//      }
+//      ticks = ticks * configs.length;
+//  }
+//  monitor.beginTask(project.getName(), ticks);
+//
+//  if (buildKind == IncrementalProjectBuilder.CLEAN_BUILD) {
+//      // It is not possible to pass arguments to clean() method of a builder
+//      // So we iterate setting active configuration
+//      IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+//      IConfiguration savedCfg = buildInfo.getDefaultConfiguration();
+//
+//      try {
+//          for (IConfiguration config : configs) {
+//              if (monitor.isCanceled())
+//                  break;
+//
+//              buildInfo.setDefaultConfiguration(config);
+//              buildProject(project, null, allBuilders, buildKind, monitor);
+//          }
+//      } finally {
+//          buildInfo.setDefaultConfiguration(savedCfg);
+//      }
+//      // } else {
+//      // // configuration IDs are passed in args to CDT builder
+//      // Map<String, String> args = builder != null ?
+//      // BuilderFactory.createBuildArgs(configs, builder)
+//      // : BuilderFactory.createBuildArgs(configs);
+//      // buildProject(project, args, allBuilders, buildKind, monitor);
+//  }
+//
+//  monitor.done();
+//}
+//
+//private void buildProject(IProject project, Map<String, String> args, boolean allBuilders, int buildKind,
+//      IProgressMonitor monitor) throws CoreException {
+//
+//  if (allBuilders) {
+//      ICommand[] commands = project.getDescription().getBuildSpec();
+//      for (ICommand command : commands) {
+//          if (monitor.isCanceled())
+//              break;
+//
+//          String builderName = command.getBuilderName();
+//          Map<String, String> newArgs = null;
+//          // if (buildKind != IncrementalProjectBuilder.CLEAN_BUILD) {
+//          // newArgs = new HashMap<>(args);
+//          // if (!builderName.equals(CommonBuilder.BUILDER_ID)) {
+//          // newArgs.putAll(command.getArguments());
+//          // }
+//          // }
+//          project.build(buildKind, builderName, newArgs, new SubProgressMonitor(monitor, 1));
+//      }
+//  } else {
+//      // project.build(buildKind, CommonBuilder.BUILDER_ID, args, new
+//      // SubProgressMonitor(monitor, 1));
+//  }
+//}
+//};
+//
+//try {
+//ResourcesPlugin.getWorkspace().run(op, monitor);
+//} finally {
+//monitor.done();
+//}
+//}
+//public static IBuildPropertyManager getBuildPropertyManager() {
+//return BuildPropertyManager.getInstance();
+//}
+//
+///**
+//* Build the specified build configurations for a given project.
+//*
+//* @param project
+//*            - project the configurations belong to
+//* @param configs
+//*            - configurations to build
+//* @param builder
+//*            - builder to retrieve build arguments
+//* @param monitor
+//*            - progress monitor
+//* @param allBuilders
+//*            - {@code true} if all builders need to be building or
+//*            {@code false} to build with {@link CommonBuilder}
+//* @param buildKind
+//*            - one of
+//*            <li>{@link IncrementalProjectBuilder#CLEAN_BUILD}</li>
+//*            <li>{@link IncrementalProjectBuilder#INCREMENTAL_BUILD}</li>
+//*            <li>{@link IncrementalProjectBuilder#FULL_BUILD}</li>
+//*
+//* @throws CoreException
+//*/
+//
+//public static IConfiguration getPreferenceConfiguration(boolean write) {
+//try {
+//  ICConfigurationDescription des = CCorePlugin.getDefault()
+//          .getPreferenceConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, write);
+//  if (des != null)
+//      return getConfigurationForDescription(des);
+//} catch (CoreException e) {
+//  Activator.log(e);
+//}
+//return null;
+//}
+//
+///* package */

@@ -15,8 +15,10 @@
 package io.sloeber.schema.internal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
@@ -33,18 +35,17 @@ import io.sloeber.schema.api.IToolChain;
 
 public class TargetPlatform extends BuildObject implements ITargetPlatform {
 
-    private static final String EMPTY_STRING = ""; //$NON-NLS-1$
-
-    //  Superclass
-    private ITargetPlatform superClass;
-    private String superClassId;
-    //  Parent and children
+	String[] modelIsAbstract;
+    String[] modelOsList; 
+    String[] modelArchList;
+    String[] modelBinaryParser;
+    
     private IToolChain parent;
     //  Managed Build model attributes
     private boolean isAbstract;
-    private List<String> osList;
-    private List<String> archList;
-    private List<String> binaryParserList;
+    private Set<String> osList=new HashSet<>();
+    private Set<String> archList=new HashSet<>();
+    private Set<String> binaryParserList=new HashSet<>();
     //  Miscellaneous
     private boolean isExtensionTargetPlatform = false;
     private boolean isDirty = false;
@@ -73,30 +74,28 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
      */
     public TargetPlatform(IToolChain parent, IExtensionPoint root, IConfigurationElement element) {
         this.parent = parent;
-        isExtensionTargetPlatform = true;
 
         loadNameAndID(root, element);
+        
+         modelIsAbstract   =getAttributes(IS_ABSTRACT);
+         modelOsList       =getAttributes(       OS_LIST );
+         modelArchList     =getAttributes(     ARCH_LIST );
+         modelBinaryParser =getAttributes( BINARY_PARSER);
 
-        // isAbstract
-        String isAbs = element.getAttribute(IBuildObject.IS_ABSTRACT);
-        if (isAbs != null) {
-            isAbstract = Boolean.parseBoolean(isAbs);
-        }
+         isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
 
         // Get the comma-separated list of valid OS
         String os = element.getAttribute(OS_LIST);
-        if (os != null) {
-            osList = new ArrayList<>();
-            String[] osTokens = os.split(","); //$NON-NLS-1$
-            for (int i = 0; i < osTokens.length; ++i) {
-                osList.add(osTokens[i].trim());
+        if (!modelOsList[SUPER].isBlank()) {
+            String[] osTokens = modelOsList[SUPER].split(","); //$NON-NLS-1$
+            for (String token:osTokens) {
+                osList.add(token.trim());
             }
         }
 
         // Get the comma-separated list of valid Architectures
         String arch = element.getAttribute(ARCH_LIST);
         if (arch != null) {
-            archList = new ArrayList<>();
             String[] archTokens = arch.split(","); //$NON-NLS-1$
             for (int j = 0; j < archTokens.length; ++j) {
                 archList.add(archTokens[j].trim());
@@ -106,7 +105,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         // Get the IDs of the binary parsers from a semi-colon-separated list.
         String bpars = element.getAttribute(BINARY_PARSER);
         if (bpars != null) {
-            binaryParserList = new ArrayList<>();
             String[] bparsTokens = CDataUtil.stringToArray(bpars, ";"); //$NON-NLS-1$
             for (int j = 0; j < bparsTokens.length; ++j) {
                 binaryParserList.add(bparsTokens[j].trim());
@@ -121,130 +119,40 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         return parent;
     }
 
-    @Override
-    public ITargetPlatform getSuperClass() {
-        return superClass;
-    }
+
 
     @Override
     public String getName() {
-        return (myName == null && superClass != null) ? superClass.getName() : myName;
+        return myName ;
     }
 
-    @Override
-    public boolean isAbstract() {
-        return isAbstract;
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.ITargetPlatform#getBinaryParserList()
      */
     @Override
-    public String[] getBinaryParserList() {
-        return binaryParserList.toArray(new String[binaryParserList.size()]);
+    public Set<String> getBinaryParserList() {
+        return binaryParserList;
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITargetPlatform#getArchList()
      */
     @Override
-    public String[] getArchList() {
-        return archList.toArray(new String[archList.size()]);
+    public Set<String> getArchList() {
+        return archList;
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITargetPlatform#getOSList()
      */
     @Override
-    public String[] getOSList() {
-        return osList.toArray(new String[osList.size()]);
+    public Set<String> getOSList() {
+        return osList;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IBuilder#setBinaryParserList(String[])
-     */
-    @Override
-    public void setBinaryParserList(String[] ids) {
-        if (ids != null) {
-            if (binaryParserList == null) {
-                binaryParserList = new ArrayList<>();
-            } else {
-                binaryParserList.clear();
-            }
-            for (int i = 0; i < ids.length; i++) {
-                binaryParserList.add(ids[i]);
-            }
-        } else {
-            binaryParserList = null;
-        }
-        setDirty(true);
-    }
 
-    @Override
-    public void setIsAbstract(boolean b) {
-        isAbstract = b;
-        setDirty(true);
-    }
-
-    @Override
-    public void setOSList(String[] OSs) {
-        if (osList == null) {
-            osList = new ArrayList<>();
-        } else {
-            osList.clear();
-        }
-        for (int i = 0; i < OSs.length; i++) {
-            osList.add(OSs[i]);
-        }
-        setDirty(true);
-    }
-
-    @Override
-    public void setArchList(String[] archs) {
-        if (archList == null) {
-            archList = new ArrayList<>();
-        } else {
-            archList.clear();
-        }
-        for (int i = 0; i < archs.length; i++) {
-            archList.add(archs[i]);
-        }
-        setDirty(true);
-    }
-
-    @Override
-    public boolean isExtensionElement() {
-        return isExtensionTargetPlatform;
-    }
-
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension Builder
-        if (isExtensionTargetPlatform)
-            return false;
-        return isDirty;
-    }
-
-    @Override
-    public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-    }
-
-    public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            // Resolve superClass
-            if (superClassId != null && superClassId.length() > 0) {
-                superClass = null;//TOFIX JABA ManagedBuildManager.getExtensionTargetPlatform(superClassId);
-                if (superClass == null) {
-                    // Report error
-                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-                            superClassId, "targetPlatform", //$NON-NLS-1$
-                            getId());
-                }
-            }
-        }
-    }
 
     @Override
     public CTargetPlatformData getTargetPlatformData() {
@@ -392,3 +300,80 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
 //        // I am clean now
 //        isDirty = false;
 //    }
+
+//@Override
+//public ITargetPlatform getSuperClass() {
+//    return superClass;
+//}
+//@Override
+//public boolean isAbstract() {
+//  return isAbstract;
+//}
+///* (non-Javadoc)
+//* @see org.eclipse.cdt.core.build.managed.IBuilder#setBinaryParserList(String[])
+//*/
+//@Override
+//public void setBinaryParserList(String[] ids) {
+// if (ids != null) {
+//     if (binaryParserList == null) {
+//         binaryParserList = new ArrayList<>();
+//     } else {
+//         binaryParserList.clear();
+//     }
+//     for (int i = 0; i < ids.length; i++) {
+//         binaryParserList.add(ids[i]);
+//     }
+// } else {
+//     binaryParserList = null;
+// }
+// setDirty(true);
+//}
+//
+//@Override
+//public void setIsAbstract(boolean b) {
+// isAbstract = b;
+// setDirty(true);
+//}
+//
+//@Override
+//public void setOSList(String[] OSs) {
+// if (osList == null) {
+//     osList = new ArrayList<>();
+// } else {
+//     osList.clear();
+// }
+// for (int i = 0; i < OSs.length; i++) {
+//     osList.add(OSs[i]);
+// }
+// setDirty(true);
+//}
+//
+//@Override
+//public void setArchList(String[] archs) {
+// if (archList == null) {
+//     archList = new ArrayList<>();
+// } else {
+//     archList.clear();
+// }
+// for (int i = 0; i < archs.length; i++) {
+//     archList.add(archs[i]);
+// }
+// setDirty(true);
+//}
+//
+//@Override
+//public boolean isExtensionElement() {
+// return isExtensionTargetPlatform;
+//}
+//
+//@Override
+//public boolean isDirty() {
+// // This shouldn't be called for an extension Builder
+// if (isExtensionTargetPlatform)
+//     return false;
+// return isDirty;
+//}
+//@Override
+//public void setDirty(boolean isDirty) {
+//  this.isDirty = isDirty;
+//}

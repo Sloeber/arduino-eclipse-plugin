@@ -43,6 +43,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
     private String myProjectName = null;
     private IProject myProject = null;
+	private String myExtensionPointID;
+	private String myExtensionID;
+	private String myProjectTypeID;
 
     public AutoBuildProjectGenerator() {
 
@@ -82,7 +85,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(myProject);
 
                 IProjectType sloeberProjType = ManagedBuildManager.getProjectType(
-                        "io.sloeber.autoBuild.buildDefinitions", "io.sloeber.builddef", "io.sloeber.core.sketch", true); //$NON-NLS-1$
+                		myExtensionPointID, myExtensionID, myProjectTypeID, true); 
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
                 ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
@@ -138,5 +141,18 @@ public class AutoBuildProjectGenerator implements IGenerator {
     public IProject getProject() {
         return myProject;
     }
+
+	public void setExtentionPointID(String extensionPointID) {
+		myExtensionPointID=extensionPointID;
+	}
+
+	public void setExtentionID(String extensionID) {
+		myExtensionID=extensionID;
+	}
+
+	public void setProjectTypeID(String projectTypeID) {
+		myProjectTypeID=projectTypeID;
+		
+	}
 
 }
