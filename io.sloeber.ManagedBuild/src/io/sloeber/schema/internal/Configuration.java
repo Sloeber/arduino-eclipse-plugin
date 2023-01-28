@@ -60,7 +60,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     // Parent and children
     private ProjectType projectType;
-    private List<String> defaultLanguageSettingsProviderIds;
+    private List<String> defaultLanguageSettingsProviderIds = new ArrayList<>();
 
     //private FolderInfo rootFolderInfo=null;
     //private BuildConfigurationData fCfgData;
@@ -68,7 +68,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     private boolean isPreferenceConfig;
     private String[] myErrorParserIDs;
-    private ICSourceEntry[] sourceEntries;
 
     /**
      * Create an configuration from the project manifest file element.
@@ -125,33 +124,30 @@ public class Configuration extends SchemaObject implements IConfiguration {
             }
         }
 
-        if (defaultLanguageSettingsProviderIds == null) {
-            if (!modellanguageSettingsProviders[SUPER].isBlank()) {
-                List<String> ids = new ArrayList<>();
-                String[] defaultIds = modellanguageSettingsProviders[SUPER].split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER);
-                for (String defaultID : defaultIds) {
-                    if (defaultID != null && !defaultID.isEmpty()) {
-                        if (defaultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
-                            defaultID = defaultID.substring(1);
-                            ids.remove(defaultID);
-                        } else if (!ids.contains(defaultID)) {
-							if (defaultID.contains($TOOLCHAIN)) {
-                                IToolChain toolchain = getToolChain();
-                                if (toolchain != null) {
-                                    String toolchainProvidersIds = toolchain.getDefaultLanguageSettingsProviderIds();
-                                    if (toolchainProvidersIds != null) {
-                                        ids.addAll(Arrays.asList(
-                                                toolchainProvidersIds.split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER)));
-                                    }
+        if (!modellanguageSettingsProviders[SUPER].isBlank()) {
+
+            String[] defaultIds = modellanguageSettingsProviders[SUPER].split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER);
+            for (String defaultID : defaultIds) {
+                if (defaultID != null && !defaultID.isEmpty()) {
+                    if (defaultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
+                        defaultID = defaultID.substring(1);
+                        defaultLanguageSettingsProviderIds.remove(defaultID);
+                    } else if (!defaultLanguageSettingsProviderIds.contains(defaultID)) {
+                        if (defaultID.contains($TOOLCHAIN)) {
+                            IToolChain toolchain = getToolChain();
+                            if (toolchain != null) {
+                                String toolchainProvidersIds = toolchain.getDefaultLanguageSettingsProviderIds();
+                                if (toolchainProvidersIds != null) {
+                                    defaultLanguageSettingsProviderIds.addAll(Arrays
+                                            .asList(toolchainProvidersIds.split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER)));
                                 }
-                            } else {
-                                ids.add(defaultID);
                             }
+                        } else {
+                            defaultLanguageSettingsProviderIds.add(defaultID);
                         }
                     }
-
                 }
-                defaultLanguageSettingsProviderIds = ids;
+
             }
         }
 
@@ -166,11 +162,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     public IToolChain getToolChain() {
         return myToolchain;
     }
-
-
-
-
-
 
     /*
      * M O D E L A T T R I B U T E A C C E S S O R S
@@ -190,7 +181,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     public String getArtifactName() {
         return modelartifactName[SUPER];
     }
-
 
     @Override
     public String getDescription() {
@@ -229,8 +219,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
         return true;
     }
 
-
-
     /*
      * O B J E C T S T A T E M A I N T E N A N C E
      */
@@ -252,8 +240,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     }
 
-
-
     @Override
     public List<ICSourceEntry> getSourceEntries() {
         return new LinkedList<>();
@@ -266,7 +252,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
         //                }
         //                return sourceEntries.clone();
     }
-
 
     @Override
     public IBuilder getBuilder() {

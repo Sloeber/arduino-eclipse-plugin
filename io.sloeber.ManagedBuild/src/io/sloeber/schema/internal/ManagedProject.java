@@ -31,6 +31,7 @@ import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.ISchemaObject;
 
 public class ManagedProject implements IManagedProject {
 

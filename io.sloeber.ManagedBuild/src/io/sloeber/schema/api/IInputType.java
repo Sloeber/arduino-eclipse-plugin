@@ -19,8 +19,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentType;
 
-import io.sloeber.schema.internal.ISchemaObject;
-
 /**
  * This interface represents an inputType instance in the managed build system.
  * It describes one category of input files to a Tool. A tool can have

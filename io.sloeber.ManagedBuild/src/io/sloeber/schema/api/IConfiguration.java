@@ -33,7 +33,6 @@ import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * A tool-integrator defines default configurations as children of the project

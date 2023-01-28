@@ -16,12 +16,7 @@ package io.sloeber.schema.api;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
-//import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
-//import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
-
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 
 /**
@@ -157,10 +152,8 @@ public interface IToolChain extends IHoldsOptions {
      */
     public String getScannerConfigDiscoveryProfileId();
 
-
-
     /**
-     * Returns the list of Tools 
+     * Returns the list of Tools
      *
      * @return String[]
      */
@@ -175,14 +168,14 @@ public interface IToolChain extends IHoldsOptions {
      */
     public List<IOutputType> getSecondaryOutputs();
 
-    /**
-     * Returns <code>true</code> if the tool-chain support is installed on the
-     * system
-     * otherwise returns <code>false</code>
-     *
-     * @return boolean
-     */
-    public boolean isSupported();
+    //    /**
+    //     * Returns <code>true</code> if the tool-chain support is installed on the
+    //     * system
+    //     * otherwise returns <code>false</code>
+    //     *
+    //     * @return boolean
+    //     */
+    //    public boolean isSupported();
 
     /**
      * Returns the tool-integrator provided implementation of the configuration
@@ -202,19 +195,6 @@ public interface IToolChain extends IHoldsOptions {
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
 
-    /**
-     * Returns an IOptionPathConverter implementation for this toolchain
-     * or null, if no conversion is required
-     */
-    //    public IOptionPathConverter getOptionPathConverter();
-
-    IFolderInfo getParentFolderInfo();
-
-    CTargetPlatformData getTargetPlatformData();
-
-    boolean supportsBuild(boolean managed);
-
     boolean isSystemObject();
 
-    String getUniqueRealName();
 }

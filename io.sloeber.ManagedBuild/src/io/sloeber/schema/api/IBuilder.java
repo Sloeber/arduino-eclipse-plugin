@@ -171,6 +171,18 @@ public interface IBuilder extends IHoldsOptions {
 
     IPath getBuildLocation();
 
+    /**
+     * If this returns true the environment variables are added to the command line
+     * environment
+     * If set false the environment variables are ignored when running a command.
+     * In other words: If you define the PATH environment variable in eclipse and
+     * this
+     * method returns false the PATH will be the PATH that eclipse started with not
+     * the PATH set in eclipse
+     * In JABA's opinion this method should always return true
+     * 
+     * @return
+     */
     boolean appendEnvironment();
 
     boolean supportsStopOnError(boolean on);

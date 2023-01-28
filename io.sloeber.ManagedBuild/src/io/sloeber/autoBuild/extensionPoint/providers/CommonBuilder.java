@@ -210,7 +210,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         IProject project = getProject();
 
         if (!isCdtProjectCreated(project)) {
-            System.err.println("The build is cancelled as the project has not yet ben created."); //$NON-NLS-1$
+            System.err.println("The build is cancelled as the project has not yet been created."); //$NON-NLS-1$
             return project.getReferencedProjects();
         }
 
@@ -494,7 +494,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                         // cfg.setRebuildState(false);
                     }
                 } catch (CoreException e) {
-                    // cfg.setRebuildState(true);
+                    //TOFIX if build fail next build request should not be ignored
+                    Activator.log(e);
                     throw e;
                 }
 

@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.ISchemaObject;
 import io.sloeber.schema.internal.ToolChain;
 
 /**

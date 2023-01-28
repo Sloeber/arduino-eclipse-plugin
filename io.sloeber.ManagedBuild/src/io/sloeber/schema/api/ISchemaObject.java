@@ -11,7 +11,7 @@
  * Contributors:
  *     IBM - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.schema.internal;
+package io.sloeber.schema.api;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

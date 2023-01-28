@@ -109,7 +109,7 @@ public class InputType extends SchemaObject implements IInputType {
 
     }
 
-// 
+    // 
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -124,8 +124,6 @@ public class InputType extends SchemaObject implements IInputType {
     public ITool getParent() {
         return parent;
     }
-
-
 
     /*
      * (non-Javadoc)
@@ -146,12 +144,11 @@ public class InputType extends SchemaObject implements IInputType {
     public String getBuildVariable() {
         return EMPTY_STRING;
     }
-    
+
     @Override
     public String getOutputTypeID() {
         return modelOutputTypeID[SUPER];
     }
-    
 
     /*
      * (non-Javadoc)
@@ -216,8 +213,6 @@ public class InputType extends SchemaObject implements IInputType {
         return false;
     }
 
-    
-
     /*
      * (non-Javadoc)
      * 
@@ -269,8 +264,6 @@ public class InputType extends SchemaObject implements IInputType {
         }
         return getSourceExtensionsAttribute();
     }
-
-
 
     @Override
     public String getLanguageName(ITool tool) {
@@ -331,8 +324,6 @@ public class InputType extends SchemaObject implements IInputType {
         return modelScannerConfigDiscoveryProfileID[SUPER];
     }
 
-
-
     public boolean hasScannerConfigSettings() {
 
         if (getDiscoveryProfileIdAttribute() != null)
@@ -364,33 +355,37 @@ public class InputType extends SchemaObject implements IInputType {
 
     @Override
     public boolean isAssociatedWith(IFile file, IOutputType outputType) {
-        if(modelOutputTypeID[SUPER].equals(outputType.getId()) ||
-        		inputExtensions.contains(file.getFileExtension())) {
-            return true;
-        }
         for (IContentType curContentType : mySourceContentTypes) {
             if (curContentType.isAssociatedWith(file.getName())) {
                 return true;
             }
+            return false;
         }
+        if (modelOutputTypeID[SUPER].equals(outputType.getId()) || inputExtensions.contains(file.getFileExtension())) {
+            return true;
+        }
+
         return false;
     }
-    
+
     @Override
     public String[] getSourceContentTypeIds() {
 
         return null;
     }
 
-    public void resolveFields() throws Exception {
-        // sourceContentType
-        IContentTypeManager manager = Platform.getContentTypeManager();
+    private void resolveFields() throws Exception {
         if (modelSourceContentType[SUPER] != null) {
+            IContentTypeManager manager = Platform.getContentTypeManager();
             StringTokenizer tokenizer = new StringTokenizer(modelSourceContentType[SUPER], DEFAULT_SEPARATOR);
             while (tokenizer.hasMoreElements()) {
-                IContentType type = manager.getContentType(tokenizer.nextToken());
-                if (type != null)
+                String curToken = tokenizer.nextToken();
+                IContentType type = manager.getContentType(curToken);
+                if (type != null) {
                     mySourceContentTypes.add(type);
+                } else {
+                    System.err.println("failed to load source content type :" + curToken); //$NON-NLS-1$
+                }
             }
         }
 
@@ -440,15 +435,16 @@ public class InputType extends SchemaObject implements IInputType {
 //}
 
 /**
-//* Create an <code>InputType</code> based on the specification stored in the
-//* project file (.cdtbuild).
-//*
-//* @param parent
-//*            The <code>ITool</code> the InputType will be added to.
-//* @param element
-//*            The XML element that contains the InputType settings.
-//*
-//*/
+ * //* Create an <code>InputType</code> based on the specification stored in the
+ * //* project file (.cdtbuild).
+ * //*
+ * //* @param parent
+ * //* The <code>ITool</code> the InputType will be added to.
+ * //* @param element
+ * //* The XML element that contains the InputType settings.
+ * //*
+ * //
+ */
 //public InputType(ITool parent, ICStorageElement element) {
 //  //        this.parent = parent;
 //  //        isExtensionInputType = false;

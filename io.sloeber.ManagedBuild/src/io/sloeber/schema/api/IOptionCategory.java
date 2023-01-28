@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.List;
 
 import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
-import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

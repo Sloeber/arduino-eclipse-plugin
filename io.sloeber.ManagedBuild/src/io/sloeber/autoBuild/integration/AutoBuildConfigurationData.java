@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.internal.Configuration;
 
@@ -25,7 +26,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     IConfiguration myAutoBuildConfiguration;
     IProject myProject;
-    CTargetPlatformData myTargetPlatformData;
+    BuildTargetPlatformData myTargetPlatformData;
     BuildBuildData myBuildBuildData;
     ICConfigurationDescription myCdtConfigurationDescription;
     private boolean isValid = false;
@@ -36,7 +37,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myCdtConfigurationDescription = null;
         myAutoBuildConfiguration = config;
         myProject = project;
-        myTargetPlatformData = myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
+        myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
         myName = myAutoBuildConfiguration.getName();
         myDescription = myAutoBuildConfiguration.getDescription();
     }
@@ -47,7 +48,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myCdtConfigurationDescription = cfgDescription;
         myAutoBuildConfiguration = autoBuildConfigBase.getConfiguration();
         myProject = autoBuildConfigBase.getProject();
-        myTargetPlatformData = myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
+        myTargetPlatformData = null;// myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
         myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
                 myCdtConfigurationDescription);
         myName = autoBuildConfigBase.getName();

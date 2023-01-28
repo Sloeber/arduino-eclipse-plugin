@@ -49,6 +49,7 @@ import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 

@@ -14,43 +14,27 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.osgi.framework.Version;
-
-import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.IToolChain;
 
 public class TargetPlatform extends SchemaObject implements ITargetPlatform {
 
-	String[] modelIsAbstract;
-    String[] modelOsList; 
+    String[] modelIsAbstract;
+    String[] modelOsList;
     String[] modelArchList;
     String[] modelBinaryParser;
-    
+
     private IToolChain parent;
-    //  Managed Build model attributes
-    private boolean isAbstract;
-    private Set<String> osList=new HashSet<>();
-    private Set<String> archList=new HashSet<>();
-    private Set<String> binaryParserList=new HashSet<>();
+    private Set<String> osList = new HashSet<>();
+    private Set<String> archList = new HashSet<>();
+    private Set<String> binaryParserList = new HashSet<>();
     //  Miscellaneous
-    private boolean isExtensionTargetPlatform = false;
-    private boolean isDirty = false;
-    private boolean resolved = true;
-    private BuildTargetPlatformData fTargetPlatformData;
 
     /*
      *  C O N S T R U C T O R S
@@ -76,19 +60,16 @@ public class TargetPlatform extends SchemaObject implements ITargetPlatform {
         this.parent = parent;
 
         loadNameAndID(root, element);
-        
-         modelIsAbstract   =getAttributes(IS_ABSTRACT);
-         modelOsList       =getAttributes(       OS_LIST );
-         modelArchList     =getAttributes(     ARCH_LIST );
-         modelBinaryParser =getAttributes( BINARY_PARSER);
 
-         isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
+        modelIsAbstract = getAttributes(IS_ABSTRACT);
+        modelOsList = getAttributes(OS_LIST);
+        modelArchList = getAttributes(ARCH_LIST);
+        modelBinaryParser = getAttributes(BINARY_PARSER);
 
         // Get the comma-separated list of valid OS
-        String os = element.getAttribute(OS_LIST);
         if (!modelOsList[SUPER].isBlank()) {
             String[] osTokens = modelOsList[SUPER].split(","); //$NON-NLS-1$
-            for (String token:osTokens) {
+            for (String token : osTokens) {
                 osList.add(token.trim());
             }
         }
@@ -111,7 +92,6 @@ public class TargetPlatform extends SchemaObject implements ITargetPlatform {
             }
         }
 
-        fTargetPlatformData = new BuildTargetPlatformData(this);
     }
 
     @Override
@@ -119,14 +99,10 @@ public class TargetPlatform extends SchemaObject implements ITargetPlatform {
         return parent;
     }
 
-
-
     @Override
     public String getName() {
-        return myName ;
+        return myName;
     }
-
-
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.ITargetPlatform#getBinaryParserList()
@@ -150,13 +126,6 @@ public class TargetPlatform extends SchemaObject implements ITargetPlatform {
     @Override
     public Set<String> getOSList() {
         return osList;
-    }
-
-
-
-    @Override
-    public CTargetPlatformData getTargetPlatformData() {
-        return fTargetPlatformData;
     }
 
 }
@@ -376,4 +345,8 @@ public class TargetPlatform extends SchemaObject implements ITargetPlatform {
 //@Override
 //public void setDirty(boolean isDirty) {
 //  this.isDirty = isDirty;
+//}
+//@Override
+//public CTargetPlatformData getTargetPlatformData() {
+//  return fTargetPlatformData;
 //}

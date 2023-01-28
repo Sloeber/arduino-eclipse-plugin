@@ -15,7 +15,7 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.internal.ISchemaObject;
+import io.sloeber.schema.api.ISchemaObject;
 
 /**
  * This interface determines whether or not the option category is currently displayed.

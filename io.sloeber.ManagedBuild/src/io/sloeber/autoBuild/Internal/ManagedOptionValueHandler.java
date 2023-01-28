@@ -21,7 +21,7 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.internal.ISchemaObject;
+import io.sloeber.schema.api.ISchemaObject;
 
 /**
  * This class implements the default managed option value handler for MBS.

@@ -16,7 +16,6 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,18 +26,12 @@ import java.util.StringTokenizer;
 
 import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPath;
-import io.sloeber.autoBuild.Internal.IManagedIsToolChainSupported;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.Internal.PathInfoCache;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
@@ -46,7 +39,6 @@ import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
@@ -66,16 +58,13 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     String[] modelBuildMacroSuplier;
     String[] modelIsSytem;
 
-    private List<Tool> toolList = new ArrayList<>();
     private Map<String, Tool> toolMap = new HashMap<>();
-    private TargetPlatform targetPlatform;
+    private TargetPlatform targetPlatform = null;
     private Builder builder;
     // Managed Build model attributes
     private List<String> osList = new ArrayList<>();
     private List<String> archList = new ArrayList<>();
     private boolean isAbstract;
-    private IConfigurationElement managedIsToolChainSupportedElement = null;
-    private IManagedIsToolChainSupported managedIsToolChainSupported = null;
     private IConfigurationElement environmentVariableSupplierElement = null;
     private IEnvironmentVariableSupplier environmentVariableSupplier = null;
     private IConfigurationElement buildMacroSupplierElement = null;
@@ -91,7 +80,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     private Boolean isRcTypeBasedDiscovery;
 
     private Configuration parent;
-    private IFolderInfo parentFolderInfo = null;
     private List<OptionCategory> myCategories = new ArrayList<>();
 
     /**
@@ -127,33 +115,38 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         //        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myEnablements);
 
         IConfigurationElement[] targetPlatforms = element.getChildren(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME);
-        if (targetPlatforms.length == 1) {
+        if (targetPlatforms.length > 1) {
             targetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
         } else {
-            System.err.println("Targetplatforms of toolchain " + myName + " has wrong cardinality"); //$NON-NLS-1$ //$NON-NLS-2$
+            System.err.println("Targetplatforms of toolchain " + parent.myID + DOT + parent.myName + BLANK + myID + DOT //$NON-NLS-1$
+                    + myName + " has wrong cardinality " + String.valueOf(targetPlatforms.length) + DOT); //$NON-NLS-1$
         }
 
         // Load the Builder child
-        IConfigurationElement[] builders = element.getChildren(IBuilder.BUILDER_ELEMENT_NAME);
-        if (builders.length == 1) {
-            builder = new Builder(this, root, builders[0]);
+        List<IConfigurationElement> builders = getFirstChildren(IBuilder.BUILDER_ELEMENT_NAME);
+        if (builders.size() == 1) {
+            builder = new Builder(this, root, builders.get(0));
         } else {
-            System.err.println("builders of toolchain " + myName + " has wrong cardinality"); //$NON-NLS-1$ //$NON-NLS-2$
+            System.err.println("builders of toolchain " + myName + " has wrong cardinality " //$NON-NLS-1$//$NON-NLS-2$
+                    + String.valueOf(builders.size()) + DOT);
         }
 
-        IConfigurationElement[] toolChainElements = element.getChildren(ITool.TOOL_ELEMENT_NAME);
+        List<IConfigurationElement> toolChainElements = getAllChildren(ITool.TOOL_ELEMENT_NAME);
         for (IConfigurationElement toolChainElement : toolChainElements) {
             Tool toolChild = new Tool(this, root, toolChainElement);
             toolMap.put(toolChild.myID, toolChild);
         }
+        if (toolMap.size() == 0) {
+            System.err.println("There are no tools in toolchain " + myName + DOT); //$NON-NLS-1$
+        }
 
-        IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
+        List<IConfigurationElement> optionElements = getAllChildren(IHoldsOptions.OPTION);
         for (IConfigurationElement optionElement : optionElements) {
             Option newOption = new Option(this, root, optionElement);
             myOptionMap.put(newOption.getName(), newOption);
         }
 
-        IConfigurationElement[] categoryElements = element.getChildren(IHoldsOptions.OPTION_CAT);
+        List<IConfigurationElement> categoryElements = getAllChildren(IHoldsOptions.OPTION_CAT);
         for (IConfigurationElement categoryElement : categoryElements) {
             myCategories.add(new OptionCategory(this, root, categoryElement));
         }
@@ -287,352 +280,10 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
     }
 
-    /**
-     * Create a {@link ToolChain} based upon an existing tool chain.
-     *
-     * @param parentFldInfo
-     *            The {@link IConfiguration} the tool-chain will be added
-     *            to.
-     * @param Id
-     *            ID of the new tool-chain
-     * @param name
-     *            name of the new tool-chain
-     * @param toolChain
-     *            The existing tool-chain to clone.
-     */
-    public ToolChain(IFolderInfo parentFldInfo, String Id, String name, Map<IPath, Map<String, String>> superIdMap,
-            ToolChain toolChain) {
-        // this.config = parentFldInfo.getParent();
-        // this.parentFolderInfo = parentFldInfo;
-        // setSuperClassInternal(toolChain.getSuperClass());
-        // if (getSuperClass() != null) {
-        // if (toolChain.superClassId != null) {
-        // superClassId = toolChain.superClassId;
-        // }
-        // }
-        // setId(Id);
-        // setName(name);
-        //
-        // // Set the managedBuildRevision and the version
-        // setManagedBuildRevision(toolChain.getManagedBuildRevision());
-        // setVersion(getVersionFromId());
-        //
-        // isExtensionToolChain = false;
-        //
-        // // Copy the remaining attributes
-        // if (toolChain.versionsSupported != null) {
-        // versionsSupported = toolChain.versionsSupported;
-        // }
-        // if (toolChain.convertToId != null) {
-        // convertToId = toolChain.convertToId;
-        // }
-        //
-        // if (toolChain.errorParserIds != null) {
-        // errorParserIds = toolChain.errorParserIds;
-        // }
-        // if (toolChain.osList != null) {
-        // osList = new ArrayList<>(toolChain.osList);
-        // }
-        // if (toolChain.archList != null) {
-        // archList = new ArrayList<>(toolChain.archList);
-        // }
-        // if (toolChain.targetToolIds != null) {
-        // targetToolIds = toolChain.targetToolIds;
-        // }
-        // if (toolChain.secondaryOutputIds != null) {
-        // secondaryOutputIds = toolChain.secondaryOutputIds;
-        // }
-        // if (toolChain.isAbstract != null) {
-        // isAbstract = toolChain.isAbstract;
-        // }
-        // if (toolChain.scannerConfigDiscoveryProfileId != null) {
-        // scannerConfigDiscoveryProfileId = toolChain.scannerConfigDiscoveryProfileId;
-        // }
-        //
-        // isRcTypeBasedDiscovery = toolChain.isRcTypeBasedDiscovery;
-        //
-        // supportsManagedBuild = toolChain.supportsManagedBuild;
-        //
-        // managedIsToolChainSupportedElement =
-        // toolChain.managedIsToolChainSupportedElement;
-        // managedIsToolChainSupported = toolChain.managedIsToolChainSupported;
-        //
-        // environmentVariableSupplierElement =
-        // toolChain.environmentVariableSupplierElement;
-        // environmentVariableSupplier = toolChain.environmentVariableSupplier;
-        //
-        // buildMacroSupplierElement = toolChain.buildMacroSupplierElement;
-        // buildMacroSupplier = toolChain.buildMacroSupplier;
-        //
-        // pathconverterElement = toolChain.pathconverterElement;
-        // optionPathConverter = toolChain.optionPathConverter;
-        //
-        // nonInternalBuilderId = toolChain.nonInternalBuilderId;
-        //
-        // discoveredInfo = toolChain.discoveredInfo;
-        //
-        // userDefinedMacros = toolChain.userDefinedMacros;
-        //
-        // // Clone the children in superclass
-        // boolean copyIds = toolChain.getId().equals(id);
-        // super.copyChildren(toolChain);
-        // // Clone the children
-        // if (toolChain.builder != null) {
-        // String subId;
-        // String subName;
-        //
-        // if (toolChain.builder.getSuperClass() != null) {
-        // subId = copyIds ? toolChain.builder.getId()
-        // :
-        // ManagedBuildManager.calculateChildId(toolChain.builder.getSuperClass().getId(),
-        // null);
-        // subName = toolChain.builder.getSuperClass().getName();
-        // } else {
-        // subId = copyIds ? toolChain.builder.getId()
-        // : ManagedBuildManager.calculateChildId(toolChain.builder.getId(), null);
-        // subName = toolChain.builder.getName();
-        // }
-        //
-        // builder = new Builder(this, subId, subName, toolChain.builder);
-        // }
-        // // if (toolChain.targetPlatform != null)
-        // {
-        // ITargetPlatform tpBase = toolChain.getTargetPlatform();
-        // if (tpBase != null) {
-        // ITargetPlatform extTp = tpBase;
-        // for (; extTp != null && !extTp.isExtensionElement(); extTp =
-        // extTp.getSuperClass()) {
-        // // empty body, the loop is to find extension element
-        // }
-        //
-        // String subId;
-        // if (copyIds) {
-        // subId = tpBase.getId();
-        // } else {
-        // subId = extTp != null ? ManagedBuildManager.calculateChildId(extTp.getId(),
-        // null)
-        // : ManagedBuildManager.calculateChildId(getId(), null);
-        // }
-        // String subName = tpBase.getName();
-        //
-        // // if (toolChain.targetPlatform.getSuperClass() != null) {
-        // // subId = toolChain.targetPlatform.getSuperClass().getId() + "." + nnn;
-        // //$NON-NLS-1$
-        // // subName = toolChain.targetPlatform.getSuperClass().getName();
-        // // } else {
-        // // subId = toolChain.targetPlatform.getId() + "." + nnn; //$NON-NLS-1$
-        // // subName = toolChain.targetPlatform.getName();
-        // // }
-        // targetPlatform = new TargetPlatform(this, subId, subName, (TargetPlatform)
-        // tpBase);
-        // }
-        // }
-        //
-        // IConfiguration cfg = parentFolderInfo.getParent();
-        // if (toolChain.toolList != null) {
-        // for (Tool toolChild : toolChain.getToolList()) {
-        // String subId = null;
-        // // String tmpId;
-        // String subName;
-        // // String version;
-        // ITool extTool = ManagedBuildManager.getExtensionTool(toolChild);
-        // Map<String, String> curIdMap = superIdMap.get(parentFldInfo.getPath());
-        // if (curIdMap != null) {
-        // if (extTool != null)
-        // subId = curIdMap.get(extTool.getId());
-        // }
-        //
-        // subName = toolChild.getName();
-        //
-        // if (subId == null) {
-        // if (extTool != null) {
-        // subId = copyIds ? toolChild.getId()
-        // : ManagedBuildManager.calculateChildId(extTool.getId(), null);
-        // // subName = toolChild.getSuperClass().getName();
-        // } else {
-        // subId = copyIds ? toolChild.getId()
-        // : ManagedBuildManager.calculateChildId(toolChild.getId(), null);
-        // // subName = toolChild.getName();
-        // }
-        // }
-        // // version = ManagedBuildManager.getVersionFromIdAndVersion(tmpId);
-        // // if ( version != null) { // If the 'tmpId' contains version information
-        // // subId = ManagedBuildManager.getIdFromIdAndVersion(tmpId) + "." + nnn + "_"
-        // + version; //$NON-NLS-1$ //$NON-NLS-2$
-        // // } else {
-        // // subId = tmpId + "." + nnn; //$NON-NLS-1$
-        // // }
-        //
-        // // The superclass for the cloned tool is not the same as the one from the
-        // tool being cloned.
-        // // The superclasses reside in different configurations.
-        // ITool toolSuperClass = null;
-        // String superId = null;
-        // // Search for the tool in this configuration that has the same
-        // grand-superClass as the
-        // // tool being cloned
-        // ITool otherSuperTool = toolChild.getSuperClass();
-        // if (otherSuperTool != null) {
-        // if (otherSuperTool.isExtensionElement()) {
-        // toolSuperClass = otherSuperTool;
-        // } else {
-        // IResourceInfo otherRcInfo = otherSuperTool.getParentResourceInfo();
-        // IResourceInfo thisRcInfo = cfg.getResourceInfo(otherRcInfo.getPath(), true);
-        // ITool otherExtTool = ManagedBuildManager.getExtensionTool(otherSuperTool);
-        // if (otherExtTool != null) {
-        // if (thisRcInfo != null) {
-        // ITool tools[] = thisRcInfo.getTools();
-        // for (int i = 0; i < tools.length; i++) {
-        // ITool thisExtTool = ManagedBuildManager.getExtensionTool(tools[i]);
-        // if (otherExtTool.equals(thisExtTool)) {
-        // toolSuperClass = tools[i];
-        // superId = toolSuperClass.getId();
-        // break;
-        // }
-        // }
-        // } else {
-        // superId = copyIds ? otherSuperTool.getId()
-        // : ManagedBuildManager.calculateChildId(otherExtTool.getId(), null);
-        // Map<String, String> idMap = superIdMap.get(otherRcInfo.getPath());
-        // if (idMap == null) {
-        // idMap = new HashMap<>();
-        // superIdMap.put(otherRcInfo.getPath(), idMap);
-        // }
-        // idMap.put(otherExtTool.getId(), superId);
-        // }
-        // }
-        // }
-        // }
-        // // Tool newTool = new Tool(this, (Tool)null, subId, subName, toolChild);
-        // // addTool(newTool);
-        //
-        // Tool newTool = null;
-        // if (toolSuperClass != null)
-        // newTool = new Tool(this, toolSuperClass, subId, subName, toolChild);
-        // else if (superId != null)
-        // newTool = new Tool(this, superId, subId, subName, toolChild);
-        // else {
-        // //TODO: Error
-        // }
-        // if (newTool != null)
-        // addTool(newTool);
-        //
-        // }
-        // }
-        //
-        // if (copyIds) {
-        // rebuildState = toolChain.rebuildState;
-        // isDirty = toolChain.isDirty;
-        // } else {
-        // setRebuildState(true);
-        // }
-    }
-
+    //  
     /*
      * E L E M E N T A T T R I B U T E R E A D E R S A N D W R I T E R S
      */
-
-    /**
-     * Initialize the tool-chain information from the XML element specified in the
-     * argument
-     *
-     * @param element
-     *            An XML element containing the tool-chain information
-     */
-    protected void loadFromProject(ICStorageElement element) {
-        //
-        //        loadNameAndID(element);
-        //
-        //        // version
-        //        setVersion(getVersionFromId());
-        //
-        //        // superClass
-        //        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
-        //        if (superClassId != null && superClassId.length() > 0) {
-        //            setSuperClassInternal(null);//TOFIX JABA ManagedBuildManager.getExtensionToolChain(superClassId));
-        //            // Check for migration support
-        //            //       checkForMigrationSupport();
-        //        }
-        //
-        //        // isAbstract
-        //        if (element.getAttribute(IS_ABSTRACT) != null) {
-        //            String isAbs = element.getAttribute(IS_ABSTRACT);
-        //            if (isAbs != null) {
-        //                isAbstract = Boolean.parseBoolean(isAbs);
-        //            }
-        //        }
-        //
-        //        // Get the semicolon separated list of IDs of the error parsers
-        //        if (element.getAttribute(ERROR_PARSERS) != null) {
-        //            errorParserIds = SafeStringInterner.safeIntern(element.getAttribute(ERROR_PARSERS));
-        //        }
-        //
-        //        // Get the semicolon separated list of IDs of the secondary outputs
-        //        if (element.getAttribute(SECONDARY_OUTPUTS) != null) {
-        //            secondaryOutputIds = SafeStringInterner.safeIntern(element.getAttribute(SECONDARY_OUTPUTS));
-        //        }
-        //
-        //        // Get the target tool id
-        //        if (element.getAttribute(TARGET_TOOL) != null) {
-        //            targetToolIds = SafeStringInterner.safeIntern(element.getAttribute(TARGET_TOOL));
-        //        }
-        //
-        //        // Get the scanner config discovery profile id
-        //        if (element.getAttribute(SCANNER_CONFIG_PROFILE_ID) != null) {
-        //            scannerConfigDiscoveryProfileId = SafeStringInterner
-        //                    .safeIntern(element.getAttribute(SCANNER_CONFIG_PROFILE_ID));
-        //        }
-        //
-        //        // Get the 'versionSupported' attribute
-        //        if (element.getAttribute(VERSIONS_SUPPORTED) != null) {
-        //            versionsSupported = SafeStringInterner.safeIntern(element.getAttribute(VERSIONS_SUPPORTED));
-        //        }
-        //
-        //        // Get the 'convertToId' id
-        //        if (element.getAttribute(CONVERT_TO_ID) != null) {
-        //            convertToId = SafeStringInterner.safeIntern(element.getAttribute(CONVERT_TO_ID));
-        //        }
-        //
-        //        // Get the comma-separated list of valid OS
-        //        if (element.getAttribute(OS_LIST) != null) {
-        //            String os = element.getAttribute(OS_LIST);
-        //            if (os != null) {
-        //                osList = new ArrayList<>();
-        //                String[] osTokens = os.split(","); //$NON-NLS-1$
-        //                for (int i = 0; i < osTokens.length; ++i) {
-        //                    osList.add(SafeStringInterner.safeIntern(osTokens[i].trim()));
-        //                }
-        //            }
-        //        }
-        //
-        //        // Get the comma-separated list of valid Architectures
-        //        if (element.getAttribute(ARCH_LIST) != null) {
-        //            String arch = element.getAttribute(ARCH_LIST);
-        //            if (arch != null) {
-        //                archList = new ArrayList<>();
-        //                String[] archTokens = arch.split(","); //$NON-NLS-1$
-        //                for (int j = 0; j < archTokens.length; ++j) {
-        //                    archList.add(SafeStringInterner.safeIntern(archTokens[j].trim()));
-        //                }
-        //            }
-        //        }
-        //
-        //        // Note: optionPathConverter cannot be specified in a project file because
-        //        //       an IConfigurationElement is needed to load it!
-        //        if (pathconverterElement != null) {
-        //            //  TODO:  issue warning?
-        //        }
-        //
-        //        // Get the scanner config discovery profile id
-        //        scannerConfigDiscoveryProfileId = element.getAttribute(SCANNER_CONFIG_PROFILE_ID);
-        //        String tmp = element.getAttribute(RESOURCE_TYPE_BASED_DISCOVERY);
-        //        if (tmp != null)
-        //            isRcTypeBasedDiscovery = Boolean.valueOf(tmp);
-        //
-        //        nonInternalBuilderId = SafeStringInterner.safeIntern(element.getAttribute(NON_INTERNAL_BUILDER_ID));
-        //
-        //        //		String tmp = element.getAttribute(name)
-    }
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -646,10 +297,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     @Override
     public ITargetPlatform getTargetPlatform() {
         return targetPlatform;
-    }
-
-    public void setBuilder(Builder builder) {
-        this.builder = builder;
     }
 
     @Override
@@ -780,16 +427,15 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         return types;
     }
 
-
     @Override
     public Set<ITool> getTargetTools() {
-    	 Set<ITool> ret=new HashSet<>();
-        Set<String> toolIDs=  new HashSet<String>();
-        toolIDs= Set.of(modelTargetTool[SUPER].split(SEMICOLON));
-        for(Tool curTool:toolMap.values()) {
-        	if(toolIDs.contains(curTool.getId())) {
-        		ret.add(curTool);
-        	}
+        Set<ITool> ret = new HashSet<>();
+        Set<String> toolIDs = new HashSet<>();
+        toolIDs = Set.of(modelTargetTool[SUPER].split(SEMICOLON));
+        for (Tool curTool : toolMap.values()) {
+            if (toolIDs.contains(curTool.getId())) {
+                ret.add(curTool);
+            }
         }
         return ret;
     }
@@ -839,31 +485,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
             }
         }
         return errorParsers;
-    }
-
-    public Set<String> contributeErrorParsers(FolderInfo info, Set<String> set, boolean includeChildren) {
-        String parserIDs = getErrorParserIdsAttribute();
-        if (parserIDs != null) {
-            if (set == null)
-                set = new HashSet<>();
-            if (parserIDs.length() != 0) {
-                StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
-                while (tok.hasMoreElements()) {
-                    set.add(tok.nextToken());
-                }
-            }
-        }
-
-        if (includeChildren) {
-            //List<ITool> tools = info.getFilteredTools();
-            // set = info.contributeErrorParsers(tools, set);
-
-            //			if (info.isRoot()) {
-            //				Builder builder = (Builder) getBuilder();
-            //				set = builder.contributeErrorParsers(set);
-            //			}
-        }
-        return set;
     }
 
     @Override
@@ -940,48 +561,7 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     //        return null;
     //    }
 
-    /*
-     * O B J E C T S T A T E M A I N T E N A N C E
-     */
-
-    private IConfigurationElement getIsToolChainSupportedElement() {
-        if (managedIsToolChainSupportedElement == null) {
-            if (superClass != null && superClass instanceof ToolChain) {
-                return ((ToolChain) superClass).getIsToolChainSupportedElement();
-            }
-        }
-        return managedIsToolChainSupportedElement;
-    }
-
-    @Override
-    public boolean isSupported() {
-        if (managedIsToolChainSupported == null) {
-            IConfigurationElement element = getIsToolChainSupportedElement();
-            if (element != null) {
-                try {
-                    if (element.getAttribute(IS_TOOL_CHAIN_SUPPORTED) != null) {
-                        managedIsToolChainSupported = (IManagedIsToolChainSupported) element
-                                .createExecutableExtension(IS_TOOL_CHAIN_SUPPORTED);
-                    }
-                } catch (CoreException e) {
-                    Activator.log(e);
-                }
-            }
-        }
-
-        // if (managedIsToolChainSupported != null) {
-        // try {
-        // return managedIsToolChainSupported.isSupported(this, null, null);
-        // } catch (Throwable e) {
-        // Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-        // "Exception in toolchain [" + getName() + "], id=" + getId(), e));
-        // //$NON-NLS-1$ //$NON-NLS-2$
-        // return false;
-        // }
-        // }
-        return true;
-    }
-
+    // 
     /**
      * Returns the plugin.xml element of the configurationEnvironmentSupplier
      * extension or <code>null</code> if none.
@@ -1080,56 +660,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     }
 
     @Override
-    public IFolderInfo getParentFolderInfo() {
-        return parentFolderInfo;
-    }
-
-    void setTargetPlatform(TargetPlatform tp) {
-        targetPlatform = tp;
-    }
-
-    @Override
-    public CTargetPlatformData getTargetPlatformData() {
-        return targetPlatform.getTargetPlatformData();
-    }
-
-    //    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
-    //        if (booleanExpressionCalculator == null) {
-    //            if (superClass != null) {
-    //                return ((ToolChain) superClass).getBooleanExpressionCalculator();
-    //            }
-    //        }
-    //        return booleanExpressionCalculator;
-    //    }
-
-    //    @Override
-    //    protected IResourceInfo getParentResourceInfo() {
-    //        //return getParentFolderInfo();
-    //        return null;
-    //    }
-
-    @Override
-    public boolean supportsBuild(boolean managed) {
-
-        //        IBuilder builder = getBuilder();
-        //        if (builder != null && !builder.supportsBuild(managed))
-        //            return false;
-        //
-        //        List<ITool> tools = getTools();
-        //        for (ITool tool : tools) {
-        //            if (!tool.supportsBuild(managed))
-        //                return false;
-        //        }
-
-        return true;
-    }
-
-    @Override
     public boolean isSystemObject() {
-        if (isTest)
-            return true;
-
-        return false;
+        return isTest;
     }
 
     public String getNameAndVersion() {
@@ -1139,28 +671,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         }
         return myName;
     }
-
-    @Override
-    public String getUniqueRealName() {
-        if (myName == null) {
-            myName = getId();
-        } else {
-            String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-            if (idVersion != null) {
-                StringBuilder buf = new StringBuilder();
-                buf.append(myName);
-                buf.append(" (v").append(idVersion).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-                myName = buf.toString();
-            }
-        }
-        return myName;
-    }
-
-    //	void resolveProjectReferences(boolean onLoad) {
-    //		for (Tool tool : getToolList()) {
-    //			tool.resolveProjectReferences(onLoad);
-    //		}
-    //	}
 
     public boolean hasScannerConfigSettings() {
 
@@ -1180,16 +690,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         return isRcTypeBasedDiscovery.booleanValue();
     }
 
-    public void setPerRcTypeDiscovery(boolean on) {
-        isRcTypeBasedDiscovery = Boolean.valueOf(on);
-    }
-
-    public PathInfoCache setDiscoveredPathInfo(PathInfoCache info) {
-        PathInfoCache oldInfo = discoveredInfo;
-        discoveredInfo = info;
-        return oldInfo;
-    }
-
     public PathInfoCache getDiscoveredPathInfo() {
         return discoveredInfo;
     }
@@ -1198,13 +698,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         PathInfoCache oldInfo = discoveredInfo;
         discoveredInfo = null;
         return oldInfo;
-    }
-
-    public boolean isPreferenceToolChain() {
-        return false;
-        // IToolChain tch = ManagedBuildManager.getRealToolChain(this);
-        // return tch != null &&
-        // tch.getId().equals(ConfigurationDataProvider.PREF_TC_ID);
     }
 
 }
@@ -1252,3 +745,486 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 //      }
 //      return false;
 //  }
+
+//@Override
+//public CTargetPlatformData getTargetPlatformData() {
+//  return targetPlatform.getTargetPlatformData();
+//}
+
+//    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
+//        if (booleanExpressionCalculator == null) {
+//            if (superClass != null) {
+//                return ((ToolChain) superClass).getBooleanExpressionCalculator();
+//            }
+//        }
+//        return booleanExpressionCalculator;
+//    }
+
+//    @Override
+//    protected IResourceInfo getParentResourceInfo() {
+//        //return getParentFolderInfo();
+//        return null;
+//    }
+
+/**
+ * //* Create a {@link ToolChain} based upon an existing tool chain.
+ * //*
+ * //* @param parentFldInfo
+ * //* The {@link IConfiguration} the tool-chain will be added
+ * //* to.
+ * //* @param Id
+ * //* ID of the new tool-chain
+ * //* @param name
+ * //* name of the new tool-chain
+ * //* @param toolChain
+ * //* The existing tool-chain to clone.
+ * //
+ */
+//public ToolChain(IFolderInfo parentFldInfo, String Id, String name, Map<IPath, Map<String, String>> superIdMap,
+//      ToolChain toolChain) {
+//  // this.config = parentFldInfo.getParent();
+//  // this.parentFolderInfo = parentFldInfo;
+//  // setSuperClassInternal(toolChain.getSuperClass());
+//  // if (getSuperClass() != null) {
+//  // if (toolChain.superClassId != null) {
+//  // superClassId = toolChain.superClassId;
+//  // }
+//  // }
+//  // setId(Id);
+//  // setName(name);
+//  //
+//  // // Set the managedBuildRevision and the version
+//  // setManagedBuildRevision(toolChain.getManagedBuildRevision());
+//  // setVersion(getVersionFromId());
+//  //
+//  // isExtensionToolChain = false;
+//  //
+//  // // Copy the remaining attributes
+//  // if (toolChain.versionsSupported != null) {
+//  // versionsSupported = toolChain.versionsSupported;
+//  // }
+//  // if (toolChain.convertToId != null) {
+//  // convertToId = toolChain.convertToId;
+//  // }
+//  //
+//  // if (toolChain.errorParserIds != null) {
+//  // errorParserIds = toolChain.errorParserIds;
+//  // }
+//  // if (toolChain.osList != null) {
+//  // osList = new ArrayList<>(toolChain.osList);
+//  // }
+//  // if (toolChain.archList != null) {
+//  // archList = new ArrayList<>(toolChain.archList);
+//  // }
+//  // if (toolChain.targetToolIds != null) {
+//  // targetToolIds = toolChain.targetToolIds;
+//  // }
+//  // if (toolChain.secondaryOutputIds != null) {
+//  // secondaryOutputIds = toolChain.secondaryOutputIds;
+//  // }
+//  // if (toolChain.isAbstract != null) {
+//  // isAbstract = toolChain.isAbstract;
+//  // }
+//  // if (toolChain.scannerConfigDiscoveryProfileId != null) {
+//  // scannerConfigDiscoveryProfileId = toolChain.scannerConfigDiscoveryProfileId;
+//  // }
+//  //
+//  // isRcTypeBasedDiscovery = toolChain.isRcTypeBasedDiscovery;
+//  //
+//  // supportsManagedBuild = toolChain.supportsManagedBuild;
+//  //
+//  // managedIsToolChainSupportedElement =
+//  // toolChain.managedIsToolChainSupportedElement;
+//  // managedIsToolChainSupported = toolChain.managedIsToolChainSupported;
+//  //
+//  // environmentVariableSupplierElement =
+//  // toolChain.environmentVariableSupplierElement;
+//  // environmentVariableSupplier = toolChain.environmentVariableSupplier;
+//  //
+//  // buildMacroSupplierElement = toolChain.buildMacroSupplierElement;
+//  // buildMacroSupplier = toolChain.buildMacroSupplier;
+//  //
+//  // pathconverterElement = toolChain.pathconverterElement;
+//  // optionPathConverter = toolChain.optionPathConverter;
+//  //
+//  // nonInternalBuilderId = toolChain.nonInternalBuilderId;
+//  //
+//  // discoveredInfo = toolChain.discoveredInfo;
+//  //
+//  // userDefinedMacros = toolChain.userDefinedMacros;
+//  //
+//  // // Clone the children in superclass
+//  // boolean copyIds = toolChain.getId().equals(id);
+//  // super.copyChildren(toolChain);
+//  // // Clone the children
+//  // if (toolChain.builder != null) {
+//  // String subId;
+//  // String subName;
+//  //
+//  // if (toolChain.builder.getSuperClass() != null) {
+//  // subId = copyIds ? toolChain.builder.getId()
+//  // :
+//  // ManagedBuildManager.calculateChildId(toolChain.builder.getSuperClass().getId(),
+//  // null);
+//  // subName = toolChain.builder.getSuperClass().getName();
+//  // } else {
+//  // subId = copyIds ? toolChain.builder.getId()
+//  // : ManagedBuildManager.calculateChildId(toolChain.builder.getId(), null);
+//  // subName = toolChain.builder.getName();
+//  // }
+//  //
+//  // builder = new Builder(this, subId, subName, toolChain.builder);
+//  // }
+//  // // if (toolChain.targetPlatform != null)
+//  // {
+//  // ITargetPlatform tpBase = toolChain.getTargetPlatform();
+//  // if (tpBase != null) {
+//  // ITargetPlatform extTp = tpBase;
+//  // for (; extTp != null && !extTp.isExtensionElement(); extTp =
+//  // extTp.getSuperClass()) {
+//  // // empty body, the loop is to find extension element
+//  // }
+//  //
+//  // String subId;
+//  // if (copyIds) {
+//  // subId = tpBase.getId();
+//  // } else {
+//  // subId = extTp != null ? ManagedBuildManager.calculateChildId(extTp.getId(),
+//  // null)
+//  // : ManagedBuildManager.calculateChildId(getId(), null);
+//  // }
+//  // String subName = tpBase.getName();
+//  //
+//  // // if (toolChain.targetPlatform.getSuperClass() != null) {
+//  // // subId = toolChain.targetPlatform.getSuperClass().getId() + "." + nnn;
+//  // //$NON-NLS-1$
+//  // // subName = toolChain.targetPlatform.getSuperClass().getName();
+//  // // } else {
+//  // // subId = toolChain.targetPlatform.getId() + "." + nnn; //$NON-NLS-1$
+//  // // subName = toolChain.targetPlatform.getName();
+//  // // }
+//  // targetPlatform = new TargetPlatform(this, subId, subName, (TargetPlatform)
+//  // tpBase);
+//  // }
+//  // }
+//  //
+//  // IConfiguration cfg = parentFolderInfo.getParent();
+//  // if (toolChain.toolList != null) {
+//  // for (Tool toolChild : toolChain.getToolList()) {
+//  // String subId = null;
+//  // // String tmpId;
+//  // String subName;
+//  // // String version;
+//  // ITool extTool = ManagedBuildManager.getExtensionTool(toolChild);
+//  // Map<String, String> curIdMap = superIdMap.get(parentFldInfo.getPath());
+//  // if (curIdMap != null) {
+//  // if (extTool != null)
+//  // subId = curIdMap.get(extTool.getId());
+//  // }
+//  //
+//  // subName = toolChild.getName();
+//  //
+//  // if (subId == null) {
+//  // if (extTool != null) {
+//  // subId = copyIds ? toolChild.getId()
+//  // : ManagedBuildManager.calculateChildId(extTool.getId(), null);
+//  // // subName = toolChild.getSuperClass().getName();
+//  // } else {
+//  // subId = copyIds ? toolChild.getId()
+//  // : ManagedBuildManager.calculateChildId(toolChild.getId(), null);
+//  // // subName = toolChild.getName();
+//  // }
+//  // }
+//  // // version = ManagedBuildManager.getVersionFromIdAndVersion(tmpId);
+//  // // if ( version != null) { // If the 'tmpId' contains version information
+//  // // subId = ManagedBuildManager.getIdFromIdAndVersion(tmpId) + "." + nnn + "_"
+//  // + version; //$NON-NLS-1$ //$NON-NLS-2$
+//  // // } else {
+//  // // subId = tmpId + "." + nnn; //$NON-NLS-1$
+//  // // }
+//  //
+//  // // The superclass for the cloned tool is not the same as the one from the
+//  // tool being cloned.
+//  // // The superclasses reside in different configurations.
+//  // ITool toolSuperClass = null;
+//  // String superId = null;
+//  // // Search for the tool in this configuration that has the same
+//  // grand-superClass as the
+//  // // tool being cloned
+//  // ITool otherSuperTool = toolChild.getSuperClass();
+//  // if (otherSuperTool != null) {
+//  // if (otherSuperTool.isExtensionElement()) {
+//  // toolSuperClass = otherSuperTool;
+//  // } else {
+//  // IResourceInfo otherRcInfo = otherSuperTool.getParentResourceInfo();
+//  // IResourceInfo thisRcInfo = cfg.getResourceInfo(otherRcInfo.getPath(), true);
+//  // ITool otherExtTool = ManagedBuildManager.getExtensionTool(otherSuperTool);
+//  // if (otherExtTool != null) {
+//  // if (thisRcInfo != null) {
+//  // ITool tools[] = thisRcInfo.getTools();
+//  // for (int i = 0; i < tools.length; i++) {
+//  // ITool thisExtTool = ManagedBuildManager.getExtensionTool(tools[i]);
+//  // if (otherExtTool.equals(thisExtTool)) {
+//  // toolSuperClass = tools[i];
+//  // superId = toolSuperClass.getId();
+//  // break;
+//  // }
+//  // }
+//  // } else {
+//  // superId = copyIds ? otherSuperTool.getId()
+//  // : ManagedBuildManager.calculateChildId(otherExtTool.getId(), null);
+//  // Map<String, String> idMap = superIdMap.get(otherRcInfo.getPath());
+//  // if (idMap == null) {
+//  // idMap = new HashMap<>();
+//  // superIdMap.put(otherRcInfo.getPath(), idMap);
+//  // }
+//  // idMap.put(otherExtTool.getId(), superId);
+//  // }
+//  // }
+//  // }
+//  // }
+//  // // Tool newTool = new Tool(this, (Tool)null, subId, subName, toolChild);
+//  // // addTool(newTool);
+//  //
+//  // Tool newTool = null;
+//  // if (toolSuperClass != null)
+//  // newTool = new Tool(this, toolSuperClass, subId, subName, toolChild);
+//  // else if (superId != null)
+//  // newTool = new Tool(this, superId, subId, subName, toolChild);
+//  // else {
+//  // //TODO: Error
+//  // }
+//  // if (newTool != null)
+//  // addTool(newTool);
+//  //
+//  // }
+//  // }
+//  //
+//  // if (copyIds) {
+//  // rebuildState = toolChain.rebuildState;
+//  // isDirty = toolChain.isDirty;
+//  // } else {
+//  // setRebuildState(true);
+//  // }
+//}
+//public void setPerRcTypeDiscovery(boolean on) {
+//isRcTypeBasedDiscovery = Boolean.valueOf(on);
+//}
+//
+//public PathInfoCache setDiscoveredPathInfo(PathInfoCache info) {
+//PathInfoCache oldInfo = discoveredInfo;
+//discoveredInfo = info;
+//return oldInfo;
+//}
+//
+///**
+//* Initialize the tool-chain information from the XML element specified in the
+//* argument
+//*
+//* @param element
+//*            An XML element containing the tool-chain information
+//*/
+//protected void loadFromProject(ICStorageElement element) {
+//  //
+//  //        loadNameAndID(element);
+//  //
+//  //        // version
+//  //        setVersion(getVersionFromId());
+//  //
+//  //        // superClass
+//  //        superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
+//  //        if (superClassId != null && superClassId.length() > 0) {
+//  //            setSuperClassInternal(null);//TOFIX JABA ManagedBuildManager.getExtensionToolChain(superClassId));
+//  //            // Check for migration support
+//  //            //       checkForMigrationSupport();
+//  //        }
+//  //
+//  //        // isAbstract
+//  //        if (element.getAttribute(IS_ABSTRACT) != null) {
+//  //            String isAbs = element.getAttribute(IS_ABSTRACT);
+//  //            if (isAbs != null) {
+//  //                isAbstract = Boolean.parseBoolean(isAbs);
+//  //            }
+//  //        }
+//  //
+//  //        // Get the semicolon separated list of IDs of the error parsers
+//  //        if (element.getAttribute(ERROR_PARSERS) != null) {
+//  //            errorParserIds = SafeStringInterner.safeIntern(element.getAttribute(ERROR_PARSERS));
+//  //        }
+//  //
+//  //        // Get the semicolon separated list of IDs of the secondary outputs
+//  //        if (element.getAttribute(SECONDARY_OUTPUTS) != null) {
+//  //            secondaryOutputIds = SafeStringInterner.safeIntern(element.getAttribute(SECONDARY_OUTPUTS));
+//  //        }
+//  //
+//  //        // Get the target tool id
+//  //        if (element.getAttribute(TARGET_TOOL) != null) {
+//  //            targetToolIds = SafeStringInterner.safeIntern(element.getAttribute(TARGET_TOOL));
+//  //        }
+//  //
+//  //        // Get the scanner config discovery profile id
+//  //        if (element.getAttribute(SCANNER_CONFIG_PROFILE_ID) != null) {
+//  //            scannerConfigDiscoveryProfileId = SafeStringInterner
+//  //                    .safeIntern(element.getAttribute(SCANNER_CONFIG_PROFILE_ID));
+//  //        }
+//  //
+//  //        // Get the 'versionSupported' attribute
+//  //        if (element.getAttribute(VERSIONS_SUPPORTED) != null) {
+//  //            versionsSupported = SafeStringInterner.safeIntern(element.getAttribute(VERSIONS_SUPPORTED));
+//  //        }
+//  //
+//  //        // Get the 'convertToId' id
+//  //        if (element.getAttribute(CONVERT_TO_ID) != null) {
+//  //            convertToId = SafeStringInterner.safeIntern(element.getAttribute(CONVERT_TO_ID));
+//  //        }
+//  //
+//  //        // Get the comma-separated list of valid OS
+//  //        if (element.getAttribute(OS_LIST) != null) {
+//  //            String os = element.getAttribute(OS_LIST);
+//  //            if (os != null) {
+//  //                osList = new ArrayList<>();
+//  //                String[] osTokens = os.split(","); //$NON-NLS-1$
+//  //                for (int i = 0; i < osTokens.length; ++i) {
+//  //                    osList.add(SafeStringInterner.safeIntern(osTokens[i].trim()));
+//  //                }
+//  //            }
+//  //        }
+//  //
+//  //        // Get the comma-separated list of valid Architectures
+//  //        if (element.getAttribute(ARCH_LIST) != null) {
+//  //            String arch = element.getAttribute(ARCH_LIST);
+//  //            if (arch != null) {
+//  //                archList = new ArrayList<>();
+//  //                String[] archTokens = arch.split(","); //$NON-NLS-1$
+//  //                for (int j = 0; j < archTokens.length; ++j) {
+//  //                    archList.add(SafeStringInterner.safeIntern(archTokens[j].trim()));
+//  //                }
+//  //            }
+//  //        }
+//  //
+//  //        // Note: optionPathConverter cannot be specified in a project file because
+//  //        //       an IConfigurationElement is needed to load it!
+//  //        if (pathconverterElement != null) {
+//  //            //  TODO:  issue warning?
+//  //        }
+//  //
+//  //        // Get the scanner config discovery profile id
+//  //        scannerConfigDiscoveryProfileId = element.getAttribute(SCANNER_CONFIG_PROFILE_ID);
+//  //        String tmp = element.getAttribute(RESOURCE_TYPE_BASED_DISCOVERY);
+//  //        if (tmp != null)
+//  //            isRcTypeBasedDiscovery = Boolean.valueOf(tmp);
+//  //
+//  //        nonInternalBuilderId = SafeStringInterner.safeIntern(element.getAttribute(NON_INTERNAL_BUILDER_ID));
+//  //
+//  //        //      String tmp = element.getAttribute(name)
+//}
+//
+//void setTargetPlatform(TargetPlatform tp) {
+//  targetPlatform = tp;
+//}
+//@Override
+//public IFolderInfo getParentFolderInfo() {
+//  return parentFolderInfo;
+//}
+//
+//@Override
+//public boolean supportsBuild(boolean managed) {
+//
+//  //        IBuilder builder = getBuilder();
+//  //        if (builder != null && !builder.supportsBuild(managed))
+//  //            return false;
+//  //
+//  //        List<ITool> tools = getTools();
+//  //        for (ITool tool : tools) {
+//  //            if (!tool.supportsBuild(managed))
+//  //                return false;
+//  //        }
+//
+//  return true;
+//}
+//  void resolveProjectReferences(boolean onLoad) {
+//      for (Tool tool : getToolList()) {
+//          tool.resolveProjectReferences(onLoad);
+//      }
+//  }
+
+//@Override
+//public String getUniqueRealName() {
+//  if (myName == null) {
+//      myName = getId();
+//  } else {
+//      String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+//      if (idVersion != null) {
+//          StringBuilder buf = new StringBuilder();
+//          buf.append(myName);
+//          buf.append(" (v").append(idVersion).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+//          myName = buf.toString();
+//      }
+//  }
+//  return myName;
+//}
+//@Override
+//public boolean isSupported() {
+//  if (managedIsToolChainSupported == null) {
+//      IConfigurationElement element = getIsToolChainSupportedElement();
+//      if (element != null) {
+//          try {
+//              if (element.getAttribute(IS_TOOL_CHAIN_SUPPORTED) != null) {
+//                  managedIsToolChainSupported = (IManagedIsToolChainSupported) element
+//                          .createExecutableExtension(IS_TOOL_CHAIN_SUPPORTED);
+//              }
+//          } catch (CoreException e) {
+//              Activator.log(e);
+//          }
+//      }
+//  }
+//
+//  // if (managedIsToolChainSupported != null) {
+//  // try {
+//  // return managedIsToolChainSupported.isSupported(this, null, null);
+//  // } catch (Throwable e) {
+//  // Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+//  // "Exception in toolchain [" + getName() + "], id=" + getId(), e));
+//  // //$NON-NLS-1$ //$NON-NLS-2$
+//  // return false;
+//  // }
+//  // }
+//  return true;
+//}
+///*
+//* O B J E C T S T A T E M A I N T E N A N C E
+//*/
+//
+//private IConfigurationElement getIsToolChainSupportedElement() {
+// if (managedIsToolChainSupportedElement == null) {
+//     if (superClass != null && superClass instanceof ToolChain) {
+//         return ((ToolChain) superClass).getIsToolChainSupportedElement();
+//     }
+// }
+// return managedIsToolChainSupportedElement;
+//}
+
+//public Set<String> contributeErrorParsers(FolderInfo info, Set<String> set, boolean includeChildren) {
+//String parserIDs = getErrorParserIdsAttribute();
+//if (parserIDs != null) {
+//  if (set == null)
+//      set = new HashSet<>();
+//  if (parserIDs.length() != 0) {
+//      StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
+//      while (tok.hasMoreElements()) {
+//          set.add(tok.nextToken());
+//      }
+//  }
+//}
+//
+//if (includeChildren) {
+//  //List<ITool> tools = info.getFilteredTools();
+//  // set = info.contributeErrorParsers(tools, set);
+//
+//  //            if (info.isRoot()) {
+//  //                Builder builder = (Builder) getBuilder();
+//  //                set = builder.contributeErrorParsers(set);
+//  //            }
+//}
+//return set;
+//}

@@ -19,8 +19,6 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.schema.internal.ISchemaObject;
-
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.

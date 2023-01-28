@@ -8,6 +8,7 @@ import static io.sloeber.autoBuild.integration.Const.*;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,12 @@ import io.sloeber.schema.api.ITool;
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public class MakefileGenerator implements IMakefileGenerator {
+    static private boolean VERBOSE = true;
+    static private final String IGNORED_BY = " ignored by "; //$NON-NLS-1$
+    static private final String ACCEPTED_BY = " accepted by "; //$NON-NLS-1$
+    // static config
+    static private final List<String> InputFileIgnoreList = new LinkedList<>(
+            List.of(".settings", ".project", ".cproject")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // Local variables needed by generator
     IConfiguration myConfig;
     IProject myProject;
@@ -118,12 +125,12 @@ public class MakefileGenerator implements IMakefileGenerator {
 
     @Override
     public void regenerateDependencies(boolean force, IProgressMonitor monitor) throws CoreException {
-        localgenerateMakefiles(monitor);
+        //Nothing to do here
     }
 
     @Override
     public void generateDependencies(IProgressMonitor monitor) throws CoreException {
-        localgenerateMakefiles(monitor);
+        //Nothing to do here
     }
 
     @Override
@@ -150,6 +157,9 @@ public class MakefileGenerator implements IMakefileGenerator {
         public boolean visit(IResourceProxy proxy) throws CoreException {
             IResource resource = proxy.requestResource();
             if (resource.isDerived()) {
+                return false;
+            }
+            if (InputFileIgnoreList.contains(resource.getName())) {
                 return false;
             }
             boolean isExcluded = !CDataUtil.isExcluded(resource.getLocation(), mySrcEntries);
@@ -186,14 +196,24 @@ public class MakefileGenerator implements IMakefileGenerator {
                             IFile outputFile = outputType.getOutputName(myTopBuildDir, inputFile,
                                     myCConfigurationDescription, inputType);
                             if (outputFile == null) {
+                                if (VERBOSE) {
+                                    System.out.println(inputFile + ACCEPTED_BY + inputType.getName() + IGNORED_BY
+                                            + outputType.getName());
+                                }
                                 continue;
                             }
-                            // We found a tool that provides a outputfile for our source file
+                            if (VERBOSE) {
+                                System.out.println(inputFile + ACCEPTED_BY + inputType.getName() + ACCEPTED_BY
+                                        + outputType.getName());
+                            }
                             MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType, outputFile, 0);
-                            // newMakeRule.addDependencies(caller);
 
                             myMakeRules.addRule(newMakeRule);
                             ret = true;
+                        }
+                    } else {
+                        if (VERBOSE) {
+                            System.out.println(inputFile + IGNORED_BY + inputType.getName());
                         }
                     }
                 }
@@ -212,15 +232,23 @@ public class MakefileGenerator implements IMakefileGenerator {
     protected void generateHigherLevelMakeRules() {
         int makeRuleSequenceID = 1;
         Map<IOutputType, Set<IFile>> generatedFiles = myMakeRules.getTargets();
+        if (VERBOSE) {
+            System.out.println("Trying to resolve generated files level 1 (that is from source files");
+        }
         MakeRules newMakeRules = getMakeRulesFromGeneratedFiles(generatedFiles, makeRuleSequenceID);
         while (makeRuleSequenceID < 20 && newMakeRules.size() > 0) {
             myMakeRules.addRules(newMakeRules);
             generatedFiles.clear();
             generatedFiles.putAll(newMakeRules.getTargets());
             makeRuleSequenceID++;
+            if (VERBOSE) {
+                System.out.println("Trying to resolve generated files level " + String.valueOf(makeRuleSequenceID));
+            }
             newMakeRules = getMakeRulesFromGeneratedFiles(generatedFiles, makeRuleSequenceID);
         }
-
+        if (VERBOSE) {
+            System.out.println("All rules are created");
+        }
     }
 
     /**
@@ -250,11 +278,24 @@ public class MakefileGenerator implements IMakefileGenerator {
                                 IFile outputFile = outputType.getOutputName(myTopBuildDir, file,
                                         myCConfigurationDescription, inputType);
 
-                                if (outputFile != null) {
+                                if (outputFile == null) {
+                                    if (VERBOSE) {
+                                        System.out.println(file + ACCEPTED_BY + inputType.getName() + IGNORED_BY
+                                                + outputType.getName());
+                                    }
+                                } else {
+                                    if (VERBOSE) {
+                                        System.out.println(file + ACCEPTED_BY + inputType.getName() + ACCEPTED_BY
+                                                + outputType.getName());
+                                    }
                                     newMakeRules.addRule(tool, inputType, file, outputType, outputFile,
                                             makeRuleSequenceID);
                                     continue;
                                 }
+                            }
+                        } else {
+                            if (VERBOSE) {
+                                System.out.println(file + IGNORED_BY + inputType.getName());
                             }
                         }
                     }
@@ -269,6 +310,10 @@ public class MakefileGenerator implements IMakefileGenerator {
      *****************************************************************************************/
 
     protected MultiStatus localgenerateMakefiles(IProgressMonitor monitor) throws CoreException {
+        if (VERBOSE) {
+            System.out.println("Start MakeFile Generation for " + myProject.getName() + " for config "
+                    + myCConfigurationDescription.getName());
+        }
         MultiStatus status;
         //This code is called several times so we need to reset the field values
         myMakeRules = new MakeRules();
@@ -374,6 +419,10 @@ public class MakefileGenerator implements IMakefileGenerator {
         // e.printStackTrace();
         // }
         // END JABA SLOEBER create the size.awk file
+        if (VERBOSE) {
+            System.out.println("MakeFile Generation done for " + myProject.getName() + " for config "
+                    + myCConfigurationDescription.getName());
+        }
 
         return status;
     }

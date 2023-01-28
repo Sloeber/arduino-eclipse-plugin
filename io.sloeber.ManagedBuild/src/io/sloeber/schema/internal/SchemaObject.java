@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.osgi.framework.Version;
 
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.ISchemaObject;
 
 public abstract class SchemaObject implements ISchemaObject {
 
@@ -116,6 +117,31 @@ public abstract class SchemaObject implements ISchemaObject {
         int cur = 0;
         while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null)) {
             ret.addAll(Arrays.asList(mySuperClassConfElement[cur].getChildren()));
+            cur++;
+        }
+        return ret;
+    }
+
+    List<IConfigurationElement> getAllChildren(String builderElementName) {
+        ArrayList<IConfigurationElement> ret = new ArrayList<>();
+        ret.addAll(Arrays.asList(myConfigurationElement.getChildren(builderElementName)));
+        int cur = 0;
+        while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null)) {
+            ret.addAll(Arrays.asList(mySuperClassConfElement[cur].getChildren(builderElementName)));
+            cur++;
+        }
+        return ret;
+    }
+
+    List<IConfigurationElement> getFirstChildren(String builderElementName) {
+        ArrayList<IConfigurationElement> ret = new ArrayList<>();
+        ret.addAll(Arrays.asList(myConfigurationElement.getChildren(builderElementName)));
+        int cur = 0;
+        while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null)) {
+            ret.addAll(Arrays.asList(mySuperClassConfElement[cur].getChildren(builderElementName)));
+            if (ret.size() > 0) {
+                return ret;
+            }
             cur++;
         }
         return ret;

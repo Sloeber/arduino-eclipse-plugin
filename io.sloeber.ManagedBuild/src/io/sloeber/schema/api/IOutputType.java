@@ -20,7 +20,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.content.IContentType;
 
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * This interface represents an outputType instance in the managed build system.

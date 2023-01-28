@@ -43,9 +43,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
     private String myProjectName = null;
     private IProject myProject = null;
-	private String myExtensionPointID;
-	private String myExtensionID;
-	private String myProjectTypeID;
+    private String myExtensionPointID;
+    private String myExtensionID;
+    private String myProjectTypeID;
 
     public AutoBuildProjectGenerator() {
 
@@ -74,7 +74,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IFolder srcFolder = myProject.getFolder("src");
                 srcFolder.create(true, true, monitor);
                 IFile mainFile = srcFolder.getFile("main.cpp");
-                InputStream stream = new ByteArrayInputStream("void main(){}".getBytes(StandardCharsets.UTF_8));
+                InputStream stream = new ByteArrayInputStream("int main(){}".getBytes(StandardCharsets.UTF_8));
                 mainFile.create(stream, true, monitor);
                 //End of stupid code creation
 
@@ -84,8 +84,8 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
                 ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(myProject);
 
-                IProjectType sloeberProjType = ManagedBuildManager.getProjectType(
-                		myExtensionPointID, myExtensionID, myProjectTypeID, true); 
+                IProjectType sloeberProjType = ManagedBuildManager.getProjectType(myExtensionPointID, myExtensionID,
+                        myProjectTypeID, true);
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
                 ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
@@ -142,17 +142,17 @@ public class AutoBuildProjectGenerator implements IGenerator {
         return myProject;
     }
 
-	public void setExtentionPointID(String extensionPointID) {
-		myExtensionPointID=extensionPointID;
-	}
+    public void setExtentionPointID(String extensionPointID) {
+        myExtensionPointID = extensionPointID;
+    }
 
-	public void setExtentionID(String extensionID) {
-		myExtensionID=extensionID;
-	}
+    public void setExtentionID(String extensionID) {
+        myExtensionID = extensionID;
+    }
 
-	public void setProjectTypeID(String projectTypeID) {
-		myProjectTypeID=projectTypeID;
-		
-	}
+    public void setProjectTypeID(String projectTypeID) {
+        myProjectTypeID = projectTypeID;
+
+    }
 
 }

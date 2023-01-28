@@ -75,9 +75,9 @@ import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.IResourceInfo;
+import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.ISchemaObject;
 import io.sloeber.schema.internal.ManagedProject;
 import io.sloeber.schema.internal.ProjectType;
 

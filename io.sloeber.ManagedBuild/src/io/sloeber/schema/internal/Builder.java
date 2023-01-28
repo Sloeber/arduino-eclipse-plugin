@@ -757,8 +757,7 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     @Override
     public boolean appendEnvironment() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override

@@ -16,7 +16,6 @@ package io.sloeber.schema.api;
 import java.util.List;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * Implements the functionality that is needed to hold options and option

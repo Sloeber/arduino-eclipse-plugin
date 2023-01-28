@@ -17,8 +17,6 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 
-import io.sloeber.schema.internal.ISchemaObject;
-
 /**
  * This class defines the os/architecture combination upon which the
  * outputs of a tool-chain can be deployed. The osList and archList
@@ -31,7 +29,7 @@ import io.sloeber.schema.internal.ISchemaObject;
  */
 public interface ITargetPlatform extends ISchemaObject {
     public static final String TARGET_PLATFORM_ELEMENT_NAME = "targetPlatform"; //$NON-NLS-1$
-    
+
     public static final String OS_LIST = "osList"; //$NON-NLS-1$
     public static final String ARCH_LIST = "archList"; //$NON-NLS-1$
     public static final String BINARY_PARSER = "binaryParser"; //$NON-NLS-1$
@@ -43,15 +41,12 @@ public interface ITargetPlatform extends ISchemaObject {
      */
     public IToolChain getParent();
 
-
     /**
      * Returns an array of operating systems this target platform represents.
      *
      * @return String[]
      */
     public Set<String> getOSList();
-
-
 
     /**
      * Returns an array of architectures this target platform represents.
@@ -67,10 +62,5 @@ public interface ITargetPlatform extends ISchemaObject {
      * @return String[]
      */
     public Set<String> getBinaryParserList();
-
-
-
-
-    public CTargetPlatformData getTargetPlatformData();
 
 }

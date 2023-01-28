@@ -16,7 +16,7 @@ package io.sloeber.autoBuild.Internal;
 
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.internal.ISchemaObject;
+import io.sloeber.schema.api.ISchemaObject;
 
 /**
  * This interface is used to represent an option context data

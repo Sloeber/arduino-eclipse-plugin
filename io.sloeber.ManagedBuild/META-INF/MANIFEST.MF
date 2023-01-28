@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.cdt.core;bundle-version="7.0.0",
  org.eclipse.tools.templates.core
 Automatic-Module-Name: io.sloeber.core
 Bundle-Activator: io.sloeber.autoBuild.core.Activator
-Export-Package: io.sloeber.autoBuild.api
+Export-Package: io.sloeber.autoBuild.api,
+ io.sloeber.schema.api
 Import-Package: org.eclipse.cdt.build.core.scannerconfig,
  org.eclipse.cdt.build.internal.core.scannerconfig2,
  org.eclipse.cdt.newmake.core
