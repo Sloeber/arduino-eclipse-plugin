@@ -29,14 +29,16 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     BuildBuildData myBuildBuildData;
     ICConfigurationDescription myCdtConfigurationDescription;
     private boolean isValid = false;
-    String myName=EMPTY_STRING;
+    String myName = EMPTY_STRING;
+    private String myDescription;
 
     public AutoBuildConfigurationData(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
         myAutoBuildConfiguration = config;
         myProject = project;
         myTargetPlatformData = myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
-        myName=config.getName();
+        myName = myAutoBuildConfiguration.getName();
+        myDescription = myAutoBuildConfiguration.getDescription();
     }
 
     //Copy constructor
@@ -48,7 +50,8 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myTargetPlatformData = myAutoBuildConfiguration.getToolChain().getTargetPlatformData();
         myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
                 myCdtConfigurationDescription);
-        myName=autoBuildConfigBase.getName();
+        myName = autoBuildConfigBase.getName();
+        myDescription = autoBuildConfigBase.getDescription();
         isValid = true;
     }
 
@@ -80,19 +83,16 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return "io.sloeber.autoBuild.configurationDescription";
+        return myAutoBuildConfiguration.getId();
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return myName;
     }
 
     @Override
     public CFolderData getRootFolderData() {
-        // TODO Auto-generated method stub
         CDataFactory factory = CDataFactory.getDefault();
         return factory.createFolderData(null, null, getId(), false, new Path("/"));
     }
@@ -105,14 +105,12 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return "AutoBuildConfigurationData.getDescription()";
+        return myDescription;
     }
 
     @Override
     public void setDescription(String description) {
-        // TODO Auto-generated method stub
-
+        myDescription = description;
     }
 
     @Override
@@ -159,7 +157,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     @Override
     public void setName(String name) {
-    	myName=name;
+        myName = name;
 
     }
 
