@@ -571,7 +571,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             IProgressMonitor monitor) throws CoreException {
 
         if (buildStatus.isRebuild()) {
-            buildStatus.getMakeGen().regenerateDependencies(false,monitor);
+            buildStatus.getMakeGen().regenerateDependencies(false, monitor);
         } else {
             buildStatus.getMakeGen().generateDependencies(monitor);
         }
@@ -585,58 +585,56 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         buildStatus = performCleanning(kind, bInfo, buildStatus, monitor);
         IMakefileGenerator generator = builder.getBuildFileGenerator();
-        if (generator != null) {
-            generator.initialize(kind, bInfo.getProject(), bInfo.getConfiguration(), bInfo.getBuilder());
-            buildStatus.setMakeGen(generator);
+        if (generator == null) {
+            generator = new MakefileGenerator();
+        }
+        generator.initialize(kind, bInfo.getProject(), bInfo.getConfiguration(), bInfo.getBuilder());
+        buildStatus.setMakeGen(generator);
 
-            MultiStatus result = performMakefileGeneration(bInfo, generator, buildStatus, monitor);
-            if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
-                IStatus[] kids = result.getChildren();
-                for (int index = 0; index < kids.length; ++index) {
-                    // One possibility is that there is nothing to build
-                    IStatus status = kids[index];
-                    //					if(messages == null){
-                    //						messages = new MultiStatus(
-                    //								Activator.getId(),
-                    //								IStatus.INFO,
-                    //								"",
-                    //								null);
-                    //
-                    //					}
-                    if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
-                        //						performBuild = false;
-                        buildStatus.getConsoleMessagesList().add(createNoSourceMessage(kind, status, bInfo));
-                        buildStatus.cancelBuild();
-                        //						break;
+        MultiStatus result = performMakefileGeneration(bInfo, generator, buildStatus, monitor);
+        if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
+            IStatus[] kids = result.getChildren();
+            for (int index = 0; index < kids.length; ++index) {
+                // One possibility is that there is nothing to build
+                IStatus status = kids[index];
+                //					if(messages == null){
+                //						messages = new MultiStatus(
+                //								Activator.getId(),
+                //								IStatus.INFO,
+                //								"",
+                //								null);
+                //
+                //					}
+                if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
+                    //						performBuild = false;
+                    buildStatus.getConsoleMessagesList().add(createNoSourceMessage(kind, status, bInfo));
+                    buildStatus.cancelBuild();
+                    //						break;
 
-                    } else {
-                        // Stick this in the list of stuff to warn the user about
+                } else {
+                    // Stick this in the list of stuff to warn the user about
 
-                        //TODO:		messages.add(status);
-                    }
+                    //TODO:		messages.add(status);
                 }
-            } else if (result.getCode() == IStatus.ERROR) {
-                StringBuilder buf = new StringBuilder();
-                buf.append(CommonBuilder_23).append(NEWLINE);
-                String message = result.getMessage();
-                if (message != null && message.length() != 0) {
-                    buf.append(message).append(NEWLINE);
-                }
-
-                buf.append(CommonBuilder_24).append(NEWLINE);
-                message = buf.toString();
-                buildStatus.getConsoleMessagesList().add(message);
-                buildStatus.cancelBuild();
+            }
+        } else if (result.getCode() == IStatus.ERROR) {
+            StringBuilder buf = new StringBuilder();
+            buf.append(CommonBuilder_23).append(NEWLINE);
+            String message = result.getMessage();
+            if (message != null && message.length() != 0) {
+                buf.append(message).append(NEWLINE);
             }
 
-            checkCancel(monitor);
-
-            //			if(result.getSeverity() != IStatus.OK)
-            //				throw new CoreException(result);
-        } else {
+            buf.append(CommonBuilder_24).append(NEWLINE);
+            message = buf.toString();
+            buildStatus.getConsoleMessagesList().add(message);
             buildStatus.cancelBuild();
         }
 
+        checkCancel(monitor);
+
+        //			if(result.getSeverity() != IStatus.OK)
+        //				throw new CoreException(result);
         return buildStatus;
     }
 
@@ -726,7 +724,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         if (buildStatus.isRebuild()) {
             result = generator.regenerateMakefiles(monitor);
         } else {
-            result = generator.generateMakefiles(getDelta(curProject),monitor);
+            result = generator.generateMakefiles(getDelta(curProject), monitor);
         }
 
         return result;

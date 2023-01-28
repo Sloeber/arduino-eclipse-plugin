@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.content.IContentType;
 
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * This interface represents an outputType instance in the managed build system.
@@ -31,7 +31,7 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IOutputType extends IBuildObject {
+public interface IOutputType extends ISchemaObject {
     public static final String OUTPUT_TYPE_ELEMENT_NAME = "outputType"; //$NON-NLS-1$
 
     public static final String OUTPUT_CONTENT_TYPE = "outputContentType"; //$NON-NLS-1$

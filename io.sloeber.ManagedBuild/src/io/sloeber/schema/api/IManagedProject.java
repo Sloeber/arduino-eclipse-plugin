@@ -15,7 +15,7 @@ package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
 
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * This class represents a project instance in the managed build system.

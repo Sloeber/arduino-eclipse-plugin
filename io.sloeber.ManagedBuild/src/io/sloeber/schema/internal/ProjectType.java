@@ -28,7 +28,7 @@ import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
 
-public class ProjectType extends BuildObject implements IProjectType {
+public class ProjectType extends SchemaObject implements IProjectType {
 
     // read from model
     private String[] modelBuildProperties;

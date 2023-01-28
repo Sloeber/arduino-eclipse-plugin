@@ -52,7 +52,7 @@ import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
-public class Option extends BuildObject implements IOption {
+public class Option extends SchemaObject implements IOption {
     // Static default return values
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final OptionStringValue[] EMPTY_LV_ARRAY = new OptionStringValue[0];
@@ -1183,7 +1183,7 @@ public class Option extends BuildObject implements IOption {
      */
 
     @Override
-    public IBuildObject getParent() {
+    public ISchemaObject getParent() {
         return holder;
     }
 

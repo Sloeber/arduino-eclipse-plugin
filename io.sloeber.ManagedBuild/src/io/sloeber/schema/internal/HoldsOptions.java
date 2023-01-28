@@ -59,7 +59,7 @@ import io.sloeber.schema.api.IResourceInfo;
  *
  * @since 3.0
  */
-public abstract class HoldsOptions extends BuildObject implements IHoldsOptions {
+public abstract class HoldsOptions extends SchemaObject implements IHoldsOptions {
 
     private static final List<IOptionCategory> EMPTY_CATEGORIES = new LinkedList<>();
 

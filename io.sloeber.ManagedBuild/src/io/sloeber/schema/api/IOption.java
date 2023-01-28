@@ -24,7 +24,7 @@ import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 //import org.eclipse.cdt.managedbuilder.macros.IOptionContextData;
 
@@ -34,7 +34,7 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IOption extends IBuildObject {
+public interface IOption extends ISchemaObject {
     public static final String ELEMENT_NAME = "option"; //$NON-NLS-1$
     // Type for the value of the option
     public static final int BOOLEAN = 0;
@@ -192,7 +192,7 @@ public interface IOption extends IBuildObject {
      *        the same object as getOptionHolder(). It is included as a convenience
      *        for clients.
      */
-    public IBuildObject getParent();
+    public ISchemaObject getParent();
 
     /**
      * @return the holder (parent) of this option. This may be an object

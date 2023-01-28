@@ -33,7 +33,7 @@ import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.IToolChain;
 
-public class TargetPlatform extends BuildObject implements ITargetPlatform {
+public class TargetPlatform extends SchemaObject implements ITargetPlatform {
 
 	String[] modelIsAbstract;
     String[] modelOsList; 

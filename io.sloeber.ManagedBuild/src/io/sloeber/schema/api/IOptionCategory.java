@@ -18,13 +18,13 @@ import java.net.URL;
 import java.util.List;
 
 import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IOptionCategory extends IBuildObject {
+public interface IOptionCategory extends ISchemaObject {
 
     // Schema element names
     public static final String OWNER = "owner"; //$NON-NLS-1$

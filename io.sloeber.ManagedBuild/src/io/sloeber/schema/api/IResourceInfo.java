@@ -19,13 +19,13 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IResourceInfo extends IBuildObject {
+public interface IResourceInfo extends ISchemaObject {
     //	public static final String PARENT_FOLDER_INFO_ID = "parentFolderInfoId";
     //	public static final String BASE_TOOLCHAIN_ID = "baseToolChainId";
     //	public static final String INHERIT_PARENT_INFO = "inheritParentInfo";					  //$NON-NLS-1$

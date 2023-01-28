@@ -36,7 +36,7 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 
-public class OutputType extends BuildObject implements IOutputType {
+public class OutputType extends SchemaObject implements IOutputType {
 
     private String[] modelOutputContentType;//Not yet implemented
     private String[] modelOption;

@@ -77,7 +77,7 @@ import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 import io.sloeber.schema.internal.ManagedProject;
 import io.sloeber.schema.internal.ProjectType;
 
@@ -118,7 +118,7 @@ public class ManagedBuildManager extends AbstractCExtension {
     private static Map<IProject, IManagedBuildInfo> fInfoMap = new HashMap<>();
 
     // The loaded extensions
-    static Map<String, List<IBuildObject>> myLoadedExtensions = new HashMap<>();
+    static Map<String, List<ISchemaObject>> myLoadedExtensions = new HashMap<>();
     // List of extension point ID's the autoBuild Supports
     // currently only 1
     private static List<String> supportedExtensionPointIDs = new ArrayList<>();
@@ -149,11 +149,7 @@ public class ManagedBuildManager extends AbstractCExtension {
         String key = makeKey(extensionPointID, extensionID);
         // verify if it is a valid set of ID's
         if (!supportedExtensionPointIDs.contains(extensionPointID)) {
-            System.err.println("extensionpoint support for " + extensionID + " for " + extensionPointID
-                    + " is not yet implemented");
-        }
-        if (!"io.sloeber.core.sketch".equals(projectTypeID)) {
-            System.err.println("extension support is for " + projectTypeID + " is not yet implemented");
+            System.err.println("extensionpoint support for " + extensionPointID + " is not yet implemented");
         }
 
         // Try to find the project type
@@ -174,11 +170,11 @@ public class ManagedBuildManager extends AbstractCExtension {
     }
 
     private static IProjectType findLoadedProject(String key, String projectTypeID) {
-        List<IBuildObject> buildObjects = myLoadedExtensions.get(key);
+        List<ISchemaObject> buildObjects = myLoadedExtensions.get(key);
         if (buildObjects == null) {
             return null;
         }
-        for (IBuildObject curBuildObject : buildObjects) {
+        for (ISchemaObject curBuildObject : buildObjects) {
             if (curBuildObject instanceof IProjectType) {
                 IProjectType curProject = (IProjectType) curBuildObject;
                 if (curProject.getId().equals(projectTypeID)) {
@@ -202,7 +198,7 @@ public class ManagedBuildManager extends AbstractCExtension {
             if (extensionPoint != null) {
                 IExtension extension = extensionPoint.getExtension(extensionID);
                 if (extension != null) {
-                    List<IBuildObject> objects = new LinkedList<>();
+                    List<ISchemaObject> objects = new LinkedList<>();
                     IConfigurationElement[] elements = extension.getConfigurationElements();
                     for (IConfigurationElement element : elements) {
                         try {
@@ -221,9 +217,6 @@ public class ManagedBuildManager extends AbstractCExtension {
             Activator.log(e);
         }
     }
-
-
-
 
     /**
      * Sets the currently selected configuration. This is used while the project
@@ -921,7 +914,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         }
     }
 
-
     /**
      * Send event to value handlers of relevant configuration including all its
      * child resource configurations, if they exist.
@@ -1037,7 +1029,7 @@ public class ManagedBuildManager extends AbstractCExtension {
         //		}
     }
 
-    private static IBuildObject invokeConverter(ManagedBuildInfo bi, IBuildObject buildObject,
+    private static ISchemaObject invokeConverter(ManagedBuildInfo bi, ISchemaObject buildObject,
             IConfigurationElement element) {
         //
         // if (element != null) {
@@ -1083,7 +1075,7 @@ public class ManagedBuildManager extends AbstractCExtension {
      * @return true if there are converters for the given Build Object. Returns
      *         false if there are no converters.
      */
-    public static boolean hasTargetConversionElements(IBuildObject buildObj) {
+    public static boolean hasTargetConversionElements(ISchemaObject buildObj) {
 
         // Get the Converter Extension Point
         IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(
@@ -1110,7 +1102,7 @@ public class ManagedBuildManager extends AbstractCExtension {
      * Object
      */
 
-    public static Map<String, IConfigurationElement> getConversionElements(IBuildObject buildObj) {
+    public static Map<String, IConfigurationElement> getConversionElements(ISchemaObject buildObj) {
 
         Map<String, IConfigurationElement> conversionTargets = new HashMap<>();
 
@@ -1141,7 +1133,7 @@ public class ManagedBuildManager extends AbstractCExtension {
      * is convertable, otherwise it returns false.
      */
 
-    private static boolean isBuildObjectApplicableForConversion(IBuildObject buildObj, IConfigurationElement element) {
+    private static boolean isBuildObjectApplicableForConversion(ISchemaObject buildObj, IConfigurationElement element) {
 
         return false;
         // String id = null;
@@ -1576,28 +1568,27 @@ public class ManagedBuildManager extends AbstractCExtension {
         //		// }
         //		return realToolChain;
     }
-    
-	public static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
-			IWorkingDirectoryTracker cwdTracker, List<IConsoleParser> parsers) {
-		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-			List<ILanguageSettingsProvider> lsProviders = ((ILanguageSettingsProvidersKeeper) cfgDescription)
-					.getLanguageSettingProviders();
-			for (ILanguageSettingsProvider lsProvider : lsProviders) {
-				ILanguageSettingsProvider rawProvider = LanguageSettingsManager.getRawProvider(lsProvider);
-				if (rawProvider instanceof ICBuildOutputParser) {
-					ICBuildOutputParser consoleParser = (ICBuildOutputParser) rawProvider;
-					try {
-						consoleParser.startup(cfgDescription, cwdTracker);
-						parsers.add(consoleParser);
-					} catch (CoreException e) {
-						Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-								"Language Settings Provider failed to start up", e)); //$NON-NLS-1$
-					}
-				}
-			}
-		}
-	}
 
+    public static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
+            IWorkingDirectoryTracker cwdTracker, List<IConsoleParser> parsers) {
+        if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+            List<ILanguageSettingsProvider> lsProviders = ((ILanguageSettingsProvidersKeeper) cfgDescription)
+                    .getLanguageSettingProviders();
+            for (ILanguageSettingsProvider lsProvider : lsProviders) {
+                ILanguageSettingsProvider rawProvider = LanguageSettingsManager.getRawProvider(lsProvider);
+                if (rawProvider instanceof ICBuildOutputParser) {
+                    ICBuildOutputParser consoleParser = (ICBuildOutputParser) rawProvider;
+                    try {
+                        consoleParser.startup(cfgDescription, cwdTracker);
+                        parsers.add(consoleParser);
+                    } catch (CoreException e) {
+                        Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+                                "Language Settings Provider failed to start up", e)); //$NON-NLS-1$
+                    }
+                }
+            }
+        }
+    }
 
 }
 //
@@ -1628,7 +1619,6 @@ public class ManagedBuildManager extends AbstractCExtension {
 //  // }
 //  return realBuilder;
 //}
-
 
 //public static IFolder getBuildFolder(IConfiguration cfg, IProject project) {
 //  return cfg.getBuildFolder(cfg);

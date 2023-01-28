@@ -15,7 +15,7 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * This interface determines whether or not the option category is currently displayed.
@@ -37,6 +37,6 @@ public interface IOptionCategoryApplicability {
 	 * @return true if this option should be visible in the build options page,
 	 *         false otherwise
 	 */
-	public boolean isOptionCategoryVisible(IBuildObject configuration, IHoldsOptions optHolder,
+	public boolean isOptionCategoryVisible(ISchemaObject configuration, IHoldsOptions optHolder,
 			IOptionCategory category);
 }

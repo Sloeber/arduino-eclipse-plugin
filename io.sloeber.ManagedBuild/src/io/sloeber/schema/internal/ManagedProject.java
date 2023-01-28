@@ -154,10 +154,10 @@ public class ManagedProject implements IManagedProject {
     protected boolean loadFromProject(ICStorageElement element) {
         // note: id and name are unique, so don't intern them
         // id
-        id = (element.getAttribute(IBuildObject.ID));
+        id = (element.getAttribute(ISchemaObject.ID));
 
         // name
-        name = (element.getAttribute(IBuildObject.NAME));
+        name = (element.getAttribute(ISchemaObject.NAME));
 
         // projectType
         projectTypeId = element.getAttribute(PROJECTTYPE);
@@ -172,10 +172,10 @@ public class ManagedProject implements IManagedProject {
     }
 
     public void serializeProjectInfo(ICStorageElement element) {
-        element.setAttribute(IBuildObject.ID, id);
+        element.setAttribute(ISchemaObject.ID, id);
 
         if (name != null) {
-            element.setAttribute(IBuildObject.NAME, name);
+            element.setAttribute(ISchemaObject.NAME, name);
         }
 
         if (projectType != null) {

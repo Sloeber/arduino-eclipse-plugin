@@ -21,7 +21,7 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.schema.api.IHoldsOptions;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 /**
  * This class implements the default managed option value handler for MBS.
@@ -55,7 +55,7 @@ public class ManagedOptionValueHandler implements IManagedOptionValueHandler {
      * @see org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler#handleValue(IConfiguration,IToolChain,IOption,String,int)
      */
     @Override
-    public boolean handleValue(IBuildObject configuration, IHoldsOptions holder, IOption option, String extraArgument,
+    public boolean handleValue(ISchemaObject configuration, IHoldsOptions holder, IOption option, String extraArgument,
             int event) {
         /*
         // The following is for debug purposes and thus normally commented out
@@ -101,7 +101,7 @@ public class ManagedOptionValueHandler implements IManagedOptionValueHandler {
      * @see org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler#isDefaultValue(IConfiguration,IToolChain,IOption,String)
      */
     @Override
-    public boolean isDefaultValue(IBuildObject configuration, IHoldsOptions holder, IOption option,
+    public boolean isDefaultValue(ISchemaObject configuration, IHoldsOptions holder, IOption option,
             String extraArgument) {
         // Get the default Value
         Object defaultValue = option.getDefaultValue();
@@ -180,7 +180,7 @@ public class ManagedOptionValueHandler implements IManagedOptionValueHandler {
      * @see org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler#isEnumValueAppropriate(IConfiguration,IToolChain,IOption,String,String)
      */
     @Override
-    public boolean isEnumValueAppropriate(IBuildObject configuration, IHoldsOptions holder, IOption option,
+    public boolean isEnumValueAppropriate(ISchemaObject configuration, IHoldsOptions holder, IOption option,
             String extraArgument, String enumValue) {
         // By default return true for all the enum values.
         return true;

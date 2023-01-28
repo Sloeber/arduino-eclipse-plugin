@@ -42,7 +42,6 @@ import io.sloeber.schema.api.IToolChain;
  */
 public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
-
     private List<IEnvVarBuildPath> envVarBuildPathList;
 
     //  private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
@@ -141,8 +140,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
             commandLineGenerator = (IManagedCommandLineGenerator) createExecutableExtension(COMMAND_LINE_GENERATOR);
         }
 
-        IConfigurationElement[] children = element.getChildren();
-        for (IConfigurationElement curChild : children) {
+        for (IConfigurationElement curChild : getAllChildren()) {
             switch (curChild.getName()) {
             case IOption.ELEMENT_NAME: {
                 Option child = new Option(this, root, curChild);
@@ -397,7 +395,7 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
     }
 
-// 
+    // 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#getEnvVarBuildPaths()
      */
@@ -650,8 +648,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         }
         return false;
     }
-
-
 
     @Override
     public IInputType getInputTypeByID(String id2) {
@@ -1573,8 +1569,9 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 //    }
 
 /**
-//* Look for ${VALUE} in the command string
-//*/
+ * //* Look for ${VALUE} in the command string
+ * //
+ */
 //private static String evaluateCommand(String command, String values) {
 //  final int DOLLAR_VALUE_LENGTH = 8;
 //

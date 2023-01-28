@@ -14,6 +14,12 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -23,15 +29,17 @@ import org.osgi.framework.Version;
 
 import io.sloeber.schema.api.IProjectType;
 
-public abstract class BuildObject implements IBuildObject {
+public abstract class SchemaObject implements ISchemaObject {
 
     protected String myID;
     public String myName;
-    protected String mySuperClassID;
-    protected IConfigurationElement myConfigurationSuperClassElement;
+
     protected IConfigurationElement myConfigurationElement;
-    protected ICStorageElement myStorageElement;
-    protected ICStorageElement myStorageSuperClassElement;
+    //protected ICStorageElement myStorageElement;
+    private static final int MAX_SUPER_CLASS = 5;
+    //protected ICStorageElement[] myStorageSuperClassElement = new ICStorageElement[MAX_SUPER_CLASS];
+    protected IConfigurationElement[] mySuperClassConfElement = new IConfigurationElement[MAX_SUPER_CLASS];
+    protected String[] mySuperClassID = new String[MAX_SUPER_CLASS];
 
     public static int ORIGINAL = 0;
     public static int SUPER = 1;
@@ -43,38 +51,26 @@ public abstract class BuildObject implements IBuildObject {
         myConfigurationElement = element;
         myID = element.getAttribute(ID);
         myName = element.getAttribute(NAME);
-        mySuperClassID = element.getAttribute(SUPERCLASS);
-        if (mySuperClassID != null) {
-            myConfigurationSuperClassElement = getSuperClassConfigurationElement(element.getName(), mySuperClassID,
-                    root);
+        int cur = 0;
+        mySuperClassID[cur] = element.getAttribute(SUPERCLASS);
+        while ((cur < MAX_SUPER_CLASS) && (mySuperClassID[cur] != null)) {
+            mySuperClassConfElement[cur] = getSuperClassConfElement(element.getName(), mySuperClassID[cur], root);
+            if (mySuperClassConfElement[cur] == null) {
+                System.err.println("Failed to load superclass " + mySuperClassID[cur]);
+            } else {
+                mySuperClassID[cur + 1] = mySuperClassConfElement[cur].getAttribute(SUPERCLASS);
+            }
+            cur++;
         }
-        //        if (myConfigurationSuperClassElement == null) {
-        //            ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-        //                    mySuperClassID, "option", //$NON-NLS-1$
-        //                    getId());
-        //        }
     }
-
-    //    protected void loadNameAndID(ICStorageElement element) {
-    //        myStorageElement = element;
-    //        id = element.getAttribute(IBuildObject.ID);
-    //        name = element.getAttribute(IBuildObject.NAME);
-    //        // superClass
-    //        mySuperClassID = element.getAttribute(SUPERCLASS);
-    //        if (mySuperClassID != null && mySuperClassID.length() > 0) {
-    //            myStorageSuperClassElement = getSuperClassSorageElement();
-    //            //            if (myStorageSuperClassElement == null) {
-    //            //                ManagedBuildManager.outputResolveError(SUPERCLASS, mySuperClassID, name, //$NON-NLS-1$
-    //            //                        getId());
-    //            //            }
-    //        }
-    //    }
 
     protected String[] getAttributes(String attributeName) {
         String[] ret = new String[2];
         ret[SUPER] = ret[ORIGINAL] = myConfigurationElement.getAttribute(attributeName);
-        if (ret[SUPER] == null && myConfigurationSuperClassElement != null) {
-            ret[SUPER] = myConfigurationSuperClassElement.getAttribute(attributeName);
+        int cur = 0;
+        while ((cur < MAX_SUPER_CLASS) && (ret[SUPER] == null) && (mySuperClassConfElement[cur] != null)) {
+            ret[SUPER] = mySuperClassConfElement[cur].getAttribute(attributeName);
+            cur++;
         }
         if (ret[SUPER] == null) {
             ret[SUPER] = EMPTY_STRING;
@@ -86,13 +82,25 @@ public abstract class BuildObject implements IBuildObject {
     }
 
     protected Object createExecutableExtension(String attributeName) {
+        String error = "createExecutableExtension for " + attributeName + " for " + myName + BLANK + myID; //$NON-NLS-1$ //$NON-NLS-2$
         try {
             if (myConfigurationElement.getAttribute(attributeName) != null) {
-                return myConfigurationElement.createExecutableExtension(attributeName);
+                Object ret = myConfigurationElement.createExecutableExtension(attributeName);
+                if (ret == null) {
+                    System.err.println(error);
+                }
+                return ret;
             }
-            if (myConfigurationSuperClassElement != null
-                    && myConfigurationSuperClassElement.getAttribute(attributeName) != null) {
-                return myConfigurationSuperClassElement.createExecutableExtension(attributeName);
+            int cur = 0;
+            while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null)) {
+                if (mySuperClassConfElement[cur].getAttribute(attributeName) != null) {
+                    Object ret = mySuperClassConfElement[cur].createExecutableExtension(attributeName);
+                    if (ret == null) {
+                        System.err.println(error);
+                    }
+                    return ret;
+                }
+                cur++;
             }
 
         } catch (CoreException e) {
@@ -100,6 +108,17 @@ public abstract class BuildObject implements IBuildObject {
             e.printStackTrace();
         }
         return null;
+    }
+
+    List<IConfigurationElement> getAllChildren() {
+        ArrayList<IConfigurationElement> ret = new ArrayList<>();
+        ret.addAll(Arrays.asList(myConfigurationElement.getChildren()));
+        int cur = 0;
+        while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null)) {
+            ret.addAll(Arrays.asList(mySuperClassConfElement[cur].getChildren()));
+            cur++;
+        }
+        return ret;
     }
 
     @Override
@@ -120,14 +139,14 @@ public abstract class BuildObject implements IBuildObject {
         return "id=" + myID; //$NON-NLS-1$
     }
 
-    private IConfigurationElement getSuperClassConfigurationElement(String elementName, String inID,
-            IExtensionPoint root) {
+    private IConfigurationElement getSuperClassConfElement(String elementName, String inID, IExtensionPoint root) {
         for (IConfigurationElement curElement : root.getConfigurationElements()) {
             IConfigurationElement foundElement = recursiveSearchElement(elementName, inID, curElement);
             if (foundElement != null) {
                 return foundElement;
             }
         }
+
         return null;
     }
 
@@ -145,8 +164,4 @@ public abstract class BuildObject implements IBuildObject {
         return null;
     }
 
-    //    private ICStorageElement getSuperClassSorageElement() {
-    //        // TODO Auto-generated method stub
-    //        return null;
-    //    }
 }

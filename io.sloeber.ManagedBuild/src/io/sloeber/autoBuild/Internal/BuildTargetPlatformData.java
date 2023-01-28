@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
+import java.lang.reflect.Array;
+
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 
 import io.sloeber.schema.internal.TargetPlatform;
@@ -26,12 +28,12 @@ public class BuildTargetPlatformData extends CTargetPlatformData {
 
     @Override
     public String[] getBinaryParserIds() {
-        return fTargetPlatform.getBinaryParserList();
+        return fTargetPlatform.getBinaryParserList().toArray(new String[0]);
     }
 
     @Override
     public void setBinaryParserIds(String[] ids) {
-        fTargetPlatform.setBinaryParserList(ids);
+        //fTargetPlatform.setBinaryParserList(ids);
     }
 
     @Override

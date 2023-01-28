@@ -17,14 +17,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 import io.sloeber.schema.internal.ToolChain;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IFolderInfo extends IBuildObject {
+public interface IFolderInfo extends ISchemaObject {
     public final static String FOLDER_INFO_ELEMENT_NAME = "folderInfo"; //$NON-NLS-1$
     public final static String RESOURCEPATH = "resourcePath"; //$NON-NLS-1$
     public final static String EXCLUDE = "exclude"; //$NON-NLS-1$

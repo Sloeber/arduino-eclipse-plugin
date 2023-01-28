@@ -52,7 +52,7 @@ import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
-public class FolderInfo extends BuildObject implements IFolderInfo {
+public class FolderInfo extends SchemaObject implements IFolderInfo {
     private String id;
     private String name;
     private Configuration myParent;

@@ -56,7 +56,7 @@ import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 import io.sloeber.schema.internal.ManagedProject;
 
 /**
@@ -133,7 +133,7 @@ public class PropertyManager {
         return fInstance;
     }
 
-    protected void setProperty(ICConfigurationDescription cfg, IBuildObject bo, String prop, String value) {
+    protected void setProperty(ICConfigurationDescription cfg, ISchemaObject bo, String prop, String value) {
         if (((Configuration) cfg).isPreference())
             return;
         Properties props = getProperties(cfg, bo);
@@ -142,7 +142,7 @@ public class PropertyManager {
         }
     }
 
-    protected String getProperty(ICConfigurationDescription cfg, IBuildObject bo, String prop) {
+    protected String getProperty(ICConfigurationDescription cfg, ISchemaObject bo, String prop) {
         if (((Configuration) cfg).isPreference())
             return null;
         Properties props = getProperties(cfg, bo);
@@ -151,7 +151,7 @@ public class PropertyManager {
         return null;
     }
 
-    protected Properties getProperties(ICConfigurationDescription cfg, IBuildObject bo) {
+    protected Properties getProperties(ICConfigurationDescription cfg, ISchemaObject bo) {
         return loadProperties(cfg, bo);
     }
 
@@ -213,13 +213,13 @@ public class PropertyManager {
     //        return rc != null ? rc.getProject() : null;
     //    }
 
-    protected Properties loadProperties(ICConfigurationDescription cfg, IBuildObject bo) {
+    protected Properties loadProperties(ICConfigurationDescription cfg, ISchemaObject bo) {
         Map<String, Object> map = getData(cfg);
 
         return getPropsFromData(map, bo);
     }
 
-    protected Properties getPropsFromData(Map<String, Object> data, IBuildObject bo) {
+    protected Properties getPropsFromData(Map<String, Object> data, ISchemaObject bo) {
         synchronized (data) {
             Object oVal = data.get(bo.getId());
             Properties props = null;

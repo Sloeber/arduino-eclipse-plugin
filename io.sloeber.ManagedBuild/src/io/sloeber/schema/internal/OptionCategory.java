@@ -32,7 +32,7 @@ import io.sloeber.schema.api.ITool;
 /**
  *
  */
-public class OptionCategory extends BuildObject implements IOptionCategory {
+public class OptionCategory extends SchemaObject implements IOptionCategory {
     private IOptionCategory owner; // The logical Option Category parent
     private URL iconPathURL;
 

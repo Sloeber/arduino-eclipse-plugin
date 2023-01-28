@@ -16,7 +16,7 @@ package io.sloeber.schema.api;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 
 //import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 //import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
@@ -52,7 +52,7 @@ import io.sloeber.schema.internal.IBuildObject;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IProjectType extends IBuildObject {
+public interface IProjectType extends ISchemaObject {
     public static final String PROJECTTYPE_ELEMENT_NAME = "projectType"; //$NON-NLS-1$
 
     public static final String IS_TEST = "isTest"; //$NON-NLS-1$

@@ -33,7 +33,7 @@ import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
-public class InputType extends BuildObject implements IInputType {
+public class InputType extends SchemaObject implements IInputType {
 
     private static final String DEFAULT_SEPARATOR = ","; //$NON-NLS-1$
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$

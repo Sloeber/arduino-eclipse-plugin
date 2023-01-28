@@ -3,7 +3,7 @@ package io.sloeber.autoBuild.core;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-    private static final String BUNDLE_NAME = "io.sloeber.managedBuild.core.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "io.sloeber.autoBuild.core.messages"; //$NON-NLS-1$
 
     public static String ManagedMakeBuilder_message_starting;
     public static String ManagedMakeBuilder_message_rebuild_makefiles;
@@ -20,7 +20,7 @@ public class Messages extends NLS {
     public static String ManagedMakeBuilder_message_no_build;
     public static String ManagedMakeBuilder_message_error;
     public static String ManagedMakeBuilder_message_error_build;
-    public static String ManagedMakeBuilder_message_error_refresh;
+    //   public static String ManagedMakeBuilder_message_error_refresh;
     public static String ManagedMakeBuilder_message_undefined_build_command;
     public static String ManagedMakeBuilder_message_finished;
     public static String ManagedMakeBuilder_message_cancelled;

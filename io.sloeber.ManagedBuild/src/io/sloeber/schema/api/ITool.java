@@ -25,7 +25,7 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
-import io.sloeber.schema.internal.IBuildObject;
+import io.sloeber.schema.internal.ISchemaObject;
 import io.sloeber.schema.internal.ToolChain;
 
 /**

@@ -36,7 +36,7 @@ import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.IToolChain;
 
-public class Configuration extends BuildObject implements IConfiguration {
+public class Configuration extends SchemaObject implements IConfiguration {
 
     private static final String LANGUAGE_SETTINGS_PROVIDER_DELIMITER = ";"; //$NON-NLS-1$
     private static final String LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN = "-"; //$NON-NLS-1$
