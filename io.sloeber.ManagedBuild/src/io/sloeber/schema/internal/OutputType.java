@@ -143,6 +143,7 @@ public class OutputType extends SchemaObject implements IOutputType {
             if (outputFile != null) {
                 return getOutputFile(buildFolder, inputFile, outputFile);
             }
+            return null;
         }
 
         if (!modelOutputName[SUPER].isBlank()) {
@@ -157,6 +158,9 @@ public class OutputType extends SchemaObject implements IOutputType {
     }
 
     private static IFile getOutputFile(IFolder buildFolder, IFile inputFile, String outputFile) {
+        if (buildFolder.getProjectRelativePath().isPrefixOf(inputFile.getProjectRelativePath())) {
+            return ((IFolder) inputFile.getParent()).getFile(outputFile);
+        }
         IFolder fileBuldFolder = buildFolder.getFolder(inputFile.getParent().getProjectRelativePath());
         return fileBuldFolder.getFile(outputFile);
     }
