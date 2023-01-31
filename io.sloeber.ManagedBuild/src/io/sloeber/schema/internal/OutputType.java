@@ -23,11 +23,14 @@ import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
+import org.eclipse.core.runtime.content.IContentTypeSettings;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
@@ -49,6 +52,7 @@ public class OutputType extends SchemaObject implements IOutputType {
 
     private IOutputNameProvider nameProvider = null;
     private String buildVariable;
+    private IContentType outputContentType;
 
     //    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
     //
@@ -104,6 +108,12 @@ public class OutputType extends SchemaObject implements IOutputType {
             nameProvider = (IOutputNameProvider) createExecutableExtension(NAME_PROVIDER);
         }
 
+        // Resolve content types
+        IContentTypeManager manager = Platform.getContentTypeManager();
+        if (!modelOutputContentType[SUPER].isBlank()) {
+            outputContentType = manager.getContentType(modelOutputContentType[SUPER]);
+        }
+
     }
 
     /* (non-Javadoc)
@@ -123,6 +133,11 @@ public class OutputType extends SchemaObject implements IOutputType {
         return modelOption[SUPER];
     }
 
+    @Override
+    public IContentType getOutputContentType() {
+        return outputContentType;
+    }
+
     //    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
     //        return booleanExpressionCalculator;
     //    }
@@ -139,7 +154,7 @@ public class OutputType extends SchemaObject implements IOutputType {
     public IFile getOutputName(IFolder buildFolder, IFile inputFile, ICConfigurationDescription config,
             IInputType inputType) {
         if (nameProvider != null) {
-            String outputFile = nameProvider.getOutputFileName(inputFile, config, inputType);
+            String outputFile = nameProvider.getOutputFileName(inputFile, config, inputType, this);
             if (outputFile != null) {
                 return getOutputFile(buildFolder, inputFile, outputFile);
             }
@@ -171,6 +186,55 @@ public class OutputType extends SchemaObject implements IOutputType {
     @Override
     public boolean isOutputExtension(ITool tool, String ext) {
         return ext.equals(modelOutputExtension[SUPER]);
+    }
+
+    @Override
+    public String getOutputPrefix() {
+        return modelOutputPrefix[SUPER];
+    }
+
+    //added for compatibility with old MBS
+    public String[] getOutputExtensions(IProject project) {
+        //  Use content type if specified and registered with Eclipse
+        IContentType type = getOutputContentType();
+        if (type != null) {
+            return getContentTypeFileSpecs(type, project);
+        }
+        String[] ret = new String[1];
+        ret[0] = modelOutputExtension[SUPER];
+        return ret;
+    }
+
+    //added for compatibility with old MBS
+    public String[] getContentTypeFileSpecs(IContentType type, IProject project) {
+        String[] globalSpecs = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
+        IContentTypeSettings settings = null;
+        //      IProject project = getProject();
+        if (project != null) {
+            IScopeContext projectScope = new ProjectScope(project);
+            try {
+                settings = type.getSettings(projectScope);
+            } catch (Exception e) {
+            }
+            if (settings != null) {
+                String[] specs = settings.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
+                if (specs.length > 0) {
+                    int total = globalSpecs.length + specs.length;
+                    String[] projSpecs = new String[total];
+                    int i = 0;
+                    for (String spec : specs) {
+                        projSpecs[i] = spec;
+                        i++;
+                    }
+                    for (String spec : globalSpecs) {
+                        projSpecs[i] = spec;
+                        i++;
+                    }
+                    return projSpecs;
+                }
+            }
+        }
+        return globalSpecs;
     }
 
 }

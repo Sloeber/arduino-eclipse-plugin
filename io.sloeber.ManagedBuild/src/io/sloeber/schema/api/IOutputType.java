@@ -171,7 +171,7 @@ public interface IOutputType extends ISchemaObject {
      * 
      * @return String
      */
-    // public String getOutputPrefix();
+    public String getOutputPrefix();
 
     /**
      * Sets the prefix that the tool should prepend to the name of the build
@@ -277,5 +277,9 @@ public interface IOutputType extends ISchemaObject {
      */
     public IFile getOutputName(IFolder buildFolder, IFile inputFile, ICConfigurationDescription config,
             IInputType inputType);
+
+    IContentType getOutputContentType();
+
+    public String[] getOutputExtensions(IProject project);
 
 }

@@ -94,19 +94,19 @@ public interface IConfiguration extends ISchemaObject {
      */
     public String getArtifactName();
 
-//    /**
-//     * Returns the build arguments from this configuration's builder
-//     *
-//     * @return String
-//     */
-//    public String getBuildArguments();
+    //    /**
+    //     * Returns the build arguments from this configuration's builder
+    //     *
+    //     * @return String
+    //     */
+    //    public String getBuildArguments();
 
     /**
      * Returns the build command from this configuration's builder
      *
      * @return String
      */
-//    public String getBuildCommand();
+    //    public String getBuildCommand();
 
     /**
      * Returns the prebuild step command
@@ -171,7 +171,6 @@ public interface IConfiguration extends ISchemaObject {
      */
     public List<String> getDefaultLanguageSettingsProviderIds();
 
-
     /**
      * Returns the project-type parent of this configuration, if this is an
      * extension configuration. Otherwise, returns <code>null</code>.
@@ -180,15 +179,15 @@ public interface IConfiguration extends ISchemaObject {
      */
     public IProjectType getProjectType();
 
-//    /**
-//     * Returns the <code>ITool</code> in this configuration's tool-chain with
-//     * the same id as the argument, or <code>null</code>.
-//     *
-//     * @param id
-//     *            unique identifier to search for
-//     * @return ITool
-//     */
-//    public ITool getTool(String id);
+    //    /**
+    //     * Returns the <code>ITool</code> in this configuration's tool-chain with
+    //     * the same id as the argument, or <code>null</code>.
+    //     *
+    //     * @param id
+    //     *            unique identifier to search for
+    //     * @return ITool
+    //     */
+    //    public ITool getTool(String id);
 
     /**
      * Returns the <code>IToolChain</code> child of this configuration.
@@ -197,47 +196,47 @@ public interface IConfiguration extends ISchemaObject {
      */
     public IToolChain getToolChain();
 
-//    /**
-//     * Returns the command-line invocation command for the specified tool.
-//     *
-//     * @param tool
-//     *            The tool that will have its command retrieved.
-//     * @return String The command
-//     */
-//    public String getToolCommand(ITool tool);
+    //    /**
+    //     * Returns the command-line invocation command for the specified tool.
+    //     *
+    //     * @param tool
+    //     *            The tool that will have its command retrieved.
+    //     * @return String The command
+    //     */
+    //    public String getToolCommand(ITool tool);
 
-//    /**
-//     * Returns the tools that are used in this configuration's tool-chain.
-//     *
-//     * @return ITool[]
-//     */
-//    public List<ITool> getTools();
+    //    /**
+    //     * Returns the tools that are used in this configuration's tool-chain.
+    //     *
+    //     * @return ITool[]
+    //     */
+    //    public List<ITool> getTools();
 
-//    /**
-//     * Returns the tool in this configuration specified with
-//     * the toolChain#targetTool attribute that creates the build artifact
-//     *
-//     * NOTE: This method returns null in case the toolChain definition
-//     * does not have the targetTool attribute or if the attribute does not
-//     * refer to the appropriate tool.
-//     * For the target tool calculation the IConfiguration#calculateTargetTool()
-//     * method should be used
-//     *
-//     * @see IConfiguration#calculateTargetTool()
-//     *
-//     * @return ITool
-//     */
-//    public ITool getTargetTool();
+    //    /**
+    //     * Returns the tool in this configuration specified with
+    //     * the toolChain#targetTool attribute that creates the build artifact
+    //     *
+    //     * NOTE: This method returns null in case the toolChain definition
+    //     * does not have the targetTool attribute or if the attribute does not
+    //     * refer to the appropriate tool.
+    //     * For the target tool calculation the IConfiguration#calculateTargetTool()
+    //     * method should be used
+    //     *
+    //     * @see IConfiguration#calculateTargetTool()
+    //     *
+    //     * @return ITool
+    //     */
+    //    public ITool getTargetTool();
 
-//    /**
-//     * Returns <code>true</code> if the extension matches one of the special
-//     * file extensions the tools for the configuration consider to be a header file.
-//     *
-//     * @param ext
-//     *            the file extension of the resource
-//     * @return boolean
-//     */
-//    public boolean isHeaderFile(String ext);
+    //    /**
+    //     * Returns <code>true</code> if the extension matches one of the special
+    //     * file extensions the tools for the configuration consider to be a header file.
+    //     *
+    //     * @param ext
+    //     *            the file extension of the resource
+    //     * @return boolean
+    //     */
+    //    public boolean isHeaderFile(String ext);
 
     /**
      * Returns <code>true</code> if the configuration's tool-chain is supported on
@@ -248,32 +247,14 @@ public interface IConfiguration extends ISchemaObject {
      */
     public boolean isSupported();
 
-    /**
-     * Returns the implementation of the IConfigurationEnvironmentVariableSupplier
-     * provided
-     * by the tool-integrator or <code>null</code> if none.
-     *
-     * @return IConfigurationEnvironmentVariableSupplier
-     */
-    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier();
-
-    /**
-     * Returns the tool-integrator provided implementation of the configuration
-     * build macro supplier
-     * or <code>null</code> if none.
-     *
-     * @return IConfigurationBuildMacroSupplier
-     */
-    public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
-
-//    /**
-//     * Calculates the configuration target tool.
-//     *
-//     * @return ITool or null if not found
-//     *
-//     * @since 3.1
-//     */
-//    public ITool calculateTargetTool();
+    //    /**
+    //     * Calculates the configuration target tool.
+    //     *
+    //     * @return ITool or null if not found
+    //     *
+    //     * @since 3.1
+    //     */
+    //    public ITool calculateTargetTool();
 
     List<ICSourceEntry> getSourceEntries();
 
@@ -281,6 +262,6 @@ public interface IConfiguration extends ISchemaObject {
 
     IFolder getBuildFolder(ICConfigurationDescription cfg);
 
-//    boolean supportsBuild(boolean managed);
+    //    boolean supportsBuild(boolean managed);
 
 }

@@ -16,8 +16,6 @@ package io.sloeber.autoBuild.Internal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,31 +30,6 @@ import org.eclipse.cdt.core.model.IPathEntryContainer;
 import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.core.settings.model.WriteAccessException;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuilder;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IEnvVarBuildPath;
-//import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedCommandLineInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionApplicability;
-//import org.eclipse.cdt.managedbuilder.core.IOptionPathConverter;
-//import org.eclipse.cdt.managedbuilder.core.IResourceConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.ITarget;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
-//import org.eclipse.cdt.managedbuilder.internal.macros.OptionContextData;
-//import org.eclipse.cdt.managedbuilder.internal.scannerconfig.ManagedBuildCPathEntryContainer;
-//import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -64,19 +37,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.BuildMacroException;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IManagedProject;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.ISchemaObject;
-import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.ManagedProject;
 
@@ -485,15 +449,15 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return isValid;
     }
 
-//    /* (non-Javadoc)
-//     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isHeaderFile(java.lang.String)
-//     */
-//    @Override
-//    public boolean isHeaderFile(String ext) {
-//        // Check to see if there is a rule to build a file with this extension
-//        IConfiguration config = getDefaultConfiguration();
-//        return config.isHeaderFile(ext);
-//    }
+    //    /* (non-Javadoc)
+    //     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isHeaderFile(java.lang.String)
+    //     */
+    //    @Override
+    //    public boolean isHeaderFile(String ext) {
+    //        // Check to see if there is a rule to build a file with this extension
+    //        IConfiguration config = getDefaultConfiguration();
+    //        return config.isHeaderFile(ext);
+    //    }
 
     /**
      *

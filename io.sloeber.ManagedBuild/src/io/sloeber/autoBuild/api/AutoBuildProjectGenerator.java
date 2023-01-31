@@ -13,7 +13,6 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -30,11 +29,9 @@ import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildNature;
 import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.ManagedProject;
@@ -71,10 +68,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 AutoBuildNature.addNature(myProject, monitor);
 
                 //TOFIX Start of stupid code creation 
-                IFolder srcFolder = myProject.getFolder("src");
+                IFolder srcFolder = myProject.getFolder("src"); //$NON-NLS-1$
                 srcFolder.create(true, true, monitor);
-                IFile mainFile = srcFolder.getFile("main.cpp");
-                InputStream stream = new ByteArrayInputStream("int main(){}".getBytes(StandardCharsets.UTF_8));
+                IFile mainFile = srcFolder.getFile("main.cpp"); //$NON-NLS-1$
+                InputStream stream = new ByteArrayInputStream("int main(){}".getBytes(StandardCharsets.UTF_8)); //$NON-NLS-1$
                 mainFile.create(stream, true, monitor);
                 //End of stupid code creation
 

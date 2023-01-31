@@ -27,7 +27,7 @@ import io.sloeber.autoBuild.api.BuildException;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IHoldsOptions extends ISchemaObject {
+public interface IOptions extends ISchemaObject {
 
     public static final String OPTION = "option"; //$NON-NLS-1$
     public static final String OPTION_CAT = "optionCategory"; //$NON-NLS-1$
@@ -35,7 +35,6 @@ public interface IHoldsOptions extends ISchemaObject {
     /*
      *  M E T H O D S   M O V E D   F R O M   I T O O L   I N   3 . 0
      */
-
 
     /**
      * Get the <code>IOption</code> in the receiver with the specified
@@ -53,7 +52,6 @@ public interface IHoldsOptions extends ISchemaObject {
      */
     public IOption getOptionById(String id);
 
-
     /**
      * Returns the complete list of options that are available for this object.
      * The list is a merging of the options specified for this object with the
@@ -62,19 +60,18 @@ public interface IHoldsOptions extends ISchemaObject {
      *
      * @return IOption[]
      */
-    public List< IOption> getOptions();
+    public List<IOption> getOptions();
 
-    /**
-     * Returns the option category children of this tool.
-     *
-     * @return IOptionCategory[]
-     */
-    public List<IOptionCategory> getChildCategories();
+    //    /**
+    //     * Returns the option category children of this tool.
+    //     *
+    //     * @return IOptionCategory[]
+    //     */
+    //    public List<IOptionCategory> getChildCategories();
 
     /*
      *  M E T H O D S   M O V E D   F R O M   T O O L   I N   3 . 0
      */
-
 
     /*
      *  N E W   M E T H O D S   A D D E D   I N   3 . 0
@@ -90,7 +87,6 @@ public interface IHoldsOptions extends ISchemaObject {
      * @since 3.0
      */
     public IOptionCategory getOptionCategory(String id);
-
 
     /**
      * 
@@ -114,6 +110,6 @@ public interface IHoldsOptions extends ISchemaObject {
      *            Note: changing this option will affect all non-extension
      *            configurations using this option!
      */
-    IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException;
+    // IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException;
 
 }

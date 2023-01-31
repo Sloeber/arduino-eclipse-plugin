@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IResourceInfo;
 
@@ -35,12 +35,12 @@ public class NotificationManager /*implements ISettingsChangeListener */ {
         return fInstance;
     }
 
-    public void optionRemoved(IResourceInfo rcInfo, IHoldsOptions holder, IOption option) {
+    public void optionRemoved(IResourceInfo rcInfo, IOptions holder, IOption option) {
         //        SettingsChangeEvent event = createOptionRemovedEvent(rcInfo, holder, option);
         //        notifyListeners(event);
     }
 
-    public void optionChanged(IResourceInfo rcInfo, IHoldsOptions holder, IOption option, Object oldValue) {
+    public void optionChanged(IResourceInfo rcInfo, IOptions holder, IOption option, Object oldValue) {
         //        SettingsChangeEvent event = createOptionChangedEvent(rcInfo, holder, option, oldValue);
         //        notifyListeners(event);
     }

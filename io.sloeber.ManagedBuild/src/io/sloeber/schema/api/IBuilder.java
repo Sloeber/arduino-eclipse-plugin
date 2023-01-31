@@ -14,19 +14,11 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
-import java.util.Map;
-
 import org.eclipse.cdt.core.ICommandLauncher;
-import org.eclipse.cdt.core.settings.model.extension.CBuildData;
-import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
-import org.eclipse.core.resources.IFolder;
 //import org.eclipse.cdt.managedbuilder.macros.IFileContextBuildMacroValues;
 //import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
 //import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-
-import io.sloeber.autoBuild.api.IFileContextBuildMacroValues;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
@@ -45,7 +37,7 @@ import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IBuilder extends IHoldsOptions {
+public interface IBuilder extends ISchemaObject {
     public static final String BUILDER_ELEMENT_NAME = "builder"; //$NON-NLS-1$
 
     public static final String COMMAND = "command"; //$NON-NLS-1$
@@ -131,24 +123,6 @@ public interface IBuilder extends IHoldsOptions {
     public boolean isAbstract();
 
     /**
-     * 
-     * /**
-     * Returns the IFileContextBuildMacroValues interface reference that specifies
-     * the file-context macro-values provided by the tool-integrator
-     *
-     * @return IFileContextBuildMacroValues
-     */
-    public IFileContextBuildMacroValues getFileContextBuildMacroValues();
-
-    //    /**
-    //     * Returns String representing the build variable pattern to be used while
-    //     * makefile generation
-    //     *
-    //     * @return String
-    //     */
-    //    public String getBuilderVariablePattern();
-
-    /**
      * Returns an array of Strings representing the patterns of the
      * builder/buildfile-generator
      * reserved variables
@@ -161,15 +135,9 @@ public interface IBuilder extends IHoldsOptions {
 
     public boolean isCustomBuilder();
 
-    boolean isSystemObject();
-
-    String getUniqueRealName();
-
     public ICommandLauncher getCommandLauncher();
 
     public IBuildRunner getBuildRunner() throws CoreException;
-
-    IPath getBuildLocation();
 
     /**
      * If this returns true the environment variables are added to the command line

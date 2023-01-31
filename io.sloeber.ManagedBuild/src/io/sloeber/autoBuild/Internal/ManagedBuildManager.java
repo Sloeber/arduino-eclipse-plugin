@@ -15,6 +15,7 @@
 package io.sloeber.autoBuild.Internal;
 
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.eclipse.cdt.core.AbstractCExtension;
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.language.settings.providers.ICBuildOutputParser;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
@@ -37,48 +37,33 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
-import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.osgi.framework.Version;
-import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
-import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
-import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
-import io.sloeber.buildProperties.BuildPropertyManager;
-import io.sloeber.buildProperties.IBuildPropertyManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IHoldsOptions;
-import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.ManagedProject;
 import io.sloeber.schema.internal.ProjectType;
 
 /**
@@ -103,14 +88,8 @@ public class ManagedBuildManager extends AbstractCExtension {
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_STATICLIB = "org.eclipse.cdt.build.core.buildArtefactType.staticLib"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_SHAREDLIB = "org.eclipse.cdt.build.core.buildArtefactType.sharedLib"; //$NON-NLS-1$
 
-    private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
-
     public static final String INTERNAL_BUILDER_ID = "org.eclipse.cdt.build.core.internal.builder"; //$NON-NLS-1$
-
-    // This is the version of the manifest and project files
-    private static final Version buildInfoVersion = new Version(4, 0, 0);
-    private static final Version version = new Version(4, 0, 0);
-    // Project types defined in the manifest files
+    private static boolean VERBOSE = true;
 
     // Random number for derived object model elements
     private static Random randomNumber;
@@ -122,7 +101,7 @@ public class ManagedBuildManager extends AbstractCExtension {
     // List of extension point ID's the autoBuild Supports
     // currently only 1
     private static List<String> supportedExtensionPointIDs = new ArrayList<>();
-    // The list of the loaded extensions
+
     static {
         supportedExtensionPointIDs.add("io.sloeber.autoBuild.buildDefinitions"); //$NON-NLS-1$
     }
@@ -203,7 +182,11 @@ public class ManagedBuildManager extends AbstractCExtension {
                     for (IConfigurationElement element : elements) {
                         try {
                             if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
-                                objects.add(new ProjectType(extensionPoint, element));
+                                ProjectType newProjectType = new ProjectType(extensionPoint, element);
+                                objects.add(newProjectType);
+                                if (VERBOSE) {
+                                    System.out.print(newProjectType.dump(0));
+                                }
                             }
 
                         } catch (Exception ex) {
@@ -242,22 +225,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         }
         // If no generator is defined, return the default GNU generator
         // return new GnuMakefileGenerator();
-        return null;
-    }
-
-    /**
-     * load tool provider defined or default (if not found) command line generator
-     * special for selected tool
-     * 
-     * @param toolId
-     *            - id selected tool ID
-     */
-    public static IManagedCommandLineGenerator getCommandLineGenerator(IConfiguration config, String toolId) {
-        // ITool tool = config.getTool(toolId);
-        // if (tool != null) {
-        // return tool.getCommandLineGenerator();
-        // }
-        // return new ManagedCommandLineGenerator();
         return null;
     }
 
@@ -343,7 +310,7 @@ public class ManagedBuildManager extends AbstractCExtension {
      *        changed to <code>IHoldsOptions holder</code>. Client code assuming
      *        <code>ITool</code> as type, will continue to work unchanged.
      */
-    public static IOption setOption(IResourceInfo resConfig, IHoldsOptions holder, IOption option, String[] value) {
+    public static IOption setOption(IResourceInfo resConfig, IOptions holder, IOption option, String[] value) {
         IOption retOpt = null;
         //		try {
         //			retOpt = resConfig.setOption(holder, option, value);
@@ -363,7 +330,7 @@ public class ManagedBuildManager extends AbstractCExtension {
         return retOpt;
     }
 
-    public static IOption setOption(IResourceInfo resConfig, IHoldsOptions holder, IOption option,
+    public static IOption setOption(IResourceInfo resConfig, IOptions holder, IOption option,
             OptionStringValue[] value) {
         IOption retOpt = null;
         //		try {
@@ -452,19 +419,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         // fo.resetOptionSettings();
         // }
         // }
-    }
-
-    /**
-     * Creates a new project instance for the resource based on the parent project
-     * type.
-     *
-     * @param parent
-     *            - parent project type
-     * @return new <code>ITarget</code> with settings based on the parent passed in
-     *         the arguments
-     */
-    public static IManagedProject createManagedProject(IResource resource, IProjectType parent) throws BuildException {
-        return new ManagedProject(resource, parent);
     }
 
     public static IStatus initBuildInfoContainer(IResource resource) {
@@ -798,16 +752,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return findBuildInfo(resource.getProject(), forceLoad);
     }
 
-    /**
-     * Answers the current version of the managed builder plugin.
-     *
-     * @return the current version of the managed builder plugin
-     * @since 8.0
-     */
-    public static Version getBuildInfoVersion() {
-        return buildInfoVersion;
-    }
-
     /*
      * @return
      */
@@ -908,10 +852,9 @@ public class ManagedBuildManager extends AbstractCExtension {
             // Get the index of the separator '_' in tool id.
             int index = idAndVersion.lastIndexOf('_');
             return idAndVersion.substring(0, index);
-        } else {
-            // if there is no version or no valid version
-            return idAndVersion;
         }
+        // if there is no version or no valid version
+        return idAndVersion;
     }
 
     /**
@@ -1820,3 +1763,27 @@ public class ManagedBuildManager extends AbstractCExtension {
 //}
 //
 ///* package */
+///**
+//* Answers the current version of the managed builder plugin.
+//*
+//* @return the current version of the managed builder plugin
+//* @since 8.0
+//*/
+//public static Version getBuildInfoVersion() {
+// return buildInfoVersion;
+//}
+///**
+//* load tool provider defined or default (if not found) command line generator
+//* special for selected tool
+//* 
+//* @param toolId
+//*            - id selected tool ID
+//*/
+//public static IManagedCommandLineGenerator getCommandLineGenerator(IConfiguration config, String toolId) {
+// // ITool tool = config.getTool(toolId);
+// // if (tool != null) {
+// // return tool.getCommandLineGenerator();
+// // }
+// // return new ManagedCommandLineGenerator();
+// return null;
+//}

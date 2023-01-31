@@ -38,7 +38,7 @@ import io.sloeber.schema.internal.ToolChain;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface ITool extends IHoldsOptions {
+public interface ITool extends ISchemaObject {
     public static final String TOOL_ELEMENT_NAME = "tool"; //$NON-NLS-1$
     // Schema element names
     public static final String OUTPUT_FLAG = "outputFlag"; //$NON-NLS-1$
@@ -289,14 +289,15 @@ public interface ITool extends IHoldsOptions {
      */
     public String[] getToolCommandFlags(IFile inputFile, IFile outputFile) throws BuildException;
 
-    /**
-     * Options are organized into categories for UI purposes.
-     * These categories are organized into a tree. This is the root
-     * of that tree.
-     *
-     * @return IOptionCategory
-     */
-    public IOptionCategory getTopOptionCategory();
+    //    /**
+    //     * Options are organized into categories for UI purposes.
+    //     * These categories are organized into a tree. This is the root
+    //     * of that tree.
+    //     *
+    //     * @return IOptionCategory
+    //     */
+    //    public IOptionCategory getTopOptionCategory();
+    public IOptions getOptions();
 
     /**
      * Return <code>true</code> if the receiver builds files with the
@@ -382,5 +383,4 @@ public interface ITool extends IHoldsOptions {
         return new LinkedList<>();
     }
 
-  
 }

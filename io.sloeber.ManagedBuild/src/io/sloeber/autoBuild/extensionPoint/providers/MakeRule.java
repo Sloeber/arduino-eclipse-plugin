@@ -25,28 +25,29 @@ import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
-public class MakeRule  {
+public class MakeRule {
 
     private Map<IOutputType, Set<IFile>> myTargets = new LinkedHashMap<>(); //Macro file target map
     private Map<IInputType, Set<IFile>> myPrerequisites = new LinkedHashMap<>();//Macro file prerequisites map
     private Map<String, Set<IFile>> myDependencies = new LinkedHashMap<>(); //Macro file target map
     private ITool myTool = null;
-    private int mySequenceGroupID=0;
+    private int mySequenceGroupID = 0;
 
-    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile,int sequenceID) {
+    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile,
+            int sequenceID) {
         addPrerequisite(inputType, inputFile);
         addTarget(outputType, outFile);
         myTool = tool;
-        mySequenceGroupID=sequenceID;
+        mySequenceGroupID = sequenceID;
     }
 
-    public MakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile,int sequenceID) {
+    public MakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile,
+            int sequenceID) {
         addPrerequisites(inputType, inputFiles);
         addTarget(outputType, outFile);
         myTool = tool;
-        mySequenceGroupID=sequenceID;
+        mySequenceGroupID = sequenceID;
     }
-
 
     public void addDependencies(MakefileGenerator caller) {
         myDependencies.clear();
@@ -86,8 +87,6 @@ public class MakeRule  {
         //            }
         //        }
     }
-
-
 
     public Set<IFile> getPrerequisiteFiles() {
         HashSet<IFile> ret = new HashSet<>();
@@ -219,9 +218,9 @@ public class MakeRule  {
     public StringBuffer getRule(IProject project, IFolder niceBuildFolder, ICConfigurationDescription confDesc) {
 
         String cmd = myTool.getToolCommand();
-//        if(!cmd.contains(BLANK)) {
-//        	cmd=
-//        }
+        //        if(!cmd.contains(BLANK)) {
+        //        	cmd=
+        //        }
         //For now assume 1 target with 1 or more prerequisites
         // if there is more than 1 prerequisite we take the flags of the first prerequisite only
         Set<IFile> local_targets = getTargetFiles();
@@ -326,7 +325,7 @@ public class MakeRule  {
             //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
             flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile, outputFile)));
 
-            //TOFIX add dependency falgs if needed
+            //TOFIX add dependency flags if needed
             List<IInputType> inputTypes = myTool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
             //            for (IInputType inputType : inputTypes) {
             //                IManagedDependencyGeneratorType t = inputType.getDependencyGenerator();
@@ -454,24 +453,24 @@ public class MakeRule  {
         return myTool.getName().equals(targetTool.getName());
     }
 
-	public int getSequenceGroupID() {
-		return mySequenceGroupID;
-	}
+    public int getSequenceGroupID() {
+        return mySequenceGroupID;
+    }
 
-	public void setSequenceGroupID(int mySequenceGroupID) {
-		this.mySequenceGroupID = mySequenceGroupID;
-	}
+    public void setSequenceGroupID(int mySequenceGroupID) {
+        this.mySequenceGroupID = mySequenceGroupID;
+    }
 
-	public boolean isForFolder(IFolder folder) {
-		for(Set<IFile> files:myPrerequisites.values()) {
-			for(IFile file:files) {
-				if(file.getParent().equals(folder)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    public boolean isForFolder(IFolder folder) {
+        for (Set<IFile> files : myPrerequisites.values()) {
+            for (IFile file : files) {
+                if (file.getParent().equals(folder)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 }
 //    /**
@@ -496,5 +495,3 @@ public class MakeRule  {
 //        }
 //        return addlDeps;
 //    }
-
-

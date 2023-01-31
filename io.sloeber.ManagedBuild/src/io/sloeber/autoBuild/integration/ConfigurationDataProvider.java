@@ -21,7 +21,6 @@ import java.util.Map;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
-import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.model.ILanguageDescriptor;
 import org.eclipse.cdt.core.model.LanguageManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -107,18 +106,18 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
                 List<ILanguageSettingsProvider> providers;
                 if (defaultIds == null) {
                     ICProjectDescription prjDescription = baseCfgDescription.getProjectDescription();
-                    if (prjDescription != null) {
-                        IProject project = prjDescription.getProject();
-                        // propagate the preference to project properties
-                        ScannerDiscoveryLegacySupport.defineLanguageSettingsEnablement(project);
-                    }
+                    //                    if (prjDescription != null) {
+                    //                        IProject project = prjDescription.getProject();
+                    //                        // propagate the preference to project properties
+                    //                        ScannerDiscoveryLegacySupport.defineLanguageSettingsEnablement(project);
+                    //                    }
 
                     if (baseCfg != null) {
                         defaultIds = baseCfg.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
                     }
-                    if (defaultIds == null) {
-                        defaultIds = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(baseCfgDescription);
-                    }
+                    //                    if (defaultIds == null) {
+                    //                        defaultIds = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(baseCfgDescription);
+                    //                    }
                     providers = LanguageSettingsManager.createLanguageSettingsProviders(defaultIds);
                 } else {
                     providers = ((ILanguageSettingsProvidersKeeper) baseCfgDescription).getLanguageSettingProviders();

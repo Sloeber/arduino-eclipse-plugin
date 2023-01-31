@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ISchemaObject;
 
@@ -81,7 +81,7 @@ public interface IManagedOptionValueHandler {
 	 * @return True when the event was handled, false otherwise. This enables
 	 *         default event handling can take place.
 	 */
-	boolean handleValue(ISchemaObject configuration, IHoldsOptions holder, IOption option, String extraArgument,
+	boolean handleValue(ISchemaObject configuration, IOptions holder, IOption option, String extraArgument,
 			int event);
 
 	/**
@@ -105,7 +105,7 @@ public interface IManagedOptionValueHandler {
 	 *         otherwise. This enables that default event handling can take
 	 *         place.
 	 */
-	boolean isDefaultValue(ISchemaObject configuration, IHoldsOptions holder, IOption option, String extraArgument);
+	boolean isDefaultValue(ISchemaObject configuration, IOptions holder, IOption option, String extraArgument);
 
 	/**
 	 * Checks whether an enumeration value of an option is currently a valid
@@ -131,6 +131,6 @@ public interface IManagedOptionValueHandler {
 	 *
 	 * @return True if the enumeration value is valid and False otherwise.
 	 */
-	boolean isEnumValueAppropriate(ISchemaObject configuration, IHoldsOptions holder, IOption option,
+	boolean isEnumValueAppropriate(ISchemaObject configuration, IOptions holder, IOption option,
 			String extraArgument, String enumValue);
 }

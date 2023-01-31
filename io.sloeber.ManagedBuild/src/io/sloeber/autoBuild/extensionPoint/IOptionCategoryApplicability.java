@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
 
@@ -37,6 +37,6 @@ public interface IOptionCategoryApplicability {
 	 * @return true if this option should be visible in the build options page,
 	 *         false otherwise
 	 */
-	public boolean isOptionCategoryVisible(ISchemaObject configuration, IHoldsOptions optHolder,
+	public boolean isOptionCategoryVisible(ISchemaObject configuration, IOptions optHolder,
 			IOptionCategory category);
 }

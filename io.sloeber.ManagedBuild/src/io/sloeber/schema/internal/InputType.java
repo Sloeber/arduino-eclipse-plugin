@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -302,22 +301,6 @@ public class InputType extends SchemaObject implements IInputType {
                 discoveryid = discoveryid.substring(0, nPos);
         }
         return discoveryid;
-    }
-
-    /**
-     * Temporary method to support compatibility during SD transition.
-     * 
-     * @noreference This method is not intended to be referenced by clients.
-     */
-    public String getLegacyDiscoveryProfileIdAttribute() {
-        String profileId = modelScannerConfigDiscoveryProfileID[SUPER];
-        if (profileId == null) {
-            profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(myID);
-            if (profileId == null && superClass instanceof InputType) {
-                profileId = ((InputType) superClass).getLegacyDiscoveryProfileIdAttribute();
-            }
-        }
-        return profileId;
     }
 
     public String getDiscoveryProfileIdAttribute() {
@@ -697,3 +680,19 @@ public class InputType extends SchemaObject implements IInputType {
 //public IInputType getSuperClass() {
 // return superClass;
 //}
+
+//    /**
+//     * Temporary method to support compatibility during SD transition.
+//     * 
+//     * @noreference This method is not intended to be referenced by clients.
+//     */
+//    public String getLegacyDiscoveryProfileIdAttribute() {
+//        String profileId = modelScannerConfigDiscoveryProfileID[SUPER];
+//        if (profileId == null) {
+//            profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(myID);
+//            if (profileId == null && superClass instanceof InputType) {
+//                profileId = ((InputType) superClass).getLegacyDiscoveryProfileIdAttribute();
+//            }
+//        }
+//        return profileId;
+//    }

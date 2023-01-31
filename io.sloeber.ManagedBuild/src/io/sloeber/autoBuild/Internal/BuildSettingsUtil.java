@@ -13,10 +13,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -25,16 +21,11 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.OptionStringValue;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IResourceInfo;
-import io.sloeber.schema.api.ITool;
 
 public class BuildSettingsUtil {
     private static final int[] COMMON_SETTINGS_IDS = new int[] { IOption.INCLUDE_PATH, IOption.PREPROCESSOR_SYMBOLS,

@@ -11,8 +11,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.internal.core.cdtvariables.DefaultVariableContextInfo;
+import org.eclipse.cdt.internal.core.cdtvariables.ICoreVariableContextInfo;
+import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
+import org.eclipse.cdt.utils.cdtvariables.IVariableSubstitutor;
+import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -27,6 +33,7 @@ import org.eclipse.core.runtime.Path;
 import io.sloeber.autoBuild.Internal.BuildMacroProvider;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
+import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.ITool;
 
@@ -98,6 +105,7 @@ public class ManagebBuildCommon {
         byte[] bytes = buffer.toString().getBytes();
         ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
         if (file.exists()) {
+            //TOFIX JABA check wether content has changed
             file.setContents(stream, true, false, null);
         } else {
             IFolder fileFolder = file.getProject().getFolder(file.getParent().getProjectRelativePath());
@@ -162,7 +170,6 @@ public class ManagebBuildCommon {
         //return populateDummyTargets(cfg.getRootFolderInfo(), makefile, force);
         return populateDummyTargets(cfg, makefile, force);
     }
-
 
     /**
      * prepend all instanced of '\' or '"' with a backslash
@@ -333,8 +340,6 @@ public class ManagebBuildCommon {
         map.put(macroName, buffer.toString());
     }
 
-
-
     /**
      * Process a String denoting a filepath in a way compatible for GNU Make rules,
      * handling windows drive letters and whitespace appropriately.
@@ -387,6 +392,24 @@ public class ManagebBuildCommon {
         return VARIABLE_PREFIX + variableName + VARIABLE_SUFFIX;
     }
 
+    static String resolve(String unresolved, ICConfigurationDescription icConfigurationDescription) {
+        DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
+                ICoreVariableContextInfo.CONTEXT_CONFIGURATION, icConfigurationDescription);
+        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, EMPTY_STRING, EMPTY_STRING);
+        try {
+            return CdtVariableResolver.resolveToString(unresolved, varSubs);
+        } catch (CdtVariableException e) {
+            Activator.log(e);
+        }
+        return EMPTY_STRING;
+        //        IEnvironmentVariableManager buildEnvironmentManger = CCorePlugin.getDefault().getBuildEnvironmentManager();
+        //        IEnvironmentVariable var = buildEnvironmentManger.getVariable(buildArguments, icConfigurationDescription, true);
+        //        if (var == null) {
+        //            return EMPTY_STRING;
+        //        }
+        //        return var.getValue();
+    }
+
     static public String resolveValue(String value, String nonexistentMacrosValue, String listDelimiter,
             int contextType, Object contextData) {
         //        FIXME needs implementation original is below
@@ -402,8 +425,8 @@ public class ManagebBuildCommon {
     static public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
             int contextType, ICConfigurationDescription confdesc) {
         try {
-            return BuildMacroProvider.getDefault().resolveValueToMakefileFormat(value,
-                    nonexistentMacrosValue, listDelimiter, contextType, confdesc);
+            return BuildMacroProvider.getDefault().resolveValueToMakefileFormat(value, nonexistentMacrosValue,
+                    listDelimiter, contextType, confdesc);
         } catch (BuildMacroException e) {
             return value;
         }
@@ -623,4 +646,3 @@ public class ManagebBuildCommon {
 //}
 //return false;
 //}
-

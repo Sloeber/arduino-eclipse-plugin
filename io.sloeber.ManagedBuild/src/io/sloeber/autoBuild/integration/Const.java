@@ -46,6 +46,9 @@ public class Const {
     public static final String TXT = "txt";
     public static final String SOURCE = "source";
     public static final String COMPILER = "compiler";
+    public static final String END_OF_CHILDREN = "end of children ";
+    public static final String BEGIN_OF_CHILDREN = "Begin of children ";
+    public static final String DUMPLEAD = " ";
 
     public static final String NETWORK = "network";
     public static final String PORT = "port";

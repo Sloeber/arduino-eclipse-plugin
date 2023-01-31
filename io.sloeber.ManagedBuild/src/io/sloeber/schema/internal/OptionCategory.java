@@ -25,8 +25,9 @@ import org.eclipse.core.runtime.IExtensionPoint;
 
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOptionCategory;
+import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
 
 /**
@@ -54,7 +55,7 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
      *            The category definition from the manifest file or a dynamic
      *            element provider
      */
-    public OptionCategory(IHoldsOptions parent, IExtensionPoint root, IConfigurationElement element) {
+    public OptionCategory(ISchemaObject parent, IExtensionPoint root, IConfigurationElement element) {
 
         loadNameAndID(root, element);
 
@@ -114,13 +115,13 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
     }
 
     @Override
-    public URL getIconPath() {
-        return iconPathURL;
+    public IOptionCategoryApplicability getApplicabilityCalculator() {
+        return applicabilityCalculator;
     }
 
     @Override
-    public IOptionCategoryApplicability getApplicabilityCalculator() {
-        return applicabilityCalculator;
+    public URL getIconPath() {
+        return iconPathURL;
     }
 
 }

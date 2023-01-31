@@ -37,7 +37,7 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IToolChain extends IHoldsOptions {
+public interface IToolChain extends IOptions {
     public static final String TOOL_CHAIN_ELEMENT_NAME = "toolChain"; //$NON-NLS-1$
     public static final String OS_LIST = "osList"; //$NON-NLS-1$
     public static final String ARCH_LIST = "archList"; //$NON-NLS-1$
@@ -87,14 +87,6 @@ public interface IToolChain extends IHoldsOptions {
      * @return ITool
      */
     public ITool getTool(String id);
-
-    /**
-     * Returns whether this element is abstract. Returns <code>false</code>
-     * if the attribute was not specified.
-     * 
-     * @return boolean
-     */
-    public boolean isAbstract();
 
     /**
      * Returns an array of operating systems the tool-chain outputs can run on.
@@ -194,7 +186,5 @@ public interface IToolChain extends IHoldsOptions {
      * @return IConfigurationBuildMacroSupplier
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
-
-    boolean isSystemObject();
 
 }

@@ -30,4 +30,6 @@ public interface ISchemaObject {
 
     public String getName();
 
+    boolean hasAncestor(String id);
+
 }

@@ -95,7 +95,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public void setOutputDirectories(ICOutputEntry[] entries) {
-        fBuilder.setOutputEntries(entries);
+        //fBuilder.setOutputEntries(entries);
     }
 
     @Override

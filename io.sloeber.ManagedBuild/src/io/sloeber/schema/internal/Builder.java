@@ -17,11 +17,7 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.eclipse.cdt.core.CommandLauncherManager;
@@ -35,14 +31,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import io.sloeber.autoBuild.Internal.BuildMacroProvider;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.api.BuildMacroException;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.api.IFileContextBuildMacroValues;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
@@ -50,10 +41,10 @@ import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunner;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IToolChain;
 
-public class Builder extends HoldsOptions implements IBuilder {
+public class Builder extends SchemaObject implements IBuilder {
     public static final int UNLIMITED_JOBS = Integer.MAX_VALUE;
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -96,14 +87,7 @@ public class Builder extends HoldsOptions implements IBuilder {
     private IMakefileGenerator myMakeFileGenerator;
     private int parallelNumberAttribute; // negative number denotes "optimal" value, see getOptimalParallelJobNum()
 
-    private IFolder myBuildFolder;
-
-    private boolean isTest;
-    private ICOutputEntry[] outputEntries;
-
-    /*
-     *  C O N S T R U C T O R S
-     */
+    private Options myOptionMap = new Options();
 
     /**
      * This constructor is called to create a builder defined by an extension point
@@ -143,10 +127,9 @@ public class Builder extends HoldsOptions implements IBuilder {
         modelcommandLauncher = getAttributes(ATTRIBUTE_COMMAND_LAUNCHER);
         modelbuildRunner = getAttributes(ATTRIBUTE_BUILD_RUNNER);
 
-        IConfigurationElement[] optionElements = element.getChildren(IHoldsOptions.OPTION);
+        IConfigurationElement[] optionElements = element.getChildren(IOptions.OPTION);
         for (IConfigurationElement optionElement : optionElements) {
-            Option newOption = new Option(this, root, optionElement);
-            myOptionMap.put(newOption.getName(), newOption);
+            myOptionMap.add(new Option(this, root, optionElement));
         }
 
         myMakeFileGenerator = (IMakefileGenerator) createExecutableExtension(MAKEGEN_ID);
@@ -166,8 +149,10 @@ public class Builder extends HoldsOptions implements IBuilder {
 
     }
 
-    public void resolveFields() {
-
+    private void resolveFields() {
+        if (myName.isBlank()) {
+            myName = getId();
+        }
         reservedMacroNames = modelreservedMacroNames[SUPER].split(","); //$NON-NLS-1$
         isAbstract = Boolean.parseBoolean(modelsAbstract[ORIGINAL]);
 
@@ -175,7 +160,7 @@ public class Builder extends HoldsOptions implements IBuilder {
         if (isParallelBuildEnabled) {
             setParallelizationNumAttribute(modelparallelizationNumber[SUPER]);
         }
-        isTest = Boolean.parseBoolean(modelisSystem[SUPER]);
+        //  isTest = Boolean.parseBoolean(modelisSystem[SUPER]);
 
         if (!modelarguments[SUPER].isBlank()) {
             String stopOnErrCmd = getStopOnErrCmd(isStopOnError());
@@ -213,15 +198,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     @Override
     public IToolChain getParent() {
         return parent;
-    }
-
-    /*
-     *  M O D E L   A T T R I B U T E   A C C E S S O R S
-     */
-
-    @Override
-    public String getName() {
-        return (myName == null && superClass != null) ? superClass.getName() : myName;
     }
 
     @Override
@@ -279,7 +255,7 @@ public class Builder extends HoldsOptions implements IBuilder {
      * <br>
      * Where # is num or empty if {@code empty} is {@code true})
      */
-    private String processParallelPattern(String pattern, boolean empty, int num) {
+    private static String processParallelPattern(String pattern, boolean empty, int num) {
         Assert.isTrue(num > 0);
 
         int start = pattern.indexOf(PARALLEL_PATTERN_NUM_START);
@@ -369,18 +345,6 @@ public class Builder extends HoldsOptions implements IBuilder {
         //return new GnuMakefileGenerator();
     }
 
-    /*
-     *  O B J E C T   S T A T E   M A I N T E N A N C E
-     */
-
-    @Override
-    public IFileContextBuildMacroValues getFileContextBuildMacroValues() {
-        return null;
-        //        if (fileContextBuildMacroValues == null && superClass != null)
-        //            return getSuperClass().getFileContextBuildMacroValues();
-        //        return fileContextBuildMacroValues;
-    }
-
     @Override
     public String[] getReservedMacroNames() {
         return reservedMacroNames;
@@ -391,23 +355,9 @@ public class Builder extends HoldsOptions implements IBuilder {
         return reservedMacroNameSupplier;
     }
 
-    //	public String[] getCustomizedErrorParserIds(){
-    //		if(customizedErrorParserIds != null)
-    //			return (String[])customizedErrorParserIds.clone();
-    //		return null;
-    //	}
-
     @Override
     public String[] getErrorParsers() {
         return new String[0];
-    }
-
-    public String[] getCustomizedErrorParserIds() {
-        return null;
-    }
-
-    private Object getMacroContextData() {
-        return (Object) this;
     }
 
     @Override
@@ -542,19 +492,6 @@ public class Builder extends HoldsOptions implements IBuilder {
         return false;
     }
 
-    public void setParent(IToolChain toolChain) {
-        parent = toolChain;
-    }
-
-    public String getNameAndVersion() {
-        String name = getName();
-        String version = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-        if (version != null && version.length() != 0) {
-            return new StringBuilder().append(name).append(" (").append(version).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        return name;
-    }
-
     /**
      * Returns the optimal number of parallel jobs.
      * The number is the number of available processors on the machine.
@@ -657,46 +594,6 @@ public class Builder extends HoldsOptions implements IBuilder {
         return isParallelBuildEnabled;
     }
 
-    public Set<String> contributeErrorParsers(Set<String> set) {
-        if (getErrorParserIds() != null) {
-            if (set == null)
-                set = new HashSet<>();
-
-            String ids[] = getErrorParserList();
-            if (ids.length != 0)
-                set.addAll(Arrays.asList(ids));
-        }
-        return set;
-    }
-
-    //  
-
-    @Override
-    public boolean isSystemObject() {
-        if (isTest)
-            return true;
-
-        if (getParent() != null)
-            return getParent().isSystemObject();
-        return false;
-    }
-
-    @Override
-    public String getUniqueRealName() {
-        if (myName == null) {
-            myName = getId();
-        } else {
-            String version = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-            if (version != null) {
-                StringBuilder buf = new StringBuilder();
-                buf.append(myName);
-                buf.append(" (v").append(version).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-                myName = buf.toString();
-            }
-        }
-        return myName;
-    }
-
     public ICOutputEntry[] getOutputEntries(IProject project) {
         return getDefaultOutputSettings(project);
     }
@@ -714,35 +611,17 @@ public class Builder extends HoldsOptions implements IBuilder {
                 new COutputEntry(BuildFolder, null, ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
     }
 
-    public ICOutputEntry[] getOutputEntrySettings() {
-        if (outputEntries == null) {
-            if (superClass != null) {
-                return ((Builder) superClass).getOutputEntrySettings();
-            }
-            return null;
-
-        }
-        return outputEntries.clone();
-    }
-
-    public void setOutputEntries(ICOutputEntry[] entries) {
-        if (entries != null)
-            outputEntries = entries.clone();
-        else
-            outputEntries = null;
-    }
-
-    //    private int getSuperClassNum() {
-    //        int num = 0;
-    //        for (IBuilder superTool = getSuperClass(); superTool != null; superTool = superTool.getSuperClass()) {
-    //            num++;
-    //        }
-    //        return num;
-    //    }
-
     @Override
     public String toString() {
-        return getUniqueRealName();
+
+        String version1 = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+        if (version1 != null) {
+            StringBuilder buf = new StringBuilder();
+            buf.append(myName);
+            buf.append(" (v").append(version1).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            return buf.toString();
+        }
+        return myName;
     }
 
     @Override
@@ -758,11 +637,6 @@ public class Builder extends HoldsOptions implements IBuilder {
     @Override
     public boolean appendEnvironment() {
         return true;
-    }
-
-    @Override
-    public IPath getBuildLocation() {
-        return myBuildFolder.getLocation();
     }
 
 }
@@ -1818,4 +1692,90 @@ public class Builder extends HoldsOptions implements IBuilder {
 //  }
 //
 //  return new Path(command);
+//}
+//@Override
+//public boolean isSystemObject() {
+//  if (isTest)
+//      return true;
+//
+//  if (getParent() != null)
+//      return getParent().isSystemObject();
+//  return false;
+//}
+
+//public ICOutputEntry[] getOutputEntrySettings() {
+//  if (outputEntries == null) {
+//      if (superClass != null) {
+//          return ((Builder) superClass).getOutputEntrySettings();
+//      }
+//      return null;
+//
+//  }
+//  return outputEntries.clone();
+//}
+
+//public void setOutputEntries(ICOutputEntry[] entries) {
+//  if (entries != null)
+//      outputEntries = entries.clone();
+//  else
+//      outputEntries = null;
+//}
+
+//    private int getSuperClassNum() {
+//        int num = 0;
+//        for (IBuilder superTool = getSuperClass(); superTool != null; superTool = superTool.getSuperClass()) {
+//            num++;
+//        }
+//        return num;
+//    }
+//public String getNameAndVersion() {
+//String name = getName();
+//String version = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+//if (version != null && version.length() != 0) {
+//  return new StringBuilder().append(name).append(" (").append(version).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+//}
+//return name;
+//}
+//  public String[] getCustomizedErrorParserIds(){
+//      if(customizedErrorParserIds != null)
+//          return (String[])customizedErrorParserIds.clone();
+//      return null;
+//  }
+//@Override
+//public IPath getBuildLocation() {
+//  return myBuildFolder.getLocation();
+//}
+///*
+//*  O B J E C T   S T A T E   M A I N T E N A N C E
+//*/
+//
+//@Override
+//public IFileContextBuildMacroValues getFileContextBuildMacroValues() {
+// return null;
+// //        if (fileContextBuildMacroValues == null && superClass != null)
+// //            return getSuperClass().getFileContextBuildMacroValues();
+// //        return fileContextBuildMacroValues;
+//}
+
+//    @Override
+//    public String getName() {
+//        return myName;
+//    }
+//private Set<String> contributeErrorParsers(Set<String> set) {
+//if (getErrorParserIds() != null) {
+//  if (set == null)
+//      set = new HashSet<>();
+//
+//  String ids[] = getErrorParserList();
+//  if (ids.length != 0)
+//      set.addAll(Arrays.asList(ids));
+//}
+//return set;
+//}
+//public String[] getCustomizedErrorParserIds() {
+//return null;
+//}
+//
+//private Object getMacroContextData() {
+//return (Object) this;
 //}

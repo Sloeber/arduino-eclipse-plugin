@@ -8,12 +8,8 @@ import static io.sloeber.autoBuild.integration.Const.*;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
-
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
@@ -22,10 +18,7 @@ import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceProxy;
-import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -40,9 +33,6 @@ import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
 
 /**
  * This is the default makefile generator
@@ -52,11 +42,7 @@ import io.sloeber.schema.api.ITool;
  */
 public class MakefileGenerator implements IMakefileGenerator {
     static private boolean VERBOSE = true;
-    static private final String IGNORED_BY = " ignored by "; //$NON-NLS-1$
-    static private final String ACCEPTED_BY = " accepted by "; //$NON-NLS-1$
-    // static config
-    static private final List<String> InputFileIgnoreList = new LinkedList<>(
-            List.of(".settings", ".project", ".cproject")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
     // Local variables needed by generator
     IConfiguration myConfig;
     IProject myProject;
@@ -147,230 +133,34 @@ public class MakefileGenerator implements IMakefileGenerator {
      * Make rule generation code
      *****************************************************************************************/
 
-    /**
-     * This class is used to recursively walk the project and create make rules for
-     * all appropriate files found
-     */
-    class SourceLevelMakeRuleGenerator implements IResourceProxyVisitor {
-
-        @Override
-        public boolean visit(IResourceProxy proxy) throws CoreException {
-            IResource resource = proxy.requestResource();
-            if (resource.isDerived()) {
-                return false;
-            }
-            if (InputFileIgnoreList.contains(resource.getName())) {
-                return false;
-            }
-            boolean isExcluded = !CDataUtil.isExcluded(resource.getLocation(), mySrcEntries);
-            if (isExcluded) {
-                return false;
-            }
-            if (proxy.getType() == IResource.FILE) {
-                if (getMakeRulesFromSourceFile((IFile) resource)) {
-                    myFoldersToBuild.add((IFolder) ((IFile) resource).getParent());
-                }
-                return false;
-            }
-            return true;
-        }
-
-        /**
-         * For the found file gives the makerules that need to be executed
-         * 
-         * @param inputFile
-         * @return true if a makerule has been created
-         */
-        private boolean getMakeRulesFromSourceFile(IFile inputFile) {
-            boolean ret = false;
-
-            String ext = inputFile.getFileExtension();
-            if (ext == null || ext.isBlank()) {
-                return ret;
-            }
-
-            for (ITool tool : myConfig.getToolChain().getTools()) {
-                for (IInputType inputType : tool.getInputTypes()) {
-                    if (inputType.isAssociatedWith(inputFile)) {
-                        for (IOutputType outputType : tool.getOutputTypes()) {
-                            IFile outputFile = outputType.getOutputName(myTopBuildDir, inputFile,
-                                    myCConfigurationDescription, inputType);
-                            if (outputFile == null) {
-                                if (VERBOSE) {
-                                    System.out.println(inputFile + ACCEPTED_BY + inputType.getName() + IGNORED_BY
-                                            + outputType.getName());
-                                }
-                                continue;
-                            }
-                            if (VERBOSE) {
-                                System.out.println(inputFile + ACCEPTED_BY + inputType.getName() + ACCEPTED_BY
-                                        + outputType.getName());
-                            }
-                            MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType, outputFile, 0);
-
-                            myMakeRules.addRule(newMakeRule);
-                            ret = true;
-                        }
-                    } else {
-                        if (VERBOSE) {
-                            System.out.println(inputFile + IGNORED_BY + inputType.getName());
-                        }
-                    }
-                }
-            }
-            return ret;
-        }
-    }
-
-    /**
-     * This method generates the rules for the files generated from the source files
-     * The results are added to the field makerules which already contain the source
-     * make rules.
-     * 
-     * The generated Make rules will have a MakeRuleSequenceID >0
-     */
-    protected void generateHigherLevelMakeRules() {
-        int makeRuleSequenceID = 1;
-        Map<IOutputType, Set<IFile>> generatedFiles = myMakeRules.getTargets();
-        if (VERBOSE) {
-            System.out.println("Trying to resolve generated files level 1 (that is from source files");
-        }
-        MakeRules newMakeRules = getMakeRulesFromGeneratedFiles(generatedFiles, makeRuleSequenceID);
-        while (makeRuleSequenceID < 20 && newMakeRules.size() > 0) {
-            myMakeRules.addRules(newMakeRules);
-            generatedFiles.clear();
-            generatedFiles.putAll(newMakeRules.getTargets());
-            makeRuleSequenceID++;
-            if (VERBOSE) {
-                System.out.println("Trying to resolve generated files level " + String.valueOf(makeRuleSequenceID));
-            }
-            newMakeRules = getMakeRulesFromGeneratedFiles(generatedFiles, makeRuleSequenceID);
-        }
-        if (VERBOSE) {
-            System.out.println("All rules are created");
-        }
-    }
-
-    /**
-     * Helper method to generateHigherLevelMakeRules Generate the makerules for the
-     * generated files
-     * 
-     * @param generatedFiles
-     *            The files generated by a rule that may generate make
-     *            rules
-     * @param makeRuleSequenceID
-     *            The makeRuleSequenceID to assign to the created MakeRules
-     * 
-     * @return The MakeRules that have been created
-     */
-    protected MakeRules getMakeRulesFromGeneratedFiles(Map<IOutputType, Set<IFile>> generatedFiles,
-            int makeRuleSequenceID) {
-        MakeRules newMakeRules = new MakeRules();
-
-        for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
-            IOutputType outputTypeIn = entry.getKey();
-            Set<IFile> files = entry.getValue();
-            for (ITool tool : myConfig.getToolChain().getTools()) {
-                for (IFile file : files) {
-                    for (IInputType inputType : tool.getInputTypes()) {
-                        if (inputType.isAssociatedWith(file, outputTypeIn)) {
-                            for (IOutputType outputType : tool.getOutputTypes()) {
-                                IFile outputFile = outputType.getOutputName(myTopBuildDir, file,
-                                        myCConfigurationDescription, inputType);
-
-                                if (outputFile == null) {
-                                    if (VERBOSE) {
-                                        System.out.println(file + ACCEPTED_BY + inputType.getName() + IGNORED_BY
-                                                + outputType.getName());
-                                    }
-                                } else {
-                                    if (VERBOSE) {
-                                        System.out.println(file + ACCEPTED_BY + inputType.getName() + ACCEPTED_BY
-                                                + outputType.getName());
-                                    }
-                                    newMakeRules.addRule(tool, inputType, file, outputType, outputFile,
-                                            makeRuleSequenceID);
-                                    continue;
-                                }
-                            }
-                        } else {
-                            if (VERBOSE) {
-                                System.out.println(file + IGNORED_BY + inputType.getName());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return newMakeRules;
-    }
-
     /****************************************************************************************
      * MakeFile generation code
      *****************************************************************************************/
 
     protected MultiStatus localgenerateMakefiles(IProgressMonitor monitor) throws CoreException {
         if (VERBOSE) {
-            System.out.println("Start MakeFile Generation for " + myProject.getName() + " for config "
+            System.out.println("Start MakeFile Generation for " + myProject.getName() + " for config " //$NON-NLS-1$ //$NON-NLS-2$
                     + myCConfigurationDescription.getName());
         }
+        beforeRuleGeneration();
         MultiStatus status;
-        //This code is called several times so we need to reset the field values
-        myMakeRules = new MakeRules();
+        //This object remains alive between builds; therefore we need to reset the field values
         myFoldersToBuild = new HashSet<>();
-        /*
-         * generate the makeRules for the source files The makeRules are stored in the
-         * field myMakeRules This method also calculates the list of folders that
-         * contain source code leading to make rules Those are stored in myFoldersToBuild
-         * The generated Make rules will have a MakeRuleSequenceID of 0
-         */
-        SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
-        myProject.accept(subDirVisitor, IResource.NONE);
+        myMakeRules = new MakeRules(myProject, myCConfigurationDescription, myTopBuildDir, myConfig, mySrcEntries,
+                myFoldersToBuild);
 
         if (myMakeRules.size() == 0) {
             // Throw an error if no source file make rules have been created
-            // String info =
-            // ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source",
-            // project.getName());
             String info = MessageFormat.format(MakefileGenerator_warning_no_source, myProject.getName());
             updateMonitor(info, monitor);
             status = new MultiStatus(Activator.getId(), IStatus.INFO, EMPTY_STRING, null);
             status.add(new Status(IStatus.ERROR, Activator.getId(), NO_SOURCE_FOLDERS, info, null));
             return status;
         }
-        checkCancel(monitor);
-
-        // Now we have the makeRules for the source files generate the Makerules for the
-        // created files
-        generateHigherLevelMakeRules();
-        checkCancel(monitor);
-
-        //		List<SubDirMakeGenerator> subDirMakeGenerators = new LinkedList<>();
-        //		// Generate the make rules from the source files
-        //		Set<MakeRule> sourceMakeRules = new HashSet<>();
-        //		Collection<IContainer> foldersToBuild = new LinkedHashSet<>();
-        //
-        //		for (IContainer res : foldersToInvestigate) {
-        //			// For all the folders get the make rules for this folder
-        //			SubDirMakeGenerator subDirMakeGenerator = new SubDirMakeGenerator(this, res);
-        //			if (!subDirMakeGenerator.isEmpty()) {
-        //				foldersToBuild.add(res);
-        //				subDirMakeGenerators.add(subDirMakeGenerator);
-        //				sourceMakeRules.addAll(subDirMakeGenerator.getMakeRules());
-        //			}
-        //			checkCancel(monitor);
-        //		}
-
+        beforeMakefileGeneration();
         //We have all the rules. Time to make the make files
         Set<String> srcMacroNames = new LinkedHashSet<>();
         Set<String> objMacroNames = new LinkedHashSet<>();
-        //		for (SubDirMakeGenerator curSubDirMake : subDirMakeGenerators) {
-        //			curSubDirMake.generateMakefile();
-        //			srcMacroNames.addAll(curSubDirMake.getPrerequisiteMacros());
-        //			srcMacroNames.addAll(curSubDirMake.getDependecyMacros());
-        //			objMacroNames.addAll(curSubDirMake.getTargetMacros());
-        //		}
-        // TOFIX also need to add macro's from main makefile
         objMacroNames = myMakeRules.getTargetMacros();
         srcMacroNames = myMakeRules.getPrerequisiteMacros();
         // srcMacroNames.addAll(myMakeRules.getDependecyMacros());
@@ -381,50 +171,14 @@ public class MakefileGenerator implements IMakefileGenerator {
                 myMakeRules, objMacroNames);
 
         checkCancel(monitor);
-        // How did we do
-        status = new MultiStatus(Activator.getId(), IStatus.OK, EMPTY_STRING, null);
+        afterMakefileGeneration();
 
-        // TOFIX this should be done differently
-        // JABA SLOEBER create the size.awk file
-        // ICConfigurationDescription confDesc =
-        // ManagedBuildManager.getDescriptionForConfiguration(config);
-        // IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
-        // IFile sizeAwkFile1 =
-        // root.getFile(topBuildDir.getFullPath().append("size.awk"));
-        // File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
-        // String regex = Common.getBuildEnvironmentVariable(confDesc,
-        // "recipe.size.regex", EMPTY);
-        // String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
-        // regex = Common.getBuildEnvironmentVariable(confDesc,
-        // "recipe.size.regex.data", EMPTY);
-        // awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
-        // regex = Common.getBuildEnvironmentVariable(confDesc,
-        // "recipe.size.regex.eeprom", EMPTY);
-        // awkContent += "/" + regex + "/ {arduino_eeprom += $2 }\n";
-        // awkContent += "END { print \"\\n";
-        // String max = Common.getBuildEnvironmentVariable(confDesc,
-        // "upload.maximum_size", "10000");
-        // awkContent += Messages.sizeReportSketch.replace("maximum_size", max);
-        // awkContent += "\\n";
-        // max = Common.getBuildEnvironmentVariable(confDesc,
-        // "upload.maximum_data_size", "10000");
-        // awkContent += Messages.sizeReportData.replace("maximum_data_size", max);
-        // awkContent += "\\n";
-        // awkContent += "\"}";
-        //
-        // try {
-        // FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // END JABA SLOEBER create the size.awk file
         if (VERBOSE) {
-            System.out.println("MakeFile Generation done for " + myProject.getName() + " for config "
+            System.out.println("MakeFile Generation done for " + myProject.getName() + " for config " //$NON-NLS-1$ //$NON-NLS-2$
                     + myCConfigurationDescription.getName());
         }
 
-        return status;
+        return new MultiStatus(Activator.getId(), IStatus.OK, EMPTY_STRING, null);
     }
 
     /*************************************************************************
@@ -443,17 +197,6 @@ public class MakefileGenerator implements IMakefileGenerator {
             IFolder srcFile = myTopBuildDir.getFolder(curFolder.getProjectRelativePath());
             save(makeBuf, srcFile.getFile(MODFILE_NAME));
         }
-    }
-
-    /***
-     * Method that asks the rule from the makerule
-     * Override this if you want to modify the rule of all/some targets
-     * 
-     * @param makeRule
-     * @return
-     */
-    protected StringBuffer getRule(MakeRule makeRule) {
-        return makeRule.getRule(myProject, myTopBuildDir, myCConfigurationDescription);
     }
 
     protected StringBuffer GenerateRules(MakeRules makeRules) {
@@ -497,6 +240,71 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     /****************************************************************************************
+     * Convenience methods to interfere in the makefile generation
+     *****************************************************************************************/
+    /***
+     * Method that asks the rule from the makerule
+     * Override this if you want to modify the rule of all/some targets
+     * 
+     * @param makeRule
+     * @return
+     */
+    protected StringBuffer getRule(MakeRule makeRule) {
+        return makeRule.getRule(myProject, myTopBuildDir, myCConfigurationDescription);
+    }
+
+    protected void afterMakefileGeneration() {
+        // nothing to do. 
+    }
+
+    protected void beforeMakefileGeneration() {
+        //nothing to do. 
+    }
+
+    protected void beforeRuleGeneration() {
+        // nothing to do. 
+        // TOFIX this should be done differently
+        // JABA SLOEBER create the size.awk file
+        // ICConfigurationDescription confDesc =
+        // ManagedBuildManager.getDescriptionForConfiguration(config);
+        // IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
+        // IFile sizeAwkFile1 =
+        // root.getFile(topBuildDir.getFullPath().append("size.awk"));
+        // File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
+        // String regex = Common.getBuildEnvironmentVariable(confDesc,
+        // "recipe.size.regex", EMPTY);
+        // String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
+        // regex = Common.getBuildEnvironmentVariable(confDesc,
+        // "recipe.size.regex.data", EMPTY);
+        // awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
+        // regex = Common.getBuildEnvironmentVariable(confDesc,
+        // "recipe.size.regex.eeprom", EMPTY);
+        // awkContent += "/" + regex + "/ {arduino_eeprom += $2 }\n";
+        // awkContent += "END { print \"\\n";
+        // String max = Common.getBuildEnvironmentVariable(confDesc,
+        // "upload.maximum_size", "10000");
+        // awkContent += Messages.sizeReportSketch.replace("maximum_size", max);
+        // awkContent += "\\n";
+        // max = Common.getBuildEnvironmentVariable(confDesc,
+        // "upload.maximum_data_size", "10000");
+        // awkContent += Messages.sizeReportData.replace("maximum_data_size", max);
+        // awkContent += "\\n";
+        // awkContent += "\"}";
+        //
+        // try {
+        // FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // END JABA SLOEBER create the size.awk file
+    }
+
+    /****************************************************************************************
+     * End of Convenience methods to interfere in the makefile generation
+     *****************************************************************************************/
+
+    /****************************************************************************************
      * Some Static house keeping methods
      *****************************************************************************************/
 
@@ -519,37 +327,3 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
     }
 }
-//	/*
-//	 * (non-Javadoc)
-//	 *
-//	 * @see org.eclipse.cdt.managedbuilder.makegen.IManagedBuilderMakefileGenerator
-//	 * #initialize(IProject, IManagedBuildInfo, IProgressMonitor)
-//	 */
-//	@Override
-//	public void initialize(IProject project, IManagedBuildInfo info, IProgressMonitor monitor) {
-//
-//		this.project = project;
-//
-//		// Save the monitor reference for reporting back to the user
-//		this.monitor = monitor;
-//		// Get the name of the build target
-//		buildTargetName = info.getBuildArtifactName();
-//		// Get its extension
-//		buildTargetExt = info.getBuildArtifactExtension();
-//		// try to resolve the build macros in the target extension
-//		buildTargetExt = resolveValueToMakefileFormat(buildTargetExt, "", " ",
-//				IBuildMacroProvider.CONTEXT_CONFIGURATION, info.getDefaultConfiguration());
-//		// try to resolve the build macros in the target name
-//		String resolved = resolveValueToMakefileFormat(buildTargetName, "", " ",
-//				IBuildMacroProvider.CONTEXT_CONFIGURATION, info.getDefaultConfiguration());
-//		if (resolved != null && (resolved = resolved.trim()).length() > 0)
-//			buildTargetName = resolved;
-//		if (buildTargetExt == null) {
-//			buildTargetExt = "";
-//		}
-//		// Cache the build tools
-//		config = info.getDefaultConfiguration();
-//		// initToolInfos();
-//		// set the top build dir path
-//		topBuildDir = project.getFile(info.getConfigurationName());
-//	}

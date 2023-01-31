@@ -45,7 +45,7 @@ import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.IProjectType;
@@ -84,7 +84,7 @@ public class Option extends SchemaObject implements IOption {
 
     //  Superclass
     //  Parent and children
-    private IHoldsOptions holder;
+    private ISchemaObject holder;
     //  Managed Build model attributes
     private int browseType = BROWSE_NONE;
     private List<OptionStringValue> builtIns;
@@ -127,7 +127,7 @@ public class Option extends SchemaObject implements IOption {
      *            The option definition from the manifest file or a dynamic element
      *            provider
      */
-    public Option(IHoldsOptions parent, IExtensionPoint root, IConfigurationElement element) {
+    public Option(ISchemaObject parent, IExtensionPoint root, IConfigurationElement element) {
         this.holder = parent;
 
         loadNameAndID(root, element);
@@ -338,7 +338,7 @@ public class Option extends SchemaObject implements IOption {
      *            - indicates whether this is an extension element or a managed
      *            project element
      */
-    public Option(IHoldsOptions parent, IOption superClass, String Id, String newName, boolean isExtensionElement) {
+    public Option(IOptions parent, IOption superClass, String Id, String newName, boolean isExtensionElement) {
         //        this.holder = parent;
         //        this.superClass = superClass;
         //        if (this.superClass != null) {
@@ -365,7 +365,7 @@ public class Option extends SchemaObject implements IOption {
      * @param element
      *            The XML element that contains the option settings.
      */
-    public Option(IHoldsOptions parent, ICStorageElement element) {
+    public Option(IOptions parent, ICStorageElement element) {
         //        this.holder = parent;
         //        isExtensionOption = false;
         //
@@ -385,7 +385,7 @@ public class Option extends SchemaObject implements IOption {
      * @param option
      *            The existing option to clone, except for the above fields.
      */
-    public Option(IHoldsOptions parent, String newId, String newName, Option option) {
+    public Option(IOptions parent, String newId, String newName, Option option) {
         //        this.holder = parent;
         //        superClass = option.superClass;
         //        if (superClass != null) {
@@ -1185,12 +1185,6 @@ public class Option extends SchemaObject implements IOption {
 
     @Override
     public ISchemaObject getParent() {
-        return holder;
-    }
-
-    @Override
-    public IHoldsOptions getOptionHolder() {
-        // Do not take superclasses into account
         return holder;
     }
 
@@ -2113,3 +2107,8 @@ public class Option extends SchemaObject implements IOption {
     }
 
 }
+//@Override
+//public IOptions getOptionHolder() {
+//  // Do not take superclasses into account
+//  return holder;
+//}

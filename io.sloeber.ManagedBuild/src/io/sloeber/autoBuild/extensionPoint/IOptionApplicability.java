@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ISchemaObject;
 
@@ -35,7 +35,7 @@ public interface IOptionApplicability {
 	 * @return true if this option is to be used in command line
 	 *         generation, false otherwise
 	 */
-	public boolean isOptionUsedInCommandLine(ISchemaObject configuration, IHoldsOptions holder, IOption option);
+	public boolean isOptionUsedInCommandLine(ISchemaObject configuration, IOptions holder, IOption option);
 
 	/**
 	 * This method is queried whenever a new option category is displayed.
@@ -48,7 +48,7 @@ public interface IOptionApplicability {
 	 * @return true if this option should be visible in the build options page,
 	 *         false otherwise
 	 */
-	public boolean isOptionVisible(ISchemaObject configuration, IHoldsOptions holder, IOption option);
+	public boolean isOptionVisible(ISchemaObject configuration, IOptions holder, IOption option);
 
 	/**
 	 * Whenever the value of an option changes in the GUI, this method is
@@ -64,6 +64,6 @@ public interface IOptionApplicability {
 	 * @return true if this option should be enabled in the build options page,
 	 *         or false if it should be disabled (grayed out)
 	 */
-	public boolean isOptionEnabled(ISchemaObject configuration, IHoldsOptions holder, IOption option);
+	public boolean isOptionEnabled(ISchemaObject configuration, IOptions holder, IOption option);
 
 }

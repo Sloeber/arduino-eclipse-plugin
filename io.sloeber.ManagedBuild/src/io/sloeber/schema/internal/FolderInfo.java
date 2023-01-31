@@ -14,43 +14,12 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import org.eclipse.cdt.core.CCProjectNature;
-import org.eclipse.cdt.core.CProjectNature;
-import org.eclipse.cdt.core.settings.model.ICSettingBase;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.core.settings.model.extension.CFolderData;
-import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-
-import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IModificationStatus;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IHoldsOptions;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IManagedProject;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITargetPlatform;
-import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.api.IToolChain;
 
 public class FolderInfo extends SchemaObject implements IFolderInfo {
     private String id;

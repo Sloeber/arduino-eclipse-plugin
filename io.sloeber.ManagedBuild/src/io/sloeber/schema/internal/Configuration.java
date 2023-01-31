@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
@@ -28,8 +30,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
@@ -61,10 +61,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     // Parent and children
     private ProjectType projectType;
     private List<String> defaultLanguageSettingsProviderIds = new ArrayList<>();
-
-    //private FolderInfo rootFolderInfo=null;
-    //private BuildConfigurationData fCfgData;
-    private ICConfigurationDescription fCfgDes;
 
     private boolean isPreferenceConfig;
     private String[] myErrorParserIDs;
@@ -116,6 +112,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     private void resolveFields() {
         myErrorParserIDs = modelerrorParsers[SUPER].split(SEMICOLON);
+
         if (modelcleanCommand[SUPER].isBlank()) {
             if (Platform.getOS().equals(Platform.OS_WIN32)) {
                 modelcleanCommand[SUPER] = "del"; //$NON-NLS-1$
@@ -134,9 +131,8 @@ public class Configuration extends SchemaObject implements IConfiguration {
                         defaultLanguageSettingsProviderIds.remove(defaultID);
                     } else if (!defaultLanguageSettingsProviderIds.contains(defaultID)) {
                         if (defaultID.contains($TOOLCHAIN)) {
-                            IToolChain toolchain = getToolChain();
-                            if (toolchain != null) {
-                                String toolchainProvidersIds = toolchain.getDefaultLanguageSettingsProviderIds();
+                            if (myToolchain != null) {
+                                String toolchainProvidersIds = myToolchain.getDefaultLanguageSettingsProviderIds();
                                 if (toolchainProvidersIds != null) {
                                     defaultLanguageSettingsProviderIds.addAll(Arrays
                                             .asList(toolchainProvidersIds.split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER)));
@@ -224,23 +220,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
      */
 
     @Override
-    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
-        IToolChain toolChain = getToolChain();
-        if (toolChain != null)
-            return toolChain.getEnvironmentVariableSupplier();
-        return null;
-    }
-
-    @Override
-    public IConfigurationBuildMacroSupplier getBuildMacroSupplier() {
-        IToolChain toolChain = getToolChain();
-        if (toolChain != null)
-            return toolChain.getBuildMacroSupplier();
-        return null;
-
-    }
-
-    @Override
     public List<ICSourceEntry> getSourceEntries() {
         return new LinkedList<>();
         //                if (sourceEntries == null || sourceEntries.length == 0) {
@@ -255,25 +234,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     @Override
     public IBuilder getBuilder() {
-        return getToolChain().getBuilder();
-    }
-
-    public ICConfigurationDescription getConfigurationDescription() {
-        return fCfgDes;
-    }
-
-    public void setConfigurationDescription(ICConfigurationDescription cfgDes) {
-        fCfgDes = cfgDes;
-    }
-
-    public boolean isPerRcTypeDiscovery() {
-        ToolChain tc = (ToolChain) getToolChain();
-        return tc.isPerRcTypeDiscovery();
-    }
-
-    public String getDiscoveryProfileId() {
-        ToolChain tc = (ToolChain) getToolChain();
-        return tc.getScannerConfigDiscoveryProfileId();
+        return myToolchain.getBuilder();
     }
 
     public boolean isPreference() {
@@ -303,6 +264,32 @@ public class Configuration extends SchemaObject implements IConfiguration {
     @Override
     public IFolder getBuildFolder(ICConfigurationDescription cfg) {
         return cfg.getProjectDescription().getProject().getFolder(cfg.getName());
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + CONFIGURATION_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + ARTIFACT_NAME + EQUAL + modelartifactName[SUPER] + NEWLINE);
+        ret.append(prepend + ARTIFACT_EXTENSION + EQUAL + modelartifactExtension[SUPER] + NEWLINE);
+        ret.append(prepend + CLEAN_COMMAND + EQUAL + modelcleanCommand[SUPER] + NEWLINE);
+        ret.append(prepend + ERROR_PARSERS + EQUAL + modelerrorParsers[SUPER] + NEWLINE);
+        ret.append(prepend + LANGUAGE_SETTINGS_PROVIDERS + EQUAL + modellanguageSettingsProviders[SUPER] + NEWLINE);
+
+        ret.append(prepend + PREBUILD_STEP + EQUAL + modelprebuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + POSTBUILD_STEP + EQUAL + modelpostbuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + PREANNOUNCEBUILD_STEP + EQUAL + modelpreannouncebuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + POSTANNOUNCEBUILD_STEP + EQUAL + modelpostannouncebuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + DESCRIPTION + EQUAL + modeldescription[SUPER] + NEWLINE);
+        ret.append(prepend + BUILD_PROPERTIES + EQUAL + modelbuildProperties[SUPER] + NEWLINE);
+        ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelbuildArtefactType[SUPER] + NEWLINE);
+
+        ret.append(prepend + BEGIN_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
+        //  ret.append(myToolchain.dump(leadingChars+1));
+        ret.append(prepend + END_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
+        return ret;
     }
 
 }

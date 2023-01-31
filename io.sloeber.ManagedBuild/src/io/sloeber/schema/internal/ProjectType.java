@@ -14,9 +14,11 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.integration.Const.*;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -42,7 +44,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
     // Parent and children
     private Map<String, Configuration> myConfigMap = new HashMap<>();
     // Managed Build model attributes
-    private boolean myIisAbstract;
+    private boolean myIsAbstract;
     private boolean myIsTest;
 
     private IConfigurationNameProvider myConfigurationNameProvider = null;
@@ -67,9 +69,11 @@ public class ProjectType extends SchemaObject implements IProjectType {
         modelConfigurationNameProvider = getAttributes(CONFIGURATION_NAME_PROVIDER);
         modelEnvironmentVariableSupplier = getAttributes(PROJECT_ENVIRONMENT_SUPPLIER);
         modelBuildMacroSupplier = getAttributes(PROJECT_BUILD_MACRO_SUPPLIER);
-        
-        myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(PROJECT_ENVIRONMENT_SUPPLIER);
-        myConfigurationNameProvider = (IConfigurationNameProvider) createExecutableExtension(CONFIGURATION_NAME_PROVIDER);
+
+        myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(
+                PROJECT_ENVIRONMENT_SUPPLIER);
+        myConfigurationNameProvider = (IConfigurationNameProvider) createExecutableExtension(
+                CONFIGURATION_NAME_PROVIDER);
         myBuildMacroSupplier = (IProjectBuildMacroSupplier) createExecutableExtension(PROJECT_BUILD_MACRO_SUPPLIER);
 
         // Load the configuration children
@@ -78,23 +82,8 @@ public class ProjectType extends SchemaObject implements IProjectType {
             Configuration newConfig = new Configuration(this, root, config);
             myConfigMap.put(newConfig.getName(), newConfig);
         }
-        //TOFIX JABA super class confiigs are not handled
-        //        if (configs.length == 0) {
-        //            // Add configurations from our superClass that are not overridden here
-        //            if (myConfigurationSuperClassElement != null) {
-        //                configs = myConfigurationSuperClassElement.myConfigurationElement.getChildren(IConfiguration.CONFIGURATION_ELEMENT_NAME);
-        //                for (IConfigurationElement config : configs) {
-        //                    Configuration newConfig = new Configuration(this, root, config);
-        //                    myConfigMap.put(newConfig.getName(), newConfig);
-        //                }
-        //            }
-        //
-        //        }
-
 
     }
-
-
 
     /*
      * P A R E N T A N D C H I L D H A N D L I N G
@@ -124,28 +113,17 @@ public class ProjectType extends SchemaObject implements IProjectType {
      * Adds the Configuration to the Configuration list and map
      */
     public void addConfiguration(Configuration configuration) {
-            myConfigMap.put(configuration.getId(), configuration);
+        myConfigMap.put(configuration.getId(), configuration);
     }
 
     @Override
     public boolean isAbstract() {
-        return myIisAbstract;
+        return myIsAbstract;
     }
 
     @Override
     public boolean isTestProjectType() {
         return myIsTest;
-    }
-
-    /*
-     * O B J E C T S T A T E M A I N T E N A N C E
-     */
-
-    /**
-     * Resolve the element IDs to interface references
-     */
-    public void resolveReferences() {
-
     }
 
     /*
@@ -167,7 +145,6 @@ public class ProjectType extends SchemaObject implements IProjectType {
         return myConfigurationNameProvider;
     }
 
-
     /*
      * (non-Javadoc)
      * 
@@ -187,6 +164,32 @@ public class ProjectType extends SchemaObject implements IProjectType {
     @Override
     public IProjectBuildMacroSupplier getBuildMacroSupplier() {
         return myBuildMacroSupplier;
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + PROJECTTYPE_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + BUILD_PROPERTIES + EQUAL + modelBuildProperties[SUPER] + NEWLINE);
+        ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelArtifactType[SUPER] + NEWLINE);
+        ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[SUPER] + NEWLINE);
+        ret.append(prepend + IS_TEST + EQUAL + modelIsTest[SUPER] + NEWLINE);
+        ret.append(prepend + CONFIGURATION_NAME_PROVIDER + EQUAL + modelConfigurationNameProvider[SUPER]
+                + resolvedState(myConfigurationNameProvider) + NEWLINE);
+        ret.append(prepend + PROJECT_ENVIRONMENT_SUPPLIER + EQUAL + modelEnvironmentVariableSupplier[SUPER]
+                + resolvedState(myEnvironmentVariableSupplier) + NEWLINE);
+        ret.append(prepend + PROJECT_BUILD_MACRO_SUPPLIER + EQUAL + modelBuildMacroSupplier[SUPER]
+                + resolvedState(myBuildMacroSupplier) + NEWLINE);
+        ret.append(prepend + BEGIN_OF_CHILDREN + myConfigMap.size() + BLANK + IConfiguration.CONFIGURATION_ELEMENT_NAME
+                + NEWLINE);
+        for (Configuration curConfig : myConfigMap.values()) {
+            ret.append(curConfig.dump(leadingChars + 1));
+            ret.append(NEWLINE);
+        }
+        ret.append(prepend + END_OF_CHILDREN + BLANK + IConfiguration.CONFIGURATION_ELEMENT_NAME + NEWLINE);
+        return ret;
     }
 
 }

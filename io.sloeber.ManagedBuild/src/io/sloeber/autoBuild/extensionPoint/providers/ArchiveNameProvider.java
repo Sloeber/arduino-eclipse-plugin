@@ -1,25 +1,25 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOutputType;
 
 public class ArchiveNameProvider implements IOutputNameProvider {
-    static String myArchiveFolders[] = { "Libraries", "libraries", "Archives", "archives" };
-    static String myFixedNameArchiveFolders[] = { "core", "Core" };
-    static private String ARCHIVE_EXTENSION = ".ar";
+    static String myArchiveFolders[] = { "Libraries", "libraries", "Archives", "archives" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    static String myFixedNameArchiveFolders[] = { "core", "Core" }; //$NON-NLS-1$ //$NON-NLS-2$
+    static private String ARCHIVE_EXTENSION = ".ar"; //$NON-NLS-1$
 
     public ArchiveNameProvider() {
         // nothing to do here
     }
 
     @Override
-    public String getOutputFileName(IFile inputFile, ICConfigurationDescription config, IInputType inputType) {
+    public String getOutputFileName(IFile inputFile, ICConfigurationDescription config, IInputType inputType,
+            IOutputType outputType) {
         String archiveFileName = getArchiveFileName(inputFile, false);
         return archiveFileName;
     }

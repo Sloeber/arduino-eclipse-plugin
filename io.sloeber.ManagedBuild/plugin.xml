@@ -8,16 +8,8 @@
         point="io.sloeber.autoBuild.buildDefinitions"
 		name="%extension.name.0" >
 		
-
-<!-- 
-####################################################################################### 
-#    AVR-GCC Compiler                                                                  # 
-####################################################################################### 
--->
 		<builder
         autoBuildTarget="all"
-        buildRunner="io.sloeber.autoBuild.extensionPoint.providers.BuildRunner"
-        buildfileGenerator="io.sloeber.autoBuild.extensionPoint.MakefileGenerator"
         cleanBuildTarget="clean"
         command="${MAKE_HOME}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
@@ -36,7 +28,6 @@
         macroOutputFileExtValue="$(suffix $(notdir $@)"
         macroOutputFileNameValue="$(notdir $@)"
         macroOutputFileRelPathValue="$@"
-        makefileGenerator="io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator"
         name="%toolchain.builder.name"
         parallelBuildCmd="-j*"
         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
@@ -45,10 +36,6 @@
   <projectType
         id="io.sloeber.core.sketch"
         name="%projectType.name">
-     
-     <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
-     <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
-     <!-- TODO: Consider renaming as base. -->
      <configuration
            cleanCommand="rm -f"
            id="io.sloeber.core.configuration.release"
@@ -311,10 +298,11 @@
                  commandLinePattern="${sloeber.size.switch} "
                  id="io.sloeber.tool.size"
                  isAbstract="false"
-                 name="%tool.printsize.name">
+                 name="print size">
               <inputType
                     dependencyExtensions="hex"
                     id="io.sloeber.tool.size.input"
+                    name="size input"
                     outputTypeID="io.sloeber.tool.objcopy.output"
                     primaryInput="true"
                     sources="hex">

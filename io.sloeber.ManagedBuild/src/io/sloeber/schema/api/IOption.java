@@ -193,13 +193,13 @@ public interface IOption extends ISchemaObject {
      */
     public ISchemaObject getParent();
 
-    /**
-     * @return the holder (parent) of this option. This may be an object
-     *         implementing ITool or IToolChain, which both extend IHoldsOptions
-     *
-     * @since 3.0
-     */
-    public IHoldsOptions getOptionHolder();
+    //    /**
+    //     * @return the holder (parent) of this option. This may be an object
+    //     *         implementing ITool or IToolChain, which both extend IHoldsOptions
+    //     *
+    //     * @since 3.0
+    //     */
+    //    public IOptions getOptionHolder();
 
     /**
      * @param holder

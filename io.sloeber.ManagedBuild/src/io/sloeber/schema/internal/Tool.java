@@ -25,11 +25,9 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
-import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
@@ -40,7 +38,7 @@ import io.sloeber.schema.api.IToolChain;
  * Note that this class implements IOptionCategory to represent the top
  * category.
  */
-public class Tool extends HoldsOptions implements ITool, IOptionCategory {
+public class Tool extends SchemaObject implements ITool {
 
     private List<IEnvVarBuildPath> envVarBuildPathList;
 
@@ -63,7 +61,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     private boolean customBuildStep;
     private boolean isAbstract;
     private boolean isSystem;
-    private URL iconPathURL;
     private ToolChain parent;
     private String myAnnouncement;
     private int natureFilter;
@@ -71,6 +68,8 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     private Map<String, OutputType> outputTypeMap = new HashMap<>();
 
     private IManagedCommandLineGenerator commandLineGenerator;
+
+    private Options myOptions = new Options();
 
     /**
      * Constructor to create a new tool for a tool-chain based on the information
@@ -119,16 +118,16 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
             natureFilter = FILTER_BOTH;
         }
 
-        // icon - was saved as URL in string form
-        if (!modelIcon[SUPER].isBlank()) {
-            try {
-                iconPathURL = new URL(modelIcon[SUPER]);
-            } catch (@SuppressWarnings("unused") MalformedURLException e) {
-                // Print a warning
-                ManagedBuildManager.outputIconError(modelIcon[SUPER]);
-                iconPathURL = null;
-            }
-        }
+        //        // icon - was saved as URL in string form
+        //        if (!modelIcon[SUPER].isBlank()) {
+        //            try {
+        //                iconPathURL = new URL(modelIcon[SUPER]);
+        //            } catch (@SuppressWarnings("unused") MalformedURLException e) {
+        //                // Print a warning
+        //                ManagedBuildManager.outputIconError(modelIcon[SUPER]);
+        //                iconPathURL = null;
+        //            }
+        //        }
 
         if (modelAnnouncement[SUPER].isBlank()) {
             myAnnouncement = Tool_default_announcement + BLANK + getName(); // + "(" + getId() + ")";
@@ -143,13 +142,11 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         for (IConfigurationElement curChild : getAllChildren()) {
             switch (curChild.getName()) {
             case IOption.ELEMENT_NAME: {
-                Option child = new Option(this, root, curChild);
-                myOptionMap.put(child.getId(), child);
+                myOptions.add(new Option(this, root, curChild));
                 break;
             }
-            case IHoldsOptions.OPTION_CAT: {
-                OptionCategory child = new OptionCategory(this, root, curChild);
-                categoryMap.put(child.getId(), child);
+            case IOptions.OPTION_CAT: {
+                myOptions.add(new OptionCategory(this, root, curChild));
                 break;
             }
             case IInputType.INPUT_TYPE_ELEMENT_NAME: {
@@ -169,11 +166,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
     @Override
     public IToolChain getParent() {
         return parent;
-    }
-
-    @Override
-    public IOptionCategory getTopOptionCategory() {
-        return this;
     }
 
     @Override
@@ -208,16 +200,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 
     public IOutputType getAllOutputTypeById(String optputTypeID) {
         return outputTypeMap.get(optputTypeID);
-    }
-
-    @Override
-    public IOptionCategory getOwner() {
-        return null;
-    }
-
-    @Override
-    public URL getIconPath() {
-        return iconPathURL;
     }
 
     @Override
@@ -476,23 +458,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         //        return typeToDataMap.get(type);
     }
 
-    public boolean supportsLanguageSettings() {
-        List<IOption> options = getOptions();
-        boolean found = false;
-        for (IOption option : options) {
-            try {
-                int type = option.getValueType();
-                if (ManagedBuildManager.optionTypeToEntryKind(type) != 0) {
-                    found = true;
-                    break;
-                }
-            } catch (BuildException e) {
-                Activator.log(e);
-            }
-        }
-        return found;
-    }
-
     @Override
     public CLanguageData[] getCLanguageDatas() {
         //TOFIX JABA don't know what this does
@@ -500,40 +465,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         //        initDataMap();
         //        return typeToDataMap.values().toArray(new BuildLanguageData[typeToDataMap.size()]);
     }
-
-    //    @Override
-    //    public IInputType getInputTypeForCLanguageData(CLanguageData data) {
-    //        if (data instanceof BuildLanguageData)
-    //            return ((BuildLanguageData) data).getInputType();
-    //        return null;
-    //    }
-
-    //    private BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
-    //        if (booleanExpressionCalculator == null) {
-    //            if (superClass != null) {
-    //                return ((Tool) superClass).getBooleanExpressionCalculator();
-    //            }
-    //        }
-    //        return booleanExpressionCalculator;
-    //    }
-
-    public boolean isEnabled(IResourceInfo rcInfo) {
-        return true;
-        //        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator();
-        //        if (calc == null)
-        //            return true;
-        //
-        //        return calc.isToolUsedInCommandLine(rcInfo, this);
-    }
-
-    //    private SupportedProperties findSupportedProperties() {
-    //        if (supportedProperties == null) {
-    //            if (superClass != null) {
-    //                return ((Tool) superClass).findSupportedProperties();
-    //            }
-    //        }
-    //        return supportedProperties;
-    //    }
 
     public String getNameAndVersion() {
         String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
@@ -591,52 +522,6 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
             }
         }
         return myName;
-    }
-
-    //    public String getDiscoveryProfileIdAttribute() {
-    //        if (scannerConfigDiscoveryProfileId == null && superClass != null)
-    //            return ((Tool) superClass).getDiscoveryProfileIdAttribute();
-    //        return scannerConfigDiscoveryProfileId;
-    //    }
-
-    //    private IToolChain getToolChain() {
-    //        IBuildObject bo = getParent();
-    //        IToolChain tCh = null;
-    //        if (bo instanceof IToolChain) {
-    //            tCh = ((IToolChain) bo);
-    //        } else if (bo instanceof IFileInfo) {
-    //            tCh = ((ResourceConfiguration) bo).getBaseToolChain();
-    //        }
-    //        return tCh;
-    //    }
-
-    //    public String getDiscoveryProfileId() {
-    //        String id = getDiscoveryProfileIdAttribute();
-    //        if (id == null) {
-    //            IToolChain tc = getToolChain();
-    //            if (tc != null)
-    //                id = tc.getScannerConfigDiscoveryProfileId();
-    //        }
-    //        return id;
-    //    }
-
-    public IOption[] getOptionsOfType(int type) {
-        List<IOption> list = new ArrayList<>();
-        for (IOption op : getOptions()) {
-            try {
-                if (op.getValueType() == type)
-                    list.add(op);
-            } catch (BuildException e) {
-                Activator.log(e);
-            }
-        }
-        return list.toArray(new Option[list.size()]);
-    }
-
-    @Override
-    public IOptionCategoryApplicability getApplicabilityCalculator() {
-        // Tool does not have any ApplicabilityCalculator.
-        return null;
     }
 
     @Override
@@ -979,6 +864,11 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
         //            }
         //        }
         //        return flags;
+    }
+
+    @Override
+    public IOptions getOptions() {
+        return myOptions;
     }
 }
 
@@ -1633,3 +1523,100 @@ public class Tool extends HoldsOptions implements ITool, IOptionCategory {
 //}
 
 //private static final String EMPTY_QUOTED_STRING = "\"\""; //$NON-NLS-1$
+//
+//@Override
+//public IOptionCategoryApplicability getApplicabilityCalculator() {
+//  // Tool does not have any ApplicabilityCalculator.
+//  return null;
+//}
+//@Override
+//public IOptionCategory getTopOptionCategory() {
+//  return this;
+//}
+//public boolean supportsLanguageSettings() {
+//List<IOption> options = getOptions();
+//boolean found = false;
+//for (IOption option : options) {
+//  try {
+//      int type = option.getValueType();
+//      if (ManagedBuildManager.optionTypeToEntryKind(type) != 0) {
+//          found = true;
+//          break;
+//      }
+//  } catch (BuildException e) {
+//      Activator.log(e);
+//  }
+//}
+//return found;
+//}
+//    public String getDiscoveryProfileIdAttribute() {
+//        if (scannerConfigDiscoveryProfileId == null && superClass != null)
+//            return ((Tool) superClass).getDiscoveryProfileIdAttribute();
+//        return scannerConfigDiscoveryProfileId;
+//    }
+
+//    private IToolChain getToolChain() {
+//        IBuildObject bo = getParent();
+//        IToolChain tCh = null;
+//        if (bo instanceof IToolChain) {
+//            tCh = ((IToolChain) bo);
+//        } else if (bo instanceof IFileInfo) {
+//            tCh = ((ResourceConfiguration) bo).getBaseToolChain();
+//        }
+//        return tCh;
+//    }
+
+//    public String getDiscoveryProfileId() {
+//        String id = getDiscoveryProfileIdAttribute();
+//        if (id == null) {
+//            IToolChain tc = getToolChain();
+//            if (tc != null)
+//                id = tc.getScannerConfigDiscoveryProfileId();
+//        }
+//        return id;
+//    }
+
+//public IOption[] getOptionsOfType(int type) {
+//    List<IOption> list = new ArrayList<>();
+//    for (IOption op : getOptions()) {
+//        try {
+//            if (op.getValueType() == type)
+//                list.add(op);
+//        } catch (BuildException e) {
+//            Activator.log(e);
+//        }
+//    }
+//    return list.toArray(new Option[list.size()]);
+//}
+//    @Override
+//    public IInputType getInputTypeForCLanguageData(CLanguageData data) {
+//        if (data instanceof BuildLanguageData)
+//            return ((BuildLanguageData) data).getInputType();
+//        return null;
+//    }
+
+//    private BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
+//        if (booleanExpressionCalculator == null) {
+//            if (superClass != null) {
+//                return ((Tool) superClass).getBooleanExpressionCalculator();
+//            }
+//        }
+//        return booleanExpressionCalculator;
+//    }
+//public boolean isEnabled(IResourceInfo rcInfo) {
+//return true;
+////        BooleanExpressionApplicabilityCalculator calc = getBooleanExpressionCalculator();
+////        if (calc == null)
+////            return true;
+////
+////        return calc.isToolUsedInCommandLine(rcInfo, this);
+//}
+
+//    private SupportedProperties findSupportedProperties() {
+//        if (supportedProperties == null) {
+//            if (superClass != null) {
+//                return ((Tool) superClass).findSupportedProperties();
+//            }
+//        }
+//        return supportedProperties;
+//    }

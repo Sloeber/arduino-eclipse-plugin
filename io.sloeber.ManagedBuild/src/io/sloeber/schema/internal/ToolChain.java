@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -37,13 +35,13 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IHoldsOptions;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
-public class ToolChain extends HoldsOptions implements IToolChain {
+public class ToolChain extends Options implements IToolChain {
 
     String[] modelIsAbstract;
     String[] modelOsList;
@@ -64,20 +62,9 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     // Managed Build model attributes
     private List<String> osList = new ArrayList<>();
     private List<String> archList = new ArrayList<>();
-    private boolean isAbstract;
-    private IConfigurationElement environmentVariableSupplierElement = null;
     private IEnvironmentVariableSupplier environmentVariableSupplier = null;
     private IConfigurationElement buildMacroSupplierElement = null;
     private IConfigurationBuildMacroSupplier buildMacroSupplier = null;
-    private IConfigurationElement pathconverterElement = null;
-    //private IOptionPathConverter optionPathConverter = null;
-    private boolean isTest;
-
-    //private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
-    //    private List<OptionEnablementExpression> myEnablements = new ArrayList<>();
-
-    private PathInfoCache discoveredInfo;
-    private Boolean isRcTypeBasedDiscovery;
 
     private Configuration parent;
     private List<OptionCategory> myCategories = new ArrayList<>();
@@ -112,10 +99,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         modelBuildMacroSuplier = getAttributes(CONFIGURATION_MACRO_SUPPLIER);
         modelIsSytem = getAttributes(IS_SYSTEM);
 
-        //        booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myEnablements);
-
         IConfigurationElement[] targetPlatforms = element.getChildren(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME);
-        if (targetPlatforms.length > 1) {
+        if (targetPlatforms.length == 1) {
             targetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
         } else {
             System.err.println("Targetplatforms of toolchain " + parent.myID + DOT + parent.myName + BLANK + myID + DOT //$NON-NLS-1$
@@ -140,13 +125,13 @@ public class ToolChain extends HoldsOptions implements IToolChain {
             System.err.println("There are no tools in toolchain " + myName + DOT); //$NON-NLS-1$
         }
 
-        List<IConfigurationElement> optionElements = getAllChildren(IHoldsOptions.OPTION);
+        List<IConfigurationElement> optionElements = getAllChildren(IOptions.OPTION);
         for (IConfigurationElement optionElement : optionElements) {
             Option newOption = new Option(this, root, optionElement);
             myOptionMap.put(newOption.getName(), newOption);
         }
 
-        List<IConfigurationElement> categoryElements = getAllChildren(IHoldsOptions.OPTION_CAT);
+        List<IConfigurationElement> categoryElements = getAllChildren(IOptions.OPTION_CAT);
         for (IConfigurationElement categoryElement : categoryElements) {
             myCategories.add(new OptionCategory(this, root, categoryElement));
         }
@@ -160,11 +145,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     }
 
     private void resolveFields() {
-
-        // Note no inheritanceof super class
-        isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
-
-        isTest = Boolean.valueOf(modelIsSytem[SUPER]).booleanValue();
 
         if (modelOsList[SUPER].isBlank()) {
             osList.add(ALL);
@@ -182,104 +162,11 @@ public class ToolChain extends HoldsOptions implements IToolChain {
             }
         }
 
-    }
-
-    /**
-     * This constructor is called to create a ToolChain whose attributes and
-     * children will be added by separate calls.
-     *
-     * @param parentFldInfo
-     *            The parent of the tool chain, if any
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The ID for the new tool chain
-     * @param name
-     *            The name for the new tool chain
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a
-     *            managed project element
-     */
-    public ToolChain(IFolderInfo parentFldInfo, IToolChain superClass, String Id, String name,
-            boolean isExtensionElement) {
-        // super(resolvedDefault);
-        // this.config = parentFldInfo.getParent();
-        // parentFolderInfo = parentFldInfo;
-        //
-        // setSuperClassInternal(superClass);
-        // setManagedBuildRevision(config.getManagedBuildRevision());
-        //
-        // if (getSuperClass() != null) {
-        // superClassId = getSuperClass().getId();
-        // }
-        // setId(Id);
-        // setName(name);
-        // setVersion(getVersionFromId());
-        //
-        // // isExtensionToolChain = isExtensionElement;
-        // // if (isExtensionElement) {
-        // // // Hook me up to the Managed Build Manager
-        // // ManagedBuildManager.addExtensionToolChain(this);
-        // // } else {
-        // // setRebuildState(true);
-        // // }
-    }
-
-    /**
-     * Create a {@link ToolChain} based on the specification stored in the project
-     * file (.cproject).
-     *
-     * @param parentFldInfo
-     *            The {@link IFolderInfo} the tool-chain will be
-     *            added to.
-     * @param element
-     *            The XML element that contains the tool-chain
-     *            settings.
-     * @param managedBuildRevision
-     *            the fileVersion of Managed Build System
-     */
-    public ToolChain(IFolderInfo parentFldInfo, ICStorageElement element) {
-        // this.config = parentFldInfo.getParent();
-        // this.parentFolderInfo = parentFldInfo;
-        //
-        // this.isExtensionToolChain = false;
-        //
-        //
-        // // Initialize from the XML attributes
-        // loadFromProject(element);
-        //
-        // // Load children
-        // ICStorageElement configElements[] = element.getChildren();
-        // for (int i = 0; i < configElements.length; ++i) {
-        // ICStorageElement configElement = configElements[i];
-        // if (loadChild(configElement)) {
-        // // do nothing
-        // } else if (configElement.getName().equals(ITool.TOOL_ELEMENT_NAME)) {
-        // Tool tool = new Tool(this, configElement, managedBuildRevision);
-        // addTool(tool);
-        // } else if
-        // (configElement.getName().equals(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME))
-        // {
-        // if (targetPlatform != null) {
-        // // TODO: report error
-        // }
-        // targetPlatform = new TargetPlatform(this, configElement,
-        // managedBuildRevision);
-        // } else if (configElement.getName().equals(IBuilder.BUILDER_ELEMENT_NAME)) {
-        // if (builder != null) {
-        // // TODO: report error
-        // }
-        // builder = new Builder(this, configElement, managedBuildRevision);
-        // }
-        // }
-        //
-        // String rebuild = PropertyManager.getInstance().getProperty(this,
-        // REBUILD_STATE);
-        // if (rebuild == null || Boolean.valueOf(rebuild).booleanValue())
-        // rebuildState = true;
+        buildMacroSupplier = (IConfigurationBuildMacroSupplier) createExecutableExtension(CONFIGURATION_MACRO_SUPPLIER);
 
     }
 
+    // 
     //  
     /*
      * E L E M E N T A T T R I B U T E R E A D E R S A N D W R I T E R S
@@ -369,15 +256,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 
     @Override
     public ITool getTool(String toolID) {
-        Tool tool = getToolMap().get(toolID);
+        Tool tool = toolMap.get(toolID);
         return tool;
-    }
-
-    /**
-     * Safe accessor for the map of tool ids to tools
-     */
-    private Map<String, Tool> getToolMap() {
-        return toolMap;
     }
 
     @Override
@@ -386,26 +266,8 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     }
 
     @Override
-    public boolean isAbstract() {
-        return isAbstract;
-    }
-
-    @Override
     public String getErrorParserIds() {
         return modelErrorParsers[SUPER];
-    }
-
-    public String getErrorParserIdsAttribute() {
-        return modelErrorParsers[SUPER];
-        // TOFIX code below is wierd
-        //        String ids = errorParserIds;
-        //        if (ids == null) {
-        //            // If I have a superClass, ask it
-        //            if (getSuperClass() != null) {
-        //                ids = ((ToolChain) getSuperClass()).getErrorParserIdsAttribute();
-        //            }
-        //        }
-        //        return ids;
     }
 
     @Override
@@ -477,7 +339,6 @@ public class ToolChain extends HoldsOptions implements IToolChain {
     public List<String> getErrorParserList() {
         String parserIDs = getErrorParserIds();
         List<String> errorParsers = new LinkedList<>();
-        ;
         if (!parserIDs.isBlank()) {
             StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
             while (tok.hasMoreElements()) {
@@ -506,198 +367,19 @@ public class ToolChain extends HoldsOptions implements IToolChain {
         //		return defaultLanguageSettingsProviderIds;
     }
 
-    /**
-     * Get list of scanner discovery profiles supported by previous version.
-     * 
-     * @see ScannerDiscoveryLegacySupport#getDeprecatedLegacyProfiles(String)
-     *
-     * @noreference This method is not intended to be referenced by clients.
-     */
-    public String getLegacyScannerConfigDiscoveryProfileId() {
-        if (modelScannerConfigDiscoveryProfileID[SUPER].isBlank()) {
-            String profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(myID);
-            if (profileId != null) {
-                return profileId;
-            }
-        }
-        return modelScannerConfigDiscoveryProfileID[SUPER];
-    }
-
     @Override
     public String getScannerConfigDiscoveryProfileId() {
-        return getScannerConfigDiscoveryProfileIdInternal();
-    }
-
-    /**
-     * Do not inline! This method needs to call itself recursively.
-     */
-    private String getScannerConfigDiscoveryProfileIdInternal() {
         return modelScannerConfigDiscoveryProfileID[SUPER];
-    }
-
-    /**
-     * @return the pathconverterElement
-     */
-    public IConfigurationElement getPathconverterElement() {
-        return pathconverterElement;
-    }
-
-    //    @Override
-    //    public IOptionPathConverter getOptionPathConverter() {
-    //        if (optionPathConverter != null) {
-    //            return optionPathConverter;
-    //        }
-    //        IConfigurationElement element = getPathconverterElement();
-    //        if (element != null) {
-    //            try {
-    //                if (element.getAttribute(ITool.OPTIONPATHCONVERTER) != null) {
-    //                    optionPathConverter = (IOptionPathConverter) element
-    //                            .createExecutableExtension(ITool.OPTIONPATHCONVERTER);
-    //                    return optionPathConverter;
-    //                }
-    //            } catch (CoreException e) {
-    //            }
-    //        }
-    //        return null;
-    //    }
-
-    // 
-    /**
-     * Returns the plugin.xml element of the configurationEnvironmentSupplier
-     * extension or <code>null</code> if none.
-     *
-     * @return IConfigurationElement
-     */
-    public IConfigurationElement getEnvironmentVariableSupplierElement() {
-        //		if (environmentVariableSupplierElement == null) {
-        //			if (getSuperClass() != null && getSuperClass() instanceof ToolChain) {
-        //				return ((ToolChain) getSuperClass()).getEnvironmentVariableSupplierElement();
-        //			}
-        //		}
-        return environmentVariableSupplierElement;
     }
 
     @Override
     public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
-        if (environmentVariableSupplier != null) {
-            return environmentVariableSupplier;
-        }
-        IConfigurationElement element = getEnvironmentVariableSupplierElement();
-        if (element != null) {
-            try {
-                if (element.getAttribute(CONFIGURATION_ENVIRONMENT_SUPPLIER) != null) {
-                    environmentVariableSupplier = (IEnvironmentVariableSupplier) element
-                            .createExecutableExtension(CONFIGURATION_ENVIRONMENT_SUPPLIER);
-                    return environmentVariableSupplier;
-                }
-            } catch (CoreException e) {
-                Activator.log(e);
-            }
-        }
-        return null;
-    }
-
-    // /*
-    // * this method is called by the UserDefinedMacroSupplier to obtain
-    // user-defined
-    // * macros available for this tool-chain
-    // */
-    // public StorableMacros getUserDefinedMacros(){
-    // if(isExtensionToolChain)
-    // return null;
-    //
-    // if(userDefinedMacros == null)
-    // userDefinedMacros = new StorableMacros();
-    // return userDefinedMacros;
-    // }
-
-    // public StorableEnvironment getUserDefinedEnvironment(){
-    // if(isExtensionToolChain)
-    // return null;
-    //
-    // return userDefinedEnvironment;
-    // }
-
-    // public void setUserDefinedEnvironment(StorableEnvironment env){
-    // if(!isExtensionToolChain)
-    // userDefinedEnvironment = env;
-    // }
-
-    /**
-     * Returns the plugin.xml element of the configurationMacroSupplier extension or
-     * <code>null</code> if none.
-     *
-     * @return IConfigurationElement
-     */
-    public IConfigurationElement getBuildMacroSupplierElement() {
-        if (buildMacroSupplierElement == null) {
-            if (superClass != null && superClass instanceof ToolChain) {
-                return ((ToolChain) superClass).getBuildMacroSupplierElement();
-            }
-        }
-        return buildMacroSupplierElement;
+        return environmentVariableSupplier;
     }
 
     @Override
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier() {
-        if (buildMacroSupplier != null) {
-            return buildMacroSupplier;
-        }
-        IConfigurationElement element = getBuildMacroSupplierElement();
-        if (element != null) {
-            try {
-                if (element.getAttribute(CONFIGURATION_MACRO_SUPPLIER) != null) {
-                    buildMacroSupplier = (IConfigurationBuildMacroSupplier) element
-                            .createExecutableExtension(CONFIGURATION_MACRO_SUPPLIER);
-                    return buildMacroSupplier;
-                }
-            } catch (CoreException e) {
-                Activator.log(e);
-
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isSystemObject() {
-        return isTest;
-    }
-
-    public String getNameAndVersion() {
-        String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-        if (idVersion != null && idVersion.length() != 0) {
-            return new StringBuilder().append(myName).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        return myName;
-    }
-
-    public boolean hasScannerConfigSettings() {
-
-        if (getScannerConfigDiscoveryProfileId() != null)
-            return true;
-
-        return false;
-    }
-
-    public boolean isPerRcTypeDiscovery() {
-        if (isRcTypeBasedDiscovery == null) {
-            if (superClass != null) {
-                return ((ToolChain) superClass).isPerRcTypeDiscovery();
-            }
-            return true;
-        }
-        return isRcTypeBasedDiscovery.booleanValue();
-    }
-
-    public PathInfoCache getDiscoveredPathInfo() {
-        return discoveredInfo;
-    }
-
-    public PathInfoCache clearDiscoveredPathInfo() {
-        PathInfoCache oldInfo = discoveredInfo;
-        discoveredInfo = null;
-        return oldInfo;
+        return buildMacroSupplier;
     }
 
 }
@@ -1227,4 +909,207 @@ public class ToolChain extends HoldsOptions implements IToolChain {
 //  //            }
 //}
 //return set;
+//}
+
+///**
+//* Get list of scanner discovery profiles supported by previous version.
+//* 
+//* @see ScannerDiscoveryLegacySupport#getDeprecatedLegacyProfiles(String)
+//*
+//* @noreference This method is not intended to be referenced by clients.
+//*/
+//public String getLegacyScannerConfigDiscoveryProfileId() {
+// if (modelScannerConfigDiscoveryProfileID[SUPER].isBlank()) {
+//     String profileId = ScannerDiscoveryLegacySupport.getDeprecatedLegacyProfiles(myID);
+//     if (profileId != null) {
+//         return profileId;
+//     }
+// }
+// return modelScannerConfigDiscoveryProfileID[SUPER];
+//}
+
+/**
+ * //* This constructor is called to create a ToolChain whose attributes and
+ * //* children will be added by separate calls.
+ * //*
+ * //* @param parentFldInfo
+ * //* The parent of the tool chain, if any
+ * //* @param superClass
+ * //* The superClass, if any
+ * //* @param Id
+ * //* The ID for the new tool chain
+ * //* @param name
+ * //* The name for the new tool chain
+ * //* @param isExtensionElement
+ * //* Indicates whether this is an extension element or a
+ * //* managed project element
+ * //
+ */
+//public ToolChain(IFolderInfo parentFldInfo, IToolChain superClass, String Id, String name,
+//      boolean isExtensionElement) {
+//  // super(resolvedDefault);
+//  // this.config = parentFldInfo.getParent();
+//  // parentFolderInfo = parentFldInfo;
+//  //
+//  // setSuperClassInternal(superClass);
+//  // setManagedBuildRevision(config.getManagedBuildRevision());
+//  //
+//  // if (getSuperClass() != null) {
+//  // superClassId = getSuperClass().getId();
+//  // }
+//  // setId(Id);
+//  // setName(name);
+//  // setVersion(getVersionFromId());
+//  //
+//  // // isExtensionToolChain = isExtensionElement;
+//  // // if (isExtensionElement) {
+//  // // // Hook me up to the Managed Build Manager
+//  // // ManagedBuildManager.addExtensionToolChain(this);
+//  // // } else {
+//  // // setRebuildState(true);
+//  // // }
+//}
+//
+///**
+//* Create a {@link ToolChain} based on the specification stored in the project
+//* file (.cproject).
+//*
+//* @param parentFldInfo
+//*            The {@link IFolderInfo} the tool-chain will be
+//*            added to.
+//* @param element
+//*            The XML element that contains the tool-chain
+//*            settings.
+//* @param managedBuildRevision
+//*            the fileVersion of Managed Build System
+//*/
+//public ToolChain(IFolderInfo parentFldInfo, ICStorageElement element) {
+//  // this.config = parentFldInfo.getParent();
+//  // this.parentFolderInfo = parentFldInfo;
+//  //
+//  // this.isExtensionToolChain = false;
+//  //
+//  //
+//  // // Initialize from the XML attributes
+//  // loadFromProject(element);
+//  //
+//  // // Load children
+//  // ICStorageElement configElements[] = element.getChildren();
+//  // for (int i = 0; i < configElements.length; ++i) {
+//  // ICStorageElement configElement = configElements[i];
+//  // if (loadChild(configElement)) {
+//  // // do nothing
+//  // } else if (configElement.getName().equals(ITool.TOOL_ELEMENT_NAME)) {
+//  // Tool tool = new Tool(this, configElement, managedBuildRevision);
+//  // addTool(tool);
+//  // } else if
+//  // (configElement.getName().equals(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME))
+//  // {
+//  // if (targetPlatform != null) {
+//  // // TODO: report error
+//  // }
+//  // targetPlatform = new TargetPlatform(this, configElement,
+//  // managedBuildRevision);
+//  // } else if (configElement.getName().equals(IBuilder.BUILDER_ELEMENT_NAME)) {
+//  // if (builder != null) {
+//  // // TODO: report error
+//  // }
+//  // builder = new Builder(this, configElement, managedBuildRevision);
+//  // }
+//  // }
+//  //
+//  // String rebuild = PropertyManager.getInstance().getProperty(this,
+//  // REBUILD_STATE);
+//  // if (rebuild == null || Boolean.valueOf(rebuild).booleanValue())
+//  // rebuildState = true;
+//
+//}
+//@Override
+//public boolean isSystemObject() {
+//  return isTest;
+//}
+//
+///**
+//* @return the pathconverterElement
+//*/
+//public IConfigurationElement getPathconverterElement() {
+//  return pathconverterElement;
+//}
+//    @Override
+//    public IOptionPathConverter getOptionPathConverter() {
+//        if (optionPathConverter != null) {
+//            return optionPathConverter;
+//        }
+//        IConfigurationElement element = getPathconverterElement();
+//        if (element != null) {
+//            try {
+//                if (element.getAttribute(ITool.OPTIONPATHCONVERTER) != null) {
+//                    optionPathConverter = (IOptionPathConverter) element
+//                            .createExecutableExtension(ITool.OPTIONPATHCONVERTER);
+//                    return optionPathConverter;
+//                }
+//            } catch (CoreException e) {
+//            }
+//        }
+//        return null;
+//    }
+
+// 
+///**
+// * Returns the plugin.xml element of the configurationEnvironmentSupplier
+// * extension or <code>null</code> if none.
+// *
+// * @return IConfigurationElement
+// */
+//public IConfigurationElement getEnvironmentVariableSupplierElement() {
+//    return ;
+//}
+//public String getNameAndVersion() {
+//String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+//if (idVersion != null && idVersion.length() != 0) {
+//  return new StringBuilder().append(myName).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+//}
+//return myName;
+//}
+//public PathInfoCache getDiscoveredPathInfo() {
+//return discoveredInfo;
+//}
+//
+//public PathInfoCache clearDiscoveredPathInfo() {
+//PathInfoCache oldInfo = discoveredInfo;
+//discoveredInfo = null;
+//return oldInfo;
+//}
+
+// /*
+// * this method is called by the UserDefinedMacroSupplier to obtain
+// user-defined
+// * macros available for this tool-chain
+// */
+// public StorableMacros getUserDefinedMacros(){
+// if(isExtensionToolChain)
+// return null;
+//
+// if(userDefinedMacros == null)
+// userDefinedMacros = new StorableMacros();
+// return userDefinedMacros;
+// }
+
+// public StorableEnvironment getUserDefinedEnvironment(){
+// if(isExtensionToolChain)
+// return null;
+//
+// return userDefinedEnvironment;
+// }
+
+// public void setUserDefinedEnvironment(StorableEnvironment env){
+// if(!isExtensionToolChain)
+// userDefinedEnvironment = env;
+// }
+//public boolean hasScannerConfigSettings() {
+//
+//  if (getScannerConfigDiscoveryProfileId() != null)
+//      return true;
+//
+//  return false;
 //}

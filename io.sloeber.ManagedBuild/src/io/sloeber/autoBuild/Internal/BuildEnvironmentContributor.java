@@ -41,7 +41,7 @@ public class BuildEnvironmentContributor implements IEnvironmentContributor {
         if (pType != null) {
             myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableSupplier();
         }
-        myConfigurationEnvironmentVariableProvider = fCfg.getEnvironmentVariableSupplier();
+        myConfigurationEnvironmentVariableProvider = fCfg.getToolChain().getEnvironmentVariableSupplier();
     }
 
     @Override
