@@ -16,23 +16,11 @@
 package io.sloeber.schema.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.extension.CBuildData;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
-//import org.eclipse.cdt.managedbuilder.core.IFileInfo;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
-//import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
-
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 
 /**
  * A tool-integrator defines default configurations as children of the project
@@ -261,6 +249,8 @@ public interface IConfiguration extends ISchemaObject {
     IBuilder getBuilder();
 
     IFolder getBuildFolder(ICConfigurationDescription cfg);
+
+    Map<String, String> getDefaultBuildProperties();
 
     //    boolean supportsBuild(boolean managed);
 

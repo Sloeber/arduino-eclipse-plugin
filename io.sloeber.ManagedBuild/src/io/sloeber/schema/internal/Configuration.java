@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -266,6 +267,11 @@ public class Configuration extends SchemaObject implements IConfiguration {
         return cfg.getProjectDescription().getProject().getFolder(cfg.getName());
     }
 
+    @Override
+    public Map<String, String> getDefaultBuildProperties() {
+        return parseProperties(modelbuildProperties[ORIGINAL]);
+    }
+
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
         String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
@@ -287,7 +293,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
         ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelbuildArtefactType[SUPER] + NEWLINE);
 
         ret.append(prepend + BEGIN_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
-        //  ret.append(myToolchain.dump(leadingChars+1));
+        ret.append(myToolchain.dump(leadingChars + 1));
         ret.append(prepend + END_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
         return ret;
     }

@@ -13,13 +13,11 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.util.Map;
+
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
-
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
-//import org.eclipse.cdt.managedbuilder.macros.IProjectBuildMacroSupplier;
 
 /**
  * This class represents project-types in the managed build system.
@@ -129,5 +127,7 @@ public interface IProjectType extends ISchemaObject {
      * @return IProjectBuildMacroSupplier
      */
     public IProjectBuildMacroSupplier getBuildMacroSupplier();
+
+    Map<String, String> getDefaultBuildProperties();
 
 }

@@ -56,7 +56,7 @@ class CreateProject {
                         } else {
                             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID));
                         }
-                        if (testCounter > 2) {
+                        if (testCounter > 3) {
                             return ret.stream();
                         }
                     }

@@ -17,7 +17,9 @@ import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.cdt.managedbuilder.core.IManagedOutputNameProvider;
 import org.eclipse.core.runtime.CoreException;
@@ -28,6 +30,7 @@ import org.osgi.framework.Version;
 
 import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass;
 
 public abstract class SchemaObject implements ISchemaObject {
 
@@ -47,6 +50,8 @@ public abstract class SchemaObject implements ISchemaObject {
 
     protected void loadNameAndID(IExtensionPoint root, IConfigurationElement element) {
         myElement = element;
+        myID = myElement.getAttribute(ID);
+        myName = myElement.getAttribute(NAME);
 
         int cur = 0;
         mySuperClassID[cur] = element.getAttribute(SUPERCLASS);
@@ -262,4 +267,19 @@ public abstract class SchemaObject implements ISchemaObject {
         return false;
     }
 
+    protected Map<String, String> parseProperties(String inProperties) {
+        Map<String, String> ret = new HashMap<>();
+        String[] properties = inProperties.split(COMMA);
+        for (String property : properties) {
+            if (!property.isBlank()) {
+                String[] parts = property.split(EQUAL);
+                if (parts.length == 2) {
+                    ret.put(parts[0], parts[1]);
+                } else {
+                    System.err.println("malformed property " + myID + BLANK + inProperties); //$NON-NLS-1$
+                }
+            }
+        }
+        return ret;
+    }
 }

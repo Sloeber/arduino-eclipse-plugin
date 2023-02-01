@@ -11,10 +11,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.expressions.ExpressionConverter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.content.IContentType;
@@ -70,6 +75,7 @@ public class Tool extends SchemaObject implements ITool {
     private IManagedCommandLineGenerator commandLineGenerator;
 
     private Options myOptions = new Options();
+    Expression myExpression;
 
     /**
      * Constructor to create a new tool for a tool-chain based on the information
@@ -160,6 +166,15 @@ public class Tool extends SchemaObject implements ITool {
                 break;
             }
             }
+            //            TOFIX JABA this enablement should be done with something like this
+            //            It is to mutch work for now (need results in other areas) So I opt for hardcoding som enablemenst
+            //            try {
+            //                myExpression= ExpressionConverter.getDefault().perform(element);
+            //                myExpression.evaluate(null;)
+            //            } catch (CoreException e) {
+            //                // TODO Auto-generated catch block
+            //                e.printStackTrace();
+            //            }
         }
     }
 
@@ -869,6 +884,40 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public IOptions getOptions() {
         return myOptions;
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + TOOL_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[ORIGINAL] + NEWLINE);
+        ret.append(prepend + OUTPUT_FLAG + EQUAL + modelOutputFlag[SUPER] + NEWLINE);
+        ret.append(prepend + NATURE + EQUAL + modelNatureFilter[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND + EQUAL + modelCommand[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND_LINE_PATTERN + EQUAL + modelCommandLinePattern[SUPER] + NEWLINE);
+
+        ret.append(prepend + COMMAND_LINE_GENERATOR + EQUAL + modelCommandLineGenerator[SUPER] + NEWLINE);
+        ret.append(prepend + ERROR_PARSERS + EQUAL + modelErrorParsers[SUPER] + NEWLINE);
+        ret.append(prepend + CUSTOM_BUILD_STEP + EQUAL + modelCustomBuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + ANNOUNCEMENT + EQUAL + modelAnnouncement[SUPER] + NEWLINE);
+        ret.append(prepend + ICON + EQUAL + modelIcon[SUPER] + NEWLINE);
+        ret.append(prepend + IS_HIDDEN + EQUAL + modelIsHidden[SUPER] + NEWLINE);
+        ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSystem[SUPER] + NEWLINE);
+
+        //        
+        //        
+        //
+        //        ret.append(prepend + BEGIN_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
+        //        ret.append(prepend + "Number of tools " + String.valueOf(myToolMap.size()));
+        //        leadingChars++;
+        //        for (Tool curTool : myToolMap.values()) {
+        //            ret.append(curTool.dump(leadingChars));
+        //        }
+        //        ret.append(prepend + END_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
+
+        return ret;
     }
 }
 

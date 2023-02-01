@@ -15,16 +15,13 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.schema.api.IConfiguration;
@@ -192,4 +189,8 @@ public class ProjectType extends SchemaObject implements IProjectType {
         return ret;
     }
 
+    @Override
+    public Map<String, String> getDefaultBuildProperties() {
+        return parseProperties(modelBuildProperties[ORIGINAL]);
+    }
 }

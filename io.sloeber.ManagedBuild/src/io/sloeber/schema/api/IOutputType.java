@@ -280,6 +280,6 @@ public interface IOutputType extends ISchemaObject {
 
     IContentType getOutputContentType();
 
-    public String[] getOutputExtensions(IProject project);
+    public String getOutputExtension();
 
 }

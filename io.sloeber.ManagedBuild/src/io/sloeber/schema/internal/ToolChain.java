@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -56,17 +57,16 @@ public class ToolChain extends Options implements IToolChain {
     String[] modelBuildMacroSuplier;
     String[] modelIsSytem;
 
-    private Map<String, Tool> toolMap = new HashMap<>();
-    private TargetPlatform targetPlatform = null;
-    private Builder builder;
+    private Map<String, Tool> myToolMap = new HashMap<>();
+    private TargetPlatform myTargetPlatform = null;
+    private Builder myBuilder;
     // Managed Build model attributes
-    private List<String> osList = new ArrayList<>();
-    private List<String> archList = new ArrayList<>();
-    private IEnvironmentVariableSupplier environmentVariableSupplier = null;
-    private IConfigurationElement buildMacroSupplierElement = null;
-    private IConfigurationBuildMacroSupplier buildMacroSupplier = null;
+    private List<String> myOsList = new ArrayList<>();
+    private List<String> myArchList = new ArrayList<>();
+    private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
+    private IConfigurationBuildMacroSupplier myBuildMacroSupplier = null;
 
-    private Configuration parent;
+    private Configuration myConfiguration;
     private List<OptionCategory> myCategories = new ArrayList<>();
 
     /**
@@ -84,7 +84,7 @@ public class ToolChain extends Options implements IToolChain {
      *            the fileVersion of Managed Build System
      */
     public ToolChain(Configuration parent, IExtensionPoint root, IConfigurationElement element) {
-        this.parent = parent;
+        this.myConfiguration = parent;
         loadNameAndID(root, element);
         modelIsAbstract = getAttributes(IS_ABSTRACT);
         modelOsList = getAttributes(OS_LIST);
@@ -101,7 +101,7 @@ public class ToolChain extends Options implements IToolChain {
 
         IConfigurationElement[] targetPlatforms = element.getChildren(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME);
         if (targetPlatforms.length == 1) {
-            targetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
+            myTargetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
         } else {
             System.err.println("Targetplatforms of toolchain " + parent.myID + DOT + parent.myName + BLANK + myID + DOT //$NON-NLS-1$
                     + myName + " has wrong cardinality " + String.valueOf(targetPlatforms.length) + DOT); //$NON-NLS-1$
@@ -110,7 +110,7 @@ public class ToolChain extends Options implements IToolChain {
         // Load the Builder child
         List<IConfigurationElement> builders = getFirstChildren(IBuilder.BUILDER_ELEMENT_NAME);
         if (builders.size() == 1) {
-            builder = new Builder(this, root, builders.get(0));
+            myBuilder = new Builder(this, root, builders.get(0));
         } else {
             System.err.println("builders of toolchain " + myName + " has wrong cardinality " //$NON-NLS-1$//$NON-NLS-2$
                     + String.valueOf(builders.size()) + DOT);
@@ -119,9 +119,9 @@ public class ToolChain extends Options implements IToolChain {
         List<IConfigurationElement> toolChainElements = getAllChildren(ITool.TOOL_ELEMENT_NAME);
         for (IConfigurationElement toolChainElement : toolChainElements) {
             Tool toolChild = new Tool(this, root, toolChainElement);
-            toolMap.put(toolChild.myID, toolChild);
+            myToolMap.put(toolChild.myID, toolChild);
         }
-        if (toolMap.size() == 0) {
+        if (myToolMap.size() == 0) {
             System.err.println("There are no tools in toolchain " + myName + DOT); //$NON-NLS-1$
         }
 
@@ -147,22 +147,25 @@ public class ToolChain extends Options implements IToolChain {
     private void resolveFields() {
 
         if (modelOsList[SUPER].isBlank()) {
-            osList.add(ALL);
+            myOsList.add(ALL);
         } else {
             for (String token : modelOsList[SUPER].split(COMMA)) {
-                osList.add(token.trim());
+                myOsList.add(token.trim());
             }
         }
 
         if (modelArchList[SUPER].isBlank()) {
-            archList.add(ALL);
+            myArchList.add(ALL);
         } else {
             for (String token : modelArchList[SUPER].split(COMMA)) {
-                archList.add(token.trim());
+                myArchList.add(token.trim());
             }
         }
 
-        buildMacroSupplier = (IConfigurationBuildMacroSupplier) createExecutableExtension(CONFIGURATION_MACRO_SUPPLIER);
+        myBuildMacroSupplier = (IConfigurationBuildMacroSupplier) createExecutableExtension(
+                CONFIGURATION_MACRO_SUPPLIER);
+        myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(
+                CONFIGURATION_ENVIRONMENT_SUPPLIER);
 
     }
 
@@ -178,17 +181,17 @@ public class ToolChain extends Options implements IToolChain {
 
     @Override
     public IConfiguration getParent() {
-        return parent;
+        return myConfiguration;
     }
 
     @Override
     public ITargetPlatform getTargetPlatform() {
-        return targetPlatform;
+        return myTargetPlatform;
     }
 
     @Override
     public IBuilder getBuilder() {
-        return builder;
+        return myBuilder;
     }
 
     @Override
@@ -208,46 +211,46 @@ public class ToolChain extends Options implements IToolChain {
     }
 
     public List<Tool> getAllTools(boolean includeCurrentUnused) {
-        return new LinkedList<>(toolMap.values()); // TOFIX jaba maybe the stuff below will need to be in the resolve
-                                                   // fields stuff
-                                                   //		// Merge our tools with our superclass' tools
-                                                   //		if (getSuperClass() != null) {
-                                                   //			tools = ((ToolChain) getSuperClass()).getAllTools(false);
-                                                   //		}
-                                                   //		// Our tools take precedence
-                                                   //		if (tools != null) {
-                                                   //			for (Tool tool : getToolList()) {
-                                                   //				int j = 0;
-                                                   //				for (; j < tools.length; j++) {
-                                                   //					ITool superTool = tool.getSuperClass();
-                                                   //					if (superTool != null) {
-                                                   //						superTool = null;// TOFIX JABA ManagedBuildManager.getExtensionTool(superTool);
-                                                   //						if (superTool != null && superTool.getId().equals(tools[j].getId())) {
-                                                   //							tools[j] = tool;
-                                                   //							break;
-                                                   //						}
-                                                   //					}
-                                                   //				}
-                                                   //				// No Match? Insert it (may be re-ordered)
-                                                   //				if (j == tools.length) {
-                                                   //					Tool[] newTools = new Tool[tools.length + 1];
-                                                   //					for (int k = 0; k < tools.length; k++) {
-                                                   //						newTools[k] = tools[k];
-                                                   //					}
-                                                   //					newTools[j] = tool;
-                                                   //					tools = newTools;
-                                                   //				}
-                                                   //			}
-                                                   //		} else {
-                                                   //			tools = new Tool[getToolList().size()];
-                                                   //			int i = 0;
-                                                   //			for (Tool tool : getToolList()) {
-                                                   //				tools[i++] = tool;
-                                                   //			}
-                                                   //		}
-                                                   //		if (includeCurrentUnused)
-                                                   //			return tools;
-                                                   //		return filterUsedTools(tools, true);
+        return new LinkedList<>(myToolMap.values()); // TOFIX jaba maybe the stuff below will need to be in the resolve
+                                                     // fields stuff
+                                                     //		// Merge our tools with our superclass' tools
+                                                     //		if (getSuperClass() != null) {
+                                                     //			tools = ((ToolChain) getSuperClass()).getAllTools(false);
+                                                     //		}
+                                                     //		// Our tools take precedence
+                                                     //		if (tools != null) {
+                                                     //			for (Tool tool : getToolList()) {
+                                                     //				int j = 0;
+                                                     //				for (; j < tools.length; j++) {
+                                                     //					ITool superTool = tool.getSuperClass();
+                                                     //					if (superTool != null) {
+                                                     //						superTool = null;// TOFIX JABA ManagedBuildManager.getExtensionTool(superTool);
+                                                     //						if (superTool != null && superTool.getId().equals(tools[j].getId())) {
+                                                     //							tools[j] = tool;
+                                                     //							break;
+                                                     //						}
+                                                     //					}
+                                                     //				}
+                                                     //				// No Match? Insert it (may be re-ordered)
+                                                     //				if (j == tools.length) {
+                                                     //					Tool[] newTools = new Tool[tools.length + 1];
+                                                     //					for (int k = 0; k < tools.length; k++) {
+                                                     //						newTools[k] = tools[k];
+                                                     //					}
+                                                     //					newTools[j] = tool;
+                                                     //					tools = newTools;
+                                                     //				}
+                                                     //			}
+                                                     //		} else {
+                                                     //			tools = new Tool[getToolList().size()];
+                                                     //			int i = 0;
+                                                     //			for (Tool tool : getToolList()) {
+                                                     //				tools[i++] = tool;
+                                                     //			}
+                                                     //		}
+                                                     //		if (includeCurrentUnused)
+                                                     //			return tools;
+                                                     //		return filterUsedTools(tools, true);
     }
 
     //	private Tool[] filterUsedTools(Tool tools[], boolean used) {
@@ -256,7 +259,7 @@ public class ToolChain extends Options implements IToolChain {
 
     @Override
     public ITool getTool(String toolID) {
-        Tool tool = toolMap.get(toolID);
+        Tool tool = myToolMap.get(toolID);
         return tool;
     }
 
@@ -294,7 +297,7 @@ public class ToolChain extends Options implements IToolChain {
         Set<ITool> ret = new HashSet<>();
         Set<String> toolIDs = new HashSet<>();
         toolIDs = Set.of(modelTargetTool[SUPER].split(SEMICOLON));
-        for (Tool curTool : toolMap.values()) {
+        for (Tool curTool : myToolMap.values()) {
             if (toolIDs.contains(curTool.getId())) {
                 ret.add(curTool);
             }
@@ -350,12 +353,12 @@ public class ToolChain extends Options implements IToolChain {
 
     @Override
     public List<String> getArchList() {
-        return new LinkedList<>(archList);
+        return new LinkedList<>(myArchList);
     }
 
     @Override
     public List<String> getOSList() {
-        return new LinkedList<>(osList);
+        return new LinkedList<>(myOsList);
     }
 
     @Override
@@ -374,12 +377,43 @@ public class ToolChain extends Options implements IToolChain {
 
     @Override
     public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
-        return environmentVariableSupplier;
+        return myEnvironmentVariableSupplier;
     }
 
     @Override
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier() {
-        return buildMacroSupplier;
+        return myBuildMacroSupplier;
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[ORIGINAL] + NEWLINE);
+        ret.append(prepend + OS_LIST + EQUAL + modelOsList[SUPER] + NEWLINE);
+        ret.append(prepend + ARCH_LIST + EQUAL + modelArchList[SUPER] + NEWLINE);
+        ret.append(prepend + ERROR_PARSERS + EQUAL + modelErrorParsers[SUPER] + NEWLINE);
+        ret.append(prepend + LANGUAGE_SETTINGS_PROVIDERS + EQUAL + modelLanguageSettingsProviders[SUPER] + NEWLINE);
+
+        ret.append(prepend + SCANNER_CONFIG_PROFILE_ID + EQUAL + modelScannerConfigDiscoveryProfileID[SUPER] + NEWLINE);
+        ret.append(prepend + TARGET_TOOL + EQUAL + modelTargetTool[SUPER] + NEWLINE);
+        ret.append(prepend + SECONDARY_OUTPUTS + EQUAL + modelSecondaryOutputs[SUPER] + NEWLINE);
+        ret.append(prepend + IS_TOOL_CHAIN_SUPPORTED + EQUAL + modelIsSupportedByOS[SUPER] + NEWLINE);
+        ret.append(prepend + CONFIGURATION_ENVIRONMENT_SUPPLIER + EQUAL + modelEnvironmentSupplier[SUPER] + NEWLINE);
+        ret.append(prepend + CONFIGURATION_MACRO_SUPPLIER + EQUAL + modelBuildMacroSuplier[SUPER] + NEWLINE);
+        ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSytem[SUPER] + NEWLINE);
+
+        ret.append(prepend + BEGIN_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + "Number of tools " + String.valueOf(myToolMap.size()));
+        leadingChars++;
+        for (Tool curTool : myToolMap.values()) {
+            ret.append(curTool.dump(leadingChars));
+        }
+        ret.append(prepend + END_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
+
+        return ret;
     }
 
 }

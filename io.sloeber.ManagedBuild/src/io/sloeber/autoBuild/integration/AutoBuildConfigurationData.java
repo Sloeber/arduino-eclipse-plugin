@@ -1,6 +1,10 @@
 package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.integration.Const.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -24,14 +28,15 @@ import io.sloeber.schema.internal.Configuration;
 
 public class AutoBuildConfigurationData extends CConfigurationData {
 
-    IConfiguration myAutoBuildConfiguration;
-    IProject myProject;
-    BuildTargetPlatformData myTargetPlatformData;
-    BuildBuildData myBuildBuildData;
-    ICConfigurationDescription myCdtConfigurationDescription;
+    private IConfiguration myAutoBuildConfiguration;
+    private IProject myProject;
+    private BuildTargetPlatformData myTargetPlatformData;
+    private BuildBuildData myBuildBuildData;
+    private ICConfigurationDescription myCdtConfigurationDescription;
     private boolean isValid = false;
-    String myName = EMPTY_STRING;
+    private String myName = EMPTY_STRING;
     private String myDescription;
+    private Map<String, String> myProperties = new HashMap<>();
 
     public AutoBuildConfigurationData(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -54,6 +59,10 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myName = autoBuildConfigBase.getName();
         myDescription = autoBuildConfigBase.getDescription();
         isValid = true;
+    }
+
+    public static AutoBuildConfigurationData getFromConfig(ICConfigurationDescription confDesc) {
+        return (AutoBuildConfigurationData) confDesc.getConfigurationData();
     }
 
     public void setCdtConfigurationDescription(ICConfigurationDescription cfgDescription) {
@@ -165,6 +174,21 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     @Override
     public boolean isValid() {
         return isValid;
+    }
+
+    public String getProperty(String propertyName) {
+        String ret = myProperties.get(propertyName);
+        if (ret == null) {
+            ret = myAutoBuildConfiguration.getDefaultBuildProperties().get(propertyName);
+            if (ret == null) {
+                ret = myAutoBuildConfiguration.getProjectType().getDefaultBuildProperties().get(propertyName);
+            }
+        }
+        return ret;
+    }
+
+    public String setProperty(String key, String value) {
+        return myProperties.put(key, value);
     }
 
 }

@@ -1,4 +1,4 @@
-package io.sloeber.schema.internal;
+package io.sloeber.schema.internal.legacy;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
@@ -7,11 +7,13 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.Options;
 
 /**
  * This class is a port of
@@ -25,6 +27,25 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
     public String getOutputFileName(IFile inputFile, ICConfigurationDescription confDesc, IInputType inputType,
             IOutputType outputType) {
         ITool tool = inputType.getParent();
+        //JABA hardcoded some enablement rules here because implementing the enablements is to hard for now
+        //Note that eclipse supports expressions now which should make this eazier but I don't want to add
+        //that to my learning curve now
+        AutoBuildConfigurationData ABCfgData = AutoBuildConfigurationData.getFromConfig(confDesc);
+        if ("cdt.managedbuild.tool.gnu.cross.c.linker".equals(tool.getId()) //$NON-NLS-1$
+                || "cdt.managedbuild.tool.gnu.cross.cpp.linker".equals(tool.getId())) { //$NON-NLS-1$
+            String property = ABCfgData.getProperty("org.eclipse.cdt.build.core.buildArtefactType"); //$NON-NLS-1$
+            if ("org.eclipse.cdt.build.core.buildArtefactType.staticLib".equals(property)) { //$NON-NLS-1$
+                return null;
+            }
+        }
+        if ("cdt.managedbuild.tool.gnu.cross.archiver".equals(tool.getId())) { //$NON-NLS-1$
+            String property = ABCfgData.getProperty("org.eclipse.cdt.build.core.buildArtefactType"); //$NON-NLS-1$
+            if (!"org.eclipse.cdt.build.core.buildArtefactType.staticLib".equals(property)) { //$NON-NLS-1$
+                return null;
+            }
+        }
+
+        //end of hardcoding
 
         //  Determine a default name from the input file name
         String fileName = inputFile.getProjectRelativePath().removeFileExtension().lastSegment();
@@ -35,7 +56,8 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
         //  If we are building a shared library, determine if the user has specified a name using the
         //  soname option
         boolean isSO = false;
-        IOptions options = tool.getOptions();
+        //TOFIX JABA the options here ar the selected options
+        IOptions options = new Options();
         String soName = ""; //$NON-NLS-1$
         if (tool.hasAncestor("cdt.managedbuild.tool.gnu.c.linker")) { //$NON-NLS-1$
             IOption optShared = options.getOptionById("gnu.c.link.option.shared"); //$NON-NLS-1$
@@ -125,9 +147,9 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
                 fileName = outputPrefix + fileName;
             }
             //  Add the primary output type extension
-            String[] exts = outputType.getOutputExtensions(confDesc.getProjectDescription().getProject());
-            if (exts != null && exts[0].length() > 0) {
-                fileName += "." + exts[0]; //$NON-NLS-1$
+            String exts = outputType.getOutputExtension();
+            if (!exts.isBlank()) {
+                fileName += "." + exts; //$NON-NLS-1$
             }
         }
 

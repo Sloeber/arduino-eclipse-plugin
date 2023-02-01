@@ -471,18 +471,6 @@ public interface IOption extends ISchemaObject {
     public String getFieldEditorExtraArgument();
 
     /**
-     * @return <code>true</code> if this option is valid and <code>false</code>
-     *         if the option cannot be safely used due to an error in the MBS
-     *         grammar.
-     *
-     * @since 3.0
-     *
-     * @pre Can only be used after Ids in MBS grammar have been resolved by
-     *      pointers.
-     */
-    public boolean isValid();
-
-    /**
      * @return the type of the option value, i.e. whether it is string, boolean,
      *         string list or enumeration. As opposed to the getValueType() method,
      *         the returned type does not specifies the "sense" of the value, e.g.
