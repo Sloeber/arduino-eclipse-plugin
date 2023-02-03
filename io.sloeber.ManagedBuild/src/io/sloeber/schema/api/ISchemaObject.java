@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
@@ -31,5 +33,7 @@ public interface ISchemaObject {
     public String getName();
 
     boolean hasAncestor(String id);
+
+	boolean isEnabled(AutoBuildConfigurationData autoBuildConfData);
 
 }

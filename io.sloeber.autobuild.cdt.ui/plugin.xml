@@ -36,6 +36,19 @@
            <adapt type="org.eclipse.core.resources.IProject">
 	            <test property="org.eclipse.core.resources.projectNature"
 	                  value="org.eclipse.cdt.environmentVars.Nature"/>
+             <and>
+                <count
+                      value="io.sloeber.autobuild.cdt.ui.count1">
+                </count>
+                <count
+                      value="io.sloeber.autobuild.cdt.ui.count2">
+                </count>
+             </and>
+             <not>
+                <test
+                      property="io.sloeber.autobuild.cdt.ui.test1">
+                </test>
+             </not>
            </adapt>
          </enabledWhen>
       </page>

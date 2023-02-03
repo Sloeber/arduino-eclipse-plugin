@@ -28,8 +28,10 @@ import org.eclipse.core.runtime.IExtensionPoint;
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 import org.osgi.framework.Version;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.enablement.Enablement;
 import io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass;
 
 public abstract class SchemaObject implements ISchemaObject {
@@ -47,6 +49,7 @@ public abstract class SchemaObject implements ISchemaObject {
 
     protected Version version = null;
     protected String managedBuildRevision = null;
+    protected Enablement myEnablement=null;
 
     protected void loadNameAndID(IExtensionPoint root, IConfigurationElement element) {
         myElement = element;
@@ -106,7 +109,7 @@ public abstract class SchemaObject implements ISchemaObject {
         String className = myElement.getAttribute(attributeName);
         IConfigurationElement element = myElement;
         String error = "createExecutableExtension for " + attributeName + " for " + myName + BLANK + className + BLANK //$NON-NLS-1$//$NON-NLS-2$
-                + "failed.";
+                + "failed."; //$NON-NLS-1$
         if (className == null) {
             int cur = 0;
             while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null) && (className == null)) {
@@ -282,4 +285,12 @@ public abstract class SchemaObject implements ISchemaObject {
         }
         return ret;
     }
+    
+	@Override
+	public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
+		if(myEnablement==null) {
+			return true;
+		}
+	return myEnablement.isEnabled(autoBuildConfData);
+	}
 }

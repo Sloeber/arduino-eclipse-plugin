@@ -51,6 +51,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     ICSourceEntry[] mySrcEntries;
     MakeRules myMakeRules = null;
     Set<IFolder> myFoldersToBuild = null;
+    AutoBuildConfigurationData autoBuildConfData;
 
     /****************************************************************************************
      * CONSTRUCTOR / INITIALIZING code / overrides
@@ -64,8 +65,8 @@ public class MakefileGenerator implements IMakefileGenerator {
     public void initialize(int buildKind, IProject project, ICConfigurationDescription cfg, IBuilder builder) {
         myProject = project;
         myCConfigurationDescription = cfg;
-        AutoBuildConfigurationData autoBuildData = (AutoBuildConfigurationData) cfg.getConfigurationData();
-        myConfig = autoBuildData.getConfiguration();
+        autoBuildConfData = (AutoBuildConfigurationData) cfg.getConfigurationData();
+        myConfig = autoBuildConfData.getConfiguration();
         myTopBuildDir = myConfig.getBuildFolder(cfg);
 
         // Get the target info

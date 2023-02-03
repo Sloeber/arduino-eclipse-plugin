@@ -24,6 +24,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
+
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -201,7 +203,7 @@ public class MakeRules implements Iterable<MakeRule> {
      * @return The MakeRules needed to buuild this configuration
      * @throws CoreException
      */
-    public MakeRules(IProject project, ICConfigurationDescription cConfDes, IFolder buildfolder, IConfiguration config,
+    public MakeRules(IProject project, AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder, IConfiguration config,
             ICSourceEntry[] srcEntries, Set<IFolder> foldersToBuild) throws CoreException {
 
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
@@ -257,7 +259,7 @@ public class MakeRules implements Iterable<MakeRule> {
          * @param inputFile
          * @return true if a makerule has been created
          */
-        protected boolean getMakeRulesFromSourceFile(ICConfigurationDescription cConfDes, IFolder buildfolder,
+        protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
                 IConfiguration config, IFile inputFile) {
             boolean ret = false;
 
@@ -267,6 +269,7 @@ public class MakeRules implements Iterable<MakeRule> {
             }
 
             for (ITool tool : config.getToolChain().getTools()) {
+            	if(!tool.isEnabled( autoBuildConfData))
                 for (IInputType inputType : tool.getInputTypes()) {
                     if (inputType.isAssociatedWith(inputFile)) {
                         for (IOutputType outputType : tool.getOutputTypes()) {
@@ -314,7 +317,7 @@ public class MakeRules implements Iterable<MakeRule> {
      * 
      * @return The MakeRules that have been created
      */
-    protected static MakeRules getMakeRulesFromGeneratedFiles(ICConfigurationDescription cConfDes, IFolder buildfolder,
+    protected static MakeRules getMakeRulesFromGeneratedFiles(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
             IConfiguration config, Map<IOutputType, Set<IFile>> generatedFiles, int makeRuleSequenceID) {
         MakeRules newMakeRules = new MakeRules();
 
@@ -366,7 +369,7 @@ public class MakeRules implements Iterable<MakeRule> {
      * @param buildfolder
      * @param cConfDes
      */
-    private void generateHigherLevelMakeRules(ICConfigurationDescription cConfDes, IFolder buildfolder,
+    private void generateHigherLevelMakeRules(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
             IConfiguration config) {
         int makeRuleSequenceID = 1;
         Map<IOutputType, Set<IFile>> generatedFiles = getTargets();
