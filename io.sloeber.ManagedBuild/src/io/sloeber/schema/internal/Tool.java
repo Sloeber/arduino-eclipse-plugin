@@ -905,6 +905,14 @@ public class Tool extends SchemaObject implements ITool {
         ret.append(prepend + ICON + EQUAL + modelIcon[SUPER] + NEWLINE);
         ret.append(prepend + IS_HIDDEN + EQUAL + modelIsHidden[SUPER] + NEWLINE);
         ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSystem[SUPER] + NEWLINE);
+        leadingChars++;
+        for( InputType curInputType: inputTypeMap.values()) {
+        	ret.append(curInputType.dump(leadingChars));
+        }
+        for( OutputType curOutputType: outputTypeMap.values()) {
+        	ret.append(curOutputType.dump(leadingChars));
+        }
+        ret.append(myOptions.dump(leadingChars));
 
         //        
         //        

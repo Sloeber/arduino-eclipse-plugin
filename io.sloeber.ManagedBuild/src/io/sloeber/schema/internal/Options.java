@@ -14,9 +14,14 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.integration.Const.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
 import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
@@ -82,6 +87,18 @@ public class Options extends SchemaObject implements IOptions {
     public void add(Option option) {
         myOptionMap.put(option.getId(), option);
 
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + IOption.ELEMENT_NAME +BLANK + myOptionMap.size()+ NEWLINE);
+        for(Option curOption:myOptionMap.values()) {
+        	 ret.append(curOption.dump(leadingChars));
+        	 ret.append(NEWLINE);
+        }
+
+        return ret;
     }
 
 }

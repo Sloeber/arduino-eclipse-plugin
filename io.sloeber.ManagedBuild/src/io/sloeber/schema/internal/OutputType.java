@@ -15,29 +15,21 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
-import org.eclipse.core.runtime.content.IContentTypeSettings;
-import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.osgi.framework.Version;
-
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
+
+
 
 public class OutputType extends SchemaObject implements IOutputType {
 
@@ -198,6 +190,24 @@ public class OutputType extends SchemaObject implements IOutputType {
         return modelOutputExtension[SUPER];
     }
 
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + OUTPUT_TYPE_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + OUTPUT_CONTENT_TYPE + EQUAL + modelOutputContentType[SUPER] + NEWLINE);
+        ret.append(prepend + OPTION + EQUAL + modelOption[SUPER] + NEWLINE);
+        ret.append(prepend + OUTPUT_PREFIX + EQUAL + modelOutputPrefix[SUPER] + NEWLINE);
+        ret.append(prepend + OPTION + EQUAL + modelOption[SUPER] + NEWLINE);
+        ret.append(prepend + OUTPUT_EXTENSION + EQUAL + modelOutputExtension[SUPER] + NEWLINE);
+
+        ret.append(prepend + OUTPUT_NAME + EQUAL + modelOutputName[SUPER] + NEWLINE);
+        ret.append(prepend + NAME_PATTERN + EQUAL + modelNamePattern[SUPER] + NEWLINE);
+        ret.append(prepend + NAME_PROVIDER + EQUAL + modelNameProvider[SUPER] + NEWLINE);
+        ret.append(prepend + BUILD_VARIABLE + EQUAL + modelBuildVariable[SUPER] + NEWLINE);
+        return ret;
+    }
 }
 
 //    /**

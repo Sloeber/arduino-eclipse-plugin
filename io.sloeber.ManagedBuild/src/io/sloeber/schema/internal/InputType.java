@@ -15,10 +15,16 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.integration.Const.DUMPLEAD;
+import static io.sloeber.autoBuild.integration.Const.EQUAL;
+import static io.sloeber.autoBuild.integration.Const.NEWLINE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -389,6 +395,27 @@ public class InputType extends SchemaObject implements IInputType {
 
         //      booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
 
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + INPUT_TYPE_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + SOURCE_CONTENT_TYPE + EQUAL + modelSourceContentType[SUPER] + NEWLINE);
+        ret.append(prepend + EXTENSIONS + EQUAL + modelExtensions[SUPER] + NEWLINE);
+        ret.append(prepend + OUTPUT_TYPE_ID + EQUAL + modelOutputTypeID[SUPER] + NEWLINE);
+        ret.append(prepend + OPTION + EQUAL + modelOption[SUPER] + NEWLINE);
+        ret.append(prepend + ASSIGN_TO_OPTION + EQUAL + modelAssignToOption[SUPER] + NEWLINE);
+
+        ret.append(prepend + DEPENDENCY_CONTENT_TYPE + EQUAL + modelDependencyContentType[SUPER] + NEWLINE);
+        ret.append(prepend + DEPENDENCY_EXTENSIONS + EQUAL + modelDependencyExtensions[SUPER] + NEWLINE);
+        ret.append(prepend + SCANNER_CONFIG_PROFILE_ID + EQUAL + modelScannerConfigDiscoveryProfileID[SUPER] + NEWLINE);
+        ret.append(prepend + LANGUAGE_ID + EQUAL + modelLanguageID[SUPER] + NEWLINE);
+        ret.append(prepend + LANGUAGE_INFO_CALCULATOR + EQUAL + modelLanguageInfoCalculator[SUPER] + NEWLINE);
+
+        return ret;
     }
 
 }

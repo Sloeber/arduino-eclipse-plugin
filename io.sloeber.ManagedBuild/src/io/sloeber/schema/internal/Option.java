@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
@@ -1180,6 +1181,36 @@ public class Option extends SchemaObject implements IOption {
             throw new BuildException(Option_error_bad_value_type);
         }
         return treeRoot;
+    }
+
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + IOption.ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbs[ORIGINAL] + NEWLINE);
+        ret.append(prepend + CATEGORY + EQUAL + modelCategoryId[SUPER] + NEWLINE);
+        ret.append(prepend + RESOURCE_FILTER + EQUAL + modelResFilterStr[SUPER] + NEWLINE);
+        ret.append(prepend + VALUE_TYPE + EQUAL + modelValueTypeStr[SUPER] + NEWLINE);
+        ret.append(prepend + BROWSE_TYPE + EQUAL + modelBrowseTypeStr[SUPER] + NEWLINE);
+        ret.append(prepend + BROWSE_FILTER_PATH + EQUAL + modelBrowseFilterPath[SUPER] + NEWLINE);
+        ret.append(prepend + BROWSE_FILTER_EXTENSIONS + EQUAL + modelBrowseFilterExtensionsStr[SUPER] + NEWLINE);
+        ret.append(prepend + VALUE + EQUAL + modelValueString[SUPER] + NEWLINE);
+        ret.append(prepend + DEFAULT_VALUE + EQUAL + modelDefaultValueString[SUPER] + NEWLINE);
+        ret.append(prepend + DEFAULTVALUE_GENERATOR + EQUAL + modelDefaultValueGeneratorStr[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND + EQUAL + modelCommand[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND_GENERATOR + EQUAL + modelCommandGeneratorStr[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND_FALSE + EQUAL + modelCommandFalse[SUPER] + NEWLINE);
+        ret.append(prepend + USE_BY_SCANNER_DISCOVERY + EQUAL + modelIsForSD[SUPER] + NEWLINE);
+        ret.append(prepend + TOOL_TIP + EQUAL + modelTip[SUPER] + NEWLINE);
+        ret.append(prepend + CONTEXT_ID + EQUAL + modelContextId[SUPER] + NEWLINE);
+        ret.append(prepend + VALUE_HANDLER + EQUAL + modelValueHandlerString[SUPER] + NEWLINE);
+        ret.append(prepend + VALUE_HANDLER_EXTRA_ARGUMENT + EQUAL + modelValueHandlerExtraArgument[SUPER] + NEWLINE);
+        ret.append(prepend + APPLICABILITY_CALCULATOR + EQUAL + modelApplicabilityCalculatorStr[SUPER] + NEWLINE);
+        ret.append(prepend + FIELD_EDITOR_ID + EQUAL + modelFieldEditorId[SUPER] + NEWLINE);
+        ret.append(prepend + FIELD_EDITOR_EXTRA_ARGUMENT + EQUAL + modelFieldEditorExtraArgument[SUPER] + NEWLINE);
+        return ret;
     }
 
 }
