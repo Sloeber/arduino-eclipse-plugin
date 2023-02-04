@@ -25,11 +25,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
-
-
 
 public class OutputType extends SchemaObject implements IOutputType {
 
@@ -143,8 +142,12 @@ public class OutputType extends SchemaObject implements IOutputType {
     //    }
 
     @Override
-    public IFile getOutputName(IFolder buildFolder, IFile inputFile, ICConfigurationDescription config,
-            IInputType inputType) {
+    public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoBuildConfData, IInputType inputType) {
+        if (!isEnabled(autoBuildConfData)) {
+            return null;
+        }
+        IFolder buildFolder = autoBuildConfData.getBuildFolder();
+        ICConfigurationDescription config = autoBuildConfData.getCdtConfigurationDescription();
         if (nameProvider != null) {
             String outputFile = nameProvider.getOutputFileName(inputFile, config, inputType, this);
             if (outputFile != null) {

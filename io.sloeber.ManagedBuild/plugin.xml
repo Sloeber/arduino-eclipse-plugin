@@ -511,7 +511,8 @@
             buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
             id="cdt.managedbuild.target.gnu.cross.exe"
             isAbstract="false"
-            isTest="false">
+            isTest="false"
+            name="gnu_cross_exe">
          <configuration
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                cleanCommand="rm -rf"
@@ -539,7 +540,8 @@
             buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
             id="cdt.managedbuild.target.gnu.cross.so"
             isAbstract="false"
-            isTest="false">
+            isTest="false"
+            name="gnu_cross_shared_lib">
          <configuration
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                cleanCommand="rm -rf"
@@ -567,7 +569,8 @@
             buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
             id="cdt.managedbuild.target.gnu.cross.lib"
             isAbstract="false"
-            isTest="false">
+            isTest="false"
+            name="gnu_cross_static_lib">
          <configuration
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                cleanCommand="rm -rf"

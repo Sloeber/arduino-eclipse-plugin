@@ -67,7 +67,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         myCConfigurationDescription = cfg;
         autoBuildConfData = (AutoBuildConfigurationData) cfg.getConfigurationData();
         myConfig = autoBuildConfData.getConfiguration();
-        myTopBuildDir = myConfig.getBuildFolder(cfg);
+        myTopBuildDir = autoBuildConfData.getBuildFolder();
 
         // Get the target info
         String buildTargetName;
@@ -147,7 +147,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         MultiStatus status;
         //This object remains alive between builds; therefore we need to reset the field values
         myFoldersToBuild = new HashSet<>();
-        myMakeRules = new MakeRules(myProject, myCConfigurationDescription, myTopBuildDir, myConfig, mySrcEntries,
+        myMakeRules = new MakeRules(myProject, autoBuildConfData, myTopBuildDir, myConfig, mySrcEntries,
                 myFoldersToBuild);
 
         if (myMakeRules.size() == 0) {

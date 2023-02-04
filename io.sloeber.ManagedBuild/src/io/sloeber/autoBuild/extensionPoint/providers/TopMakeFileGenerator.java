@@ -6,151 +6,76 @@ import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*
 import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 public class TopMakeFileGenerator {
-//    private MakefileGenerator caller = null;
-//    private Set<MakeRule> mySubDirMakeRules = new LinkedHashSet<>();
-    private MakeRules myMakeRules = new MakeRules();
-    private Collection<IContainer> myFoldersToBuild;
-//    private Map<IOutputType, Set<IFile>> myAllSourceTargets = new HashMap<>();
-    private Set<String> myDependencyMacros = new HashSet<>();
-//
-//    private IConfiguration getConfig() {
-//        return caller.getConfig();
-//    }
-//
-//    private ICConfigurationDescription getCConfigurationDescription() {
-//        return caller.getCConfigurationDescription();
-//    }
-//
-//    private IProject getProject() {
-//        return caller.getProject();
-//    }
-//
-//    private IFolder getBuildFolder() {
-//        return caller.getBuildFolder();
-//    }
 
-//    public TopMakeFileGenerator(MakefileGenerator theCaller, Set<MakeRule> subDirMakeRules,
-//            Collection<IContainer> foldersToBuild) {
     public TopMakeFileGenerator() {
-//        caller = theCaller;
-//        mySubDirMakeRules = subDirMakeRules;
-//        myFoldersToBuild = foldersToBuild;
-//        for (MakeRule curMakeRule : mySubDirMakeRules) {
-//            myAllSourceTargets.putAll(curMakeRule.getTargets());
-//            myDependencyMacros.addAll(curMakeRule.getDependecyMacros());
-//        }
-//        MakeRules makeRules = new MakeRules();
-//        Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();
-//        for (MakeRule makeRule : subDirMakeRules) {
-//            Map<IOutputType, Set<IFile>> targets = makeRule.getTargets();
-//            for (Entry<IOutputType, Set<IFile>> curTarget : targets.entrySet()) {
-//                Set<IFile> esxistingTarget = generatedFiles.get(curTarget.getKey());
-//                if (esxistingTarget != null) {
-//                    esxistingTarget.addAll(curTarget.getValue());
-//                } else {
-//                    Set<IFile> copySet = new HashSet<>();
-//                    copySet.addAll(curTarget.getValue());
-//                    generatedFiles.put(curTarget.getKey(), copySet);
-//                }
-//
-//            }
-//        }
-//        int depth = 10;
-//        while (depth > 0) {
-//            makeRules = getMakeRulesFromGeneratedFiles(generatedFiles);
-//            generatedFiles.clear();
-//            if (makeRules.size() > 0) {
-//                depth--;
-//                myMakeRules.addRules(makeRules);
-//                generatedFiles.putAll(makeRules.getTargets());
-//            } else {
-//                depth = 0;
-//            }
-//        }
-
     }
 
-    public static void generateMakefile(IFolder buildFolder,ICConfigurationDescription cfg,IConfiguration config, Collection<IFolder> myFoldersToBuild,MakeRules myMakeRules,Set<String> myDependencyMacros) throws CoreException {
-    	IProject project=cfg.getProjectDescription().getProject();
+    public static void generateMakefile(IFolder buildFolder, ICConfigurationDescription cfg, IConfiguration config,
+            Collection<IFolder> myFoldersToBuild, MakeRules myMakeRules, Set<String> myDependencyMacros)
+            throws CoreException {
+        IProject project = cfg.getProjectDescription().getProject();
 
         StringBuffer buffer = new StringBuffer();
         buffer.append(addDefaultHeader());
 
         buffer.append(getMakeIncludeSubDirs(myFoldersToBuild));
         buffer.append(getMakeIncludeDependencies(config, cfg));
-        buffer.append(getMakeRMCommand( config, cfg, myDependencyMacros));
+        buffer.append(getMakeRMCommand(config, cfg, myDependencyMacros));
         buffer.append(getMakeTopTargets(config, buildFolder, myMakeRules, cfg));// this is the include dependencies
         // TOFIX the content from the append below should come from a registered method
-        buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n"
-                + "\t@echo trying to burn bootloader ${bootloader.tool}\n"
-                + "\t${tools.${bootloader.tool}.erase.pattern}\n" + "\t${tools.${bootloader.tool}.bootloader.pattern}\n"
-                + "\n" + "uploadWithBuild: all\n"
-                + "\t@echo trying to build and upload with upload tool ${upload.tool}\n"
-                + "\t${tools.${upload.tool}.upload.pattern}\n" + "\n" + "uploadWithoutBuild: \n"
-                + "\t@echo trying to upload without build with upload tool ${upload.tool}\n"
-                + "\t${tools.${upload.tool}.upload.pattern}\n" + "    \n" + "uploadWithProgrammerWithBuild: all\n"
-                + "\t@echo trying to build and upload with programmer ${program.tool}\n"
-                + "\t${tools.${program.tool}.program.pattern}\n" + "\n" + "uploadWithProgrammerWithoutBuild: \n"
-                + "\t@echo trying to upload with programmer ${program.tool} without build\n"
-                + "\t${tools.${program.tool}.program.pattern}\n\n");
+        buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n" //$NON-NLS-1$ //$NON-NLS-2$
+                + "\t@echo trying to burn bootloader ${bootloader.tool}\n" //$NON-NLS-1$
+                + "\t${tools.${bootloader.tool}.erase.pattern}\n" + "\t${tools.${bootloader.tool}.bootloader.pattern}\n" //$NON-NLS-1$ //$NON-NLS-2$
+                + "\n" + "uploadWithBuild: all\n" //$NON-NLS-1$ //$NON-NLS-2$
+                + "\t@echo trying to build and upload with upload tool ${upload.tool}\n" //$NON-NLS-1$
+                + "\t${tools.${upload.tool}.upload.pattern}\n" + "\n" + "uploadWithoutBuild: \n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + "\t@echo trying to upload without build with upload tool ${upload.tool}\n" //$NON-NLS-1$
+                + "\t${tools.${upload.tool}.upload.pattern}\n" + "    \n" + "uploadWithProgrammerWithBuild: all\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + "\t@echo trying to build and upload with programmer ${program.tool}\n" //$NON-NLS-1$
+                + "\t${tools.${program.tool}.program.pattern}\n" + "\n" + "uploadWithProgrammerWithoutBuild: \n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + "\t@echo trying to upload with programmer ${program.tool} without build\n" //$NON-NLS-1$
+                + "\t${tools.${program.tool}.program.pattern}\n\n"); //$NON-NLS-1$
         buffer.append(getMakeMacros(buildFolder, myMakeRules));
         buffer.append(getMakeRules(project, buildFolder, myMakeRules, cfg));
-        buffer.append(getMakeFinalTargets("", ""));
+        buffer.append(getMakeFinalTargets("", "")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        IFile fileHandle = buildFolder.getFile( MAKEFILE_NAME);
+        IFile fileHandle = buildFolder.getFile(MAKEFILE_NAME);
         save(buffer, fileHandle);
     }
 
-    private static StringBuffer getMakeIncludeSubDirs( Collection<IFolder> myFoldersToBuild) {
+    private static StringBuffer getMakeIncludeSubDirs(Collection<IFolder> myFoldersToBuild) {
         StringBuffer buffer = new StringBuffer();
 
         for (IContainer subDir : myFoldersToBuild) {
             String includeFile = subDir.getProjectRelativePath().append(MODFILE_NAME).toOSString();
-            buffer.append("-include " + includeFile).append(NEWLINE);
+            buffer.append("-include " + includeFile).append(NEWLINE); //$NON-NLS-1$
         }
-        buffer.append("-include sources.mk").append(NEWLINE);
-        buffer.append("-include objects.mk").append(NEWLINE).append(NEWLINE);
+        buffer.append("-include sources.mk").append(NEWLINE); //$NON-NLS-1$
+        buffer.append("-include objects.mk").append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
         return buffer;
     }
 
-    private static StringBuffer getMakeRMCommand(IConfiguration config,ICConfigurationDescription cfg, Set<String> myDependencyMacros ) {
+    private static StringBuffer getMakeRMCommand(IConfiguration config, ICConfigurationDescription cfg,
+            Set<String> myDependencyMacros) {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE);
+        buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE); //$NON-NLS-1$
         buffer.append(NEWLINE);
         // Get the clean command from the build model
-        buffer.append("RM := ");
+        buffer.append("RM := "); //$NON-NLS-1$
         // support macros in the clean command
         String cleanCommand = resolveValueToMakefileFormat(config.getCleanCommand(), EMPTY_STRING, WHITESPACE,
                 IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
@@ -158,20 +83,20 @@ public class TopMakeFileGenerator {
         buffer.append(NEWLINE);
 
         if (!myDependencyMacros.isEmpty()) {
-            buffer.append("ifneq ($(MAKECMDGOALS),clean)").append(NEWLINE);
+            buffer.append("ifneq ($(MAKECMDGOALS),clean)").append(NEWLINE); //$NON-NLS-1$
             for (String depsMacro : myDependencyMacros) {
-                buffer.append("ifneq ($(strip $(").append(depsMacro).append(")),)").append(NEWLINE);
-                buffer.append("-include $(").append(depsMacro).append(')').append(NEWLINE);
-                buffer.append("endif").append(NEWLINE);
+                buffer.append("ifneq ($(strip $(").append(depsMacro).append(")),)").append(NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
+                buffer.append("-include $(").append(depsMacro).append(')').append(NEWLINE); //$NON-NLS-1$
+                buffer.append("endif").append(NEWLINE); //$NON-NLS-1$
             }
-            buffer.append("endif").append(NEWLINE).append(NEWLINE);
+            buffer.append("endif").append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
         }
         // Include makefile.defs supplemental makefile
-        buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_DEFS).append(NEWLINE);
+        buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_DEFS).append(NEWLINE); //$NON-NLS-1$
         return (buffer.append(NEWLINE));
     }
 
-    private static String getPreBuildStep(IConfiguration config,ICConfigurationDescription cfg) {
+    private static String getPreBuildStep(IConfiguration config, ICConfigurationDescription cfg) {
         String prebuildStep = config.getPrebuildStep();
         // JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt
         // prebuild command if needed
@@ -181,11 +106,11 @@ public class TopMakeFileGenerator {
         // io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
         // "sloeber.prebuild",
         // new String(), false);
-        String sketchPrebuild = resolveValueToMakefileFormat("sloeber.prebuild", EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION,cfg);
+        String sketchPrebuild = resolveValueToMakefileFormat("sloeber.prebuild", EMPTY_STRING, WHITESPACE, //$NON-NLS-1$
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
-                prebuildStep = prebuildStep + "\n\t" + sketchPrebuild;
+                prebuildStep = prebuildStep + "\n\t" + sketchPrebuild; //$NON-NLS-1$
             } else {
                 prebuildStep = sketchPrebuild;
             }
@@ -193,17 +118,17 @@ public class TopMakeFileGenerator {
         // end off JABA issue927
         // try to resolve the build macros in the prebuild step
         prebuildStep = resolveValueToMakefileFormat(prebuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION,cfg);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
         return prebuildStep.trim();
     }
 
-    private static StringBuffer getMakeIncludeDependencies(IConfiguration config,ICConfigurationDescription cfg) {
+    private static StringBuffer getMakeIncludeDependencies(IConfiguration config, ICConfigurationDescription cfg) {
 
         // JABA add the arduino upload/program targets
         StringBuffer buffer = new StringBuffer();
 
-        String defaultTarget = "all:";
-        String prebuildStep = getPreBuildStep(config,cfg);
+        String defaultTarget = "all:"; //$NON-NLS-1$
+        String prebuildStep = getPreBuildStep(config, cfg);
         if (prebuildStep.length() > 0) {
             // Add the comment for the "All" target
             buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
@@ -224,14 +149,14 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private static StringBuffer getMakeTopTargets(IConfiguration config,IFolder buildFolder,MakeRules myMakeRules,ICConfigurationDescription cfg) {
-
+    private static StringBuffer getMakeTopTargets(IConfiguration config, IFolder buildFolder, MakeRules myMakeRules,
+            ICConfigurationDescription cfg) {
 
         StringBuffer buffer = new StringBuffer();
 
         Set<ITool> targetTools = config.getToolChain().getTargetTools();
-        buffer.append("all:").append(WHITESPACE);
-        for(ITool curTargetTool:targetTools) {
+        buffer.append("all:").append(WHITESPACE); //$NON-NLS-1$
+        for (ITool curTargetTool : targetTools) {
             Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
             for (IFile curTarget : allTargets) {
                 String targetString = GetNiceFileName(buildFolder, curTarget);
@@ -282,7 +207,7 @@ public class TopMakeFileGenerator {
         buffer.append(NEWLINE).append(NEWLINE);
 
         // Add all the needed dummy and phony targets
-        buffer.append(".PHONY: all clean dependents");
+        buffer.append(".PHONY: all clean dependents"); //$NON-NLS-1$
         if (prebuildStep.length() > 0) {
             buffer.append(WHITESPACE).append(MAINBUILD).append(WHITESPACE).append(PREBUILD);
         }
@@ -292,13 +217,11 @@ public class TopMakeFileGenerator {
 
         buffer.append(NEWLINE);
         // Include makefile.targets supplemental makefile
-        buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_TARGETS).append(NEWLINE);
+        buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_TARGETS).append(NEWLINE); //$NON-NLS-1$
         return buffer;
     }
 
-
-
-    private static StringBuffer getMakeMacros(IFolder buildRoot,MakeRules myMakeRules) {
+    private static StringBuffer getMakeMacros(IFolder buildRoot, MakeRules myMakeRules) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_module_variables).append(NEWLINE);
@@ -320,15 +243,16 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private static StringBuffer getMakeRules(IProject project,IFolder topBuildDir,MakeRules myMakeRules,ICConfigurationDescription cfg) {
+    private static StringBuffer getMakeRules(IProject project, IFolder topBuildDir, MakeRules myMakeRules,
+            ICConfigurationDescription cfg) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules.getMakeRules()) {
-        	if(makeRule.getSequenceGroupID()!=0) {
-        		buffer.append(makeRule.getRule(project, topBuildDir, cfg));
-        	}
+            if (makeRule.getSequenceGroupID() != 0) {
+                buffer.append(makeRule.getRule(project, topBuildDir, cfg));
+            }
         }
         return buffer;
     }

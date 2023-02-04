@@ -89,7 +89,7 @@ public class ManagedBuildManager extends AbstractCExtension {
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_SHAREDLIB = "org.eclipse.cdt.build.core.buildArtefactType.sharedLib"; //$NON-NLS-1$
 
     public static final String INTERNAL_BUILDER_ID = "org.eclipse.cdt.build.core.internal.builder"; //$NON-NLS-1$
-    private static boolean VERBOSE = true;
+    private static boolean VERBOSE = false;
 
     // Random number for derived object model elements
     private static Random randomNumber;
@@ -857,20 +857,20 @@ public class ManagedBuildManager extends AbstractCExtension {
         return idAndVersion;
     }
 
-    /**
-     * Send event to value handlers of relevant configuration including all its
-     * child resource configurations, if they exist.
-     *
-     * @param config
-     *            configuration for which to send the event
-     * @param event
-     *            to be sent
-     *
-     * @since 3.0
-     */
-    public static void performValueHandlerEvent(IConfiguration config, int event) {
-        performValueHandlerEvent(config, event, true);
-    }
+    //    /**
+    //     * Send event to value handlers of relevant configuration including all its
+    //     * child resource configurations, if they exist.
+    //     *
+    //     * @param config
+    //     *            configuration for which to send the event
+    //     * @param event
+    //     *            to be sent
+    //     *
+    //     * @since 3.0
+    //     */
+    //    public static void performValueHandlerEvent(IConfiguration config, int event) {
+    //        performValueHandlerEvent(config, event, true);
+    //    }
 
     /**
      * Send event to value handlers of relevant configuration.
@@ -885,57 +885,57 @@ public class ManagedBuildManager extends AbstractCExtension {
      *
      * @since 3.0
      */
-    public static void performValueHandlerEvent(IConfiguration config, int event, boolean doChildren) {
-
-        IToolChain toolChain = config.getToolChain();
-        if (toolChain == null)
-            return;
-
-        List<IOption> options = toolChain.getOptions();
-        // Get global options directly under Toolchain (not associated with a particular
-        // tool)
-        // This has to be sent to all the Options associated with this configuration.
-        //		for (IOption option : options) {
-        //			// Ignore invalid options
-        //			if (option.isValid()) {
-        //				// Call the handler
-        //				if (option.getValueHandler().handleValue(config, toolChain, option,
-        //						option.getValueHandlerExtraArgument(), event)) {
-        //					// TODO : Event is handled successfully and returned true.
-        //					// May need to do something here say logging a message.
-        //				} else {
-        //					// Event handling Failed.
-        //				}
-        //			}
-        //		}
-
-        // Get options associated with tools under toolChain
-        //		List<ITool> tools = config.getFilteredTools();
-        //		for (ITool tool : tools) {
-        //			List<IOption> toolOptions = tool.getOptions();
-        //			for (IOption toolOption : toolOptions) {
-        //				// Ignore invalid options
-        //				if (toolOption.isValid()) {
-        //					// Call the handler
-        //					if (toolOption.getValueHandler().handleValue(config, tool, toolOption,
-        //							toolOption.getValueHandlerExtraArgument(), event)) {
-        //						// TODO : Event is handled successfully and returned true.
-        //						// May need to do something here say logging a message.
-        //					} else {
-        //						// Event handling Failed.
-        //					}
-        //				}
-        //			}
-        //		}
-
-        // Call backs for Resource Configurations associated with this config.
-        //		if (doChildren == true) {
-        //			List<IResourceConfiguration> resConfigs = config.getResourceConfigurations();
-        //			for (IResourceConfiguration resConfig : resConfigs) {
-        //				ManagedBuildManager.performValueHandlerEvent(resConfig, event);
-        //			}
-        //		}
-    }
+    //    public static void performValueHandlerEvent(IConfiguration config, int event, boolean doChildren) {
+    //
+    //        IToolChain toolChain = config.getToolChain();
+    //        if (toolChain == null)
+    //            return;
+    //
+    //        List<IOption> options = toolChain.getOptions();
+    //        // Get global options directly under Toolchain (not associated with a particular
+    //        // tool)
+    //        // This has to be sent to all the Options associated with this configuration.
+    //        //		for (IOption option : options) {
+    //        //			// Ignore invalid options
+    //        //			if (option.isValid()) {
+    //        //				// Call the handler
+    //        //				if (option.getValueHandler().handleValue(config, toolChain, option,
+    //        //						option.getValueHandlerExtraArgument(), event)) {
+    //        //					// TODO : Event is handled successfully and returned true.
+    //        //					// May need to do something here say logging a message.
+    //        //				} else {
+    //        //					// Event handling Failed.
+    //        //				}
+    //        //			}
+    //        //		}
+    //
+    //        // Get options associated with tools under toolChain
+    //        //		List<ITool> tools = config.getFilteredTools();
+    //        //		for (ITool tool : tools) {
+    //        //			List<IOption> toolOptions = tool.getOptions();
+    //        //			for (IOption toolOption : toolOptions) {
+    //        //				// Ignore invalid options
+    //        //				if (toolOption.isValid()) {
+    //        //					// Call the handler
+    //        //					if (toolOption.getValueHandler().handleValue(config, tool, toolOption,
+    //        //							toolOption.getValueHandlerExtraArgument(), event)) {
+    //        //						// TODO : Event is handled successfully and returned true.
+    //        //						// May need to do something here say logging a message.
+    //        //					} else {
+    //        //						// Event handling Failed.
+    //        //					}
+    //        //				}
+    //        //			}
+    //        //		}
+    //
+    //        // Call backs for Resource Configurations associated with this config.
+    //        //		if (doChildren == true) {
+    //        //			List<IResourceConfiguration> resConfigs = config.getResourceConfigurations();
+    //        //			for (IResourceConfiguration resConfig : resConfigs) {
+    //        //				ManagedBuildManager.performValueHandlerEvent(resConfig, event);
+    //        //			}
+    //        //		}
+    //    }
 
     /**
      * Send event to value handlers of relevant configuration.

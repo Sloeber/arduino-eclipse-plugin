@@ -31,16 +31,15 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
     // read from model
     private String[] modelBuildProperties;
-    private String[] modelArtifactType;
+    private String[] modelBuildArtifactType;
     private String[] modelIsAbstract;
     private String[] modelIsTest;
     private String[] modelConfigurationNameProvider;
     private String[] modelEnvironmentVariableSupplier;
     private String[] modelBuildMacroSupplier;
 
-    // Parent and children
     private Map<String, Configuration> myConfigMap = new HashMap<>();
-    // Managed Build model attributes
+    private Map<String, String> myProperties = new HashMap<>();
     private boolean myIsAbstract;
     private boolean myIsTest;
 
@@ -60,7 +59,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
         loadNameAndID(root, element);
         modelBuildProperties = getAttributes(BUILD_PROPERTIES);
-        modelArtifactType = getAttributes(BUILD_ARTEFACT_TYPE);
+        modelBuildArtifactType = getAttributes(BUILD_ARTEFACT_TYPE);
         modelIsAbstract = getAttributes(IS_ABSTRACT);
         modelIsTest = getAttributes(IS_TEST);
         modelConfigurationNameProvider = getAttributes(CONFIGURATION_NAME_PROVIDER);
@@ -78,6 +77,11 @@ public class ProjectType extends SchemaObject implements IProjectType {
         for (IConfigurationElement config : configs) {
             Configuration newConfig = new Configuration(this, root, config);
             myConfigMap.put(newConfig.getName(), newConfig);
+        }
+
+        myProperties = parseProperties(modelBuildProperties[SUPER]);
+        if (!modelBuildArtifactType[SUPER].isBlank()) {
+            myProperties.put(BUILD_ARTEFACT_TYPE_PROPERTY_ID, modelBuildArtifactType[SUPER]);
         }
 
     }
@@ -170,7 +174,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);
         ret.append(prepend + BUILD_PROPERTIES + EQUAL + modelBuildProperties[SUPER] + NEWLINE);
-        ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelArtifactType[SUPER] + NEWLINE);
+        ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelBuildArtifactType[SUPER] + NEWLINE);
         ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[SUPER] + NEWLINE);
         ret.append(prepend + IS_TEST + EQUAL + modelIsTest[SUPER] + NEWLINE);
         ret.append(prepend + CONFIGURATION_NAME_PROVIDER + EQUAL + modelConfigurationNameProvider[SUPER]
@@ -191,6 +195,6 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
     @Override
     public Map<String, String> getDefaultBuildProperties() {
-        return parseProperties(modelBuildProperties[ORIGINAL]);
+        return myProperties;
     }
 }

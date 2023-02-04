@@ -170,16 +170,18 @@ public interface IInputType extends ISchemaObject {
      * object files this method will return false.
      * 
      * @param file
+     * @param outputType
+     *            if null this is a source file. for generated files provide the
+     *            outputType that generated the file
      * @return true if the file matches the inputType
      */
-    public boolean isAssociatedWith(IFile file);
+    public boolean isAssociatedWith(IFile file, IOutputType outputType);
 
     /**
      * Get the ID of the output tye this input type processes
+     * 
      * @return an ID of a outputType or an empty string
      */
-	public String getOutputTypeID();
-
-	public boolean isAssociatedWith(IFile file, IOutputType outputType);
+    public String getOutputTypeID();
 
 }

@@ -7,7 +7,6 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
@@ -27,25 +26,6 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
     public String getOutputFileName(IFile inputFile, ICConfigurationDescription confDesc, IInputType inputType,
             IOutputType outputType) {
         ITool tool = inputType.getParent();
-        //JABA hardcoded some enablement rules here because implementing the enablements is to hard for now
-        //Note that eclipse supports expressions now which should make this eazier but I don't want to add
-        //that to my learning curve now
-        AutoBuildConfigurationData ABCfgData = AutoBuildConfigurationData.getFromConfig(confDesc);
-        if ("cdt.managedbuild.tool.gnu.cross.c.linker".equals(tool.getId()) //$NON-NLS-1$
-                || "cdt.managedbuild.tool.gnu.cross.cpp.linker".equals(tool.getId())) { //$NON-NLS-1$
-            String property = ABCfgData.getProperty("org.eclipse.cdt.build.core.buildArtefactType"); //$NON-NLS-1$
-            if ("org.eclipse.cdt.build.core.buildArtefactType.staticLib".equals(property)) { //$NON-NLS-1$
-                return null;
-            }
-        }
-        if ("cdt.managedbuild.tool.gnu.cross.archiver".equals(tool.getId())) { //$NON-NLS-1$
-            String property = ABCfgData.getProperty("org.eclipse.cdt.build.core.buildArtefactType"); //$NON-NLS-1$
-            if (!"org.eclipse.cdt.build.core.buildArtefactType.staticLib".equals(property)) { //$NON-NLS-1$
-                return null;
-            }
-        }
-
-        //end of hardcoding
 
         //  Determine a default name from the input file name
         String fileName = inputFile.getProjectRelativePath().removeFileExtension().lastSegment();

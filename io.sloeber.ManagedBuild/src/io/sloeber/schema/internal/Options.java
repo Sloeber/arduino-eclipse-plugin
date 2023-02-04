@@ -45,7 +45,7 @@ import io.sloeber.schema.api.IOptionCategory;
  *
  * @since 3.0
  */
-public class Options extends SchemaObject implements IOptions {
+public class Options implements IOptions {
 
     protected Map<String, IOptionCategory> categoryMap = new HashMap<>();
     protected Map<String, Option> myOptionMap = new HashMap<>();
@@ -92,10 +92,10 @@ public class Options extends SchemaObject implements IOptions {
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
         String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
-        ret.append(prepend + IOption.ELEMENT_NAME +BLANK + myOptionMap.size()+ NEWLINE);
-        for(Option curOption:myOptionMap.values()) {
-        	 ret.append(curOption.dump(leadingChars));
-        	 ret.append(NEWLINE);
+        ret.append(prepend + IOption.ELEMENT_NAME + BLANK + myOptionMap.size() + NEWLINE);
+        for (Option curOption : myOptionMap.values()) {
+            ret.append(curOption.dump(leadingChars));
+            ret.append(NEWLINE);
         }
 
         return ret;

@@ -330,27 +330,21 @@ public class InputType extends SchemaObject implements IInputType {
     }
 
     @Override
-    public boolean isAssociatedWith(IFile file) {
-        if (inputExtensions.contains(file.getFileExtension())) {
-            return true;
-        }
-        for (IContentType curContentType : mySourceContentTypes) {
-            if (curContentType.isAssociatedWith(file.getName())) {
+    public boolean isAssociatedWith(IFile file, IOutputType outputType) {
+        if (outputType != null) {
+            if (modelOutputTypeID[SUPER].equals(outputType.getId())
+                    || inputExtensions.contains(file.getFileExtension())) {
                 return true;
             }
         }
-        return false;
-    }
 
-    @Override
-    public boolean isAssociatedWith(IFile file, IOutputType outputType) {
         for (IContentType curContentType : mySourceContentTypes) {
             if (curContentType.isAssociatedWith(file.getName())) {
                 return true;
             }
             return false;
         }
-        if (modelOutputTypeID[SUPER].equals(outputType.getId()) || inputExtensions.contains(file.getFileExtension())) {
+        if (inputExtensions.contains(file.getFileExtension())) {
             return true;
         }
 

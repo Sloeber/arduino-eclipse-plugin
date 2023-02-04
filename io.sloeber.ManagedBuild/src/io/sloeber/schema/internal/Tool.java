@@ -3,8 +3,6 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.integration.Const.*;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,12 +12,9 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
-import org.eclipse.core.expressions.Expression;
-import org.eclipse.core.expressions.ExpressionConverter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.content.IContentType;
@@ -30,12 +25,13 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
+import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.enablement.Enablement;
@@ -46,893 +42,916 @@ import io.sloeber.schema.internal.enablement.Enablement;
  */
 public class Tool extends SchemaObject implements ITool {
 
-	private List<IEnvVarBuildPath> envVarBuildPathList;
+    private List<IEnvVarBuildPath> envVarBuildPathList;
 
-	// private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
+    // private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
-	private String[] modelIsAbstract;
-	private String[] modelOutputFlag;
-	private String[] modelNatureFilter;
-	private String[] modelCommand;
-	private String[] modelCommandLinePattern;
-	private String[] modelCommandLineGenerator;
-	private String[] modelErrorParsers;
-	private String[] modelCustomBuildStep;
-	private String[] modelAnnouncement;
-	private String[] modelIcon;
-	private String[] modelIsSystem;
-	private String[] modelIsHidden;
+    private String[] modelIsAbstract;
+    private String[] modelOutputFlag;
+    private String[] modelNatureFilter;
+    private String[] modelCommand;
+    private String[] modelCommandLinePattern;
+    private String[] modelCommandLineGenerator;
+    private String[] modelErrorParsers;
+    private String[] modelCustomBuildStep;
+    private String[] modelAnnouncement;
+    private String[] modelIcon;
+    private String[] modelIsSystem;
+    private String[] modelIsHidden;
 
-	private boolean isHidden;
-	private boolean customBuildStep;
-	private boolean isAbstract;
-	private boolean isSystem;
-	private ToolChain parent;
-	private String myAnnouncement;
-	private int natureFilter;
-	private Map<String, InputType> inputTypeMap = new HashMap<>();
-	private Map<String, OutputType> outputTypeMap = new HashMap<>();
+    private boolean isHidden;
+    private boolean customBuildStep;
+    private boolean isAbstract;
+    private boolean isSystem;
+    private ToolChain parent;
+    private String myAnnouncement;
+    private int natureFilter;
+    private Map<String, InputType> inputTypeMap = new HashMap<>();
+    private Map<String, OutputType> outputTypeMap = new HashMap<>();
 
-	private IManagedCommandLineGenerator commandLineGenerator;
+    private IManagedCommandLineGenerator commandLineGenerator;
 
-	private Options myOptions = new Options();
+    /**
+     * Constructor to create a new tool for a tool-chain based on the information
+     * defined in the plugin.xml manifest.
+     *
+     * @param parent
+     *            The parent of this tool. This can be a ToolChain
+     *            or a ResourceConfiguration.
+     * @param element
+     *            The element containing the information about the
+     *            tool.
+     * @param managedBuildRevision
+     *            the fileVersion of Managed Build System
+     */
+    public Tool(ToolChain parent, IExtensionPoint root, IConfigurationElement element) {
+        this.parent = parent;
+        loadNameAndID(root, element);
+        modelIsAbstract = getAttributes(IS_ABSTRACT);
+        modelOutputFlag = getAttributes(OUTPUT_FLAG);
+        modelNatureFilter = getAttributes(NATURE);
+        modelCommand = getAttributes(COMMAND);
+        modelCommandLinePattern = getAttributes(COMMAND_LINE_PATTERN);
+        modelCommandLineGenerator = getAttributes(COMMAND_LINE_GENERATOR);
+        modelErrorParsers = getAttributes(ERROR_PARSERS);
+        modelCustomBuildStep = getAttributes(CUSTOM_BUILD_STEP);
+        modelAnnouncement = getAttributes(ANNOUNCEMENT);
+        modelIcon = getAttributes(ICON);
+        modelIsSystem = getAttributes(IS_SYSTEM);
+        modelIsHidden = getAttributes(IS_HIDDEN);
 
-	
+        isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
+        customBuildStep = Boolean.parseBoolean(modelCustomBuildStep[SUPER]);
+        isHidden = Boolean.parseBoolean(modelIsHidden[ORIGINAL]);
+        isSystem = Boolean.parseBoolean(modelIsSystem[ORIGINAL]);
 
-	/**
-	 * Constructor to create a new tool for a tool-chain based on the information
-	 * defined in the plugin.xml manifest.
-	 *
-	 * @param parent               The parent of this tool. This can be a ToolChain
-	 *                             or a ResourceConfiguration.
-	 * @param element              The element containing the information about the
-	 *                             tool.
-	 * @param managedBuildRevision the fileVersion of Managed Build System
-	 */
-	public Tool(ToolChain parent, IExtensionPoint root, IConfigurationElement element) {
-		this.parent = parent;
-		loadNameAndID(root, element);
-		modelIsAbstract = getAttributes(IS_ABSTRACT);
-		modelOutputFlag = getAttributes(OUTPUT_FLAG);
-		modelNatureFilter = getAttributes(NATURE);
-		modelCommand = getAttributes(COMMAND);
-		modelCommandLinePattern = getAttributes(COMMAND_LINE_PATTERN);
-		modelCommandLineGenerator = getAttributes(COMMAND_LINE_GENERATOR);
-		modelErrorParsers = getAttributes(ERROR_PARSERS);
-		modelCustomBuildStep = getAttributes(CUSTOM_BUILD_STEP);
-		modelAnnouncement = getAttributes(ANNOUNCEMENT);
-		modelIcon = getAttributes(ICON);
-		modelIsSystem = getAttributes(IS_SYSTEM);
-		modelIsHidden = getAttributes(IS_HIDDEN);
+        switch (modelNatureFilter[SUPER]) {
+        case "both": //$NON-NLS-1$
+            natureFilter = FILTER_BOTH;
+            break;
+        case "cnature": //$NON-NLS-1$
+            natureFilter = FILTER_C;
+            break;
+        case "ccnature": //$NON-NLS-1$
+            natureFilter = FILTER_CC;
+            break;
+        default:
+            natureFilter = FILTER_BOTH;
+        }
 
-		isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
-		customBuildStep = Boolean.parseBoolean(modelCustomBuildStep[SUPER]);
-		isHidden = Boolean.parseBoolean(modelIsHidden[ORIGINAL]);
-		isSystem = Boolean.parseBoolean(modelIsSystem[ORIGINAL]);
+        // // icon - was saved as URL in string form
+        // if (!modelIcon[SUPER].isBlank()) {
+        // try {
+        // iconPathURL = new URL(modelIcon[SUPER]);
+        // } catch (@SuppressWarnings("unused") MalformedURLException e) {
+        // // Print a warning
+        // ManagedBuildManager.outputIconError(modelIcon[SUPER]);
+        // iconPathURL = null;
+        // }
+        // }
 
-		switch (modelNatureFilter[SUPER]) {
-		case "both": //$NON-NLS-1$
-			natureFilter = FILTER_BOTH;
-			break;
-		case "cnature": //$NON-NLS-1$
-			natureFilter = FILTER_C;
-			break;
-		case "ccnature": //$NON-NLS-1$
-			natureFilter = FILTER_CC;
-			break;
-		default:
-			natureFilter = FILTER_BOTH;
-		}
+        if (modelAnnouncement[SUPER].isBlank()) {
+            myAnnouncement = Tool_default_announcement + BLANK + getName(); // + "(" + getId() + ")";
+        } else {
+            myAnnouncement = modelAnnouncement[SUPER];
+        }
 
-		// // icon - was saved as URL in string form
-		// if (!modelIcon[SUPER].isBlank()) {
-		// try {
-		// iconPathURL = new URL(modelIcon[SUPER]);
-		// } catch (@SuppressWarnings("unused") MalformedURLException e) {
-		// // Print a warning
-		// ManagedBuildManager.outputIconError(modelIcon[SUPER]);
-		// iconPathURL = null;
-		// }
-		// }
+        if (!modelCommandLineGenerator[SUPER].isBlank()) {
+            commandLineGenerator = (IManagedCommandLineGenerator) createExecutableExtension(COMMAND_LINE_GENERATOR);
+        }
 
-		if (modelAnnouncement[SUPER].isBlank()) {
-			myAnnouncement = Tool_default_announcement + BLANK + getName(); // + "(" + getId() + ")";
-		} else {
-			myAnnouncement = modelAnnouncement[SUPER];
-		}
+        for (IConfigurationElement curChild : getAllChildren()) {
+            switch (curChild.getName()) {
+            case IInputType.INPUT_TYPE_ELEMENT_NAME: {
+                InputType child = new InputType(this, root, curChild);
+                inputTypeMap.put(child.getId(), child);
+                break;
+            }
+            case IOutputType.OUTPUT_TYPE_ELEMENT_NAME: {
+                OutputType child = new OutputType(this, root, curChild);
+                outputTypeMap.put(child.getId(), child);
+                break;
+            }
+            }
 
-		if (!modelCommandLineGenerator[SUPER].isBlank()) {
-			commandLineGenerator = (IManagedCommandLineGenerator) createExecutableExtension(COMMAND_LINE_GENERATOR);
-		}
+        }
+    }
 
-		for (IConfigurationElement curChild : getAllChildren()) {
-			switch (curChild.getName()) {
-			case IOption.ELEMENT_NAME: {
-				myOptions.add(new Option(this, root, curChild));
-				break;
-			}
-			case IOptions.OPTION_CAT: {
-				myOptions.add(new OptionCategory(this, root, curChild));
-				break;
-			}
-			case IInputType.INPUT_TYPE_ELEMENT_NAME: {
-				InputType child = new InputType(this, root, curChild);
-				inputTypeMap.put(child.getId(), child);
-				break;
-			}
-			case IOutputType.OUTPUT_TYPE_ELEMENT_NAME: {
-				OutputType child = new OutputType(this, root, curChild);
-				outputTypeMap.put(child.getId(), child);
-				break;
-			}
-			}
+    @Override
+    public IToolChain getParent() {
+        return parent;
+    }
 
-			myEnablement = new Enablement(element);
-		}
-	}
+    @Override
+    public List<IInputType> getInputTypes() {
+        List<IInputType> ret = new LinkedList<>();
+        for (InputType cur : inputTypeMap.values()) {
+            ret.add(cur);
+        }
+        return ret;
+    }
 
-	@Override
-	public IToolChain getParent() {
-		return parent;
-	}
+    @Override
+    public List<IOutputType> getOutputTypes() {
+        List<IOutputType> out = new LinkedList<>();
+        for (OutputType cur : outputTypeMap.values()) {
+            // if (cur.isEnabled(this)) {
+            out.add(cur);
+            // }
+        }
+        return out;
+    }
 
-	@Override
-	public List<IInputType> getInputTypes() {
-		List<IInputType> ret = new LinkedList<>();
-		for (InputType cur : inputTypeMap.values()) {
-			ret.add(cur);
-		}
-		return ret;
-	}
+    @Override
+    public IOutputType getOutputTypeById(String optputTypeID) {
+        return getAllOutputTypeById(optputTypeID);
+        // OutputType type = (OutputType) getAllOutputTypeById(optputTypeID);
+        //
+        // if (type == null || type.isEnabled(this))
+        // return type;
+        // return null;
+    }
 
-	@Override
-	public List<IOutputType> getOutputTypes() {
-		List<IOutputType> out = new LinkedList<>();
-		for (OutputType cur : outputTypeMap.values()) {
-			// if (cur.isEnabled(this)) {
-			out.add(cur);
-			// }
-		}
-		return out;
-	}
+    public IOutputType getAllOutputTypeById(String optputTypeID) {
+        return outputTypeMap.get(optputTypeID);
+    }
 
-	@Override
-	public IOutputType getOutputTypeById(String optputTypeID) {
-		return getAllOutputTypeById(optputTypeID);
-		// OutputType type = (OutputType) getAllOutputTypeById(optputTypeID);
-		//
-		// if (type == null || type.isEnabled(this))
-		// return type;
-		// return null;
-	}
+    @Override
+    public String getName() {
+        return myName;
+    }
 
-	public IOutputType getAllOutputTypeById(String optputTypeID) {
-		return outputTypeMap.get(optputTypeID);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.cdt.core.build.managed.ITool#isAbstract()
+     */
+    @Override
+    public boolean isAbstract() {
+        return isAbstract;
+    }
 
-	@Override
-	public String getName() {
-		return myName;
-	}
+    @Override
+    public String getErrorParserIds() {
+        return modelErrorParsers[SUPER];
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.cdt.core.build.managed.ITool#isAbstract()
-	 */
-	@Override
-	public boolean isAbstract() {
-		return isAbstract;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.cdt.managedbuilder.core.ITool#getErrorParserList()
+     */
+    @Override
+    public String[] getErrorParserList() {
+        String parserIDs = getErrorParserIds();
+        String[] errorParsers;
+        if (parserIDs != null) {
+            // Check for an empty string
+            if (parserIDs.length() == 0) {
+                errorParsers = new String[0];
+            } else {
+                StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
+                List<String> list = new ArrayList<>(tok.countTokens());
+                while (tok.hasMoreElements()) {
+                    list.add(tok.nextToken());
+                }
+                String[] strArr = { "" }; //$NON-NLS-1$
+                errorParsers = list.toArray(strArr);
+            }
+        } else {
+            errorParsers = new String[0];
+        }
+        return errorParsers;
+    }
 
-	@Override
-	public String getErrorParserIds() {
-		return modelErrorParsers[SUPER];
-	}
+    // private Set<String> contributeErrorParsers(Set<String> set) {
+    // if (getErrorParserIds() != null) {
+    // if (set == null)
+    // set = new HashSet<>();
+    // String ids[] = getErrorParserList();
+    // if (ids.length != 0)
+    // set.addAll(Arrays.asList(ids));
+    // }
+    // return set;
+    // }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.cdt.managedbuilder.core.ITool#getErrorParserList()
-	 */
-	@Override
-	public String[] getErrorParserList() {
-		String parserIDs = getErrorParserIds();
-		String[] errorParsers;
-		if (parserIDs != null) {
-			// Check for an empty string
-			if (parserIDs.length() == 0) {
-				errorParsers = new String[0];
-			} else {
-				StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
-				List<String> list = new ArrayList<>(tok.countTokens());
-				while (tok.hasMoreElements()) {
-					list.add(tok.nextToken());
-				}
-				String[] strArr = { "" }; //$NON-NLS-1$
-				errorParsers = list.toArray(strArr);
-			}
-		} else {
-			errorParsers = new String[0];
-		}
-		return errorParsers;
-	}
+    /*
+     * (non-Javadoc) // * @see
+     * org.eclipse.cdt.managedbuilder.core.ITool#getInputExtensions() //
+     * * @deprecated //
+     */
+    // //@Override
+    // public List<String> getInputExtensions() {
+    // String[] exts = getPrimaryInputExtensions();
+    // List<String> extList = new ArrayList<>();
+    // for (String ext : exts) {
+    // extList.add(ext);
+    // }
+    // return extList;
+    // }
 
-	// private Set<String> contributeErrorParsers(Set<String> set) {
-	// if (getErrorParserIds() != null) {
-	// if (set == null)
-	// set = new HashSet<>();
-	// String ids[] = getErrorParserList();
-	// if (ids.length != 0)
-	// set.addAll(Arrays.asList(ids));
-	// }
-	// return set;
-	// }
+    // private List<String> getInputExtensionsAttribute() {
+    // // if ((inputExtensions == null) || (inputExtensions.size() == 0)) {
+    // // // If I have a superClass, ask it
+    // // if (getSuperClass() != null) {
+    // // return ((Tool) getSuperClass()).getInputExtensionsAttribute();
+    // // } else {
+    // // inputExtensions = new ArrayList<>();
+    // // }
+    // // }
+    // return inputExtensions;
+    // }
 
-	/*
-	 * (non-Javadoc) // * @see
-	 * org.eclipse.cdt.managedbuilder.core.ITool#getInputExtensions() //
-	 * * @deprecated //
-	 */
-	// //@Override
-	// public List<String> getInputExtensions() {
-	// String[] exts = getPrimaryInputExtensions();
-	// List<String> extList = new ArrayList<>();
-	// for (String ext : exts) {
-	// extList.add(ext);
-	// }
-	// return extList;
-	// }
+    // private List<String> getInputExtensionsList() {
+    // if (inputExtensions == null) {
+    // inputExtensions = new ArrayList<>();
+    // }
+    // return inputExtensions;
+    // }
 
-	// private List<String> getInputExtensionsAttribute() {
-	// // if ((inputExtensions == null) || (inputExtensions.size() == 0)) {
-	// // // If I have a superClass, ask it
-	// // if (getSuperClass() != null) {
-	// // return ((Tool) getSuperClass()).getInputExtensionsAttribute();
-	// // } else {
-	// // inputExtensions = new ArrayList<>();
-	// // }
-	// // }
-	// return inputExtensions;
-	// }
+    // /* (non-Javadoc)
+    // * @see org.eclipse.cdt.managedbuilder.core.ITool#getPrimaryInputExtensions()
+    // */
+    @Override
+    public List<String> getPrimaryInputExtensions() {
+        List<String> ret = new LinkedList<>();
+        for (InputType curInputType : inputTypeMap.values()) {
+            ret.addAll(curInputType.getSourceExtensions(this));
+        }
+        return ret;
+        // IInputType type = getPrimaryInputType();
+        // if (type != null) {
+        // String[] exts = type.getSourceExtensions(this);
+        // // Use the first entry in the list
+        // if (exts.length > 0)
+        // return exts;
+        // }
+        // // If none, use the input extensions specified for the Tool (backwards
+        // compatibility)
+        // List<String> extsList = getInputExtensionsAttribute();
+        // // Use the first entry in the list
+        // if (extsList != null && extsList.size() > 0) {
+        // return extsList.toArray(new String[extsList.size()]);
+        // }
+        // return EMPTY_STRING_ARRAY;
+    }
 
-	// private List<String> getInputExtensionsList() {
-	// if (inputExtensions == null) {
-	// inputExtensions = new ArrayList<>();
-	// }
-	// return inputExtensions;
-	// }
+    // public List<String> getInterfaceExtensions() {
+    // return getHeaderExtensionsAttribute();
+    // }
 
-	// /* (non-Javadoc)
-	// * @see org.eclipse.cdt.managedbuilder.core.ITool#getPrimaryInputExtensions()
-	// */
-	@Override
-	public List<String> getPrimaryInputExtensions() {
-		List<String> ret = new LinkedList<>();
-		for (InputType curInputType : inputTypeMap.values()) {
-			ret.addAll(curInputType.getSourceExtensions(this));
-		}
-		return ret;
-		// IInputType type = getPrimaryInputType();
-		// if (type != null) {
-		// String[] exts = type.getSourceExtensions(this);
-		// // Use the first entry in the list
-		// if (exts.length > 0)
-		// return exts;
-		// }
-		// // If none, use the input extensions specified for the Tool (backwards
-		// compatibility)
-		// List<String> extsList = getInputExtensionsAttribute();
-		// // Use the first entry in the list
-		// if (extsList != null && extsList.size() > 0) {
-		// return extsList.toArray(new String[extsList.size()]);
-		// }
-		// return EMPTY_STRING_ARRAY;
-	}
+    // private List<String> getHeaderExtensionsAttribute() {
+    // // if (interfaceExtensions == null || interfaceExtensions.size() == 0) {
+    // // // If I have a superClass, ask it
+    // // if (getSuperClass() != null) {
+    // // return ((Tool) getSuperClass()).getHeaderExtensionsAttribute();
+    // // } else {
+    // // if (interfaceExtensions == null) {
+    // // interfaceExtensions = new ArrayList<>();
+    // // }
+    // // }
+    // // }
+    // return interfaceExtensions;
+    // }
 
-	// public List<String> getInterfaceExtensions() {
-	// return getHeaderExtensionsAttribute();
-	// }
+    @Override
+    public String getOutputFlag() {
+        return modelOutputFlag[SUPER];
+    }
 
-	// private List<String> getHeaderExtensionsAttribute() {
-	// // if (interfaceExtensions == null || interfaceExtensions.size() == 0) {
-	// // // If I have a superClass, ask it
-	// // if (getSuperClass() != null) {
-	// // return ((Tool) getSuperClass()).getHeaderExtensionsAttribute();
-	// // } else {
-	// // if (interfaceExtensions == null) {
-	// // interfaceExtensions = new ArrayList<>();
-	// // }
-	// // }
-	// // }
-	// return interfaceExtensions;
-	// }
+    @Override
+    public String getToolCommand() {
+        return modelCommand[SUPER];
+    }
 
-	@Override
-	public String getOutputFlag() {
-		return modelOutputFlag[SUPER];
-	}
+    @Override
+    public String getCommandLinePattern() {
+        return modelCommandLinePattern[SUPER];
+    }
 
-	@Override
-	public String getToolCommand() {
-		return modelCommand[SUPER];
-	}
+    @Override
+    public boolean getCustomBuildStep() {
+        return customBuildStep;
+    }
 
-	@Override
-	public String getCommandLinePattern() {
-		return modelCommandLinePattern[SUPER];
-	}
+    @Override
+    public String getAnnouncement() {
+        return myAnnouncement;
+    }
 
-	@Override
-	public boolean getCustomBuildStep() {
-		return customBuildStep;
-	}
+    @Override
+    public IManagedCommandLineGenerator getCommandLineGenerator() {
+        return commandLineGenerator;
+    }
 
-	@Override
-	public String getAnnouncement() {
-		return myAnnouncement;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.cdt.managedbuilder.core.ITool#getNatureFilter()
+     */
+    @Override
+    public int getNatureFilter() {
+        return natureFilter;
+    }
 
-	@Override
-	public IManagedCommandLineGenerator getCommandLineGenerator() {
-		return commandLineGenerator;
-	}
+    public List<InputType> getAllInputTypes() {
+        return new LinkedList<>(inputTypeMap.values());
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.cdt.managedbuilder.core.ITool#getNatureFilter()
-	 */
-	@Override
-	public int getNatureFilter() {
-		return natureFilter;
-	}
+    }
 
-	public List<InputType> getAllInputTypes() {
-		return new LinkedList<>(inputTypeMap.values());
+    //
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.cdt.managedbuilder.core.ITool#getEnvVarBuildPaths()
+     */
+    @Override
+    public IEnvVarBuildPath[] getEnvVarBuildPaths() {
+        // if (envVarBuildPathList != null) {
+        return envVarBuildPathList.toArray(new IEnvVarBuildPath[envVarBuildPathList.size()]);
+        // } else if (getSuperClass() != null)
+        // return getSuperClass().getEnvVarBuildPaths();
+        // return null;
+    }
 
-	}
+    // private void addEnvVarBuildPath(IEnvVarBuildPath path) {
+    // if (path == null)
+    // return;
+    // if (envVarBuildPathList == null)
+    // envVarBuildPathList = new ArrayList<>();
+    //
+    // envVarBuildPathList.add(path);
+    // }
 
-	//
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.cdt.managedbuilder.core.ITool#getEnvVarBuildPaths()
-	 */
-	@Override
-	public IEnvVarBuildPath[] getEnvVarBuildPaths() {
-		// if (envVarBuildPathList != null) {
-		return envVarBuildPathList.toArray(new IEnvVarBuildPath[envVarBuildPathList.size()]);
-		// } else if (getSuperClass() != null)
-		// return getSuperClass().getEnvVarBuildPaths();
-		// return null;
-	}
+    // public IProject getProject() {
+    // IBuildObject toolParent = getParent();
+    // if (toolParent != null) {
+    // if (toolParent instanceof IToolChain) {
+    // IConfiguration config = ((IToolChain) toolParent).getParent();
+    // if (config == null)
+    // return null;
+    // return (IProject) config.getOwner();
+    // } else if (toolParent instanceof IResourceConfiguration) {
+    // return (IProject) ((IResourceConfiguration) toolParent).getOwner();
+    // }
+    // }
+    // return null;
+    // }
 
-	// private void addEnvVarBuildPath(IEnvVarBuildPath path) {
-	// if (path == null)
-	// return;
-	// if (envVarBuildPathList == null)
-	// envVarBuildPathList = new ArrayList<>();
-	//
-	// envVarBuildPathList.add(path);
-	// }
+    public String[] getContentTypeFileSpecs(IContentType type) {
+        return getContentTypeFileSpecs(type, null);// getProject());
+    }
 
-	// public IProject getProject() {
-	// IBuildObject toolParent = getParent();
-	// if (toolParent != null) {
-	// if (toolParent instanceof IToolChain) {
-	// IConfiguration config = ((IToolChain) toolParent).getParent();
-	// if (config == null)
-	// return null;
-	// return (IProject) config.getOwner();
-	// } else if (toolParent instanceof IResourceConfiguration) {
-	// return (IProject) ((IResourceConfiguration) toolParent).getOwner();
-	// }
-	// }
-	// return null;
-	// }
+    public static String[] getContentTypeFileSpecs(IContentType type, IProject project) {
+        String[] globalSpecs = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
+        IContentTypeSettings settings = null;
+        // IProject project = getProject();
+        if (project != null) {
+            IScopeContext projectScope = new ProjectScope(project);
+            try {
+                settings = type.getSettings(projectScope);
+            } catch (Exception e) {
+                Activator.log(e);
+            }
+            if (settings != null) {
+                String[] specs = settings.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
+                if (specs.length > 0) {
+                    int total = globalSpecs.length + specs.length;
+                    String[] projSpecs = new String[total];
+                    int i = 0;
+                    for (String spec : specs) {
+                        projSpecs[i] = spec;
+                        i++;
+                    }
+                    for (String spec : globalSpecs) {
+                        projSpecs[i] = spec;
+                        i++;
+                    }
+                    return projSpecs;
+                }
+            }
+        }
+        return globalSpecs;
+    }
 
-	public String[] getContentTypeFileSpecs(IContentType type) {
-		return getContentTypeFileSpecs(type, null);// getProject());
-	}
+    @Override
+    public CLanguageData getCLanguageData(IInputType type) {
+        // JABA dead code
+        return null;
+        // initDataMap();
+        // return typeToDataMap.get(type);
+    }
 
-	public static String[] getContentTypeFileSpecs(IContentType type, IProject project) {
-		String[] globalSpecs = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
-		IContentTypeSettings settings = null;
-		// IProject project = getProject();
-		if (project != null) {
-			IScopeContext projectScope = new ProjectScope(project);
-			try {
-				settings = type.getSettings(projectScope);
-			} catch (Exception e) {
-				Activator.log(e);
-			}
-			if (settings != null) {
-				String[] specs = settings.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
-				if (specs.length > 0) {
-					int total = globalSpecs.length + specs.length;
-					String[] projSpecs = new String[total];
-					int i = 0;
-					for (String spec : specs) {
-						projSpecs[i] = spec;
-						i++;
-					}
-					for (String spec : globalSpecs) {
-						projSpecs[i] = spec;
-						i++;
-					}
-					return projSpecs;
-				}
-			}
-		}
-		return globalSpecs;
-	}
+    @Override
+    public CLanguageData[] getCLanguageDatas() {
+        // TOFIX JABA don't know what this does
+        return null;
+        // initDataMap();
+        // return typeToDataMap.values().toArray(new
+        // BuildLanguageData[typeToDataMap.size()]);
+    }
 
-	@Override
-	public CLanguageData getCLanguageData(IInputType type) {
-		// JABA dead code
-		return null;
-		// initDataMap();
-		// return typeToDataMap.get(type);
-	}
+    public String getNameAndVersion() {
+        String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+        if (idVersion != null && idVersion.length() != 0) {
+            return new StringBuilder().append(myName).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        return myName;
+    }
 
-	@Override
-	public CLanguageData[] getCLanguageDatas() {
-		// TOFIX JABA don't know what this does
-		return null;
-		// initDataMap();
-		// return typeToDataMap.values().toArray(new
-		// BuildLanguageData[typeToDataMap.size()]);
-	}
+    @Override
+    public boolean isSystemObject() {
+        return isSystem;
+    }
 
-	public String getNameAndVersion() {
-		String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-		if (idVersion != null && idVersion.length() != 0) {
-			return new StringBuilder().append(myName).append(" (").append(idVersion).append("").toString(); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		return myName;
-	}
+    @Override
+    public boolean isHidden() {
+        return isHidden;
+    }
 
-	@Override
-	public boolean isSystemObject() {
-		return isSystem;
-	}
+    @Override
+    public String getUniqueRealName() {
+        if (myName == null) {
+            myName = getId();
+        } else {
+            String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+            if (idVersion != null) {
+                StringBuilder buf = new StringBuilder();
+                buf.append(myName);
+                buf.append(" (v").append(idVersion).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+                myName = buf.toString();
+            }
+        }
+        return myName;
+    }
 
-	@Override
-	public boolean isHidden() {
-		return isHidden;
-	}
+    @Override
+    public IInputType getInputTypeByID(String id2) {
+        return inputTypeMap.get(id2);
+    }
 
-	@Override
-	public String getUniqueRealName() {
-		if (myName == null) {
-			myName = getId();
-		} else {
-			String idVersion = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-			if (idVersion != null) {
-				StringBuilder buf = new StringBuilder();
-				buf.append(myName);
-				buf.append(" (v").append(idVersion).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-				myName = buf.toString();
-			}
-		}
-		return myName;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.cdt.managedbuilder.core.ITool#getCommandFlags()
+     */
+    // @Override
+    public String[] getCommandFlags() throws BuildException {
+        return getToolCommandFlags(null, null);
+    }
 
-	@Override
-	public boolean buildsFileType(IFile file) {
-		for (InputType inputType : inputTypeMap.values()) {
-			if (inputType.isAssociatedWith(file)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * This method used internally by the Tool to obtain the command flags with the
+     * build macros resolved, but could be also used by other MBS components to
+     * adjust the tool flags resolution behavior by passing the method some custom
+     * macro substitutor
+     *
+     * @return the command flags with the build macros resolved
+     */
+    // private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
+    // SupplierBasedCdtVariableSubstitutor macroSubstitutor,
+    // IMacroContextInfoProvider provider) {
+    // List<IOption> opts = getOptions();
+    // ArrayList<String> flags = new ArrayList<>();
+    // StringBuilder sb = new StringBuilder();
+    // for (IOption option : opts) {
+    // if (option == null)
+    // continue;
+    // sb.setLength(0);
+    //
+    // // check to see if the option has an applicability calculator
+    // IOptionApplicability applicabilityCalculator =
+    // option.getApplicabilityCalculator();
+    // IOptionCategory cat = option.getCategory();
+    // IOptionCategoryApplicability catApplicabilityCalculator =
+    // cat.getApplicabilityCalculator();
+    //
+    // IBuildObject config = null;
+    // //IBuildObject parent = getParent();
+    // if (parent instanceof IResourceConfiguration) {
+    // config = parent;
+    // } else if (parent instanceof IToolChain) {
+    // config = ((IToolChain) parent).getParent();
+    // }
+    //
+    // if ((catApplicabilityCalculator == null
+    // || catApplicabilityCalculator.isOptionCategoryVisible(config, this, cat))
+    // && (applicabilityCalculator == null
+    // || applicabilityCalculator.isOptionUsedInCommandLine(config, this, option)))
+    // {
+    //
+    // // update option in case when its value changed.
+    // // This code is added to fix bug #219684 and
+    // // avoid using "getOptionToSet()"
+    // // if (applicabilityCalculator != null
+    // // && !(applicabilityCalculator instanceof
+    // BooleanExpressionApplicabilityCalculator)) {
+    // // if (option.getSuperClass() != null)
+    // // option = getOptionBySuperClassId(option.getSuperClass().getId());
+    // // // bug #405904 - if the option is an extension element (first time we
+    // build),
+    // // // use the option id as a superclass id, otherwise we won't find the
+    // option we may have just
+    // // // set and will end up with the default setting
+    // // else if (option.isExtensionElement())
+    // // option = getOptionBySuperClassId(option.getId());
+    // // else
+    // // option = getOptionById(option.getId());
+    // // }
+    //
+    // try {
+    // boolean generateDefaultCommand = true;
+    // IOptionCommandGenerator commandGenerator = option.getCommandGenerator();
+    // if (commandGenerator != null) {
+    // switch (option.getValueType()) {
+    // case IOption.BOOLEAN:
+    // case IOption.ENUMERATED:
+    // case IOption.TREE:
+    // case IOption.STRING:
+    // case IOption.STRING_LIST:
+    // case IOption.INCLUDE_FILES:
+    // case IOption.INCLUDE_PATH:
+    // case IOption.LIBRARY_PATHS:
+    // case IOption.LIBRARY_FILES:
+    // case IOption.MACRO_FILES:
+    // case IOption.UNDEF_INCLUDE_FILES:
+    // case IOption.UNDEF_INCLUDE_PATH:
+    // case IOption.UNDEF_LIBRARY_PATHS:
+    // case IOption.UNDEF_LIBRARY_FILES:
+    // case IOption.UNDEF_MACRO_FILES:
+    // case IOption.PREPROCESSOR_SYMBOLS:
+    // case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
+    // IMacroContextInfo info =
+    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
+    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
+    // option,
+    // this));
+    // if (info != null) {
+    // macroSubstitutor.setMacroContextInfo(info);
+    // String command = commandGenerator.generateCommand(option, macroSubstitutor);
+    // if (command != null) {
+    // sb.append(command);
+    // generateDefaultCommand = false;
+    // }
+    // }
+    // break;
+    // default:
+    // break;
+    // }
+    // }
+    // if (generateDefaultCommand) {
+    // switch (option.getValueType()) {
+    // case IOption.BOOLEAN:
+    // String boolCmd;
+    // if (option.getBooleanValue()) {
+    // boolCmd = option.getCommand();
+    // } else {
+    // // Note: getCommandFalse is new with CDT 2.0
+    // boolCmd = option.getCommandFalse();
+    // }
+    // if (boolCmd != null && boolCmd.length() > 0) {
+    // sb.append(boolCmd);
+    // }
+    // break;
+    //
+    // case IOption.ENUMERATED:
+    // String enumVal = option.getEnumCommand(option.getSelectedEnum());
+    // if (enumVal.length() > 0) {
+    // sb.append(enumVal);
+    // }
+    // break;
+    //
+    // case IOption.TREE:
+    // String treeVal = option.getCommand(option.getStringValue());
+    // if (treeVal.length() > 0) {
+    // sb.append(treeVal);
+    // }
+    // break;
+    //
+    // case IOption.STRING: {
+    // String strCmd = option.getCommand();
+    // String val = option.getStringValue();
+    // IMacroContextInfo info =
+    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
+    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
+    // option,
+    // this));
+    // if (info != null) {
+    // macroSubstitutor.setMacroContextInfo(info);
+    // if (val.length() > 0
+    // && (val = CdtVariableResolver.resolveToString(val, macroSubstitutor))
+    // .length() > 0) {
+    // sb.append(evaluateCommand(strCmd, val));
+    // }
+    // }
+    // }
+    // break;
+    //
+    // case IOption.STRING_LIST:
+    // case IOption.INCLUDE_FILES:
+    // case IOption.INCLUDE_PATH:
+    // case IOption.LIBRARY_PATHS:
+    // case IOption.LIBRARY_FILES:
+    // case IOption.MACRO_FILES:
+    // case IOption.UNDEF_INCLUDE_FILES:
+    // case IOption.UNDEF_INCLUDE_PATH:
+    // case IOption.UNDEF_LIBRARY_PATHS:
+    // case IOption.UNDEF_LIBRARY_FILES:
+    // case IOption.UNDEF_MACRO_FILES: {
+    // String listCmd = option.getCommand();
+    // IMacroContextInfo info =
+    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
+    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
+    // option,
+    // this));
+    // if (info != null) {
+    // macroSubstitutor.setMacroContextInfo(info);
+    // String[] list = CdtVariableResolver.resolveStringListValues(
+    // option.getBasicStringListValue(), macroSubstitutor, true);
+    // if (list != null) {
+    // for (String temp : list) {
+    // if (temp.length() > 0 && !temp.equals(EMPTY_QUOTED_STRING))
+    // sb.append(evaluateCommand(listCmd, temp)).append(BLANK);
+    // }
+    // }
+    // }
+    // }
+    // break;
+    //
+    // case IOption.PREPROCESSOR_SYMBOLS:
+    // case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
+    // String defCmd = option.getCommand();
+    // IMacroContextInfo info =
+    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
+    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
+    // option,
+    // this));
+    // if (info != null) {
+    // macroSubstitutor.setMacroContextInfo(info);
+    // String[] symbols = CdtVariableResolver.resolveStringListValues(
+    // option.getBasicStringListValue(), macroSubstitutor, true);
+    // if (symbols != null) {
+    // for (String temp : symbols) {
+    // if (temp.length() > 0)
+    // sb.append(evaluateCommand(defCmd, temp) + BLANK);
+    // }
+    // }
+    // }
+    // }
+    // break;
+    //
+    // default:
+    // break;
+    // }
+    // }
+    //
+    // if (sb.toString().trim().length() > 0)
+    // flags.add(sb.toString().trim());
+    //
+    // } catch (BuildException e) {
+    // // Bug 315187 one broken option shouldn't cascade to all other options
+    // breaking the build...
+    // Status s = new Status(IStatus.ERROR, Activator.getId(),
+    // MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, option,
+    // option.getId()), e);
+    // Activator.log(new CoreException(s));
+    // } catch (CdtVariableException e) {
+    // Status s = new Status(IStatus.ERROR, Activator.getId(),
+    // MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, option,
+    // option.getId()), e);
+    // Activator.log(new CoreException(s));
+    // }
+    // }
+    // }
+    // String[] f = new String[flags.size()];
+    // return flags.toArray(f);
+    // }
 
-	@Override
-	public IInputType getInputTypeByID(String id2) {
-		return inputTypeMap.get(id2);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.cdt.managedbuilder.core.ITool#getToolCommandFlags(org.eclipse.
+     * core.runtime.IPath, org.eclipse.core.runtime.IPath)
+     */
+    @Override
+    public String[] getToolCommandFlags(IFile inputFile, IFile outputFile) throws BuildException {
+        return new String[0];
+        // SupplierBasedCdtVariableSubstitutor macroSubstitutor = new
+        // BuildfileMacroSubstitutor(null, EMPTY_STRING, BLANK);
+        // return getToolCommandFlags(inputFile, outputFile, macroSubstitutor,
+        // BuildMacroProvider.getDefault());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.cdt.managedbuilder.core.ITool#getCommandFlags()
-	 */
-	// @Override
-	public String[] getCommandFlags() throws BuildException {
-		return getToolCommandFlags(null, null);
-	}
+    @Override
+    public List<String> getExtraFlags(int optionType) {
+        List<String> flags = new LinkedList<>();
+        return flags;
+        // if (optionType != IOption.LIBRARIES && optionType != IOption.OBJECTS) {
+        // // Early exit to avoid performance penalty
+        // return flags;
+        // }
+        //
+        // for (IOption option : getOptions()) {
+        // try {
+        // if (option.getValueType() != optionType) {
+        // continue;
+        // }
+        //
+        // // check to see if the option has an applicability calculator
+        // IOptionApplicability applicabilityCalculator =
+        // option.getApplicabilityCalculator();
+        //
+        // if (applicabilityCalculator == null
+        // || applicabilityCalculator.isOptionUsedInCommandLine(this, this, option)) {
+        // boolean generateDefaultCommand = true;
+        // IOptionCommandGenerator commandGenerator = option.getCommandGenerator();
+        // if (commandGenerator != null) {
+        // SupplierBasedCdtVariableSubstitutor macroSubstitutor = new
+        // BuildfileMacroSubstitutor(null,
+        // EMPTY_STRING, BLANK);
+        // IMacroContextInfoProvider provider = BuildMacroProvider.getDefault();
+        // IMacroContextInfo info =
+        // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_OPTION,
+        // new OptionContextData(option, this));
+        // if (info != null) {
+        // macroSubstitutor.setMacroContextInfo(info);
+        // String command = commandGenerator.generateCommand(option, macroSubstitutor);
+        // if (command != null) {
+        // flags.add(command);
+        // generateDefaultCommand = false;
+        // }
+        // }
+        // }
+        //
+        // if (generateDefaultCommand) {
+        // switch (optionType) {
+        // case IOption.LIBRARIES: {
+        // String command = option.getCommand();
+        // String[] libs = option.getLibraries();
+        // for (String lib : libs) {
+        // try {
+        // String resolved[] = ManagedBuildManager.getBuildMacroProvider()
+        // .resolveStringListValueToMakefileFormat(lib, " ", //$NON-NLS-1$
+        // " ", //$NON-NLS-1$
+        // IBuildMacroProvider.CONTEXT_OPTION,
+        // new OptionContextData(option, this));
+        // if (resolved != null && resolved.length > 0) {
+        // for (String string : resolved) {
+        // if (!string.isEmpty()) {
+        // flags.add(command + string);
+        // }
+        // }
+        // }
+        // } catch (BuildMacroException e) {
+        // // TODO: report error
+        // continue;
+        // }
+        // }
+        // break;
+        // }
+        // case IOption.OBJECTS: {
+        // String userObjs[] = option.getUserObjects();
+        // if (userObjs != null && userObjs.length > 0) {
+        // for (String userObj : userObjs) {
+        // try {
+        // String resolved[] = ManagedBuildManager.getBuildMacroProvider()
+        // .resolveStringListValueToMakefileFormat(userObj, "", //$NON-NLS-1$
+        // " ", //$NON-NLS-1$
+        // IBuildMacroProvider.CONTEXT_OPTION,
+        // new OptionContextData(option, this));
+        // if (resolved != null && resolved.length > 0) {
+        // flags.addAll(Arrays.asList(resolved));
+        // }
+        // } catch (BuildMacroException e) {
+        // // TODO: report error
+        // continue;
+        // }
+        // }
+        // }
+        // break;
+        // }
+        // default:
+        // // Cannot happen
+        // break;
+        // }
+        // }
+        // }
+        // } catch (BuildException | CdtVariableException e) {
+        // // TODO: report error
+        // continue;
+        // }
+        // }
+        // return flags;
+    }
 
-	/**
-	 * This method used internally by the Tool to obtain the command flags with the
-	 * build macros resolved, but could be also used by other MBS components to
-	 * adjust the tool flags resolution behavior by passing the method some custom
-	 * macro substitutor
-	 *
-	 * @return the command flags with the build macros resolved
-	 */
-	// private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
-	// SupplierBasedCdtVariableSubstitutor macroSubstitutor,
-	// IMacroContextInfoProvider provider) {
-	// List<IOption> opts = getOptions();
-	// ArrayList<String> flags = new ArrayList<>();
-	// StringBuilder sb = new StringBuilder();
-	// for (IOption option : opts) {
-	// if (option == null)
-	// continue;
-	// sb.setLength(0);
-	//
-	// // check to see if the option has an applicability calculator
-	// IOptionApplicability applicabilityCalculator =
-	// option.getApplicabilityCalculator();
-	// IOptionCategory cat = option.getCategory();
-	// IOptionCategoryApplicability catApplicabilityCalculator =
-	// cat.getApplicabilityCalculator();
-	//
-	// IBuildObject config = null;
-	// //IBuildObject parent = getParent();
-	// if (parent instanceof IResourceConfiguration) {
-	// config = parent;
-	// } else if (parent instanceof IToolChain) {
-	// config = ((IToolChain) parent).getParent();
-	// }
-	//
-	// if ((catApplicabilityCalculator == null
-	// || catApplicabilityCalculator.isOptionCategoryVisible(config, this, cat))
-	// && (applicabilityCalculator == null
-	// || applicabilityCalculator.isOptionUsedInCommandLine(config, this, option)))
-	// {
-	//
-	// // update option in case when its value changed.
-	// // This code is added to fix bug #219684 and
-	// // avoid using "getOptionToSet()"
-	// // if (applicabilityCalculator != null
-	// // && !(applicabilityCalculator instanceof
-	// BooleanExpressionApplicabilityCalculator)) {
-	// // if (option.getSuperClass() != null)
-	// // option = getOptionBySuperClassId(option.getSuperClass().getId());
-	// // // bug #405904 - if the option is an extension element (first time we
-	// build),
-	// // // use the option id as a superclass id, otherwise we won't find the
-	// option we may have just
-	// // // set and will end up with the default setting
-	// // else if (option.isExtensionElement())
-	// // option = getOptionBySuperClassId(option.getId());
-	// // else
-	// // option = getOptionById(option.getId());
-	// // }
-	//
-	// try {
-	// boolean generateDefaultCommand = true;
-	// IOptionCommandGenerator commandGenerator = option.getCommandGenerator();
-	// if (commandGenerator != null) {
-	// switch (option.getValueType()) {
-	// case IOption.BOOLEAN:
-	// case IOption.ENUMERATED:
-	// case IOption.TREE:
-	// case IOption.STRING:
-	// case IOption.STRING_LIST:
-	// case IOption.INCLUDE_FILES:
-	// case IOption.INCLUDE_PATH:
-	// case IOption.LIBRARY_PATHS:
-	// case IOption.LIBRARY_FILES:
-	// case IOption.MACRO_FILES:
-	// case IOption.UNDEF_INCLUDE_FILES:
-	// case IOption.UNDEF_INCLUDE_PATH:
-	// case IOption.UNDEF_LIBRARY_PATHS:
-	// case IOption.UNDEF_LIBRARY_FILES:
-	// case IOption.UNDEF_MACRO_FILES:
-	// case IOption.PREPROCESSOR_SYMBOLS:
-	// case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
-	// IMacroContextInfo info =
-	// provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-	// new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-	// option,
-	// this));
-	// if (info != null) {
-	// macroSubstitutor.setMacroContextInfo(info);
-	// String command = commandGenerator.generateCommand(option, macroSubstitutor);
-	// if (command != null) {
-	// sb.append(command);
-	// generateDefaultCommand = false;
-	// }
-	// }
-	// break;
-	// default:
-	// break;
-	// }
-	// }
-	// if (generateDefaultCommand) {
-	// switch (option.getValueType()) {
-	// case IOption.BOOLEAN:
-	// String boolCmd;
-	// if (option.getBooleanValue()) {
-	// boolCmd = option.getCommand();
-	// } else {
-	// // Note: getCommandFalse is new with CDT 2.0
-	// boolCmd = option.getCommandFalse();
-	// }
-	// if (boolCmd != null && boolCmd.length() > 0) {
-	// sb.append(boolCmd);
-	// }
-	// break;
-	//
-	// case IOption.ENUMERATED:
-	// String enumVal = option.getEnumCommand(option.getSelectedEnum());
-	// if (enumVal.length() > 0) {
-	// sb.append(enumVal);
-	// }
-	// break;
-	//
-	// case IOption.TREE:
-	// String treeVal = option.getCommand(option.getStringValue());
-	// if (treeVal.length() > 0) {
-	// sb.append(treeVal);
-	// }
-	// break;
-	//
-	// case IOption.STRING: {
-	// String strCmd = option.getCommand();
-	// String val = option.getStringValue();
-	// IMacroContextInfo info =
-	// provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-	// new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-	// option,
-	// this));
-	// if (info != null) {
-	// macroSubstitutor.setMacroContextInfo(info);
-	// if (val.length() > 0
-	// && (val = CdtVariableResolver.resolveToString(val, macroSubstitutor))
-	// .length() > 0) {
-	// sb.append(evaluateCommand(strCmd, val));
-	// }
-	// }
-	// }
-	// break;
-	//
-	// case IOption.STRING_LIST:
-	// case IOption.INCLUDE_FILES:
-	// case IOption.INCLUDE_PATH:
-	// case IOption.LIBRARY_PATHS:
-	// case IOption.LIBRARY_FILES:
-	// case IOption.MACRO_FILES:
-	// case IOption.UNDEF_INCLUDE_FILES:
-	// case IOption.UNDEF_INCLUDE_PATH:
-	// case IOption.UNDEF_LIBRARY_PATHS:
-	// case IOption.UNDEF_LIBRARY_FILES:
-	// case IOption.UNDEF_MACRO_FILES: {
-	// String listCmd = option.getCommand();
-	// IMacroContextInfo info =
-	// provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-	// new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-	// option,
-	// this));
-	// if (info != null) {
-	// macroSubstitutor.setMacroContextInfo(info);
-	// String[] list = CdtVariableResolver.resolveStringListValues(
-	// option.getBasicStringListValue(), macroSubstitutor, true);
-	// if (list != null) {
-	// for (String temp : list) {
-	// if (temp.length() > 0 && !temp.equals(EMPTY_QUOTED_STRING))
-	// sb.append(evaluateCommand(listCmd, temp)).append(BLANK);
-	// }
-	// }
-	// }
-	// }
-	// break;
-	//
-	// case IOption.PREPROCESSOR_SYMBOLS:
-	// case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
-	// String defCmd = option.getCommand();
-	// IMacroContextInfo info =
-	// provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-	// new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-	// option,
-	// this));
-	// if (info != null) {
-	// macroSubstitutor.setMacroContextInfo(info);
-	// String[] symbols = CdtVariableResolver.resolveStringListValues(
-	// option.getBasicStringListValue(), macroSubstitutor, true);
-	// if (symbols != null) {
-	// for (String temp : symbols) {
-	// if (temp.length() > 0)
-	// sb.append(evaluateCommand(defCmd, temp) + BLANK);
-	// }
-	// }
-	// }
-	// }
-	// break;
-	//
-	// default:
-	// break;
-	// }
-	// }
-	//
-	// if (sb.toString().trim().length() > 0)
-	// flags.add(sb.toString().trim());
-	//
-	// } catch (BuildException e) {
-	// // Bug 315187 one broken option shouldn't cascade to all other options
-	// breaking the build...
-	// Status s = new Status(IStatus.ERROR, Activator.getId(),
-	// MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, option,
-	// option.getId()), e);
-	// Activator.log(new CoreException(s));
-	// } catch (CdtVariableException e) {
-	// Status s = new Status(IStatus.ERROR, Activator.getId(),
-	// MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, option,
-	// option.getId()), e);
-	// Activator.log(new CoreException(s));
-	// }
-	// }
-	// }
-	// String[] f = new String[flags.size()];
-	// return flags.toArray(f);
-	// }
+    //	@Override
+    //	public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
+    //	return myEnablement.isEnabled(autoBuildConfData);
+    //	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.cdt.managedbuilder.core.ITool#getToolCommandFlags(org.eclipse.
-	 * core.runtime.IPath, org.eclipse.core.runtime.IPath)
-	 */
-	@Override
-	public String[] getToolCommandFlags(IFile inputFile, IFile outputFile) throws BuildException {
-		return new String[0];
-		// SupplierBasedCdtVariableSubstitutor macroSubstitutor = new
-		// BuildfileMacroSubstitutor(null, EMPTY_STRING, BLANK);
-		// return getToolCommandFlags(inputFile, outputFile, macroSubstitutor,
-		// BuildMacroProvider.getDefault());
-	}
+    public StringBuffer dump(int leadingChars) {
+        StringBuffer ret = new StringBuffer();
+        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        ret.append(prepend + TOOL_ELEMENT_NAME + NEWLINE);
+        ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
+        ret.append(prepend + ID + EQUAL + myID + NEWLINE);
+        ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[ORIGINAL] + NEWLINE);
+        ret.append(prepend + OUTPUT_FLAG + EQUAL + modelOutputFlag[SUPER] + NEWLINE);
+        ret.append(prepend + NATURE + EQUAL + modelNatureFilter[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND + EQUAL + modelCommand[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND_LINE_PATTERN + EQUAL + modelCommandLinePattern[SUPER] + NEWLINE);
 
-	@Override
-	public List<String> getExtraFlags(int optionType) {
-		List<String> flags = new LinkedList<>();
-		return flags;
-		// if (optionType != IOption.LIBRARIES && optionType != IOption.OBJECTS) {
-		// // Early exit to avoid performance penalty
-		// return flags;
-		// }
-		//
-		// for (IOption option : getOptions()) {
-		// try {
-		// if (option.getValueType() != optionType) {
-		// continue;
-		// }
-		//
-		// // check to see if the option has an applicability calculator
-		// IOptionApplicability applicabilityCalculator =
-		// option.getApplicabilityCalculator();
-		//
-		// if (applicabilityCalculator == null
-		// || applicabilityCalculator.isOptionUsedInCommandLine(this, this, option)) {
-		// boolean generateDefaultCommand = true;
-		// IOptionCommandGenerator commandGenerator = option.getCommandGenerator();
-		// if (commandGenerator != null) {
-		// SupplierBasedCdtVariableSubstitutor macroSubstitutor = new
-		// BuildfileMacroSubstitutor(null,
-		// EMPTY_STRING, BLANK);
-		// IMacroContextInfoProvider provider = BuildMacroProvider.getDefault();
-		// IMacroContextInfo info =
-		// provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_OPTION,
-		// new OptionContextData(option, this));
-		// if (info != null) {
-		// macroSubstitutor.setMacroContextInfo(info);
-		// String command = commandGenerator.generateCommand(option, macroSubstitutor);
-		// if (command != null) {
-		// flags.add(command);
-		// generateDefaultCommand = false;
-		// }
-		// }
-		// }
-		//
-		// if (generateDefaultCommand) {
-		// switch (optionType) {
-		// case IOption.LIBRARIES: {
-		// String command = option.getCommand();
-		// String[] libs = option.getLibraries();
-		// for (String lib : libs) {
-		// try {
-		// String resolved[] = ManagedBuildManager.getBuildMacroProvider()
-		// .resolveStringListValueToMakefileFormat(lib, " ", //$NON-NLS-1$
-		// " ", //$NON-NLS-1$
-		// IBuildMacroProvider.CONTEXT_OPTION,
-		// new OptionContextData(option, this));
-		// if (resolved != null && resolved.length > 0) {
-		// for (String string : resolved) {
-		// if (!string.isEmpty()) {
-		// flags.add(command + string);
-		// }
-		// }
-		// }
-		// } catch (BuildMacroException e) {
-		// // TODO: report error
-		// continue;
-		// }
-		// }
-		// break;
-		// }
-		// case IOption.OBJECTS: {
-		// String userObjs[] = option.getUserObjects();
-		// if (userObjs != null && userObjs.length > 0) {
-		// for (String userObj : userObjs) {
-		// try {
-		// String resolved[] = ManagedBuildManager.getBuildMacroProvider()
-		// .resolveStringListValueToMakefileFormat(userObj, "", //$NON-NLS-1$
-		// " ", //$NON-NLS-1$
-		// IBuildMacroProvider.CONTEXT_OPTION,
-		// new OptionContextData(option, this));
-		// if (resolved != null && resolved.length > 0) {
-		// flags.addAll(Arrays.asList(resolved));
-		// }
-		// } catch (BuildMacroException e) {
-		// // TODO: report error
-		// continue;
-		// }
-		// }
-		// }
-		// break;
-		// }
-		// default:
-		// // Cannot happen
-		// break;
-		// }
-		// }
-		// }
-		// } catch (BuildException | CdtVariableException e) {
-		// // TODO: report error
-		// continue;
-		// }
-		// }
-		// return flags;
-	}
+        ret.append(prepend + COMMAND_LINE_GENERATOR + EQUAL + modelCommandLineGenerator[SUPER] + NEWLINE);
+        ret.append(prepend + ERROR_PARSERS + EQUAL + modelErrorParsers[SUPER] + NEWLINE);
+        ret.append(prepend + CUSTOM_BUILD_STEP + EQUAL + modelCustomBuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + ANNOUNCEMENT + EQUAL + modelAnnouncement[SUPER] + NEWLINE);
+        ret.append(prepend + ICON + EQUAL + modelIcon[SUPER] + NEWLINE);
+        ret.append(prepend + IS_HIDDEN + EQUAL + modelIsHidden[SUPER] + NEWLINE);
+        ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSystem[SUPER] + NEWLINE);
+        if (myEnablement == null) {
+            ret.append(prepend + "No enablement found" + NEWLINE); //$NON-NLS-1$
+        } else {
+            ret.append(prepend + "Enablement found" + NEWLINE); //$NON-NLS-1$
+        }
+        for (InputType curInputType : inputTypeMap.values()) {
+            ret.append(curInputType.dump(leadingChars + 1));
+        }
+        for (OutputType curOutputType : outputTypeMap.values()) {
+            ret.append(curOutputType.dump(leadingChars + 1));
+        }
+        ret.append(myOptions.dump(leadingChars + 1));
 
-	@Override
-	public IOptions getOptions() {
-		return myOptions;
-	}
-	
-	@Override
-	public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
-	return myEnablement.isEnabled(autoBuildConfData);
-	}
+        return ret;
+    }
 
-	public StringBuffer dump(int leadingChars) {
-		StringBuffer ret = new StringBuffer();
-		String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
-		ret.append(prepend + TOOL_ELEMENT_NAME + NEWLINE);
-		ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
-		ret.append(prepend + ID + EQUAL + myID + NEWLINE);
-		ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[ORIGINAL] + NEWLINE);
-		ret.append(prepend + OUTPUT_FLAG + EQUAL + modelOutputFlag[SUPER] + NEWLINE);
-		ret.append(prepend + NATURE + EQUAL + modelNatureFilter[SUPER] + NEWLINE);
-		ret.append(prepend + COMMAND + EQUAL + modelCommand[SUPER] + NEWLINE);
-		ret.append(prepend + COMMAND_LINE_PATTERN + EQUAL + modelCommandLinePattern[SUPER] + NEWLINE);
+    static private final String IGNORED_BY = " ignored by: "; //$NON-NLS-1$
+    static private final String DISABLED = " disabled: ";//$NON-NLS-1$
+    static private final String ACCEPTED_BY = " accepted by: "; //$NON-NLS-1$
 
-		ret.append(prepend + COMMAND_LINE_GENERATOR + EQUAL + modelCommandLineGenerator[SUPER] + NEWLINE);
-		ret.append(prepend + ERROR_PARSERS + EQUAL + modelErrorParsers[SUPER] + NEWLINE);
-		ret.append(prepend + CUSTOM_BUILD_STEP + EQUAL + modelCustomBuildStep[SUPER] + NEWLINE);
-		ret.append(prepend + ANNOUNCEMENT + EQUAL + modelAnnouncement[SUPER] + NEWLINE);
-		ret.append(prepend + ICON + EQUAL + modelIcon[SUPER] + NEWLINE);
-		ret.append(prepend + IS_HIDDEN + EQUAL + modelIsHidden[SUPER] + NEWLINE);
-		ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSystem[SUPER] + NEWLINE);
-		if (myEnablement == null) {
-			ret.append(prepend + "No enablement found" + NEWLINE); //$NON-NLS-1$
-		} else {
-			ret.append(prepend + "Enablement found" + NEWLINE); //$NON-NLS-1$
-		}
-		for (InputType curInputType : inputTypeMap.values()) {
-			ret.append(curInputType.dump(leadingChars + 1));
-		}
-		for (OutputType curOutputType : outputTypeMap.values()) {
-			ret.append(curOutputType.dump(leadingChars + 1));
-		}
-		ret.append(myOptions.dump(leadingChars + 1));
+    @Override
+    public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
+            IFile inputFile, int makeRuleSequenceID, boolean VERBOSE) {
+        MakeRules ret = new MakeRules();
+        if (!isEnabled(autoBuildConfData)) {
+            return ret;
+        }
+        for (IInputType inputType : getInputTypes()) {
+            if (inputType.isAssociatedWith(inputFile, outputTypeIn)) {
+                for (IOutputType outputType : getOutputTypes()) {
+                    if (!outputType.isEnabled(autoBuildConfData)) {
+                        if (VERBOSE) {
+                            System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName() + DISABLED
+                                    + outputType.getName());
+                        }
+                        continue;
+                    }
+                    IFile outputFile = outputType.getOutputName(inputFile, autoBuildConfData, inputType);
+                    if (outputFile == null) {
+                        if (VERBOSE) {
+                            System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName()
+                                    + IGNORED_BY + outputType.getName());
+                        }
+                        continue;
+                    }
+                    if (VERBOSE) {
+                        System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName() + ACCEPTED_BY
+                                + outputType.getName());
+                    }
+                    MakeRule newMakeRule = new MakeRule(this, inputType, inputFile, outputType, outputFile,
+                            makeRuleSequenceID);
 
-		return ret;
-	}
+                    ret.addRule(newMakeRule);
+                }
+            } else {
+                if (VERBOSE) {
+                    System.out.println(inputFile + BLANK + myName + IGNORED_BY + inputType.getName());
+                }
+            }
+        }
+        return ret;
+    }
+
 }
 
 //    public PathInfoCache setDiscoveredPathInfo(IInputType type, PathInfoCache info) {
@@ -1717,3 +1736,13 @@ public class Tool extends SchemaObject implements ITool {
 //
 //        return element;
 //    }
+
+//@Override
+//public boolean buildsFileType(IFile file) {
+//  for (InputType inputType : inputTypeMap.values()) {
+//      if (inputType.isAssociatedWith(file)) {
+//          return true;
+//      }
+//  }
+//  return false;
+//}

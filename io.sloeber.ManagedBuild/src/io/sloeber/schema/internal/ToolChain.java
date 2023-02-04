@@ -25,13 +25,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.Internal.PathInfoCache;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
@@ -42,7 +38,7 @@ import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
-public class ToolChain extends Options implements IToolChain {
+public class ToolChain extends SchemaObject implements IToolChain {
 
     String[] modelIsAbstract;
     String[] modelOsList;
@@ -125,11 +121,11 @@ public class ToolChain extends Options implements IToolChain {
             System.err.println("There are no tools in toolchain " + myName + DOT); //$NON-NLS-1$
         }
 
-        List<IConfigurationElement> optionElements = getAllChildren(IOptions.OPTION);
-        for (IConfigurationElement optionElement : optionElements) {
-            Option newOption = new Option(this, root, optionElement);
-            myOptionMap.put(newOption.getName(), newOption);
-        }
+        //        List<IConfigurationElement> optionElements = getAllChildren(IOptions.OPTION);
+        //        for (IConfigurationElement optionElement : optionElements) {
+        //            Option newOption = new Option(this, root, optionElement);
+        //            myOptionMap.put(newOption.getName(), newOption);
+        //        }
 
         List<IConfigurationElement> categoryElements = getAllChildren(IOptions.OPTION_CAT);
         for (IConfigurationElement categoryElement : categoryElements) {
@@ -298,7 +294,7 @@ public class ToolChain extends Options implements IToolChain {
         Set<String> toolIDs = new HashSet<>();
         toolIDs = Set.of(modelTargetTool[SUPER].split(SEMICOLON));
         for (Tool curTool : myToolMap.values()) {
-            if (toolIDs.contains(curTool.getId())) {
+            if (curTool.matchID(toolIDs)) {
                 ret.add(curTool);
             }
         }
@@ -406,10 +402,9 @@ public class ToolChain extends Options implements IToolChain {
         ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSytem[SUPER] + NEWLINE);
 
         ret.append(prepend + BEGIN_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
-        ret.append(prepend + "Number of tools " + String.valueOf(myToolMap.size()));
-        leadingChars++;
+        ret.append(prepend + "Number of tools " + String.valueOf(myToolMap.size())); //$NON-NLS-1$
         for (Tool curTool : myToolMap.values()) {
-            ret.append(curTool.dump(leadingChars));
+            ret.append(curTool.dump(leadingChars + 1));
         }
         ret.append(prepend + END_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
 

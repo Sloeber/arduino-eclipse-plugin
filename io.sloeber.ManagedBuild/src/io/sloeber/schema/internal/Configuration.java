@@ -19,6 +19,7 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,21 +44,22 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private static final String LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN = "-"; //$NON-NLS-1$
     private static final String $TOOLCHAIN = "${Toolchain}"; //$NON-NLS-1$
 
-    String[] modelartifactName;
-    String[] modelartifactExtension;
-    String[] modelerrorParsers;
-    String[] modellanguageSettingsProviders;
-    String[] modeldescription;
-    String[] modelbuildProperties;
-    String[] modelbuildArtefactType;
-    String[] modelprebuildStep;
-    String[] modelpostbuildStep;
-    String[] modelpreannouncebuildStep;
-    String[] modelpostannouncebuildStep;
-    String[] modelcleanCommand;
+    private String[] modelartifactName;
+    private String[] modelartifactExtension;
+    private String[] modelerrorParsers;
+    private String[] modellanguageSettingsProviders;
+    private String[] modeldescription;
+    private String[] modelbuildProperties;
+    private String[] modelbuildArtefactType;
+    private String[] modelprebuildStep;
+    private String[] modelpostbuildStep;
+    private String[] modelpreannouncebuildStep;
+    private String[] modelpostannouncebuildStep;
+    private String[] modelcleanCommand;
 
-    ToolChain myToolchain;
-    List<FolderInfo> myFolderInfo = new ArrayList<>();
+    private ToolChain myToolchain;
+    private List<FolderInfo> myFolderInfo = new ArrayList<>();
+    private Map<String, String> myBuildProperties = new HashMap<>();
 
     // Parent and children
     private ProjectType projectType;
@@ -146,6 +148,10 @@ public class Configuration extends SchemaObject implements IConfiguration {
                 }
 
             }
+        }
+        myBuildProperties = parseProperties(modelbuildProperties[SUPER]);
+        if (!modelartifactName[SUPER].isBlank()) {
+            myBuildProperties.put(BUILD_ARTEFACT_TYPE_PROPERTY_ID, modelartifactName[SUPER]);
         }
 
     }
@@ -269,7 +275,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     @Override
     public Map<String, String> getDefaultBuildProperties() {
-        return parseProperties(modelbuildProperties[ORIGINAL]);
+        return myBuildProperties;
     }
 
     public StringBuffer dump(int leadingChars) {

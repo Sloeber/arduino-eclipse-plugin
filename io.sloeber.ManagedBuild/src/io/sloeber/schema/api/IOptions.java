@@ -27,7 +27,7 @@ import io.sloeber.autoBuild.api.BuildException;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IOptions extends ISchemaObject {
+public interface IOptions {
 
     public static final String OPTION = "option"; //$NON-NLS-1$
     public static final String OPTION_CAT = "optionCategory"; //$NON-NLS-1$

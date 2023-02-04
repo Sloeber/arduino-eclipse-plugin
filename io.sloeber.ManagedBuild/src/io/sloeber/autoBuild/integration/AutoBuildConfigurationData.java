@@ -17,6 +17,7 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -27,7 +28,6 @@ import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.internal.Configuration;
 
 public class AutoBuildConfigurationData extends CConfigurationData {
-
     private IConfiguration myAutoBuildConfiguration;
     private IProject myProject;
     private BuildTargetPlatformData myTargetPlatformData;
@@ -72,6 +72,10 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         isValid = true;
     }
 
+    public ICConfigurationDescription getCdtConfigurationDescription() {
+        return myCdtConfigurationDescription;
+    }
+
     public IProject getProject() {
         return myProject;
     }
@@ -104,7 +108,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     @Override
     public CFolderData getRootFolderData() {
         CDataFactory factory = CDataFactory.getDefault();
-        return factory.createFolderData(null, null, getId(), false, new Path("/"));
+        return factory.createFolderData(null, null, getId(), false, new Path(SLACH));
     }
 
     @Override
@@ -189,6 +193,10 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     public String setProperty(String key, String value) {
         return myProperties.put(key, value);
+    }
+
+    public IFolder getBuildFolder() {
+        return myAutoBuildConfiguration.getBuildFolder(myCdtConfigurationDescription);
     }
 
 }

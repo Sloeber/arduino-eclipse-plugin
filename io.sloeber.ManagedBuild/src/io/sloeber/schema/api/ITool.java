@@ -19,12 +19,15 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.internal.ToolChain;
 
 /**
@@ -299,15 +302,15 @@ public interface ITool extends ISchemaObject {
     //    public IOptionCategory getTopOptionCategory();
     public IOptions getOptions();
 
-    /**
-     * Return <code>true</code> if the receiver builds files with the
-     * specified extension, else <code>false</code>.
-     *
-     * @param extension
-     *            file extension of the source
-     * @return boolean
-     */
-    public boolean buildsFileType(IFile file);
+    //    /**
+    //     * Return <code>true</code> if the receiver builds files with the
+    //     * specified extension, else <code>false</code>.
+    //     *
+    //     * @param extension
+    //     *            file extension of the source
+    //     * @return boolean
+    //     */
+    //    public boolean buildsFileType(IFile file);
 
     //    /**
     //     * Answers <code>true</code> if the tool considers the file extension to be
@@ -382,5 +385,8 @@ public interface ITool extends ISchemaObject {
     default public List<String> getExtraFlags(int optionType) {
         return new LinkedList<>();
     }
+
+    public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
+            IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
 
 }

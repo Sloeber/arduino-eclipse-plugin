@@ -1,6 +1,5 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 //import org.eclipse.cdt.managedbuilder.core.IInputType;
@@ -33,9 +31,7 @@ import io.sloeber.schema.api.ITool;
 
 public class MakeRules implements Iterable<MakeRule> {
     static private boolean VERBOSE = true;
-    static private final String IGNORED_BY = " ignored by "; //$NON-NLS-1$
-    static private final String ACCEPTED_BY = " accepted by "; //$NON-NLS-1$
-    // static config
+
     static private final List<String> InputFileIgnoreList = new LinkedList<>(
             List.of(".settings", ".project", ".cproject")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -203,12 +199,12 @@ public class MakeRules implements Iterable<MakeRule> {
      * @return The MakeRules needed to buuild this configuration
      * @throws CoreException
      */
-    public MakeRules(IProject project, AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder, IConfiguration config,
-            ICSourceEntry[] srcEntries, Set<IFolder> foldersToBuild) throws CoreException {
+    public MakeRules(IProject project, AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
+            IConfiguration config, ICSourceEntry[] srcEntries, Set<IFolder> foldersToBuild) throws CoreException {
 
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
         subDirVisitor.myBuildfolder = buildfolder;
-        subDirVisitor.myCConfDes = cConfDes;
+        subDirVisitor.myAutoBuildConfData = autoBuildConfData;
         subDirVisitor.myConfig = config;
         subDirVisitor.myFoldersToBuild = foldersToBuild;
         subDirVisitor.mySrcEntries = srcEntries;
@@ -216,7 +212,7 @@ public class MakeRules implements Iterable<MakeRule> {
 
         // Now we have the makeRules for the source files generate the MakeRules for the
         // created files
-        generateHigherLevelMakeRules(cConfDes, buildfolder, config);
+        generateHigherLevelMakeRules(autoBuildConfData, buildfolder, config);
     }
 
     /**
@@ -224,11 +220,11 @@ public class MakeRules implements Iterable<MakeRule> {
      * all appropriate files found
      */
     class SourceLevelMakeRuleGenerator implements IResourceProxyVisitor {
-        ICConfigurationDescription myCConfDes;
         IFolder myBuildfolder;
         IConfiguration myConfig;
         Set<IFolder> myFoldersToBuild;
         ICSourceEntry[] mySrcEntries;
+        AutoBuildConfigurationData myAutoBuildConfData;
 
         @Override
         public boolean visit(IResourceProxy proxy) throws CoreException {
@@ -244,7 +240,7 @@ public class MakeRules implements Iterable<MakeRule> {
                 return false;
             }
             if (proxy.getType() == IResource.FILE) {
-                if (getMakeRulesFromSourceFile(myCConfDes, myBuildfolder, myConfig, (IFile) resource)) {
+                if (getMakeRulesFromSourceFile(myAutoBuildConfData, (IFile) resource)) {
                     myFoldersToBuild.add((IFolder) ((IFile) resource).getParent());
                 }
                 return false;
@@ -259,45 +255,47 @@ public class MakeRules implements Iterable<MakeRule> {
          * @param inputFile
          * @return true if a makerule has been created
          */
-        protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
-                IConfiguration config, IFile inputFile) {
-            boolean ret = false;
+        protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationData autoBuildConfData, IFile inputFile) {
 
+            IConfiguration config = autoBuildConfData.getConfiguration();
             String ext = inputFile.getFileExtension();
             if (ext == null || ext.isBlank()) {
-                return ret;
+                return false;
             }
-
+            int numRulesAtStart = myMakeRules.size();
             for (ITool tool : config.getToolChain().getTools()) {
-            	if(!tool.isEnabled( autoBuildConfData))
-                for (IInputType inputType : tool.getInputTypes()) {
-                    if (inputType.isAssociatedWith(inputFile)) {
-                        for (IOutputType outputType : tool.getOutputTypes()) {
-                            IFile outputFile = outputType.getOutputName(buildfolder, inputFile, cConfDes, inputType);
-                            if (outputFile == null) {
-                                if (VERBOSE) {
-                                    System.out.println(inputFile + BLANK + tool.getName() + ACCEPTED_BY
-                                            + inputType.getName() + IGNORED_BY + outputType.getName());
-                                }
-                                continue;
-                            }
-                            if (VERBOSE) {
-                                System.out.println(inputFile + BLANK + tool.getName() + ACCEPTED_BY
-                                        + inputType.getName() + ACCEPTED_BY + outputType.getName());
-                            }
-                            MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType, outputFile, 0);
-
-                            addRule(newMakeRule);
-                            ret = true;
-                        }
-                    } else {
-                        if (VERBOSE) {
-                            System.out.println(inputFile + BLANK + tool.getName() + IGNORED_BY + inputType.getName());
-                        }
-                    }
-                }
+                addRules(tool.getMakeRules(autoBuildConfData, null, inputFile, 0, VERBOSE));
+                //                if (!tool.isEnabled(autoBuildConfData)) {
+                //                    continue;
+                //                }
+                //                for (IInputType inputType : tool.getInputTypes()) {
+                //                    if (inputType.isAssociatedWith(inputFile)) {
+                //                        for (IOutputType outputType : tool.getOutputTypes()) {
+                //                            IFile outputFile = outputType.getOutputName(buildfolder, inputFile, cConfDes, inputType);
+                //                            if (outputFile == null) {
+                //                                if (VERBOSE) {
+                //                                    System.out.println(inputFile + BLANK + tool.getName() + ACCEPTED_BY
+                //                                            + inputType.getName() + IGNORED_BY + outputType.getName());
+                //                                }
+                //                                continue;
+                //                            }
+                //                            if (VERBOSE) {
+                //                                System.out.println(inputFile + BLANK + tool.getName() + ACCEPTED_BY
+                //                                        + inputType.getName() + ACCEPTED_BY + outputType.getName());
+                //                            }
+                //                            MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType, outputFile, 0);
+                //
+                //                            addRule(newMakeRule);
+                //                            ret = true;
+                //                        }
+                //                    } else {
+                //                        if (VERBOSE) {
+                //                            System.out.println(inputFile + BLANK + tool.getName() + IGNORED_BY + inputType.getName());
+                //                        }
+                //                    }
+                //                }
             }
-            return ret;
+            return numRulesAtStart != myMakeRules.size();
         }
     }
 
@@ -317,41 +315,44 @@ public class MakeRules implements Iterable<MakeRule> {
      * 
      * @return The MakeRules that have been created
      */
-    protected static MakeRules getMakeRulesFromGeneratedFiles(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
-            IConfiguration config, Map<IOutputType, Set<IFile>> generatedFiles, int makeRuleSequenceID) {
+    protected static MakeRules getMakeRulesFromGeneratedFiles(AutoBuildConfigurationData autoBuildConfData,
+            Map<IOutputType, Set<IFile>> generatedFiles, int makeRuleSequenceID) {
         MakeRules newMakeRules = new MakeRules();
+        IConfiguration config = autoBuildConfData.getConfiguration();
 
         for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
             IOutputType outputTypeIn = entry.getKey();
             Set<IFile> files = entry.getValue();
-            for (ITool tool : config.getToolChain().getTools()) {
-                for (IFile file : files) {
-                    for (IInputType inputType : tool.getInputTypes()) {
-                        if (inputType.isAssociatedWith(file, outputTypeIn)) {
-                            for (IOutputType outputType : tool.getOutputTypes()) {
-                                IFile outputFile = outputType.getOutputName(buildfolder, file, cConfDes, inputType);
+            for (IFile file : files) {
+                for (ITool tool : config.getToolChain().getTools()) {
+                    newMakeRules.addRules(
+                            tool.getMakeRules(autoBuildConfData, outputTypeIn, file, makeRuleSequenceID, VERBOSE));
 
-                                if (outputFile == null) {
-                                    if (VERBOSE) {
-                                        System.out.println(file + BLANK + tool.getName() + ACCEPTED_BY
-                                                + inputType.getName() + IGNORED_BY + outputType.getName());
-                                    }
-                                } else {
-                                    if (VERBOSE) {
-                                        System.out.println(file + BLANK + tool.getName() + ACCEPTED_BY
-                                                + inputType.getName() + ACCEPTED_BY + outputType.getName());
-                                    }
-                                    newMakeRules.addRule(tool, inputType, file, outputType, outputFile,
-                                            makeRuleSequenceID);
-                                    continue;
-                                }
-                            }
-                        } else {
-                            if (VERBOSE) {
-                                System.out.println(file + BLANK + tool.getName() + IGNORED_BY + inputType.getName());
-                            }
-                        }
-                    }
+                    //                    for (IInputType inputType : tool.getInputTypes()) {
+                    //                        if (inputType.isAssociatedWith(file, outputTypeIn)) {
+                    //                            for (IOutputType outputType : tool.getOutputTypes()) {
+                    //                                IFile outputFile = outputType.getOutputName(buildfolder, file, cConfDes, inputType);
+                    //
+                    //                                if (outputFile == null) {
+                    //                                    if (VERBOSE) {
+                    //                                        System.out.println(file + BLANK + tool.getName() + ACCEPTED_BY
+                    //                                                + inputType.getName() + IGNORED_BY + outputType.getName());
+                    //                                    }
+                    //                                    continue;
+                    //                                }
+                    //                                if (VERBOSE) {
+                    //                                    System.out.println(file + BLANK + tool.getName() + ACCEPTED_BY + inputType.getName()
+                    //                                            + ACCEPTED_BY + outputType.getName());
+                    //                                }
+                    //                                newMakeRules.addRule(tool, inputType, file, outputType, outputFile, makeRuleSequenceID);
+                    //
+                    //                            }
+                    //                        } else {
+                    //                            if (VERBOSE) {
+                    //                                System.out.println(file + BLANK + tool.getName() + IGNORED_BY + inputType.getName());
+                    //                            }
+                    //                        }
+                    //                    }
                 }
             }
         }
@@ -376,18 +377,19 @@ public class MakeRules implements Iterable<MakeRule> {
         if (VERBOSE) {
             System.out.println("Trying to resolve generated files level 1 (that is from source files"); //$NON-NLS-1$
         }
-        MakeRules newMakeRules = getMakeRulesFromGeneratedFiles(cConfDes, buildfolder, config, generatedFiles,
-                makeRuleSequenceID);
+        MakeRules newMakeRules = getMakeRulesFromGeneratedFiles(autoBuildConfData, generatedFiles, makeRuleSequenceID);
         while (makeRuleSequenceID < 20 && newMakeRules.size() > 0) {
-            addRules(newMakeRules);
             generatedFiles.clear();
             generatedFiles.putAll(newMakeRules.getTargets());
+            addRules(newMakeRules);
             makeRuleSequenceID++;
             if (VERBOSE) {
                 System.out.println("Trying to resolve generated files level " + String.valueOf(makeRuleSequenceID)); //$NON-NLS-1$
             }
-            newMakeRules = getMakeRulesFromGeneratedFiles(cConfDes, buildfolder, config, generatedFiles,
-                    makeRuleSequenceID);
+            newMakeRules = getMakeRulesFromGeneratedFiles(autoBuildConfData, generatedFiles, makeRuleSequenceID);
+        }
+        if (newMakeRules.size() != 0) {
+            System.err.println("Makerules did not resolve to targets. Probably caused by recursion"); //$NON-NLS-1$
         }
         if (VERBOSE) {
             System.out.println("All rules are created"); //$NON-NLS-1$

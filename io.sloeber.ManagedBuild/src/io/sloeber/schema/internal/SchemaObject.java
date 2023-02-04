@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.cdt.managedbuilder.core.IManagedOutputNameProvider;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -29,8 +29,11 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptions;
+import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ISchemaObject;
-import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.enablement.Enablement;
 import io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass;
 
@@ -49,7 +52,23 @@ public abstract class SchemaObject implements ISchemaObject {
 
     protected Version version = null;
     protected String managedBuildRevision = null;
-    protected Enablement myEnablement=null;
+    protected Enablement myEnablement = null;
+    protected Options myOptions = new Options();
+
+    public boolean matchID(Set<String> toolIDs) {
+        if (toolIDs.contains(myID)) {
+            return true;
+        }
+        for (int i = 0; i < MAX_SUPER_CLASS; i++) {
+            if (mySuperClassID[i] == null) {
+                return false;
+            }
+            if (toolIDs.contains(mySuperClassID[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     protected void loadNameAndID(IExtensionPoint root, IConfigurationElement element) {
         myElement = element;
@@ -76,6 +95,25 @@ public abstract class SchemaObject implements ISchemaObject {
         if (myName.isBlank()) {
             myName = myID;
         }
+        myEnablement = new Enablement(element, this);
+        readOptions(root);
+    }
+
+    private void readOptions(IExtensionPoint root) {
+        for (IConfigurationElement curChild : getAllChildren()) {
+            switch (curChild.getName()) {
+            case IOption.ELEMENT_NAME: {
+                myOptions.add(new Option(this, root, curChild));
+                break;
+            }
+            case IOptions.OPTION_CAT: {
+                myOptions.add(new OptionCategory(this, root, curChild));
+                break;
+            }
+            }
+
+        }
+
     }
 
     protected String[] getAttributes(String attributeName) {
@@ -93,6 +131,11 @@ public abstract class SchemaObject implements ISchemaObject {
             ret[ORIGINAL] = EMPTY_STRING;
         }
         return ret;
+    }
+
+    @Override
+    public IOptions getOptions() {
+        return myOptions;
     }
 
     /**
@@ -149,8 +192,9 @@ public abstract class SchemaObject implements ISchemaObject {
             if (ret != null) {
                 return ret;
             }
-        } catch (CoreException e) {
-            // TODO Auto-generated catch block
+        } catch (@SuppressWarnings("unused") CoreException e) {
+            //Do not log this stacktrace as it causes 
+            //many stacktraces that are not really problems
             //e.printStackTrace();
         }
         // The provided class does not conform with the current class
@@ -162,7 +206,7 @@ public abstract class SchemaObject implements ISchemaObject {
             case "org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider": //$NON-NLS-1$
                 return new OutputNameProviderCompatibilityClass();
             }
-        } catch (Exception e) {
+        } catch (@SuppressWarnings("unused") Exception e) {
             // if this fails it is likely a class name is in the plugin.xml that is not a class name
             //not dumping the stacktrace as the error is reported in calling method
             //e.printStackTrace();
@@ -198,10 +242,10 @@ public abstract class SchemaObject implements ISchemaObject {
         ret.addAll(Arrays.asList(myElement.getChildren(builderElementName)));
         int cur = 0;
         while ((cur < MAX_SUPER_CLASS) && (mySuperClassConfElement[cur] != null)) {
-            ret.addAll(Arrays.asList(mySuperClassConfElement[cur].getChildren(builderElementName)));
             if (ret.size() > 0) {
                 return ret;
             }
+            ret.addAll(Arrays.asList(mySuperClassConfElement[cur].getChildren(builderElementName)));
             cur++;
         }
         return ret;
@@ -285,12 +329,12 @@ public abstract class SchemaObject implements ISchemaObject {
         }
         return ret;
     }
-    
-	@Override
-	public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
-		if(myEnablement==null) {
-			return true;
-		}
-	return myEnablement.isEnabled(autoBuildConfData);
-	}
+
+    @Override
+    public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
+        if (myEnablement == null) {
+            return true;
+        }
+        return myEnablement.isEnabled(autoBuildConfData);
+    }
 }

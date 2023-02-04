@@ -20,6 +20,8 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface ISchemaObject {
+    //property ID's
+    public static final String BUILD_ARTEFACT_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildArtefactType"; //$NON-NLS-1$
     // Schema element names
     public static final String ID = "id"; //$NON-NLS-1$
     public static final String NAME = "name"; //$NON-NLS-1$
@@ -34,6 +36,8 @@ public interface ISchemaObject {
 
     boolean hasAncestor(String id);
 
-	boolean isEnabled(AutoBuildConfigurationData autoBuildConfData);
+    boolean isEnabled(AutoBuildConfigurationData autoBuildConfData);
+
+    IOptions getOptions();
 
 }
