@@ -18,10 +18,12 @@ import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -29,10 +31,8 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
-import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.internal.enablement.Enablement;
 import io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass;
@@ -331,10 +331,23 @@ public abstract class SchemaObject implements ISchemaObject {
     }
 
     @Override
-    public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
+    public boolean isEnabled(IResource resource, AutoBuildConfigurationData autoBuildConfData) {
         if (myEnablement == null) {
             return true;
         }
-        return myEnablement.isEnabled(autoBuildConfData);
+        return myEnablement.isEnabled(resource, autoBuildConfData);
+    }
+
+    public Map<String, String> getDefaultOptions(IResource resource,
+            AutoBuildConfigurationData autoBuildConfigurationData) {
+        Map<String, String> ret = new LinkedHashMap<>();
+        if (isEnabled(resource, autoBuildConfigurationData)) {
+            for (IOption curOption : myOptions.getOptions()) {
+                if (curOption.isEnabled(resource, autoBuildConfigurationData)) {
+                    ret.put(curOption.getId(), curOption.getDefaultValueString());
+                }
+            }
+        }
+        return ret;
     }
 }

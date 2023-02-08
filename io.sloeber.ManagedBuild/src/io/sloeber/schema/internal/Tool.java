@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -20,6 +21,8 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+
+import io.sloeber.autoBuild.Internal.BuildMacroProvider;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
@@ -28,13 +31,12 @@ import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.schema.api.IOptions;
+import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.enablement.Enablement;
 
 /**
  * Represents a tool that can be invoked during a build. Note that this class
@@ -244,96 +246,6 @@ public class Tool extends SchemaObject implements ITool {
         return errorParsers;
     }
 
-    // private Set<String> contributeErrorParsers(Set<String> set) {
-    // if (getErrorParserIds() != null) {
-    // if (set == null)
-    // set = new HashSet<>();
-    // String ids[] = getErrorParserList();
-    // if (ids.length != 0)
-    // set.addAll(Arrays.asList(ids));
-    // }
-    // return set;
-    // }
-
-    /*
-     * (non-Javadoc) // * @see
-     * org.eclipse.cdt.managedbuilder.core.ITool#getInputExtensions() //
-     * * @deprecated //
-     */
-    // //@Override
-    // public List<String> getInputExtensions() {
-    // String[] exts = getPrimaryInputExtensions();
-    // List<String> extList = new ArrayList<>();
-    // for (String ext : exts) {
-    // extList.add(ext);
-    // }
-    // return extList;
-    // }
-
-    // private List<String> getInputExtensionsAttribute() {
-    // // if ((inputExtensions == null) || (inputExtensions.size() == 0)) {
-    // // // If I have a superClass, ask it
-    // // if (getSuperClass() != null) {
-    // // return ((Tool) getSuperClass()).getInputExtensionsAttribute();
-    // // } else {
-    // // inputExtensions = new ArrayList<>();
-    // // }
-    // // }
-    // return inputExtensions;
-    // }
-
-    // private List<String> getInputExtensionsList() {
-    // if (inputExtensions == null) {
-    // inputExtensions = new ArrayList<>();
-    // }
-    // return inputExtensions;
-    // }
-
-    // /* (non-Javadoc)
-    // * @see org.eclipse.cdt.managedbuilder.core.ITool#getPrimaryInputExtensions()
-    // */
-    @Override
-    public List<String> getPrimaryInputExtensions() {
-        List<String> ret = new LinkedList<>();
-        for (InputType curInputType : inputTypeMap.values()) {
-            ret.addAll(curInputType.getSourceExtensions(this));
-        }
-        return ret;
-        // IInputType type = getPrimaryInputType();
-        // if (type != null) {
-        // String[] exts = type.getSourceExtensions(this);
-        // // Use the first entry in the list
-        // if (exts.length > 0)
-        // return exts;
-        // }
-        // // If none, use the input extensions specified for the Tool (backwards
-        // compatibility)
-        // List<String> extsList = getInputExtensionsAttribute();
-        // // Use the first entry in the list
-        // if (extsList != null && extsList.size() > 0) {
-        // return extsList.toArray(new String[extsList.size()]);
-        // }
-        // return EMPTY_STRING_ARRAY;
-    }
-
-    // public List<String> getInterfaceExtensions() {
-    // return getHeaderExtensionsAttribute();
-    // }
-
-    // private List<String> getHeaderExtensionsAttribute() {
-    // // if (interfaceExtensions == null || interfaceExtensions.size() == 0) {
-    // // // If I have a superClass, ask it
-    // // if (getSuperClass() != null) {
-    // // return ((Tool) getSuperClass()).getHeaderExtensionsAttribute();
-    // // } else {
-    // // if (interfaceExtensions == null) {
-    // // interfaceExtensions = new ArrayList<>();
-    // // }
-    // // }
-    // // }
-    // return interfaceExtensions;
-    // }
-
     @Override
     public String getOutputFlag() {
         return modelOutputFlag[SUPER];
@@ -418,9 +330,9 @@ public class Tool extends SchemaObject implements ITool {
     // return null;
     // }
 
-    public String[] getContentTypeFileSpecs(IContentType type) {
-        return getContentTypeFileSpecs(type, null);// getProject());
-    }
+    //    public String[] getContentTypeFileSpecs(IContentType type) {
+    //        return getContentTypeFileSpecs(type, null);// getProject());
+    //    }
 
     public static String[] getContentTypeFileSpecs(IContentType type, IProject project) {
         String[] globalSpecs = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
@@ -510,16 +422,6 @@ public class Tool extends SchemaObject implements ITool {
         return inputTypeMap.get(id2);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getCommandFlags()
-     */
-    // @Override
-    public String[] getCommandFlags() throws BuildException {
-        return getToolCommandFlags(null, null);
-    }
-
     /**
      * This method used internally by the Tool to obtain the command flags with the
      * build macros resolved, but could be also used by other MBS components to
@@ -528,224 +430,47 @@ public class Tool extends SchemaObject implements ITool {
      *
      * @return the command flags with the build macros resolved
      */
-    // private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
-    // SupplierBasedCdtVariableSubstitutor macroSubstitutor,
-    // IMacroContextInfoProvider provider) {
-    // List<IOption> opts = getOptions();
-    // ArrayList<String> flags = new ArrayList<>();
-    // StringBuilder sb = new StringBuilder();
-    // for (IOption option : opts) {
-    // if (option == null)
-    // continue;
-    // sb.setLength(0);
-    //
-    // // check to see if the option has an applicability calculator
-    // IOptionApplicability applicabilityCalculator =
-    // option.getApplicabilityCalculator();
-    // IOptionCategory cat = option.getCategory();
-    // IOptionCategoryApplicability catApplicabilityCalculator =
-    // cat.getApplicabilityCalculator();
-    //
-    // IBuildObject config = null;
-    // //IBuildObject parent = getParent();
-    // if (parent instanceof IResourceConfiguration) {
-    // config = parent;
-    // } else if (parent instanceof IToolChain) {
-    // config = ((IToolChain) parent).getParent();
-    // }
-    //
-    // if ((catApplicabilityCalculator == null
-    // || catApplicabilityCalculator.isOptionCategoryVisible(config, this, cat))
-    // && (applicabilityCalculator == null
-    // || applicabilityCalculator.isOptionUsedInCommandLine(config, this, option)))
-    // {
-    //
-    // // update option in case when its value changed.
-    // // This code is added to fix bug #219684 and
-    // // avoid using "getOptionToSet()"
-    // // if (applicabilityCalculator != null
-    // // && !(applicabilityCalculator instanceof
-    // BooleanExpressionApplicabilityCalculator)) {
-    // // if (option.getSuperClass() != null)
-    // // option = getOptionBySuperClassId(option.getSuperClass().getId());
-    // // // bug #405904 - if the option is an extension element (first time we
-    // build),
-    // // // use the option id as a superclass id, otherwise we won't find the
-    // option we may have just
-    // // // set and will end up with the default setting
-    // // else if (option.isExtensionElement())
-    // // option = getOptionBySuperClassId(option.getId());
-    // // else
-    // // option = getOptionById(option.getId());
-    // // }
-    //
-    // try {
-    // boolean generateDefaultCommand = true;
-    // IOptionCommandGenerator commandGenerator = option.getCommandGenerator();
-    // if (commandGenerator != null) {
-    // switch (option.getValueType()) {
-    // case IOption.BOOLEAN:
-    // case IOption.ENUMERATED:
-    // case IOption.TREE:
-    // case IOption.STRING:
-    // case IOption.STRING_LIST:
-    // case IOption.INCLUDE_FILES:
-    // case IOption.INCLUDE_PATH:
-    // case IOption.LIBRARY_PATHS:
-    // case IOption.LIBRARY_FILES:
-    // case IOption.MACRO_FILES:
-    // case IOption.UNDEF_INCLUDE_FILES:
-    // case IOption.UNDEF_INCLUDE_PATH:
-    // case IOption.UNDEF_LIBRARY_PATHS:
-    // case IOption.UNDEF_LIBRARY_FILES:
-    // case IOption.UNDEF_MACRO_FILES:
-    // case IOption.PREPROCESSOR_SYMBOLS:
-    // case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
-    // IMacroContextInfo info =
-    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-    // option,
-    // this));
-    // if (info != null) {
-    // macroSubstitutor.setMacroContextInfo(info);
-    // String command = commandGenerator.generateCommand(option, macroSubstitutor);
-    // if (command != null) {
-    // sb.append(command);
-    // generateDefaultCommand = false;
-    // }
-    // }
-    // break;
-    // default:
-    // break;
-    // }
-    // }
-    // if (generateDefaultCommand) {
-    // switch (option.getValueType()) {
-    // case IOption.BOOLEAN:
-    // String boolCmd;
-    // if (option.getBooleanValue()) {
-    // boolCmd = option.getCommand();
-    // } else {
-    // // Note: getCommandFalse is new with CDT 2.0
-    // boolCmd = option.getCommandFalse();
-    // }
-    // if (boolCmd != null && boolCmd.length() > 0) {
-    // sb.append(boolCmd);
-    // }
-    // break;
-    //
-    // case IOption.ENUMERATED:
-    // String enumVal = option.getEnumCommand(option.getSelectedEnum());
-    // if (enumVal.length() > 0) {
-    // sb.append(enumVal);
-    // }
-    // break;
-    //
-    // case IOption.TREE:
-    // String treeVal = option.getCommand(option.getStringValue());
-    // if (treeVal.length() > 0) {
-    // sb.append(treeVal);
-    // }
-    // break;
-    //
-    // case IOption.STRING: {
-    // String strCmd = option.getCommand();
-    // String val = option.getStringValue();
-    // IMacroContextInfo info =
-    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-    // option,
-    // this));
-    // if (info != null) {
-    // macroSubstitutor.setMacroContextInfo(info);
-    // if (val.length() > 0
-    // && (val = CdtVariableResolver.resolveToString(val, macroSubstitutor))
-    // .length() > 0) {
-    // sb.append(evaluateCommand(strCmd, val));
-    // }
-    // }
-    // }
-    // break;
-    //
-    // case IOption.STRING_LIST:
-    // case IOption.INCLUDE_FILES:
-    // case IOption.INCLUDE_PATH:
-    // case IOption.LIBRARY_PATHS:
-    // case IOption.LIBRARY_FILES:
-    // case IOption.MACRO_FILES:
-    // case IOption.UNDEF_INCLUDE_FILES:
-    // case IOption.UNDEF_INCLUDE_PATH:
-    // case IOption.UNDEF_LIBRARY_PATHS:
-    // case IOption.UNDEF_LIBRARY_FILES:
-    // case IOption.UNDEF_MACRO_FILES: {
-    // String listCmd = option.getCommand();
-    // IMacroContextInfo info =
-    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-    // option,
-    // this));
-    // if (info != null) {
-    // macroSubstitutor.setMacroContextInfo(info);
-    // String[] list = CdtVariableResolver.resolveStringListValues(
-    // option.getBasicStringListValue(), macroSubstitutor, true);
-    // if (list != null) {
-    // for (String temp : list) {
-    // if (temp.length() > 0 && !temp.equals(EMPTY_QUOTED_STRING))
-    // sb.append(evaluateCommand(listCmd, temp)).append(BLANK);
-    // }
-    // }
-    // }
-    // }
-    // break;
-    //
-    // case IOption.PREPROCESSOR_SYMBOLS:
-    // case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
-    // String defCmd = option.getCommand();
-    // IMacroContextInfo info =
-    // provider.getMacroContextInfo(IBuildMacroProvider.CONTEXT_FILE,
-    // new FileContextData(inputFile.getLocation(), outputFile.getLocation(),
-    // option,
-    // this));
-    // if (info != null) {
-    // macroSubstitutor.setMacroContextInfo(info);
-    // String[] symbols = CdtVariableResolver.resolveStringListValues(
-    // option.getBasicStringListValue(), macroSubstitutor, true);
-    // if (symbols != null) {
-    // for (String temp : symbols) {
-    // if (temp.length() > 0)
-    // sb.append(evaluateCommand(defCmd, temp) + BLANK);
-    // }
-    // }
-    // }
-    // }
-    // break;
-    //
-    // default:
-    // break;
-    // }
-    // }
-    //
-    // if (sb.toString().trim().length() > 0)
-    // flags.add(sb.toString().trim());
-    //
-    // } catch (BuildException e) {
-    // // Bug 315187 one broken option shouldn't cascade to all other options
-    // breaking the build...
-    // Status s = new Status(IStatus.ERROR, Activator.getId(),
-    // MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, option,
-    // option.getId()), e);
-    // Activator.log(new CoreException(s));
-    // } catch (CdtVariableException e) {
-    // Status s = new Status(IStatus.ERROR, Activator.getId(),
-    // MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, option,
-    // option.getId()), e);
-    // Activator.log(new CoreException(s));
-    // }
-    // }
-    // }
-    // String[] f = new String[flags.size()];
-    // return flags.toArray(f);
-    // }
+    private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
+            AutoBuildConfigurationData autoBuildConfData) {
+        BuildMacroProvider provider = BuildMacroProvider.getDefault();
+        //List<IOption> opts = getOptions();
+        Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFile);
+        ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
+        IConfiguration config = autoBuildConfData.getConfiguration();
+
+        ArrayList<String> flags = new ArrayList<>();
+
+        for (IOption curOption : getOptions().getOptions()) {
+            String optionValue = selectedOptions.get(curOption.getId());
+            if (optionValue == null) {
+                //no value set for this option
+                //as options with a default are set during project creation time it is 
+                //safe to ignore this option
+                //or this option has no default setting nor a user setting
+                //At least that is my thinking JABA
+                continue;
+            }
+
+            String[] cmdContrib = curOption.getCommandLineContribution(optionValue, autoBuildConfData);
+            java.util.Collections.addAll(flags, cmdContrib);
+            //
+            //            } catch (BuildException e) {
+            //                // Bug 315187 one broken option shouldn't cascade to all other options
+            //                //breaking the build...
+            //                Status s = new Status(IStatus.ERROR, Activator.getId(),
+            //                        MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, curOption, curOption.getId()),
+            //                        e);
+            //                Activator.log(new CoreException(s));
+            //            } catch (CdtVariableException e) {
+            //                Status s = new Status(IStatus.ERROR, Activator.getId(),
+            //                        MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, curOption, curOption.getId()),
+            //                        e);
+            //                Activator.log(new CoreException(s));
+            //            }
+        }
+        return flags.toArray(new String[flags.size()]);
+
+    }
 
     /*
      * (non-Javadoc)
@@ -755,12 +480,9 @@ public class Tool extends SchemaObject implements ITool {
      * core.runtime.IPath, org.eclipse.core.runtime.IPath)
      */
     @Override
-    public String[] getToolCommandFlags(IFile inputFile, IFile outputFile) throws BuildException {
-        return new String[0];
-        // SupplierBasedCdtVariableSubstitutor macroSubstitutor = new
-        // BuildfileMacroSubstitutor(null, EMPTY_STRING, BLANK);
-        // return getToolCommandFlags(inputFile, outputFile, macroSubstitutor,
-        // BuildMacroProvider.getDefault());
+    public String[] getToolCommandFlags(AutoBuildConfigurationData autoConfData, IFile inputFile, IFile outputFile)
+            throws BuildException {
+        return getToolCommandFlags(inputFile, outputFile, autoConfData);
     }
 
     @Override
@@ -913,13 +635,13 @@ public class Tool extends SchemaObject implements ITool {
     public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE) {
         MakeRules ret = new MakeRules();
-        if (!isEnabled(autoBuildConfData)) {
+        if (!isEnabled(inputFile, autoBuildConfData)) {
             return ret;
         }
         for (IInputType inputType : getInputTypes()) {
             if (inputType.isAssociatedWith(inputFile, outputTypeIn)) {
                 for (IOutputType outputType : getOutputTypes()) {
-                    if (!outputType.isEnabled(autoBuildConfData)) {
+                    if (!outputType.isEnabled(inputFile, autoBuildConfData)) {
                         if (VERBOSE) {
                             System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName() + DISABLED
                                     + outputType.getName());
@@ -1551,70 +1273,6 @@ public class Tool extends SchemaObject implements ITool {
 //        return EMPTY_STRING;
 //    }
 
-/**
- * //* Look for ${VALUE} in the command string //
- */
-//private static String evaluateCommand(String command, String values) {
-//  final int DOLLAR_VALUE_LENGTH = 8;
-//
-//  if (command == null)
-//      return values.trim();
-//
-//  String ret = command;
-//  boolean found = false;
-//  int start = 0;
-//  int index;
-//  int len;
-//  while ((index = ret.indexOf("${", start)) >= 0 && //$NON-NLS-1$
-//          (len = ret.length()) >= index + DOLLAR_VALUE_LENGTH) {
-//      start = index;
-//      index = index + 2;
-//      int ch = ret.charAt(index);
-//      if (ch == 'v' || ch == 'V') {
-//          index++;
-//          ch = ret.charAt(index);
-//          if (ch == 'a' || ch == 'A') {
-//              index++;
-//              ch = ret.charAt(index);
-//              if (ch == 'l' || ch == 'L') {
-//                  index++;
-//                  ch = ret.charAt(index);
-//                  if (ch == 'u' || ch == 'U') {
-//                      index++;
-//                      ch = ret.charAt(index);
-//                      if (ch == 'e' || ch == 'E') {
-//                          index++;
-//                          ch = ret.charAt(index);
-//                          if (ch == '}') {
-//                              String temp = ""; //$NON-NLS-1$
-//                              index++;
-//                              found = true;
-//                              if (start > 0) {
-//                                  temp = ret.substring(0, start);
-//                              }
-//                              temp = temp.concat(values.trim());
-//                              if (len > index) {
-//                                  start = temp.length();
-//                                  ret = temp.concat(ret.substring(index));
-//                                  index = start;
-//                              } else {
-//                                  ret = temp;
-//                                  break;
-//                              }
-//                          }
-//                      }
-//                  }
-//              }
-//          }
-//      }
-//      start = index;
-//  }
-//  if (found)
-//      return ret.trim();
-//  return (command + values).trim();
-//}
-
-//private static final String EMPTY_QUOTED_STRING = "\"\""; //$NON-NLS-1$
 //
 //@Override
 //public IOptionCategoryApplicability getApplicabilityCalculator() {
@@ -1745,4 +1403,104 @@ public class Tool extends SchemaObject implements ITool {
 //      }
 //  }
 //  return false;
+//}
+
+// private Set<String> contributeErrorParsers(Set<String> set) {
+// if (getErrorParserIds() != null) {
+// if (set == null)
+// set = new HashSet<>();
+// String ids[] = getErrorParserList();
+// if (ids.length != 0)
+// set.addAll(Arrays.asList(ids));
+// }
+// return set;
+// }
+
+/*
+ * (non-Javadoc) // * @see
+ * org.eclipse.cdt.managedbuilder.core.ITool#getInputExtensions() //
+ * * @deprecated //
+ */
+// //@Override
+// public List<String> getInputExtensions() {
+// String[] exts = getPrimaryInputExtensions();
+// List<String> extList = new ArrayList<>();
+// for (String ext : exts) {
+// extList.add(ext);
+// }
+// return extList;
+// }
+
+// private List<String> getInputExtensionsAttribute() {
+// // if ((inputExtensions == null) || (inputExtensions.size() == 0)) {
+// // // If I have a superClass, ask it
+// // if (getSuperClass() != null) {
+// // return ((Tool) getSuperClass()).getInputExtensionsAttribute();
+// // } else {
+// // inputExtensions = new ArrayList<>();
+// // }
+// // }
+// return inputExtensions;
+// }
+
+// private List<String> getInputExtensionsList() {
+// if (inputExtensions == null) {
+// inputExtensions = new ArrayList<>();
+// }
+// return inputExtensions;
+// }
+
+// /* (non-Javadoc)
+// * @see org.eclipse.cdt.managedbuilder.core.ITool#getPrimaryInputExtensions()
+// */
+//@Override
+//public List<String> getPrimaryInputExtensions() {
+//    List<String> ret = new LinkedList<>();
+//    for (InputType curInputType : inputTypeMap.values()) {
+//        ret.addAll(curInputType.getSourceExtensions(this));
+//    }
+//    return ret;
+//    // IInputType type = getPrimaryInputType();
+//    // if (type != null) {
+//    // String[] exts = type.getSourceExtensions(this);
+//    // // Use the first entry in the list
+//    // if (exts.length > 0)
+//    // return exts;
+//    // }
+//    // // If none, use the input extensions specified for the Tool (backwards
+//    // compatibility)
+//    // List<String> extsList = getInputExtensionsAttribute();
+//    // // Use the first entry in the list
+//    // if (extsList != null && extsList.size() > 0) {
+//    // return extsList.toArray(new String[extsList.size()]);
+//    // }
+//    // return EMPTY_STRING_ARRAY;
+//}
+
+// public List<String> getInterfaceExtensions() {
+// return getHeaderExtensionsAttribute();
+// }
+
+// private List<String> getHeaderExtensionsAttribute() {
+// // if (interfaceExtensions == null || interfaceExtensions.size() == 0) {
+// // // If I have a superClass, ask it
+// // if (getSuperClass() != null) {
+// // return ((Tool) getSuperClass()).getHeaderExtensionsAttribute();
+// // } else {
+// // if (interfaceExtensions == null) {
+// // interfaceExtensions = new ArrayList<>();
+// // }
+// // }
+// // }
+// return interfaceExtensions;
+// }
+
+/*
+ * (non-Javadoc)
+ * 
+ * @see org.eclipse.cdt.managedbuilder.core.ITool#getCommandFlags()
+ */
+// @Override
+//public String[] getCommandFlags() throws BuildException {
+//    return getToolCommandFlags(null, null);
 //}

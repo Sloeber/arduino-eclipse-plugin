@@ -16,19 +16,12 @@ package io.sloeber.schema.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
-import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
-import io.sloeber.schema.api.ITool;
 
 /**
  *
@@ -37,7 +30,6 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
     private IOptionCategory owner; // The logical Option Category parent
     private URL iconPathURL;
 
-    private IOptionCategoryApplicability applicabilityCalculator = null;
     //	private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator = null;
     //	List<OptionEnablementExpression> myOptionEnablementExpressions = new ArrayList<>();
     private String[] modelOwner;
@@ -69,8 +61,6 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
         //		}
         //
         //		booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpressions);
-
-        applicabilityCalculator = (IOptionCategoryApplicability) createExecutableExtension(APPLICABILITY_CALCULATOR);
 
         if (!modelIcon[SUPER].isBlank()) {
             try {
@@ -112,11 +102,6 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
     @Override
     public IOptionCategory getOwner() {
         return owner;
-    }
-
-    @Override
-    public IOptionCategoryApplicability getApplicabilityCalculator() {
-        return applicabilityCalculator;
     }
 
     @Override

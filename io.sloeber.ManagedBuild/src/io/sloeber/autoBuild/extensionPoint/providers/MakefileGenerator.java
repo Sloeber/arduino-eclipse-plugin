@@ -2,7 +2,7 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.MAKE_ADDITION;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.text.MessageFormat;
@@ -51,7 +51,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     ICSourceEntry[] mySrcEntries;
     MakeRules myMakeRules = null;
     Set<IFolder> myFoldersToBuild = null;
-    AutoBuildConfigurationData autoBuildConfData;
+    AutoBuildConfigurationData myAutoBuildConfData;
 
     /****************************************************************************************
      * CONSTRUCTOR / INITIALIZING code / overrides
@@ -62,12 +62,13 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize(int buildKind, IProject project, ICConfigurationDescription cfg, IBuilder builder) {
+    public void initialize(int buildKind, IProject project, AutoBuildConfigurationData autoBuildConfData,
+            IBuilder builder) {
         myProject = project;
-        myCConfigurationDescription = cfg;
-        autoBuildConfData = (AutoBuildConfigurationData) cfg.getConfigurationData();
-        myConfig = autoBuildConfData.getConfiguration();
-        myTopBuildDir = autoBuildConfData.getBuildFolder();
+        myAutoBuildConfData = autoBuildConfData;
+        myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();
+        myConfig = myAutoBuildConfData.getConfiguration();
+        myTopBuildDir = myAutoBuildConfData.getBuildFolder();
 
         // Get the target info
         String buildTargetName;
@@ -77,10 +78,10 @@ public class MakefileGenerator implements IMakefileGenerator {
         buildTargetExt = myConfig.getArtifactExtension();
         // try to resolve the build macros in the target extension
         buildTargetExt = resolveValueToMakefileFormat(buildTargetExt, EMPTY_STRING, BLANK,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, myCConfigurationDescription);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         // try to resolve the build macros in the target name
         String resolved = resolveValueToMakefileFormat(buildTargetName, EMPTY_STRING, BLANK,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, myCConfigurationDescription);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         if (resolved != null) {
             resolved = resolved.trim();
             if (resolved.length() > 0)
@@ -147,7 +148,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         MultiStatus status;
         //This object remains alive between builds; therefore we need to reset the field values
         myFoldersToBuild = new HashSet<>();
-        myMakeRules = new MakeRules(myProject, autoBuildConfData, myTopBuildDir, myConfig, mySrcEntries,
+        myMakeRules = new MakeRules(myProject, myAutoBuildConfData, myTopBuildDir, myConfig, mySrcEntries,
                 myFoldersToBuild);
 
         if (myMakeRules.size() == 0) {
@@ -168,8 +169,8 @@ public class MakefileGenerator implements IMakefileGenerator {
         generateSrcMakefiles();
         SrcMakeGenerator.generateSourceMakefile(myTopBuildDir, myProject, srcMacroNames, myFoldersToBuild);
         SrcMakeGenerator.generateObjectsMakefile(myTopBuildDir, myProject, objMacroNames);
-        TopMakeFileGenerator.generateMakefile(myTopBuildDir, myCConfigurationDescription, myConfig, myFoldersToBuild,
-                myMakeRules, objMacroNames);
+        TopMakeFileGenerator.generateMakefile(myTopBuildDir, myAutoBuildConfData, myFoldersToBuild, myMakeRules,
+                objMacroNames);
 
         checkCancel(monitor);
         afterMakefileGeneration();
@@ -251,7 +252,7 @@ public class MakefileGenerator implements IMakefileGenerator {
      * @return
      */
     protected StringBuffer getRule(MakeRule makeRule) {
-        return makeRule.getRule(myProject, myTopBuildDir, myCConfigurationDescription);
+        return makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData);
     }
 
     protected void afterMakefileGeneration() {

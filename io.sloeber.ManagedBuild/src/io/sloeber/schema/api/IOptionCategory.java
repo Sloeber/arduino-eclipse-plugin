@@ -15,9 +15,6 @@
 package io.sloeber.schema.api;
 
 import java.net.URL;
-import java.util.List;
-
-import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
@@ -28,7 +25,6 @@ public interface IOptionCategory extends ISchemaObject {
     // Schema element names
     public static final String OWNER = "owner"; //$NON-NLS-1$
     // public static final String ICON = "icon"; //$NON-NLS-1$
-    public static final String APPLICABILITY_CALCULATOR = "applicabilityCalculator";
 
     //	 Resource Filter type
     public static final int FILTER_ALL = 0;
@@ -52,10 +48,4 @@ public interface IOptionCategory extends ISchemaObject {
      */
     public URL getIconPath();
 
-    /**
-     * @return an instance of the class that calculates whether the option category
-     *         is visible.
-     * @since 8.0
-     */
-    public IOptionCategoryApplicability getApplicabilityCalculator();
 }

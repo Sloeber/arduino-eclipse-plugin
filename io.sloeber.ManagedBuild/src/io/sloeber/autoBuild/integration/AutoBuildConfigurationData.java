@@ -4,6 +4,7 @@ import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -17,15 +18,20 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.internal.Configuration;
+import io.sloeber.schema.internal.Options;
 
 public class AutoBuildConfigurationData extends CConfigurationData {
     private IConfiguration myAutoBuildConfiguration;
@@ -37,6 +43,8 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     private String myName = EMPTY_STRING;
     private String myDescription;
     private Map<String, String> myProperties = new HashMap<>();
+    //resource OptionID Value
+    private Map<IResource, Map<String, String>> mySelectedOptions = new HashMap<>();
 
     public AutoBuildConfigurationData(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -45,6 +53,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
         myName = myAutoBuildConfiguration.getName();
         myDescription = myAutoBuildConfiguration.getDescription();
+
     }
 
     //Copy constructor
@@ -58,6 +67,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
                 myCdtConfigurationDescription);
         myName = autoBuildConfigBase.getName();
         myDescription = autoBuildConfigBase.getDescription();
+        mySelectedOptions = myAutoBuildConfiguration.getDefaultProjectOptions(this);
         isValid = true;
     }
 
@@ -69,6 +79,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myCdtConfigurationDescription = cfgDescription;
         myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
                 myCdtConfigurationDescription);
+        mySelectedOptions = myAutoBuildConfiguration.getDefaultProjectOptions(this);
         isValid = true;
     }
 
@@ -197,6 +208,45 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     public IFolder getBuildFolder() {
         return myAutoBuildConfiguration.getBuildFolder(myCdtConfigurationDescription);
+    }
+
+    /**
+     * Get the options selected by the user.
+     * At project creation time the options are set to the defaults.
+     * File specific values overrule folder specific values which overrule project
+     * specific values
+     * Only the parentfolder options are taken into account
+     * 
+     * @param resource
+     *            the resource you want the selected options for
+     * @return a Map of <optionID,Selectedvalue>
+     */
+    public Map<String, String> getSelectedOptions(IResource resource) {
+        Map<String, String> retProject = new HashMap<>();
+        Map<String, String> retFolder = new HashMap<>();
+        Map<String, String> retFile = new HashMap<>();
+        for (Entry<IResource, Map<String, String>> curResourceOptions : mySelectedOptions.entrySet()) {
+            IResource curResource = curResourceOptions.getKey();
+            if (curResource instanceof IProject) {
+                //null means project level and as sutch is valid for all resources
+                retProject.putAll(curResourceOptions.getValue());
+                continue;
+            }
+            if ((curResource instanceof IFolder)
+                    && (curResource.getProjectRelativePath().equals(resource.getParent().getProjectRelativePath()))) {
+                retFolder.putAll(curResourceOptions.getValue());
+                continue;
+            }
+            if ((curResource instanceof IFile) && (curResource.equals(resource))) {
+                retFile.putAll(curResourceOptions.getValue());
+                continue;
+            }
+        }
+        Map<String, String> ret = new HashMap<>();
+        ret.putAll(retProject);
+        ret.putAll(retFolder);
+        ret.putAll(retFile);
+        return ret;
     }
 
 }

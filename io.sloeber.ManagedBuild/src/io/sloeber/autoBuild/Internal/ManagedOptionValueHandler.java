@@ -98,85 +98,85 @@ public class ManagedOptionValueHandler implements IManagedOptionValueHandler {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler#isDefaultValue(IConfiguration,IToolChain,IOption,String)
-     */
-    @Override
-    public boolean isDefaultValue(ISchemaObject configuration, IOptions holder, IOption option,
-            String extraArgument) {
-        // Get the default Value
-        Object defaultValue = option.getDefaultValue();
-        if (defaultValue instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<String> list = (List<String>) defaultValue;
-            defaultValue = list.toArray(new String[list.size()]);
-        }
-
-        try {
-            // Figure out which type the option is and implement default behaviour for it.
-            switch (option.getValueType()) {
-            case IOption.STRING:
-                if (option.getStringValue().equals(defaultValue)) {
-                    return true;
-                }
-                break;
-            case IOption.BOOLEAN:
-                if (option.getBooleanValue() == ((Boolean) defaultValue).booleanValue()) {
-                    return true;
-                }
-                break;
-            case IOption.ENUMERATED:
-            case IOption.TREE:
-                if (option.getValue().toString().equals(defaultValue.toString())) {
-                    return true;
-                }
-                break;
-            case IOption.INCLUDE_PATH:
-            case IOption.UNDEF_INCLUDE_PATH:
-                if (Arrays.equals(option.getBasicStringListValue(), (String[]) defaultValue)) {
-                    return true;
-                }
-                break;
-            case IOption.STRING_LIST:
-                if (Arrays.equals(option.getStringListValue(), (String[]) defaultValue)) {
-                    return true;
-                }
-                break;
-            case IOption.PREPROCESSOR_SYMBOLS:
-            case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
-                if (Arrays.equals(option.getBasicStringListValue(), (String[]) defaultValue)) {
-                    return true;
-                }
-                break;
-            case IOption.LIBRARIES:
-                if (Arrays.equals(option.getLibraries(), (String[]) defaultValue)) {
-                    return true;
-                }
-                break;
-            case IOption.OBJECTS:
-                if (Arrays.equals(option.getUserObjects(), (String[]) defaultValue)) {
-                    return true;
-                }
-                break;
-            case IOption.INCLUDE_FILES:
-            case IOption.LIBRARY_PATHS:
-            case IOption.LIBRARY_FILES:
-            case IOption.MACRO_FILES:
-            case IOption.UNDEF_INCLUDE_FILES:
-            case IOption.UNDEF_LIBRARY_PATHS:
-            case IOption.UNDEF_LIBRARY_FILES:
-            case IOption.UNDEF_MACRO_FILES:
-            default:
-                if (Arrays.equals(option.getBasicStringListValue(), (String[]) defaultValue)) {
-                    return true;
-                }
-                break;
-            }
-        } catch (BuildException e) {
-            Activator.log(e);
-        }
-        return false;
-    }
+    //    /* (non-Javadoc)
+    //     * @see org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler#isDefaultValue(IConfiguration,IToolChain,IOption,String)
+    //     */
+    //    @Override
+    //    public boolean isDefaultValue(ISchemaObject configuration, IOptions holder, IOption option,
+    //            String extraArgument) {
+    //        // Get the default Value
+    //        Object defaultValue = option.getDefaultValue();
+    //        if (defaultValue instanceof List) {
+    //            @SuppressWarnings("unchecked")
+    //            List<String> list = (List<String>) defaultValue;
+    //            defaultValue = list.toArray(new String[list.size()]);
+    //        }
+    //
+    //        try {
+    //            // Figure out which type the option is and implement default behaviour for it.
+    //            switch (option.getValueType()) {
+    //            case IOption.STRING:
+    //                if (option.getStringValue().equals(defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.BOOLEAN:
+    //                if (option.getBooleanValue() == ((Boolean) defaultValue).booleanValue()) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.ENUMERATED:
+    //            case IOption.TREE:
+    //                if (option.getValue().toString().equals(defaultValue.toString())) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.INCLUDE_PATH:
+    //            case IOption.UNDEF_INCLUDE_PATH:
+    //                if (Arrays.equals(option.getBasicStringListValue(), (String[]) defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.STRING_LIST:
+    //                if (Arrays.equals(option.getStringListValue(), (String[]) defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.PREPROCESSOR_SYMBOLS:
+    //            case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
+    //                if (Arrays.equals(option.getBasicStringListValue(), (String[]) defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.LIBRARIES:
+    //                if (Arrays.equals(option.getLibraries(), (String[]) defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.OBJECTS:
+    //                if (Arrays.equals(option.getUserObjects(), (String[]) defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            case IOption.INCLUDE_FILES:
+    //            case IOption.LIBRARY_PATHS:
+    //            case IOption.LIBRARY_FILES:
+    //            case IOption.MACRO_FILES:
+    //            case IOption.UNDEF_INCLUDE_FILES:
+    //            case IOption.UNDEF_LIBRARY_PATHS:
+    //            case IOption.UNDEF_LIBRARY_FILES:
+    //            case IOption.UNDEF_MACRO_FILES:
+    //            default:
+    //                if (Arrays.equals(option.getBasicStringListValue(), (String[]) defaultValue)) {
+    //                    return true;
+    //                }
+    //                break;
+    //            }
+    //        } catch (BuildException e) {
+    //            Activator.log(e);
+    //        }
+    //        return false;
+    //    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler#isEnumValueAppropriate(IConfiguration,IToolChain,IOption,String,String)

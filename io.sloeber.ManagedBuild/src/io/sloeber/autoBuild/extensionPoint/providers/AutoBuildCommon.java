@@ -34,22 +34,23 @@ import io.sloeber.autoBuild.Internal.BuildMacroProvider;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.ITool;
 
-public class ManagebBuildCommon {
+public class AutoBuildCommon {
     /**
      * Answers the argument with all whitespaces replaced with an escape sequence.
      */
     static public String escapeWhitespaces(String path) {
         // Escape the spaces in the path/filename if it has any
-        String[] segments = path.split("\\s");
+        String[] segments = path.split("\\s"); //$NON-NLS-1$
         if (segments.length > 1) {
             StringBuffer escapedPath = new StringBuffer();
             for (int index = 0; index < segments.length; ++index) {
                 escapedPath.append(segments[index]);
                 if (index + 1 < segments.length) {
-                    escapedPath.append("\\ ");
+                    escapedPath.append("\\ "); //$NON-NLS-1$
                 }
             }
             return escapedPath.toString().trim();
@@ -68,7 +69,7 @@ public class ManagebBuildCommon {
     }
 
     static public boolean containsSpecialCharacters(String path) {
-        return path.matches(".*(\\s|[\\{\\}\\(\\)\\$\\@%=;]).*");
+        return path.matches(".*(\\s|[\\{\\}\\(\\)\\$\\@%=;]).*"); //$NON-NLS-1$
     }
 
     /**
@@ -91,12 +92,12 @@ public class ManagebBuildCommon {
         // truly
         // unique name.
         if (extensionName.equals(extensionName.toUpperCase())) {
-            macroName.append(extensionName.toUpperCase()).append("_UPPER");
+            macroName.append(extensionName.toUpperCase()).append("_UPPER"); //$NON-NLS-1$
         } else {
             // lower case... no need for "UPPER_"
             macroName.append(extensionName.toUpperCase());
         }
-        macroName.append("_SRCS");
+        macroName.append("_SRCS"); //$NON-NLS-1$
         return macroName;
     }
 
@@ -121,7 +122,7 @@ public class ManagebBuildCommon {
             return;
         }
         if (!folder.getParent().exists()) {
-            createFolder(folder.getFolder(".."));
+            createFolder(folder.getFolder("..")); //$NON-NLS-1$
         }
         folder.create(true, true, null);
         folder.setDerived(true, null);
@@ -145,12 +146,12 @@ public class ManagebBuildCommon {
         // truly
         // unique name.
         if (extensionName.equals(extensionName.toUpperCase())) {
-            macroName.append(extensionName.toUpperCase()).append("_UPPER");
+            macroName.append(extensionName.toUpperCase()).append("_UPPER"); //$NON-NLS-1$
         } else {
             // lower case... no need for "UPPER_"
             macroName.append(extensionName.toUpperCase());
         }
-        macroName.append("_DEPS");
+        macroName.append("_DEPS"); //$NON-NLS-1$
         return macroName;
     }
 
@@ -177,7 +178,7 @@ public class ManagebBuildCommon {
      * @return resulting string
      */
     static public String escapedEcho(String string) {
-        String escapedString = string.replace("'", "'\"'\"'");
+        String escapedString = string.replace("'", "'\"'\"'"); //$NON-NLS-1$ //$NON-NLS-2$
         return ECHO + WHITESPACE + SINGLE_QUOTE + escapedString + SINGLE_QUOTE + NEWLINE;
     }
 
@@ -205,12 +206,12 @@ public class ManagebBuildCommon {
      * @return a String without the outermost quotes (if the input has them)
      */
     public static String ensureUnquoted(String path) {
-        boolean doubleQuoted = path.startsWith("\"") && path.endsWith("\"");
-        boolean singleQuoted = path.startsWith("'") && path.endsWith("'");
+        boolean doubleQuoted = path.startsWith("\"") && path.endsWith("\""); //$NON-NLS-1$ //$NON-NLS-2$
+        boolean singleQuoted = path.startsWith("'") && path.endsWith("'"); //$NON-NLS-1$ //$NON-NLS-2$
         return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
-    public static List<String> resolvePaths(List<IPath> toResolve, ICConfigurationDescription config) {
+    public static List<String> resolvePaths(List<IPath> toResolve, AutoBuildConfigurationData autoBuildConfData) {
         List<String> ret = new LinkedList<>();
         if (toResolve.isEmpty())
             return ret;
@@ -221,7 +222,7 @@ public class ManagebBuildCommon {
                 // output names
                 String resolved = resolveValueToMakefileFormat(curOutput, "", //$NON-NLS-1$
                         " ", //$NON-NLS-1$
-                        IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+                        IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
                 if ((resolved = resolved.trim()).length() > 0) {
                     ret.add(resolved);
                 } else {
@@ -363,13 +364,13 @@ public class ManagebBuildCommon {
         return escapeWhitespaces(ensureUnquoted(path));
     }
 
-    static public String getToolCommandLinePattern(ICConfigurationDescription confDesc, ITool tool) {
+    static public String getToolCommandLinePattern(AutoBuildConfigurationData autoBuildConfData, ITool tool) {
         String orgPattern = tool.getCommandLinePattern();
-        if (orgPattern.contains("$")) {
+        if (orgPattern.contains("$")) { //$NON-NLS-1$
             //if the pattern contains a space no use to try to expand it
             return orgPattern;
         }
-        return getBuildEnvironmentVariable(confDesc, orgPattern, orgPattern, false);
+        return getBuildEnvironmentVariable(autoBuildConfData, orgPattern, orgPattern, false);
 
     }
 
@@ -392,7 +393,31 @@ public class ManagebBuildCommon {
         return VARIABLE_PREFIX + variableName + VARIABLE_SUFFIX;
     }
 
-    static String resolve(String unresolved, ICConfigurationDescription icConfigurationDescription) {
+    public static String[] resolveStringListValues(String[] basicStringListValue,
+            AutoBuildConfigurationData autoConfData, boolean ignoreErrors) {
+        ICConfigurationDescription confDesc = autoConfData.getCdtConfigurationDescription();
+        DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
+                ICoreVariableContextInfo.CONTEXT_CONFIGURATION, confDesc);
+        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, EMPTY_STRING, EMPTY_STRING);
+        try {
+            return CdtVariableResolver.resolveStringListValues(basicStringListValue, varSubs, ignoreErrors);
+        } catch (CdtVariableException e) {
+            Activator.log(e);
+        }
+        return new String[0];
+    }
+
+    /**
+     * Mapper function for CdtVariableResolver.resolveToString
+     * Non existing environment variables are removed
+     * List type environment variables are seperated by an empty string
+     * The context for resolution is the configuration provided
+     * 
+     * @param unresolved
+     * @param icConfigurationDescription
+     * @return a string that holds the resolved unresolved input. Never returns null
+     */
+    static public String resolve(String unresolved, ICConfigurationDescription icConfigurationDescription) {
         DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
                 ICoreVariableContextInfo.CONTEXT_CONFIGURATION, icConfigurationDescription);
         IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, EMPTY_STRING, EMPTY_STRING);
@@ -413,6 +438,7 @@ public class ManagebBuildCommon {
     static public String resolveValue(String value, String nonexistentMacrosValue, String listDelimiter,
             int contextType, Object contextData) {
         //        FIXME needs implementation original is below
+        //solution =>replace with the method above
         return null;
         //        try {
         //            return ManagedBuildManager.getBuildMacroProvider().resolveValue(
@@ -423,26 +449,28 @@ public class ManagebBuildCommon {
     }
 
     static public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
-            int contextType, ICConfigurationDescription confdesc) {
+            int contextType, AutoBuildConfigurationData autoBuildConfData) {
         try {
+            ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
             return BuildMacroProvider.getDefault().resolveValueToMakefileFormat(value, nonexistentMacrosValue,
-                    listDelimiter, contextType, confdesc);
-        } catch (BuildMacroException e) {
+                    listDelimiter, contextType, confDesc);
+        } catch (@SuppressWarnings("unused") BuildMacroException e) {
             return value;
         }
 
     }
 
-    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
-            String envName, String defaultvalue, boolean expanded) {
-
+    static public String getBuildEnvironmentVariable(AutoBuildConfigurationData autoBuildConfData, String envName,
+            String defaultvalue, boolean expanded) {
+        ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         try {
-            return envManager.getVariable(envName, configurationDescription, expanded).getValue();
-        } catch (Exception e) {// ignore all errors and return the default value
+            return envManager.getVariable(envName, confDesc, expanded).getValue();
+        } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
         }
         return defaultvalue;
     }
+
 }
 
 ///**

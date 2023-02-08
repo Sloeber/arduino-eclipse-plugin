@@ -589,7 +589,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         if (generator == null) {
             generator = new MakefileGenerator();
         }
-        generator.initialize(kind, bInfo.getProject(), bInfo.getConfiguration(), bInfo.getBuilder());
+        AutoBuildConfigurationData autoBuildConf = AutoBuildConfigurationData.getFromConfig(bInfo.getConfiguration());
+        generator.initialize(kind, bInfo.getProject(), autoBuildConf, bInfo.getBuilder());
         buildStatus.setMakeGen(generator);
 
         MultiStatus result = performMakefileGeneration(bInfo, generator, buildStatus, monitor);

@@ -2,7 +2,7 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.Arrays;
@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -215,7 +216,8 @@ public class MakeRule {
     }
 
     //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
-    public StringBuffer getRule(IProject project, IFolder niceBuildFolder, ICConfigurationDescription confDesc) {
+    public StringBuffer getRule(IProject project, IFolder niceBuildFolder,
+            AutoBuildConfigurationData autoBuildConfData) {
 
         String cmd = myTool.getToolCommand();
         //        if(!cmd.contains(BLANK)) {
@@ -246,7 +248,7 @@ public class MakeRule {
         final String fileName = sourceLocation.getFullPath().removeFileExtension().lastSegment();
         final String inputExtension = sourceLocation.getFileExtension();
 
-        Set<String> flags = getBuildFlags(niceBuildFolder, confDesc, sourceLocation, outputLocation);
+        Set<String> flags = getBuildFlags(niceBuildFolder, autoBuildConfData, sourceLocation, outputLocation);
 
         boolean needExplicitRuleForFile = false;
         boolean needExplicitDependencyCommands = false;
@@ -258,9 +260,9 @@ public class MakeRule {
                 + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
         if (needExplicitRuleForFile || needExplicitDependencyCommands) {
             buildCmd = expandCommandLinePattern(cmd, flags, outflag, OUT_MACRO + otherPrimaryOutputs, niceNameList,
-                    getToolCommandLinePattern(confDesc, myTool));
+                    getToolCommandLinePattern(autoBuildConfData, myTool));
         } else {
-            buildCmd = expandCommandLinePattern(confDesc, inputExtension, flags, outflag,
+            buildCmd = expandCommandLinePattern(autoBuildConfData, inputExtension, flags, outflag,
                     OUT_MACRO + otherPrimaryOutputs, niceNameList, sourceLocation, outputLocation);
         }
         // resolve any remaining macros in the command after it has been
@@ -268,12 +270,12 @@ public class MakeRule {
         String resolvedCommand;
         if (!needExplicitRuleForFile) {
             resolvedCommand = resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
-                    IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
+                    IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         } else {
             // if we need an explicit rule then don't use any builder
             // variables, resolve everything to explicit strings
             resolvedCommand = resolveValue(buildCmd, EMPTY_STRING, WHITESPACE,
-                    IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
+                    IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         }
         if (resolvedCommand != null && !resolvedCommand.isBlank())
             buildCmd = resolvedCommand.trim();
@@ -294,9 +296,9 @@ public class MakeRule {
             //            String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
             //                    "sloeber.sketch.postbuild", new String(), true); //$NON-NLS-1$
             String sketchPrebuild = resolveValueToMakefileFormat("sloeber.sketch.prebuild", EMPTY_STRING, WHITESPACE,
-                    IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
+                    IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
             String sketchPostBuild = resolveValueToMakefileFormat("sloeber.sketch.postbuild", EMPTY_STRING, WHITESPACE,
-                    IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
+                    IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
             if (!sketchPrebuild.isEmpty()) {
                 buffer.append(TAB).append(sketchPrebuild);
             }
@@ -316,14 +318,14 @@ public class MakeRule {
         return buffer;
     }
 
-    private Set<String> getBuildFlags(IFolder buildFolder, ICConfigurationDescription confDesc, IFile sourceFile,
-            IFile outputFile) {
+    private Set<String> getBuildFlags(IFolder buildFolder, AutoBuildConfigurationData autoBuildConfData,
+            IFile sourceFile, IFile outputFile) {
         Set<String> flags = new LinkedHashSet<>();
         // Get the tool command line options
         try {
 
             //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
-            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile, outputFile)));
+            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, sourceFile, outputFile)));
 
             //TOFIX add dependency flags if needed
             List<IInputType> inputTypes = myTool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
@@ -350,7 +352,7 @@ public class MakeRule {
         return flags;
     }
 
-    private String expandCommandLinePattern(ICConfigurationDescription confDesc, String sourceExtension,
+    private String expandCommandLinePattern(AutoBuildConfigurationData autoBuildConfData, String sourceExtension,
             Set<String> flags, String outputFlag, String outputName, Set<String> inputResources, IFile inputLocation,
             IFile outputLocation) {
         String cmd = myTool.getToolCommand();
@@ -359,15 +361,15 @@ public class MakeRule {
         if ((inputLocation != null && inputLocation.toString().indexOf(WHITESPACE) != -1)
                 || (outputLocation != null && outputLocation.toString().indexOf(WHITESPACE) != -1)) {
             resolvedCommand = resolveValue(cmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION,
-                    confDesc);
+                    autoBuildConfData);
         } else {
             resolvedCommand = resolveValueToMakefileFormat(cmd, EMPTY_STRING, WHITESPACE,
-                    IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
+                    IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         }
         if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
             cmd = resolvedCommand;
         return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
-                getToolCommandLinePattern(confDesc, myTool));
+                getToolCommandLinePattern(autoBuildConfData, myTool));
     }
 
     private String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag, String outputName,

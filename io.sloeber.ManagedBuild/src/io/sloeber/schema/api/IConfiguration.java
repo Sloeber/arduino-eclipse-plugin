@@ -21,6 +21,9 @@ import java.util.Map;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 
 /**
  * A tool-integrator defines default configurations as children of the project
@@ -251,6 +254,9 @@ public interface IConfiguration extends ISchemaObject {
     IFolder getBuildFolder(ICConfigurationDescription cfg);
 
     Map<String, String> getDefaultBuildProperties();
+
+    public Map<IResource, Map<String, String>> getDefaultProjectOptions(
+            AutoBuildConfigurationData autoBuildConfigurationData);
 
     //    boolean supportsBuild(boolean managed);
 

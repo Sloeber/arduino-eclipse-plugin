@@ -3,6 +3,7 @@ package io.sloeber.schema.internal.enablement;
 import org.eclipse.core.expressions.EvaluationResult;
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.IEvaluationContext;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
@@ -18,6 +19,8 @@ public class CheckOptionExpression extends Expression {
     private static final String KEY_IS_REG_EX = "isRegex"; //$NON-NLS-1$
     private static final String KEY_OTHER_HOLDER_ID = "OtherHolderId"; //$NON-NLS-1$
     private static final String KEY_OTHER_OPTION_ID = "otherOptionId"; //$NON-NLS-1$
+    public static final String KEY_RESOURCE = "resource"; //$NON-NLS-1$
+
     private String myOptionID;
     private String myHolderID;
     private String myOtherOptionID;
@@ -44,11 +47,13 @@ public class CheckOptionExpression extends Expression {
 
     @Override
     public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
-        IOption option = mySchemaObject.getOptions().getOptionById(myOptionID);
-        if ("true".equals(myExpectedValue) && option != null) {
+        AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) context.getDefaultVariable();
+        IResource resource = (IResource) context.getVariable(KEY_RESOURCE);
+        String selectedOption = autoData.getSelectedOptions(resource).get(myOptionID);
+        if ("true".equals(myExpectedValue) && selectedOption != null) { //$NON-NLS-1$
             return EvaluationResult.TRUE;
         }
-        if ("false".equals(myExpectedValue) && option == null) {
+        if ("false".equals(myExpectedValue) && selectedOption == null) { //$NON-NLS-1$
             return EvaluationResult.TRUE;
         }
         return EvaluationResult.FALSE;

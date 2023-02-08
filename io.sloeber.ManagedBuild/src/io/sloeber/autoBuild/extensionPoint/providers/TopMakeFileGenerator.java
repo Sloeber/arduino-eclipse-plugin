@@ -2,19 +2,19 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -24,18 +24,18 @@ public class TopMakeFileGenerator {
     public TopMakeFileGenerator() {
     }
 
-    public static void generateMakefile(IFolder buildFolder, ICConfigurationDescription cfg, IConfiguration config,
+    public static void generateMakefile(IFolder buildFolder, AutoBuildConfigurationData autoBuildConfData,
             Collection<IFolder> myFoldersToBuild, MakeRules myMakeRules, Set<String> myDependencyMacros)
             throws CoreException {
-        IProject project = cfg.getProjectDescription().getProject();
+        IProject project = autoBuildConfData.getProject();
 
         StringBuffer buffer = new StringBuffer();
         buffer.append(addDefaultHeader());
 
         buffer.append(getMakeIncludeSubDirs(myFoldersToBuild));
-        buffer.append(getMakeIncludeDependencies(config, cfg));
-        buffer.append(getMakeRMCommand(config, cfg, myDependencyMacros));
-        buffer.append(getMakeTopTargets(config, buildFolder, myMakeRules, cfg));// this is the include dependencies
+        buffer.append(getMakeIncludeDependencies(autoBuildConfData));
+        buffer.append(getMakeRMCommand(autoBuildConfData, myDependencyMacros));
+        buffer.append(getMakeTopTargets(buildFolder, myMakeRules, autoBuildConfData));// this is the include dependencies
         // TOFIX the content from the append below should come from a registered method
         buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n" //$NON-NLS-1$ //$NON-NLS-2$
                 + "\t@echo trying to burn bootloader ${bootloader.tool}\n" //$NON-NLS-1$
@@ -50,7 +50,7 @@ public class TopMakeFileGenerator {
                 + "\t@echo trying to upload with programmer ${program.tool} without build\n" //$NON-NLS-1$
                 + "\t${tools.${program.tool}.program.pattern}\n\n"); //$NON-NLS-1$
         buffer.append(getMakeMacros(buildFolder, myMakeRules));
-        buffer.append(getMakeRules(project, buildFolder, myMakeRules, cfg));
+        buffer.append(getMakeRules(project, buildFolder, myMakeRules, autoBuildConfData));
         buffer.append(getMakeFinalTargets("", "")); //$NON-NLS-1$ //$NON-NLS-2$
 
         IFile fileHandle = buildFolder.getFile(MAKEFILE_NAME);
@@ -69,8 +69,9 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private static StringBuffer getMakeRMCommand(IConfiguration config, ICConfigurationDescription cfg,
+    private static StringBuffer getMakeRMCommand(AutoBuildConfigurationData autoBuildConfData,
             Set<String> myDependencyMacros) {
+        IConfiguration config = autoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
         buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE); //$NON-NLS-1$
         buffer.append(NEWLINE);
@@ -78,7 +79,7 @@ public class TopMakeFileGenerator {
         buffer.append("RM := "); //$NON-NLS-1$
         // support macros in the clean command
         String cleanCommand = resolveValueToMakefileFormat(config.getCleanCommand(), EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         buffer.append(cleanCommand).append(NEWLINE);
         buffer.append(NEWLINE);
 
@@ -96,8 +97,8 @@ public class TopMakeFileGenerator {
         return (buffer.append(NEWLINE));
     }
 
-    private static String getPreBuildStep(IConfiguration config, ICConfigurationDescription cfg) {
-        String prebuildStep = config.getPrebuildStep();
+    private static String getPreBuildStep(AutoBuildConfigurationData autoBuildConfData) {
+        String prebuildStep = autoBuildConfData.getConfiguration().getPrebuildStep();
         // JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt
         // prebuild command if needed
         // ICConfigurationDescription confDesc =
@@ -107,7 +108,7 @@ public class TopMakeFileGenerator {
         // "sloeber.prebuild",
         // new String(), false);
         String sketchPrebuild = resolveValueToMakefileFormat("sloeber.prebuild", EMPTY_STRING, WHITESPACE, //$NON-NLS-1$
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
                 prebuildStep = prebuildStep + "\n\t" + sketchPrebuild; //$NON-NLS-1$
@@ -118,17 +119,17 @@ public class TopMakeFileGenerator {
         // end off JABA issue927
         // try to resolve the build macros in the prebuild step
         prebuildStep = resolveValueToMakefileFormat(prebuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         return prebuildStep.trim();
     }
 
-    private static StringBuffer getMakeIncludeDependencies(IConfiguration config, ICConfigurationDescription cfg) {
+    private static StringBuffer getMakeIncludeDependencies(AutoBuildConfigurationData autoBuildConfData) {
 
         // JABA add the arduino upload/program targets
         StringBuffer buffer = new StringBuffer();
 
         String defaultTarget = "all:"; //$NON-NLS-1$
-        String prebuildStep = getPreBuildStep(config, cfg);
+        String prebuildStep = getPreBuildStep(autoBuildConfData);
         if (prebuildStep.length() > 0) {
             // Add the comment for the "All" target
             buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
@@ -149,9 +150,9 @@ public class TopMakeFileGenerator {
         return buffer;
     }
 
-    private static StringBuffer getMakeTopTargets(IConfiguration config, IFolder buildFolder, MakeRules myMakeRules,
-            ICConfigurationDescription cfg) {
-
+    private static StringBuffer getMakeTopTargets(IFolder buildFolder, MakeRules myMakeRules,
+            AutoBuildConfigurationData autoBuildConfData) {
+        IConfiguration config = autoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
 
         Set<ITool> targetTools = config.getToolChain().getTargetTools();
@@ -172,7 +173,7 @@ public class TopMakeFileGenerator {
         }
         buffer.append(NEWLINE).append(NEWLINE);
 
-        String prebuildStep = getPreBuildStep(config, cfg);
+        String prebuildStep = getPreBuildStep(autoBuildConfData);
         if (prebuildStep.length() > 0) {
 
             String preannouncebuildStep = config.getPreannouncebuildStep();
@@ -186,7 +187,7 @@ public class TopMakeFileGenerator {
 
         String postbuildStep = config.getPostbuildStep();
         postbuildStep = resolveValueToMakefileFormat(postbuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, cfg);
+                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
         postbuildStep = postbuildStep.trim();
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {
@@ -244,14 +245,14 @@ public class TopMakeFileGenerator {
     }
 
     private static StringBuffer getMakeRules(IProject project, IFolder topBuildDir, MakeRules myMakeRules,
-            ICConfigurationDescription cfg) {
+            AutoBuildConfigurationData autoBuildConfData) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules.getMakeRules()) {
             if (makeRule.getSequenceGroupID() != 0) {
-                buffer.append(makeRule.getRule(project, topBuildDir, cfg));
+                buffer.append(makeRule.getRule(project, topBuildDir, autoBuildConfData));
             }
         }
         return buffer;

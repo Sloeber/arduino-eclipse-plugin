@@ -20,14 +20,11 @@ import static io.sloeber.autoBuild.integration.Const.EQUAL;
 import static io.sloeber.autoBuild.integration.Const.NEWLINE;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
@@ -96,12 +93,6 @@ public class InputType extends SchemaObject implements IInputType {
         modelLanguageID = getAttributes(LANGUAGE_ID);
         modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
 
-        //        myOptionEnablementExpression.clear();
-        //        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        //        for (IConfigurationElement curEnablement : enablements) {
-        //            myOptionEnablementExpression.add(new OptionEnablementExpression(curEnablement));
-        //        }
-
         try {
             resolveFields();
         } catch (Exception e) {
@@ -109,16 +100,7 @@ public class InputType extends SchemaObject implements IInputType {
             e.printStackTrace();
         }
 
-        // Hook me up to the Managed Build Manager
-        //       ManagedBuildManager.addExtensionInputType(this);
-
     }
-
-    // 
-
-    /*
-     * P A R E N T A N D C H I L D H A N D L I N G
-     */
 
     /*
      * (non-Javadoc)
@@ -170,54 +152,6 @@ public class InputType extends SchemaObject implements IInputType {
         return dependencyExtensions.toArray(new String[dependencyExtensions.size()]);
     }
 
-    @Override
-    public String[] getDependencyExtensions(ITool tool) {
-        // Use content type if specified and registered with Eclipse
-        IContentType type = getDependencyContentType();
-        if (type != null) {
-            String[] exts = ((Tool) tool).getContentTypeFileSpecs(type);
-            // TODO: This is a temporary hack until we decide how to specify the langauge (C
-            // vs. C++)
-            // of a .h file. If the content type is the CDT-defined C/C++ content type, then
-            // add "h" to the list if it is not already there.
-            if (type.getId().compareTo("org.eclipse.cdt.core.cxxHeader") == 0) { //$NON-NLS-1$
-                boolean h_found = false;
-                for (String ext : exts) {
-                    if (ext.compareTo("h") == 0) { //$NON-NLS-1$
-                        h_found = true;
-                        break;
-                    }
-                }
-                if (!h_found) {
-                    String[] cppexts = new String[exts.length + 1];
-                    int i = 0;
-                    for (; i < exts.length; i++) {
-                        cppexts[i] = exts[i];
-                    }
-                    cppexts[i] = "h"; //$NON-NLS-1$
-                    return cppexts;
-                }
-            }
-            return exts;
-        }
-        return getDependencyExtensionsAttribute();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#isDependencyExtension()
-     */
-    @Override
-    public boolean isDependencyExtension(ITool tool, String ext) {
-        String[] exts = getDependencyExtensions(tool);
-        for (String depExt : exts) {
-            if (ext.equals(depExt))
-                return true;
-        }
-        return false;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -252,46 +186,7 @@ public class InputType extends SchemaObject implements IInputType {
         return inputExtensions;
     }
 
-    @Override
-    public List<String> getSourceExtensions(ITool tool) {
-        return getSourceExtensions(tool, null);//((Tool) tool).getProject());
-    }
-
-    public List<String> getSourceExtensions(ITool tool, IProject project) {
-        // Use content type if specified and registered with Eclipse
-        List<IContentType> types = getSourceContentTypes();
-        if (!types.isEmpty()) {
-            List<String> list = new ArrayList<>();
-            for (IContentType type : types) {
-                list.addAll(Arrays.asList(((Tool) tool).getContentTypeFileSpecs(type, project)));
-            }
-            return list;
-        }
-        return getSourceExtensionsAttribute();
-    }
-
-    @Override
-    public String getLanguageName(ITool tool) {
-        //        IResourceInfo rcInfo = getRcInfo(tool);
-        String langName = null;
-        //        if (langName == null || isExtensionInputType) {
-        //            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
-        //            if (calc != null)
-        //                langName = calc.getLanguageName(rcInfo, tool, this);
-        //        }
-
-        if (langName == null) {
-            langName = getName();
-            if (langName == null) {
-                langName = tool.getName();
-                if (langName == null) {
-                    langName = getId();
-                }
-            }
-        }
-
-        return langName;
-    }
+    //  
 
     @Override
     public String getDiscoveryProfileId(ITool tool) {
@@ -351,12 +246,6 @@ public class InputType extends SchemaObject implements IInputType {
         return false;
     }
 
-    @Override
-    public String[] getSourceContentTypeIds() {
-
-        return null;
-    }
-
     private void resolveFields() throws Exception {
         if (modelSourceContentType[SUPER] != null) {
             IContentTypeManager manager = Platform.getContentTypeManager();
@@ -386,9 +275,6 @@ public class InputType extends SchemaObject implements IInputType {
                 dependencyExtensions.add(tokenizer.nextToken());
             }
         }
-
-        //      booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpression);
-
     }
 
     public StringBuffer dump(int leadingChars) {
@@ -717,3 +603,99 @@ public class InputType extends SchemaObject implements IInputType {
 //        }
 //        return profileId;
 //    }
+
+///*
+//* (non-Javadoc)
+//* 
+//* @see org.eclipse.cdt.core.build.managed.IInputType#isDependencyExtension()
+//*/
+//@Override
+//public boolean isDependencyExtension(ITool tool, String ext) {
+// String[] exts = getDependencyExtensions(tool);
+// for (String depExt : exts) {
+//     if (ext.equals(depExt))
+//         return true;
+// }
+// return false;
+//}
+
+//@Override
+//public String[] getDependencyExtensions(ITool tool) {
+//  // Use content type if specified and registered with Eclipse
+//  IContentType type = getDependencyContentType();
+//  if (type != null) {
+//      String[] exts = ((Tool) tool).getContentTypeFileSpecs(type);
+//      // TODO: This is a temporary hack until we decide how to specify the langauge (C
+//      // vs. C++)
+//      // of a .h file. If the content type is the CDT-defined C/C++ content type, then
+//      // add "h" to the list if it is not already there.
+//      if (type.getId().compareTo("org.eclipse.cdt.core.cxxHeader") == 0) { //$NON-NLS-1$
+//          boolean h_found = false;
+//          for (String ext : exts) {
+//              if (ext.compareTo("h") == 0) { //$NON-NLS-1$
+//                  h_found = true;
+//                  break;
+//              }
+//          }
+//          if (!h_found) {
+//              String[] cppexts = new String[exts.length + 1];
+//              int i = 0;
+//              for (; i < exts.length; i++) {
+//                  cppexts[i] = exts[i];
+//              }
+//              cppexts[i] = "h"; //$NON-NLS-1$
+//              return cppexts;
+//          }
+//      }
+//      return exts;
+//  }
+//  return getDependencyExtensionsAttribute();
+//}
+//
+//@Override
+//public String getLanguageName(ITool tool) {
+//  //        IResourceInfo rcInfo = getRcInfo(tool);
+//  String langName = null;
+//  //        if (langName == null || isExtensionInputType) {
+//  //            ILanguageInfoCalculator calc = getLanguageInfoCalculator();
+//  //            if (calc != null)
+//  //                langName = calc.getLanguageName(rcInfo, tool, this);
+//  //        }
+//
+//  if (langName == null) {
+//      langName = getName();
+//      if (langName == null) {
+//          langName = tool.getName();
+//          if (langName == null) {
+//              langName = getId();
+//          }
+//      }
+//  }
+//
+//  return langName;
+//}
+
+//@Override
+//public List<String> getSourceExtensions(ITool tool) {
+//  return getSourceExtensions(tool, null);//((Tool) tool).getProject());
+//}
+
+//public List<String> getSourceExtensions(ITool tool, IProject project) {
+//// Use content type if specified and registered with Eclipse
+//List<IContentType> types = getSourceContentTypes();
+//if (!types.isEmpty()) {
+//  List<String> list = new ArrayList<>();
+//  for (IContentType type : types) {
+//      list.addAll(Arrays.asList(((Tool) tool).getContentTypeFileSpecs(type, project)));
+//  }
+//  return list;
+//}
+//return getSourceExtensionsAttribute();
+//}
+
+//
+//@Override
+//public String[] getSourceContentTypeIds() {
+//
+//  return null;
+//}

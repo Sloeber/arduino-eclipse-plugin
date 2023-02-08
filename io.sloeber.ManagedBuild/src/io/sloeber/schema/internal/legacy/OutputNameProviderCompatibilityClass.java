@@ -1,5 +1,7 @@
 package io.sloeber.schema.internal.legacy;
 
+import java.util.Map;
+
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 import io.sloeber.autoBuild.Internal.BuildMacroProvider;
@@ -7,6 +9,7 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
@@ -25,6 +28,7 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
     @Override
     public String getOutputFileName(IFile inputFile, ICConfigurationDescription confDesc, IInputType inputType,
             IOutputType outputType) {
+        AutoBuildConfigurationData autoData = AutoBuildConfigurationData.getFromConfig(confDesc);
         ITool tool = inputType.getParent();
 
         //  Determine a default name from the input file name
@@ -36,46 +40,27 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
         //  If we are building a shared library, determine if the user has specified a name using the
         //  soname option
         boolean isSO = false;
-        //TOFIX JABA the options here ar the selected options
-        IOptions options = new Options();
+        Map<String, String> options = autoData.getSelectedOptions(inputFile);
         String soName = ""; //$NON-NLS-1$
         if (tool.hasAncestor("cdt.managedbuild.tool.gnu.c.linker")) { //$NON-NLS-1$
-            IOption optShared = options.getOptionById("gnu.c.link.option.shared"); //$NON-NLS-1$
-            if (optShared != null) {
+            String optSharedValue = options.get("gnu.c.link.option.shared"); //$NON-NLS-1$
+            if (optSharedValue != null) {
                 try {
-                    isSO = optShared.getBooleanValue();
+                    isSO = Boolean.getBoolean(optSharedValue);
                 } catch (Exception e) {
                     Activator.log(e);
                 }
             }
             if (isSO) {
-                IOption optSOName = options.getOptionById("gnu.c.link.option.soname"); //$NON-NLS-1$
-                if (optSOName != null) {
-                    try {
-                        soName = optSOName.getStringValue();
-                    } catch (Exception e) {
-                        Activator.log(e);
-                    }
-                }
+                soName = options.get("gnu.c.link.option.soname"); //$NON-NLS-1$
             }
         } else if (tool.hasAncestor("cdt.managedbuild.tool.gnu.cpp.linker")) { //$NON-NLS-1$
-            IOption optShared = options.getOptionById("gnu.cpp.link.option.shared"); //$NON-NLS-1$
-            if (optShared != null) {
-                try {
-                    isSO = optShared.getBooleanValue();
-                } catch (Exception e) {
-                    Activator.log(e);
-                }
+            String optSharedValue = options.get("gnu.cpp.link.option.shared"); //$NON-NLS-1$
+            if (optSharedValue != null) {
+                isSO = Boolean.getBoolean(optSharedValue);
             }
             if (isSO) {
-                IOption optSOName = options.getOptionById("gnu.cpp.link.option.soname"); //$NON-NLS-1$
-                if (optSOName != null) {
-                    try {
-                        soName = optSOName.getStringValue();
-                    } catch (Exception e) {
-                        Activator.log(e);
-                    }
-                }
+                soName = options.get("gnu.cpp.link.option.soname"); //$NON-NLS-1$
             }
         }
 
@@ -92,35 +77,30 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
             // variables such as $@. Hence
             // we use the next best thing, i.e. configuration context.
 
-            // figure out the configuration we're using
-            if (confDesc != null) {
+            boolean explicitRuleRequired = false;
 
-                boolean explicitRuleRequired = false;
+            // if any input files have spaces in the name, then we must
+            // not use builder variables
+            if (inputFile.toString().indexOf(" ") != -1) //$NON-NLS-1$
+                explicitRuleRequired = true;
 
-                // if any input files have spaces in the name, then we must
-                // not use builder variables
-                if (inputFile.toString().indexOf(" ") != -1) //$NON-NLS-1$
-                    explicitRuleRequired = true;
+            try {
 
-                try {
-
-                    if (explicitRuleRequired) {
-                        outputPrefix = BuildMacroProvider.getDefault().resolveValue(outputPrefix, "", //$NON-NLS-1$
-                                " ", //$NON-NLS-1$
-                                IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
-                    }
-
-                    else {
-                        outputPrefix = BuildMacroProvider.getDefault().resolveValueToMakefileFormat(outputPrefix, "", //$NON-NLS-1$
-                                " ", //$NON-NLS-1$
-                                IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
-                    }
+                if (explicitRuleRequired) {
+                    outputPrefix = BuildMacroProvider.getDefault().resolveValue(outputPrefix, "", //$NON-NLS-1$
+                            " ", //$NON-NLS-1$
+                            IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
                 }
 
-                catch (BuildMacroException e) {
-                    Activator.log(e);
+                else {
+                    outputPrefix = BuildMacroProvider.getDefault().resolveValueToMakefileFormat(outputPrefix, "", //$NON-NLS-1$
+                            " ", //$NON-NLS-1$
+                            IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
                 }
+            }
 
+            catch (BuildMacroException e) {
+                Activator.log(e);
             }
 
             if (outputPrefix != null && outputPrefix.length() > 0) {

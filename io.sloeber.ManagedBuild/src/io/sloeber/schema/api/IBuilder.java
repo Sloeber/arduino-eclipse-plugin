@@ -181,4 +181,6 @@ public interface IBuilder extends ISchemaObject {
 
     boolean isStopOnError();
 
+    public String getBuilderVariablePattern();
+
 }

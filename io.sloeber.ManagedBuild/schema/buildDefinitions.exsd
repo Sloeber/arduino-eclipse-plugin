@@ -204,13 +204,6 @@ Additional special types exist to flag options of special relevance to the build
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="value" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the value assigned to the option by the end user or in a default configuration.  For boolean values, specify truth using the string &apos;true&apos;. All other strings will be treated as false.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="defaultValue" type="string">
             <annotation>
                <documentation>
@@ -1348,17 +1341,27 @@ The path is relative to the plug-in directory which defines .buildDefinitions.
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="isDefault" type="boolean">
-            <annotation>
-               <documentation>
-                  Flags this enumerated value as the default to apply to the option if the user has not changed the setting.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="command" type="string">
             <annotation>
                <documentation>
                   The command that the enumerated value translates to on the command line.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Description of the option to be presented to the user
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="isDefault" type="boolean">
+            <annotation>
+               <documentation>
+                  Flags this enumerated value as the default to apply to the option if the user has not changed the setting.
                </documentation>
             </annotation>
          </attribute>
@@ -1466,7 +1469,7 @@ If no order is defined a default order is assumed, see &quot;org.eclipse.cdt.man
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="selectLeafOnly" type="boolean">
+         <attribute name="selectLeafOnly" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
                   Determines whether this tree allows selecting categories as well as leaf nodes, or leaf nodes only.

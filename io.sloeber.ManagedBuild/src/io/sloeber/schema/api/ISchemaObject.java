@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import org.eclipse.core.resources.IResource;
+
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 
 /**
@@ -36,7 +38,7 @@ public interface ISchemaObject {
 
     boolean hasAncestor(String id);
 
-    boolean isEnabled(AutoBuildConfigurationData autoBuildConfData);
+    boolean isEnabled(IResource resource, AutoBuildConfigurationData autoBuildConfData);
 
     IOptions getOptions();
 

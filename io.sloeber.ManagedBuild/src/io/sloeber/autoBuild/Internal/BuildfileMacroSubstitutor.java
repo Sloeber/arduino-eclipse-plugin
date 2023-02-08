@@ -137,18 +137,15 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
      */
     @Override
     protected ResolvedMacro resolveMacro(ICdtVariable macro) throws CdtVariableException {
-        ResolvedMacro resolved = null;
 
         if (fConfiguration != null && fBuilder != null && fVarMngr.isEnvironmentVariable(macro, fCfgDes)
                 && (!CdtVariableResolver.isStringListVariable(macro.getValueType())
                         || size(macro.getStringListValue()) < 2)) {
             String ref = getMacroReference(macro);
             if (ref != null)
-                resolved = new ResolvedMacro(macro.getName(), ref);
+                return new ResolvedMacro(macro.getName(), ref);
 
         }
-        if (resolved != null)
-            return resolved;
         return super.resolveMacro(macro);
     }
 
@@ -175,12 +172,12 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
         String ref = null;
         IReservedMacroNameSupplier supplier = getReservedMacroNameSupplier();
         macroName = EnvVarOperationProcessor.normalizeName(macroName);
-        //        if (supplier == null || !supplier.isReservedName(macroName, fConfiguration)) {
-        //            String pattern = fBuilder.getBuilderVariablePattern();
-        //            if (pattern != null && pattern.indexOf(PATTERN_MACRO_NAME) != -1) {
-        //                ref = pattern.replaceAll(PATTERN_MACRO_NAME, macroName);
-        //            }
-        //        }
+        if (supplier == null || !supplier.isReservedName(macroName, fConfiguration)) {
+            String pattern = fBuilder.getBuilderVariablePattern();
+            if (pattern != null && pattern.indexOf(PATTERN_MACRO_NAME) != -1) {
+                ref = pattern.replaceAll(PATTERN_MACRO_NAME, macroName);
+            }
+        }
         return ref;
     }
 

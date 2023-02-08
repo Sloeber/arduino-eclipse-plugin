@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.MultiStatus;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 
 /**
@@ -69,7 +70,8 @@ public interface IMakefileGenerator {
      * This method initializes the makefile generator
      */
 
-    public void initialize(int buildKind, IProject iProject, ICConfigurationDescription cfg, IBuilder builder);
+    public void initialize(int buildKind, IProject iProject, AutoBuildConfigurationData autoBuildConfData,
+            IBuilder builder);
 
     public void generateDependencies(IProgressMonitor monitor) throws CoreException;
 
@@ -79,14 +81,10 @@ public interface IMakefileGenerator {
      * contains a set of resource deltas that will be used to determine which
      * subdirectories need a new makefile and dependency list (if any).
      */
-    public MultiStatus generateMakefiles(IResourceDelta delta,IProgressMonitor monitor) throws CoreException;
+    public MultiStatus generateMakefiles(IResourceDelta delta, IProgressMonitor monitor) throws CoreException;
 
-
-
-    public void regenerateDependencies(boolean force,IProgressMonitor monitor) throws CoreException;
+    public void regenerateDependencies(boolean force, IProgressMonitor monitor) throws CoreException;
 
     public MultiStatus regenerateMakefiles(IProgressMonitor monitor) throws CoreException;
-
-
 
 }

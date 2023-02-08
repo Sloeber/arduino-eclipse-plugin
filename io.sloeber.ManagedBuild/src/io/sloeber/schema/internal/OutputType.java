@@ -31,19 +31,22 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 public class OutputType extends SchemaObject implements IOutputType {
+    private static final String MAKE_FILE_WITHOUT_EXTENSION_MACRO = PROCENT;
+    private static final String MAKE_FILE_WITH_EXTENSION_MACRO = AT_SYMBOL;
 
     private String[] modelOutputContentType;//Not yet implemented
     private String[] modelOption;
     private String[] modelOutputPrefix;
     private String[] modelOutputExtension;
     private String[] modelOutputName;
-    private String[] modelNamePattern; //Not yet implemented
+    private String[] modelNamePattern;
     private String[] modelNameProvider;
     private String[] modelBuildVariable;
 
     private IOutputNameProvider nameProvider = null;
     private String buildVariable;
     private IContentType outputContentType;
+    private String myNamePattern;
 
     //    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
     //
@@ -105,6 +108,11 @@ public class OutputType extends SchemaObject implements IOutputType {
             outputContentType = manager.getContentType(modelOutputContentType[SUPER]);
         }
 
+        //Make sure the name Patterns is valid
+        myNamePattern = modelNamePattern[SUPER];
+        if (myNamePattern.toString().isBlank()) {
+            myNamePattern = MAKE_FILE_WITHOUT_EXTENSION_MACRO;
+        }
     }
 
     /* (non-Javadoc)
@@ -143,7 +151,7 @@ public class OutputType extends SchemaObject implements IOutputType {
 
     @Override
     public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoBuildConfData, IInputType inputType) {
-        if (!isEnabled(autoBuildConfData)) {
+        if (!isEnabled(inputFile, autoBuildConfData)) {
             return null;
         }
         IFolder buildFolder = autoBuildConfData.getBuildFolder();
@@ -161,8 +169,13 @@ public class OutputType extends SchemaObject implements IOutputType {
         }
 
         if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isBlank()) {
+            String fileNameWithoutExtension = inputFile.getFullPath().removeFileExtension().lastSegment();
+            String fileNameWithExtension = inputFile.getName();
+            //  Replace the % with the file name
+            String outName = myNamePattern.replace(MAKE_FILE_WITHOUT_EXTENSION_MACRO, fileNameWithoutExtension);
+            outName = outName.replace(MAKE_FILE_WITH_EXTENSION_MACRO, fileNameWithExtension);
             return getOutputFile(buildFolder, inputFile,
-                    modelOutputPrefix[SUPER] + inputFile.getName() + DOT + modelOutputExtension[SUPER]);
+                    modelOutputPrefix[SUPER] + outName + DOT + modelOutputExtension[SUPER]);
         }
         return null;
     }

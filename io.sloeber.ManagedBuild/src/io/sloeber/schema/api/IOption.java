@@ -18,12 +18,13 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.OptionStringValue;
-import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
-import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 
 //import org.eclipse.cdt.managedbuilder.macros.IOptionContextData;
 
@@ -168,7 +169,6 @@ public interface IOption extends ISchemaObject {
      */
     public static final String TYPE_TREE = "tree"; //$NON-NLS-1$
 
-    public static final String VALUE = "value"; //$NON-NLS-1$
     public static final String VALUE_TYPE = "valueType"; //$NON-NLS-1$
     public static final String VALUE_HANDLER = "valueHandler"; //$NON-NLS-1$
     public static final String VALUE_HANDLER_EXTRA_ARGUMENT = "valueHandlerExtraArgument"; //$NON-NLS-1$
@@ -211,19 +211,19 @@ public interface IOption extends ISchemaObject {
      */
     //public IOptionContextData getOptionContextData(IHoldsOptions holder);
 
-    /**
-     * @return If this option is defined as an enumeration, this function returns
-     *         the list of possible values for that enum.
-     *
-     *         If this option is not defined as an enumeration, it returns
-     *         <code>null</code>.
-     */
-    public String[] getApplicableValues();
+    //    /**
+    //     * @return If this option is defined as an enumeration, this function returns
+    //     *         the list of possible values for that enum.
+    //     *
+    //     *         If this option is not defined as an enumeration, it returns
+    //     *         <code>null</code>.
+    //     */
+    //    public String[] getApplicableValues();
 
-    /**
-     * @return the value for a boolean option.
-     */
-    public boolean getBooleanValue() throws BuildException;
+    //    /**
+    //     * @return the value for a boolean option.
+    //     */
+    //    public boolean getBooleanValue() throws BuildException;
 
     /**
      * @return the setting of the browseType attribute
@@ -235,12 +235,13 @@ public interface IOption extends ISchemaObject {
      */
     public int getResourceFilter();
 
-    /**
-     * @return an instance of the class that calculates whether the option is
-     *         visible,
-     *         enabled, and used in command line generation
-     */
-    public IOptionApplicability getApplicabilityCalculator();
+    //    /**
+    //     * @return an instance of the class that calculates whether the option is
+    //     *         visible,
+    //     *         enabled, and used in command line generation
+    //     */
+    //    public IOptionApplicability getApplicabilityCalculator();
+    //except for... none of the classes who implement this actually do any of that.
 
     /**
      * @return an array of strings containing the built-in values
@@ -261,19 +262,21 @@ public interface IOption extends ISchemaObject {
      */
     public String getCommand();
 
-    /**
-     * @return an instance of the class that overrides the default command
-     *         generation for the option
-     * @since 8.0
-     */
-    public IOptionCommandGenerator getCommandGenerator();
+    public String[] getCommandLineContribution(String value, AutoBuildConfigurationData autoConfData);
 
-    /**
-     * @return {@code String} containing the actual command line
-     *         option associated with a Boolean option when the value is
-     *         {@code false}
-     */
-    public String getCommandFalse();
+    //    /**
+    //     * @return an instance of the class that overrides the default command
+    //     *         generation for the option
+    //     * @since 8.0
+    //     */
+    //    public IOptionCommandGenerator getCommandGenerator();
+
+    //    /**
+    //     * @return {@code String} containing the actual command line
+    //     *         option associated with a Boolean option when the value is
+    //     *         {@code false}
+    //     */
+    //    public String getCommandFalse();
 
     /**
      * @return a <code>String</code> containing the tooltip
@@ -290,40 +293,40 @@ public interface IOption extends ISchemaObject {
     /**
      * @return the user-defined preprocessor symbols.
      */
-    public String[] getDefinedSymbols() throws BuildException;
+    //    public String[] getDefinedSymbols() throws BuildException;
 
-    /**
-     *
-     * @param id
-     *            - enumeration id
-     * @return the command associated with the enumeration id. For
-     *         example, if the enumeration id was
-     *         <code>gnu.debug.level.default</code>
-     *         for the debug level option of the Gnu compiler, and the plugin
-     *         manifest defined that as -g, then the return value would be the
-     *         String "-g"
-     */
-    public String getEnumCommand(String id) throws BuildException;
+    //    /**
+    //     *
+    //     * @param id
+    //     *            - enumeration id
+    //     * @return the command associated with the enumeration id. For
+    //     *         example, if the enumeration id was
+    //     *         <code>gnu.debug.level.default</code>
+    //     *         for the debug level option of the Gnu compiler, and the plugin
+    //     *         manifest defined that as -g, then the return value would be the
+    //     *         String "-g"
+    //     */
+    //    public String getEnumCommand(String id) throws BuildException;
 
-    /**
-     * Returns the command associated with the child of this option
-     * with the given id. Applies to options of types that has children
-     * for example {@link #TREE} or {@link #ENUMERATED}
-     *
-     * @param id
-     *            - child id
-     * @return the command associated with the child id. For
-     *         example, if the child id was <code>gnu.debug.level.default</code>
-     *         for the debug level option of the Gnu compiler, and the plugin
-     *         manifest defined that as -g, then the return value would be the
-     *         String "-g"
-     *
-     * @throws BuildException
-     *             if this option is not of type {@link #TREE} or
-     *             {@link #ENUMERATED}
-     * @since 8.1
-     */
-    public String getCommand(String id) throws BuildException;
+    //    /**
+    //     * Returns the command associated with the child of this option
+    //     * with the given id. Applies to options of types that has children
+    //     * for example {@link #TREE} or {@link #ENUMERATED}
+    //     *
+    //     * @param id
+    //     *            - child id
+    //     * @return the command associated with the child id. For
+    //     *         example, if the child id was <code>gnu.debug.level.default</code>
+    //     *         for the debug level option of the Gnu compiler, and the plugin
+    //     *         manifest defined that as -g, then the return value would be the
+    //     *         String "-g"
+    //     *
+    //     * @throws BuildException
+    //     *             if this option is not of type {@link #TREE} or
+    //     *             {@link #ENUMERATED}
+    //     * @since 8.1
+    //     */
+    //    public String getCommand(String id) throws BuildException;
 
     /**
      * @param id
@@ -347,56 +350,49 @@ public interface IOption extends ISchemaObject {
      */
     public abstract String getName(String id) throws BuildException;
 
-    /**
-     * @param name
-     *            - a "name" associated with enumeration id
-     * @return enumeration id
-     */
-    public String getEnumeratedId(String name) throws BuildException;
+    //    /**
+    //     * Returns the id associated with the child of this option
+    //     * with the given name. Applies to options of types that has children
+    //     * for example {@link #TREE} or {@link #ENUMERATED}
+    //     *
+    //     * @param name
+    //     *            the name of the child to look for.
+    //     * @return The id of the found child or <code>null</code> if not found.
+    //     * @throws BuildException
+    //     *             if any error happened while searching
+    //     * @since 8.1
+    //     */
+    //    public abstract String getId(String name) throws BuildException;
 
-    /**
-     * Returns the id associated with the child of this option
-     * with the given name. Applies to options of types that has children
-     * for example {@link #TREE} or {@link #ENUMERATED}
-     *
-     * @param name
-     *            the name of the child to look for.
-     * @return The id of the found child or <code>null</code> if not found.
-     * @throws BuildException
-     *             if any error happened while searching
-     * @since 8.1
-     */
-    public abstract String getId(String name) throws BuildException;
+    //    /**
+    //     * @return an array of <code>String</code> containing the includes paths
+    //     *         defined in the build model.
+    //     */
+    //    public String[] getIncludePaths() throws BuildException;
 
-    /**
-     * @return an array of <code>String</code> containing the includes paths
-     *         defined in the build model.
-     */
-    public String[] getIncludePaths() throws BuildException;
+    //    /**
+    //     * @return an array or <code>String</code>s containing the libraries
+    //     *         that must be linked into the project.
+    //     */
+    //    public String[] getLibraries() throws BuildException;
 
-    /**
-     * @return an array or <code>String</code>s containing the libraries
-     *         that must be linked into the project.
-     */
-    public String[] getLibraries() throws BuildException;
+    //    /**
+    //     * @return an array or <code>String</code>s containing the library files
+    //     *         that must be linked into the project.
+    //     *
+    //     * @since 7.0
+    //     */
+    //    public String[] getLibraryFiles() throws BuildException;
 
-    /**
-     * @return an array or <code>String</code>s containing the library files
-     *         that must be linked into the project.
-     *
-     * @since 7.0
-     */
-    public String[] getLibraryFiles() throws BuildException;
-
-    /**
-     * @return an array or <code>String</code>s containing the library paths
-     *         passed to the linker.
-     *
-     * @throws BuildException
-     *             if the option isn't of type IOption#LIBRARY_PATHS
-     * @since 8.0
-     */
-    public String[] getLibraryPaths() throws BuildException;
+    //    /**
+    //     * @return an array or <code>String</code>s containing the library paths
+    //     *         passed to the linker.
+    //     *
+    //     * @throws BuildException
+    //     *             if the option isn't of type IOption#LIBRARY_PATHS
+    //     * @since 8.0
+    //     */
+    //    public String[] getLibraryPaths() throws BuildException;
 
     /**
      * @return a <code>String</code> containing the unique ID of the selected
@@ -409,30 +405,30 @@ public interface IOption extends ISchemaObject {
      * @throws BuildException
      *             if the option type is not an enumeration
      */
-    public String getSelectedEnum() throws BuildException;
+    //    public String getSelectedEnum() throws BuildException;
 
     /**
      * @return the current value for this option if it is a List of Strings.
      */
-    public String[] getStringListValue() throws BuildException;
+    //    public String[] getStringListValue() throws BuildException;
 
     /**
      * @return the current value for this option if it is a String
      */
-    public String getStringValue() throws BuildException;
+    //    public String getStringValue() throws BuildException;
 
-    /**
-     * @return all of the user-defined object files that must be linked with
-     *         the final build target.
-     */
-    public String[] getUserObjects() throws BuildException;
+    //    /**
+    //     * @return all of the user-defined object files that must be linked with
+    //     *         the final build target.
+    //     */
+    //    public String[] getUserObjects() throws BuildException;
 
-    /**
-     * @return the raw value of this option which is the Object that contains the
-     *         raw value of the option.
-     *         The type of Object is specific to the option type.
-     */
-    public Object getValue();
+    //    /**
+    //     * @return the raw value of this option which is the Object that contains the
+    //     *         raw value of the option.
+    //     *         The type of Object is specific to the option type.
+    //     */
+    //    public Object getValue();
 
     /**
      * @return the raw default value of this option which is the Object that
@@ -441,12 +437,14 @@ public interface IOption extends ISchemaObject {
      */
     public Object getDefaultValue();
 
-    /**
-     * @return an instance of the class that overrides the default defaultValue
-     *         generation for the option
-     * @since 8.5
-     */
-    public IOptionDefaultValueGenerator getDefaultValueGenerator();
+    public String getDefaultValueString();
+
+    //    /**
+    //     * @return an instance of the class that overrides the default defaultValue
+    //     *         generation for the option
+    //     * @since 8.5
+    //     */
+    //    public IOptionDefaultValueGenerator getDefaultValueGenerator();
 
     /**
      * @return the type for the value of the option.
@@ -496,9 +494,9 @@ public interface IOption extends ISchemaObject {
      *         String list value,
      *         throws BuildException otherwise
      */
-    String[] getBasicStringListValue() throws BuildException;
-
-    public OptionStringValue[] getBasicStringListValueElements() throws BuildException;
+    //    String[] getBasicStringListValue() throws BuildException;
+    //
+    //    public OptionStringValue[] getBasicStringListValueElements() throws BuildException;
 
     /**
      * Flag to indicate whether the option is also used by scanner discovery.
@@ -529,7 +527,7 @@ public interface IOption extends ISchemaObject {
      * @since 8.1
      *
      */
-    public interface ITreeRoot extends ITreeOption {
+    public interface ITreeRoot {
         /**
          * Determines whether this tree allows selecting leaf nodes
          * only or any nodes.
@@ -549,29 +547,31 @@ public interface IOption extends ISchemaObject {
          */
         ITreeOption findNode(String id);
 
-        /**
-         * Adds a new node to the tree.
-         * 
-         * @param id
-         *            The id of the new child.
-         * @param name
-         *            The name of the new child.
-         * @param category
-         *            The category of the new child.category is a '.'
-         *            separated string representing hierarchical path
-         *            of the child from the root of the tree.
-         *            can cause other nodes to be created to construct the
-         *            full path to the new child.
-         * @param order
-         *            The order of the newly created node among its peers.
-         *            see {@link ITreeOption#getOrder()} for more information.
-         *            Note: this order will apply to any parents auto-created
-         *            according to the passed category.
-         *            if <code>null</code> the {@link ITreeOption#DEFAULT_ORDER}
-         *            will be used.
-         * @return the newly added node.
-         */
-        ITreeOption addNode(String id, String name, String category, int order);
+        Object findOptionOnValue(String optionValue);
+
+        //        /**
+        //         * Adds a new node to the tree.
+        //         * 
+        //         * @param id
+        //         *            The id of the new child.
+        //         * @param name
+        //         *            The name of the new child.
+        //         * @param category
+        //         *            The category of the new child.category is a '.'
+        //         *            separated string representing hierarchical path
+        //         *            of the child from the root of the tree.
+        //         *            can cause other nodes to be created to construct the
+        //         *            full path to the new child.
+        //         * @param order
+        //         *            The order of the newly created node among its peers.
+        //         *            see {@link ITreeOption#getOrder()} for more information.
+        //         *            Note: this order will apply to any parents auto-created
+        //         *            according to the passed category.
+        //         *            if <code>null</code> the {@link ITreeOption#DEFAULT_ORDER}
+        //         *            will be used.
+        //         * @return the newly added node.
+        //         */
+        //        ITreeOption addNode(String id, String name, String category, int order);
     }
 
     /**
@@ -606,30 +606,26 @@ public interface IOption extends ISchemaObject {
          */
         int getOrder();
 
-        void setOrder(int order);
-
         ITreeOption[] getChildren();
-
-        ITreeOption getParent();
 
         boolean isContainer();
 
         String getCommand();
 
-        ITreeOption getChild(String name);
+        //        ITreeOption getChild(String name);
 
-        /**
-         * Adds a new child directly under this node.
-         * 
-         * @param id
-         *            The id of the new child.
-         * @param name
-         *            The name of the new child.
-         * @return The added child.
-         */
-        ITreeOption addChild(String id, String name);
-
-        void remove();
+        //        /**
+        //         * Adds a new child directly under this node.
+        //         * 
+        //         * @param id
+        //         *            The id of the new child.
+        //         * @param name
+        //         *            The name of the new child.
+        //         * @return The added child.
+        //         */
+        //        ITreeOption addChild(String id, String name);
+        //
+        //        void remove();
 
         String getIcon();
     }

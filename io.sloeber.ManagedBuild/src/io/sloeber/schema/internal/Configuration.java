@@ -20,6 +20,7 @@ import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +29,12 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
@@ -301,6 +304,18 @@ public class Configuration extends SchemaObject implements IConfiguration {
         ret.append(prepend + BEGIN_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
         ret.append(myToolchain.dump(leadingChars + 1));
         ret.append(prepend + END_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
+        return ret;
+    }
+
+    @Override
+    public Map<IResource, Map<String, String>> getDefaultProjectOptions(
+            AutoBuildConfigurationData autoBuildConfigurationData) {
+        // TODO Auto-generated method stub
+        Map<String, String> retOptions = getDefaultOptions(autoBuildConfigurationData.getProject(),
+                autoBuildConfigurationData);
+        retOptions.putAll(myToolchain.getDefaultProjectOptions(autoBuildConfigurationData));
+        Map<IResource, Map<String, String>> ret = new LinkedHashMap<>();
+        ret.put(autoBuildConfigurationData.getProject(), retOptions);
         return ret;
     }
 

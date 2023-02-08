@@ -67,7 +67,7 @@ public class BuildRunner extends IBuildRunner {
         boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
         AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) confDesc.getConfigurationData();
         IConfiguration configuration = autoData.getConfiguration();
-        String buildCommand = ManagebBuildCommon.resolve(builder.getCommand(), confDesc);
+        String buildCommand = AutoBuildCommon.resolve(builder.getCommand(), confDesc);
         if (buildCommand.isBlank()) {
             String msg = MessageFormat.format(ManagedMakeBuilder_message_undefined_build_command, builder.getId());
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, new Exception()));
@@ -129,7 +129,7 @@ public class BuildRunner extends IBuildRunner {
     private static String[] getCommandArguments(int kind, IBuilder builder,
             ICConfigurationDescription icConfigurationDescription) {
         String[] targets = getBuildTargets(kind, builder, icConfigurationDescription);
-        String builderArguments = ManagebBuildCommon.resolve(builder.getArguments(), icConfigurationDescription);
+        String builderArguments = AutoBuildCommon.resolve(builder.getArguments(), icConfigurationDescription);
         String[] builderArgs = CommandLineUtil.argumentsToArray(builderArguments);
         String[] args = new String[targets.length + builderArgs.length];
         System.arraycopy(builderArgs, 0, args, 0, builderArgs.length);
@@ -142,14 +142,14 @@ public class BuildRunner extends IBuildRunner {
         String targets = EMPTY_STRING;
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:
-            targets = ManagebBuildCommon.resolve(builder.getAutoBuildTarget(), icConfigurationDescription);
+            targets = AutoBuildCommon.resolve(builder.getAutoBuildTarget(), icConfigurationDescription);
             break;
         case IncrementalProjectBuilder.INCREMENTAL_BUILD: // now treated as the same!
         case IncrementalProjectBuilder.FULL_BUILD:
-            targets = ManagebBuildCommon.resolve(builder.getIncrementalBuildTarget(), icConfigurationDescription);
+            targets = AutoBuildCommon.resolve(builder.getIncrementalBuildTarget(), icConfigurationDescription);
             break;
         case IncrementalProjectBuilder.CLEAN_BUILD:
-            targets = ManagebBuildCommon.resolve(builder.getCleanBuildTarget(), icConfigurationDescription);
+            targets = AutoBuildCommon.resolve(builder.getCleanBuildTarget(), icConfigurationDescription);
             break;
         }
 

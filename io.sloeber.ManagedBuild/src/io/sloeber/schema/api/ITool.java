@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -174,14 +175,14 @@ public interface ITool extends ISchemaObject {
      */
     public String[] getErrorParserList();
 
-    /**
-     * Returns the array of valid primary source extensions this tool knows how to
-     * build.
-     * The array may be empty but will never be <code>null</code>.
-     *
-     * @return String[]
-     */
-    public List<String> getPrimaryInputExtensions();
+    //    /**
+    //     * Returns the array of valid primary source extensions this tool knows how to
+    //     * build.
+    //     * The array may be empty but will never be <code>null</code>.
+    //     *
+    //     * @return String[]
+    //     */
+    //    public List<String> getPrimaryInputExtensions();
 
     /**
      * Returns the array of all valid source extensions this tool knows how to
@@ -290,7 +291,8 @@ public interface ITool extends ISchemaObject {
      * the environment macro references converted to the buildfile variable format,
      * all other macro references are resolved
      */
-    public String[] getToolCommandFlags(IFile inputFile, IFile outputFile) throws BuildException;
+    public String[] getToolCommandFlags(AutoBuildConfigurationData autoBuildConfData, IFile inputFile, IFile outputFile)
+            throws BuildException;
 
     //    /**
     //     * Options are organized into categories for UI purposes.

@@ -60,7 +60,7 @@ public interface IInputType extends ISchemaObject {
 
     public List<IContentType> getSourceContentTypes();
 
-    public String[] getSourceContentTypeIds();
+    //    public String[] getSourceContentTypeIds();
 
     /**
      * Returns the list of valid source extensions from the
@@ -73,17 +73,17 @@ public interface IInputType extends ISchemaObject {
      */
     public List<String> getSourceExtensionsAttribute();
 
-    /**
-     * Returns the list of valid source extensions for this input type.
-     * Note that the list will come from the sourceContentType if it
-     * is specified and registered with Eclipse. Otherwise the
-     * sourceExtensions attribute will be used.
-     *
-     * @param tool
-     *            the tool that contains the input-type
-     * @return String[]
-     */
-    public List<String> getSourceExtensions(ITool tool);
+    //    /**
+    //     * Returns the list of valid source extensions for this input type.
+    //     * Note that the list will come from the sourceContentType if it
+    //     * is specified and registered with Eclipse. Otherwise the
+    //     * sourceExtensions attribute will be used.
+    //     *
+    //     * @param tool
+    //     *            the tool that contains the input-type
+    //     * @return String[]
+    //     */
+    //    public List<String> getSourceExtensions(ITool tool);
 
     /**
      * Returns the Eclipse <code>IContentType</code> that describes the
@@ -106,17 +106,17 @@ public interface IInputType extends ISchemaObject {
      */
     public String[] getDependencyExtensionsAttribute();
 
-    /**
-     * Returns the list of valid dependency extensions for this input type.
-     * Note that the list will come from the dependencyContentType if it
-     * is specified and registered with Eclipse. Otherwise the
-     * dependencyExtensions attribute will be used.
-     *
-     * @param tool
-     *            the tool that contains the input-type
-     * @return String[]
-     */
-    public String[] getDependencyExtensions(ITool tool);
+    //    /**
+    //     * Returns the list of valid dependency extensions for this input type.
+    //     * Note that the list will come from the dependencyContentType if it
+    //     * is specified and registered with Eclipse. Otherwise the
+    //     * dependencyExtensions attribute will be used.
+    //     *
+    //     * @param tool
+    //     *            the tool that contains the input-type
+    //     * @return String[]
+    //     */
+    //    public String[] getDependencyExtensions(ITool tool);
 
     /**
      * Answers <code>true</code> if the input type considers the file extension to
@@ -129,7 +129,7 @@ public interface IInputType extends ISchemaObject {
      *            file extension of the source
      * @return boolean
      */
-    public boolean isDependencyExtension(ITool tool, String ext);
+    //    public boolean isDependencyExtension(ITool tool, String ext);
 
     /**
      * Returns the id of the option whose value is to be assigned to the
@@ -159,7 +159,7 @@ public interface IInputType extends ISchemaObject {
      */
     public String getBuildVariable();
 
-    String getLanguageName(ITool tool);
+    //    String getLanguageName(ITool tool);
 
     String getDiscoveryProfileId(ITool tool);
 

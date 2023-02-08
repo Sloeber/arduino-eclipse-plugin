@@ -18,6 +18,7 @@ import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +26,12 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
@@ -409,6 +412,14 @@ public class ToolChain extends SchemaObject implements IToolChain {
         ret.append(prepend + END_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
 
         return ret;
+    }
+
+    public Map<String, String> getDefaultProjectOptions(AutoBuildConfigurationData autoBuildConfData) {
+        Map<String, String> retOptions = getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData);
+        for (Tool curTool : myToolMap.values()) {
+            retOptions.putAll(curTool.getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData));
+        }
+        return retOptions;
     }
 
 }

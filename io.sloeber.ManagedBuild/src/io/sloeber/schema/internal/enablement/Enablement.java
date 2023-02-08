@@ -5,6 +5,7 @@ import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.expressions.EvaluationResult;
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.ExpressionConverter;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
@@ -14,15 +15,16 @@ import io.sloeber.schema.internal.SchemaObject;
 public class Enablement {
     private Expression myExpression;
 
-    public boolean isEnabled(AutoBuildConfigurationData autoBuildConfData) {
+    public boolean isEnabled(IResource resource, AutoBuildConfigurationData autoBuildConfData) {
         if (myExpression == null) {
             return true;
         }
         try {
-            EvaluationResult result = myExpression.evaluate(new EvaluationContext(null, autoBuildConfData));
+            EvaluationContext evalContext = new EvaluationContext(null, autoBuildConfData);
+            evalContext.addVariable(CheckOptionExpression.KEY_RESOURCE, resource);
+            EvaluationResult result = myExpression.evaluate(evalContext);
             return result == EvaluationResult.TRUE;
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return true;

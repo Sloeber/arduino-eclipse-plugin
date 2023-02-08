@@ -454,7 +454,7 @@ public class Builder extends SchemaObject implements IBuilder {
         //            return ARGUMENTS;
         //        } else if (BuilderFactory.STOP_ON_ERROR.equals(name)) {
         //            return ATTRIBUTE_STOP_ON_ERR;
-        //        } //TODO else if(BuilderFactory.USE_DEFAULT_BUILD_CMD.equals(name)){
+        //        } //TO DO else if(BuilderFactory.USE_DEFAULT_BUILD_CMD.equals(name)){
         //          //	return getCommand();
         //          //}
         //        else if (BuilderFactory.BUILD_INCREMENTAL_ENABLED.equals(name)
@@ -637,6 +637,11 @@ public class Builder extends SchemaObject implements IBuilder {
     @Override
     public boolean appendEnvironment() {
         return true;
+    }
+
+    @Override
+    public String getBuilderVariablePattern() {
+        return modelvariableFormat[SUPER];
     }
 
 }
@@ -1160,7 +1165,7 @@ public class Builder extends SchemaObject implements IBuilder {
 //  //        // Note: build file generator cannot be specified in a project file because
 //  //        //       an IConfigurationElement is needed to load it!
 //  //        if (buildFileGeneratorElement != null) {
-//  //            //  TODO:  issue warning?
+//  //            //  TO DO:  issue warning?
 //  //        }
 //  //
 //  //        // options
@@ -1247,7 +1252,7 @@ public class Builder extends SchemaObject implements IBuilder {
 //  //        // Note: build file generator cannot be specified in a project file because
 //  //        //       an IConfigurationElement is needed to load it!
 //  //        if (buildFileGeneratorElement != null) {
-//  //            //  TODO:  issue warning?
+//  //            //  TO DO:  issue warning?
 //  //        }
 //  //
 //  //        // options
@@ -1464,31 +1469,31 @@ public class Builder extends SchemaObject implements IBuilder {
 //
 //@Override
 //public void setIncrementalBuildEnable(boolean enabled) throws CoreException {
-//  // TODO Auto-generated method stub
+//  // TO DO Auto-generated method stub
 //
 //}
 //
 //@Override
 //public void setIncrementalBuildTarget(String target) throws CoreException {
-//  // TODO Auto-generated method stub
+//  // TO DO Auto-generated method stub
 //
 //}
 //
 //@Override
 //public void setFullBuildTarget(String target) throws CoreException {
-//  // TODO Auto-generated method stub
+//  // TO DO Auto-generated method stub
 //
 //}
 //
 //@Override
 //public void setAppendEnvironment(boolean append) throws CoreException {
-//  // TODO Auto-generated method stub
+//  // TO DO Auto-generated method stub
 //
 //}
 //
 //@Override
 //public void setErrorParsers(String[] parsers) throws CoreException {
-//  // TODO Auto-generated method stub
+//  // TO DO Auto-generated method stub
 //
 //}
 ///**
@@ -1628,7 +1633,7 @@ public class Builder extends SchemaObject implements IBuilder {
 //  return args;
 //}
 //
-////@Override TODO is this used?
+////@Override TO DO is this used?
 //public String getBuildAttribute(String name, String defaultValue) {
 //  String result = null;
 //  if (BUILD_TARGET_INCREMENTAL.equals(name)) {

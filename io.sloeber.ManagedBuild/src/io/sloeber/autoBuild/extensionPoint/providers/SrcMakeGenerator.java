@@ -2,7 +2,7 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.ManagebBuildCommon.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.Const.*;
 
 import java.util.Collection;
