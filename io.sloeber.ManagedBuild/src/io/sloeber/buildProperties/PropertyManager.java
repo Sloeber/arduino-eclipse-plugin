@@ -27,37 +27,20 @@ import java.util.Set;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuilder;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IResourceConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ISchemaObject;
-import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.ManagedProject;
 
 /**
  * This class allows specifying BuildObject-specific persisted properties
@@ -423,20 +406,20 @@ public class PropertyManager {
         return null;
     }
 
-    private static IConfiguration getConfigurationFromId(IProject project, String id) {
-        if (project == null || id == null)
-            return null;
-        IManagedBuildInfo bInfo = ManagedBuildManager.getBuildInfo(project, false);
-        IConfiguration cfg = null;
-        if (bInfo != null) {
-            IManagedProject mProj = bInfo.getManagedProject();
-            if (mProj != null) {
-                cfg = mProj.getConfiguration(id);
-            }
-        }
-
-        return cfg;
-    }
+//    private static IConfiguration getConfigurationFromId(IProject project, String id) {
+//        if (project == null || id == null)
+//            return null;
+//        IManagedBuildInfo bInfo = ManagedBuildManager.getBuildInfo(project, false);
+//        IConfiguration cfg = null;
+//        if (bInfo != null) {
+//            IManagedProject mProj = bInfo.getManagedProject();
+//            if (mProj != null) {
+//                cfg = mProj.getConfiguration(id);
+//            }
+//        }
+//
+//        return cfg;
+//    }
 
     protected void setLoaddedData(ICConfigurationDescription cfg, Map<String, Object> data) {
         LoaddedInfo info = getLoaddedInfo();

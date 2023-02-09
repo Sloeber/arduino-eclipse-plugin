@@ -15,21 +15,13 @@ package io.sloeber.schema.api;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.IPath;
-
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
-import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.schema.internal.ToolChain;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -294,54 +286,6 @@ public interface ITool extends ISchemaObject {
     public String[] getToolCommandFlags(AutoBuildConfigurationData autoBuildConfData, IFile inputFile, IFile outputFile)
             throws BuildException;
 
-    //    /**
-    //     * Options are organized into categories for UI purposes.
-    //     * These categories are organized into a tree. This is the root
-    //     * of that tree.
-    //     *
-    //     * @return IOptionCategory
-    //     */
-    //    public IOptionCategory getTopOptionCategory();
-    public IOptions getOptions();
-
-    //    /**
-    //     * Return <code>true</code> if the receiver builds files with the
-    //     * specified extension, else <code>false</code>.
-    //     *
-    //     * @param extension
-    //     *            file extension of the source
-    //     * @return boolean
-    //     */
-    //    public boolean buildsFileType(IFile file);
-
-    //    /**
-    //     * Answers <code>true</code> if the tool considers the file extension to be
-    //     * one associated with a header file.
-    //     *
-    //     * @param ext
-    //     *            file extension of the source
-    //     * @return boolean
-    //     */
-    //    public boolean isHeaderFile(String ext);
-
-    /**
-     * Answers <code>true</code> if the receiver builds a file with the extension
-     * specified
-     * in the argument, else <code>false</code>.
-     *
-     * @param outputExtension
-     *            extension of the file being produced by a tool
-     * @return boolean
-     */
-    //public boolean producesFileType(String outputExtension);
-
-    /**
-     * Returns <code>true</code> if this tool was loaded from a manifest file,
-     * and <code>false</code> if it was loaded from a project (.cdtbuild) file.
-     *
-     * @return boolean
-     */
-    // public boolean isExtensionElement();
 
     /**
      * Returns an array of the Environment Build Path variable descriptors
@@ -350,27 +294,7 @@ public interface ITool extends ISchemaObject {
      */
     public IEnvVarBuildPath[] getEnvVarBuildPaths();
 
-    /**
-     * Returns an IOptionPathConverter implementation for this tool
-     * or null, if no conversion is required
-     */
-    ///public IOptionPathConverter getOptionPathConverter();
-
     CLanguageData getCLanguageData(IInputType type);
-
-    CLanguageData[] getCLanguageDatas();
-
-    // IInputType getInputTypeForCLanguageData(CLanguageData data);
-
-    //IResourceInfo getParentResourceInfo();
-
-    // IInputType getEditableInputType(IInputType base);
-
-    // boolean isEnabled();
-
-    // boolean supportsBuild(boolean managed);
-
-    //boolean matches(ITool tool);
 
     boolean isSystemObject();
 
@@ -379,14 +303,6 @@ public interface ITool extends ISchemaObject {
      */
     boolean isHidden();
 
-    String getUniqueRealName();
-
-    /**
-     * @since 9.4
-     */
-    default public List<String> getExtraFlags(int optionType) {
-        return new LinkedList<>();
-    }
 
     public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);

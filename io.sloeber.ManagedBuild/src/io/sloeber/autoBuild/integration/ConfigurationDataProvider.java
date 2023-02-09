@@ -14,19 +14,12 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
-import org.eclipse.cdt.core.model.ILanguageDescriptor;
-import org.eclipse.cdt.core.model.LanguageManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICExternalSetting;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.IModificationContext;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationDataProvider;
@@ -35,21 +28,10 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.QualifiedName;
 import io.sloeber.autoBuild.Internal.BuilderFactory;
-import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IManagedProject;
-import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.Builder;
-import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.ManagedProject;
 
 /**
  * The main hook ManagedBuild uses to connect to cdt.core's project model.

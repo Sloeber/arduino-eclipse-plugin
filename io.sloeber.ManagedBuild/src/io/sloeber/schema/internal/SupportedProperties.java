@@ -55,36 +55,6 @@ public class SupportedProperties  {
             return fId;
         }
 
-        /*		SupportedProperty(IManagedConfigElement el) {
-        			fId = el.getAttribute(ID);
-        
-        //			IBuildPropertyType type = mngr.getPropertyType(id);
-        //			if(type == null)
-        //				continue;
-        
-        			fIsRequired = Boolean.valueOf(el.getAttribute(REQUIRED)).booleanValue();
-        
-        			fValues = new HashSet();
-        
-        			IManagedConfigElement values[] = el.getChildren();
-        			for(int k = 0; k < values.length; k++){
-        				IManagedConfigElement value = values[k];
-        				if(PROPERTY_VALUE.equals(value.getName())){
-        					String valueId = value.getAttribute(ID);
-        					if(valueId == null && valueId.length() == 0)
-        						continue;
-        
-        //					IBuildPropertyValue val = type.getSupportedValue(valueId);
-        //					if(val != null)
-        //						set.add(val.getId());
-        					fValues.add(valueId);
-        				}
-        			}
-        		}
-        */
-        //		public boolean isValid(){
-        //			return fId != null && fValues.size() != 0;
-        //		}
 
         public boolean isRequired() {
             return fIsRequired;
@@ -153,9 +123,6 @@ public class SupportedProperties  {
 
     }
 
-    //	public boolean supportsType(IBuildPropertyType type) {
-    //		return supportsType(type.getId());
-    //	}
 
     public boolean supportsType(String type) {
         return fSupportedProperties.containsKey(type);
@@ -169,11 +136,6 @@ public class SupportedProperties  {
         }
         return suports;
     }
-
-    //	public boolean supportsValue(IBuildPropertyType type,
-    //			IBuildPropertyValue value) {
-    //		return supportsValue(type.getId(), value.getId());
-    //	}
 
     public String[] getRequiredTypeIds() {
         List<String> list = new ArrayList<>(fSupportedProperties.size());
@@ -204,10 +166,5 @@ public class SupportedProperties  {
             return prop.isRequired();
         return false;
     }
-
-
-
-
-
 
 }

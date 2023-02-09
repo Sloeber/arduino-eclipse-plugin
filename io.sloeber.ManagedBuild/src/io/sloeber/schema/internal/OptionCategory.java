@@ -23,15 +23,10 @@ import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
 
-/**
- *
- */
 public class OptionCategory extends SchemaObject implements IOptionCategory {
     private IOptionCategory owner; // The logical Option Category parent
     private URL iconPathURL;
 
-    //	private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator = null;
-    //	List<OptionEnablementExpression> myOptionEnablementExpressions = new ArrayList<>();
     private String[] modelOwner;
     private String[] modelIcon;
 

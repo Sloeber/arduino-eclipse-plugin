@@ -20,14 +20,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.core.resources.IResource;
-import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
-import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IProjectType;
@@ -62,85 +57,6 @@ public class ManagedProject implements IManagedProject {
         this.owner = owner;
     }
 
-    /**
-     * Create a project instance from the project-type specified in the argument,
-     * that is owned by the specified Eclipse project.
-     *
-     * @param owner
-     *            the Eclipse project that owns the Managed Project
-     */
-    public ManagedProject(IResource owner, IProjectType projectType) {
-        // Make the owner of the ProjectType the project resource
-        this(owner);
-
-        // Copy the parent's identity
-        this.projectType = projectType;
-        int randomNumber = ManagedBuildManager.getRandomNumber();
-        id = (owner.getName() + "." + projectType.getId() + "." + randomNumber); //$NON-NLS-1$ //$NON-NLS-2$
-        name = (projectType.getName());
-
-
-        // Hook me up
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(owner);
-        buildInfo.setManagedProject(this);
-    }
-
-    public ManagedProject(ICProjectDescription des) {
-        // Make the owner of the ProjectType the project resource
-        this(des.getProject());
-
-        // Copy the parent's identity
-        //		this.projectType = projectType;
-        int randomNumuber = ManagedBuildManager.getRandomNumber();
-        id = (owner.getName() + "." + des.getId() + "." + randomNumuber); //$NON-NLS-1$ //$NON-NLS-2$
-        name = (des.getName());
-
-        //		setManagedBuildRevision(projectType.getManagedBuildRevision());
-
-        // Hook me up
-        //		IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(owner);
-        //		buildInfo.setManagedProject(this);
-        //		setDirty(true);
-    }
-
-//    /**
-//     * Create the project instance from project file.
-//     *
-//     * @param managedBuildRevision
-//     *            the fileVersion of Managed Build System
-//     */
-//    public ManagedProject(ManagedBuildInfo buildInfo, ICStorageElement element, boolean loadConfigs,
-//            String managedBuildRevision) {
-//        this(buildInfo.getOwner());
-//
-//
-//        // Initialize from the XML attributes
-//        if (loadFromProject(element)) {
-//
-//            //            // check for migration support.
-//            //            boolean isSupportAvailable = projectType != null ? projectType.checkForMigrationSupport() : true;
-//            //            if (isSupportAvailable == false) {
-//            //                setValid(false);
-//            //            }
-//
-//            if (loadConfigs) {
-//                // Load children
-//                ICStorageElement configElements[] = element.getChildren();
-//                for (ICStorageElement configElement : configElements) {
-//                    if (configElement.getName().equals(IConfiguration.CONFIGURATION_ELEMENT_NAME)) {
-//                        Configuration config = new Configuration(this, configElement, managedBuildRevision, false);
-//                    }
-//
-//                }
-//
-//            }
-//        } else {
-//            setValid(false);
-//        }
-//
-//        // hook me up
-//        buildInfo.setManagedProject(this);
-//    }
 
     /*
      *  E L E M E N T   A T T R I B U T E   R E A D E R S   A N D   W R I T E R S
@@ -218,26 +134,6 @@ public class ManagedProject implements IManagedProject {
         return projectType;
     }
 
-//    /* (non-Javadoc)
-//     * @see org.eclipse.cdt.core.build.managed.IManagedProject#createConfiguration(org.eclipse.cdt.core.build.managed.IConfiguration)
-//     */
-//    @Override
-//    public IConfiguration createConfiguration(IConfiguration parent, String id) {
-//        Configuration config = new Configuration(this, (Configuration) parent, id, false, false, false);
-//        ManagedBuildManager.performValueHandlerEvent(config, IManagedOptionValueHandler.EVENT_OPEN);
-//        return config;
-//    }
-
-//    /* (non-Javadoc)
-//     * @see org.eclipse.cdt.core.build.managed.IManagedProject#createConfigurationClone(org.eclipse.cdt.core.build.managed.IConfiguration)
-//     */
-//    @Override
-//    public IConfiguration createConfigurationClone(IConfiguration parent, String id) {
-//        Configuration config = new Configuration(this, (Configuration) parent, id, true, false, false);
-//        // Inform all options in the configuration and all its resource configurations
-//        ManagedBuildManager.performValueHandlerEvent(config, IManagedOptionValueHandler.EVENT_OPEN);
-//        return config;
-//    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IManagedProject#getConfiguration()
@@ -382,25 +278,6 @@ public class ManagedProject implements IManagedProject {
     }
 
 
-
-    /*
-     * this method is called by the UserDefinedMacroSupplier to obtain user-defined
-     * macros available for this managed project
-     */
-    /*	public StorableMacros getUserDefinedMacros(){
-    		if(userDefinedMacros == null)
-    			userDefinedMacros = new StorableMacros();
-    		return userDefinedMacros;
-    	}
-    */
-    //	public StorableEnvironment getUserDefinedEnvironmet(){
-    //		return userDefinedEnvironment;
-    //	}
-    //
-    //	public void setUserDefinedEnvironmet(StorableEnvironment env){
-    //		userDefinedEnvironment = env;
-    //	}
-
     public void setProjectType(IProjectType projectType) {
         if (this.projectType != projectType) {
             this.projectType = projectType;
@@ -419,3 +296,4 @@ public class ManagedProject implements IManagedProject {
     	return name;
     }
 }
+

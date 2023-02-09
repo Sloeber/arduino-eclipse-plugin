@@ -34,7 +34,6 @@ import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.ManagedProject;
 
 public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
