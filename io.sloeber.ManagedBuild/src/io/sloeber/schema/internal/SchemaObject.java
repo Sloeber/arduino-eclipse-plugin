@@ -344,7 +344,9 @@ public abstract class SchemaObject implements ISchemaObject {
         if (isEnabled(resource, autoBuildConfigurationData)) {
             for (IOption curOption : myOptions.getOptions()) {
                 if (curOption.isEnabled(resource, autoBuildConfigurationData)) {
-                    ret.put(curOption.getId(), curOption.getDefaultValueString());
+                	if(!curOption.getDefaultValue().isBlank()) {
+                    ret.put(curOption.getId(), curOption.getDefaultValue());
+                	}
                 }
             }
         }

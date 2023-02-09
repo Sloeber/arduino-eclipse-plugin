@@ -306,33 +306,7 @@ public class Tool extends SchemaObject implements ITool {
         // return null;
     }
 
-    // private void addEnvVarBuildPath(IEnvVarBuildPath path) {
-    // if (path == null)
-    // return;
-    // if (envVarBuildPathList == null)
-    // envVarBuildPathList = new ArrayList<>();
-    //
-    // envVarBuildPathList.add(path);
-    // }
 
-    // public IProject getProject() {
-    // IBuildObject toolParent = getParent();
-    // if (toolParent != null) {
-    // if (toolParent instanceof IToolChain) {
-    // IConfiguration config = ((IToolChain) toolParent).getParent();
-    // if (config == null)
-    // return null;
-    // return (IProject) config.getOwner();
-    // } else if (toolParent instanceof IResourceConfiguration) {
-    // return (IProject) ((IResourceConfiguration) toolParent).getOwner();
-    // }
-    // }
-    // return null;
-    // }
-
-    //    public String[] getContentTypeFileSpecs(IContentType type) {
-    //        return getContentTypeFileSpecs(type, null);// getProject());
-    //    }
 
     public static String[] getContentTypeFileSpecs(IContentType type, IProject project) {
         String[] globalSpecs = type.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
@@ -432,11 +406,8 @@ public class Tool extends SchemaObject implements ITool {
      */
     private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
             AutoBuildConfigurationData autoBuildConfData) {
-        BuildMacroProvider provider = BuildMacroProvider.getDefault();
         //List<IOption> opts = getOptions();
         Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFile);
-        ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
-        IConfiguration config = autoBuildConfData.getConfiguration();
 
         ArrayList<String> flags = new ArrayList<>();
 
@@ -1504,3 +1475,31 @@ public class Tool extends SchemaObject implements ITool {
 //public String[] getCommandFlags() throws BuildException {
 //    return getToolCommandFlags(null, null);
 //}
+
+// private void addEnvVarBuildPath(IEnvVarBuildPath path) {
+// if (path == null)
+// return;
+// if (envVarBuildPathList == null)
+// envVarBuildPathList = new ArrayList<>();
+//
+// envVarBuildPathList.add(path);
+// }
+
+// public IProject getProject() {
+// IBuildObject toolParent = getParent();
+// if (toolParent != null) {
+// if (toolParent instanceof IToolChain) {
+// IConfiguration config = ((IToolChain) toolParent).getParent();
+// if (config == null)
+// return null;
+// return (IProject) config.getOwner();
+// } else if (toolParent instanceof IResourceConfiguration) {
+// return (IProject) ((IResourceConfiguration) toolParent).getOwner();
+// }
+// }
+// return null;
+// }
+
+//    public String[] getContentTypeFileSpecs(IContentType type) {
+//        return getContentTypeFileSpecs(type, null);// getProject());
+//    }

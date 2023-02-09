@@ -34,6 +34,6 @@ public interface IOptionDefaultValueGenerator {
 	 * @return the generated build-option defaultValue. May return {@code null} to fall back to the default
 	 *         defaultValue generation logic.
 	 */
-	Object generateDefaultValue(IOption option);
+	String generateDefaultValue(IOption option);
 
 }

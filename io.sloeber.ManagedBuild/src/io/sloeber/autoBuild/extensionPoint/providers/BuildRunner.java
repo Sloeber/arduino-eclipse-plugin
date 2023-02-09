@@ -112,12 +112,10 @@ public class BuildRunner extends IBuildRunner {
             }
             buildRunnerHelper.close();
             buildRunnerHelper.goodbye();
-            epm.addProblemMarker(
-                    new ProblemMarkerInfo(project, 1, "Build Failed", IMarkerGenerator.SEVERITY_ERROR_BUILD, null));
+           
             project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 
         } catch (Exception e) {
-
             String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
                     new String[] { project.getName(), configuration.getName() });
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
