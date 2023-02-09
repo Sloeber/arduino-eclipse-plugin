@@ -85,16 +85,12 @@ public class BuildRunner extends IBuildRunner {
 
             String[] envp = BuildRunnerHelper.envMapToEnvp(getEnvironment(confDesc, builder));
 
-            String[] errorParsers = builder.getErrorParsers();
+            String[] errorParsers =autoData.getErrorParserList(); 
             ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator, errorParsers);
 
             List<IConsoleParser> parsers = new ArrayList<>();
             if (!isClean) {
                 ManagedBuildManager.collectLanguageSettingsConsoleParsers(confDesc, epm, parsers);
-                //                    if (ScannerDiscoveryLegacySupport.isLegacyScannerDiscoveryOn(confDesc)) {
-                //                        collectScannerInfoConsoleParsers(project, configuration, buildFolder.getLocationURI(),
-                //                                markerGenerator, parsers);
-                //                    }
             }
 
             buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand), args, buildFolderURI, envp);
@@ -107,6 +103,11 @@ public class BuildRunner extends IBuildRunner {
             epm.deferDeDuplication();
             try {
                 state = buildRunnerHelper.build(monitor);
+                if (state!=0) {
+               	 epm.addProblemMarker(
+                         new ProblemMarkerInfo(project, 1, "Build Failed", IMarkerGenerator.SEVERITY_ERROR_BUILD, null)); //$NON-NLS-1$
+
+                }
             } finally {
                 epm.deDuplicate();
             }

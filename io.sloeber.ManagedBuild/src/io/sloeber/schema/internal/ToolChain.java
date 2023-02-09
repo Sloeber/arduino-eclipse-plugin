@@ -16,6 +16,7 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.Const.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
@@ -59,6 +61,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
     private Map<String, Tool> myToolMap = new HashMap<>();
     private TargetPlatform myTargetPlatform = null;
     private Builder myBuilder;
+    List<String> myErrorParsersIDs = new LinkedList<>();
     // Managed Build model attributes
     private List<String> myOsList = new ArrayList<>();
     private List<String> myArchList = new ArrayList<>();
@@ -166,6 +169,14 @@ public class ToolChain extends SchemaObject implements IToolChain {
         myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(
                 CONFIGURATION_ENVIRONMENT_SUPPLIER);
 
+        //collect all the error parser ID's
+        String localErrorIDs[]=modelErrorParsers[SUPER].split(Pattern.quote(SEMICOLON));
+        myErrorParsersIDs.addAll(Arrays.asList(localErrorIDs));
+        for(Tool curTool:myToolMap.values()) {
+        	String toolErrorIDs[]=curTool.getErrorParserList();
+        	 myErrorParsersIDs.addAll(Arrays.asList(toolErrorIDs));
+        }
+       
     }
 
     // 
@@ -267,10 +278,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return myName;
     }
 
-    @Override
-    public String getErrorParserIds() {
-        return modelErrorParsers[SUPER];
-    }
+//    @Override
+//    public String getErrorParserIds() {
+//        return modelErrorParsers[SUPER];
+//    }
 
     @Override
     public List<IOutputType> getSecondaryOutputs() {
@@ -304,50 +315,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return ret;
     }
 
-    @Override
-    public String getErrorParserIds(IConfiguration config) {
-        return modelErrorParsers[SUPER];
-        // TOFIX JABA code below is wierd
-        //        String ids = errorParserIds;
-        //        if (ids == null) {
-        //            // If I have a superClass, ask it
-        //            if (getSuperClass() != null) {
-        //                ids = getSuperClass().getErrorParserIds(config);
-        //            }
-        //        }
-        //        if (ids == null) {
-        //            // Collect the error parsers from my children
-        //            if (builder != null) {
-        //                ids = builder.getErrorParserIds();
-        //            }
-        //            ITool[] tools = config.getFilteredTools();
-        //            for (int i = 0; i < tools.length; i++) {
-        //                ITool tool = tools[i];
-        //                String toolIds = tool.getErrorParserIds();
-        //                if (toolIds != null && toolIds.length() > 0) {
-        //                    if (ids != null) {
-        //                        ids += ";"; //$NON-NLS-1$
-        //                        ids += toolIds;
-        //                    } else {
-        //                        ids = toolIds;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        return ids;
-    }
-
+// 
     @Override
     public List<String> getErrorParserList() {
-        String parserIDs = getErrorParserIds();
-        List<String> errorParsers = new LinkedList<>();
-        if (!parserIDs.isBlank()) {
-            StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
-            while (tok.hasMoreElements()) {
-                errorParsers.add(tok.nextToken());
-            }
-        }
-        return errorParsers;
+    	return myErrorParsersIDs;
     }
 
     @Override
@@ -1152,4 +1123,37 @@ public class ToolChain extends SchemaObject implements IToolChain {
 //      return true;
 //
 //  return false;
+//}
+
+//@Override
+//public String getErrorParserIds(IConfiguration config) {
+//  return modelErrorParsers[SUPER];
+//  // TOFIX JABA code below is wierd
+//  //        String ids = errorParserIds;
+//  //        if (ids == null) {
+//  //            // If I have a superClass, ask it
+//  //            if (getSuperClass() != null) {
+//  //                ids = getSuperClass().getErrorParserIds(config);
+//  //            }
+//  //        }
+//  //        if (ids == null) {
+//  //            // Collect the error parsers from my children
+//  //            if (builder != null) {
+//  //                ids = builder.getErrorParserIds();
+//  //            }
+//  //            ITool[] tools = config.getFilteredTools();
+//  //            for (int i = 0; i < tools.length; i++) {
+//  //                ITool tool = tools[i];
+//  //                String toolIds = tool.getErrorParserIds();
+//  //                if (toolIds != null && toolIds.length() > 0) {
+//  //                    if (ids != null) {
+//  //                        ids += ";"; //$NON-NLS-1$
+//  //                        ids += toolIds;
+//  //                    } else {
+//  //                        ids = toolIds;
+//  //                    }
+//  //                }
+//  //            }
+//  //        }
+//  //        return ids;
 //}

@@ -135,14 +135,14 @@ public interface IConfiguration extends ISchemaObject {
      */
     public String getCleanCommand();
 
-    /**
-     * Answers the semicolon separated list of unique IDs of the error parsers
-     * associated
-     * with this configuration.
-     *
-     * @return String
-     */
-    public String getErrorParserIds();
+//    /**
+//     * Answers the semicolon separated list of unique IDs of the error parsers
+//     * associated
+//     * with this configuration.
+//     *
+//     * @return String
+//     */
+//    public String getErrorParserIds();
 
     /**
      * Answers the ordered list of unique IDs of the error parsers associated

@@ -79,33 +79,19 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
                 ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
                 ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
-                ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(myProject);
 
                 IProjectType sloeberProjType = ManagedBuildManager.getProjectType(myExtensionPointID, myExtensionID,
                         myProjectTypeID, true);
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
-                ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
-                info.setManagedProject(mProj);
                 for (IConfiguration iConfig : modelConfigs) {
                     //        for (CfgHolder cfg : cfgs) {
                     Configuration config = (Configuration) iConfig;
-                    //String id = ManagedBuildManager.calculateChildId(config.getId(), null);
-                    // Configuration config = new Configuration(mProj, cf, id, false, true);
                     AutoBuildConfigurationData data = new AutoBuildConfigurationData(config, myProject);
                     assert (data != null);
-                    //ICConfigurationDescription cfgDes = 
                     ICConfigurationDescription cdtCfgDes = des
                             .createConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, data);
                     data.setCdtConfigurationDescription(cdtCfgDes);
-                    //                    config.setConfigurationDescription(cfgDes);
-                    //                    config.exportArtifactInfo();
-
-                    //                    IBuilder bld = config.getBuilder();
-                    //                    if (bld != null) {
-                    //                        bld.setManagedBuildOn(true);
-                    //                    }
-
                 }
                 des.setCdtProjectCreated();
                 mngr.setProjectDescription(myProject, des);
@@ -121,7 +107,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
     @Override
     public IFile[] getFilesToOpen() {
-        // TODO Auto-generated method stub
         return IGenerator.super.getFilesToOpen();
     }
 

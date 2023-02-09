@@ -28,10 +28,7 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.Options;
 
 public class AutoBuildConfigurationData extends CConfigurationData {
     private IConfiguration myAutoBuildConfiguration;
@@ -45,6 +42,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     private Map<String, String> myProperties = new HashMap<>();
     //resource OptionID Value
     private Map<IResource, Map<String, String>> mySelectedOptions = new HashMap<>();
+	private String[] myRequiredErrorParserList;
 
     public AutoBuildConfigurationData(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -53,6 +51,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
         myName = myAutoBuildConfiguration.getName();
         myDescription = myAutoBuildConfiguration.getDescription();
+        myRequiredErrorParserList=myAutoBuildConfiguration.getErrorParserList();
 
     }
 
@@ -68,6 +67,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myName = autoBuildConfigBase.getName();
         myDescription = autoBuildConfigBase.getDescription();
         mySelectedOptions = myAutoBuildConfiguration.getDefaultProjectOptions(this);
+        myRequiredErrorParserList=myAutoBuildConfiguration.getErrorParserList();
         isValid = true;
     }
 
@@ -248,5 +248,10 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         ret.putAll(retFile);
         return ret;
     }
+
+	public String[] getErrorParserList() {
+		// TODO JABA I for now return the required but this should be the selected
+		return myRequiredErrorParserList;
+	}
 
 }

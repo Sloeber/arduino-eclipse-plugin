@@ -69,7 +69,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private List<String> defaultLanguageSettingsProviderIds = new ArrayList<>();
 
     private boolean isPreferenceConfig;
-    private String[] myErrorParserIDs;
+    private List<String> myErrorParserIDs=new LinkedList<>();
 
     /**
      * Create an configuration from the project manifest file element.
@@ -117,7 +117,10 @@ public class Configuration extends SchemaObject implements IConfiguration {
     }
 
     private void resolveFields() {
-        myErrorParserIDs = modelerrorParsers[SUPER].split(SEMICOLON);
+       String errorParserIDs[] = modelerrorParsers[SUPER].split(SEMICOLON);
+       List<String>  builderErroParserIds=myToolchain.getErrorParserList();
+       myErrorParserIDs.addAll(Arrays.asList(errorParserIDs));
+       myErrorParserIDs.addAll(builderErroParserIds);
 
         if (modelcleanCommand[SUPER].isBlank()) {
             if (Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -193,14 +196,11 @@ public class Configuration extends SchemaObject implements IConfiguration {
         return modeldescription[SUPER];
     }
 
-    @Override
-    public String getErrorParserIds() {
-        return modelerrorParsers[SUPER];
-    }
+
 
     @Override
     public String[] getErrorParserList() {
-        return myErrorParserIDs;
+        return myErrorParserIDs.toArray(new String[myErrorParserIDs.size()]);
     }
 
     @Override
