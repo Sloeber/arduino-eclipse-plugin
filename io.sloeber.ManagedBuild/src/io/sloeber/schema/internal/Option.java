@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
@@ -759,9 +760,12 @@ public class Option extends SchemaObject implements IOption {
     }
 
     @Override
-    public String[] getCommandLineContribution(String optionValue, AutoBuildConfigurationData autoConfData) {
+    public String[] getCommandLineContribution(IResource resource, String optionValue, AutoBuildConfigurationData autoConfData) {
         ICConfigurationDescription confDesc = autoConfData.getCdtConfigurationDescription();
         String[] retString = new String[1];
+        if(!isEnabled(resource, autoConfData)) {
+        	return new String[0];
+        }
         if (commandGenerator != null) {
             String command[] = commandGenerator.generateCommand(this, optionValue, autoConfData);
             if (command != null) {

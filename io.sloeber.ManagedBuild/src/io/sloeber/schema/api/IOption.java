@@ -19,6 +19,7 @@
 package io.sloeber.schema.api;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.OptionStringValue;
@@ -262,7 +263,7 @@ public interface IOption extends ISchemaObject {
      */
     public String getCommand();
 
-    public String[] getCommandLineContribution(String value, AutoBuildConfigurationData autoConfData);
+    public String[] getCommandLineContribution(IResource resource, String value, AutoBuildConfigurationData autoConfData);
 
     //    /**
     //     * @return an instance of the class that overrides the default command

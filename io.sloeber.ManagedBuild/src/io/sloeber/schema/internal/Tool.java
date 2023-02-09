@@ -451,7 +451,7 @@ public class Tool extends SchemaObject implements ITool {
                 continue;
             }
 
-            String[] cmdContrib = curOption.getCommandLineContribution(optionValue, autoBuildConfData);
+            String[] cmdContrib = curOption.getCommandLineContribution(inputFile,optionValue, autoBuildConfData);
             java.util.Collections.addAll(flags, cmdContrib);
             //
             //            } catch (BuildException e) {
