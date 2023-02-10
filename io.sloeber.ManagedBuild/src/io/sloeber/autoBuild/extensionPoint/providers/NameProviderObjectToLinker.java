@@ -8,17 +8,17 @@ import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
-public class LinkObjectNameProvider implements IOutputNameProvider {
+public class NameProviderObjectToLinker implements IOutputNameProvider {
     public static String OBJECT_EXTENSION = ".o";
 
-    public LinkObjectNameProvider() {
+    public NameProviderObjectToLinker() {
         // nothing to do here
     }
 
     @Override
     public String getOutputFileName(IFile inputFile, ICConfigurationDescription config, IInputType inputType,
             IOutputType outputType) {
-        if (ArchiveNameProvider.isArchiveInputFile(inputFile)) {
+        if (NameProviderArchive.isArchiveInputFile(inputFile)) {
             return null;
         }
         return inputFile.getName() + OBJECT_EXTENSION;

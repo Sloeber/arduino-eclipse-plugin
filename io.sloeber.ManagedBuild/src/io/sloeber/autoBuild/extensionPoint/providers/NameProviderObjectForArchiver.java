@@ -8,19 +8,19 @@ import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
-public class ArchiveObjectNameProvider implements IOutputNameProvider {
+public class NameProviderObjectForArchiver implements IOutputNameProvider {
 
-    public ArchiveObjectNameProvider() {
+    public NameProviderObjectForArchiver() {
         // nothing to do here
     }
 
     @Override
     public String getOutputFileName(IFile inputFile, ICConfigurationDescription config, IInputType inputType,
             IOutputType outputType) {
-        if (!ArchiveNameProvider.isArchiveInputFile(inputFile)) {
+        if (!NameProviderArchive.isArchiveInputFile(inputFile)) {
             return null;
         }
-        return inputFile.getName() + LinkObjectNameProvider.OBJECT_EXTENSION;
+        return inputFile.getName() + NameProviderObjectToLinker.OBJECT_EXTENSION;
     }
 
 }

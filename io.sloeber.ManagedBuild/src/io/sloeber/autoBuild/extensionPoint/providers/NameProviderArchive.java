@@ -8,12 +8,12 @@ import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 
-public class ArchiveNameProvider implements IOutputNameProvider {
+public class NameProviderArchive implements IOutputNameProvider {
     static String myArchiveFolders[] = { "Libraries", "libraries", "Archives", "archives" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     static String myFixedNameArchiveFolders[] = { "core", "Core" }; //$NON-NLS-1$ //$NON-NLS-2$
     static private String ARCHIVE_EXTENSION = ".ar"; //$NON-NLS-1$
 
-    public ArchiveNameProvider() {
+    public NameProviderArchive() {
         // nothing to do here
     }
 

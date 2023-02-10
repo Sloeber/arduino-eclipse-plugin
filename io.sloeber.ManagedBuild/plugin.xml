@@ -100,14 +100,14 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.cpp.link.output"
                     name="%outputType.CPP.link.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.LinkObjectNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectToLinker"
                     primaryOutput="true">
               </outputType>
               <outputType
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.cpp.ar.output"
                     name="%outputType.CPP.AR.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveObjectNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectForArchiver"
                     primaryOutput="true">
               </outputType>
            </tool>
@@ -146,7 +146,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.c.link.output"
                     name="%outputType.C.link.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.LinkObjectNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectToLinker"
                     outputExtension="O"
                     primaryOutput="true">
               </outputType>
@@ -154,7 +154,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.c.ar.output"
                     name="%outputType.C.AR.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveObjectNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectForArchiver"
                     outputExtension="o"
                     primaryOutput="true">
               </outputType>
@@ -193,7 +193,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.S.sketch.link.output"
                     name="%outputType.S.link.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.LinkObjectNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectToLinker"
                     outputExtension="o"
                     primaryOutput="true">
               </outputType>
@@ -201,7 +201,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.S.ar.output"
                     name="%outputType.S.AR.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveObjectNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectForArchiver"
                     outputExtension="o"
                     primaryOutput="true">
               </outputType>
@@ -217,7 +217,7 @@
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.archiver.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.ArchiveNameProvider"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderArchive"
                     outputExtension="ar"
                     outputNames="${archive_file_path}"
                     primaryOutput="true">
