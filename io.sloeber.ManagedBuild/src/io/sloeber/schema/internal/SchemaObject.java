@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.Const.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

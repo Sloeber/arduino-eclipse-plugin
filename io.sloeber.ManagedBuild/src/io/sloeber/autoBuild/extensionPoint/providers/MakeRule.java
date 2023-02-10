@@ -1,9 +1,8 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.Internal.ManagedBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
-import static io.sloeber.autoBuild.integration.Const.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -220,11 +218,6 @@ public class MakeRule {
             AutoBuildConfigurationData autoBuildConfData) {
 
         String cmd = myTool.getToolCommand();
-        //        if(!cmd.contains(BLANK)) {
-        //        	cmd=
-        //        }
-        //For now assume 1 target with 1 or more prerequisites
-        // if there is more than 1 prerequisite we take the flags of the first prerequisite only
         Set<IFile> local_targets = getTargetFiles();
         Set<IFile> local_prerequisites = getPrerequisiteFiles();
         if (local_targets.size() != 1) {
@@ -287,7 +280,7 @@ public class MakeRule {
                 .append(escapedEcho(MakefileGenerator_message_start_file + WHITESPACE + OUT_MACRO));
         buffer.append(TAB).append(AT).append(escapedEcho(myTool.getAnnouncement()));
 
-        // JABA add sketch.prebuild and postbouild if needed
+        // JABA add sketch.prebuild and postbuild if needed
         //TOFIX this should not be here
         if ("sloeber.ino".equals(fileName)) { //$NON-NLS-1$
 
@@ -309,7 +302,7 @@ public class MakeRule {
         } else {
             buffer.append(TAB).append(buildCmd);
         }
-        // end JABA add sketch.prebuild and postbouild if needed
+        // end JABA add sketch.prebuild and postbuild if needed
 
         buffer.append(NEWLINE);
         buffer.append(TAB).append(AT)

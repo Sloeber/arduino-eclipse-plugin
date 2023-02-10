@@ -16,7 +16,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.integration.Const.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import java.net.URI;
 import java.text.MessageFormat;

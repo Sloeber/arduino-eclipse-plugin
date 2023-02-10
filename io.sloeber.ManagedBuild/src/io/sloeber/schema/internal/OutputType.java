@@ -14,7 +14,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.Const.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;

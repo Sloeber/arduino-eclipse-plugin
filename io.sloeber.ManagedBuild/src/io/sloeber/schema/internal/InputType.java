@@ -15,9 +15,9 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.Const.DUMPLEAD;
-import static io.sloeber.autoBuild.integration.Const.EQUAL;
-import static io.sloeber.autoBuild.integration.Const.NEWLINE;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.DUMPLEAD;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.EQUAL;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.NEWLINE;
 
 import java.util.ArrayList;
 import java.util.List;

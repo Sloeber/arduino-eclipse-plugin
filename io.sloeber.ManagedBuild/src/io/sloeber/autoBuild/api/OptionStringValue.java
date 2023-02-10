@@ -15,7 +15,7 @@
 package io.sloeber.autoBuild.api;
 
 import java.util.Objects;
-import static io.sloeber.autoBuild.integration.Const.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import org.eclipse.cdt.core.settings.model.ICLibraryFileEntry;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
