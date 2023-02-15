@@ -50,10 +50,10 @@ public class CheckOptionExpression extends Expression {
         AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) context.getDefaultVariable();
         IResource resource = (IResource) context.getVariable(KEY_RESOURCE);
         String selectedOption = autoData.getSelectedOptions(resource).get(myOptionID);
-        if ("true".equals(myExpectedValue) && selectedOption != null) { //$NON-NLS-1$
-            return EvaluationResult.TRUE;
-        }
-        if ("false".equals(myExpectedValue) && selectedOption == null) { //$NON-NLS-1$
+        boolean selectedBoolean = "true".equals(selectedOption); //$NON-NLS-1$
+        boolean expectedBoolean = "true".equals(myExpectedValue); //$NON-NLS-1$
+        if (selectedBoolean == expectedBoolean) {
+            int a = 0;
             return EvaluationResult.TRUE;
         }
         return EvaluationResult.FALSE;

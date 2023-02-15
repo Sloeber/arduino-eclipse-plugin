@@ -237,6 +237,8 @@ public class InputType extends SchemaObject implements IInputType {
             if (curContentType.isAssociatedWith(file.getName())) {
                 return true;
             }
+        }
+        if (mySourceContentTypes.size() > 0) {
             return false;
         }
         if (inputExtensions.contains(file.getFileExtension())) {
