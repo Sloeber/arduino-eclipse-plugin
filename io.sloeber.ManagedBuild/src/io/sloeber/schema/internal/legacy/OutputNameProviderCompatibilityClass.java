@@ -26,9 +26,9 @@ import io.sloeber.schema.internal.Options;
 public class OutputNameProviderCompatibilityClass implements IOutputNameProvider {
 
     @Override
-    public String getOutputFileName(IFile inputFile, ICConfigurationDescription confDesc, IInputType inputType,
+    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType,
             IOutputType outputType) {
-        AutoBuildConfigurationData autoData = AutoBuildConfigurationData.getFromConfig(confDesc);
+        ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
         ITool tool = inputType.getParent();
 
         //  Determine a default name from the input file name

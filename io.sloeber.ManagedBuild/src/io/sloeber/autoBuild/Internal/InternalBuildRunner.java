@@ -25,6 +25,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
@@ -71,15 +72,18 @@ public class InternalBuildRunner extends IBuildRunner {
     private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
     @Override
-    public boolean invokeBuild(int kind, IProject project, ICConfigurationDescription cfgDescription, IBuilder builder,
-            IConsole console, IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder,
-            IProgressMonitor monitor) throws CoreException {
+    public boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor monitor)
+            throws CoreException {
 
         SubMonitor parentMon = SubMonitor.convert(monitor);
+        IProject project = autoData.getProject();
+        IConfiguration configuration = autoData.getConfiguration();
+        ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
         BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
-        AutoBuildConfigurationData autoBuildConfData = (AutoBuildConfigurationData) cfgDescription
-                .getConfigurationData();
-        IConfiguration configuration = autoBuildConfData.getConfiguration();
+
+        IConsole console = CCorePlugin.getDefault().getConsole();
+        console.start(project);
 
         try {
             if (monitor == null) {
@@ -191,4 +195,5 @@ public class InternalBuildRunner extends IBuildRunner {
 
         return false;
     }
+
 }

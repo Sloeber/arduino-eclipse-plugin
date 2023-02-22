@@ -5,6 +5,7 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 
@@ -15,13 +16,6 @@ public class NameProviderArchive implements IOutputNameProvider {
 
     public NameProviderArchive() {
         // nothing to do here
-    }
-
-    @Override
-    public String getOutputFileName(IFile inputFile, ICConfigurationDescription config, IInputType inputType,
-            IOutputType outputType) {
-        String archiveFileName = getArchiveFileName(inputFile, false);
-        return archiveFileName;
     }
 
     public static boolean isArchiveInputFile(IFile inputFile) {
@@ -47,6 +41,13 @@ public class NameProviderArchive implements IOutputNameProvider {
             }
         }
         return null;
+    }
+
+    @Override
+    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType,
+            IOutputType outputType) {
+        String archiveFileName = getArchiveFileName(inputFile, false);
+        return archiveFileName;
     }
 
 }

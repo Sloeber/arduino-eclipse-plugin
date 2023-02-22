@@ -46,6 +46,8 @@ public class ProjectType extends SchemaObject implements IProjectType {
     private IConfigurationNameProvider myConfigurationNameProvider = null;
     private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
     private IProjectBuildMacroSupplier myBuildMacroSupplier = null;
+    private String myExtensionPointID;
+    private String myExtensionID;
 
     /*
      * C O N S T R U C T O R S
@@ -55,8 +57,10 @@ public class ProjectType extends SchemaObject implements IProjectType {
      * This constructor is called to create a projectType defined by an extension
      * point in a plugin manifest file.
      */
-    public ProjectType(IExtensionPoint root, IConfigurationElement element) {
-
+    public ProjectType(String extensionPointID, String extensionID, IExtensionPoint root,
+            IConfigurationElement element) {
+        myExtensionPointID = extensionPointID;
+        myExtensionID = extensionID;
         loadNameAndID(root, element);
         modelBuildProperties = getAttributes(BUILD_PROPERTIES);
         modelBuildArtifactType = getAttributes(BUILD_ARTEFACT_TYPE);
@@ -196,5 +200,15 @@ public class ProjectType extends SchemaObject implements IProjectType {
     @Override
     public Map<String, String> getDefaultBuildProperties() {
         return myProperties;
+    }
+
+    @Override
+    public String getExtensionPointID() {
+        return myExtensionPointID;
+    }
+
+    @Override
+    public String getExtensionID() {
+        return myExtensionID;
     }
 }

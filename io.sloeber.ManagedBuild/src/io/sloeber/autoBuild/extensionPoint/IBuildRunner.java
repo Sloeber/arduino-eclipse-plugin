@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -53,8 +54,7 @@ public abstract class IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public abstract boolean invokeBuild(int kind, IProject project,
-            ICConfigurationDescription icConfigurationDescription, IBuilder builder, IConsole console,
+    public abstract boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor monitor)
             throws CoreException;
 

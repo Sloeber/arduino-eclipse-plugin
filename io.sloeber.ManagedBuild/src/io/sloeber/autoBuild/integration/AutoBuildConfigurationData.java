@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.Internal.BuildTargetPlatformData;
 import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
 
 public class AutoBuildConfigurationData extends CConfigurationData {
@@ -42,7 +43,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
     private Map<String, String> myProperties = new HashMap<>();
     //resource OptionID Value
     private Map<IResource, Map<String, String>> mySelectedOptions = new HashMap<>();
-	private String[] myRequiredErrorParserList;
+    private String[] myRequiredErrorParserList;
 
     public AutoBuildConfigurationData(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -51,7 +52,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
         myName = myAutoBuildConfiguration.getName();
         myDescription = myAutoBuildConfiguration.getDescription();
-        myRequiredErrorParserList=myAutoBuildConfiguration.getErrorParserList();
+        myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
 
     }
 
@@ -67,11 +68,40 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myName = autoBuildConfigBase.getName();
         myDescription = autoBuildConfigBase.getDescription();
         mySelectedOptions = myAutoBuildConfiguration.getDefaultProjectOptions(this);
-        myRequiredErrorParserList=myAutoBuildConfiguration.getErrorParserList();
+        myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
+        doLegacyChanges();
         isValid = true;
     }
 
+    private void doLegacyChanges() {
+        IProjectType projectType = myAutoBuildConfiguration.getProjectType();
+        if ("io.sloeber.autoBuild.buildDefinitions".equals(projectType.getExtensionPointID())) { //$NON-NLS-1$
+            if ("cdt.cross.gnu".equals(projectType.getExtensionID())) { //$NON-NLS-1$
+                switch (projectType.getId()) {
+                case "cdt.managedbuild.target.gnu.cross.exe": { //$NON-NLS-1$
+                    Map<String, String> options = mySelectedOptions.get(myProject);
+                    options.put("gnu.c.link.option.shared", FALSE); //$NON-NLS-1$
+                    options.put("gnu.cpp.link.option.shared", FALSE); //$NON-NLS-1$
+                    //mySelectedOptions.put(myProject, options);
+                    break;
+                }
+                case "cdt.managedbuild.target.gnu.cross.so": { //$NON-NLS-1$
+                    Map<String, String> options = mySelectedOptions.get(myProject);
+                    options.put("gnu.c.link.option.shared", TRUE.toLowerCase()); //$NON-NLS-1$
+                    options.put("gnu.cpp.link.option.shared", TRUE.toLowerCase()); //$NON-NLS-1$
+                    //mySelectedOptions.put(myProject, options);
+                    break;
+                }
+                }
+            }
+        }
+
+    }
+
     public static AutoBuildConfigurationData getFromConfig(ICConfigurationDescription confDesc) {
+        //TOFIX JABA as CDT does a create on the configuration data in this call
+        // I will need to make a lookup table to avoid doing this call
+        //I currently keep this with  side effects
         return (AutoBuildConfigurationData) confDesc.getConfigurationData();
     }
 
@@ -80,6 +110,7 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
                 myCdtConfigurationDescription);
         mySelectedOptions = myAutoBuildConfiguration.getDefaultProjectOptions(this);
+        doLegacyChanges();
         isValid = true;
     }
 
@@ -249,9 +280,9 @@ public class AutoBuildConfigurationData extends CConfigurationData {
         return ret;
     }
 
-	public String[] getErrorParserList() {
-		// TODO JABA I for now return the required but this should be the selected
-		return myRequiredErrorParserList;
-	}
+    public String[] getErrorParserList() {
+        // TODO JABA I for now return the required but this should be the selected
+        return myRequiredErrorParserList;
+    }
 
 }

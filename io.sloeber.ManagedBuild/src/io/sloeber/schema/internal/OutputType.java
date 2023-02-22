@@ -16,7 +16,6 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -137,16 +136,14 @@ public class OutputType extends SchemaObject implements IOutputType {
         return outputContentType;
     }
 
-
     @Override
     public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoBuildConfData, IInputType inputType) {
         if (!isEnabled(inputFile, autoBuildConfData)) {
             return null;
         }
         IFolder buildFolder = autoBuildConfData.getBuildFolder();
-        ICConfigurationDescription config = autoBuildConfData.getCdtConfigurationDescription();
         if (nameProvider != null) {
-            String outputFile = nameProvider.getOutputFileName(inputFile, config, inputType, this);
+            String outputFile = nameProvider.getOutputFileName(inputFile, autoBuildConfData, inputType, this);
             if (outputFile != null) {
                 return getOutputFile(buildFolder, inputFile, outputFile);
             }

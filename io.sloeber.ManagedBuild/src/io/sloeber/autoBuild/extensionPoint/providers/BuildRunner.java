@@ -57,16 +57,22 @@ import io.sloeber.schema.api.IConfiguration;
 public class BuildRunner extends IBuildRunner {
 
     @Override
-    public boolean invokeBuild(int kind, IProject project, ICConfigurationDescription confDesc, IBuilder builder,
-            IConsole console, IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder,
-            IProgressMonitor inMonitor) throws CoreException {
+    public boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor inMonitor)
+            throws CoreException {
         IProgressMonitor monitor = inMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
-        boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
-        AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) confDesc.getConfigurationData();
+
+        IProject project = autoData.getProject();
         IConfiguration configuration = autoData.getConfiguration();
+        ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
+
+        IConsole console = CCorePlugin.getDefault().getConsole();
+        console.start(project);
+        boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
+
         String buildCommand = AutoBuildCommon.resolve(builder.getCommand(), confDesc);
         if (buildCommand.isBlank()) {
             String msg = MessageFormat.format(ManagedMakeBuilder_message_undefined_build_command, builder.getId());
@@ -85,7 +91,7 @@ public class BuildRunner extends IBuildRunner {
 
             String[] envp = BuildRunnerHelper.envMapToEnvp(getEnvironment(confDesc, builder));
 
-            String[] errorParsers =autoData.getErrorParserList(); 
+            String[] errorParsers = autoData.getErrorParserList();
             ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator, errorParsers);
 
             List<IConsoleParser> parsers = new ArrayList<>();
@@ -103,9 +109,9 @@ public class BuildRunner extends IBuildRunner {
             epm.deferDeDuplication();
             try {
                 state = buildRunnerHelper.build(monitor);
-                if (state!=0) {
-               	 epm.addProblemMarker(
-                         new ProblemMarkerInfo(project, 1, "Build Failed", IMarkerGenerator.SEVERITY_ERROR_BUILD, null)); //$NON-NLS-1$
+                if (state != 0) {
+                    epm.addProblemMarker(new ProblemMarkerInfo(project, 1, "Build Failed", //$NON-NLS-1$
+                            IMarkerGenerator.SEVERITY_ERROR_BUILD, null));
 
                 }
             } finally {
@@ -113,7 +119,7 @@ public class BuildRunner extends IBuildRunner {
             }
             buildRunnerHelper.close();
             buildRunnerHelper.goodbye();
-           
+
             project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 
         } catch (Exception e) {

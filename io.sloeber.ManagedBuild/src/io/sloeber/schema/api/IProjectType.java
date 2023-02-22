@@ -128,6 +128,21 @@ public interface IProjectType extends ISchemaObject {
      */
     public IProjectBuildMacroSupplier getBuildMacroSupplier();
 
+    /**
+     * return the extensionPointID that describes this XML model that describes this
+     * configuration
+     * 
+     * @return the extensionPointID of the XML
+     */
+    public String getExtensionPointID();
+
+    /**
+     * return the extensiontID that describes this configuration
+     * 
+     * @return the extensionID of the model
+     */
+    public String getExtensionID();
+
     Map<String, String> getDefaultBuildProperties();
 
 }

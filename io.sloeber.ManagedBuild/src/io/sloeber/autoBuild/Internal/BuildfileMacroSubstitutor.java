@@ -127,7 +127,7 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
     private void init(ICConfigurationDescription CfgDes) {
         fCfgDes = CfgDes;
         fVarMngr = CCorePlugin.getDefault().getCdtVariableManager();
-        AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) CfgDes.getConfigurationData();
+        AutoBuildConfigurationData autoData = AutoBuildConfigurationData.getFromConfig(CfgDes);
         fConfiguration = autoData.getConfiguration();
         fBuilder = fConfiguration.getBuilder();
     }

@@ -59,23 +59,23 @@ import io.sloeber.schema.internal.ProjectType;
 public class ManagedBuildManager extends AbstractCExtension {
 
     // Error ID's for OptionValidError()
-//    private static final int ERROR_CATEGORY = 0;
-//    private static final int ERROR_FILTER = 1;
-//
-//    private static final String BUILD_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildType"; //$NON-NLS-1$
-//    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildArtefactType"; //$NON-NLS-1$
-//
-//    private static final String BUILD_TYPE_PROPERTY_DEBUG = "org.eclipse.cdt.build.core.buildType.debug"; //$NON-NLS-1$
-//    private static final String BUILD_TYPE_PROPERTY_RELEASE = "org.eclipse.cdt.build.core.buildType.release"; //$NON-NLS-1$
-//    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_EXE = "org.eclipse.cdt.build.core.buildArtefactType.exe"; //$NON-NLS-1$
-//    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_STATICLIB = "org.eclipse.cdt.build.core.buildArtefactType.staticLib"; //$NON-NLS-1$
-//    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_SHAREDLIB = "org.eclipse.cdt.build.core.buildArtefactType.sharedLib"; //$NON-NLS-1$
-//
-//    private static final String INTERNAL_BUILDER_ID = "org.eclipse.cdt.build.core.internal.builder"; //$NON-NLS-1$
+    //    private static final int ERROR_CATEGORY = 0;
+    //    private static final int ERROR_FILTER = 1;
+    //
+    //    private static final String BUILD_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildType"; //$NON-NLS-1$
+    //    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildArtefactType"; //$NON-NLS-1$
+    //
+    //    private static final String BUILD_TYPE_PROPERTY_DEBUG = "org.eclipse.cdt.build.core.buildType.debug"; //$NON-NLS-1$
+    //    private static final String BUILD_TYPE_PROPERTY_RELEASE = "org.eclipse.cdt.build.core.buildType.release"; //$NON-NLS-1$
+    //    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_EXE = "org.eclipse.cdt.build.core.buildArtefactType.exe"; //$NON-NLS-1$
+    //    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_STATICLIB = "org.eclipse.cdt.build.core.buildArtefactType.staticLib"; //$NON-NLS-1$
+    //    private static final String BUILD_ARTEFACT_TYPE_PROPERTY_SHAREDLIB = "org.eclipse.cdt.build.core.buildArtefactType.sharedLib"; //$NON-NLS-1$
+    //
+    //    private static final String INTERNAL_BUILDER_ID = "org.eclipse.cdt.build.core.internal.builder"; //$NON-NLS-1$
     private static boolean VERBOSE = false;
 
     // Random number for derived object model elements
-//    private static Random randomNumber;
+    //    private static Random randomNumber;
 
     private static Map<IProject, IManagedBuildInfo> fInfoMap = new HashMap<>();
 
@@ -88,8 +88,6 @@ public class ManagedBuildManager extends AbstractCExtension {
     static {
         supportedExtensionPointIDs.add("io.sloeber.autoBuild.buildDefinitions"); //$NON-NLS-1$
     }
-
-
 
     @SuppressWarnings("nls")
     public static IProjectType getProjectType(String extensionPointID, String extensionID, String projectTypeID,
@@ -151,7 +149,8 @@ public class ManagedBuildManager extends AbstractCExtension {
                     for (IConfigurationElement element : elements) {
                         try {
                             if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
-                                ProjectType newProjectType = new ProjectType(extensionPoint, element);
+                                ProjectType newProjectType = new ProjectType(extensionPointID, extensionID,
+                                        extensionPoint, element);
                                 objects.add(newProjectType);
                                 if (VERBOSE) {
                                     System.out.print(newProjectType.dump(0));
@@ -169,7 +168,6 @@ public class ManagedBuildManager extends AbstractCExtension {
             Activator.log(e);
         }
     }
-
 
     public static void setLoaddedBuildInfo(IProject project, IManagedBuildInfo info) throws CoreException {
         // Associate the build info with the project for the duration of the session
@@ -207,8 +205,6 @@ public class ManagedBuildManager extends AbstractCExtension {
             // //$NON-NLS-1$
         }
     }
-
-
 
     /**
      * Private helper method that first checks to see if a build information object
@@ -358,8 +354,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return buildInfo;
     }
 
-
-
     /**
      * Finds, but does not create, the managed build information for the argument.
      * If the build info is not currently loaded and "forceLoad" argument is set to
@@ -377,8 +371,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return findBuildInfo(resource.getProject(), forceLoad);
     }
 
-
-
     public static void outputManifestError(String message) {
         System.err.println(ManagedBuildManager_error_manifest_header + message + NEWLINE);
     }
@@ -388,8 +380,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         msgs[0] = iconLocation;
         ManagedBuildManager.outputManifestError(MessageFormat.format(ManagedBuildManager_error_manifest_icon, msgs));
     }
-
-
 
     public static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
             IWorkingDirectoryTracker cwdTracker, List<IConsoleParser> parsers) {

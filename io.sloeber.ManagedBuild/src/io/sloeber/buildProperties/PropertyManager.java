@@ -68,7 +68,7 @@ public class PropertyManager {
             fConfigDesc = ConfigDesc;
             fProject = ConfigDesc.getProjectDescription().getProject();
             fCfgPropertyMap = cfgPropertyMap;
-            AutoBuildConfigurationData autoConfig = (AutoBuildConfigurationData) fConfigDesc.getConfigurationData();
+            AutoBuildConfigurationData autoConfig = AutoBuildConfigurationData.getFromConfig(fConfigDesc);
             config = autoConfig.getConfiguration();
             fCfgId = config.getId();
         }
@@ -406,20 +406,20 @@ public class PropertyManager {
         return null;
     }
 
-//    private static IConfiguration getConfigurationFromId(IProject project, String id) {
-//        if (project == null || id == null)
-//            return null;
-//        IManagedBuildInfo bInfo = ManagedBuildManager.getBuildInfo(project, false);
-//        IConfiguration cfg = null;
-//        if (bInfo != null) {
-//            IManagedProject mProj = bInfo.getManagedProject();
-//            if (mProj != null) {
-//                cfg = mProj.getConfiguration(id);
-//            }
-//        }
-//
-//        return cfg;
-//    }
+    //    private static IConfiguration getConfigurationFromId(IProject project, String id) {
+    //        if (project == null || id == null)
+    //            return null;
+    //        IManagedBuildInfo bInfo = ManagedBuildManager.getBuildInfo(project, false);
+    //        IConfiguration cfg = null;
+    //        if (bInfo != null) {
+    //            IManagedProject mProj = bInfo.getManagedProject();
+    //            if (mProj != null) {
+    //                cfg = mProj.getConfiguration(id);
+    //            }
+    //        }
+    //
+    //        return cfg;
+    //    }
 
     protected void setLoaddedData(ICConfigurationDescription cfg, Map<String, Object> data) {
         LoaddedInfo info = getLoaddedInfo();

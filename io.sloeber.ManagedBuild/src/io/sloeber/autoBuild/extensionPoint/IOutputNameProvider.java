@@ -6,6 +6,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -33,6 +34,6 @@ public interface IOutputNameProvider {
      * @return the file name the tool should generate or null if the inputFile
      *         should be ignored
      */
-    public String getOutputFileName(IFile inputFile, ICConfigurationDescription config, IInputType inputType,
+    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType,
             IOutputType outputType);
 }
