@@ -28,11 +28,9 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -66,9 +64,8 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize(int buildKind, IProject project, AutoBuildConfigurationData autoBuildConfData,
-            IBuilder builder) {
-        myProject = project;
+    public void initialize(int buildKind, AutoBuildConfigurationData autoBuildConfData) {
+        myProject = autoBuildConfData.getProject();
         myAutoBuildConfData = autoBuildConfData;
         myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();
         myConfig = myAutoBuildConfData.getConfiguration();
@@ -116,16 +113,6 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void regenerateDependencies(boolean force, IProgressMonitor monitor) throws CoreException {
-        //Nothing to do here
-    }
-
-    @Override
-    public void generateDependencies(IProgressMonitor monitor) throws CoreException {
-        //Nothing to do here
-    }
-
-    @Override
     public MultiStatus generateMakefiles(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
         return localgenerateMakefiles(monitor);
     }
@@ -152,8 +139,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         MultiStatus status;
         //This object remains alive between builds; therefore we need to reset the field values
         myFoldersToBuild = new HashSet<>();
-        myMakeRules = new MakeRules(myProject, myAutoBuildConfData, myTopBuildDir, myConfig, mySrcEntries,
-                myFoldersToBuild);
+        myMakeRules = new MakeRules(myAutoBuildConfData, myTopBuildDir, mySrcEntries, myFoldersToBuild);
 
         if (myMakeRules.size() == 0) {
             // Throw an error if no source file make rules have been created
@@ -171,9 +157,9 @@ public class MakefileGenerator implements IMakefileGenerator {
         srcMacroNames = myMakeRules.getPrerequisiteMacros();
         // srcMacroNames.addAll(myMakeRules.getDependecyMacros());
         generateSrcMakefiles();
-        generateSourceMakefile( srcMacroNames);
-        generateObjectsMakefile( objMacroNames);
-        topMakeGeneratefile( objMacroNames);
+        generateSourceMakefile(srcMacroNames);
+        generateObjectsMakefile(objMacroNames);
+        topMakeGeneratefile(objMacroNames);
 
         checkCancel(monitor);
         afterMakefileGeneration();
@@ -243,7 +229,6 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
         return buffer;
     }
-    
 
     /****************************************************************************************
      * Convenience methods to interfere in the makefile generation
@@ -309,82 +294,76 @@ public class MakefileGenerator implements IMakefileGenerator {
     /****************************************************************************************
      * End of Convenience methods to interfere in the makefile generation
      *****************************************************************************************/
-    
+
     /****************************************************************************************
      * Sources/objects MakeFile generation code
      ****************************************************************************************/
 
-    
-	protected void generateSourceMakefile( Set<String> macroNames) throws CoreException {
-		StringBuffer buffer = addDefaultHeader();
-		for (String macroName : macroNames) {
-			if (!macroName.isBlank()) {
-				buffer.append(macroName).append(WHITESPACE).append(":=").append(WHITESPACE).append(NEWLINE); //$NON-NLS-1$
-			}
-		}
-		// Add a list of subdirectories to the makefile
-		buffer.append(NEWLINE);
-		// Add the comment
-		buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_module_list).append(NEWLINE);
-		buffer.append("SUBDIRS := ").append(LINEBREAK); //$NON-NLS-1$
+    protected void generateSourceMakefile(Set<String> macroNames) throws CoreException {
+        StringBuffer buffer = addDefaultHeader();
+        for (String macroName : macroNames) {
+            if (!macroName.isBlank()) {
+                buffer.append(macroName).append(WHITESPACE).append(":=").append(WHITESPACE).append(NEWLINE); //$NON-NLS-1$
+            }
+        }
+        // Add a list of subdirectories to the makefile
+        buffer.append(NEWLINE);
+        // Add the comment
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_module_list).append(NEWLINE);
+        buffer.append("SUBDIRS := ").append(LINEBREAK); //$NON-NLS-1$
 
-		for (IFolder container : myFoldersToBuild) {
-			if (container.getFullPath() == myProject.getFullPath()) {
-				buffer.append(DOT).append(WHITESPACE).append(LINEBREAK);
-			} else {
-				IPath path = container.getProjectRelativePath();
-				buffer.append(escapeWhitespaces(path.toOSString())).append(WHITESPACE).append(LINEBREAK);
-			}
-		}
-		buffer.append(NEWLINE);
-		// Save the file
-		IFile fileHandle = myTopBuildDir.getFile(SRCSFILE_NAME);
-		save(buffer, fileHandle);
-	}
+        for (IFolder container : myFoldersToBuild) {
+            if (container.getFullPath() == myProject.getFullPath()) {
+                buffer.append(DOT).append(WHITESPACE).append(LINEBREAK);
+            } else {
+                IPath path = container.getProjectRelativePath();
+                buffer.append(escapeWhitespaces(path.toOSString())).append(WHITESPACE).append(LINEBREAK);
+            }
+        }
+        buffer.append(NEWLINE);
+        // Save the file
+        IFile fileHandle = myTopBuildDir.getFile(SRCSFILE_NAME);
+        save(buffer, fileHandle);
+    }
 
-	/**
-	 * The makefile generator generates a Macro for each type of output, other than
-	 * final artifact, created by the build.
-	 *
-	 * @param fileHandle The file that should be populated with the output
-	 */
-	protected  void generateObjectsMakefile(  Set<String> outputMacros)
-			throws CoreException {
-		StringBuffer macroBuffer = new StringBuffer();
-		macroBuffer.append(addDefaultHeader());
+    /**
+     * The makefile generator generates a Macro for each type of output, other than
+     * final artifact, created by the build.
+     *
+     * @param fileHandle
+     *            The file that should be populated with the output
+     */
+    protected void generateObjectsMakefile(Set<String> outputMacros) throws CoreException {
+        StringBuffer macroBuffer = new StringBuffer();
+        macroBuffer.append(addDefaultHeader());
 
-		for (String macroName : outputMacros) {
-			if (!macroName.isBlank()) {
-				macroBuffer.append(macroName).append(MAKE_EQUAL);
-				macroBuffer.append(NEWLINE);
-				macroBuffer.append(NEWLINE);
-			}
-		}
-		IFile fileHandle = myTopBuildDir.getFile( OBJECTS_MAKFILE);
-		save(macroBuffer, fileHandle);
-	}
-    
-    
+        for (String macroName : outputMacros) {
+            if (!macroName.isBlank()) {
+                macroBuffer.append(macroName).append(MAKE_EQUAL);
+                macroBuffer.append(NEWLINE);
+                macroBuffer.append(NEWLINE);
+            }
+        }
+        IFile fileHandle = myTopBuildDir.getFile(OBJECTS_MAKFILE);
+        save(macroBuffer, fileHandle);
+    }
+
     /****************************************************************************************
      * End of Sources/objects MakeFile generation code
      ****************************************************************************************/
-    
-    
-    
-    
+
     /****************************************************************************************
      * Top MakeFile generation code
      ****************************************************************************************/
-    
-     protected void topMakeGeneratefile( Set<String> objMacroNames)
-            throws CoreException {
+
+    protected void topMakeGeneratefile(Set<String> objMacroNames) throws CoreException {
 
         StringBuffer buffer = new StringBuffer();
         buffer.append(addDefaultHeader());
 
         buffer.append(topMakeGetIncludeSubDirs());
         buffer.append(topMakeGetIncludeDependencies());
-        buffer.append(topMakeGetRMCommand( objMacroNames));
+        buffer.append(topMakeGetRMCommand(objMacroNames));
         buffer.append(topMakeGetTargets());// this is the include dependencies
         // TOFIX the content from the append below should come from a registered method
         buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n" //$NON-NLS-1$ //$NON-NLS-2$
@@ -407,7 +386,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         save(buffer, fileHandle);
     }
 
-     protected  StringBuffer topMakeGetIncludeSubDirs() {
+    protected StringBuffer topMakeGetIncludeSubDirs() {
         StringBuffer buffer = new StringBuffer();
 
         for (IContainer subDir : myFoldersToBuild) {
@@ -419,7 +398,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         return buffer;
     }
 
-     protected  StringBuffer topMakeGetRMCommand(   Set<String> myDependencyMacros) {
+    protected StringBuffer topMakeGetRMCommand(Set<String> myDependencyMacros) {
         IConfiguration config = myAutoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
         buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE); //$NON-NLS-1$
@@ -446,7 +425,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         return (buffer.append(NEWLINE));
     }
 
-     protected  String topMakeGetPreBuildStep() {
+    protected String topMakeGetPreBuildStep() {
         String prebuildStep = myAutoBuildConfData.getConfiguration().getPrebuildStep();
         // JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt
         // prebuild command if needed
@@ -472,7 +451,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         return prebuildStep.trim();
     }
 
-     protected StringBuffer topMakeGetIncludeDependencies() {
+    protected StringBuffer topMakeGetIncludeDependencies() {
 
         // JABA add the arduino upload/program targets
         StringBuffer buffer = new StringBuffer();
@@ -499,7 +478,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         return buffer;
     }
 
-     protected StringBuffer topMakeGetTargets() {
+    protected StringBuffer topMakeGetTargets() {
         IConfiguration config = myAutoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
 
@@ -592,7 +571,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         return buffer;
     }
 
-    protected  StringBuffer topMakeGetMakeRules( ) {
+    protected StringBuffer topMakeGetMakeRules() {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
@@ -608,8 +587,6 @@ public class MakefileGenerator implements IMakefileGenerator {
     /****************************************************************************************
      * End of Top MakeFile generation code
      ****************************************************************************************/
-     
-
 
     /****************************************************************************************
      * Some Static house keeping methods
@@ -633,9 +610,5 @@ public class MakefileGenerator implements IMakefileGenerator {
             monitor.worked(1);
         }
     }
-    
-    
-    
-    
-    
+
 }

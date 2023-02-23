@@ -165,12 +165,6 @@ public interface IBuilder extends ISchemaObject {
 
     boolean isAutoBuildEnable();
 
-    boolean isCleanBuildEnabled();
-
-    boolean isFullBuildEnabled();
-
-    boolean isIncrementalBuildEnabled();
-
     boolean isParallelBuildOn();
 
     String getAutoBuildTarget();

@@ -89,6 +89,8 @@ public class AutoBuildConfigurationData extends CConfigurationData {
                     Map<String, String> options = mySelectedOptions.get(myProject);
                     options.put("gnu.c.link.option.shared", TRUE.toLowerCase()); //$NON-NLS-1$
                     options.put("gnu.cpp.link.option.shared", TRUE.toLowerCase()); //$NON-NLS-1$
+                    options.put("gnu.cpp.link.option.soname", "${ProjName}.so"); //$NON-NLS-1$ //$NON-NLS-2$
+
                     //mySelectedOptions.put(myProject, options);
                     break;
                 }
@@ -133,7 +135,6 @@ public class AutoBuildConfigurationData extends CConfigurationData {
 
     @Override
     public CBuildData getBuildData() {
-        // TODO Auto-generated method stub
         return myBuildBuildData;
     }
 

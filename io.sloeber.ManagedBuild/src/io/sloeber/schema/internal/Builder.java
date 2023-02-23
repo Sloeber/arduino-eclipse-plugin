@@ -384,21 +384,6 @@ public class Builder extends SchemaObject implements IBuilder {
         return true;
     }
 
-    @Override
-    public boolean isCleanBuildEnabled() {
-        return true;
-    }
-
-    @Override
-    public boolean isFullBuildEnabled() {
-        return isIncrementalBuildEnabled();
-    }
-
-    @Override
-    public boolean isIncrementalBuildEnabled() {
-        return true;
-    }
-
     public static String[] toBuildAttributes(String name) {
 
         //        if (ATTRIBUTE_TARGET_INCREMENTAL.equals(name)) {
@@ -613,13 +598,13 @@ public class Builder extends SchemaObject implements IBuilder {
     @Override
     public String toString() {
 
-//        String version1 = ManagedBuildManager.getVersionFromIdAndVersion(getId());
-//        if (version1 != null) {
-//            StringBuilder buf = new StringBuilder();
-//            buf.append(myName);
-//            buf.append(" (v").append(version1).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-//            return buf.toString();
-//        }
+        //        String version1 = ManagedBuildManager.getVersionFromIdAndVersion(getId());
+        //        if (version1 != null) {
+        //            StringBuilder buf = new StringBuilder();
+        //            buf.append(myName);
+        //            buf.append(" (v").append(version1).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+        //            return buf.toString();
+        //        }
         return myName;
     }
 

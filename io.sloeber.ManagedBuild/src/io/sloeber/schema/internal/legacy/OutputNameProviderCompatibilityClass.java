@@ -46,7 +46,7 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
             String optSharedValue = options.get("gnu.c.link.option.shared"); //$NON-NLS-1$
             if (optSharedValue != null) {
                 try {
-                    isSO = Boolean.getBoolean(optSharedValue);
+                    isSO = Boolean.parseBoolean(optSharedValue);
                 } catch (Exception e) {
                     Activator.log(e);
                 }
@@ -57,62 +57,61 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
         } else if (tool.hasAncestor("cdt.managedbuild.tool.gnu.cpp.linker")) { //$NON-NLS-1$
             String optSharedValue = options.get("gnu.cpp.link.option.shared"); //$NON-NLS-1$
             if (optSharedValue != null) {
-                isSO = Boolean.getBoolean(optSharedValue);
+                isSO = Boolean.parseBoolean(optSharedValue);
             }
             if (isSO) {
                 soName = options.get("gnu.cpp.link.option.soname"); //$NON-NLS-1$
             }
         }
-
         //  If this is a shared library, use the specified name
         if (isSO && soName != null && soName.length() > 0) {
-            fileName = soName;
-        } else {
-            //  Add the outputPrefix
-            String outputPrefix = outputType.getOutputPrefix();
-            // Resolve any macros in the outputPrefix
-            // Note that we cannot use file macros because if we do a clean
-            // we need to know the actual
-            // name of the file to clean, and cannot use any builder
-            // variables such as $@. Hence
-            // we use the next best thing, i.e. configuration context.
+            return soName;
+        }
 
-            boolean explicitRuleRequired = false;
+        // This is not a library
+        //Add the outputPrefix
+        String outputPrefix = outputType.getOutputPrefix();
+        // Resolve any macros in the outputPrefix
+        // Note that we cannot use file macros because if we do a clean
+        // we need to know the actual
+        // name of the file to clean, and cannot use any builder
+        // variables such as $@. Hence
+        // we use the next best thing, i.e. configuration context.
 
-            // if any input files have spaces in the name, then we must
-            // not use builder variables
-            if (inputFile.toString().indexOf(" ") != -1) //$NON-NLS-1$
-                explicitRuleRequired = true;
+        boolean explicitRuleRequired = false;
 
-            try {
+        // if any input files have spaces in the name, then we must
+        // not use builder variables
+        if (inputFile.toString().indexOf(" ") != -1) //$NON-NLS-1$
+            explicitRuleRequired = true;
 
-                if (explicitRuleRequired) {
-                    outputPrefix = BuildMacroProvider.getDefault().resolveValue(outputPrefix, "", //$NON-NLS-1$
-                            " ", //$NON-NLS-1$
-                            IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
-                }
+        try {
 
-                else {
-                    outputPrefix = BuildMacroProvider.getDefault().resolveValueToMakefileFormat(outputPrefix, "", //$NON-NLS-1$
-                            " ", //$NON-NLS-1$
-                            IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
-                }
+            if (explicitRuleRequired) {
+                outputPrefix = BuildMacroProvider.getDefault().resolveValue(outputPrefix, "", //$NON-NLS-1$
+                        " ", //$NON-NLS-1$
+                        IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
             }
 
-            catch (BuildMacroException e) {
-                Activator.log(e);
-            }
-
-            if (outputPrefix != null && outputPrefix.length() > 0) {
-                fileName = outputPrefix + fileName;
-            }
-            //  Add the primary output type extension
-            String exts = outputType.getOutputExtension();
-            if (!exts.isBlank()) {
-                fileName += "." + exts; //$NON-NLS-1$
+            else {
+                outputPrefix = BuildMacroProvider.getDefault().resolveValueToMakefileFormat(outputPrefix, "", //$NON-NLS-1$
+                        " ", //$NON-NLS-1$
+                        IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
             }
         }
 
+        catch (BuildMacroException e) {
+            Activator.log(e);
+        }
+
+        if (outputPrefix != null && outputPrefix.length() > 0) {
+            fileName = outputPrefix + fileName;
+        }
+        //  Add the primary output type extension
+        String exts = outputType.getOutputExtension();
+        if (!exts.isBlank()) {
+            fileName += "." + exts; //$NON-NLS-1$
+        }
         return fileName;
     }
 

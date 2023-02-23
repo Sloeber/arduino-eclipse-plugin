@@ -53,7 +53,6 @@ public class CheckOptionExpression extends Expression {
         boolean selectedBoolean = "true".equals(selectedOption); //$NON-NLS-1$
         boolean expectedBoolean = "true".equals(myExpectedValue); //$NON-NLS-1$
         if (selectedBoolean == expectedBoolean) {
-            int a = 0;
             return EvaluationResult.TRUE;
         }
         return EvaluationResult.FALSE;

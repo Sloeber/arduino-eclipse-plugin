@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.CoreException;
 import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.internal.Builder;
 
 public class BuilderFactory {
 
@@ -61,87 +60,7 @@ public class BuilderFactory {
     static final String[] EMPTY_STRING_ARRAY = new String[0];
     static final IConfiguration[] EMPTY_CFG_ARAY = new IConfiguration[0];
 
-    private static class BuildArgsStorageElement extends MapStorageElement {
-
-        public BuildArgsStorageElement(Map<String, String> map, MapStorageElement parent) {
-            super(map, parent);
-        }
-
-        public BuildArgsStorageElement(String name, MapStorageElement parent) {
-            super(name, parent);
-        }
-
-        @Override
-        public String getAttribute(String name) {
-            String value = super.getAttribute(name);
-            if (value == null) {
-                String keys[] = Builder.toBuildAttributes(name);
-                for (int i = 0; i < keys.length; i++) {
-                    value = super.getAttribute(keys[i]);
-                    if (value != null)
-                        break;
-                }
-            }
-            return value;
-        }
-
-        //		protected String getMapKey(String name) {
-        //			if(name.indexOf('.') == -1)
-        //				return PREFIX_WITH_DOT + name;
-        //			return super.getMapKey(name);
-        //		}
-
-        @Override
-        public void setAttribute(String name, String value) {
-            String[] names = Builder.toBuildAttributes(name);
-            String attrName = names.length != 0 ? names[names.length - 1] : null;
-
-            if (attrName == null && BuilderFactory.USE_DEFAULT_BUILD_CMD.equals(name))
-                attrName = BuilderFactory.USE_DEFAULT_BUILD_CMD;
-
-            if (attrName != null)
-                super.setAttribute(attrName, value);
-        }
-
-        @Override
-        protected MapStorageElement createChildElement(Map<String, String> childMap) {
-            return new BuildArgsStorageElement(childMap, this);
-        }
-
-        @Override
-        protected MapStorageElement createChildElement(String name) {
-            return new BuildArgsStorageElement(name, this);
-        }
-    }
-
-    /*	public static IMakeBuilderInfo create(Preferences prefs, String builderID, boolean useDefaults) {
-    		return new BuildInfoPreference(prefs, builderID, useDefaults);
-    	}
-    
-    	public static IMakeBuilderInfo create(IProject project, String builderID) throws CoreException {
-    		return new BuildInfoProject(project, builderID);
-    	}
-    
-    	public static IMakeBuilderInfo create(Map args, String builderID) {
-    		return new BuildInfoMap(args, builderID);
-    	}
-    	*/
-    /*
-    	private static IBuilder customizeBuilder(IBuilder builder, Map args){
-    		if(args.get(IBuilder.ID) == null){
-    			args = new HashMap(args);
-    			String id = builder.getSuperClass().getId();
-    			id = ManagedBuildManager.calculateChildId(id, null);
-    			args.put(IBuilder.ID, id);
-    		}
-    		MapStorageElement el = new MapStorageElement(args, null);
-    
-    		Builder builder = new Builder(builder.getParent(), )
-    
-    
-    	}
-    */
-
+    // 
     public static Map<String, String> createBuildArgs(IConfiguration cfgs[]) {
         Map<String, String> map = new HashMap<>();
         cfgsToMap(cfgs, map);
@@ -174,9 +93,18 @@ public class BuilderFactory {
      * @param project
      */
     public static ICommand createCommandFromBuilder(IProject project, IBuilder builder) throws CoreException {
-        ICommand command = getBuildSpec(project.getDescription(), CommonBuilder.BUILDER_ID);
-        if (command == null)
-            return null;
+        ICommand[] commands = project.getDescription().getBuildSpec();
+        for (ICommand command : commands) {
+            if (command.getBuilderName().equals(CommonBuilder.BUILDER_ID)) {
+                command.setBuilding(IncrementalProjectBuilder.AUTO_BUILD, true);// builder.isAutoBuildEnable());
+                command.setBuilding(IncrementalProjectBuilder.FULL_BUILD, true);// builder.isFullBuildEnabled());
+                command.setBuilding(IncrementalProjectBuilder.INCREMENTAL_BUILD, true);// builder.isIncrementalBuildEnabled());
+                command.setBuilding(IncrementalProjectBuilder.CLEAN_BUILD, true);// builder.isCleanBuildEnabled());
+                return command;
+            }
+        }
+        return null;
+
         //
         //        MapStorageElement el = new BuildArgsStorageElement("", null); //$NON-NLS-1$
         //        ((Builder) builder).serializeRawData(el);
@@ -186,22 +114,6 @@ public class BuilderFactory {
 
         //        command.setArguments(el.toStringMap());
 
-        command.setBuilding(IncrementalProjectBuilder.AUTO_BUILD, builder.isAutoBuildEnable());
-        command.setBuilding(IncrementalProjectBuilder.FULL_BUILD, builder.isFullBuildEnabled());
-        command.setBuilding(IncrementalProjectBuilder.INCREMENTAL_BUILD, builder.isIncrementalBuildEnabled());
-        command.setBuilding(IncrementalProjectBuilder.CLEAN_BUILD, builder.isCleanBuildEnabled());
-
-        return command;
-    }
-
-    public static ICommand getBuildSpec(IProjectDescription description, String builderID) {
-        ICommand[] commands = description.getBuildSpec();
-        for (int i = 0; i < commands.length; ++i) {
-            if (commands[i].getBuilderName().equals(builderID)) {
-                return commands[i];
-            }
-        }
-        return null;
     }
 
     //  
@@ -232,16 +144,16 @@ public class BuilderFactory {
             cmd.setBuilding(IncrementalProjectBuilder.AUTO_BUILD, builder.isAutoBuildEnable());
             changesMade = true;
         }
-        if (cmd.isBuilding(IncrementalProjectBuilder.FULL_BUILD) != builder.isFullBuildEnabled()) {
-            cmd.setBuilding(IncrementalProjectBuilder.FULL_BUILD, builder.isFullBuildEnabled());
+        if (cmd.isBuilding(IncrementalProjectBuilder.FULL_BUILD) != true) {//builder.isFullBuildEnabled()) {
+            cmd.setBuilding(IncrementalProjectBuilder.FULL_BUILD, true);// builder.isFullBuildEnabled());
             changesMade = true;
         }
-        if (cmd.isBuilding(IncrementalProjectBuilder.INCREMENTAL_BUILD) != builder.isIncrementalBuildEnabled()) {
-            cmd.setBuilding(IncrementalProjectBuilder.INCREMENTAL_BUILD, builder.isIncrementalBuildEnabled());
+        if (cmd.isBuilding(IncrementalProjectBuilder.INCREMENTAL_BUILD) != true) {//builder.isIncrementalBuildEnabled()) {
+            cmd.setBuilding(IncrementalProjectBuilder.INCREMENTAL_BUILD, true);//builder.isIncrementalBuildEnabled());
             changesMade = true;
         }
-        if (cmd.isBuilding(IncrementalProjectBuilder.CLEAN_BUILD) != builder.isCleanBuildEnabled()) {
-            cmd.setBuilding(IncrementalProjectBuilder.CLEAN_BUILD, builder.isCleanBuildEnabled());
+        if (cmd.isBuilding(IncrementalProjectBuilder.CLEAN_BUILD) != true) {//builder.isCleanBuildEnabled()) {
+            cmd.setBuilding(IncrementalProjectBuilder.CLEAN_BUILD, true);//builder.isCleanBuildEnabled());
             changesMade = true;
         }
         return changesMade;
@@ -447,4 +359,95 @@ public class BuilderFactory {
 //((Builder) builder).serialize(el, false);
 //
 //return el.toStringMap();
+//}
+
+//private static class BuildArgsStorageElement extends MapStorageElement {
+//
+//     public BuildArgsStorageElement(Map<String, String> map, MapStorageElement parent) {
+//         super(map, parent);
+//     }
+//
+//     public BuildArgsStorageElement(String name, MapStorageElement parent) {
+//         super(name, parent);
+//     }
+//
+//     @Override
+//     public String getAttribute(String name) {
+//         String value = super.getAttribute(name);
+//         if (value == null) {
+//             String keys[] = Builder.toBuildAttributes(name);
+//             for (int i = 0; i < keys.length; i++) {
+//                 value = super.getAttribute(keys[i]);
+//                 if (value != null)
+//                     break;
+//             }
+//         }
+//         return value;
+//     }
+//
+//     //        protected String getMapKey(String name) {
+//     //            if(name.indexOf('.') == -1)
+//     //                return PREFIX_WITH_DOT + name;
+//     //            return super.getMapKey(name);
+//     //        }
+//
+//     @Override
+//     public void setAttribute(String name, String value) {
+//         String[] names = Builder.toBuildAttributes(name);
+//         String attrName = names.length != 0 ? names[names.length - 1] : null;
+//
+//         if (attrName == null && BuilderFactory.USE_DEFAULT_BUILD_CMD.equals(name))
+//             attrName = BuilderFactory.USE_DEFAULT_BUILD_CMD;
+//
+//         if (attrName != null)
+//             super.setAttribute(attrName, value);
+//     }
+//
+//     @Override
+//     protected MapStorageElement createChildElement(Map<String, String> childMap) {
+//         return new BuildArgsStorageElement(childMap, this);
+//     }
+//
+//     @Override
+//     protected MapStorageElement createChildElement(String name) {
+//         return new BuildArgsStorageElement(name, this);
+//     }
+// }
+//
+// /*    public static IMakeBuilderInfo create(Preferences prefs, String builderID, boolean useDefaults) {
+//       return new BuildInfoPreference(prefs, builderID, useDefaults);
+//   }
+// 
+//   public static IMakeBuilderInfo create(IProject project, String builderID) throws CoreException {
+//       return new BuildInfoProject(project, builderID);
+//   }
+// 
+//   public static IMakeBuilderInfo create(Map args, String builderID) {
+//       return new BuildInfoMap(args, builderID);
+//   }
+//   */
+// /*
+//   private static IBuilder customizeBuilder(IBuilder builder, Map args){
+//       if(args.get(IBuilder.ID) == null){
+//           args = new HashMap(args);
+//           String id = builder.getSuperClass().getId();
+//           id = ManagedBuildManager.calculateChildId(id, null);
+//           args.put(IBuilder.ID, id);
+//       }
+//       MapStorageElement el = new MapStorageElement(args, null);
+// 
+//       Builder builder = new Builder(builder.getParent(), )
+// 
+// 
+//   }
+// */
+
+//public static ICommand getBuildSpec(IProjectDescription description, String builderID) {
+//ICommand[] commands = description.getBuildSpec();
+//for (int i = 0; i < commands.length; ++i) {
+//  if (commands[i].getBuilderName().equals(builderID)) {
+//      return commands[i];
+//  }
+//}
+//return null;
 //}

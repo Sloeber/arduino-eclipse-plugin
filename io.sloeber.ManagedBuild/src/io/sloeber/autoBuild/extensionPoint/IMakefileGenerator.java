@@ -13,16 +13,12 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.MultiStatus;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.schema.api.IBuilder;
 
 /**
  * @since 11.0
@@ -70,10 +66,7 @@ public interface IMakefileGenerator {
      * This method initializes the makefile generator
      */
 
-    public void initialize(int buildKind, IProject iProject, AutoBuildConfigurationData autoBuildConfData,
-            IBuilder builder);
-
-    public void generateDependencies(IProgressMonitor monitor) throws CoreException;
+    public void initialize(int buildKind, AutoBuildConfigurationData autoBuildConfData);
 
     /**
      * Clients call this method when an incremental rebuild is required. The
@@ -82,8 +75,6 @@ public interface IMakefileGenerator {
      * subdirectories need a new makefile and dependency list (if any).
      */
     public MultiStatus generateMakefiles(IResourceDelta delta, IProgressMonitor monitor) throws CoreException;
-
-    public void regenerateDependencies(boolean force, IProgressMonitor monitor) throws CoreException;
 
     public MultiStatus regenerateMakefiles(IProgressMonitor monitor) throws CoreException;
 

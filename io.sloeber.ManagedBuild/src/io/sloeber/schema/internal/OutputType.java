@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -137,21 +138,21 @@ public class OutputType extends SchemaObject implements IOutputType {
     }
 
     @Override
-    public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoBuildConfData, IInputType inputType) {
-        if (!isEnabled(inputFile, autoBuildConfData)) {
+    public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType) {
+        if (!isEnabled(inputFile, autoData)) {
             return null;
         }
-        IFolder buildFolder = autoBuildConfData.getBuildFolder();
+        IFolder buildFolder = autoData.getBuildFolder();
         if (nameProvider != null) {
-            String outputFile = nameProvider.getOutputFileName(inputFile, autoBuildConfData, inputType, this);
+            String outputFile = nameProvider.getOutputFileName(inputFile, autoData, inputType, this);
             if (outputFile != null) {
-                return getOutputFile(buildFolder, inputFile, outputFile);
+                return getOutputFile(autoData, buildFolder, inputFile, outputFile);
             }
             return null;
         }
 
         if (!modelOutputName[SUPER].isBlank()) {
-            return getOutputFile(buildFolder, inputFile, modelOutputName[SUPER]);
+            return getOutputFile(autoData, buildFolder, inputFile, modelOutputName[SUPER]);
         }
 
         if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isBlank()) {
@@ -160,18 +161,36 @@ public class OutputType extends SchemaObject implements IOutputType {
             //  Replace the % with the file name
             String outName = myNamePattern.replace(MAKE_FILE_WITHOUT_EXTENSION_MACRO, fileNameWithoutExtension);
             outName = outName.replace(MAKE_FILE_WITH_EXTENSION_MACRO, fileNameWithExtension);
-            return getOutputFile(buildFolder, inputFile,
+            return getOutputFile(autoData, buildFolder, inputFile,
                     modelOutputPrefix[SUPER] + outName + DOT + modelOutputExtension[SUPER]);
         }
         return null;
     }
 
-    private static IFile getOutputFile(IFolder buildFolder, IFile inputFile, String outputFile) {
+    /**
+     * Given the buildFolder, the inputFile and the outputfileName
+     * Provides the IFile basically the FQN
+     * 
+     * If the inputFioe is in the build folder the output file is in the root of the
+     * buildfolder
+     * Else the outputfile is in in the buildfolder with a relative path that
+     * is equal to the project relative path
+     * 
+     * @param autoBuildConfData
+     * 
+     * @param buildFolder
+     * @param inputFile
+     * @param outputFile
+     * @return
+     */
+    private static IFile getOutputFile(AutoBuildConfigurationData autoBuildConfData, IFolder buildFolder,
+            IFile inputFile, String outputFile) {
+        String resolvedFile = AutoBuildCommon.resolve(outputFile, autoBuildConfData.getCdtConfigurationDescription());
         if (buildFolder.getProjectRelativePath().isPrefixOf(inputFile.getProjectRelativePath())) {
-            return ((IFolder) inputFile.getParent()).getFile(outputFile);
+            return buildFolder.getFile(resolvedFile);
         }
         IFolder fileBuldFolder = buildFolder.getFolder(inputFile.getParent().getProjectRelativePath());
-        return fileBuldFolder.getFile(outputFile);
+        return fileBuldFolder.getFile(resolvedFile);
     }
 
     /* (non-Javadoc)

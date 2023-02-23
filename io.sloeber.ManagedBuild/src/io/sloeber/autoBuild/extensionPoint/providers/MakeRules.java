@@ -199,20 +199,20 @@ public class MakeRules implements Iterable<MakeRule> {
      * @return The MakeRules needed to buuild this configuration
      * @throws CoreException
      */
-    public MakeRules(IProject project, AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
-            IConfiguration config, ICSourceEntry[] srcEntries, Set<IFolder> foldersToBuild) throws CoreException {
+    public MakeRules(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder, ICSourceEntry[] srcEntries,
+            Set<IFolder> foldersToBuild) throws CoreException {
 
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
         subDirVisitor.myBuildfolder = buildfolder;
         subDirVisitor.myAutoBuildConfData = autoBuildConfData;
-        subDirVisitor.myConfig = config;
+        subDirVisitor.myConfig = autoBuildConfData.getConfiguration();
         subDirVisitor.myFoldersToBuild = foldersToBuild;
         subDirVisitor.mySrcEntries = srcEntries;
-        project.accept(subDirVisitor, IResource.NONE);
+        autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
 
         // Now we have the makeRules for the source files generate the MakeRules for the
         // created files
-        generateHigherLevelMakeRules(autoBuildConfData, buildfolder, config);
+        generateHigherLevelMakeRules(autoBuildConfData, buildfolder);
     }
 
     /**
@@ -370,8 +370,7 @@ public class MakeRules implements Iterable<MakeRule> {
      * @param buildfolder
      * @param cConfDes
      */
-    private void generateHigherLevelMakeRules(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder,
-            IConfiguration config) {
+    private void generateHigherLevelMakeRules(AutoBuildConfigurationData autoBuildConfData, IFolder buildfolder) {
         int makeRuleSequenceID = 1;
         Map<IOutputType, Set<IFile>> generatedFiles = getTargets();
         if (VERBOSE) {

@@ -12,6 +12,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuild;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ISchemaObject;
+
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -26,10 +30,21 @@ class CreateProject {
     @MethodSource("projectCreationInfoProvider")
     void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID)
             throws Exception {
+        Shared.setDeleteProjects(false);
+        Shared.setCloseProjects(false);
 
         IProject testProject = AutoBuild.createProject(myProjectName, extensionID, extensionImpID, projectTypeID, null);
-        if (!Shared.BuildAndVerify(testProject)) {
-            fail("Project " + myProjectName + " failed to build correctly");
+        ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
+        String errorMessage = new String();
+        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+            cProjectDesc.setActiveConfiguration(curConfig);
+            CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
+            if (!Shared.BuildAndVerify(testProject)) {
+                errorMessage += "\n\t" + curConfig.getName();
+            }
+        }
+        if (!errorMessage.isBlank()) {
+            fail("Project " + myProjectName + " Failed to build configs:" + errorMessage);
         }
     }
 
