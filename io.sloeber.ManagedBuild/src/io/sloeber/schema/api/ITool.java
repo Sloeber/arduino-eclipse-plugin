@@ -49,9 +49,9 @@ public interface ITool extends ISchemaObject {
     //  public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
     public static final String IS_HIDDEN = "isHidden"; //$NON-NLS-1$
 
-    public static final int FILTER_C = 0;
-    public static final int FILTER_CC = 1;
-    public static final int FILTER_BOTH = 2;
+//    public static final int FILTER_C = 0;
+//    public static final int FILTER_CC = 1;
+//    public static final int FILTER_BOTH = 2;
 
     /**
      * Returns the tool-chain or resource configuration that is the parent of this
@@ -200,25 +200,25 @@ public interface ITool extends ISchemaObject {
      */
     ///  public String[] getAllDependencyExtensions();
 
-    /**
-     * Answers a constant corresponding to the project nature the tool should be
-     * used
-     * for. Possible answers are:
-     *
-     * <dl>
-     * <dt>ITool.FILTER_C
-     * <dd>The tool should only be displayed for C projects. <i>Notes:</i> even
-     * though a C++ project has a C nature, this flag will mask the tool for C++
-     * projects.
-     * <dt>ITool.FILTER_CC
-     * <dd>The tool should only be displayed for C++ projects.
-     * <dt>ITool.FILTER_BOTH
-     * <dd>The tool should be displayed for projects with both natures.
-     * </dl>
-     *
-     * @return int
-     */
-    public int getNatureFilter();
+//    /**
+//     * Answers a constant corresponding to the project nature the tool should be
+//     * used
+//     * for. Possible answers are:
+//     *
+//     * <dl>
+//     * <dt>ITool.FILTER_C
+//     * <dd>The tool should only be displayed for C projects. <i>Notes:</i> even
+//     * though a C++ project has a C nature, this flag will mask the tool for C++
+//     * projects.
+//     * <dt>ITool.FILTER_CC
+//     * <dd>The tool should only be displayed for C++ projects.
+//     * <dt>ITool.FILTER_BOTH
+//     * <dd>The tool should be displayed for projects with both natures.
+//     * </dl>
+//     *
+//     * @return int
+//     */
+//    public int getNatureFilter();
 
     /**
      * Answers all of the output extensions that the receiver can build,

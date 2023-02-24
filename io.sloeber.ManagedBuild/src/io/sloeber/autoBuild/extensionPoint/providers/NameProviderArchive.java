@@ -1,7 +1,6 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
 import java.util.Arrays;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
