@@ -61,8 +61,11 @@ class CreateProject {
                 IConfigurationElement[] elements = extension.getConfigurationElements();
                 for (IConfigurationElement element : elements) {
                     if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
-
-                        String projectName = extensionID + "_" + element.getAttribute(NAME) + "_"
+                    	String elementName=element.getAttribute(NAME);
+                    	if(elementName==null) {
+                    		elementName=element.getAttribute(ID);
+                    	}
+                        String projectName = extensionID + "_" + elementName + "_"
                                 + String.valueOf(testCounter);
                         String projectID = element.getAttribute(ID);
                         testCounter++;
@@ -72,16 +75,10 @@ class CreateProject {
                         } else {
                             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID));
                         }
-                        if (testCounter > 4) {
-                            return ret.stream();
-                        }
+//                        if (testCounter > 4) {
+//                            return ret.stream();
+//                        }
                     }
-
-                    //		return Stream.of(
-                    //				Arguments.of("project1", "io.sloeber.autoBuild.buildDefinitions", "io.sloeber.builddef",
-                    //						"io.sloeber.core.sketch"),
-                    //				Arguments.of("project2", "io.sloeber.autoBuild.buildDefinitions", "cdt.autotools.core.managed.build.info",
-                    //						"org.eclipse.linuxtools.cdt.autotools.core.projectType"));
                 }
             }
         }
