@@ -53,7 +53,6 @@ public class AutoBuildConstants {
     public static final String MENU = "menu";
     public static final String STEP = "step";
     public static final String PATTERN = "pattern";
-    public static final String NAME = "name";
     public static final String HARDWARE = "hardware";
     public static final String PLATFORM = "platform";
     public static final String TXT = "txt";
@@ -233,6 +232,32 @@ public class AutoBuildConstants {
     //    public static final String MESSAGE_SRC_LISTS = ManagedMakeMessages.getResourceString(COMMENT + ".source.list");
     //    public static final String MESSAGE_HEADER = ManagedMakeMessages.getResourceString(HEADER);
     
-    
+    // Schema element names
+    public static final String ID = "id"; //$NON-NLS-1$
+    public static final String NAME = "name"; //$NON-NLS-1$
+    public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
+    public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
+    public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
+    public static final String ICON = "icon"; //$NON-NLS-1$
+    public static final String INPUT_TYPE_ELEMENT_NAME = "inputType"; //$NON-NLS-1$
+    public static final String SOURCE_CONTENT_TYPE = "sourceContentType"; //$NON-NLS-1$
+    public static final String EXTENSIONS = "extensions"; //$NON-NLS-1$
+    public static final String OUTPUT_TYPE_ID = "outputTypeID"; //$NON-NLS-1$
+    public static final String OPTION = "option"; //$NON-NLS-1$
+    public static final String ASSIGN_TO_OPTION = "assignToOption"; //$NON-NLS-1$	
+    public static final String DEPENDENCY_CONTENT_TYPE = "dependencyContentType"; //$NON-NLS-1$
+    public static final String DEPENDENCY_EXTENSIONS = "dependencyExtensions"; //$NON-NLS-1$
+    public static final String SCANNER_CONFIG_PROFILE_ID = "scannerConfigDiscoveryProfileId"; //$NON-NLS-1$
+    public static final String LANGUAGE_ID = "languageId"; //$NON-NLS-1$
+    public static final String LANGUAGE_INFO_CALCULATOR = "languageInfoCalculator"; //$NON-NLS-1$
+    public static final String OUTPUT_TYPE_ELEMENT_NAME = "outputType"; //$NON-NLS-1$
+
+    public static final String OUTPUT_CONTENT_TYPE = "outputContentType"; //$NON-NLS-1$
+    public static final String OUTPUT_PREFIX = "outputPrefix"; //$NON-NLS-1$
+    public static final String OUTPUT_EXTENSION = "outputExtension"; //$NON-NLS-1$
+    public static final String OUTPUT_NAME = "outputName"; //$NON-NLS-1$
+    public static final String NAME_PATTERN = "namePattern"; //$NON-NLS-1$
+    public static final String NAME_PROVIDER = "nameProvider"; //$NON-NLS-1$
+    public static final String BUILD_VARIABLE = "buildVariable"; //$NON-NLS-1$
     
 }

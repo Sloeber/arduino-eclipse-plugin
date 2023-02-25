@@ -82,7 +82,7 @@ public class OutputType extends SchemaObject implements IOutputType {
         modelBuildVariable = getAttributes(BUILD_VARIABLE);
 
         // buildVariable
-        buildVariable = element.getAttribute(IOutputType.BUILD_VARIABLE);
+        buildVariable = element.getAttribute(BUILD_VARIABLE);
 
         //        myOptionEnablementExpression.clear();
         //        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);

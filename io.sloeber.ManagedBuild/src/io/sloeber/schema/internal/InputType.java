@@ -15,9 +15,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.DUMPLEAD;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.EQUAL;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.NEWLINE;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,6 @@ import io.sloeber.schema.api.ITool;
 public class InputType extends SchemaObject implements IInputType {
 
     private static final String DEFAULT_SEPARATOR = ","; //$NON-NLS-1$
-    private static final String EMPTY_STRING = ""; //$NON-NLS-1$
     // Parent and children
     private ITool parent;
 

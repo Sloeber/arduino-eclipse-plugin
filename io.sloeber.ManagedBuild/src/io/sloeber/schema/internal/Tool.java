@@ -176,12 +176,12 @@ public class Tool extends SchemaObject implements ITool {
 
 		for (IConfigurationElement curChild : getAllChildren()) {
 			switch (curChild.getName()) {
-			case IInputType.INPUT_TYPE_ELEMENT_NAME: {
+			case INPUT_TYPE_ELEMENT_NAME: {
 				InputType child = new InputType(this, root, curChild);
 				inputTypeMap.put(child.getId(), child);
 				break;
 			}
-			case IOutputType.OUTPUT_TYPE_ELEMENT_NAME: {
+			case OUTPUT_TYPE_ELEMENT_NAME: {
 				OutputType child = new OutputType(this, root, curChild);
 				outputTypeMap.put(child.getId(), child);
 				break;

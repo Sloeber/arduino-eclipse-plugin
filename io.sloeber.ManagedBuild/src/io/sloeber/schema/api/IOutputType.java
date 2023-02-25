@@ -28,16 +28,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IOutputType extends ISchemaObject {
-    public static final String OUTPUT_TYPE_ELEMENT_NAME = "outputType"; //$NON-NLS-1$
 
-    public static final String OUTPUT_CONTENT_TYPE = "outputContentType"; //$NON-NLS-1$
-    public static final String OPTION = "option"; //$NON-NLS-1$
-    public static final String OUTPUT_PREFIX = "outputPrefix"; //$NON-NLS-1$
-    public static final String OUTPUT_EXTENSION = "outputExtension"; //$NON-NLS-1$
-    public static final String OUTPUT_NAME = "outputName"; //$NON-NLS-1$
-    public static final String NAME_PATTERN = "namePattern"; //$NON-NLS-1$
-    public static final String NAME_PROVIDER = "nameProvider"; //$NON-NLS-1$
-    public static final String BUILD_VARIABLE = "buildVariable"; //$NON-NLS-1$
 
     /**
      * Answers <code>true</code> if the output type considers the file extension to

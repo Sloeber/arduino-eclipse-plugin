@@ -14,7 +14,6 @@
 package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
-
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 
 /**
@@ -24,13 +23,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 public interface ISchemaObject {
     //property ID's
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildArtefactType"; //$NON-NLS-1$
-    // Schema element names
-    public static final String ID = "id"; //$NON-NLS-1$
-    public static final String NAME = "name"; //$NON-NLS-1$
-    public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
-    public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
-    public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
-    public static final String ICON = "icon"; //$NON-NLS-1$
+
 
     public String getId();
 

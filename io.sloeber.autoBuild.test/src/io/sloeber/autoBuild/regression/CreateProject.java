@@ -1,6 +1,7 @@
 package io.sloeber.autoBuild.regression;
 
 import static org.junit.Assert.fail;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,9 +62,9 @@ class CreateProject {
                 for (IConfigurationElement element : elements) {
                     if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
 
-                        String projectName = extensionID + "_" + element.getAttribute(ISchemaObject.NAME) + "_"
+                        String projectName = extensionID + "_" + element.getAttribute(NAME) + "_"
                                 + String.valueOf(testCounter);
-                        String projectID = element.getAttribute(ISchemaObject.ID);
+                        String projectID = element.getAttribute(ID);
                         testCounter++;
                         if (extensionID == null) {
                             System.err.println("Skipping project " + projectName + " from extensionPointID projectID ("

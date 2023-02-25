@@ -29,17 +29,6 @@ import org.eclipse.core.runtime.content.IContentType;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IInputType extends ISchemaObject {
-    public static final String INPUT_TYPE_ELEMENT_NAME = "inputType"; //$NON-NLS-1$
-    public static final String SOURCE_CONTENT_TYPE = "sourceContentType"; //$NON-NLS-1$
-    public static final String EXTENSIONS = "extensions"; //$NON-NLS-1$
-    public static final String OUTPUT_TYPE_ID = "outputTypeID"; //$NON-NLS-1$
-    public static final String OPTION = "option"; //$NON-NLS-1$
-    public static final String ASSIGN_TO_OPTION = "assignToOption"; //$NON-NLS-1$	
-    public static final String DEPENDENCY_CONTENT_TYPE = "dependencyContentType"; //$NON-NLS-1$
-    public static final String DEPENDENCY_EXTENSIONS = "dependencyExtensions"; //$NON-NLS-1$
-    public static final String SCANNER_CONFIG_PROFILE_ID = "scannerConfigDiscoveryProfileId"; //$NON-NLS-1$
-    public static final String LANGUAGE_ID = "languageId"; //$NON-NLS-1$
-    public static final String LANGUAGE_INFO_CALCULATOR = "languageInfoCalculator"; //$NON-NLS-1$
 
     /**
      * Returns the tool parent of this InputType.

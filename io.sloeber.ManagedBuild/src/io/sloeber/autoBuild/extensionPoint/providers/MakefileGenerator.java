@@ -431,7 +431,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         // io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
         // "sloeber.prebuild",
         // new String(), false);
-        String sketchPrebuild = resolve("sloeber.prebuild", EMPTY_STRING, WHITESPACE,  myAutoBuildConfData); //$NON-NLS-1$
+        String sketchPrebuild = getVariableValue("sloeber.prebuild", EMPTY_STRING, true,  myAutoBuildConfData); //$NON-NLS-1$
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
                 prebuildStep = prebuildStep + "\n\t" + sketchPrebuild; //$NON-NLS-1$

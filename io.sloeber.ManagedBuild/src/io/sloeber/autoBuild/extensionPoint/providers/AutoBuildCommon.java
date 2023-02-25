@@ -364,7 +364,7 @@ public class AutoBuildCommon {
             //if the pattern contains a space no use to try to expand it
             return orgPattern;
         }
-        return getBuildEnvironmentVariable(autoBuildConfData, orgPattern, orgPattern, false);
+        return getVariableValue( orgPattern, orgPattern, false,autoBuildConfData);
 
     }
 
@@ -412,14 +412,7 @@ public class AutoBuildCommon {
      * @return a string that holds the resolved unresolved input. Never returns null
      */
     static public String resolve(String unresolved, AutoBuildConfigurationData autoData) {
-
         return resolve( unresolved, EMPTY_STRING , EMPTY_STRING ,  autoData);
-        //        IEnvironmentVariableManager buildEnvironmentManger = CCorePlugin.getDefault().getBuildEnvironmentManager();
-        //        IEnvironmentVariable var = buildEnvironmentManger.getVariable(buildArguments, icConfigurationDescription, true);
-        //        if (var == null) {
-        //            return EMPTY_STRING;
-        //        }
-        //        return var.getValue();
     }
 
     static public String resolve(String unresolved, String nonexistentMacrosValue, String listDelimiter, AutoBuildConfigurationData autoData) {
@@ -432,23 +425,14 @@ public class AutoBuildCommon {
             Activator.log(e);
         }
         return EMPTY_STRING;
-        //        FIXME needs implementation original is below
-        //solution =>replace with the method above
-        //        try {
-        //            return ManagedBuildManager.getBuildMacroProvider().resolveValue(
-        //                      value,  nonexistentMacrosValue,  listDelimiter,  contextType,  contextData);
-        //         } catch (BuildMacroException e) {
-        //            return value;
-        //         }
     }
 
 
-    static public String getBuildEnvironmentVariable(AutoBuildConfigurationData autoBuildConfData, String envName,
-            String defaultvalue, boolean expanded) {
+    static public String getVariableValue( String varName, String defaultvalue, boolean resolve,AutoBuildConfigurationData autoBuildConfData) {
         ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         try {
-            return envManager.getVariable(envName, confDesc, expanded).getValue();
+            return envManager.getVariable(varName, confDesc, resolve).getValue();
         } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
         }
         return defaultvalue;

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,10 +73,10 @@ public class ManagedProject implements IManagedProject {
     protected boolean loadFromProject(ICStorageElement element) {
         // note: id and name are unique, so don't intern them
         // id
-        id = (element.getAttribute(ISchemaObject.ID));
+        id = (element.getAttribute(ID));
 
         // name
-        name = (element.getAttribute(ISchemaObject.NAME));
+        name = (element.getAttribute(NAME));
 
         // projectType
         projectTypeId = element.getAttribute(PROJECTTYPE);
@@ -89,10 +91,10 @@ public class ManagedProject implements IManagedProject {
     }
 
     public void serializeProjectInfo(ICStorageElement element) {
-        element.setAttribute(ISchemaObject.ID, id);
+        element.setAttribute(ID, id);
 
         if (name != null) {
-            element.setAttribute(ISchemaObject.NAME, name);
+            element.setAttribute(NAME, name);
         }
 
         if (projectType != null) {
