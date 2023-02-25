@@ -20,6 +20,7 @@ public class AutoBuildConstants {
     public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
     public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
 	
+    public static final String PROJECT_NAME_VARIABLE ="${ProjName}";
 	
     // preference nodes
     public static final String NODE_ARDUINO = "io.sloeber.arduino";

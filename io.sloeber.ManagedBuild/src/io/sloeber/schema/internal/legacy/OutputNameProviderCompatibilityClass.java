@@ -2,22 +2,14 @@ package io.sloeber.schema.internal.legacy;
 
 import java.util.Map;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
-import io.sloeber.autoBuild.Internal.BuildMacroProvider;
-import io.sloeber.autoBuild.api.BuildMacroException;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.internal.Options;
 
 /**
  * This class is a port of
@@ -30,7 +22,6 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
 	@Override
 	public String getOutputFileName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType,
 			IOutputType outputType) {
-		ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
 		ITool tool = inputType.getParent();
 
 		boolean isToolCLinker = tool.hasAncestor("cdt.managedbuild.tool.gnu.c.linker"); //$NON-NLS-1$
@@ -71,8 +62,8 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
 				if ("org.eclipse.cdt.build.core.buildArtefactType.exe" //$NON-NLS-1$
 						.equals(autoData.getProperty(ISchemaObject.BUILD_ARTEFACT_TYPE_PROPERTY_ID))) {
 					if (isWindows)
-						return "${ProjName}.exe"; //$NON-NLS-1$
-					return "${ProjName}"; //$NON-NLS-1$
+						return PROJECT_NAME_VARIABLE+".exe"; //$NON-NLS-1$
+					return PROJECT_NAME_VARIABLE; 
 				}
 				// This is not a Executable?
 			}
@@ -83,6 +74,11 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
 		String fileName = inputFile.getProjectRelativePath().removeFileExtension().lastSegment();
 		if (fileName.startsWith("$(") && fileName.endsWith(")")) { //$NON-NLS-1$ //$NON-NLS-2$
 			fileName = fileName.substring(2, fileName.length() - 1);
+		}
+		//Is this a archive project
+		if ("org.eclipse.cdt.build.core.buildArtefactType.staticLib" //$NON-NLS-1$
+				.equals(autoData.getProperty(ISchemaObject.BUILD_ARTEFACT_TYPE_PROPERTY_ID))) {
+			fileName=PROJECT_NAME_VARIABLE;
 		}
 		// Add the primary output type extension
 		String exts = outputType.getOutputExtension();
