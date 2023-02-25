@@ -174,21 +174,14 @@ public class Tool extends SchemaObject implements ITool {
 			commandLineGenerator = (IManagedCommandLineGenerator) createExecutableExtension(COMMAND_LINE_GENERATOR);
 		}
 
-		for (IConfigurationElement curChild : getAllChildren()) {
-			switch (curChild.getName()) {
-			case INPUT_TYPE_ELEMENT_NAME: {
+		for (IConfigurationElement curChild : getFirstChildren(INPUT_TYPE_ELEMENT_NAME)) {
 				InputType child = new InputType(this, root, curChild);
 				inputTypeMap.put(child.getId(), child);
-				break;
 			}
-			case OUTPUT_TYPE_ELEMENT_NAME: {
+		for (IConfigurationElement curChild : getFirstChildren(OUTPUT_TYPE_ELEMENT_NAME)) {
 				OutputType child = new OutputType(this, root, curChild);
 				outputTypeMap.put(child.getId(), child);
-				break;
 			}
-			}
-
-		}
 	}
 
 	@Override

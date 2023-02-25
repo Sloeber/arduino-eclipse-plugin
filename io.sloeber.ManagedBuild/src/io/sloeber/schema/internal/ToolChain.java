@@ -118,7 +118,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
                     + String.valueOf(builders.size()) + DOT);
         }
 
-        List<IConfigurationElement> toolChainElements = getAllChildren(ITool.TOOL_ELEMENT_NAME);
+        List<IConfigurationElement> toolChainElements = getFirstChildren(ITool.TOOL_ELEMENT_NAME);
         for (IConfigurationElement toolChainElement : toolChainElements) {
             Tool toolChild = new Tool(this, root, toolChainElement);
             myToolMap.put(toolChild.myID, toolChild);
@@ -133,15 +133,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
         //            myOptionMap.put(newOption.getName(), newOption);
         //        }
 
-        List<IConfigurationElement> categoryElements = getAllChildren(IOptions.OPTION_CAT);
+        List<IConfigurationElement> categoryElements = getFirstChildren(IOptions.OPTION_CAT);
         for (IConfigurationElement categoryElement : categoryElements) {
             myCategories.add(new OptionCategory(this, root, categoryElement));
         }
-
-        //        IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        //        for (IConfigurationElement curEnablement : enablements) {
-        //            myEnablements.add(new OptionEnablementExpression(curEnablement));
-        //        }
 
         resolveFields();
     }
