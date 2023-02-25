@@ -5,6 +5,7 @@ import java.io.File;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 
 /**
  * ArduinoConst only contains global strings used in sloeber.
@@ -14,6 +15,12 @@ import org.eclipse.core.runtime.Path;
  */
 @SuppressWarnings("nls")
 public class AutoBuildConstants {
+	
+    public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
+    public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
+    public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
+	
+	
     // preference nodes
     public static final String NODE_ARDUINO = "io.sloeber.arduino";
 

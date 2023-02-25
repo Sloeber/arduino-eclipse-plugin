@@ -29,9 +29,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.autoBuild.Internal.BuildMacroProvider;
-import io.sloeber.autoBuild.api.BuildMacroException;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IConfiguration;
@@ -219,9 +216,7 @@ public class AutoBuildCommon {
                 String curOutput = curOutputPath.toOSString();
                 // try to resolve the build macros in the
                 // output names
-                String resolved = resolveValueToMakefileFormat(curOutput, "", //$NON-NLS-1$
-                        " ", //$NON-NLS-1$
-                        IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
+                String resolved = resolve(curOutput, EMPTY_STRING, BLANK,   autoBuildConfData);
                 if ((resolved = resolved.trim()).length() > 0) {
                     ret.add(resolved);
                 } else {
@@ -416,16 +411,9 @@ public class AutoBuildCommon {
      * @param icConfigurationDescription
      * @return a string that holds the resolved unresolved input. Never returns null
      */
-    static public String resolve(String unresolved, ICConfigurationDescription icConfigurationDescription) {
-        DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
-                ICoreVariableContextInfo.CONTEXT_CONFIGURATION, icConfigurationDescription);
-        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, EMPTY_STRING, EMPTY_STRING);
-        try {
-            return CdtVariableResolver.resolveToString(unresolved, varSubs);
-        } catch (CdtVariableException e) {
-            Activator.log(e);
-        }
-        return EMPTY_STRING;
+    static public String resolve(String unresolved, AutoBuildConfigurationData autoData) {
+
+        return resolve( unresolved, EMPTY_STRING , EMPTY_STRING ,  autoData);
         //        IEnvironmentVariableManager buildEnvironmentManger = CCorePlugin.getDefault().getBuildEnvironmentManager();
         //        IEnvironmentVariable var = buildEnvironmentManger.getVariable(buildArguments, icConfigurationDescription, true);
         //        if (var == null) {
@@ -434,11 +422,18 @@ public class AutoBuildCommon {
         //        return var.getValue();
     }
 
-    static public String resolveValue(String value, String nonexistentMacrosValue, String listDelimiter,
-            int contextType, Object contextData) {
+    static public String resolve(String unresolved, String nonexistentMacrosValue, String listDelimiter, AutoBuildConfigurationData autoData) {
+        DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
+                ICoreVariableContextInfo.CONTEXT_CONFIGURATION, autoData.getCdtConfigurationDescription());
+        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, nonexistentMacrosValue, listDelimiter);
+        try {
+            return CdtVariableResolver.resolveToString(unresolved, varSubs);
+        } catch (CdtVariableException e) {
+            Activator.log(e);
+        }
+        return EMPTY_STRING;
         //        FIXME needs implementation original is below
         //solution =>replace with the method above
-        return null;
         //        try {
         //            return ManagedBuildManager.getBuildMacroProvider().resolveValue(
         //                      value,  nonexistentMacrosValue,  listDelimiter,  contextType,  contextData);
@@ -447,17 +442,6 @@ public class AutoBuildCommon {
         //         }
     }
 
-    static public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
-            int contextType, AutoBuildConfigurationData autoBuildConfData) {
-        try {
-            ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
-            return BuildMacroProvider.getDefault().resolveValueToMakefileFormat(value, nonexistentMacrosValue,
-                    listDelimiter, contextType, confDesc);
-        } catch (@SuppressWarnings("unused") BuildMacroException e) {
-            return value;
-        }
-
-    }
 
     static public String getBuildEnvironmentVariable(AutoBuildConfigurationData autoBuildConfData, String envName,
             String defaultvalue, boolean expanded) {

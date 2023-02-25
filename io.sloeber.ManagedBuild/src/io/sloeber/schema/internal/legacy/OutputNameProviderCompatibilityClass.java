@@ -1,7 +1,7 @@
 package io.sloeber.schema.internal.legacy;
 
 import java.util.Map;
-
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 import io.sloeber.autoBuild.Internal.BuildMacroProvider;
@@ -9,11 +9,13 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
+import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.Options;
 
@@ -25,94 +27,70 @@ import io.sloeber.schema.internal.Options;
  */
 public class OutputNameProviderCompatibilityClass implements IOutputNameProvider {
 
-    @Override
-    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType,
-            IOutputType outputType) {
-        ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
-        ITool tool = inputType.getParent();
+	@Override
+	public String getOutputFileName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType,
+			IOutputType outputType) {
+		ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
+		ITool tool = inputType.getParent();
 
-        //  Determine a default name from the input file name
-        String fileName = inputFile.getProjectRelativePath().removeFileExtension().lastSegment();
-        if (fileName.startsWith("$(") && fileName.endsWith(")")) { //$NON-NLS-1$ //$NON-NLS-2$
-            fileName = fileName.substring(2, fileName.length() - 1);
-        }
+		boolean isToolCLinker = tool.hasAncestor("cdt.managedbuild.tool.gnu.c.linker"); //$NON-NLS-1$
+		boolean isToolCPPLinker = tool.hasAncestor("cdt.managedbuild.tool.gnu.cpp.linker"); //$NON-NLS-1$
 
-        //  If we are building a shared library, determine if the user has specified a name using the
-        //  soname option
-        boolean isSO = false;
-        Map<String, String> options = autoData.getSelectedOptions(inputFile);
-        String soName = ""; //$NON-NLS-1$
-        if (tool.hasAncestor("cdt.managedbuild.tool.gnu.c.linker")) { //$NON-NLS-1$
-            String optSharedValue = options.get("gnu.c.link.option.shared"); //$NON-NLS-1$
-            if (optSharedValue != null) {
-                try {
-                    isSO = Boolean.parseBoolean(optSharedValue);
-                } catch (Exception e) {
-                    Activator.log(e);
-                }
-            }
-            if (isSO) {
-                soName = options.get("gnu.c.link.option.soname"); //$NON-NLS-1$
-            }
-        } else if (tool.hasAncestor("cdt.managedbuild.tool.gnu.cpp.linker")) { //$NON-NLS-1$
-            String optSharedValue = options.get("gnu.cpp.link.option.shared"); //$NON-NLS-1$
-            if (optSharedValue != null) {
-                isSO = Boolean.parseBoolean(optSharedValue);
-            }
-            if (isSO) {
-                soName = options.get("gnu.cpp.link.option.soname"); //$NON-NLS-1$
-            }
-        }
-        //  If this is a shared library, use the specified name
-        if (isSO && soName != null && soName.length() > 0) {
-            return soName;
-        }
+		if (isToolCLinker || isToolCPPLinker) {
+			// it is a linker tool
+			Map<String, String> projectOptions = autoData.getSelectedOptions(inputFile);
 
-        // This is not a library
-        //Add the outputPrefix
-        String outputPrefix = outputType.getOutputPrefix();
-        // Resolve any macros in the outputPrefix
-        // Note that we cannot use file macros because if we do a clean
-        // we need to know the actual
-        // name of the file to clean, and cannot use any builder
-        // variables such as $@. Hence
-        // we use the next best thing, i.e. configuration context.
+			if (isToolCLinker) {
+				// Are we building a dynamically shared C library?
 
-        boolean explicitRuleRequired = false;
+				String optCSharedValue = projectOptions.get("gnu.c.link.option.shared"); //$NON-NLS-1$
+				if (optCSharedValue != null) {
+					if (Boolean.parseBoolean(optCSharedValue)) {
+						String dynamicLibraryName = projectOptions.get("gnu.c.link.option.soname"); //$NON-NLS-1$
+						if (dynamicLibraryName != null && !dynamicLibraryName.isBlank()) {
+							return dynamicLibraryName;
+						}
+					}
+				}
+			}
+			if (isToolCPPLinker) {
+				// Are we building a dynamically shared CPP library?
+				String optCPPSharedValue = projectOptions.get("gnu.cpp.link.option.shared"); //$NON-NLS-1$
+				if (optCPPSharedValue != null) {
+					if (Boolean.parseBoolean(optCPPSharedValue)) {
+						String dynamicLibraryName = projectOptions.get("gnu.cpp.link.option.soname"); //$NON-NLS-1$
+						if (dynamicLibraryName != null && dynamicLibraryName.length() > 0) {
+							return dynamicLibraryName;
+						}
+					}
+				}
 
-        // if any input files have spaces in the name, then we must
-        // not use builder variables
-        if (inputFile.toString().indexOf(" ") != -1) //$NON-NLS-1$
-            explicitRuleRequired = true;
+				// This is not a dynamically shared library
 
-        try {
+				// is this a Executable?
+				if ("org.eclipse.cdt.build.core.buildArtefactType.exe" //$NON-NLS-1$
+						.equals(autoData.getProperty(ISchemaObject.BUILD_ARTEFACT_TYPE_PROPERTY_ID))) {
+					if (isWindows)
+						return "${ProjName}.exe"; //$NON-NLS-1$
+					return "${ProjName}"; //$NON-NLS-1$
+				}
+				// This is not a Executable?
+			}
+		}
+		// it is not a linking tool
 
-            if (explicitRuleRequired) {
-                outputPrefix = BuildMacroProvider.getDefault().resolveValue(outputPrefix, "", //$NON-NLS-1$
-                        " ", //$NON-NLS-1$
-                        IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
-            }
-
-            else {
-                outputPrefix = BuildMacroProvider.getDefault().resolveValueToMakefileFormat(outputPrefix, "", //$NON-NLS-1$
-                        " ", //$NON-NLS-1$
-                        IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
-            }
-        }
-
-        catch (BuildMacroException e) {
-            Activator.log(e);
-        }
-
-        if (outputPrefix != null && outputPrefix.length() > 0) {
-            fileName = outputPrefix + fileName;
-        }
-        //  Add the primary output type extension
-        String exts = outputType.getOutputExtension();
-        if (!exts.isBlank()) {
-            fileName += "." + exts; //$NON-NLS-1$
-        }
-        return fileName;
-    }
+		// Determine a default name from the input file name
+		String fileName = inputFile.getProjectRelativePath().removeFileExtension().lastSegment();
+		if (fileName.startsWith("$(") && fileName.endsWith(")")) { //$NON-NLS-1$ //$NON-NLS-2$
+			fileName = fileName.substring(2, fileName.length() - 1);
+		}
+		// Add the primary output type extension
+		String exts = outputType.getOutputExtension();
+		if (!exts.isBlank()) {
+			fileName += "." + exts; //$NON-NLS-1$
+		}
+		String outputPrefix = AutoBuildCommon.resolve(outputType.getOutputPrefix(), autoData);
+		return outputPrefix + fileName;
+	}
 
 }

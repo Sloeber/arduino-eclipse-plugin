@@ -43,9 +43,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -710,7 +707,6 @@ public class Option extends SchemaObject implements IOption {
 	@Override
 	public String[] getCommandLineContribution(IResource resource, String optionValue,
 			AutoBuildConfigurationData autoConfData) {
-		ICConfigurationDescription confDesc = autoConfData.getCdtConfigurationDescription();
 		String[] retString = new String[1];
 		String[] retNothing = new String[0];
 		if (!isEnabled(resource, autoConfData)) {
@@ -757,7 +753,7 @@ public class Option extends SchemaObject implements IOption {
 			return ret.toArray(new String[ret.size()]);
 		}
 		case IOption.STRING:
-			retString[0] = evaluateCommand(modelCommand[SUPER], AutoBuildCommon.resolve(optionValue, confDesc));
+			retString[0] = evaluateCommand(modelCommand[SUPER], AutoBuildCommon.resolve(optionValue, autoConfData));
 			return retString;
 		case IOption.STRING_LIST:
 		case IOption.INCLUDE_FILES:

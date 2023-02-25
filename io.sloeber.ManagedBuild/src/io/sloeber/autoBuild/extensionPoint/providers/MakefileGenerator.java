@@ -34,7 +34,6 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
 
 /**
  * This is the default makefile generator
@@ -64,9 +63,9 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize(int buildKind, AutoBuildConfigurationData autoBuildConfData) {
-        myProject = autoBuildConfData.getProject();
-        myAutoBuildConfData = autoBuildConfData;
+    public void initialize(int buildKind, AutoBuildConfigurationData autoData) {
+        myProject = autoData.getProject();
+        myAutoBuildConfData = autoData;
         myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();
         myConfig = myAutoBuildConfData.getConfiguration();
         myTopBuildDir = myAutoBuildConfData.getBuildFolder();
@@ -78,11 +77,9 @@ public class MakefileGenerator implements IMakefileGenerator {
         // Get its extension
         buildTargetExt = myConfig.getArtifactExtension();
         // try to resolve the build macros in the target extension
-        buildTargetExt = resolveValueToMakefileFormat(buildTargetExt, EMPTY_STRING, BLANK,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
+        buildTargetExt = resolve(buildTargetExt, EMPTY_STRING, BLANK, autoData);
         // try to resolve the build macros in the target name
-        String resolved = resolveValueToMakefileFormat(buildTargetName, EMPTY_STRING, BLANK,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, autoBuildConfData);
+        String resolved = resolve(buildTargetName, EMPTY_STRING, BLANK, autoData);
         if (resolved != null) {
             resolved = resolved.trim();
             if (resolved.length() > 0)
@@ -406,8 +403,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         // Get the clean command from the build model
         buffer.append("RM := "); //$NON-NLS-1$
         // support macros in the clean command
-        String cleanCommand = resolveValueToMakefileFormat(config.getCleanCommand(), EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, myAutoBuildConfData);
+        String cleanCommand = resolve(config.getCleanCommand(), EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
         buffer.append(cleanCommand).append(NEWLINE);
         buffer.append(NEWLINE);
 
@@ -435,8 +431,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         // io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
         // "sloeber.prebuild",
         // new String(), false);
-        String sketchPrebuild = resolveValueToMakefileFormat("sloeber.prebuild", EMPTY_STRING, WHITESPACE, //$NON-NLS-1$
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, myAutoBuildConfData);
+        String sketchPrebuild = resolve("sloeber.prebuild", EMPTY_STRING, WHITESPACE,  myAutoBuildConfData); //$NON-NLS-1$
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
                 prebuildStep = prebuildStep + "\n\t" + sketchPrebuild; //$NON-NLS-1$
@@ -446,8 +441,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
         // end off JABA issue927
         // try to resolve the build macros in the prebuild step
-        prebuildStep = resolveValueToMakefileFormat(prebuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, myAutoBuildConfData);
+        prebuildStep = resolve(prebuildStep, EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
         return prebuildStep.trim();
     }
 
@@ -513,8 +507,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
 
         String postbuildStep = config.getPostbuildStep();
-        postbuildStep = resolveValueToMakefileFormat(postbuildStep, EMPTY_STRING, WHITESPACE,
-                IBuildMacroProvider.CONTEXT_CONFIGURATION, myAutoBuildConfData);
+        postbuildStep = resolve(postbuildStep, EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
         postbuildStep = postbuildStep.trim();
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {

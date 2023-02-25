@@ -73,7 +73,7 @@ public class BuildRunner extends IBuildRunner {
         console.start(project);
         boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
 
-        String buildCommand = AutoBuildCommon.resolve(builder.getCommand(), confDesc);
+        String buildCommand = AutoBuildCommon.resolve(builder.getCommand(), autoData);
         if (buildCommand.isBlank()) {
             String msg = MessageFormat.format(ManagedMakeBuilder_message_undefined_build_command, builder.getId());
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, new Exception()));
@@ -85,7 +85,7 @@ public class BuildRunner extends IBuildRunner {
 
             String cfgName = confDesc.getName();
             ICommandLauncher launcher = builder.getCommandLauncher();
-            String[] args = getCommandArguments(kind, builder, confDesc);
+            String[] args = getCommandArguments(kind, builder, autoData);
             IFolder buildFolder = configuration.getBuildFolder(confDesc);
             URI buildFolderURI = buildFolder.getLocationURI();
 
@@ -132,9 +132,9 @@ public class BuildRunner extends IBuildRunner {
     }
 
     private static String[] getCommandArguments(int kind, IBuilder builder,
-            ICConfigurationDescription icConfigurationDescription) {
-        String[] targets = getBuildTargets(kind, builder, icConfigurationDescription);
-        String builderArguments = AutoBuildCommon.resolve(builder.getArguments(), icConfigurationDescription);
+    		AutoBuildConfigurationData autoData) {
+        String[] targets = getBuildTargets(kind, builder, autoData);
+        String builderArguments = AutoBuildCommon.resolve(builder.getArguments(), autoData);
         String[] builderArgs = CommandLineUtil.argumentsToArray(builderArguments);
         String[] args = new String[targets.length + builderArgs.length];
         System.arraycopy(builderArgs, 0, args, 0, builderArgs.length);
@@ -143,18 +143,18 @@ public class BuildRunner extends IBuildRunner {
     }
 
     private static String[] getBuildTargets(int kind, IBuilder builder,
-            ICConfigurationDescription icConfigurationDescription) {
+    		AutoBuildConfigurationData autoData) {
         String targets = EMPTY_STRING;
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:
-            targets = AutoBuildCommon.resolve(builder.getAutoBuildTarget(), icConfigurationDescription);
+            targets = AutoBuildCommon.resolve(builder.getAutoBuildTarget(), autoData);
             break;
         case IncrementalProjectBuilder.INCREMENTAL_BUILD: // now treated as the same!
         case IncrementalProjectBuilder.FULL_BUILD:
-            targets = AutoBuildCommon.resolve(builder.getIncrementalBuildTarget(), icConfigurationDescription);
+            targets = AutoBuildCommon.resolve(builder.getIncrementalBuildTarget(), autoData);
             break;
         case IncrementalProjectBuilder.CLEAN_BUILD:
-            targets = AutoBuildCommon.resolve(builder.getCleanBuildTarget(), icConfigurationDescription);
+            targets = AutoBuildCommon.resolve(builder.getCleanBuildTarget(), autoData);
             break;
         }
 

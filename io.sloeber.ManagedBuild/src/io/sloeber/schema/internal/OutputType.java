@@ -185,7 +185,7 @@ public class OutputType extends SchemaObject implements IOutputType {
      */
     private static IFile getOutputFile(AutoBuildConfigurationData autoBuildConfData, IFolder buildFolder,
             IFile inputFile, String outputFile) {
-        String resolvedFile = AutoBuildCommon.resolve(outputFile, autoBuildConfData.getCdtConfigurationDescription());
+        String resolvedFile = AutoBuildCommon.resolve(outputFile, autoBuildConfData);
         if (buildFolder.getProjectRelativePath().isPrefixOf(inputFile.getProjectRelativePath())) {
             return buildFolder.getFile(resolvedFile);
         }
