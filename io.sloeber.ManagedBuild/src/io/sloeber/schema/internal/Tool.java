@@ -464,7 +464,7 @@ public class Tool extends SchemaObject implements ITool {
 		ret.append(prepend + ICON + EQUAL + modelIcon[SUPER] + NEWLINE);
 		ret.append(prepend + IS_HIDDEN + EQUAL + modelIsHidden[SUPER] + NEWLINE);
 		ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSystem[SUPER] + NEWLINE);
-		if (myEnablement == null) {
+		if (myEnablement.isBlank()) {
 			ret.append(prepend + "No enablement found" + NEWLINE); //$NON-NLS-1$
 		} else {
 			ret.append(prepend + "Enablement found" + NEWLINE); //$NON-NLS-1$

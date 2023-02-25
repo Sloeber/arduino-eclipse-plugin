@@ -258,7 +258,7 @@ public interface IOption extends ISchemaObject {
     public abstract String getName(String id) throws BuildException;
 
 
-    public String getDefaultValue();
+    public String getDefaultValue(IResource resource, AutoBuildConfigurationData autoData);
 
 
     /**

@@ -97,7 +97,6 @@ public class Option extends SchemaObject implements IOption {
 	private IOptionCategory category;
 	private IOptionCommandGenerator commandGenerator;
 	private boolean isForScannerDiscovery;
-	private String myDefaultStringValue = null;
 	private IOptionDefaultValueGenerator defaultValueGenerator;
 	private int valueType;
 	private int resourceFilter;
@@ -177,32 +176,7 @@ public class Option extends SchemaObject implements IOption {
 
 		browseType = resolveBrowseType(modelBrowseTypeStr[SUPER]);
 		resourceFilter = resolveResourceFilter(modelResFilterStr[SUPER]);
-		if (defaultValueGenerator != null) {
-			myDefaultStringValue = defaultValueGenerator.generateDefaultValue(this);
-		} else {
 
-			if (myTreeRoot != null) {
-				myDefaultStringValue = myTreeRoot.getDefaultValueString();
-			}
-			if (myEnumOptionValues.size() > 0) {
-				for (EnumOptionValue cur : myEnumOptionValues.values()) {
-					if (cur.isDefault()) {
-						myDefaultStringValue = cur.getID();
-						break;
-					}
-					if (myDefaultStringValue == null) {
-						if (cur.getCommandLIneDistribution().isBlank()) {
-							myDefaultStringValue = EMPTY_STRING;
-						} else {
-							myDefaultStringValue = cur.getID();
-						}
-					}
-				}
-			}
-			if ((!modelDefaultValueString[SUPER].isBlank())||(myDefaultStringValue==null)) {
-				myDefaultStringValue = modelDefaultValueString[SUPER];
-			}
-		}
 	}
 
 	private static int resolveResourceFilter(String string) {
@@ -698,8 +672,39 @@ public class Option extends SchemaObject implements IOption {
 	}
 
 	@Override
-	public String getDefaultValue() {
-		return myDefaultStringValue;
+	public String getDefaultValue(IResource resource, AutoBuildConfigurationData autoData) {
+		String ret = EMPTY_STRING;
+		if (defaultValueGenerator != null) {
+			return defaultValueGenerator.generateDefaultValue(this);
+		}
+
+		if(!myEnablement.isBlank()) {
+			ret=myEnablement.getDefaultValue( resource,  autoData);
+			if(!ret.isBlank()) {
+				return ret;
+			}
+		}
+		if (myTreeRoot != null) {
+			return myTreeRoot.getDefaultValueString();
+		}
+		if (myEnumOptionValues.size() > 0) {
+			for (EnumOptionValue cur : myEnumOptionValues.values()) {
+				if (cur.isDefault()) {
+					return cur.getID();
+				}
+				if (ret == null) {
+					if (cur.getCommandLIneDistribution().isBlank()) {
+						ret = EMPTY_STRING;
+					} else {
+						ret = cur.getID();
+					}
+				}
+			}
+		}
+		if ((!modelDefaultValueString[SUPER].isBlank()) || (ret == null)) {
+			return modelDefaultValueString[SUPER];
+		}
+		return ret;
 	}
 
 	@Override
@@ -860,4 +865,3 @@ public class Option extends SchemaObject implements IOption {
 	}
 
 }
-
