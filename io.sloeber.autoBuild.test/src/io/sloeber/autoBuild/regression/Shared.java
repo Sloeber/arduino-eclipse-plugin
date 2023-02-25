@@ -64,7 +64,7 @@ public class Shared {
         IPath resultPath = project.getLocation().append(activeConfig.getName());
         String projName = project.getName();
         String[] validOutputss = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
-                projName + ".so", projName + ".a", "application.axf" };
+                projName + ".so", "lib"+projName + ".a", "application.axf" };
         for (String validOutput : validOutputss) {
             File validFile = resultPath.append(validOutput).toFile();
             if (validFile.exists()) {
