@@ -89,7 +89,7 @@ public class InputType extends SchemaObject implements IInputType {
         modelScannerConfigDiscoveryProfileID = getAttributes(SCANNER_CONFIG_PROFILE_ID);
         modelLanguageID = getAttributes(LANGUAGE_ID);
         modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
-
+        legacyCode();
         try {
             resolveFields();
         } catch (Exception e) {
@@ -99,7 +99,14 @@ public class InputType extends SchemaObject implements IInputType {
 
     }
 
-    /*
+    private void legacyCode() {
+		if(modelExtensions[SUPER].isBlank()) {
+			modelExtensions = getAttributes("sources");
+		}
+		
+	}
+
+	/*
      * (non-Javadoc)
      * 
      * @see org.eclipse.cdt.core.build.managed.IInputType#getParent()
