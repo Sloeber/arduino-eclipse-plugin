@@ -211,4 +211,14 @@ public class ProjectType extends SchemaObject implements IProjectType {
     public String getExtensionID() {
         return myExtensionID;
     }
+
+    @Override
+    public boolean isCompatibleWithLocalOS() {
+        for (Configuration curConfig : myConfigMap.values()) {
+            if (curConfig.isCompatibleWithLocalOS()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -138,6 +138,11 @@ public class OutputType extends SchemaObject implements IOutputType {
     }
 
     @Override
+    public String getOutputName() {
+        return modelOutputName[SUPER];
+    }
+
+    @Override
     public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType) {
         if (!isEnabled(inputFile, autoData)) {
             return null;

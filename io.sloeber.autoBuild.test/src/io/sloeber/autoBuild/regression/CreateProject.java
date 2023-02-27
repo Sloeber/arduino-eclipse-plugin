@@ -12,8 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuild;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ISchemaObject;
-
+import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -51,7 +50,7 @@ class CreateProject {
 
     static Stream<Arguments> projectCreationInfoProvider() {
         String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
-        int testCounter = 0;
+        int testCounter = 1;
         List<Arguments> ret = new LinkedList<>();
         IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(extensionPointID);
         if (extensionPoint != null) {
@@ -61,23 +60,26 @@ class CreateProject {
                 IConfigurationElement[] elements = extension.getConfigurationElements();
                 for (IConfigurationElement element : elements) {
                     if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
-                    	String elementName=element.getAttribute(NAME);
-                    	if(elementName==null) {
-                    		elementName=element.getAttribute(ID);
-                    	}
-                        String projectName = extensionID + "_" + elementName + "_"
-                                + String.valueOf(testCounter);
                         String projectID = element.getAttribute(ID);
-                        testCounter++;
-                        if (extensionID == null) {
-                            System.err.println("Skipping project " + projectName + " from extensionPointID projectID ("
-                                    + extensionPointID + " " + projectID + " because extensionID is null");
-                        } else {
+                        IProjectType projectType = ManagedBuildManager.getProjectType(extensionPointID, extensionID,
+                                projectID, true);
+                        if (projectType != null && projectType.isCompatibleWithLocalOS()) {
+
+                            String projectName = String.format("%03d", testCounter) + "_" + projectType.getName() + "_"
+                                    + extensionID;
+
+                            testCounter++;
                             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID));
+                            //                        if (testCounter > 4) {
+                            //                            return ret.stream();
+                            //                        }
+                        } else {
+                            System.err.print("Skipping projectType " + extensionPointID + " " + projectID);
+                            if (projectType == null)
+                                System.err.println(" projectType is null");
+                            else
+                                System.err.println(" projectType is incompitble with OS");
                         }
-//                        if (testCounter > 4) {
-//                            return ret.stream();
-//                        }
                     }
                 }
             }

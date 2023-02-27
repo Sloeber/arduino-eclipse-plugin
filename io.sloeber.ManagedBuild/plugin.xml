@@ -910,7 +910,8 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.gnu.c.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider">
+               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
                <checkOption
@@ -923,8 +924,7 @@
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.c.linker.output.so"
                nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
-               outputPrefix="lib"
-               outputExtension="so">
+               outputName="lib_${ProjName}.so">
             <enablement
                   type="ALL">
                <checkOption
@@ -1126,7 +1126,8 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider">
+               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
                <checkOption
@@ -1139,8 +1140,9 @@
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.output.so"
                nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
-               outputPrefix="lib"
-               outputExtension="so">
+               outputExtension="so"
+               outputName="lib_${ProjName}.so"
+               outputPrefix="lib">
             <enablement
                   type="ALL">
                <checkOption
@@ -1220,8 +1222,7 @@
                buildVariable="ARCHIVES"
                id="cdt.managedbuild.tool.gnu.archiver.output"
                nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
-               outputPrefix="lib"
-               outputExtension="a">
+               outputName="lib_${ProjName}.a">
          </outputType>
       </tool>
       <tool
@@ -1453,7 +1454,8 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.macosx.c.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider">
+               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
                <checkOption
@@ -1466,8 +1468,7 @@
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.macosx.c.linker.output.so"
                nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
-               outputPrefix="lib"
-               outputExtension="dylib">
+               outputName="lib_${ProjName}.dylib">
             <enablement
                   type="ALL">
                <checkOption
@@ -1624,7 +1625,8 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.macosx.cpp.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider">
+               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
                <checkOption
@@ -1637,8 +1639,7 @@
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.macosx.cpp.linker.output.so"
                nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
-               outputPrefix="lib"
-               outputExtension="dylib">
+               outputName="lib_${ProjName}.dylib">
             <enablement
                   type="ALL">
                <checkOption
@@ -2800,13 +2801,13 @@
          </envVarBuildPath>
          <outputType
                id="cdt.managedbuild.tool.gnu.c.linker.cygwin.output"
-               outputExtension="exe"
+               outputName="${ProjName}.exe"
                superClass="cdt.managedbuild.tool.gnu.c.linker.output">
          </outputType>
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.c.linker.cygwin.output.so"
-               outputExtension="dll"
+               outputName="${ProjName}.dll"
                superClass="cdt.managedbuild.tool.gnu.c.linker.output.so">
          </outputType>
       </tool>
@@ -2827,7 +2828,7 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.output.so"
-               outputExtension="dll"
+               outputName="${ProjName}.dll"
                superClass="cdt.managedbuild.tool.gnu.cpp.linker.output.so">
          </outputType>
       </tool>
@@ -3118,7 +3119,7 @@
             </enablement>
             <outputType
                   id="cdt.managedbuild.tool.gnu.c.linker.mingw.so.output.base"
-                  outputExtension="dll"
+                  outputName="${ProjName}.dll"
                   superClass="cdt.managedbuild.tool.gnu.c.linker.output.so">
             </outputType>
          </tool>
@@ -3137,7 +3138,7 @@
             </enablement>
             <outputType
                   id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.so.output.base"
-                  outputExtension="dll"
+                  outputName="${ProjName}.dll"
                   superClass="cdt.managedbuild.tool.gnu.cpp.linker.output.so">
             </outputType>
          </tool>
@@ -5224,7 +5225,7 @@
                buildVariable="LLVM_BC_EXECUTABLES"
                id="cdt.managedbuild.tool.llvm.c.linker.output.exe.bc"
                namePattern="%.exe.bc"
-               outputExtension="exe.bc"
+               outputName="${ProjName}.exe.bc"
                primaryOutput="true">
             <enablement
                   type="ALL">
@@ -5237,7 +5238,7 @@
          <outputType
                buildVariable="LLVM_EXECUTABLES"
                id="cdt.managedbuild.tool.llvm.c.linker.output.exe"
-               outputExtension="exe">
+               outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
                <checkOption
@@ -5249,8 +5250,7 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.llvm.c.linker.output.so"
-               outputPrefix="lib"
-               outputExtension="so">
+               outputName="lib_${ProjName}.so">
             <enablement
                   type="ALL">
                <checkOption
@@ -5330,8 +5330,7 @@
                buildVariable="ARCHIVES"
                id="cdt.managedbuild.tool.llvm.archiver.output"
                nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
-               outputPrefix="lib"
-               outputExtension="a">
+               outputName="lib_${ProjName}.a">
          </outputType>
       </tool>
       <tool

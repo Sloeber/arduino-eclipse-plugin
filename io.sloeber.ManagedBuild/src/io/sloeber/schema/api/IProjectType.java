@@ -145,4 +145,14 @@ public interface IProjectType extends ISchemaObject {
 
     Map<String, String> getDefaultBuildProperties();
 
+    /**
+     * Is this project type compatible with the OS eclipse is running on.
+     * In other words: can we create projects and compile them to targets on the
+     * machine we are running?
+     * 
+     * @return true if the projectType has at least 1 configuration that is
+     *         compatible with the local os.
+     */
+    public boolean isCompatibleWithLocalOS();
+
 }

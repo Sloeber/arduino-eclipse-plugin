@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +27,10 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
+
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
@@ -63,13 +63,13 @@ public class ToolChain extends SchemaObject implements IToolChain {
     private Builder myBuilder;
     List<String> myErrorParsersIDs = new LinkedList<>();
     // Managed Build model attributes
-    private List<String> myOsList = new ArrayList<>();
     private List<String> myArchList = new ArrayList<>();
     private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
     private IConfigurationBuildMacroSupplier myBuildMacroSupplier = null;
 
     private Configuration myConfiguration;
     private List<OptionCategory> myCategories = new ArrayList<>();
+    private boolean myIsCompatibleWithLocalOS = false;
 
     /**
      * This constructor is called to create a tool-chain defined by an extension
@@ -142,13 +142,18 @@ public class ToolChain extends SchemaObject implements IToolChain {
     }
 
     private void resolveFields() {
-
-        if (modelOsList[SUPER].isBlank()) {
-            myOsList.add(ALL);
+        String osName = Platform.getOS();
+        if (modelOsList[SUPER].isBlank() || ALL.equals(modelOsList[SUPER])) {
+            myIsCompatibleWithLocalOS = true;
         } else {
             for (String token : modelOsList[SUPER].split(COMMA)) {
-                myOsList.add(token.trim());
+                if (osName.equals(token)) {
+                    myIsCompatibleWithLocalOS = true;
+                }
             }
+        }
+        if (!myIsCompatibleWithLocalOS) {
+            System.err.println(myName + BLANK + myID + BLANK + modelOsList[SUPER]);
         }
 
         if (modelArchList[SUPER].isBlank()) {
@@ -165,13 +170,13 @@ public class ToolChain extends SchemaObject implements IToolChain {
                 CONFIGURATION_ENVIRONMENT_SUPPLIER);
 
         //collect all the error parser ID's
-        String localErrorIDs[]=modelErrorParsers[SUPER].split(Pattern.quote(SEMICOLON));
+        String localErrorIDs[] = modelErrorParsers[SUPER].split(Pattern.quote(SEMICOLON));
         myErrorParsersIDs.addAll(Arrays.asList(localErrorIDs));
-        for(Tool curTool:myToolMap.values()) {
-        	String toolErrorIDs[]=curTool.getErrorParserList();
-        	 myErrorParsersIDs.addAll(Arrays.asList(toolErrorIDs));
+        for (Tool curTool : myToolMap.values()) {
+            String toolErrorIDs[] = curTool.getErrorParserList();
+            myErrorParsersIDs.addAll(Arrays.asList(toolErrorIDs));
         }
-       
+
     }
 
     // 
@@ -273,10 +278,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return myName;
     }
 
-//    @Override
-//    public String getErrorParserIds() {
-//        return modelErrorParsers[SUPER];
-//    }
+    //    @Override
+    //    public String getErrorParserIds() {
+    //        return modelErrorParsers[SUPER];
+    //    }
 
     @Override
     public List<IOutputType> getSecondaryOutputs() {
@@ -310,10 +315,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return ret;
     }
 
-// 
+    // 
     @Override
     public List<String> getErrorParserList() {
-    	return myErrorParsersIDs;
+        return myErrorParsersIDs;
     }
 
     @Override
@@ -321,10 +326,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return new LinkedList<>(myArchList);
     }
 
-    @Override
-    public List<String> getOSList() {
-        return new LinkedList<>(myOsList);
-    }
+    //    @Override
+    //    public List<String> getOSList() {
+    //        return new LinkedList<>(myOsList);
+    //    }
 
     @Override
     public String getDefaultLanguageSettingsProviderIds() {
@@ -386,6 +391,10 @@ public class ToolChain extends SchemaObject implements IToolChain {
             retOptions.putAll(curTool.getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData));
         }
         return retOptions;
+    }
+
+    public boolean isCompatibleWithLocalOS() {
+        return myIsCompatibleWithLocalOS;
     }
 
 }

@@ -88,12 +88,12 @@ public interface IToolChain extends ISchemaObject {
      */
     public ITool getTool(String id);
 
-    /**
-     * Returns an array of operating systems the tool-chain outputs can run on.
-     *
-     * @return String[]
-     */
-    public List<String> getOSList();
+    //    /**
+    //     * Returns an array of operating systems the tool-chain outputs can run on.
+    //     *
+    //     * @return String[]
+    //     */
+    //    public List<String> getOSList();
 
     /**
      * Returns an array of architectures the tool-chain outputs can run on.
@@ -102,21 +102,21 @@ public interface IToolChain extends ISchemaObject {
      */
     public List<String> getArchList();
 
-//    /**
-//     * Returns the semicolon separated list of unique IDs of the error parsers
-//     * associated
-//     * with the tool-chain.
-//     *
-//     * @return String
-//     */
-//    public String getErrorParserIds();
-//
-//    /**
-//     * Returns the semicolon separated list of unique IDs of the error parsers
-//     * associated
-//     * with the tool-chain, filtered for the specified configuration.
-//     */
-//    public String getErrorParserIds(IConfiguration config);
+    //    /**
+    //     * Returns the semicolon separated list of unique IDs of the error parsers
+    //     * associated
+    //     * with the tool-chain.
+    //     *
+    //     * @return String
+    //     */
+    //    public String getErrorParserIds();
+    //
+    //    /**
+    //     * Returns the semicolon separated list of unique IDs of the error parsers
+    //     * associated
+    //     * with the tool-chain, filtered for the specified configuration.
+    //     */
+    //    public String getErrorParserIds(IConfiguration config);
 
     /**
      * Returns the ordered list of unique IDs of the error parsers associated with

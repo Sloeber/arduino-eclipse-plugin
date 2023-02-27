@@ -29,7 +29,6 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
  */
 public interface IOutputType extends ISchemaObject {
 
-
     /**
      * Answers <code>true</code> if the output type considers the file extension to
      * be
@@ -99,5 +98,7 @@ public interface IOutputType extends ISchemaObject {
     public String getOutputExtension();
 
     public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoBuildConfData, IInputType inputType);
+
+    String getOutputName();
 
 }
