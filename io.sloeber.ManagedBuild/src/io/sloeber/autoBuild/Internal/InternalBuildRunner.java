@@ -20,12 +20,10 @@ import static io.sloeber.autoBuild.core.Messages.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
@@ -33,15 +31,6 @@ import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.internal.core.BuildRunnerHelper;
 import org.eclipse.core.resources.IFolder;
-//import org.eclipse.cdt.internal.core.BuildRunnerHelper;
-//import org.eclipse.cdt.managedbuilder.buildmodel.BuildDescriptionManager;
-//import org.eclipse.cdt.managedbuilder.buildmodel.IBuildDescription;
-//import org.eclipse.cdt.managedbuilder.internal.buildmodel.BuildStateManager;
-//import org.eclipse.cdt.managedbuilder.internal.buildmodel.DescriptionBuilder;
-//import org.eclipse.cdt.managedbuilder.internal.buildmodel.IConfigurationBuildState;
-//import org.eclipse.cdt.managedbuilder.internal.buildmodel.IProjectBuildState;
-//import org.eclipse.cdt.managedbuilder.internal.buildmodel.ParallelBuilder;
-//import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -73,17 +62,14 @@ public class InternalBuildRunner extends IBuildRunner {
 
     @Override
     public boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor monitor)
-            throws CoreException {
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
+            IProgressMonitor monitor) throws CoreException {
 
         SubMonitor parentMon = SubMonitor.convert(monitor);
         IProject project = autoData.getProject();
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
         BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
-
-        IConsole console = CCorePlugin.getDefault().getConsole();
-        console.start(project);
 
         try {
             if (monitor == null) {

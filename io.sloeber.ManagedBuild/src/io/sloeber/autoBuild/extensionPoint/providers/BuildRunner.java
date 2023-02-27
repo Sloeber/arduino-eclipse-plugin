@@ -58,8 +58,8 @@ public class BuildRunner extends IBuildRunner {
 
     @Override
     public boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor inMonitor)
-            throws CoreException {
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
+            IProgressMonitor inMonitor) throws CoreException {
         IProgressMonitor monitor = inMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -69,8 +69,6 @@ public class BuildRunner extends IBuildRunner {
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
 
-        IConsole console = CCorePlugin.getDefault().getConsole();
-        console.start(project);
         boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
 
         String buildCommand = AutoBuildCommon.resolve(builder.getCommand(), autoData);
@@ -131,8 +129,7 @@ public class BuildRunner extends IBuildRunner {
         return isClean;
     }
 
-    private static String[] getCommandArguments(int kind, IBuilder builder,
-    		AutoBuildConfigurationData autoData) {
+    private static String[] getCommandArguments(int kind, IBuilder builder, AutoBuildConfigurationData autoData) {
         String[] targets = getBuildTargets(kind, builder, autoData);
         String builderArguments = AutoBuildCommon.resolve(builder.getArguments(), autoData);
         String[] builderArgs = CommandLineUtil.argumentsToArray(builderArguments);
@@ -142,8 +139,7 @@ public class BuildRunner extends IBuildRunner {
         return args;
     }
 
-    private static String[] getBuildTargets(int kind, IBuilder builder,
-    		AutoBuildConfigurationData autoData) {
+    private static String[] getBuildTargets(int kind, IBuilder builder, AutoBuildConfigurationData autoData) {
         String targets = EMPTY_STRING;
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:

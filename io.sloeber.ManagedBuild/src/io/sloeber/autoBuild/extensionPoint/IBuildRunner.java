@@ -16,15 +16,12 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
 
 /**
  * Interface implemented by toolchain integrators to perform the actual build.
@@ -55,7 +52,7 @@ public abstract class IBuildRunner {
      *             standard core exception if something goes wrong
      */
     public abstract boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IProgressMonitor monitor)
-            throws CoreException;
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
+            IProgressMonitor monitor) throws CoreException;
 
 }

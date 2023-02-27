@@ -254,6 +254,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         String configName = cConfDesc.getName();
         IProject project = autoData.getProject();
         IConsole console = CCorePlugin.getDefault().getConsole();
+        console.start(project);
         outputTrace(project.getName(), "building cfg " + configName //$NON-NLS-1$
                 + " with builder " + builder.getName()); //$NON-NLS-1$
 
@@ -264,7 +265,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         try {
             // Set the current project for markers creation
             setCurrentProject(project);
-            if (builder.getBuildRunner().invokeBuild(kind, autoData, builder, this, this, monitor)) {
+            if (builder.getBuildRunner().invokeBuild(kind, autoData, builder, this, this, console, monitor)) {
                 forgetLastBuiltState();
             }
         } catch (CoreException e) {
@@ -422,6 +423,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         IResourceRuleFactory ruleFactory = ResourcesPlugin.getWorkspace().getRuleFactory();
         final ISchedulingRule rule = ruleFactory.modifyRule(project);
         IBuilder builder = autoData.getConfiguration().getBuilder();
+        IConsole console = CCorePlugin.getDefault().getConsole();
+        console.start(project);
 
         if (separateJob) {
             Job backgroundJob = new Job("CDT Common Builder") { //$NON-NLS-1$
@@ -436,9 +439,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                             @Override
                             public void run(IProgressMonitor monitor3) throws CoreException {
                                 // Set the current project for markers creation
+
                                 setCurrentProject(project);
                                 builder.getBuildRunner().invokeBuild(CLEAN_BUILD, autoData, builder, CommonBuilder.this,
-                                        CommonBuilder.this, monitor3);
+                                        CommonBuilder.this, console, monitor3);
                             }
                         }, rule, IWorkspace.AVOID_UPDATE, monitor2);
                     } catch (CoreException e) {
@@ -455,7 +459,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         } else {
             // Set the current project for markers creation
             setCurrentProject(project);
-            builder.getBuildRunner().invokeBuild(CLEAN_BUILD, autoData, builder, this, this, monitor);
+            builder.getBuildRunner().invokeBuild(CLEAN_BUILD, autoData, builder, this, this, console, monitor);
         }
 
     }
