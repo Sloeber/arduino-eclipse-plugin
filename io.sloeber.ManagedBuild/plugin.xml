@@ -5229,10 +5229,10 @@
                primaryOutput="true">
             <enablement
                   type="ALL">
-               <checkOption
-                     optionId="llvm.c.link.option.linkaslibrary"
-                     value="false">
-               </checkOption>
+               <checkBuildProperty
+                     property="org.eclipse.cdt.build.core.buildArtefactType"
+                     value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
+               </checkBuildProperty>
             </enablement>
          </outputType>
          <outputType
@@ -5241,10 +5241,10 @@
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
-               <checkOption
-                     optionId="llvm.c.link.option.native"
-                     value="false">
-               </checkOption>
+               <checkBuildProperty
+                     property="org.eclipse.cdt.build.core.buildArtefactType"
+                     value="org.eclipse.cdt.build.core.buildArtefactType.exe">
+               </checkBuildProperty>
             </enablement>
          </outputType>
          <outputType
@@ -5253,10 +5253,10 @@
                outputName="lib_${ProjName}.so">
             <enablement
                   type="ALL">
-               <checkOption
-                     optionId="llvm.c.link.option.linkaslibrary"
-                     value="true">
-               </checkOption>
+               <checkBuildProperty
+                     property="org.eclipse.cdt.build.core.buildArtefactType"
+                     value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
+               </checkBuildProperty>
             </enablement>
          </outputType>
       </tool>
@@ -6250,15 +6250,6 @@
                name="%ToolName.linker.llvm.cpp"
                natureFilter="ccnature"
                superClass="cdt.managedbuild.tool.llvm.clang.cpp.linker">
-            <enablement
-                  type="ALL">
-               <not>
-                  <checkBuildProperty
-                        property="org.eclipse.cdt.build.core.buildArtefactType"
-                        value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
-                  </checkBuildProperty>
-               </not>
-            </enablement>
             <option
                   id="llvm.c.link.base.option.ldflags"
                   isAbstract="true"
