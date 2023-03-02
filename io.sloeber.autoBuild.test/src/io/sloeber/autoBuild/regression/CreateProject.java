@@ -11,6 +11,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuild;
+import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -28,12 +30,13 @@ class CreateProject {
     @SuppressWarnings("static-method")
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
-    void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID)
-            throws Exception {
+    void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID,
+            ICodeProvider codeProvider) throws Exception {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
 
-        IProject testProject = AutoBuild.createProject(myProjectName, extensionID, extensionImpID, projectTypeID, null);
+        IProject testProject = AutoBuild.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
+                codeProvider, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         String errorMessage = new String();
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
@@ -63,13 +66,22 @@ class CreateProject {
                         String projectID = element.getAttribute(ID);
                         IProjectType projectType = ManagedBuildManager.getProjectType(extensionPointID, extensionID,
                                 projectID, true);
-                        if (projectType != null && projectType.isCompatibleWithLocalOS()) {
-
+                        if (projectType != null && projectType.isCompatibleWithLocalOS() && !projectType.isAbstract()) {
+                            String buildArtifactType = projectType.getBuildArtifactType();
+                            ICodeProvider codeProvider = null;
+                            switch (buildArtifactType) {
+                            case "org.eclipse.cdt.build.core.buildArtefactType.exe":
+                                codeProvider = new TemplateTestCodeProvider("exe");
+                                break;
+                            case "org.eclipse.cdt.build.core.buildArtefactType.staticLib":
+                            case "org.eclipse.cdt.build.core.buildArtefactType.sharedLib":
+                                codeProvider = new TemplateTestCodeProvider("lib");
+                                break;
+                            }
                             String projectName = String.format("%03d", testCounter) + "_" + projectType.getName() + "_"
                                     + extensionID;
-
                             testCounter++;
-                            ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID));
+                            ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID, codeProvider));
                             //                        if (testCounter > 4) {
                             //                            return ret.stream();
                             //                        }

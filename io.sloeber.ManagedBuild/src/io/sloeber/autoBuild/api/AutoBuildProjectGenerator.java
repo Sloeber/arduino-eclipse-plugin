@@ -38,9 +38,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
     private String myProjectName = null;
     private IProject myProject = null;
-    private String myExtensionPointID;
-    private String myExtensionID;
-    private String myProjectTypeID;
+    private String myExtensionPointID = null;
+    private String myExtensionID = null;
+    private String myProjectTypeID = null;
+    private ICodeProvider myCodeProvider = null;
 
     public AutoBuildProjectGenerator() {
 
@@ -65,13 +66,11 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 CCProjectNature.addCCNature(myProject, monitor);
                 AutoBuildNature.addNature(myProject, monitor);
 
-                //TOFIX Start of stupid code creation 
                 IFolder srcFolder = myProject.getFolder("src"); //$NON-NLS-1$
                 srcFolder.create(true, true, monitor);
-                IFile mainFile = srcFolder.getFile("main.cpp"); //$NON-NLS-1$
-                InputStream stream = new ByteArrayInputStream("int main(){}".getBytes(StandardCharsets.UTF_8)); //$NON-NLS-1$
-                mainFile.create(stream, true, monitor);
-                //End of stupid code creation
+                if (myCodeProvider != null) {
+                    myCodeProvider.createFiles(srcFolder, monitor);
+                }
 
                 myProject = CCorePlugin.getDefault().createCDTProject(description, myProject, monitor);
 
@@ -132,6 +131,11 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
     public void setProjectTypeID(String projectTypeID) {
         myProjectTypeID = projectTypeID;
+
+    }
+
+    public void setCodeProvider(ICodeProvider codeProvider) {
+        myCodeProvider = codeProvider;
 
     }
 

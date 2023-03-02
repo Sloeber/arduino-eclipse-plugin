@@ -221,4 +221,9 @@ public class ProjectType extends SchemaObject implements IProjectType {
         }
         return false;
     }
+
+    @Override
+    public String getBuildArtifactType() {
+        return modelBuildArtifactType[SUPER];
+    }
 }

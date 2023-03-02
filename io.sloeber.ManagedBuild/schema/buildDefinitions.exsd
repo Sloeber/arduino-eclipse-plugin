@@ -745,7 +745,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
    <element name="projectType">
       <annotation>
          <documentation>
-            Represents a class of project which acts as a template for the projects that the user will create, for example, a Linux static library. A project type contains a sequence of configurations. Project types are arranged in an inheritance hierarchy where a project type inherits the list of configurations from it&apos;s parent and can add to or override configurations in this list.
+            Represents a class of project which acts as a template for the projects that the user will create, for example, a  static library. A project type contains a sequence of configurations. Project types are arranged in an inheritance hierarchy where a project type inherits the list of configurations from it&apos;s superClass  and can add to or override configurations in this list.
          </documentation>
       </annotation>
       <complexType>

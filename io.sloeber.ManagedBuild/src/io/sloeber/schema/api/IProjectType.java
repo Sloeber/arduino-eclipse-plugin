@@ -155,4 +155,6 @@ public interface IProjectType extends ISchemaObject {
      */
     public boolean isCompatibleWithLocalOS();
 
+    public String getBuildArtifactType();
+
 }

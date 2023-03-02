@@ -61,8 +61,9 @@ public class MakeRules implements Iterable<MakeRule> {
                 for (Entry<IInputType, Set<IFile>> curTarget : prerequisites.entrySet()) {
                     inputType = curTarget.getKey();
                     files = curTarget.getValue();
+                    makerule.addPrerequisites(inputType, files);
                 }
-                makerule.addPrerequisites(inputType, files);
+
                 makerule.setSequenceGroupID(newMakeRule.getSequenceGroupID());
             } else {
                 myMakeRules.add(newMakeRule);
@@ -106,7 +107,18 @@ public class MakeRules implements Iterable<MakeRule> {
     public Map<IOutputType, Set<IFile>> getTargets() {
         Map<IOutputType, Set<IFile>> ret = new HashMap<>();
         for (MakeRule makeRule : myMakeRules) {
-            ret.putAll(makeRule.getTargets());
+            Map<IOutputType, Set<IFile>> toAdd = makeRule.getTargets();
+            for (Entry<IOutputType, Set<IFile>> addEntry : toAdd.entrySet()) {
+                IOutputType toAddKey = addEntry.getKey();
+                Set<IFile> toAddValue = addEntry.getValue();
+                Set<IFile> files = ret.get(toAddKey);
+                if (files == null) {
+                    Set<IFile> addCopy = new HashSet<>(toAddValue);
+                    ret.put(toAddKey, addCopy);
+                } else {
+                    files.addAll(toAddValue);
+                }
+            }
         }
         return ret;
     }

@@ -1655,7 +1655,7 @@
             id="cdt.managedbuild.tool.gnu.c.compiler"
             isAbstract="true"
             name="%ToolName.compiler.gnu.c"
-            natureFilter="both"
+            natureFilter="cnature"
             outputFlag="-o">
          <supportedProperties>
             <property
