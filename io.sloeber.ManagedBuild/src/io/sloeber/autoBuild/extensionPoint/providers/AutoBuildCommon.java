@@ -216,7 +216,7 @@ public class AutoBuildCommon {
                 String curOutput = curOutputPath.toOSString();
                 // try to resolve the build macros in the
                 // output names
-                String resolved = resolve(curOutput, EMPTY_STRING, BLANK,   autoBuildConfData);
+                String resolved = resolve(curOutput, EMPTY_STRING, BLANK, autoBuildConfData);
                 if ((resolved = resolved.trim()).length() > 0) {
                     ret.add(resolved);
                 } else {
@@ -364,7 +364,7 @@ public class AutoBuildCommon {
             //if the pattern contains a space no use to try to expand it
             return orgPattern;
         }
-        return getVariableValue( orgPattern, orgPattern, false,autoBuildConfData);
+        return getVariableValue(orgPattern, orgPattern, false, autoBuildConfData);
 
     }
 
@@ -412,13 +412,15 @@ public class AutoBuildCommon {
      * @return a string that holds the resolved unresolved input. Never returns null
      */
     static public String resolve(String unresolved, AutoBuildConfigurationData autoData) {
-        return resolve( unresolved, EMPTY_STRING , EMPTY_STRING ,  autoData);
+        return resolve(unresolved, EMPTY_STRING, EMPTY_STRING, autoData);
     }
 
-    static public String resolve(String unresolved, String nonexistentMacrosValue, String listDelimiter, AutoBuildConfigurationData autoData) {
+    static public String resolve(String unresolved, String nonexistentMacrosValue, String listDelimiter,
+            AutoBuildConfigurationData autoData) {
         DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
                 ICoreVariableContextInfo.CONTEXT_CONFIGURATION, autoData.getCdtConfigurationDescription());
-        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, nonexistentMacrosValue, listDelimiter);
+        IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, nonexistentMacrosValue,
+                listDelimiter);
         try {
             return CdtVariableResolver.resolveToString(unresolved, varSubs);
         } catch (CdtVariableException e) {
@@ -427,8 +429,8 @@ public class AutoBuildCommon {
         return EMPTY_STRING;
     }
 
-
-    static public String getVariableValue( String varName, String defaultvalue, boolean resolve,AutoBuildConfigurationData autoBuildConfData) {
+    static public String getVariableValue(String varName, String defaultvalue, boolean resolve,
+            AutoBuildConfigurationData autoBuildConfData) {
         ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         try {
@@ -436,6 +438,71 @@ public class AutoBuildCommon {
         } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
         }
         return defaultvalue;
+    }
+
+    /**
+     * This method makes sure that a string can be used as a file or folder name
+     * <br/>
+     * To do this it replaces all unacceptable characters with underscores.<br/>
+     * Currently it replaces (based on http://en.wikipedia.org/wiki/Filename ) /
+     * slash used as a path name component separator in Unix-like, Windows, and
+     * Amiga systems. (The MS-DOS command.com shell would consume it as a switch
+     * character, but Windows itself always accepts it as a
+     * separator.[6][vague]) \ backslash Also used as a path name component
+     * separator in MS-DOS, OS/2 and Windows (where there are few differences
+     * between slash and backslash); allowed in Unix filenames, see Note 1 ?
+     * question mark used as a wildcard in Unix, Windows and AmigaOS; marks a
+     * single character. Allowed in Unix filenames, see Note 1 % percent used as
+     * a wildcard in RT-11; marks a single character. asterisk or star used as a
+     * wildcard in Unix, MS-DOS, RT-11, VMS and Windows. Marks any sequence of
+     * characters (Unix, Windows, later versions of MS-DOS) or any sequence of
+     * characters in either the basename or extension (thus "*.*" in early
+     * versions of MS-DOS means "all files". Allowed in Unix filenames, see note
+     * 1 : colon used to determine the mount point / drive on Windows; used to
+     * determine the virtual device or physical device such as a drive on
+     * AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac OS.
+     * Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+     * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar
+     * or pipe designates software pipelining in Unix and Windows; allowed in
+     * Unix filenames, see Note 1 " quote used to mark beginning and end of
+     * filenames containing spaces in Windows, see Note 1 < less than used to
+     * redirect input, allowed in Unix filenames, see Note 1 > greater than used
+     * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
+     * 
+     * # is excluded as it is seen as a special character by make
+     * =======
+     * character, but Windows itself always accepts it as a separator.[6][vague]) \
+     * backslash Also used as a path name component separator in MS-DOS, OS/2 and
+     * Windows (where there are few differences between slash and backslash);
+     * allowed in Unix filenames, see Note 1 ? question mark used as a wildcard in
+     * Unix, Windows and AmigaOS; marks a single character. Allowed in Unix
+     * filenames, see Note 1 % percent used as a wildcard in RT-11; marks a single
+     * character. asterisk or star used as a wildcard in Unix, MS-DOS, RT-11, VMS
+     * and Windows. Marks any sequence of characters (Unix, Windows, later versions
+     * of MS-DOS) or any sequence of characters in either the basename or extension
+     * (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix
+     * filenames, see note 1 : colon used to determine the mount point / drive on
+     * Windows; used to determine the virtual device or physical device such as a
+     * drive on AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac
+     * OS. Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+     * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar or
+     * pipe designates software pipelining in Unix and Windows; allowed in Unix
+     * filenames, see Note 1 " quote used to mark beginning and end of filenames
+     * containing spaces in Windows, see Note 1 < less than used to redirect input,
+     * allowed in Unix filenames, see Note 1 > greater than used to redirect output,
+     * allowed in Unix filenames, see Note 1 . period or dot
+     *
+     * @param name
+     *            the string that needs to be checked
+     * @return a name safe to create files or folders
+     */
+    public static String MakeNameCompileSafe(String name) {
+        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#' };
+        String ret = name.trim();
+        for (char curchar : badChars) {
+            ret = ret.replace(curchar, '_');
+        }
+        return ret;
     }
 
 }

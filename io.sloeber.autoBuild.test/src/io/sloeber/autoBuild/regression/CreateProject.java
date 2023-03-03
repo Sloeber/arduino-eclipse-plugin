@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuild;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
@@ -77,9 +78,14 @@ class CreateProject {
                             case "org.eclipse.cdt.build.core.buildArtefactType.sharedLib":
                                 codeProvider = new TemplateTestCodeProvider("lib");
                                 break;
+                            case "org.eclipse.cdt.build.core.buildArtefactType.compound":
+                                codeProvider = new TemplateTestCodeProvider("compound");
+                                break;
+                            default:
+                                codeProvider = new TemplateTestCodeProvider("exe");
                             }
-                            String projectName = String.format("%03d", testCounter) + "_" + projectType.getName() + "_"
-                                    + extensionID;
+                            String projectName = AutoBuildCommon.MakeNameCompileSafe(String.format("%03d", testCounter)
+                                    + "_" + projectType.getName() + "_" + extensionID);
                             testCounter++;
                             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID, codeProvider));
                             //                        if (testCounter > 4) {

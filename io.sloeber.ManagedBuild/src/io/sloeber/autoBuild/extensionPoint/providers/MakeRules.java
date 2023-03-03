@@ -407,6 +407,28 @@ public class MakeRules implements Iterable<MakeRule> {
         }
     }
 
+    /**
+     * Get the targets for the makefiles with the highest sequence ID
+     * Though literally speaking this is not the same as the final targets
+     * it should be :-S (well in my mind right now)
+     * 
+     * @return The targets of rules that are not used as input by another tool
+     */
+    public Set<IFile> getFinalTargets() {
+        Set<IFile> ret = new HashSet<>();
+        int highestSequenceID = 1; //(0 is for sure not the highest)
+        for (MakeRule curMakeRule : myMakeRules) {
+            if (curMakeRule.getSequenceGroupID() > highestSequenceID) {
+                highestSequenceID = curMakeRule.getSequenceGroupID();
+                ret.clear();
+            }
+            if (curMakeRule.getSequenceGroupID() >= highestSequenceID) {
+                ret.addAll(curMakeRule.getTargetFiles());
+            }
+        }
+        return ret;
+    }
+
     //	public Map<IOutputType, Set<IFile>> getTargets() {
     //		Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();
     //		for (MakeRule makeRule : myMakeRules) {

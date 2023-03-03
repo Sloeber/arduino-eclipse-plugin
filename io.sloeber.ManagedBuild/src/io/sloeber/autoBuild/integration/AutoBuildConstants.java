@@ -15,13 +15,13 @@ import org.eclipse.core.runtime.Platform;
  */
 @SuppressWarnings("nls")
 public class AutoBuildConstants {
-	
+
     public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
     public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
     public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
-	
-    public static final String PROJECT_NAME_VARIABLE ="${ProjName}";
-	
+
+    public static final String PROJECT_NAME_VARIABLE = "${ProjName}";
+
     // preference nodes
     public static final String NODE_ARDUINO = "io.sloeber.arduino";
 
@@ -63,6 +63,9 @@ public class AutoBuildConstants {
     public static final String BEGIN_OF_CHILDREN = "Begin of children ";
     public static final String DUMPLEAD = " ";
 
+    public static final String STATIC_LIB_EXTENSION = "a";
+    public static final String DYNAMIC_LIB_EXTENSION = isWindows ? "dll" : "so";
+    public static final String EXE_NAME = isWindows ? "${ProjName}.exe" : "${ProjName}";
     public static final String NETWORK = "network";
     public static final String PORT = "port";
     public static final String AUTH = "auth";
@@ -145,7 +148,6 @@ public class AutoBuildConstants {
     public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
     public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";
 
-    
     public static final String AT = "@";
     public static final int COLS_PER_LINE = 80;
     public static final String COMMENT_SYMBOL = "#";
@@ -232,7 +234,7 @@ public class AutoBuildConstants {
     //        public static final String MESSAGE_ALL_TARGET = ManagedMakeMessages.getResourceString(MakefileGenerator_comment_build_alltarget");
     //    public static final String MESSAGE_SRC_LISTS = ManagedMakeMessages.getResourceString(COMMENT + ".source.list");
     //    public static final String MESSAGE_HEADER = ManagedMakeMessages.getResourceString(HEADER);
-    
+
     // Schema element names
     public static final String ID = "id"; //$NON-NLS-1$
     public static final String NAME = "name"; //$NON-NLS-1$
@@ -260,5 +262,5 @@ public class AutoBuildConstants {
     public static final String NAME_PATTERN = "namePattern"; //$NON-NLS-1$
     public static final String NAME_PROVIDER = "nameProvider"; //$NON-NLS-1$
     public static final String BUILD_VARIABLE = "buildVariable"; //$NON-NLS-1$
-    
+
 }

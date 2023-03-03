@@ -431,7 +431,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         // io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
         // "sloeber.prebuild",
         // new String(), false);
-        String sketchPrebuild = getVariableValue("sloeber.prebuild", EMPTY_STRING, true,  myAutoBuildConfData); //$NON-NLS-1$
+        String sketchPrebuild = getVariableValue("sloeber.prebuild", EMPTY_STRING, true, myAutoBuildConfData); //$NON-NLS-1$
         if (!sketchPrebuild.isEmpty()) {
             if (!prebuildStep.isEmpty()) {
                 prebuildStep = prebuildStep + "\n\t" + sketchPrebuild; //$NON-NLS-1$
@@ -476,10 +476,19 @@ public class MakefileGenerator implements IMakefileGenerator {
         IConfiguration config = myAutoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
 
-        Set<ITool> targetTools = config.getToolChain().getTargetTools();
         buffer.append("all:").append(WHITESPACE); //$NON-NLS-1$
-        for (ITool curTargetTool : targetTools) {
-            Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
+        Set<ITool> targetTools = config.getToolChain().getTargetTools();
+        if (targetTools.size() > 0) {
+            for (ITool curTargetTool : targetTools) {
+                Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
+                for (IFile curTarget : allTargets) {
+                    String targetString = GetNiceFileName(myTopBuildDir, curTarget);
+                    buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
+                    buffer.append(WHITESPACE);
+                }
+            }
+        } else {
+            Set<IFile> allTargets = myMakeRules.getFinalTargets();
             for (IFile curTarget : allTargets) {
                 String targetString = GetNiceFileName(myTopBuildDir, curTarget);
                 buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));

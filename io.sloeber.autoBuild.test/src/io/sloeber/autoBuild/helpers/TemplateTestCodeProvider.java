@@ -24,25 +24,36 @@ public class TemplateTestCodeProvider implements ICodeProvider {
         myTemplateFolder = templateFolder;
     }
 
-    @SuppressWarnings("nls")
     @Override
-    public boolean createFiles(IFolder srcFolder, IProgressMonitor monitor) {
+    public boolean createFiles(IFolder targetFolder, IProgressMonitor monitor) {
         try {
             IPath folderName = getTemplateFolder();
-            String FileNames[] = folderName.toFile().list();
+            File templateFolder = folderName.toFile();
+            return recursiveCreateFiles(templateFolder, targetFolder, monitor);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-            for (String file : FileNames) {
-
-                if (!(file.equals(".") || file.equals(".."))) {
-                    File sourceFile = folderName.append(file).toFile();
-                    IFile targetFile = srcFolder.getFile(file);
+    private boolean recursiveCreateFiles(File templateFolder, IFolder targetFolder, IProgressMonitor monitor) {
+        try {
+            for (File curMember : templateFolder.listFiles()) {
+                if (curMember.isFile()) {
+                    File sourceFile = curMember;
+                    IFile targetFile = targetFolder.getFile(sourceFile.getName());
 
                     try (InputStream theFileStream = new FileInputStream(sourceFile.toString())) {
                         targetFile.create(theFileStream, true, monitor);
                     } catch (IOException e) {
-                        int a = 0;
+                        e.printStackTrace();
                     }
 
+                } else {
+                    // curmember is a folder
+                    IFolder newtargetFolder = targetFolder.getFolder(curMember.getName());
+                    newtargetFolder.create(true, true, monitor);
+                    recursiveCreateFiles(curMember, newtargetFolder, monitor);
                 }
             }
         } catch (Exception e) {
@@ -54,8 +65,8 @@ public class TemplateTestCodeProvider implements ICodeProvider {
     }
 
     private IPath getTemplateFolder() throws Exception {
-        Bundle bundle = Platform.getBundle("io.sloeber.autoBuild.test");
-        Path path = new Path("templates/" + myTemplateFolder);
+        Bundle bundle = Platform.getBundle("io.sloeber.autoBuild.test"); //$NON-NLS-1$
+        Path path = new Path("templates/" + myTemplateFolder); //$NON-NLS-1$
         URL fileURL = FileLocator.find(bundle, path, null);
         URL resolvedFileURL = FileLocator.toFileURL(fileURL);
         return new Path(resolvedFileURL.toURI().getPath());

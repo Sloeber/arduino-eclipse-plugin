@@ -13,10 +13,10 @@
         cleanBuildTarget="clean"
         command="${MAKE_HOME}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
-        id="io.sloeber.gnu.builder"
+        id="io.sloeber.autoBuild.builder"
         ignoreErrCmd="-k"
         incrementalBuildTarget="all"
-        isAbstract="true"
+        isAbstract="false"
         isVariableCaseSensitive="true"
         macroInputDirRelPathValue="$(dir $&lt;)"
         macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
@@ -28,320 +28,167 @@
         macroOutputFileExtValue="$(suffix $(notdir $@)"
         macroOutputFileNameValue="$(notdir $@)"
         macroOutputFileRelPathValue="$@"
-        name="%toolchain.builder.name"
+        name="%autoBuild.builder.name"
         parallelBuildCmd="-j*"
         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
         variableFormat="${=}">
   </builder>
   <projectType
-        id="io.sloeber.core.sketch"
-        name="%projectType.name">
+        buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.compound"
+        id="io.sloeber.autoBuild.projectType.exe"
+        name="%autoBuild.projectType.name">
      <configuration
            cleanCommand="rm -f"
-           id="io.sloeber.core.configuration.release"
-           languageSettingsProviders="io.sloeber.languageSettingsProvider"
-           name="%configuration.name">
+           id="io.sloeber.autoBuild.configuration.release"
+           name="%autoBuild.configuration.name">
         <toolChain
               archList="all"
-              environmentSupplier="io.sloeber.autoBuild.core.DefaultConfigurationEnvironmentVariableSupplier"
-              id="io.sloeber.core.toolChain.release"
-              isAbstract="false"
-              languageSettingsProviders="io.sloeber.languageSettingsProvider"
-              name="%toolChain.name"
-              osList="all"
-              targetTool="io.sloeber.tool.size">
-           <targetPlatform
-                 archList="all"
-                 binaryParser="org.eclipse.cdt.core.ELF"
-                 id="io.sloeber.targetplatform"
-                 name="%targetPlatform.name"
-                 osList="all">
-           </targetPlatform>
+              id="io.sloeber.autoBuild.toolChain.release"
+              name="%autoBuild.tooolChain.name"
+              osList="all">
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.assembler"
+                 name="%autoBuild.tool.gcc.assembler"
+                 superClass="cdt.managedbuild.tool.gnu.assembler">
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.cpp.compiler"
+                 name="%autoBuild.tool.gpp.compiler"
+                 superClass="cdt.managedbuild.tool.gnu.cpp.compiler">
+              <outputType
+                    id="io.sloeber.autoBuild.gpp.compiler.outputType.exe"
+                    name="%autoBuild.outputType.CPP.exe.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <outputType
+                    id="io.sloeber.autoBuild.gpp.compiler.outputType.staticLib"
+                    name="%autoBuild.outputType.CPP.staticLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <outputType
+                    id="io.sloeber.autoBuild.gpp.compiler.outputType.dynLib"
+                    name="%autoBuild.outputType.CPP.dynLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.staticLib"
+                 name="%autoBuild.tool.gpp.linker.staticLib"
+                 superClass="cdt.managedbuild.tool.gnu.archiver">
+              <inputType
+                    id="io.sloeber.autoBuild.inputType.cpp.staticLibs"
+                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.staticLib">
+              </inputType>
+              <outputType
+                    id="io.sloeber.autoBuild.outputType.link.staticLib"
+                    name="%autoBuild.outputType.staticLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.dynLib"
+                 name="%autoBuild.tool.gpp.linker.dynLib"
+                 superClass="cdt.managedbuild.tool.gnu.cpp.linker">
+              <inputType
+                    id="io.sloeber.autoBuild.inputType.cpp.dynLib"
+                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.dynLib">
+              </inputType>
+              <outputType
+                    id="io.sloeber.autoBuild.outputType.link.dynLib"
+                    name="%autoBuild.outputType.dynLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.exe"
+                 name="%autoBuild.tool.gpp.linker.exe"
+                 superClass="cdt.managedbuild.tool.gnu.cpp.linker">
+              <inputType
+                    id="io.sloeber.autoBuild.inputType3"
+                    outputTypeID="io.sloeber.autoBuild.outputType.link.dynLib">
+              </inputType>
+              <outputType
+                    id="io.sloeber.autoBuild.outputType.link.exe"
+                    name="%autoBuild.outputType.exe.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild"
+                    outputName="${ProjName}.exe">
+              </outputType>
+              <inputType
+                    id="io.sloeber.autoBuild.inputType4"
+                    outputTypeID="io.sloeber.autoBuild.outputType.link.staticLib">
+              </inputType>
+              <inputType
+                    id="io.sloeber.autoBuild.inputType5"
+                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.exe">
+              </inputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.c.compiler"
+                 name="%autoBuild.tool.gcc.compiler"
+                 superClass="cdt.managedbuild.tool.gnu.c.compiler">
+              <outputType
+                    id="io.sloeber.autoBuild.gcc.compiler.outputType.exe"
+                    name="%autoBuild.outputType.C.exe.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <outputType
+                    id="io.sloeber.autoBuild.gcc.compiler.outputType.staticLib"
+                    name="%autoBuild.outputType.C.staticLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <outputType
+                    id="io.sloeber.autoBuild.gcc.compiler.outputType.dynLib"
+                    name="%autoBuild.outputType.C.dynLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.staticLib"
+                 name="%autoBuild.tool.gcc.linker.staticLib"
+                 superClass="cdt.managedbuild.tool.gnu.archiver">
+              <outputType
+                    id="io.sloeber.autoBuild.outputType.staticLib"
+                    name="%autoBuild.outputType.staticLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <inputType
+                    id="io.sloeber.autoBuild.inputType.gcc.staticLib.object"
+                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.staticLib">
+              </inputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.dynLib"
+                 name="%autoBuild.tool.gcc.linker.dynLib"
+                 superClass="cdt.managedbuild.tool.gnu.c.linker">
+              <outputType
+                    id="io.sloeber.autoBuild.outputType.dynLib"
+                    name="%autoBuild.outputType.dynLib.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <inputType
+                    id="io.sloeber.autoBuild.inputType.gcc.dynLib.Object"
+                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.dynLib">
+              </inputType>
+           </tool>
+           <tool
+                 id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.exe"
+                 name="%autoBuild.tool.gcc.linker.exe"
+                 superClass="cdt.managedbuild.tool.gnu.c.linker">
+              <outputType
+                    id="io.sloeber.autoBuild.outputType.exe"
+                    name="%autoBuild.outputType.exe.name"
+                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
+              </outputType>
+              <inputType
+                    id="io.sloeber.autoBuild.inputType.gcc.exe.object"
+                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.exe">
+              </inputType>
+           </tool>
            <builder
-                 id="io.sloeber.sketch.builder"
-                 name="%toolchain.gnu.builder.name"
-                 superClass="io.sloeber.gnu.builder">
+                 id="io.sloeber.autoBuild.builder1"
+                 superClass="io.sloeber.autoBuild.builder">
            </builder>
-           <optionCategory
-                 id="io.sloeber.core.optionCategory.includePaths"
-                 name="%optionCategory.include.name">
-           </optionCategory>
-           <tool
-                 announcement="%tool.Arduino.CPP.announcement"
-                 command="${recipe.cpp.o.pattern}"
-                 commandLinePattern="recipe.cpp.o.pattern"
-                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
-                 id="io.sloeber.tool.sketch.compiler.cpp"
-                 name="%tool.Arduino.CPP2O.name"
-                 natureFilter="both">
-              <optionCategory
-                    id="io.sloeber.core.cpp.optionCategory.includePaths"
-                    name="%optionCategory.include.name">
-              </optionCategory>
-              <option
-                    browseType="directory"
-                    category="io.sloeber.core.cpp.optionCategory.includePaths"
-                    command="-I"
-                    id="io.sloeber.compiler.cpp.sketch.option.incpath"
-                    name="%option.include.path.name"
-                    resourceFilter="project"
-                    valueType="includePath">
-              </option>
-              <inputType
-                    buildVariable="CPP_SKETCH_FILES"
-                    dependencyCalculator="io.sloeber.core.toolchain.ArduinoDependencyCalculator"
-                    dependencyContentType="org.eclipse.cdt.core.cxxHeader"
-                    id="io.sloeber.compiler.cpp.sketch.input"
-                    name="%inputType.CPP.name"
-                    primaryInput="true"
-                    sourceContentType="org.eclipse.cdt.core.cxxSource">
-              </inputType>
-              <outputType
-                    buildVariable="LINK_OBJ"
-                    id="io.sloeber.compiler.cpp.link.output"
-                    name="%outputType.CPP.link.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectToLinker"
-                    primaryOutput="true">
-              </outputType>
-              <outputType
-                    buildVariable="AR_OBJ"
-                    id="io.sloeber.compiler.cpp.ar.output"
-                    name="%outputType.CPP.AR.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectForArchiver"
-                    primaryOutput="true">
-              </outputType>
-           </tool>
-           <tool
-                 announcement="%tool.Arduino.C.announcement"
-                 command="${recipe.c.o.pattern}"
-                 commandLinePattern="recipe.c.o.pattern"
-                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
-                 id="io.sloeber.tool.compiler.c"
-                 name="%tool.Arduino.C2O.name"
-                 natureFilter="both">
-              <optionCategory
-                    id="io.sloeber.core.c.optionCategory.includePaths"
-                    name="%optionCategory.include.name">
-              </optionCategory>
-              <option
-                    browseType="directory"
-                    category="io.sloeber.core.c.optionCategory.includePaths"
-                    command="-I"
-                    id="io.sloeber.compiler.c.sketch.option.incpath"
-                    name="%option.include.path.name"
-                    resourceFilter="project"
-                    valueType="includePath">
-              </option>
-              <inputType
-                    buildVariable="C_SKETCH_FILES"
-                    dependencyCalculator="io.sloeber.core.toolchain.ArduinoDependencyCalculator"
-                    dependencyContentType="org.eclipse.cdt.core.cHeader"
-                    id="io.sloeber.compiler.c.sketch.input"
-                    multipleOfType="false"
-                    name="%inputType.C.name"
-                    primaryInput="true"
-                    sourceContentType="org.eclipse.cdt.core.cSource">
-              </inputType>
-              <outputType
-                    buildVariable="LINK_OBJ"
-                    id="io.sloeber.compiler.c.link.output"
-                    name="%outputType.C.link.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectToLinker"
-                    outputExtension="O"
-                    primaryOutput="true">
-              </outputType>
-              <outputType
-                    buildVariable="AR_OBJ"
-                    id="io.sloeber.compiler.c.ar.output"
-                    name="%outputType.C.AR.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectForArchiver"
-                    outputExtension="o"
-                    primaryOutput="true">
-              </outputType>
-           </tool>
-           <tool
-                 announcement="%tool.Arduino.S.announcement"
-                 command="${recipe.S.o.pattern}"
-                 commandLinePattern="recipe.S.o.pattern"
-                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
-                 id="io.sloeber.tool.sketch.compiler.s"
-                 name="%tool.Arduino.S20.name"
-                 natureFilter="both">
-              <optionCategory
-                    id="io.sloeber.core.asm.optionCategory.includePaths"
-                    name="%optionCategory.include.name">
-              </optionCategory>
-              <option
-                    browseType="directory"
-                    category="io.sloeber.core.asm.optionCategory.includePaths"
-                    command="-I"
-                    id="io.sloeber.compiler.asm.sketch.option.incpath"
-                    name="%option.include.path.name"
-                    resourceFilter="project"
-                    valueType="includePath">
-              </option>
-              <inputType
-                    buildVariable="S_SKETCH_FILES"
-                    dependencyCalculator="io.sloeber.core.toolchain.ArduinoDependencyCalculator"
-                    dependencyContentType="org.eclipse.cdt.core.cxxHeader"
-                    id="io.sloeber.compiler.S.sketch.input"
-                    name="%inputType.Asembly.name"
-                    primaryInput="false"
-                    sourceContentType="org.eclipse.cdt.core.asmSource">
-              </inputType>
-              <outputType
-                    buildVariable="LINK_OBJ"
-                    id="io.sloeber.compiler.S.sketch.link.output"
-                    name="%outputType.S.link.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectToLinker"
-                    outputExtension="o"
-                    primaryOutput="true">
-              </outputType>
-              <outputType
-                    buildVariable="AR_OBJ"
-                    id="io.sloeber.compiler.S.ar.output"
-                    name="%outputType.S.AR.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderObjectForArchiver"
-                    outputExtension="o"
-                    primaryOutput="true">
-              </outputType>
-           </tool>
-           <tool
-                 announcement="%tool.Arduino.archiver.announcement"
-                 command="${recipe.ar.pattern}"
-                 commandLinePattern="recipe.ar.pattern"
-                 errorParsers="org.eclipse.cdt.core.GLDErrorParser"
-                 id="io.sloeber.tool.ar"
-                 name="%tool.archiver.name">
-              <outputType
-                    buildVariable="AR"
-                    id="io.sloeber.tool.archiver.output"
-                    name="%outputType.archiver.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderArchive"
-                    outputExtension="ar"
-                    outputNames="${archive_file_path}"
-                    primaryOutput="true">
-              </outputType>
-              <inputType
-                    buildVariable="AR_OBJ"
-                    id="io.sloeber.tool.archiver.input"
-                    multipleOfType="true"
-                    name="%inputType.archiver.name"
-                    outputTypeID="io.sloeber.compiler.cpp.ar.output"
-                    primaryInput="false">
-              </inputType>
-           </tool>
-           <tool
-                 announcement="%tool.Arduino.combiner.announcement"
-                 command="${recipe.c.combine.pattern}"
-                 commandLinePattern="recipe.c.combine.pattern"
-                 errorParsers="org.eclipse.cdt.core.GLDErrorParser"
-                 id="io.sloeber.tool.combine"
-                 name="%tool.combiner.name"
-                 natureFilter="both">
-              <outputType
-                    buildVariable="ELF"
-                    id="io.sloeber.tool.combiner.output"
-                    name="%outputType.elf.name"
-                    outputName="${project}.elf"
-                    outputNames="${ProjName}.elf"
-                    outputExtension="elf"
-                    primaryOutput="true">
-              </outputType>
-                            <inputType
-                                  buildVariable="LINK_OBJ"
-                                  id="io.sloeber.tool.combiner.ob.input"
-                                  multipleOfType="true"
-                                  name="%inputType.linker.name"
-                                  outputTypeID="io.sloeber.compiler.cpp.link.output"
-                                  primaryInput="true">
-              </inputType>
-              <inputType
-                    buildVariable="AR"
-                    id="io.sloeber.tool.combiner.ar.input"
-                    multipleOfType="true"
-                    name="Build Archives"
-                    option="ARCHIVES"
-                    primaryInput="false"
-                    sources="ar">
-              </inputType>
-           </tool>
-           <tool
-                 announcement="%tool.obcopy.announcement"
-                 command="all objcopy commands"
-                 commandLinePattern="${sloeber.objcopy}"
-                 id="io.sloeber.tool.objcopy.eep"
-                 isAbstract="false"
-                 name="%tool.objcopy.name"
-                 natureFilter="both">
-              <inputType
-                    buildVariable="ELF"
-                    id="io.sloeber.tool.objcopy.eep.input"
-                    multipleOfType="true"
-                    name="%inputType.objcopy.name"
-                    outputTypeID="io.sloeber.tool.combiner.output"
-                    primaryInput="true"
-                    sources="elf">
-              </inputType>
-              <outputType
-                    buildVariable="HEX"
-                    id="io.sloeber.tool.objcopy.output"
-                    multipleOfType="false"
-                    name="%outputType.hexdump.name"
-                    outputExtension="objcopy"
-                    outputNames="${ProjName}.hex">
-              </outputType>
-           </tool>
-           <tool
-                 announcement="%tool.printsize.announcement"
-                 command="${sloeber.size.switch} "
-                 commandLinePattern="${sloeber.size.switch} "
-                 id="io.sloeber.tool.size"
-                 isAbstract="false"
-                 name="print size">
-              <inputType
-                    dependencyExtensions="hex"
-                    id="io.sloeber.tool.size.input"
-                    name="size input"
-                    outputTypeID="io.sloeber.tool.objcopy.output"
-                    primaryInput="true"
-                    sources="hex">
-              </inputType>
-              <outputType
-                    buildVariable="SIZEDUMMY"
-                    id="io.sloeber.tool.size.output"
-                    multipleOfType="false"
-                    name="size info"
-                    outputExtension="size"
-                    outputNames="${ProjName}.size"
-                    primaryOutput="false">
-              </outputType>
-           </tool>
         </toolChain>
-        <folderInfo
-              exclude="true"
-              resourcePath="libraries/?*/**/?xamples/**">
-        </folderInfo>
-        <folderInfo
-              exclude="true"
-              resourcePath="libraries/?*/**/?xtras/**">
-        </folderInfo>
-        <folderInfo
-              exclude="true"
-              resourcePath="libraries/?*/**/test*/**">
-        </folderInfo>
-        <folderInfo
-              exclude="true"
-              resourcePath="libraries/?*/**/third-party/**">
-        </folderInfo>
-        <folderInfo
-              exclude="true"
-              resourcePath="libraries/**/._*">
-        </folderInfo>
-        <folderInfo
-              exclude="true"
-              resourcePath="libraries/?*/utility/*/*">
-        </folderInfo>
      </configuration>
   </projectType>
 
@@ -636,7 +483,7 @@
                         autoBuildTarget="all"
                         buildfileGenerator="org.eclipse.cdt.managedbuilder.makegen.gnu2.GnuMakefileGenerator"
                         cleanBuildTarget="clean"
-                        command="make"
+                        command="${SLOEBER_HOME}make"
                         errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser"
                         id="org.eclipse.cdt.build.core.settings.default.builder"
                         ignoreErrCmd="-k"
@@ -718,6 +565,7 @@
                </option>
             </tool>
             <builder
+                  command="${MAKE_HOME}make"
                   id="org.eclipse.cdt.build.core.internal.builder"
                   name="%InternalBuilder.name">
             </builder>
@@ -735,7 +583,7 @@
             fileVersion="4.0.0">
       </managedBuildRevision>
       <tool
-            command="gcc"
+            command="${TOOL_FOLDER}gcc"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.gnu.c.linker"
             name="%ToolName.linker.gnu.c"
@@ -959,7 +807,7 @@
          </option>
       </tool>
       <tool
-            command="g++"
+            command="${TOOL_FOLDER}g++"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.gnu.cpp.linker"
             name="%ToolName.linker.gnu.cpp"
@@ -1177,7 +1025,7 @@
          </option>
       </tool>
       <tool
-            command="ar"
+            command="${TOOL_FOLDER}ar"
             id="cdt.managedbuild.tool.gnu.archiver"
             isAbstract="true"
             name="%ToolName.archiver.gnu"
@@ -1197,7 +1045,7 @@
          </optionCategory>
          <option
                category="gnu.lib.category.general"
-               defaultValue="-r"
+               defaultValue="-crs"
                id="gnu.both.lib.option.flags"
                name="%Option.Posix.Archiver.Flags"
                valueType="string">
@@ -1226,7 +1074,7 @@
          </outputType>
       </tool>
       <tool
-            command="as"
+            command="${TOOL_FOLDER}as"
             errorParsers="org.eclipse.cdt.core.GASErrorParser"
             id="cdt.managedbuild.tool.gnu.assembler"
             name="%ToolName.assembler.gnu"
@@ -1280,7 +1128,7 @@
          </outputType>
       </tool>
       <tool
-            command="gcc"
+            command="${TOOL_FOLDER}gcc"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.macosx.c.linker"
             name="%ToolName.linker.macosx.c"
@@ -1479,7 +1327,7 @@
          </outputType>
       </tool>
       <tool
-            command="g++"
+            command="${TOOL_FOLDER}g++"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.macosx.cpp.linker"
             name="%ToolName.linker.macosx.cpp"
@@ -1650,7 +1498,7 @@
          </outputType>
       </tool>
       <tool
-            command="gcc"
+            command="${TOOL_FOLDER}gcc"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.gnu.c.compiler"
             isAbstract="true"
@@ -2196,7 +2044,7 @@
          </outputType>
       </tool>
       <tool
-            command="g++"
+            command="${TOOL_FOLDER}g++"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.gnu.cpp.compiler"
             isAbstract="true"
@@ -2822,14 +2670,28 @@
          </envVarBuildPath>
          <outputType
                id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.output"
-               outputExtension="exe"
+               outputName="${ProjName}.exe"
                superClass="cdt.managedbuild.tool.gnu.cpp.linker.output">
+            <enablement
+                  type="ALL">
+               <checkBuildProperty
+                     property="org.eclipse.cdt.build.core.buildArtefactType"
+                     value="org.eclipse.cdt.build.core.buildArtefactType.dynLib">
+               </checkBuildProperty>
+            </enablement>
          </outputType>
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.output.so"
                outputName="${ProjName}.dll"
                superClass="cdt.managedbuild.tool.gnu.cpp.linker.output.so">
+            <enablement
+                  type="ALL">
+               <checkBuildProperty
+                     property="org.eclipse.cdt.build.core.buildArtefactType"
+                     value="org.eclipse.cdt.build.core.buildArtefactType.exe">
+               </checkBuildProperty>
+            </enablement>
          </outputType>
       </tool>
       <tool
@@ -2863,7 +2725,7 @@
       <builder
             autoBuildTarget="all"
             cleanBuildTarget="clean"
-            command="make"
+            command="${MAKE_HOME}make"
             errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser"
             id="cdt.managedbuild.target.gnu.builder"
             ignoreErrCmd="-k"
@@ -10754,6 +10616,7 @@
          </enablement>
       </configuration>
       <projectType
+            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
             buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe"
             id="org.eclipse.cdt.msvc.projectType.exe"
             projectEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
@@ -10819,7 +10682,7 @@
          </configuration>
       </projectType>
       <projectType
-            buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
+            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
             id="org.eclipse.cdt.msvc.projectType.dll"
             projectEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
          <configuration
@@ -10884,7 +10747,7 @@
          </configuration>
       </projectType>
       <projectType
-            buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib"
+            buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
             id="org.eclipse.cdt.msvc.projectType.lib"
             projectEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
          <configuration
