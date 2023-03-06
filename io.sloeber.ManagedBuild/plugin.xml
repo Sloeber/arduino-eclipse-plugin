@@ -434,125 +434,6 @@
          </configuration>
       </projectType>
    </extension>
-          <extension
-               id="emptyConfigs"
-               name="%extension.name.6"
-               point="io.sloeber.autoBuild.buildDefinitions">
-            <configuration
-                  id="org.eclipse.cdt.build.core.emptycfg"
-                  languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider"
-                  name="%cfg1_empty">
-            </configuration>
-            <configuration
-                  id="org.eclipse.cdt.build.core.prefbase.cfg"
-                  languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider"
-                  name="%cfg1_base">
-               <toolChain
-                     id="org.eclipse.cdt.build.core.prefbase.toolchain"
-                     isSystem="true"
-                     name="%toolChain.name">
-                  <tool
-                        errorParsers="org.eclipse.cdt.core.VCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GCCErrorParser"
-                        id="org.eclipse.cdt.build.core.settings.holder.libs"
-                        isSystem="true"
-                        name="%tool.name">
-                     <option
-                           browseType="directory"
-                           id="org.eclipse.cdt.build.core.settings.holder.libpaths"
-                           name="%option.name"
-                           valueType="libPaths">
-                     </option>
-                     <option
-                           browseType="file"
-                           id="org.eclipse.cdt.build.core.settings.holder.libfiles"
-                           name="%option.name.0"
-                           valueType="libFiles">
-                     </option>
-                  </tool>
-                  <builder
-                        autoBuildTarget="all"
-                        makefileGenerator="org.eclipse.cdt.managedbuilder.makegen.gnu2.GnuMakefileGenerator"
-                        cleanBuildTarget="clean"
-                        command="${SLOEBER_HOME}make"
-                        errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser"
-                        id="org.eclipse.cdt.build.core.settings.default.builder"
-                        ignoreErrCmd="-k"
-                        incrementalBuildTarget="all"
-                        isAbstract="false"
-                        isSystem="true"
-                        name="%GNUMakeBuilder.name"
-                        parallelBuildCmd="-j*"
-                        reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
-                        variableFormat="${=}">
-                  </builder>
-               </toolChain>
-            </configuration>
-            <tool
-                  errorParsers="org.eclipse.cdt.core.VCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GCCErrorParser"
-                  id="org.eclipse.cdt.build.core.settings.holder"
-                  isSystem="true"
-                  name="%tool.name.0">
-               <inputType
-                     id="org.eclipse.cdt.build.core.settings.holder.inType">
-               </inputType>
-               <option
-                     browseType="directory"
-                     id="org.eclipse.cdt.build.core.settings.holder.incpaths"
-                     name="%option.name.1"
-                     valueType="includePath">
-               </option>
-               <option
-                     id="org.eclipse.cdt.build.core.settings.holder.symbols"
-                     name="%option.name.2"
-                     valueType="definedSymbols">
-               </option>
-               <option
-                     browseType="file"
-                     id="org.eclipse.cdt.build.core.settings.holder.symbolfiles"
-                     name="%option.name.3"
-                     valueType="symbolFiles">
-               </option>
-               <option
-                     browseType="file"
-                     id="org.eclipse.cdt.build.core.settings.holder.includefiles"
-                     name="%option.name.4"
-                     valueType="includeFiles">
-               </option>
-               <option
-                     browseType="directory"
-                     id="org.eclipse.cdt.build.core.settings.holder.undef.incpaths"
-                     name="%option.name.5"
-                     valueType="undefIncludePath">
-               </option>
-               <option
-                     id="org.eclipse.cdt.build.core.settings.holder.undef.symbols"
-                     name="%option.name.6"
-                     valueType="undefDefinedSymbols">
-               </option>
-               <option
-                     browseType="file"
-                     id="org.eclipse.cdt.build.core.settings.holder.undef.symbolfiles"
-                     name="%option.name.7"
-                     valueType="undefSymbolFiles">
-               </option>
-               <option
-                     browseType="file"
-                     id="org.eclipse.cdt.build.core.settings.holder.undef.includefiles"
-                     name="%option.name.8"
-                     valueType="undefIncludeFiles">
-               </option>
-            </tool>
-            <builder
-                  command="${MAKE_HOME}make"
-                  id="org.eclipse.cdt.build.core.internal.builder"
-                  name="%InternalBuilder.name">
-            </builder>
-            <tool
-                  id="org.eclipse.cdt.build.core.default.tool"
-                  isAbstract="true"
-                  isSystem="true">
-            </tool>
-         </extension>
             <extension
          id="cdt.managed.build.info"
          name="%extension.name"
@@ -2959,9 +2840,8 @@
                osList="win32">
          </targetPlatform>
          <builder
-               id="cdt.managedbuild.tool.gnu.builder.mingw.base"
-               isAbstract="false"
-               superClass="org.eclipse.cdt.build.core.internal.builder">
+               command="${MAKE_HOME}make"
+               id="cdt.managedbuild.tool.gnu.builder.mingw.base">
          </builder>
          <tool
                id="cdt.managedbuild.tool.gnu.assembler.mingw.base"
@@ -5990,9 +5870,8 @@
             osList="all"
             targetTool="cdt.managedbuild.tool.llvm.archiver">
          <builder
-               id="cdt.managedbuild.target.llvm.builder.base"
-               isAbstract="false"
-               superClass="org.eclipse.cdt.build.core.internal.builder">
+               command="${MAKE_HOME}make"
+               id="cdt.managedbuild.target.llvm.builder.base">
          </builder>
          <tool
                id="cdt.managedbuild.tool.llvm.assembler.base"
@@ -10294,8 +10173,8 @@
                osList="win32">
          </targetPlatform>
          <builder
-               id="org.eclipse.cdt.msvc.builder"
-               superClass="org.eclipse.cdt.build.core.internal.builder">
+               command="${MAKE_HOME}make"
+               id="org.eclipse.cdt.msvc.builder">
          </builder>
          <tool
                id="org.eclipse.cdt.msvc.cl.c"
