@@ -47,19 +47,15 @@ public class InputType extends SchemaObject implements IInputType {
 
     private List<String> inputExtensions = new ArrayList<>();
     private IContentType dependencyContentType;
-    private List<String> dependencyExtensions = new ArrayList<>();
 
     // read from model
     private String[] modelSourceContentType;
     private String[] modelExtensions;
     private String[] modelOutputTypeID;
-    private String[] modelOption;
-    private String[] modelAssignToOption;
-    private String[] modelDependencyContentType;
-    private String[] modelDependencyExtensions;
     private String[] modelScannerConfigDiscoveryProfileID;
     private String[] modelLanguageID;
     private String[] modelLanguageInfoCalculator;
+    private String[] modelAssignToCommandVarriable;
 
     /*
      * C O N S T R U C T O R S
@@ -82,31 +78,28 @@ public class InputType extends SchemaObject implements IInputType {
         modelSourceContentType = getAttributes(SOURCE_CONTENT_TYPE);
         modelExtensions = getAttributes(EXTENSIONS);
         modelOutputTypeID = getAttributes(OUTPUT_TYPE_ID);
-        modelOption = getAttributes(OPTION);
-        modelAssignToOption = getAttributes(ASSIGN_TO_OPTION);
-        modelDependencyContentType = getAttributes(DEPENDENCY_CONTENT_TYPE);
-        modelDependencyExtensions = getAttributes(DEPENDENCY_EXTENSIONS);
         modelScannerConfigDiscoveryProfileID = getAttributes(SCANNER_CONFIG_PROFILE_ID);
         modelLanguageID = getAttributes(LANGUAGE_ID);
         modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
+        modelAssignToCommandVarriable = getAttributes(ASSIGN_TO_COMMAND_VARIABLE);
+
         legacyCode();
         try {
             resolveFields();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
     }
 
     private void legacyCode() {
-		if(modelExtensions[SUPER].isBlank()) {
-			modelExtensions = getAttributes("sources");
-		}
-		
-	}
+        if (modelExtensions[SUPER].isBlank()) {
+            modelExtensions = getAttributes("sources"); //$NON-NLS-1$
+        }
 
-	/*
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see org.eclipse.cdt.core.build.managed.IInputType#getParent()
@@ -149,21 +142,6 @@ public class InputType extends SchemaObject implements IInputType {
     @Override
     public IContentType getDependencyContentType() {
         return dependencyContentType;
-    }
-
-    @Override
-    public String[] getDependencyExtensionsAttribute() {
-        return dependencyExtensions.toArray(new String[dependencyExtensions.size()]);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#getAssignToOptionId()
-     */
-    @Override
-    public String getAssignToOptionId() {
-        return modelAssignToOption[SUPER];
     }
 
     /*
@@ -268,18 +246,16 @@ public class InputType extends SchemaObject implements IInputType {
         }
 
         // Get the supported input file extensions
-        if (modelExtensions[SUPER] != null) {
+        if (!modelExtensions[SUPER].isBlank()) {
             StringTokenizer tokenizer = new StringTokenizer(modelExtensions[SUPER], DEFAULT_SEPARATOR);
             while (tokenizer.hasMoreElements()) {
                 inputExtensions.add(tokenizer.nextToken());
             }
         }
-        // Get the dependency (header file) extensions
-        if (modelDependencyExtensions[SUPER] != null) {
-            StringTokenizer tokenizer = new StringTokenizer(modelDependencyExtensions[SUPER], DEFAULT_SEPARATOR);
-            while (tokenizer.hasMoreElements()) {
-                dependencyExtensions.add(tokenizer.nextToken());
-            }
+
+        //if no assignment to variablez is done assign to files
+        if (modelAssignToCommandVarriable[SUPER].isBlank()) {
+            modelAssignToCommandVarriable[SUPER] = INPUTS_PRM_NAME;
         }
     }
 
@@ -292,16 +268,17 @@ public class InputType extends SchemaObject implements IInputType {
         ret.append(prepend + SOURCE_CONTENT_TYPE + EQUAL + modelSourceContentType[SUPER] + NEWLINE);
         ret.append(prepend + EXTENSIONS + EQUAL + modelExtensions[SUPER] + NEWLINE);
         ret.append(prepend + OUTPUT_TYPE_ID + EQUAL + modelOutputTypeID[SUPER] + NEWLINE);
-        ret.append(prepend + OPTION + EQUAL + modelOption[SUPER] + NEWLINE);
-        ret.append(prepend + ASSIGN_TO_OPTION + EQUAL + modelAssignToOption[SUPER] + NEWLINE);
 
-        ret.append(prepend + DEPENDENCY_CONTENT_TYPE + EQUAL + modelDependencyContentType[SUPER] + NEWLINE);
-        ret.append(prepend + DEPENDENCY_EXTENSIONS + EQUAL + modelDependencyExtensions[SUPER] + NEWLINE);
         ret.append(prepend + SCANNER_CONFIG_PROFILE_ID + EQUAL + modelScannerConfigDiscoveryProfileID[SUPER] + NEWLINE);
         ret.append(prepend + LANGUAGE_ID + EQUAL + modelLanguageID[SUPER] + NEWLINE);
         ret.append(prepend + LANGUAGE_INFO_CALCULATOR + EQUAL + modelLanguageInfoCalculator[SUPER] + NEWLINE);
 
         return ret;
+    }
+
+    @Override
+    public String getAssignToCmdVarriable() {
+        return modelAssignToCommandVarriable[SUPER];
     }
 
 }

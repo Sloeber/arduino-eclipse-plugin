@@ -84,16 +84,16 @@ public interface IInputType extends ISchemaObject {
      */
     public IContentType getDependencyContentType();
 
-    /**
-     * Returns the list of valid dependency extensions from the
-     * dependencyExtensions attribute. Note that this value is not used
-     * if dependency content type is specified and registered with Eclipse.
-     * Also, the user will not be able to modify the set of file
-     * extensions as they can when dependencyContentType is specified.
-     *
-     * @return String[]
-     */
-    public String[] getDependencyExtensionsAttribute();
+    //    /**
+    //     * Returns the list of valid dependency extensions from the
+    //     * dependencyExtensions attribute. Note that this value is not used
+    //     * if dependency content type is specified and registered with Eclipse.
+    //     * Also, the user will not be able to modify the set of file
+    //     * extensions as they can when dependencyContentType is specified.
+    //     *
+    //     * @return String[]
+    //     */
+    //    public String[] getDependencyExtensionsAttribute();
 
     //    /**
     //     * Returns the list of valid dependency extensions for this input type.
@@ -120,18 +120,18 @@ public interface IInputType extends ISchemaObject {
      */
     //    public boolean isDependencyExtension(ITool tool, String ext);
 
-    /**
-     * Returns the id of the option whose value is to be assigned to the
-     * file(s) calculated for this input type. The default is not to
-     * assign the input file(s) to a command line option but to assign the
-     * files to the ${Inputs} part of the command line. Note that the
-     * option value is only updated during build file generation and therefore
-     * could be out of sync with the project until build file generation
-     * occurs.
-     *
-     * @return String
-     */
-    public String getAssignToOptionId();
+    //    /**
+    //     * Returns the id of the option whose value is to be assigned to the
+    //     * file(s) calculated for this input type. The default is not to
+    //     * assign the input file(s) to a command line option but to assign the
+    //     * files to the ${Inputs} part of the command line. Note that the
+    //     * option value is only updated during build file generation and therefore
+    //     * could be out of sync with the project until build file generation
+    //     * occurs.
+    //     *
+    //     * @return String
+    //     */
+    //    public String getAssignToOptionId();
 
     /**
      * Returns the name of the build variable associated this this input type's
@@ -172,5 +172,14 @@ public interface IInputType extends ISchemaObject {
      * @return an ID of a outputType or an empty string
      */
     public String getOutputTypeID();
+
+    /**
+     * Get the attribute assignToCommandVarriable
+     * If no such attribute has been provided returns "INPUTS"
+     * 
+     * @return the string representation of the variable in the command to assign
+     *         the input files to
+     */
+    public String getAssignToCmdVarriable();
 
 }

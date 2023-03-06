@@ -1033,35 +1033,8 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
             <annotation>
                <documentation>
                   The ID of an output type.
-All files from that output type will match this input type
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="option" type="string">
-            <annotation>
-               <documentation>
-                  The id of an Option element that is used on the command line to identify inputs of this type.  If specified, the name(s) of the input files for this input type are taken from the value specified for the option.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="assignToOption" type="string">
-            <annotation>
-               <documentation>
-                  The id of an Option element whose value is to be assigned to the file(s) calculated for this input type.  The default is not to assign the input file(s) to a command line option but to assign the files to the ${Inputs} part of the command line.  Note that the option value is only updated during build file generation and therefore could be out of sync with the project until build file generation occurs.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="dependencyContentType" type="string">
-            <annotation>
-               <documentation>
-                  The id of an Eclipse content type that describes the calculated dependencies for this type of input.  If dependencyExtensions is also specified, and the content type specified here is defined by Eclipse, the dependencyExtensions attribute is not used.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="dependencyExtensions" type="string">
-            <annotation>
-               <documentation>
-                  A comma-separated list of file extensions that are used for calculated dependencies of this input-type. Note that the user will not be able to modify the set of file extensions as they can when dependencyContentType is specified.
+All files from that output type will match this input type.
+If this set all other filter options (like extensions,sourceContentType) are ignored.
                </documentation>
             </annotation>
          </attribute>
@@ -1090,6 +1063,16 @@ Overrides language id specified with the languageId attribute.
                <appinfo>
                   <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.ILanguageInfoCalculator"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="assignToCommandVarriable" type="string">
+            <annotation>
+               <documentation>
+                  The name of a variable that is part of the command string of the tool.
+If not specified the input files will be assigned to ${INPUTS}.
+Only use this field when your command needs a specific order for the different inputTypes.
+If you need this you can specify the variable to assign the inputTypes here and add those variable (in the format ${myVar}) in the commandLinePattern of the tool.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

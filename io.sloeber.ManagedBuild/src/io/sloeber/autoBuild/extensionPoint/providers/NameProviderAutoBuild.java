@@ -8,11 +8,13 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 
 public class NameProviderAutoBuild implements IOutputNameProvider {
     public static final String OBJECT_EXTENSION = ".o"; //$NON-NLS-1$
     public static final String STATIC_LIB = "staticLib"; //$NON-NLS-1$
-    public static final String DYNAMIC_LIB = "dynLib"; //$NON-NLS-1$
+    public static final String DYNAMIC_LIB = "sharedLib"; //$NON-NLS-1$
     public static final String EXECUTABLE = "exe"; //$NON-NLS-1$
     private static final int STATIC_LIB_TYPE = 1;
     private static final int DYNAMIC_LIB_TYPE = 2;
@@ -48,8 +50,13 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
         if (!inputFileFQN.contains(LIBRARY_PATH_SUFFIX)) {
             return EXE_TYPE;
         }
-        //TOFIX JABA some code is needed to distinguis between shared and dynamic
-        // I would use a file in the project
+        IResource LibFolder = inputFile;
+        while (!LibFolder.getParent().getName().equals(LIBRARY_PATH_SUFFIX)) {
+            LibFolder = LibFolder.getParent();
+        }
+        if (((IFolder) LibFolder).getFile(DYNAMIC_LIB_FILE).exists()) {
+            return DYNAMIC_LIB_TYPE;
+        }
         return STATIC_LIB_TYPE;
     }
 

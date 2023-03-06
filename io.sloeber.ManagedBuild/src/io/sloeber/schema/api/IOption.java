@@ -21,7 +21,7 @@ package io.sloeber.schema.api;
 import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 /**
  * Basic Tool / Tool-chain Option type.
@@ -30,7 +30,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IOption extends ISchemaObject {
-    public static final String ELEMENT_NAME = "option"; //$NON-NLS-1$
+    public static final String ELEMENT_NAME = OPTION;
     // Type for the value of the option
     public static final int BOOLEAN = 0;
     public static final int ENUMERATED = 1;
@@ -92,91 +92,6 @@ public interface IOption extends ISchemaObject {
     public static final int FILTER_NONE = 1;
     public static final String PROJECT = "project"; //$NON-NLS-1$
 
-    // Schema attribute names for option elements
-    public static final String BROWSE_TYPE = "browseType"; //$NON-NLS-1$
-    /** @since 7.0 */
-    public static final String BROWSE_FILTER_PATH = "browseFilterPath"; //$NON-NLS-1$
-    /** @since 7.0 */
-    public static final String BROWSE_FILTER_EXTENSIONS = "browseFilterExtensions"; //$NON-NLS-1$
-    public static final String CATEGORY = "category"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    //public static final String ICON = "icon"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    public static final String ORDER = "order"; //$NON-NLS-1$
-    public static final String COMMAND = "command"; //$NON-NLS-1$
-    public static final String COMMAND_FALSE = "commandFalse"; //$NON-NLS-1$
-    /** @since 8.3 */
-    public static final String USE_BY_SCANNER_DISCOVERY = "useByScannerDiscovery"; //$NON-NLS-1$
-    /** @since 8.0 */
-    public static final String COMMAND_GENERATOR = "commandGenerator"; //$NON-NLS-1$
-    public static final String TOOL_TIP = "tip"; //$NON-NLS-1$
-    public static final String CONTEXT_ID = "contextId"; //$NON-NLS-1$
-    public static final String DEFAULT_VALUE = "defaultValue"; //$NON-NLS-1$
-    /**
-     * @since 8.5
-     */
-    public static final String DEFAULTVALUE_GENERATOR = "defaultValueGenerator"; //$NON-NLS-1$
-    public static final String ENUM_VALUE = "enumeratedOptionValue"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    public static final String TREE_ROOT = "treeOptionRoot"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    public static final String SELECT_LEAF_ONLY = "selectLeafOnly"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    public static final String TREE_VALUE = "treeOption"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    public static final String DESCRIPTION = "description"; //$NON-NLS-1$
-    public static final String IS_DEFAULT = "isDefault"; //$NON-NLS-1$
-    public static final String LIST_VALUE = "listOptionValue"; //$NON-NLS-1$
-    public static final String RESOURCE_FILTER = "resourceFilter"; //$NON-NLS-1$
-    public static final String APPLICABILITY_CALCULATOR = "applicabilityCalculator"; //$NON-NLS-1$
-    public static final String TYPE_BOOL = "boolean"; //$NON-NLS-1$
-    public static final String TYPE_ENUM = "enumerated"; //$NON-NLS-1$
-    public static final String TYPE_INC_PATH = "includePath"; //$NON-NLS-1$
-    public static final String TYPE_LIB = "libs"; //$NON-NLS-1$
-    public static final String TYPE_STRING = "string"; //$NON-NLS-1$
-    public static final String TYPE_STR_LIST = "stringList"; //$NON-NLS-1$
-    public static final String TYPE_USER_OBJS = "userObjs"; //$NON-NLS-1$
-    public static final String TYPE_DEFINED_SYMBOLS = "definedSymbols"; //$NON-NLS-1$
-    public static final String TYPE_LIB_PATHS = "libPaths"; //$NON-NLS-1$
-    public static final String TYPE_LIB_FILES = "libFiles"; //$NON-NLS-1$
-    public static final String TYPE_INC_FILES = "includeFiles"; //$NON-NLS-1$
-    public static final String TYPE_SYMBOL_FILES = "symbolFiles"; //$NON-NLS-1$
-    public static final String TYPE_UNDEF_INC_PATH = "undefIncludePath"; //$NON-NLS-1$
-    public static final String TYPE_UNDEF_DEFINED_SYMBOLS = "undefDefinedSymbols"; //$NON-NLS-1$
-    public static final String TYPE_UNDEF_LIB_PATHS = "undefLibPaths"; //$NON-NLS-1$
-    public static final String TYPE_UNDEF_LIB_FILES = "undefLibFiles"; //$NON-NLS-1$
-    public static final String TYPE_UNDEF_INC_FILES = "undefIncludeFiles"; //$NON-NLS-1$
-    public static final String TYPE_UNDEF_SYMBOL_FILES = "undefSymbolFiles"; //$NON-NLS-1$
-    /**
-     * @since 8.1
-     */
-    public static final String TYPE_TREE = "tree"; //$NON-NLS-1$
-
-    public static final String VALUE_TYPE = "valueType"; //$NON-NLS-1$
-    public static final String VALUE_HANDLER = "valueHandler"; //$NON-NLS-1$
-    public static final String VALUE_HANDLER_EXTRA_ARGUMENT = "valueHandlerExtraArgument"; //$NON-NLS-1$
-
-    /** @since 8.0 */
-    public static final String FIELD_EDITOR_ID = "fieldEditor"; //$NON-NLS-1$
-    /** @since 8.0 */
-    public static final String FIELD_EDITOR_EXTRA_ARGUMENT = "fieldEditorExtraArgument"; //$NON-NLS-1$
-
-    // Schema attribute names for listOptionValue elements
-    public static final String LIST_ITEM_VALUE = "value"; //$NON-NLS-1$
-    public static final String LIST_ITEM_BUILTIN = "builtIn"; //$NON-NLS-1$
-
     /**
      * @return the parent of this option. This is an object implementing ITool
      *         or IToolChain.
@@ -188,8 +103,6 @@ public interface IOption extends ISchemaObject {
      */
     public ISchemaObject getParent();
 
-
-
     /**
      * @return the setting of the browseType attribute
      */
@@ -199,7 +112,6 @@ public interface IOption extends ISchemaObject {
      * @return the setting of the resourceFilter attribute
      */
     public int getResourceFilter();
-
 
     /**
      * @return an array of strings containing the built-in values
@@ -220,8 +132,8 @@ public interface IOption extends ISchemaObject {
      */
     public String getCommand();
 
-    public String[] getCommandLineContribution(IResource resource, String value, AutoBuildConfigurationData autoConfData);
-
+    public String[] getCommandLineContribution(IResource resource, String value,
+            AutoBuildConfigurationData autoConfData);
 
     /**
      * @return a <code>String</code> containing the tooltip
@@ -257,9 +169,7 @@ public interface IOption extends ISchemaObject {
      */
     public abstract String getName(String id) throws BuildException;
 
-
     public String getDefaultValue(IResource resource, AutoBuildConfigurationData autoData);
-
 
     /**
      * @return the type for the value of the option.
@@ -303,7 +213,6 @@ public interface IOption extends ISchemaObject {
      *         {@link IOption#LIBRARY_FILES}, {@link IOption#MACRO_FILES}
      */
     int getBasicValueType() throws BuildException;
-
 
     /**
      * Flag to indicate whether the option is also used by scanner discovery.
@@ -354,7 +263,6 @@ public interface IOption extends ISchemaObject {
          */
         ITreeOption findNode(String id);
 
-
     }
 
     /**
@@ -397,7 +305,7 @@ public interface IOption extends ISchemaObject {
 
         String getIcon();
     }
-    
+
     /**
      * class to store options for a enum
      * 
@@ -405,34 +313,42 @@ public interface IOption extends ISchemaObject {
      *
      */
     public interface IEnumOptionValue {
-    	/**
-    	 * Get the unique Identifier for this enumeration option
-    	 * @return the identifyer
-    	 */
-    	String getID();
-    	/**
-    	 * Get the name for this enumeration option
-    	 * @return the name
-    	 */
+        /**
+         * Get the unique Identifier for this enumeration option
+         * 
+         * @return the identifyer
+         */
+        String getID();
+
+        /**
+         * Get the name for this enumeration option
+         * 
+         * @return the name
+         */
         String getName();
-    	/**
-    	 * Get the description for this enumeration option
-    	 * @return the description
-    	 */
+
+        /**
+         * Get the description for this enumeration option
+         * 
+         * @return the description
+         */
         String getDescription();
-    	/**
-    	 * Get the contribution to the command line for this enumeration option
-    	 * @return the contribution to the command line
-    	 */
+
+        /**
+         * Get the contribution to the command line for this enumeration option
+         * 
+         * @return the contribution to the command line
+         */
         String getCommandLIneDistribution();
-    	/**
-    	 * Is this enumeration option set by default
-    	 * Only one enumeration option can be set by default.
-    	 * Therefore if multiple enumeration option values are set to default 
-    	 * only the first found will be treated as set by default
-    	 * 
-    	 * @return the set by default flag
-    	 */
+
+        /**
+         * Is this enumeration option set by default
+         * Only one enumeration option can be set by default.
+         * Therefore if multiple enumeration option values are set to default
+         * only the first found will be treated as set by default
+         * 
+         * @return the set by default flag
+         */
         boolean isDefault();
 
     }

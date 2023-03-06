@@ -35,12 +35,12 @@ public final class OptionStringValue {
     private boolean isBuiltIn;
 
     public OptionStringValue(ICStorageElement el) {
-        if (el.getAttribute(IOption.LIST_ITEM_BUILTIN) != null) {
-            isBuiltIn = Boolean.valueOf(el.getAttribute(IOption.LIST_ITEM_BUILTIN)).booleanValue();
+        if (el.getAttribute(LIST_ITEM_BUILTIN) != null) {
+            isBuiltIn = Boolean.valueOf(el.getAttribute(LIST_ITEM_BUILTIN)).booleanValue();
         } else {
             isBuiltIn = false;
         }
-        value = el.getAttribute(IOption.LIST_ITEM_VALUE);
+        value = el.getAttribute(LIST_ITEM_VALUE);
         srcPath = el.getAttribute(ATTR_SRC_PATH);
         srcRootPath = el.getAttribute(ATTR_SRC_ROOT_PATH);
         srcPrefixMapping = el.getAttribute(ATTR_SRC_PREFIX_MAPPING);
@@ -49,12 +49,12 @@ public final class OptionStringValue {
     }
 
     public OptionStringValue(IConfigurationElement el) {
-        if (el.getAttribute(IOption.LIST_ITEM_BUILTIN) != null) {
-            isBuiltIn = Boolean.valueOf(el.getAttribute(IOption.LIST_ITEM_BUILTIN)).booleanValue();
+        if (el.getAttribute(LIST_ITEM_BUILTIN) != null) {
+            isBuiltIn = Boolean.valueOf(el.getAttribute(LIST_ITEM_BUILTIN)).booleanValue();
         } else {
             isBuiltIn = false;
         }
-        value = el.getAttribute(IOption.LIST_ITEM_VALUE);
+        value = el.getAttribute(LIST_ITEM_VALUE);
         srcPath = el.getAttribute(ATTR_SRC_PATH);
         srcRootPath = el.getAttribute(ATTR_SRC_ROOT_PATH);
         srcPrefixMapping = el.getAttribute(ATTR_SRC_PREFIX_MAPPING);
@@ -92,8 +92,8 @@ public final class OptionStringValue {
     }
 
     public void serialize(ICStorageElement el) {
-        el.setAttribute(IOption.LIST_ITEM_VALUE, value);
-        el.setAttribute(IOption.LIST_ITEM_BUILTIN, Boolean.toString(isBuiltIn));
+        el.setAttribute(LIST_ITEM_VALUE, value);
+        el.setAttribute(LIST_ITEM_BUILTIN, Boolean.toString(isBuiltIn));
         if (srcPath != null)
             el.setAttribute(ATTR_SRC_PATH, srcPath);
         if (srcRootPath != null)

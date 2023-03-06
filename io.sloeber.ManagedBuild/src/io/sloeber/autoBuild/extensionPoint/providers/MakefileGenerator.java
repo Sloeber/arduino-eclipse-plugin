@@ -193,7 +193,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : makeRules) {
-            buffer.append(getRule(makeRule));
+            buffer.append(makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData));
         }
 
         return buffer;
@@ -237,9 +237,9 @@ public class MakefileGenerator implements IMakefileGenerator {
      * @param makeRule
      * @return
      */
-    protected StringBuffer getRule(MakeRule makeRule) {
-        return makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData);
-    }
+    //    protected StringBuffer getRule(MakeRule makeRule) {
+    //        return makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData);
+    //    }
 
     protected void afterMakefileGeneration() {
         // nothing to do. 

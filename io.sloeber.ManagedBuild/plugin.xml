@@ -17,17 +17,6 @@
         ignoreErrCmd="-k"
         incrementalBuildTarget="all"
         isAbstract="false"
-        isVariableCaseSensitive="true"
-        macroInputDirRelPathValue="$(dir $&lt;)"
-        macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
-        macroInputFileExtValue="$(suffix $(notdir $&lt;))"
-        macroInputFileNameValue="$(notdir $&lt;)"
-        macroInputFileRelPathValue="$&lt;"
-        macroOutputDirRelPathValue="$(dir $@)"
-        macroOutputFileBaseNameValue="$(basename (notdir $@))"
-        macroOutputFileExtValue="$(suffix $(notdir $@)"
-        macroOutputFileNameValue="$(notdir $@)"
-        macroOutputFileRelPathValue="$@"
         name="%autoBuild.builder.name"
         parallelBuildCmd="-j*"
         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
@@ -66,8 +55,8 @@
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <outputType
-                    id="io.sloeber.autoBuild.gpp.compiler.outputType.dynLib"
-                    name="%autoBuild.outputType.CPP.dynLib.name"
+                    id="io.sloeber.autoBuild.gpp.compiler.outputType.sharedLib"
+                    name="%autoBuild.outputType.CPP.sharedLib.name"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
            </tool>
@@ -86,26 +75,28 @@
               </outputType>
            </tool>
            <tool
-                 id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.dynLib"
-                 name="%autoBuild.tool.gpp.linker.dynLib"
-                 superClass="cdt.managedbuild.tool.gnu.cpp.linker">
+                 id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.sharedLib"
+                 name="%autoBuild.tool.gpp.linker.sharedLib"
+                 superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.sharedLib.base">
               <inputType
-                    id="io.sloeber.autoBuild.inputType.cpp.dynLib"
-                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.dynLib">
+                    id="io.sloeber.autoBuild.inputType.cpp.sharedLib"
+                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.sharedLib">
               </inputType>
               <outputType
-                    id="io.sloeber.autoBuild.outputType.link.dynLib"
-                    name="%autoBuild.outputType.dynLib.name"
+                    id="io.sloeber.autoBuild.outputType.link.sharedLib"
+                    name="%autoBuild.outputType.sharedLib.name"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
            </tool>
            <tool
+                 commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS} ${DYNLIBS} ${STATICLIBS} "
                  id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.exe"
                  name="%autoBuild.tool.gpp.linker.exe"
-                 superClass="cdt.managedbuild.tool.gnu.cpp.linker">
+                 superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.exe.base">
               <inputType
-                    id="io.sloeber.autoBuild.inputType3"
-                    outputTypeID="io.sloeber.autoBuild.outputType.link.dynLib">
+                    assignToCommandVarriable="DYNLIBS"
+                    id="io.sloeber.autoBuild.inputType.cpp.sharedLib"
+                    outputTypeID="io.sloeber.autoBuild.outputType.link.sharedLib">
               </inputType>
               <outputType
                     id="io.sloeber.autoBuild.outputType.link.exe"
@@ -114,11 +105,12 @@
                     outputName="${ProjName}.exe">
               </outputType>
               <inputType
-                    id="io.sloeber.autoBuild.inputType4"
+                    assignToCommandVarriable="STATICLIBS"
+                    id="io.sloeber.autoBuild.inputType.cpp.staticLib"
                     outputTypeID="io.sloeber.autoBuild.outputType.link.staticLib">
               </inputType>
               <inputType
-                    id="io.sloeber.autoBuild.inputType5"
+                    id="io.sloeber.autoBuild.inputType.cpp.objects"
                     outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.exe">
               </inputType>
            </tool>
@@ -137,8 +129,8 @@
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <outputType
-                    id="io.sloeber.autoBuild.gcc.compiler.outputType.dynLib"
-                    name="%autoBuild.outputType.C.dynLib.name"
+                    id="io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib"
+                    name="%autoBuild.outputType.C.sharedLib.name"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
            </tool>
@@ -157,23 +149,23 @@
               </inputType>
            </tool>
            <tool
-                 id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.dynLib"
-                 name="%autoBuild.tool.gcc.linker.dynLib"
-                 superClass="cdt.managedbuild.tool.gnu.c.linker">
+                 id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.sharedLib"
+                 name="%autoBuild.tool.gcc.linker.sharedLib"
+                 superClass="cdt.managedbuild.tool.gnu.c.linker.to.sharedLib.base">
               <outputType
-                    id="io.sloeber.autoBuild.outputType.dynLib"
-                    name="%autoBuild.outputType.dynLib.name"
+                    id="io.sloeber.autoBuild.outputType.sharedLib"
+                    name="%autoBuild.outputType.sharedLib.name"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <inputType
-                    id="io.sloeber.autoBuild.inputType.gcc.dynLib.Object"
-                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.dynLib">
+                    id="io.sloeber.autoBuild.inputType.gcc.sharedLib.Object"
+                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib">
               </inputType>
            </tool>
            <tool
                  id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.exe"
                  name="%autoBuild.tool.gcc.linker.exe"
-                 superClass="cdt.managedbuild.tool.gnu.c.linker">
+                 superClass="cdt.managedbuild.tool.gnu.c.linker.to.exe.base">
               <outputType
                     id="io.sloeber.autoBuild.outputType.exe"
                     name="%autoBuild.outputType.exe.name"
@@ -247,11 +239,11 @@
           point="io.sloeber.autoBuild.buildDefinitions">
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.internal.build.crossgcc.CrossEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.internal.build.crossgcc.CrossEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.gnu.cross.base"
             isAbstract="false"
             languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector"
-            name="%toolChain.name"
+            name="%cross.gnu.toolChain.name"
             osList="all"
             targetTool="cdt.managedbuild.tool.gnu.cross.c.linker;cdt.managedbuild.tool.gnu.cross.cpp.linker;cdt.managedbuild.tool.gnu.archiver">
          <targetPlatform
@@ -267,13 +259,13 @@
          </builder>
          <optionCategory
                id="cdt.managedbuild.optionCategory.gnu.cross.settings"
-               name="%optionCategory.name">
+               name="%cross.gnu.optionCategory.name">
          </optionCategory>
          <option
                category="cdt.managedbuild.optionCategory.gnu.cross.settings"
                id="cdt.managedbuild.option.gnu.cross.prefix"
                isAbstract="false"
-               name="%option.prefix"
+               name="%cross.gnu.option.prefix"
                resourceFilter="all"
                valueType="string">
          </option>
@@ -282,7 +274,7 @@
                category="cdt.managedbuild.optionCategory.gnu.cross.settings"
                id="cdt.managedbuild.option.gnu.cross.path"
                isAbstract="false"
-               name="%option.path"
+               name="%cross.gnu.option.path"
                resourceFilter="all"
                valueType="string">
          </option>
@@ -290,21 +282,21 @@
                commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.c.compiler"
                isAbstract="false"
-               name="%tool.gcc.compiler"
+               name="%cross.gnu.tool.gcc.compiler"
                superClass="cdt.managedbuild.tool.gnu.c.compiler">
          </tool>
          <tool
                commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.cpp.compiler"
                isAbstract="false"
-               name="%tool.gpp.compiler"
+               name="%cross.gnu.tool.gpp.compiler"
                superClass="cdt.managedbuild.tool.gnu.cpp.compiler">
          </tool>
          <tool
                commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.c.linker"
                isAbstract="false"
-               name="%tool.gcc.linker"
+               name="%cross.gnu.tool.gcc.linker"
                superClass="cdt.managedbuild.tool.gnu.c.linker">
             <enablement
                   type="ALL">
@@ -320,7 +312,7 @@
                commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.cpp.linker"
                isAbstract="false"
-               name="%tool.gpp.linker"
+               name="%cross.gnu.tool.gpp.linker"
                superClass="cdt.managedbuild.tool.gnu.cpp.linker">
             <enablement
                   type="ALL">
@@ -336,7 +328,7 @@
                commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.archiver"
                isAbstract="false"
-               name="%tool.gcc.archiver"
+               name="%cross.gnu.tool.gcc.archiver"
                superClass="cdt.managedbuild.tool.gnu.archiver">
             <enablement
                   type="ALL">
@@ -350,7 +342,7 @@
                commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.assembler"
                isAbstract="false"
-               name="%tool.gcc.assembler"
+               name="%cross.gnu.tool.gcc.assembler"
                superClass="cdt.managedbuild.tool.gnu.assembler">
          </tool>
       </toolChain>
@@ -365,10 +357,10 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cross.exe.debug"
                name="Debug"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cross.exe.debug"
-                  superClass="cdt.managedbuild.toolchain.gnu.cross.base">
+                  superClass="cdt.managedbuild.toolchain.gnu.base">
             </toolChain>
          </configuration>
          <configuration
@@ -376,10 +368,10 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cross.exe.release"
                name="Release"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cross.exe.release"
-                  superClass="cdt.managedbuild.toolchain.gnu.cross.base">
+                  superClass="cdt.managedbuild.toolchain.gnu.base">
             </toolChain>
          </configuration>
       </projectType>
@@ -394,10 +386,10 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cross.so.debug"
                name="Debug"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cross.so.debug"
-                  superClass="cdt.managedbuild.toolchain.gnu.cross.base">
+                  superClass="cdt.managedbuild.toolchain.gnu.base">
             </toolChain>
          </configuration>
          <configuration
@@ -405,10 +397,10 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cross.so.release"
                name="Release"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cross.so.release"
-                  superClass="cdt.managedbuild.toolchain.gnu.cross.base">
+                  superClass="cdt.managedbuild.toolchain.gnu.base">
             </toolChain>
          </configuration>
       </projectType>
@@ -423,10 +415,10 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cross.lib.debug"
                name="Debug"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cross.lib.debug"
-                  superClass="cdt.managedbuild.toolchain.gnu.cross.base">
+                  superClass="cdt.managedbuild.toolchain.gnu.base">
             </toolChain>
          </configuration>
          <configuration
@@ -434,10 +426,10 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cross.lib.release"
                name="Release"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cross.lib.release"
-                  superClass="cdt.managedbuild.toolchain.gnu.cross.base">
+                  superClass="cdt.managedbuild.toolchain.gnu.base">
             </toolChain>
          </configuration>
       </projectType>
@@ -458,14 +450,12 @@
                <toolChain
                      id="org.eclipse.cdt.build.core.prefbase.toolchain"
                      isSystem="true"
-                     name="%toolChain.name"
-                     supportsManagedBuild="false">
+                     name="%toolChain.name">
                   <tool
                         errorParsers="org.eclipse.cdt.core.VCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GCCErrorParser"
                         id="org.eclipse.cdt.build.core.settings.holder.libs"
                         isSystem="true"
-                        name="%tool.name"
-                        supportsManagedBuild="false">
+                        name="%tool.name">
                      <option
                            browseType="directory"
                            id="org.eclipse.cdt.build.core.settings.holder.libpaths"
@@ -481,7 +471,7 @@
                   </tool>
                   <builder
                         autoBuildTarget="all"
-                        buildfileGenerator="org.eclipse.cdt.managedbuilder.makegen.gnu2.GnuMakefileGenerator"
+                        makefileGenerator="org.eclipse.cdt.managedbuilder.makegen.gnu2.GnuMakefileGenerator"
                         cleanBuildTarget="clean"
                         command="${SLOEBER_HOME}make"
                         errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser"
@@ -490,17 +480,6 @@
                         incrementalBuildTarget="all"
                         isAbstract="false"
                         isSystem="true"
-                        isVariableCaseSensitive="true"
-                        macroInputDirRelPathValue="$(dir $&lt;)"
-                        macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
-                        macroInputFileExtValue="$(suffix $(notdir $&lt;))"
-                        macroInputFileNameValue="$(notdir $&lt;)"
-                        macroInputFileRelPathValue="$&lt;"
-                        macroOutputDirRelPathValue="$(dir $@)"
-                        macroOutputFileBaseNameValue="$(basename $(notdir $@))"
-                        macroOutputFileExtValue="$(suffix $(notdir $@))"
-                        macroOutputFileNameValue="$(notdir $@)"
-                        macroOutputFileRelPathValue="$@"
                         name="%GNUMakeBuilder.name"
                         parallelBuildCmd="-j*"
                         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
@@ -512,8 +491,7 @@
                   errorParsers="org.eclipse.cdt.core.VCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GCCErrorParser"
                   id="org.eclipse.cdt.build.core.settings.holder"
                   isSystem="true"
-                  name="%tool.name.0"
-                  supportsManagedBuild="false">
+                  name="%tool.name.0">
                <inputType
                      id="org.eclipse.cdt.build.core.settings.holder.inType">
                </inputType>
@@ -702,24 +680,6 @@
          </optionCategory>
          <option
                category="gnu.c.link.category.shared"
-               command="-shared"
-               defaultValue="false"
-               id="gnu.c.link.option.shared"
-               name="%Option.Posix.Linker.Shared"
-               valueType="boolean">
-            <enablement
-                  attribute="defaultValue"
-                  extensionAdjustment="false"
-                  type="CONTAINER_ATTRIBUTE"
-                  value="true">
-               <checkBuildProperty
-                     property="org.eclipse.cdt.build.core.buildArtefactType"
-                     value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
-               </checkBuildProperty>
-            </enablement>
-         </option>
-         <option
-               category="gnu.c.link.category.shared"
                command="-Wl,-soname="
                id="gnu.c.link.option.soname"
                name="%Option.Posix.Linker.SOName"
@@ -740,12 +700,8 @@
                valueType="string">
          </option>
          <inputType
-               buildVariable="OBJS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.internal.DefaultNoDependencyCalculator"
                id="cdt.managedbuild.tool.gnu.c.linker.input"
-               multipleOfType="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile"
-               sources="o">
+               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -918,24 +874,6 @@
          </optionCategory>
          <option
                category="gnu.cpp.link.category.shared"
-               command="-shared"
-               defaultValue="false"
-               id="gnu.cpp.link.option.shared"
-               name="%Option.Posix.Linker.Shared"
-               valueType="boolean">
-            <enablement
-                  attribute="defaultValue"
-                  extensionAdjustment="false"
-                  type="CONTAINER_ATTRIBUTE"
-                  value="true">
-               <checkBuildProperty
-                     property="org.eclipse.cdt.build.core.buildArtefactType"
-                     value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
-               </checkBuildProperty>
-            </enablement>
-         </option>
-         <option
-               category="gnu.cpp.link.category.shared"
                command="-Wl,-soname="
                id="gnu.cpp.link.option.soname"
                name="%Option.Posix.Linker.SOName"
@@ -956,12 +894,8 @@
                valueType="string">
          </option>
          <inputType
-               buildVariable="OBJS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.internal.DefaultNoDependencyCalculator"
                id="cdt.managedbuild.tool.gnu.cpp.linker.input"
-               multipleOfType="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile"
-               sources="o">
+               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -1051,12 +985,8 @@
                valueType="string">
          </option>
          <inputType
-               buildVariable="OBJS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.internal.DefaultNoDependencyCalculator"
                id="cdt.managedbuild.tool.gnu.archiver.input"
-               multipleOfType="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile"
-               sources="o">
+               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -1118,8 +1048,7 @@
          <inputType
                id="cdt.managedbuild.tool.gnu.assembler.input"
                languageId="org.eclipse.cdt.core.assembly"
-               sourceContentType="org.eclipse.cdt.core.asmSource"
-               sources="s,S">
+               sourceContentType="org.eclipse.cdt.core.asmSource">
          </inputType>
          <outputType
                buildVariable="OBJS"
@@ -1284,12 +1213,8 @@
             </enablement>
          </option>
          <inputType
-               buildVariable="OBJS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.internal.DefaultNoDependencyCalculator"
                id="cdt.managedbuild.tool.macosx.c.linker.input"
-               multipleOfType="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile"
-               sources="o">
+               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -1455,12 +1380,8 @@
             </enablement>
          </option>
          <inputType
-               buildVariable="OBJS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.internal.DefaultNoDependencyCalculator"
                id="cdt.managedbuild.tool.macosx.cpp.linker.input"
-               multipleOfType="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile"
-               sources="o">
+               sourceContentType="org.eclipse.cdt.managedbuilder.core.compiledObjectFile">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -2029,13 +1950,9 @@
                valueType="boolean">
          </option>
          <inputType
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.gnu.DefaultGCCDependencyCalculator2"
-               dependencyContentType="org.eclipse.cdt.core.cHeader"
-               dependencyExtensions="h"
                id="cdt.managedbuild.tool.gnu.c.compiler.input"
                languageId="org.eclipse.cdt.core.gcc"
-               sourceContentType="org.eclipse.cdt.core.cSource"
-               sources="c">
+               sourceContentType="org.eclipse.cdt.core.cSource">
          </inputType>
          <outputType
                buildVariable="OBJS"
@@ -2624,13 +2541,9 @@
                valueType="boolean">
          </option>
          <inputType
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.makegen.gnu.DefaultGCCDependencyCalculator2"
-               dependencyContentType="org.eclipse.cdt.core.cxxHeader"
-               dependencyExtensions="h,H,hpp,hh,hp,hxx,HPP,h++,tcc"
                id="cdt.managedbuild.tool.gnu.cpp.compiler.input"
                languageId="org.eclipse.cdt.core.g++"
-               sourceContentType="org.eclipse.cdt.core.cxxSource"
-               sources="c,C,cc,cxx,cpp,cp,CPP">
+               sourceContentType="org.eclipse.cdt.core.cxxSource">
          </inputType>
          <outputType
                buildVariable="OBJS"
@@ -2676,7 +2589,7 @@
                   type="ALL">
                <checkBuildProperty
                      property="org.eclipse.cdt.build.core.buildArtefactType"
-                     value="org.eclipse.cdt.build.core.buildArtefactType.dynLib">
+                     value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
                </checkBuildProperty>
             </enablement>
          </outputType>
@@ -2731,17 +2644,6 @@
             ignoreErrCmd="-k"
             incrementalBuildTarget="all"
             isAbstract="true"
-            isVariableCaseSensitive="true"
-            macroInputDirRelPathValue="$(dir $&lt;)"
-            macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
-            macroInputFileExtValue="$(suffix $(notdir $&lt;))"
-            macroInputFileNameValue="$(notdir $&lt;)"
-            macroInputFileRelPathValue="$&lt;"
-            macroOutputDirRelPathValue="$(dir $@)"
-            macroOutputFileBaseNameValue="$(basename $(notdir $@))"
-            macroOutputFileExtValue="$(suffix $(notdir $@))"
-            macroOutputFileNameValue="$(notdir $@)"
-            macroOutputFileRelPathValue="$@"
             name="%GNUMakeBuilder.name"
             parallelBuildCmd="-j*"
             reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
@@ -2751,9 +2653,8 @@
             archList="all"
             id="cdt.managedbuild.toolchain.gnu.base"
             languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector"
-            name="%ToolChainName.Linux"
-            osList="linux,hpux,aix,qnx"
-            targetTool="cdt.managedbuild.tool.gnu.c.linker;cdt.managedbuild.tool.gnu.cpp.linker;cdt.managedbuild.tool.gnu.archiver">
+            name="%ToolChainName.gnu.all"
+            osList="all">
          <targetPlatform
                archList="all"
                binaryParser="org.eclipse.cdt.core.GNU_ELF"
@@ -2770,10 +2671,16 @@
                superClass="cdt.managedbuild.tool.gnu.archiver">
             <enablement
                   type="ALL">
-               <checkBuildProperty
-                     property="org.eclipse.cdt.build.core.buildArtefactType"
-                     value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
-               </checkBuildProperty>
+               <or>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.compound">
+                  </checkBuildProperty>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
+                  </checkBuildProperty>
+               </or>
             </enablement>
          </tool>
          <tool
@@ -2803,7 +2710,8 @@
             </option>
          </tool>
          <tool
-               id="cdt.managedbuild.tool.gnu.c.linker.base"
+               id="cdt.managedbuild.tool.gnu.c.linker.to.exe.base"
+               name="%tool.gnu.c.linker.to.exe.base"
                superClass="cdt.managedbuild.tool.gnu.c.linker">
             <option
                   category="gnu.c.link.category.general"
@@ -2816,16 +2724,97 @@
             </option>
             <enablement
                   type="ALL">
-               <not>
+               <or>
                   <checkBuildProperty
                         property="org.eclipse.cdt.build.core.buildArtefactType"
-                        value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
+                        value="org.eclipse.cdt.build.core.buildArtefactType.compound">
                   </checkBuildProperty>
-               </not>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.exe">
+                  </checkBuildProperty>
+               </or>
             </enablement>
          </tool>
          <tool
-               id="cdt.managedbuild.tool.gnu.cpp.linker.base"
+               id="cdt.managedbuild.tool.gnu.c.linker.to.sharedLib.base"
+               name="%tool.gnu.c.linker.to.sharedLib.base"
+               superClass="cdt.managedbuild.tool.gnu.c.linker">
+            <option
+                  category="gnu.c.link.category.general"
+                  command="-pthread"
+                  defaultValue="false"
+                  id="gnu.c.link.option.pthread"
+                  name="%Option.Pthread"
+                  tip="%Option.PthreadLinkerTip"
+                  valueType="boolean">
+            </option>
+            <option
+                  category="gnu.c.link.category.shared"
+                  command="-shared"
+                  defaultValue="true"
+                  id="gnu.c.link.option.shared"
+                  name="%Option.Posix.Linker.Shared"
+                  valueType="boolean">
+               <enablement
+                     type="CMD_USAGE">
+               </enablement>
+            </option>
+            <enablement
+                  type="ALL">
+               <or>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.compound">
+                  </checkBuildProperty>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
+                  </checkBuildProperty>
+               </or>
+            </enablement>
+         </tool>
+         <tool
+               id="cdt.managedbuild.tool.gnu.cpp.linker.to.sharedLib.base"
+               name="%tool.gnu.cpp.linker.to.sharedLib.base"
+               superClass="cdt.managedbuild.tool.gnu.cpp.linker">
+            <option
+                  category="gnu.cpp.link.category.options"
+                  command="-pthread"
+                  defaultValue="false"
+                  id="gnu.cpp.link.option.pthread"
+                  name="%Option.Pthread"
+                  tip="%Option.PthreadLinkerTip"
+                  valueType="boolean">
+            </option>
+            <option
+                  category="gnu.cpp.link.category.shared"
+                  command="-shared"
+                  defaultValue="true"
+                  id="gnu.cpp.link.option.shared"
+                  name="%Option.Posix.Linker.Shared"
+                  valueType="boolean">
+               <enablement
+                     type="CMD_USAGE">
+               </enablement>
+            </option>
+            <enablement
+                  type="ALL">
+               <or>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.compound">
+                  </checkBuildProperty>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
+                  </checkBuildProperty>
+               </or>
+            </enablement>
+         </tool>
+         <tool
+               id="cdt.managedbuild.tool.gnu.cpp.linker.to.exe.base"
+               name="%tool.gnu.cpp.linker.to.exe.base"
                superClass="cdt.managedbuild.tool.gnu.cpp.linker">
             <option
                   category="gnu.cpp.link.category.options"
@@ -2838,12 +2827,16 @@
             </option>
             <enablement
                   type="ALL">
-               <not>
+               <or>
                   <checkBuildProperty
                         property="org.eclipse.cdt.build.core.buildArtefactType"
-                        value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
+                        value="org.eclipse.cdt.build.core.buildArtefactType.compound">
                   </checkBuildProperty>
-               </not>
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.exe">
+                  </checkBuildProperty>
+               </or>
             </enablement>
          </tool>
          <tool
@@ -2853,9 +2846,8 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
             id="cdt.managedbuild.toolchain.gnu.cygwin.base"
-            isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.cygwin.IsGnuCygwinToolChainSupported"
             languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorCygwin"
             name="%ToolChainName.Cygwin"
             osList="win32"
@@ -2906,6 +2898,21 @@
                   </checkBuildProperty>
                </not>
             </enablement>
+            <option
+                  category="gnu.cpp.link.category.shared"
+                  command="-shared"
+                  defaultValue="true"
+                  id="gnu.cpp.link.option.shared"
+                  name="%Option.Posix.Linker.Shared"
+                  valueType="boolean">
+               <enablement
+                     type="CMD_USAGE">
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
+                  </checkBuildProperty>
+               </enablement>
+            </option>
          </tool>
          <tool
                id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.base"
@@ -2919,13 +2926,27 @@
                   </checkBuildProperty>
                </not>
             </enablement>
+            <option
+                  category="gnu.cpp.link.category.shared"
+                  command="-shared"
+                  defaultValue="true"
+                  id="gnu.cpp.link.option.shared"
+                  name="%Option.Posix.Linker.Shared"
+                  valueType="boolean">
+               <enablement
+                     type="CMD_USAGE">
+                  <checkBuildProperty
+                        property="org.eclipse.cdt.build.core.buildArtefactType"
+                        value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
+                  </checkBuildProperty>
+               </enablement>
+            </option>
          </tool>
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.gnu.mingw.base"
-            isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
             languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorMinGW"
             name="%ToolChainName.MinGW"
             osList="win32"
@@ -2940,7 +2961,6 @@
          <builder
                id="cdt.managedbuild.tool.gnu.builder.mingw.base"
                isAbstract="false"
-               isVariableCaseSensitive="false"
                superClass="org.eclipse.cdt.build.core.internal.builder">
          </builder>
          <tool
@@ -3137,7 +3157,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.exe.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3179,7 +3199,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"
-                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.exe.base">
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.assembler.exe.debug"
@@ -3192,7 +3212,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.exe.release"
                   superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3234,7 +3254,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release"
-                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.exe.base">
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.assembler.exe.release"
@@ -3253,7 +3273,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.so.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3291,7 +3311,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.c.linker.so.debug"
-                     superClass="cdt.managedbuild.tool.gnu.c.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.c.linker.to.sharedLib.base">
                   <option
                         id="gnu.c.link.so.debug.option.shared"
                         superClass="gnu.c.link.option.shared">
@@ -3303,7 +3323,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.cpp.linker.so.debug"
-                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.sharedLib.base">
                   <option
                         id="gnu.cpp.link.so.debug.option.shared"
                         superClass="gnu.cpp.link.option.shared">
@@ -3324,7 +3344,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.so.release"
                   superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3362,7 +3382,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.c.linker.so.release"
-                     superClass="cdt.managedbuild.tool.gnu.c.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.c.linker.to.sharedLib.base">
                   <option
                         id="gnu.c.link.so.release.option.shared"
                         superClass="gnu.c.link.option.shared">
@@ -3374,7 +3394,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.cpp.linker.so.release"
-                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.sharedLib.base">
                   <option
                         id="gnu.cpp.link.so.release.option.shared"
                         superClass="gnu.cpp.link.option.shared">
@@ -3401,7 +3421,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.lib.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3452,7 +3472,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.base">
+               superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.lib.release"
                   superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3535,7 +3555,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cygwin.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.cygwin.base">
+               superClass="cdt.managedbuild.config.gnu.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
@@ -3590,7 +3610,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cygwin.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.cygwin.base">
+               superClass="cdt.managedbuild.config.gnu.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cygwin.exe.release"
                   superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
@@ -3651,7 +3671,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cygwin.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.cygwin.base">
+               superClass="cdt.managedbuild.config.gnu.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cygwin.so.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
@@ -3722,7 +3742,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cygwin.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.cygwin.base">
+               superClass="cdt.managedbuild.config.gnu.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cygwin.so.release"
                   superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
@@ -3799,7 +3819,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cygwin.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.cygwin.base">
+               superClass="cdt.managedbuild.config.gnu.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cygwin.lib.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
@@ -3850,7 +3870,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.cygwin.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.cygwin.base">
+               superClass="cdt.managedbuild.config.gnu.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.cygwin.lib.release"
                   superClass="cdt.managedbuild.toolchain.gnu.cygwin.base">
@@ -3933,7 +3953,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.mingw.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               superClass="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.mingw.exe.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
@@ -3984,7 +4004,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.mingw.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               superClass="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.mingw.exe.release"
                   superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
@@ -4041,7 +4061,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.mingw.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               superClass="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.mingw.so.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
@@ -4108,7 +4128,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.mingw.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               superClass="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.mingw.so.release"
                   superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
@@ -4181,7 +4201,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.mingw.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               superClass="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.mingw.lib.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
@@ -4228,7 +4248,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.mingw.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.mingw.base">
+               superClass="cdt.managedbuild.config.gnu.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.mingw.lib.release"
                   superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
@@ -4306,7 +4326,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.gnu.macosx.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.macosx.exe.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
@@ -4361,7 +4381,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.macosx.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.macosx.exe.release"
                   superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
@@ -4422,7 +4442,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.macosx.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.macosx.so.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
@@ -4501,7 +4521,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.macosx.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.macosx.so.release"
                   superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
@@ -4586,7 +4606,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.macosx.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.macosx.lib.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
@@ -4637,7 +4657,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.macosx.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.macosx.lib.release"
                   superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
@@ -4718,7 +4738,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                id="cdt.managedbuild.config.gnu.solaris.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.solaris.base">
+               superClass="cdt.managedbuild.config.gnu.solaris.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.solaris.exe.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.solaris.base">
@@ -4740,7 +4760,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
                id="cdt.managedbuild.config.gnu.solaris.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.solaris.base">
+               superClass="cdt.managedbuild.config.gnu.solaris.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.solaris.exe.release"
                   superClass="cdt.managedbuild.toolchain.gnu.solaris.base">
@@ -4768,7 +4788,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                id="cdt.managedbuild.config.gnu.solaris.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.solaris.base">
+               superClass="cdt.managedbuild.config.gnu.solaris.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.solaris.so.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.solaris.base">
@@ -4790,7 +4810,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
                id="cdt.managedbuild.config.gnu.solaris.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.solaris.base">
+               superClass="cdt.managedbuild.config.gnu.solaris.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.solaris.so.release"
                   superClass="cdt.managedbuild.toolchain.gnu.solaris.base">
@@ -4818,7 +4838,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                id="cdt.managedbuild.config.gnu.solaris.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.gnu.solaris.base">
+               superClass="cdt.managedbuild.config.gnu.solaris.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.solaris.lib.debug"
                   superClass="cdt.managedbuild.toolchain.gnu.solaris.base">
@@ -4840,7 +4860,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
                id="cdt.managedbuild.config.gnu.solaris.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.gnu.solaris.base">
+               superClass="cdt.managedbuild.config.gnu.solaris.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.solaris.lib.release"
                   superClass="cdt.managedbuild.toolchain.gnu.solaris.base">
@@ -4868,7 +4888,6 @@
             fileVersion="4.0.0">
       </managedBuildRevision>
       <tool
-            advancedInputCategory="true"
             command="llvm-ld"
             commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS}"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
@@ -5067,13 +5086,8 @@
                owner="cdt.managedbuild.tool.llvm.c.linker">
          </optionCategory>
          <inputType
-               buildVariable="BCS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.llvm.makegen.LlvmDependencyCalculator2"
                id="cdt.managedbuild.tool.llvm.c.linker.input"
-               multipleOfType="true"
-               primaryInput="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode"
-               sources="bc">
+               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -5087,8 +5101,7 @@
                buildVariable="LLVM_BC_EXECUTABLES"
                id="cdt.managedbuild.tool.llvm.c.linker.output.exe.bc"
                namePattern="%.exe.bc"
-               outputName="${ProjName}.exe.bc"
-               primaryOutput="true">
+               outputName="${ProjName}.exe.bc">
             <enablement
                   type="ALL">
                <checkBuildProperty
@@ -5173,12 +5186,8 @@
                valueType="boolean">
          </option>
          <inputType
-               buildVariable="BCS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.llvm.makegen.LlvmDependencyCalculator2"
                id="cdt.managedbuild.tool.llvm.archiver.input"
-               multipleOfType="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode"
-               sources="bc">
+               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -5232,8 +5241,7 @@
          </option>
          <inputType
                id="cdt.managedbuild.tool.llvm.assembler.input"
-               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmAssemblySource"
-               sources="ll">
+               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmAssemblySource">
          </inputType>
          <outputType
                buildVariable="BCS"
@@ -5372,13 +5380,8 @@
                valueType="boolean">
          </option>
          <inputType
-               buildVariable="BCS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.llvm.makegen.LlvmDependencyCalculator2"
                id="cdt.managedbuild.tool.llvm.llc.input"
-               multipleOfType="true"
-               primaryInput="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode"
-               sources="bc">
+               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -5527,13 +5530,8 @@
                valueType="boolean">
          </option>
          <inputType
-               buildVariable="BCS"
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.llvm.makegen.LlvmDependencyCalculator2"
                id="cdt.managedbuild.tool.llvm.lli.input"
-               multipleOfType="true"
-               primaryInput="true"
-               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode"
-               sources="bc">
+               sourceContentType="org.eclipse.cdt.managedbuilder.llvm.ui.llvmBytecode">
             <additionalInput
                   kind="additionalinputdependency"
                   paths="$(USER_OBJS)">
@@ -5671,7 +5669,7 @@
                category="llvm.c_cpp.compiler.category.optimization"
                id="llvm.c_cpp.compiler.option.optimization.flags"
                name="%Option.Posix.Optimize.Flags"
-               value="-emit-llvm"
+               defaultValue="-emit-llvm"
                valueType="string">
          </option>
          <optionCategory
@@ -5930,13 +5928,9 @@
                superClass="gnu.c.compiler.option.dialect.flags">
          </option>
          <inputType
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.llvm.makegen.LlvmDependencyCalculator2"
-               dependencyContentType="org.eclipse.cdt.core.cHeader"
-               dependencyExtensions="h"
                id="cdt.managedbuild.tool.llvm.c.compiler.input"
                languageId="org.eclipse.cdt.core.gcc"
-               sourceContentType="org.eclipse.cdt.core.cSource"
-               sources="c">
+               sourceContentType="org.eclipse.cdt.core.cSource">
          </inputType>
       </tool>
       <tool
@@ -5961,13 +5955,9 @@
                superClass="gnu.cpp.compiler.option.dialect.flags">
          </option>
          <inputType
-               dependencyCalculator="org.eclipse.cdt.managedbuilder.llvm.makegen.LlvmDependencyCalculator2"
-               dependencyContentType="org.eclipse.cdt.core.cxxHeader"
-               dependencyExtensions="h,H,hpp"
                id="cdt.managedbuild.tool.llvm.cpp.compiler.input"
                languageId="org.eclipse.cdt.core.g++"
-               sourceContentType="org.eclipse.cdt.core.cxxSource"
-               sources="c,C,cc,cxx,cpp">
+               sourceContentType="org.eclipse.cdt.core.cxxSource">
          </inputType>
       </tool>
       <tool
@@ -6036,7 +6026,7 @@
       </tool>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.llvm.ui.LlvmEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.llvm.ui.LlvmEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.llvm.base"
             isAbstract="true"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.llvm.ui.LlvmIsToolChainSupported"
@@ -6156,7 +6146,7 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
             id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.cygwin.IsGnuCygwinToolChainSupported"
@@ -6175,7 +6165,7 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
@@ -6281,7 +6271,7 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
             id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.cygwin.IsGnuCygwinToolChainSupported"
@@ -6300,7 +6290,7 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
@@ -6367,7 +6357,7 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
@@ -6433,7 +6423,7 @@
       </toolChain>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.llvm.jit.win32.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
@@ -6484,7 +6474,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.linux.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.linux.base">
+               superClass="cdt.managedbuild.config.llvm.clang.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.linux.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.linux.base">
@@ -6525,7 +6515,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.linux.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.linux.base">
+               superClass="cdt.managedbuild.config.llvm.clang.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.linux.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.linux.base">
@@ -6572,7 +6562,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.linux.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.linux.base">
+               superClass="cdt.managedbuild.config.llvm.clang.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.linux.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.linux.base">
@@ -6613,7 +6603,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.linux.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.linux.base">
+               superClass="cdt.managedbuild.config.llvm.clang.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.linux.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.linux.base">
@@ -6660,7 +6650,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.linux.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.linux.base">
+               superClass="cdt.managedbuild.config.llvm.clang.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.linux.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.linux.base">
@@ -6701,7 +6691,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.linux.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.linux.base">
+               superClass="cdt.managedbuild.config.llvm.clang.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.linux.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.linux.base">
@@ -6773,7 +6763,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.macosx.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.clang.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.macosx.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.macosx.base">
@@ -6814,7 +6804,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.macosx.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.clang.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.macosx.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.macosx.base">
@@ -6861,7 +6851,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.macosx.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.clang.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.macosx.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.macosx.base">
@@ -6900,7 +6890,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.macosx.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.clang.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.macosx.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.macosx.base">
@@ -6947,7 +6937,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.macosx.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.clang.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.macosx.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.macosx.base">
@@ -6988,7 +6978,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.macosx.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.clang.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.macosx.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.macosx.base">
@@ -7060,7 +7050,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.cygwin.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base">
@@ -7101,7 +7091,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.cygwin..exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base">
@@ -7148,7 +7138,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.cygwin.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base">
@@ -7189,7 +7179,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.cygwin.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base">
@@ -7236,7 +7226,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.cygwin.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base">
@@ -7277,7 +7267,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.cygwin.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base">
@@ -7349,7 +7339,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.mingw.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base">
@@ -7390,7 +7380,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.mingw..exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base">
@@ -7437,7 +7427,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.mingw.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base">
@@ -7478,7 +7468,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.mingw.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base">
@@ -7525,7 +7515,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.mingw.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base">
@@ -7566,7 +7556,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.clang.win32.mingw.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base">
@@ -7638,7 +7628,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.linux.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.linux.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.linux.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.linux.base">
@@ -7679,7 +7669,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.linux.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.linux.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.linux.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.linux.base">
@@ -7726,7 +7716,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.linux.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.linux.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.linux.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.linux.base">
@@ -7768,7 +7758,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.linux.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.linux.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.linux.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.linux.base">
@@ -7815,7 +7805,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.linux.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.linux.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.linux.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.linux.base">
@@ -7857,7 +7847,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.linux.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.linux.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.linux.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.linux.base">
@@ -7928,7 +7918,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.macosx.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.macosx.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.macosx.base">
@@ -7969,7 +7959,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.macosx.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.macosx.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.macosx.base">
@@ -8014,7 +8004,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.macosx.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.macosx.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.macosx.base">
@@ -8056,7 +8046,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.macosx.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.macosx.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.macosx.base">
@@ -8103,7 +8093,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.macosx.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.macosx.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.macosx.base">
@@ -8145,7 +8135,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.macosx.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.macosx.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.macosx.base">
@@ -8218,7 +8208,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base">
@@ -8259,7 +8249,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base">
@@ -8306,7 +8296,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base">
@@ -8347,7 +8337,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base">
@@ -8394,7 +8384,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base">
@@ -8435,7 +8425,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base">
@@ -8508,7 +8498,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.mingw.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base">
@@ -8549,7 +8539,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.mingw.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base">
@@ -8596,7 +8586,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.mingw.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base">
@@ -8637,7 +8627,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.mingw.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base">
@@ -8684,7 +8674,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.mingw.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base">
@@ -8725,7 +8715,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.gnu.win32.mingw.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
+               superClass="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base">
@@ -8796,7 +8786,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.linux.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.linux.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.linux.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.linux.base">
@@ -8825,7 +8815,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.linux.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.linux.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.linux.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.linux.base">
@@ -8860,7 +8850,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.linux.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.linux.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.linux.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.linux.base">
@@ -8889,7 +8879,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.linux.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.linux.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.linux.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.linux.base">
@@ -8924,7 +8914,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.linux.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.linux.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.linux.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.linux.base">
@@ -8953,7 +8943,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.linux.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.linux.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.linux.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.linux.base">
@@ -9012,7 +9002,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.macosx.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.base">
@@ -9041,7 +9031,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.macosx.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.base">
@@ -9076,7 +9066,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.macosx.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.base">
@@ -9105,7 +9095,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.macosx.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.base">
@@ -9140,7 +9130,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.macosx.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.base">
@@ -9169,7 +9159,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.macosx.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.macosx.base">
@@ -9228,7 +9218,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.win32.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.win32.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base">
@@ -9257,7 +9247,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.win32.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.win32.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base">
@@ -9292,7 +9282,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.win32.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.win32.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base">
@@ -9321,7 +9311,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.win32.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.win32.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base">
@@ -9356,7 +9346,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.win32.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.static.compiler.win32.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base">
@@ -9385,7 +9375,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.static.compiler.win32.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.static.compiler.win32.base">
+               superClass="cdt.managedbuild.config.llvm.static.compiler.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.static.compiler.win32.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.static.compiler.win32.base">
@@ -9444,7 +9434,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.linux.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.linux.base">
+               superClass="cdt.managedbuild.config.llvm.jit.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.linux.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.linux.base">
@@ -9473,7 +9463,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.linux.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.linux.base">
+               superClass="cdt.managedbuild.config.llvm.jit.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.linux.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.linux.base">
@@ -9508,7 +9498,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.linux.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.linux.base">
+               superClass="cdt.managedbuild.config.llvm.jit.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.linux.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.linux.base">
@@ -9537,7 +9527,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.linux.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.linux.base">
+               superClass="cdt.managedbuild.config.llvm.jit.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.ji.linux.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.linux.base">
@@ -9572,7 +9562,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.linux.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.linux.base">
+               superClass="cdt.managedbuild.config.llvm.jit.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.linux.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.linux.base">
@@ -9601,7 +9591,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.linux.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.linux.base">
+               superClass="cdt.managedbuild.config.llvm.jit.linux.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.linux.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.linux.base">
@@ -9660,7 +9650,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.macosx.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.jit.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.macosx.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.macosx.base">
@@ -9689,7 +9679,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.macosx.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.jit.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.macosx.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.macosx.base">
@@ -9724,7 +9714,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.macosx.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.jit.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.macosx.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.macosx.base">
@@ -9753,7 +9743,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.macosx.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.jit.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.ji.macosx.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.macosx.base">
@@ -9788,7 +9778,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.macosx.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.jit.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.macosx.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.macosx.base">
@@ -9817,7 +9807,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.macosx.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.macosx.base">
+               superClass="cdt.managedbuild.config.llvm.jit.macosx.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.macosx.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.macosx.base">
@@ -9876,7 +9866,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.win32.exe.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.win32.base">
+               superClass="cdt.managedbuild.config.llvm.jit.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.win32.exe.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.win32.base">
@@ -9905,7 +9895,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.win32.exe.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.win32.base">
+               superClass="cdt.managedbuild.config.llvm.jit.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.win32.exe.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.win32.base">
@@ -9940,7 +9930,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.win32.so.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.win32.base">
+               superClass="cdt.managedbuild.config.llvm.jit.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.win32.so.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.win32.base">
@@ -9969,7 +9959,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.win32.so.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.win32.base">
+               superClass="cdt.managedbuild.config.llvm.jit.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.ji.win32.so.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.win32.base">
@@ -10004,7 +9994,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.win32.lib.debug"
                name="%ConfigName.Dbg"
-               parent="cdt.managedbuild.config.llvm.jit.win32.base">
+               superClass="cdt.managedbuild.config.llvm.jit.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.win32.lib.debug"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.win32.base">
@@ -10033,7 +10023,7 @@
                cleanCommand="rm -rf"
                id="cdt.managedbuild.config.llvm.jit.win32.lib.release"
                name="%ConfigName.Rel"
-               parent="cdt.managedbuild.config.llvm.jit.win32.base">
+               superClass="cdt.managedbuild.config.llvm.jit.win32.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.llvm.jit.win32.lib.release"
                   superClass="cdt.managedbuild.toolchain.llvm.jit.win32.base">
@@ -10060,7 +10050,7 @@
       </projectType>
    </extension>
       <extension
-            id="CDT.mws.build"
+            id="CDT.mvc.build"
             point="io.sloeber.autoBuild.buildDefinitions">
       <managedBuildRevision
             fileVersion="4.0.0">
@@ -10335,7 +10325,7 @@
       </tool>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
+            environmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
             id="org.eclipse.cdt.msvc.toolchain.base"
             isAbstract="true"
             name="%toolchain.name"
@@ -10349,7 +10339,6 @@
          </targetPlatform>
          <builder
                id="org.eclipse.cdt.msvc.builder"
-               isVariableCaseSensitive="false"
                superClass="org.eclipse.cdt.build.core.internal.builder">
          </builder>
          <tool
@@ -10359,7 +10348,6 @@
                natureFilter="both"
                superClass="org.eclipse.cdt.msvc.cl.abstract">
             <inputType
-                  dependencyContentType="org.eclipse.cdt.core.cHeader"
                   id="org.eclipse.cdt.msvc.cl.inputType.c"
                   scannerConfigDiscoveryProfileId="org.eclipse.cdt.msw.build.clScannerInfo"
                   sourceContentType="org.eclipse.cdt.core.cSource">
@@ -10372,7 +10360,6 @@
                natureFilter="ccnature"
                superClass="org.eclipse.cdt.msvc.cl.abstract">
             <inputType
-                  dependencyContentType="org.eclipse.cdt.core.cxxHeader"
                   id="org.eclipse.cdt.msvc.cl.inputType"
                   scannerConfigDiscoveryProfileId="org.eclipse.cdt.msw.build.clScannerInfo"
                   sourceContentType="org.eclipse.cdt.core.cxxSource">
@@ -10419,7 +10406,7 @@
             </option>
             <inputType
                   id="org.eclipse.cdt.msvc.rc.inputType"
-                  sources="rc">
+                  extensions="rc">
             </inputType>
             <outputType
                   id="org.eclipse.cdt.msvc.rc.outputType"
@@ -10524,8 +10511,7 @@
             </option>
             <inputType
                   id="org.eclipse.cdt.msvc.link.inputType"
-                  multipleOfType="true"
-                  sources="res,obj">
+                  extensions="res,obj">
             </inputType>
             <outputType
                   id="org.eclipse.cdt.msvc.link.outputType"
@@ -10575,8 +10561,7 @@
             </option>
             <inputType
                   id="org.eclipse.cdt.msvc.lib.inputType"
-                  multipleOfType="true"
-                  sources="obj,res">
+                  extensions="obj,res">
             </inputType>
             <outputType
                   id="org.eclipse.cdt.msvc.lib.outputType"
@@ -10619,12 +10604,12 @@
             buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
             buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe"
             id="org.eclipse.cdt.msvc.projectType.exe"
-            projectEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
+            environmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
          <configuration
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                id="org.eclipse.cdt.msvc.exe.debug"
                name="%config.debug"
-               parent="org.eclipse.cdt.msvc.configuration">
+               superClass="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.eclipse.cdt.msvc.toolchain.exe.debug"
                   superClass="org.eclipse.cdt.msvc.toolchain.base">
@@ -10654,7 +10639,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
                id="org.eclipse.cdt.msvc.exe.release"
                name="%config.release"
-               parent="org.eclipse.cdt.msvc.configuration">
+               superClass="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.eclipse.cdt.msvc.toolchain.exe.release"
                   superClass="org.eclipse.cdt.msvc.toolchain.base">
@@ -10684,12 +10669,12 @@
       <projectType
             buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
             id="org.eclipse.cdt.msvc.projectType.dll"
-            projectEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
+            environmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
          <configuration
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                id="org.eclipse.cdt.msvc.dll.debug"
                name="%config.debug"
-               parent="org.eclipse.cdt.msvc.configuration">
+               superClass="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.eclipse.cdt.msvc.toolchain.dll.debug"
                   superClass="org.eclipse.cdt.msvc.toolchain.base">
@@ -10719,7 +10704,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
                id="org.eclipse.cdt.msvc.dll.release"
                name="%config.release"
-               parent="org.eclipse.cdt.msvc.configuration">
+               superClass="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.eclipse.cdt.msvc.toolchain.dll.release"
                   superClass="org.eclipse.cdt.msvc.toolchain.base">
@@ -10749,12 +10734,12 @@
       <projectType
             buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
             id="org.eclipse.cdt.msvc.projectType.lib"
-            projectEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
+            environmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier">
          <configuration
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
                id="org.eclipse.cdt.msvc.lib.debug"
                name="%config.debug"
-               parent="org.eclipse.cdt.msvc.configuration">
+               superClass="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.eclipse.cdt.msvc.toolchain.lib.debug"
                   superClass="org.eclipse.cdt.msvc.toolchain.base">
@@ -10784,7 +10769,7 @@
                buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
                id="org.eclipse.cdt.msvc.lib.release"
                name="%config.release"
-               parent="org.eclipse.cdt.msvc.configuration">
+               superClass="org.eclipse.cdt.msvc.configuration">
             <toolChain
                   id="org.eclipse.cdt.msvc.toolchain.lib.release"
                   superClass="org.eclipse.cdt.msvc.toolchain.base">

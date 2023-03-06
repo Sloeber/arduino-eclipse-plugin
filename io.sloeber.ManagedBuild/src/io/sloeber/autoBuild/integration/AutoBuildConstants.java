@@ -7,6 +7,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 
+import io.sloeber.schema.api.IToolChain;
+
 /**
  * ArduinoConst only contains global strings used in sloeber.
  *
@@ -236,31 +238,87 @@ public class AutoBuildConstants {
     //    public static final String MESSAGE_HEADER = ManagedMakeMessages.getResourceString(HEADER);
 
     // Schema element names
-    public static final String ID = "id"; //$NON-NLS-1$
-    public static final String NAME = "name"; //$NON-NLS-1$
-    public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
-    public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
-    public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
-    public static final String ICON = "icon"; //$NON-NLS-1$
-    public static final String INPUT_TYPE_ELEMENT_NAME = "inputType"; //$NON-NLS-1$
-    public static final String SOURCE_CONTENT_TYPE = "sourceContentType"; //$NON-NLS-1$
-    public static final String EXTENSIONS = "extensions"; //$NON-NLS-1$
-    public static final String OUTPUT_TYPE_ID = "outputTypeID"; //$NON-NLS-1$
-    public static final String OPTION = "option"; //$NON-NLS-1$
-    public static final String ASSIGN_TO_OPTION = "assignToOption"; //$NON-NLS-1$	
-    public static final String DEPENDENCY_CONTENT_TYPE = "dependencyContentType"; //$NON-NLS-1$
-    public static final String DEPENDENCY_EXTENSIONS = "dependencyExtensions"; //$NON-NLS-1$
-    public static final String SCANNER_CONFIG_PROFILE_ID = "scannerConfigDiscoveryProfileId"; //$NON-NLS-1$
-    public static final String LANGUAGE_ID = "languageId"; //$NON-NLS-1$
-    public static final String LANGUAGE_INFO_CALCULATOR = "languageInfoCalculator"; //$NON-NLS-1$
-    public static final String OUTPUT_TYPE_ELEMENT_NAME = "outputType"; //$NON-NLS-1$
+    public static final String ID = "id";
+    public static final String NAME = "name";
+    public static final String SUPERCLASS = "superClass";
+    public static final String IS_ABSTRACT = "isAbstract";
+    public static final String IS_SYSTEM = "isSystem";
+    public static final String ICON = "icon";
+    public static final String INPUT_TYPE_ELEMENT_NAME = "inputType";
+    public static final String SOURCE_CONTENT_TYPE = "sourceContentType";
+    public static final String EXTENSIONS = "extensions";
+    public static final String OUTPUT_TYPE_ID = "outputTypeID";
+    public static final String OPTION = "option";
+    public static final String SCANNER_CONFIG_PROFILE_ID = "scannerConfigDiscoveryProfileId";
+    public static final String LANGUAGE_ID = "languageId";
+    public static final String LANGUAGE_INFO_CALCULATOR = "languageInfoCalculator";
+    public static final String OUTPUT_TYPE_ELEMENT_NAME = "outputType";
 
-    public static final String OUTPUT_CONTENT_TYPE = "outputContentType"; //$NON-NLS-1$
-    public static final String OUTPUT_PREFIX = "outputPrefix"; //$NON-NLS-1$
-    public static final String OUTPUT_EXTENSION = "outputExtension"; //$NON-NLS-1$
-    public static final String OUTPUT_NAME = "outputName"; //$NON-NLS-1$
-    public static final String NAME_PATTERN = "namePattern"; //$NON-NLS-1$
-    public static final String NAME_PROVIDER = "nameProvider"; //$NON-NLS-1$
-    public static final String BUILD_VARIABLE = "buildVariable"; //$NON-NLS-1$
+    public static final String OUTPUT_CONTENT_TYPE = "outputContentType";
+    public static final String OUTPUT_PREFIX = "outputPrefix";
+    public static final String OUTPUT_EXTENSION = "outputExtension";
+    public static final String OUTPUT_NAME = "outputName";
+    public static final String NAME_PATTERN = "namePattern";
+    public static final String NAME_PROVIDER = "nameProvider";
+    public static final String BUILD_VARIABLE = "buildVariable";
+    public static final String DYNAMIC_LIB_FILE = "dynamic";
 
+    // Schema attribute names for option elements
+    public static final String BROWSE_TYPE = "browseType";
+    public static final String BROWSE_FILTER_PATH = "browseFilterPath";
+    public static final String BROWSE_FILTER_EXTENSIONS = "browseFilterExtensions";
+    public static final String CATEGORY = "category";
+    public static final String ORDER = "order";
+    public static final String COMMAND = "command";
+    public static final String COMMAND_FALSE = "commandFalse";
+    public static final String USE_BY_SCANNER_DISCOVERY = "useByScannerDiscovery";
+    public static final String COMMAND_GENERATOR = "commandGenerator";
+    public static final String TOOL_TIP = "tip";
+    public static final String CONTEXT_ID = "contextId";
+    public static final String DEFAULT_VALUE = "defaultValue";
+    public static final String DEFAULTVALUE_GENERATOR = "defaultValueGenerator";
+    public static final String ENUM_VALUE = "enumeratedOptionValue";
+    public static final String TREE_ROOT = "treeOptionRoot";
+    public static final String SELECT_LEAF_ONLY = "selectLeafOnly";
+    public static final String TREE_VALUE = "treeOption";
+    public static final String DESCRIPTION = "description";
+    public static final String IS_DEFAULT = "isDefault";
+    public static final String LIST_VALUE = "listOptionValue";
+    public static final String RESOURCE_FILTER = "resourceFilter";
+    public static final String APPLICABILITY_CALCULATOR = "applicabilityCalculator";
+    public static final String TYPE_BOOL = "boolean";
+    public static final String TYPE_ENUM = "enumerated";
+    public static final String TYPE_INC_PATH = "includePath";
+    public static final String TYPE_LIB = "libs";
+    public static final String TYPE_STRING = "string";
+    public static final String TYPE_STR_LIST = "stringList";
+    public static final String TYPE_USER_OBJS = "userObjs";
+    public static final String TYPE_DEFINED_SYMBOLS = "definedSymbols";
+    public static final String TYPE_LIB_PATHS = "libPaths";
+    public static final String TYPE_LIB_FILES = "libFiles";
+    public static final String TYPE_INC_FILES = "includeFiles";
+    public static final String TYPE_SYMBOL_FILES = "symbolFiles";
+    public static final String TYPE_UNDEF_INC_PATH = "undefIncludePath";
+    public static final String TYPE_UNDEF_DEFINED_SYMBOLS = "undefDefinedSymbols";
+    public static final String TYPE_UNDEF_LIB_PATHS = "undefLibPaths";
+    public static final String TYPE_UNDEF_LIB_FILES = "undefLibFiles";
+    public static final String TYPE_UNDEF_INC_FILES = "undefIncludeFiles";
+    public static final String TYPE_UNDEF_SYMBOL_FILES = "undefSymbolFiles";
+    public static final String TYPE_TREE = "tree";
+    public static final String VALUE_TYPE = "valueType";
+    public static final String VALUE_HANDLER = "valueHandler";
+    public static final String VALUE_HANDLER_EXTRA_ARGUMENT = "valueHandlerExtraArgument";
+    public static final String FIELD_EDITOR_ID = "fieldEditor";
+    public static final String FIELD_EDITOR_EXTRA_ARGUMENT = "fieldEditorExtraArgument";
+    public static final String LIST_ITEM_VALUE = "value";
+    public static final String LIST_ITEM_BUILTIN = "builtIn";
+    public static final String ASSIGN_TO_COMMAND_VARIABLE = "assignToCommandVarriable";
+    public static final String OUTPUT_FLAG = "outputFlag"; //$NON-NLS-1$
+    public static final String NATURE = "natureFilter"; //$NON-NLS-1$
+    public static final String COMMAND_LINE_PATTERN = "commandLinePattern"; //$NON-NLS-1$
+    public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator"; //$NON-NLS-1$
+    public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;
+    public static final String CUSTOM_BUILD_STEP = "customBuildStep"; //$NON-NLS-1$
+    public static final String ANNOUNCEMENT = "announcement"; //$NON-NLS-1$
+    public static final String IS_HIDDEN = "isHidden"; //$NON-NLS-1$
 }

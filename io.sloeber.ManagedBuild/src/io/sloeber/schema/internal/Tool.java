@@ -1,6 +1,7 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
@@ -166,6 +169,10 @@ public class Tool extends SchemaObject implements ITool {
         customBuildStep = Boolean.parseBoolean(modelCustomBuildStep[SUPER]);
         isHidden = Boolean.parseBoolean(modelIsHidden[ORIGINAL]);
         isSystem = Boolean.parseBoolean(modelIsSystem[ORIGINAL]);
+
+        if (modelCommandLinePattern[SUPER].isBlank()) {
+            modelCommandLinePattern[SUPER] = DEFAULT_PATTERN;
+        }
 
         if (modelAnnouncement[SUPER].isBlank()) {
             myAnnouncement = Tool_default_announcement + BLANK + getName(); // + "(" + getId() + ")";
@@ -485,6 +492,9 @@ public class Tool extends SchemaObject implements ITool {
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE) {
         MakeRules ret = new MakeRules();
         if (!isEnabled(inputFile, autoBuildConfData)) {
+            if (VERBOSE) {
+                System.out.println(myName + DISABLED);
+            }
             return ret;
         }
         for (IInputType inputType : getInputTypes()) {
@@ -526,6 +536,52 @@ public class Tool extends SchemaObject implements ITool {
             }
         }
         return ret;
+    }
+
+    @Override
+    public String getRecipe(AutoBuildConfigurationData autoBuildConfData, Set<String> flags, String outputName,
+            Map<String, Set<String>> nicePreReqNameList) {
+        String cmd = modelCommand[SUPER];
+        // expand the command
+        String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
+        if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
+            cmd = resolvedCommand;
+        String commandLinePattern = modelCommandLinePattern[SUPER];
+        commandLinePattern = getVariableValue(commandLinePattern, commandLinePattern, false, autoBuildConfData);
+
+        String quotedOutputName = outputName;
+        // if the output name isn't a variable then quote it
+        if (quotedOutputName.length() > 0 && quotedOutputName.indexOf("$(") != 0) { //$NON-NLS-1$
+            quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
+        }
+
+        Map<String, String> preReqFiles = new HashMap<>();
+        for (String curCmdVariable : nicePreReqNameList.keySet()) {
+            String inputsStr = EMPTY_STRING;
+            for (String inp : nicePreReqNameList.get(curCmdVariable)) {
+                if (inp != null && !inp.isEmpty()) {
+                    // if the input resource isn't a variable then quote it
+                    if (inp.indexOf("$(") != 0) { //$NON-NLS-1$
+                        inp = DOUBLE_QUOTE + inp + DOUBLE_QUOTE;
+                    }
+                    inputsStr = inputsStr + inp + WHITESPACE;
+                }
+            }
+            preReqFiles.put(curCmdVariable, inputsStr.trim());
+        }
+
+        String flagsStr = String.join(WHITESPACE, flags);
+
+        String command = commandLinePattern.replace(makeVariable(CMD_LINE_PRM_NAME), cmd);
+        command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
+        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), modelOutputFlag[SUPER]);
+        command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
+        for (Entry<String, String> curCmdVariable : preReqFiles.entrySet()) {
+            command = command.replace(makeVariable(curCmdVariable.getKey()), curCmdVariable.getValue());
+
+        }
+
+        return command;
     }
 
 }

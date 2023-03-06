@@ -5,10 +5,10 @@ import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -228,25 +228,36 @@ public class MakeRule {
         }
         IFile targetFile = local_targets.toArray(new IFile[1])[0];
 
-        Set<String> niceNameList = new HashSet<>();
         Set<String> flags = new LinkedHashSet<>();
-        for (IFile curPrerequisite : local_prerequisites) {
-            niceNameList.add(GetNiceFileName(niceBuildFolder, curPrerequisite));
-            try {
-                flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrerequisite, targetFile)));
-            } catch (BuildException e) {
-                e.printStackTrace();
+        Map<String, Set<String>> niceNameList = new HashMap<>();
+        for (Entry<IInputType, Set<IFile>> cur : myPrerequisites.entrySet()) {
+            String cmdVariable = cur.getKey().getAssignToCmdVarriable();
+            for (IFile curPrereqFile : cur.getValue()) {
+                Set<String> niceNames = niceNameList.get(cmdVariable);
+                if (niceNames == null) {
+                    niceNames = new HashSet<>();
+                    niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
+                    niceNameList.put(cmdVariable, niceNames);
+                }
+                niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
+                //TOFIX JABA I'm not sure it is necessary to loop through all the prerequisites to add all flags
+                try {
+                    flags.addAll(
+                            Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile, targetFile)));
+                } catch (BuildException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        String buildCmd = expandCommandLinePattern(autoBuildConfData, flags, myTool.getOutputFlag(), OUT_MACRO,
+        //        String buildCmd = expandCommandLinePattern(autoBuildConfData, flags, myTool.getOutputFlag(), OUT_MACRO,
+        //                niceNameList);
+        String buildCmd = myTool.getRecipe(autoBuildConfData, flags, GetNiceFileName(niceBuildFolder, targetFile),
                 niceNameList);
 
-        // resolve any remaining macros in the command after it has been
-        // generated
         String resolvedCommand = resolve(buildCmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
-        if (resolvedCommand != null && !resolvedCommand.isBlank())
-            buildCmd = resolvedCommand.trim();
+        if (resolvedCommand.isBlank())
+            resolvedCommand = buildCmd;
 
         StringBuffer buffer = new StringBuffer();
         buffer.append(enumTargets(niceBuildFolder)).append(COLON).append(WHITESPACE);
@@ -273,7 +284,7 @@ public class MakeRule {
         //                buffer.append(TAB).append(sketchPostBuild);
         //            }
         //        } else {
-        buffer.append(TAB).append(buildCmd);
+        buffer.append(TAB).append(resolvedCommand);
         //        }
         //        // end JABA add sketch.prebuild and postbuild if needed
 
@@ -284,21 +295,21 @@ public class MakeRule {
         return buffer;
     }
 
-    private Set<String> getBuildFlags(AutoBuildConfigurationData autoBuildConfData, IFile sourceFile,
-            IFile outputFile) {
-        Set<String> flags = new LinkedHashSet<>();
-        // Get the tool command line options
-        try {
-
-            //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
-            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, sourceFile, outputFile)));
-
-            myTool.getInputTypes();
-        } catch (BuildException e) {
-            e.printStackTrace();
-        }
-        return flags;
-    }
+    //    private Set<String> getBuildFlags(AutoBuildConfigurationData autoBuildConfData, IFile sourceFile,
+    //            IFile outputFile) {
+    //        Set<String> flags = new LinkedHashSet<>();
+    //        // Get the tool command line options
+    //        try {
+    //
+    //            //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
+    //            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, sourceFile, outputFile)));
+    //
+    //            myTool.getInputTypes();
+    //        } catch (BuildException e) {
+    //            e.printStackTrace();
+    //        }
+    //        return flags;
+    //    }
 
     private String expandCommandLinePattern(AutoBuildConfigurationData autoBuildConfData, Set<String> flags,
             String outputFlag, String outputName, Set<String> inputResources) {

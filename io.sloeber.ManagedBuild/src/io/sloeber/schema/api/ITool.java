@@ -13,8 +13,10 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
 import io.sloeber.autoBuild.api.BuildException;
@@ -37,21 +39,6 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
 public interface ITool extends ISchemaObject {
     public static final String TOOL_ELEMENT_NAME = "tool"; //$NON-NLS-1$
     // Schema element names
-    public static final String OUTPUT_FLAG = "outputFlag"; //$NON-NLS-1$
-    public static final String NATURE = "natureFilter"; //$NON-NLS-1$
-    public static final String COMMAND = "command"; //$NON-NLS-1$
-    public static final String COMMAND_LINE_PATTERN = "commandLinePattern"; //$NON-NLS-1$
-    public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator"; //$NON-NLS-1$
-    public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;
-    public static final String CUSTOM_BUILD_STEP = "customBuildStep"; //$NON-NLS-1$
-    public static final String ANNOUNCEMENT = "announcement"; //$NON-NLS-1$
-    //public static final String ICON = IOptionCategory.ICON;
-    //  public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
-    public static final String IS_HIDDEN = "isHidden"; //$NON-NLS-1$
-
-//    public static final int FILTER_C = 0;
-//    public static final int FILTER_CC = 1;
-//    public static final int FILTER_BOTH = 2;
 
     /**
      * Returns the tool-chain or resource configuration that is the parent of this
@@ -200,25 +187,25 @@ public interface ITool extends ISchemaObject {
      */
     ///  public String[] getAllDependencyExtensions();
 
-//    /**
-//     * Answers a constant corresponding to the project nature the tool should be
-//     * used
-//     * for. Possible answers are:
-//     *
-//     * <dl>
-//     * <dt>ITool.FILTER_C
-//     * <dd>The tool should only be displayed for C projects. <i>Notes:</i> even
-//     * though a C++ project has a C nature, this flag will mask the tool for C++
-//     * projects.
-//     * <dt>ITool.FILTER_CC
-//     * <dd>The tool should only be displayed for C++ projects.
-//     * <dt>ITool.FILTER_BOTH
-//     * <dd>The tool should be displayed for projects with both natures.
-//     * </dl>
-//     *
-//     * @return int
-//     */
-//    public int getNatureFilter();
+    //    /**
+    //     * Answers a constant corresponding to the project nature the tool should be
+    //     * used
+    //     * for. Possible answers are:
+    //     *
+    //     * <dl>
+    //     * <dt>ITool.FILTER_C
+    //     * <dd>The tool should only be displayed for C projects. <i>Notes:</i> even
+    //     * though a C++ project has a C nature, this flag will mask the tool for C++
+    //     * projects.
+    //     * <dt>ITool.FILTER_CC
+    //     * <dd>The tool should only be displayed for C++ projects.
+    //     * <dt>ITool.FILTER_BOTH
+    //     * <dd>The tool should be displayed for projects with both natures.
+    //     * </dl>
+    //     *
+    //     * @return int
+    //     */
+    //    public int getNatureFilter();
 
     /**
      * Answers all of the output extensions that the receiver can build,
@@ -286,7 +273,6 @@ public interface ITool extends ISchemaObject {
     public String[] getToolCommandFlags(AutoBuildConfigurationData autoBuildConfData, IFile inputFile, IFile outputFile)
             throws BuildException;
 
-
     /**
      * Returns an array of the Environment Build Path variable descriptors
      *
@@ -298,13 +284,12 @@ public interface ITool extends ISchemaObject {
 
     boolean isSystemObject();
 
-    /**
-     * @since 8.4
-     */
     boolean isHidden();
-
 
     public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
+
+    public String getRecipe(AutoBuildConfigurationData autoBuildConfData, Set<String> flags, String outputName,
+            Map<String, Set<String>> nicePreReqNameList);
 
 }
