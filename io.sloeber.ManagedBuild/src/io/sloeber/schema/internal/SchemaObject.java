@@ -43,7 +43,7 @@ public abstract class SchemaObject implements ISchemaObject {
     public String myName;
 
     protected IConfigurationElement myElement;
-	private static final int MAX_SUPER_CLASS = 5;
+    private static final int MAX_SUPER_CLASS = 5;
     protected IConfigurationElement[] mySuperClassConfElement = new IConfigurationElement[MAX_SUPER_CLASS];
     protected String[] mySuperClassID = new String[MAX_SUPER_CLASS];
 
@@ -181,7 +181,7 @@ public abstract class SchemaObject implements ISchemaObject {
      * 
 	 * @param className     the FQN classname (can not be null)
      * @param attributeName
-	 * @return the loaded class or null if failed
+     * @return the loaded class or null if failed
      */
     private Object legacyCreateExecutableExtention(IConfigurationElement element, String className,
             String attributeName) {
@@ -204,8 +204,6 @@ public abstract class SchemaObject implements ISchemaObject {
             switch (className) {
             case "org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider": //$NON-NLS-1$
                 return new OutputNameProviderCompatibilityClass();
-            case "org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator": //$NON-NLS-1$
-                return Boolean.FALSE;
             }
         } catch (@SuppressWarnings("unused") Exception e) {
             // if this fails it is likely a class name is in the plugin.xml that is not a

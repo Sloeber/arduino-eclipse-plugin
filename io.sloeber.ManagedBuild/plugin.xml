@@ -239,7 +239,6 @@
           point="io.sloeber.autoBuild.buildDefinitions">
       <toolChain
             archList="all"
-            environmentSupplier="org.eclipse.cdt.internal.build.crossgcc.CrossEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.gnu.cross.base"
             isAbstract="false"
             languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector"
@@ -279,21 +278,18 @@
                valueType="string">
          </option>
          <tool
-               commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.c.compiler"
                isAbstract="false"
                name="%cross.gnu.tool.gcc.compiler"
                superClass="cdt.managedbuild.tool.gnu.c.compiler">
          </tool>
          <tool
-               commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.cpp.compiler"
                isAbstract="false"
                name="%cross.gnu.tool.gpp.compiler"
                superClass="cdt.managedbuild.tool.gnu.cpp.compiler">
          </tool>
          <tool
-               commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.c.linker"
                isAbstract="false"
                name="%cross.gnu.tool.gcc.linker"
@@ -309,7 +305,6 @@
             </enablement>
          </tool>
          <tool
-               commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.cpp.linker"
                isAbstract="false"
                name="%cross.gnu.tool.gpp.linker"
@@ -325,7 +320,6 @@
             </enablement>
          </tool>
          <tool
-               commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.archiver"
                isAbstract="false"
                name="%cross.gnu.tool.gcc.archiver"
@@ -339,7 +333,6 @@
             </enablement>
          </tool>
          <tool
-               commandLineGenerator="org.eclipse.cdt.internal.build.crossgcc.CrossCommandLineGenerator"
                id="cdt.managedbuild.tool.gnu.cross.assembler"
                isAbstract="false"
                name="%cross.gnu.tool.gcc.assembler"
@@ -595,7 +588,7 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.gnu.c.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -608,7 +601,7 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.c.linker.output.so"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.so">
             <enablement
                   type="ALL">
@@ -619,7 +612,6 @@
             </enablement>
          </outputType>
          <option
-               applicabilityCalculator="org.eclipse.cdt.managedbuilder.gnu.ui.ProfAppCalculator"
                command="-p"
                defaultValue="false"
                id="gnu.c.link.option.debugging.prof"
@@ -627,7 +619,6 @@
                valueType="boolean">
          </option>
          <option
-               applicabilityCalculator="org.eclipse.cdt.managedbuilder.gnu.ui.GprofAppCalculator"
                command="-pg"
                defaultValue="false"
                id="gnu.c.link.option.debugging.gprof"
@@ -635,7 +626,6 @@
                valueType="boolean">
          </option>
          <option
-               applicabilityCalculator="org.eclipse.cdt.managedbuilder.gnu.ui.GcovAppCalculator"
                command="-ftest-coverage -fprofile-arcs"
                defaultValue="false"
                id="gnu.c.link.option.debugging.codecov"
@@ -789,7 +779,7 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -802,7 +792,7 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.output.so"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputExtension="so"
                outputName="lib_${ProjName}.so"
                outputPrefix="lib">
@@ -815,7 +805,6 @@
             </enablement>
          </outputType>
          <option
-               applicabilityCalculator="org.eclipse.cdt.managedbuilder.gnu.ui.ProfAppCalculator"
                command="-p"
                defaultValue="false"
                id="gnu.cpp.link.option.debugging.prof"
@@ -823,7 +812,6 @@
                valueType="boolean">
          </option>
          <option
-               applicabilityCalculator="org.eclipse.cdt.managedbuilder.gnu.ui.GprofAppCalculator"
                command="-pg"
                defaultValue="false"
                id="gnu.cpp.link.option.debugging.gprof"
@@ -831,7 +819,6 @@
                valueType="boolean">
          </option>
          <option
-               applicabilityCalculator="org.eclipse.cdt.managedbuilder.gnu.ui.GcovAppCalculator"
                command="-ftest-coverage -fprofile-arcs"
                defaultValue="false"
                id="gnu.cpp.link.option.debugging.codecov"
@@ -880,7 +867,7 @@
          <outputType
                buildVariable="ARCHIVES"
                id="cdt.managedbuild.tool.gnu.archiver.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.a">
          </outputType>
       </tool>
@@ -1108,7 +1095,7 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.macosx.c.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -1121,7 +1108,7 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.macosx.c.linker.output.so"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.dylib">
             <enablement
                   type="ALL">
@@ -1275,7 +1262,7 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.macosx.cpp.linker.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -1288,7 +1275,7 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.macosx.cpp.linker.output.so"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.dylib">
             <enablement
                   type="ALL">
@@ -5036,7 +5023,7 @@
          <outputType
                buildVariable="ARCHIVES"
                id="cdt.managedbuild.tool.llvm.archiver.output"
-               nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.a">
          </outputType>
       </tool>
