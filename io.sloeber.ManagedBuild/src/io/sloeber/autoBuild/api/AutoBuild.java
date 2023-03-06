@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class AutoBuild {
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, ICodeProvider codeProvider, IProgressMonitor monitor) {
+            String projectTypeID, String natureID, ICodeProvider codeProvider, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
             IProgressMonitor internalMonitor = monitor;
@@ -19,6 +19,7 @@ public class AutoBuild {
             theGenerator.setProjectTypeID(projectTypeID);
             theGenerator.setProjectName(projectName);
             theGenerator.setCodeProvider(codeProvider);
+            theGenerator.setNatureID(natureID);
             theGenerator.generate(internalMonitor);
         } catch (CoreException e) {
             // TODO Auto-generated catch block

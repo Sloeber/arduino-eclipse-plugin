@@ -42,6 +42,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private String myExtensionID = null;
     private String myProjectTypeID = null;
     private ICodeProvider myCodeProvider = null;
+    private String myNatureID;
 
     public AutoBuildProjectGenerator() {
 
@@ -63,7 +64,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 myProject.create(description, monitor);
                 myProject.open(monitor);
                 CProjectNature.addCNature(myProject, monitor);
-                CCProjectNature.addCCNature(myProject, monitor);
+                if (CCProjectNature.CC_NATURE_ID.equals(myNatureID)) {
+                    CCProjectNature.addCCNature(myProject, monitor);
+                }
                 AutoBuildNature.addNature(myProject, monitor);
 
                 IFolder srcFolder = myProject.getFolder("src"); //$NON-NLS-1$
@@ -136,6 +139,11 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
     public void setCodeProvider(ICodeProvider codeProvider) {
         myCodeProvider = codeProvider;
+
+    }
+
+    public void setNatureID(String natureID) {
+        myNatureID = natureID;
 
     }
 

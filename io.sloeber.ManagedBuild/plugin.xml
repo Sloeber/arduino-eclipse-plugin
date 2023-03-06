@@ -3195,7 +3195,7 @@
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.c.linker.exe.debug"
-                     superClass="cdt.managedbuild.tool.gnu.c.linker.base">
+                     superClass="cdt.managedbuild.tool.gnu.c.linker.to.exe.base">
                </tool>
                <tool
                      id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"
@@ -3215,51 +3215,7 @@
                superClass="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="cdt.managedbuild.toolchain.gnu.exe.release"
-                  superClass="cdt.managedbuild.toolchain.gnu.base">
-               <targetPlatform
-                     id="cdt.managedbuild.target.gnu.platform.exe.release"
-                     superClass="cdt.managedbuild.target.gnu.platform.base">
-               </targetPlatform>
-               <builder
-                     id="cdt.managedbuild.target.gnu.builder.exe.release"
-                     superClass="cdt.managedbuild.target.gnu.builder.base">
-               </builder>
-               <tool
-                     id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release"
-                     superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
-                  <option
-                        id="gnu.cpp.compiler.exe.release.option.optimization.level"
-                        superClass="gnu.cpp.compiler.option.optimization.level">
-                  </option>
-                  <option
-                        id="gnu.cpp.compiler.exe.release.option.debugging.level"
-                        superClass="gnu.cpp.compiler.option.debugging.level">
-                  </option>
-               </tool>
-               <tool
-                     id="cdt.managedbuild.tool.gnu.c.compiler.exe.release"
-                     superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
-                  <option
-                        id="gnu.c.compiler.exe.release.option.optimization.level"
-                        superClass="gnu.c.compiler.option.optimization.level">
-                  </option>
-                  <option
-                        id="gnu.c.compiler.exe.release.option.debugging.level"
-                        superClass="gnu.c.compiler.option.debugging.level">
-                  </option>
-               </tool>
-               <tool
-                     id="cdt.managedbuild.tool.gnu.c.linker.exe.release"
-                     superClass="cdt.managedbuild.tool.gnu.c.linker.base">
-               </tool>
-               <tool
-                     id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release"
-                     superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.exe.base">
-               </tool>
-               <tool
-                     id="cdt.managedbuild.tool.gnu.assembler.exe.release"
-                     superClass="cdt.managedbuild.tool.gnu.assembler.base">
-               </tool>
+                  superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
             </toolChain>
          </configuration>
       </projectType>

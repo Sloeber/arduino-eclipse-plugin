@@ -16,7 +16,10 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
+
+import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
@@ -32,12 +35,12 @@ class CreateProject {
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID,
-            ICodeProvider codeProvider) throws Exception {
+            String natureID, ICodeProvider codeProvider) throws Exception {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
 
         IProject testProject = AutoBuild.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
-                codeProvider, null);
+                natureID, codeProvider, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         String errorMessage = new String();
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
@@ -69,25 +72,36 @@ class CreateProject {
                                 projectID, true);
                         if (projectType != null && projectType.isCompatibleWithLocalOS() && !projectType.isAbstract()) {
                             String buildArtifactType = projectType.getBuildArtifactType();
-                            ICodeProvider codeProvider = null;
+                            ICodeProvider codeProvider_cpp = null;
+                            ICodeProvider codeProvider_c = null;
                             switch (buildArtifactType) {
                             case "org.eclipse.cdt.build.core.buildArtefactType.exe":
-                                codeProvider = new TemplateTestCodeProvider("exe");
+                                codeProvider_cpp = new TemplateTestCodeProvider("exe");
+                                codeProvider_c = new TemplateTestCodeProvider("c_exe");
                                 break;
                             case "org.eclipse.cdt.build.core.buildArtefactType.staticLib":
                             case "org.eclipse.cdt.build.core.buildArtefactType.sharedLib":
-                                codeProvider = new TemplateTestCodeProvider("lib");
+                                codeProvider_cpp = new TemplateTestCodeProvider("lib");
+                                codeProvider_c = new TemplateTestCodeProvider("c_lib");
                                 break;
                             case "org.eclipse.cdt.build.core.buildArtefactType.compound":
-                                codeProvider = new TemplateTestCodeProvider("compound");
+                                codeProvider_cpp = new TemplateTestCodeProvider("compound");
                                 break;
                             default:
-                                codeProvider = new TemplateTestCodeProvider("exe");
+                                codeProvider_cpp = new TemplateTestCodeProvider("exe");
                             }
                             String projectName = AutoBuildCommon.MakeNameCompileSafe(String.format("%03d", testCounter)
                                     + "_" + projectType.getName() + "_" + extensionID);
                             testCounter++;
-                            ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID, codeProvider));
+                            ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
+                                    CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
+                            if (codeProvider_c != null) {
+                                projectName = AutoBuildCommon.MakeNameCompileSafe(String.format("%03d", testCounter)
+                                        + "_" + projectType.getName() + "_" + extensionID);
+                                testCounter++;
+                                ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
+                                        CCProjectNature.C_NATURE_ID, codeProvider_c));
+                            }
                             //                        if (testCounter > 4) {
                             //                            return ret.stream();
                             //                        }
