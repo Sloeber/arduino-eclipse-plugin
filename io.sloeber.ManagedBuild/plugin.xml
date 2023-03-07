@@ -47,16 +47,19 @@
               <outputType
                     id="io.sloeber.autoBuild.gpp.compiler.outputType.exe"
                     name="%autoBuild.outputType.CPP.exe.name"
+                    namePattern="%.o"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <outputType
                     id="io.sloeber.autoBuild.gpp.compiler.outputType.staticLib"
                     name="%autoBuild.outputType.CPP.staticLib.name"
+                    namePattern="%.o"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <outputType
                     id="io.sloeber.autoBuild.gpp.compiler.outputType.sharedLib"
                     name="%autoBuild.outputType.CPP.sharedLib.name"
+                    namePattern="%.o"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
            </tool>
@@ -121,16 +124,19 @@
               <outputType
                     id="io.sloeber.autoBuild.gcc.compiler.outputType.exe"
                     name="%autoBuild.outputType.C.exe.name"
+                    namePattern="%.o"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <outputType
                     id="io.sloeber.autoBuild.gcc.compiler.outputType.staticLib"
                     name="%autoBuild.outputType.C.staticLib.name"
+                    namePattern="%.o"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <outputType
                     id="io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib"
                     name="%autoBuild.outputType.C.sharedLib.name"
+                    namePattern="%.o"
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
            </tool>
@@ -1288,6 +1294,8 @@
       </tool>
       <tool
             command="${TOOL_FOLDER}gcc"
+            dependencyGenerationFlag="-MMD -MP -MF&quot;$(@:%.o=%.d)&quot; -MT&quot;$@&quot; "
+            dependencyOutputPattern="%.d"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.gnu.c.compiler"
             isAbstract="true"
@@ -1825,11 +1833,13 @@
          <outputType
                buildVariable="OBJS"
                id="cdt.managedbuild.tool.gnu.c.compiler.output"
-               outputExtension="o">
+               namePattern="%.o">
          </outputType>
       </tool>
       <tool
             command="${TOOL_FOLDER}g++"
+            dependencyGenerationFlag="-MMD -MP -MF&quot;$(@:%.o=%.d)&quot; -MT&quot;$@&quot; "
+            dependencyOutputPattern="%.d"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.gnu.cpp.compiler"
             isAbstract="true"
@@ -2416,7 +2426,7 @@
          <outputType
                buildVariable="OBJS"
                id="cdt.managedbuild.tool.gnu.cpp.compiler.output"
-               outputExtension="o">
+               namePattern="%.o">
          </outputType>
       </tool>
       <tool

@@ -461,6 +461,20 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="dependencyOutputPattern" type="string">
+            <annotation>
+               <documentation>
+                  The pattern that describes the dependency genereted file
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="dependencyGenerationFlag" type="string">
+            <annotation>
+               <documentation>
+                  The flag to be added to the command flags to generate the dependency file
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -987,7 +1001,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
       </annotation>
       <complexType>
          <sequence>
-            <element ref="inputOrder" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="additionalInput" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="enablement" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
@@ -1072,37 +1085,6 @@ Overrides language id specified with the languageId attribute.
 If not specified the input files will be assigned to ${INPUTS}.
 Only use this field when your command needs a specific order for the different inputTypes.
 If you need this you can specify the variable to assign the inputTypes here and add those variable (in the format ${myVar}) in the commandLinePattern of the tool.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="inputOrder">
-      <annotation>
-         <documentation>
-            Describes optional, ordering, information regarding the inputs of an inputType.  Note:  This element is not yet implemented
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="path" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Defines the relative or absolute path of the resource to which this element applies.  The resource must be a member of the project, or the output from another tool in the tool-chain.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="order" type="string">
-            <annotation>
-               <documentation>
-                  A comma-separated list of integer values that specify the input order of this resource.  In most cases, a single value is used.  A list is used if the same input resource appears multiple times in the input list.  The order number begins at 1.  All unordered input resources fill the first gap in the specified order values.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="excluded" type="boolean">
-            <annotation>
-               <documentation>
-                  If True, this input resource is not used as an input to the tool.
                </documentation>
             </annotation>
          </attribute>

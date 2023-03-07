@@ -47,43 +47,19 @@ public class MakeRule {
         mySequenceGroupID = sequenceID;
     }
 
-    public void addDependencies(MakefileGenerator caller) {
+    public void getDependencies() {
         myDependencies.clear();
-        //FIXME need new way to know dependencies need to be added
-        //
-        //        for (Entry<IInputType, Set<IFile>> curprerequisite : myPrerequisites.entrySet()) {
-        //            IInputType curInputType = curprerequisite.getKey();
-        //            
-        //                        IManagedDependencyGeneratorType t = curInputType.getDependencyGenerator();
-        //                        if (t == null) {
-        //                            continue;
-        //                        }
-        //            Set<IFile> files = curprerequisite.getValue();
-        //            String depkey = curInputType.getBuildVariable() + DEPENDENCY_SUFFIX;
-        //            for (IFile file : files) {
-        //                IBuildObject buildContext = caller.getConfig().getResourceInfo(file.getFullPath(), false);
-        //
-        //                IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) t;
-        //                IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(file.getProjectRelativePath(), file,
-        //                        buildContext, myTool, caller.getBuildWorkingDir());
-        //
-        //                if (depInfo instanceof IManagedDependencyCalculator) {
-        //                    IManagedDependencyCalculator depCalculator = (IManagedDependencyCalculator) depInfo;
-        //                    IPath[] addlDeps = calculateDependenciesForSource(caller, depCalculator);
-        //                    IPath[] addlTargets = depCalculator.getAdditionalTargets();
-        //                    //TOFIX when is this call path used?
-        //                }
-        //                if (depInfo instanceof IManagedDependencyCommands) {
-        //                    IManagedDependencyCommands tmp = (IManagedDependencyCommands) depInfo;
-        //                    IPath[] addlTargets = tmp.getDependencyFiles();
-        //                    Set<IFile> depFiles = new HashSet<>();
-        //                    for (IPath curPath : addlTargets) {
-        //                        depFiles.add(caller.getProject().getFile(caller.getBuildWorkingDir().append(curPath)));
-        //                    }
-        //                    myDependencies.put(depkey, depFiles);
-        //                }
-        //            }
-        //        }
+        for (Entry<IOutputType, Set<IFile>> curTarget : myTargets.entrySet()) {
+            IOutputType curoutputType = curTarget.getKey();
+            Set<IFile> files = curTarget.getValue();
+            String depkey = curoutputType.getBuildVariable() + DEPENDENCY_SUFFIX;
+            Set<IFile> depFiles = new HashSet<>();
+            for (IFile curTargetFile : files) {
+                depFiles.add(myTool.getDependencyFile(curTargetFile));
+            }
+            depFiles.remove(null);
+            myDependencies.put(depkey, depFiles);
+        }
     }
 
     public Set<IFile> getPrerequisiteFiles() {
@@ -121,7 +97,7 @@ public class MakeRule {
     public Set<String> getAllMacros() {
         Set<String> ret = getTargetMacros();
         ret.addAll(getPrerequisiteMacros());
-        ret.addAll(getDependecyMacros());
+        ret.addAll(getDependencyMacros());
         return ret;
     }
 
@@ -142,11 +118,10 @@ public class MakeRule {
         return ret;
     }
 
-    public Set<String> getDependecyMacros() {
+    public Set<String> getDependencyMacros() {
+        getDependencies();
         HashSet<String> ret = new LinkedHashSet<>();
-        for (String cur : myDependencies.keySet()) {
-            ret.add(cur);
-        }
+        ret.addAll(myDependencies.keySet());
         return ret;
     }
 
@@ -240,7 +215,7 @@ public class MakeRule {
                     niceNameList.put(cmdVariable, niceNames);
                 }
                 niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
-                //TOFIX JABA I'm not sure it is necessary to loop through all the prerequisites to add all flags
+                //JABA I'm not sure it is necessary to loop through all the prerequisites to add all flags
                 try {
                     flags.addAll(
                             Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile, targetFile)));
@@ -382,6 +357,7 @@ public class MakeRule {
      */
 
     public boolean isSimpleRule() {
+        //TOFIX 2 times the same test with an or???
         if ((myTargets.size() != 1) || (myTargets.size() != 1)) {
             return false;
         }

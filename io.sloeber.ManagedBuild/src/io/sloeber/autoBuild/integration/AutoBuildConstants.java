@@ -313,12 +313,14 @@ public class AutoBuildConstants {
     public static final String LIST_ITEM_VALUE = "value";
     public static final String LIST_ITEM_BUILTIN = "builtIn";
     public static final String ASSIGN_TO_COMMAND_VARIABLE = "assignToCommandVarriable";
-    public static final String OUTPUT_FLAG = "outputFlag"; //$NON-NLS-1$
-    public static final String NATURE = "natureFilter"; //$NON-NLS-1$
-    public static final String COMMAND_LINE_PATTERN = "commandLinePattern"; //$NON-NLS-1$
-    public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator"; //$NON-NLS-1$
+    public static final String OUTPUT_FLAG = "outputFlag";
+    public static final String NATURE = "natureFilter";
+    public static final String COMMAND_LINE_PATTERN = "commandLinePattern";
+    public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator";
     public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;
-    public static final String CUSTOM_BUILD_STEP = "customBuildStep"; //$NON-NLS-1$
-    public static final String ANNOUNCEMENT = "announcement"; //$NON-NLS-1$
-    public static final String IS_HIDDEN = "isHidden"; //$NON-NLS-1$
+    public static final String CUSTOM_BUILD_STEP = "customBuildStep";
+    public static final String ANNOUNCEMENT = "announcement";
+    public static final String IS_HIDDEN = "isHidden";
+    public static final String DEPENDENCY_OUTPUT_PATTERN = "dependencyOutputPattern";
+    public static final String DEPENDENCY_GENERATION_FLAG = "dependencyGenerationFlag";
 }

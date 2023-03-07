@@ -505,6 +505,25 @@ public class AutoBuildCommon {
         return ret;
     }
 
+    /**
+     * given a pattern provide the name
+     * 
+     * @param myNamePattern
+     *            the pattern used to get the filename
+     * @param inputFile
+     *            the file that is the input to the pattern
+     * @return the filename as to the pattern using inputFile as data
+     */
+    public static String applyPattern(String myNamePattern, IFile inputFile) {
+        String fileNameWithoutExtension = inputFile.getFullPath().removeFileExtension().lastSegment();
+        String fileNameWithExtension = inputFile.getName();
+        //  Replace the % with the file name without extension
+        String outName = myNamePattern.replace(PROCENT, fileNameWithoutExtension);
+        //Replace the @ with the file name without extension
+        outName = outName.replace(AT_SYMBOL, fileNameWithExtension);
+        return outName;
+    }
+
 }
 
 ///**

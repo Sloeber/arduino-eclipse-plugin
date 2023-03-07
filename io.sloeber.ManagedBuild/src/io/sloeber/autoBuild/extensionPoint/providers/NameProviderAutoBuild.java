@@ -14,10 +14,10 @@ import org.eclipse.core.resources.IResource;
 public class NameProviderAutoBuild implements IOutputNameProvider {
     public static final String OBJECT_EXTENSION = ".o"; //$NON-NLS-1$
     public static final String STATIC_LIB = "staticLib"; //$NON-NLS-1$
-    public static final String DYNAMIC_LIB = "sharedLib"; //$NON-NLS-1$
+    public static final String SHARED_LIB = "sharedLib"; //$NON-NLS-1$
     public static final String EXECUTABLE = "exe"; //$NON-NLS-1$
     private static final int STATIC_LIB_TYPE = 1;
-    private static final int DYNAMIC_LIB_TYPE = 2;
+    private static final int SHARED_LIB_TYPE = 2;
     private static final int EXE_TYPE = 3;
     private static final int TYPE_ERROR = 4;
 
@@ -40,7 +40,7 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
         int outputTypeType = getOutputTypeType(outputType);
         int fileType = getFileType(inputFile);
         if (fileType == outputTypeType) {
-            return inputFile.getName() + OBJECT_EXTENSION;
+            return outputType.getOutputNameWithoutNameProvider(inputFile);
         }
         return null;
     }
@@ -55,19 +55,26 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
             LibFolder = LibFolder.getParent();
         }
         if (((IFolder) LibFolder).getFile(DYNAMIC_LIB_FILE).exists()) {
-            return DYNAMIC_LIB_TYPE;
+            return SHARED_LIB_TYPE;
         }
         return STATIC_LIB_TYPE;
     }
 
+    /**
+     * Is this outputType for staticlib, shared lib or exe
+     * This is based on the outputType id last segment
+     * 
+     * @param outputType
+     * @return
+     */
     private static int getOutputTypeType(IOutputType outputType) {
         String outputID = outputType.getId();
         String outputTypeID = outputID.substring(outputID.lastIndexOf(DOT) + 1);
         switch (outputTypeID) {
         case STATIC_LIB:
             return STATIC_LIB_TYPE;
-        case DYNAMIC_LIB:
-            return DYNAMIC_LIB_TYPE;
+        case SHARED_LIB:
+            return SHARED_LIB_TYPE;
         case EXECUTABLE:
             return EXE_TYPE;
         }
@@ -84,7 +91,7 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
         switch (getOutputTypeType(outputType)) {
         case STATIC_LIB_TYPE:
             return libName + DOT + STATIC_LIB_EXTENSION;
-        case DYNAMIC_LIB_TYPE:
+        case SHARED_LIB_TYPE:
             return libName + DOT + DYNAMIC_LIB_EXTENSION;
         case EXE_TYPE:
             return EXE_NAME;

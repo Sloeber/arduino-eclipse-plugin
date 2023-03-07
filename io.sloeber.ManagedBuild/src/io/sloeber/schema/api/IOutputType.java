@@ -97,7 +97,28 @@ public interface IOutputType extends ISchemaObject {
 
     public String getOutputExtension();
 
+    /**
+     * Get the actual outputName
+     * 
+     * @param inputFile
+     * @param autoBuildConfData
+     * @param inputType
+     * @return
+     */
     public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoBuildConfData, IInputType inputType);
+
+    /**
+     * Get the outputName as if the nameProvider was null
+     * This way the outputNameProvide can fallback to the "default" name and only
+     * work as a switch
+     * to provide a name or not
+     * 
+     * @param inputFile
+     * @param autoBuildConfData
+     * @param inputType
+     * @return
+     */
+    public String getOutputNameWithoutNameProvider(IFile inputFile);
 
     String getOutputName();
 

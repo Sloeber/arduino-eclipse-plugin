@@ -429,6 +429,14 @@ public class MakeRules implements Iterable<MakeRule> {
         return ret;
     }
 
+    public Set<String> getDependencyMacros() {
+        Set<String> ret = new HashSet<>();
+        for (MakeRule makeRule : myMakeRules) {
+            ret.addAll(makeRule.getDependencyMacros());
+        }
+        return ret;
+    }
+
     //	public Map<IOutputType, Set<IFile>> getTargets() {
     //		Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();
     //		for (MakeRule makeRule : myMakeRules) {

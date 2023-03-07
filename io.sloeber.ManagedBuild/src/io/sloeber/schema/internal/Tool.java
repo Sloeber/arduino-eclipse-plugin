@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ProjectScope;
@@ -31,6 +32,7 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
@@ -88,6 +90,37 @@ public class Tool extends SchemaObject implements ITool {
      * 
      */
     // @formatter:on
+
+    private List<IEnvVarBuildPath> envVarBuildPathList;
+
+    // private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
+
+    private String[] modelIsAbstract;
+    private String[] modelOutputFlag;
+    private String[] modelNatureFilter;
+    private String[] modelCommand;
+    private String[] modelCommandLinePattern;
+    private String[] modelCommandLineGenerator;
+    private String[] modelErrorParsers;
+    private String[] modelCustomBuildStep;
+    private String[] modelAnnouncement;
+    private String[] modelIcon;
+    private String[] modelIsSystem;
+    private String[] modelIsHidden;
+    private String[] modelDependencyOutputPattern;
+    private String[] modelDependencyGenerationFlag;
+
+    private boolean isHidden;
+    private boolean customBuildStep;
+    private boolean isAbstract;
+    private boolean isSystem;
+    private ToolChain parent;
+    private String myAnnouncement;
+    private Map<String, InputType> inputTypeMap = new HashMap<>();
+    private Map<String, OutputType> outputTypeMap = new HashMap<>();
+
+    private IManagedCommandLineGenerator commandLineGenerator;
+
     @Override
     public boolean isEnabled(IResource resource, AutoBuildConfigurationData autoData) {
         if (!super.isEnabled(resource, autoData)) {
@@ -107,34 +140,6 @@ public class Tool extends SchemaObject implements ITool {
         }
         return true;
     }
-
-    private List<IEnvVarBuildPath> envVarBuildPathList;
-
-    // private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
-
-    private String[] modelIsAbstract;
-    private String[] modelOutputFlag;
-    private String[] modelNatureFilter;
-    private String[] modelCommand;
-    private String[] modelCommandLinePattern;
-    private String[] modelCommandLineGenerator;
-    private String[] modelErrorParsers;
-    private String[] modelCustomBuildStep;
-    private String[] modelAnnouncement;
-    private String[] modelIcon;
-    private String[] modelIsSystem;
-    private String[] modelIsHidden;
-
-    private boolean isHidden;
-    private boolean customBuildStep;
-    private boolean isAbstract;
-    private boolean isSystem;
-    private ToolChain parent;
-    private String myAnnouncement;
-    private Map<String, InputType> inputTypeMap = new HashMap<>();
-    private Map<String, OutputType> outputTypeMap = new HashMap<>();
-
-    private IManagedCommandLineGenerator commandLineGenerator;
 
     /**
      * Constructor to create a new tool for a tool-chain based on the information
@@ -164,6 +169,8 @@ public class Tool extends SchemaObject implements ITool {
         modelIcon = getAttributes(ICON);
         modelIsSystem = getAttributes(IS_SYSTEM);
         modelIsHidden = getAttributes(IS_HIDDEN);
+        modelDependencyOutputPattern = getAttributes(DEPENDENCY_OUTPUT_PATTERN);
+        modelDependencyGenerationFlag = getAttributes(DEPENDENCY_GENERATION_FLAG);
 
         isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
         customBuildStep = Boolean.parseBoolean(modelCustomBuildStep[SUPER]);
@@ -544,8 +551,8 @@ public class Tool extends SchemaObject implements ITool {
         String cmd = modelCommand[SUPER];
         // expand the command
         String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
-        if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
-            cmd = resolvedCommand;
+        if (!resolvedCommand.isBlank())
+            cmd = resolvedCommand.trim();
         String commandLinePattern = modelCommandLinePattern[SUPER];
         commandLinePattern = getVariableValue(commandLinePattern, commandLinePattern, false, autoBuildConfData);
 
@@ -570,6 +577,9 @@ public class Tool extends SchemaObject implements ITool {
             preReqFiles.put(curCmdVariable, inputsStr.trim());
         }
 
+        if (!modelDependencyGenerationFlag[SUPER].isBlank()) {
+            flags.add(modelDependencyGenerationFlag[SUPER]);
+        }
         String flagsStr = String.join(WHITESPACE, flags);
 
         String command = commandLinePattern.replace(makeVariable(CMD_LINE_PRM_NAME), cmd);
@@ -582,6 +592,17 @@ public class Tool extends SchemaObject implements ITool {
         }
 
         return command;
+    }
+
+    @Override
+    public IFile getDependencyFile(IFile curTargetFile) {
+        String depName = AutoBuildCommon.applyPattern(modelDependencyOutputPattern[SUPER], curTargetFile);
+        IResource fileParent = curTargetFile.getParent();
+        if (fileParent instanceof IFolder) {
+            IFolder folder = (IFolder) fileParent;
+            return folder.getFile(depName);
+        }
+        return null;
     }
 
 }

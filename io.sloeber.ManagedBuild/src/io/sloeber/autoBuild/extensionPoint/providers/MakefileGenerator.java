@@ -148,15 +148,15 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
         beforeMakefileGeneration();
         //We have all the rules. Time to make the make files
-        Set<String> srcMacroNames = new LinkedHashSet<>();
-        Set<String> objMacroNames = new LinkedHashSet<>();
+        Set<String> srcMacroNames = myMakeRules.getPrerequisiteMacros();
+        Set<String> objMacroNames = myMakeRules.getTargetMacros();
         objMacroNames = myMakeRules.getTargetMacros();
         srcMacroNames = myMakeRules.getPrerequisiteMacros();
-        // srcMacroNames.addAll(myMakeRules.getDependecyMacros());
+        Set<String> dependencyMacroNames = myMakeRules.getDependencyMacros();
         generateSrcMakefiles();
         generateSourceMakefile(srcMacroNames);
         generateObjectsMakefile(objMacroNames);
-        topMakeGeneratefile(objMacroNames);
+        topMakeGeneratefile(dependencyMacroNames);
 
         checkCancel(monitor);
         afterMakefileGeneration();

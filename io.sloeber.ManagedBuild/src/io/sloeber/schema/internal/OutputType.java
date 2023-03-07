@@ -31,8 +31,6 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 public class OutputType extends SchemaObject implements IOutputType {
-    private static final String MAKE_FILE_WITHOUT_EXTENSION_MACRO = PROCENT;
-    private static final String MAKE_FILE_WITH_EXTENSION_MACRO = AT_SYMBOL;
 
     private String[] modelOutputContentType;//Not yet implemented
     private String[] modelOption;
@@ -111,7 +109,7 @@ public class OutputType extends SchemaObject implements IOutputType {
         //Make sure the name Patterns is valid
         myNamePattern = modelNamePattern[SUPER];
         if (myNamePattern.toString().isBlank()) {
-            myNamePattern = MAKE_FILE_WITHOUT_EXTENSION_MACRO;
+            myNamePattern = PROCENT;
         }
     }
 
@@ -143,31 +141,37 @@ public class OutputType extends SchemaObject implements IOutputType {
     }
 
     @Override
+    public String getOutputNameWithoutNameProvider(IFile inputFile) {
+        if (!modelOutputName[SUPER].isBlank()) {
+            return modelOutputName[SUPER];
+        }
+
+        if (!myNamePattern.isBlank()) {
+            return AutoBuildCommon.applyPattern(myNamePattern, inputFile);
+        }
+        if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isBlank()) {
+            return modelOutputPrefix[SUPER] + inputFile.getName() + DOT + modelOutputExtension[SUPER];
+        }
+
+        return null;
+    }
+
+    @Override
     public IFile getOutputName(IFile inputFile, AutoBuildConfigurationData autoData, IInputType inputType) {
         if (!isEnabled(inputFile, autoData)) {
             return null;
         }
         IFolder buildFolder = autoData.getBuildFolder();
         if (nameProvider != null) {
-            String outputFile = nameProvider.getOutputFileName(inputFile, autoData, inputType, this);
-            if (outputFile != null) {
-                return getOutputFile(autoData, buildFolder, inputFile, outputFile);
+            String outputFilename = nameProvider.getOutputFileName(inputFile, autoData, inputType, this);
+            if (outputFilename != null) {
+                return getOutputFile(autoData, buildFolder, inputFile, outputFilename);
             }
             return null;
         }
-
-        if (!modelOutputName[SUPER].isBlank()) {
-            return getOutputFile(autoData, buildFolder, inputFile, modelOutputName[SUPER]);
-        }
-
-        if (!modelOutputPrefix[SUPER].isBlank() || !modelOutputExtension[SUPER].isBlank()) {
-            String fileNameWithoutExtension = inputFile.getFullPath().removeFileExtension().lastSegment();
-            String fileNameWithExtension = inputFile.getName();
-            //  Replace the % with the file name
-            String outName = myNamePattern.replace(MAKE_FILE_WITHOUT_EXTENSION_MACRO, fileNameWithoutExtension);
-            outName = outName.replace(MAKE_FILE_WITH_EXTENSION_MACRO, fileNameWithExtension);
-            return getOutputFile(autoData, buildFolder, inputFile,
-                    modelOutputPrefix[SUPER] + outName + DOT + modelOutputExtension[SUPER]);
+        String outputFilename = getOutputNameWithoutNameProvider(inputFile);
+        if (outputFilename != null) {
+            return getOutputFile(autoData, buildFolder, inputFile, outputFilename);
         }
         return null;
     }
@@ -234,4 +238,5 @@ public class OutputType extends SchemaObject implements IOutputType {
         ret.append(prepend + BUILD_VARIABLE + EQUAL + modelBuildVariable[SUPER] + NEWLINE);
         return ret;
     }
+
 }

@@ -292,4 +292,12 @@ public interface ITool extends ISchemaObject {
     public String getRecipe(AutoBuildConfigurationData autoBuildConfData, Set<String> flags, String outputName,
             Map<String, Set<String>> nicePreReqNameList);
 
+    /**
+     * Get the dependency file for this target
+     * 
+     * @param curTargetFile
+     * @return the dependency file
+     */
+    public IFile getDependencyFile(IFile curTargetFile);
+
 }
