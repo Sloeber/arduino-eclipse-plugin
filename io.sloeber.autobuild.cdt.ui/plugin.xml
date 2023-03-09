@@ -16,7 +16,7 @@
          point="org.eclipse.ui.propertyPages">
         <page
             class="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
-            id="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build_2"
+            id="io.sloeber.autoBuild.projectProperties.main"
             name="%page.c.build"
             >
          <enabledWhen>
@@ -28,30 +28,32 @@
         </page>    
         <page
             class="org.eclipse.cdt.managedbuilder.ui.properties.Page_Variables"
-            id="org.eclipse.cdt.managedbuilder.ui.properties.Page_Variables"
-            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build_2"
+            id="io.sloeber.autoBuild.projectProperties.macro"
+            category="io.sloeber.autoBuild.projectProperties.main"
             name="%CDTVariablesProperty.name"
             >
          <enabledWhen>
            <adapt type="org.eclipse.core.resources.IProject">
 	            <test property="org.eclipse.core.resources.projectNature"
 	                  value="org.eclipse.cdt.environmentVars.Nature"/>
-             <and>
-                <count
-                      value="io.sloeber.autobuild.cdt.ui.count1">
-                </count>
-                <count
-                      value="io.sloeber.autobuild.cdt.ui.count2">
-                </count>
-             </and>
-             <not>
-                <test
-                      property="io.sloeber.autobuild.cdt.ui.test1">
-                </test>
-             </not>
            </adapt>
          </enabledWhen>
       </page>
+        <page
+              category="io.sloeber.autoBuild.projectProperties.main"
+              class="org.eclipse.cdt.managedbuilder.ui.properties.Page_Environment"
+              id="io.sloeber.autoBuild.projectProperties.EnvironmentVars"
+              name="%Environment">
+           <enabledWhen>
+              <adapt
+                    type="org.eclipse.core.resources.IProject">
+                 <test
+                       property="org.eclipse.core.resources.projectNature"
+                       value="org.eclipse.cdt.environmentVars.Nature">
+                 </test>
+              </adapt>
+           </enabledWhen>
+        </page>
 <!--
             <page
             class="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings"
