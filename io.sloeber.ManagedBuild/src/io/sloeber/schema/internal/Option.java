@@ -55,7 +55,7 @@ import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
@@ -669,7 +669,7 @@ public class Option extends SchemaObject implements IOption {
 	}
 
 	@Override
-	public String getDefaultValue(IResource resource, AutoBuildConfigurationData autoData) {
+	public String getDefaultValue(IResource resource, AutoBuildConfigurationDescription autoData) {
 		String ret = EMPTY_STRING;
 		if (defaultValueGenerator != null) {
 			return defaultValueGenerator.generateDefaultValue(this);
@@ -706,7 +706,7 @@ public class Option extends SchemaObject implements IOption {
 
 	@Override
 	public String[] getCommandLineContribution(IResource resource, String optionValue,
-			AutoBuildConfigurationData autoConfData) {
+			AutoBuildConfigurationDescription autoConfData) {
 		String[] retString = new String[1];
 		String[] retNothing = new String[0];
 		if (!isEnabled(resource, autoConfData)) {

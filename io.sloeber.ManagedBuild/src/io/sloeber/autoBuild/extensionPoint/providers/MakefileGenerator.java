@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -52,7 +52,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     ICSourceEntry[] mySrcEntries;
     MakeRules myMakeRules = null;
     Set<IFolder> myFoldersToBuild = null;
-    AutoBuildConfigurationData myAutoBuildConfData;
+    AutoBuildConfigurationDescription myAutoBuildConfData;
 
     /****************************************************************************************
      * CONSTRUCTOR / INITIALIZING code / overrides
@@ -63,7 +63,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize(int buildKind, AutoBuildConfigurationData autoData) {
+    public void initialize(int buildKind, AutoBuildConfigurationDescription autoData) {
         myProject = autoData.getProject();
         myAutoBuildConfData = autoData;
         myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();

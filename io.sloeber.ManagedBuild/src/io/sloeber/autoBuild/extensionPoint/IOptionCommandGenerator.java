@@ -16,7 +16,7 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.cdt.utils.cdtvariables.IVariableSubstitutor;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 
 /**
@@ -44,6 +44,6 @@ public interface IOptionCommandGenerator {
      * @return the generated build-option command. May return {@code null} to fall
      *         back to the default command generation logic.
      */
-    String[] generateCommand(IOption option, String value, AutoBuildConfigurationData autoConfData);
+    String[] generateCommand(IOption option, String value, AutoBuildConfigurationDescription autoConfData);
 
 }

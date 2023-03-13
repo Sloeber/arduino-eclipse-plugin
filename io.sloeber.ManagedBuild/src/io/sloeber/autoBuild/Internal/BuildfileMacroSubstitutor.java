@@ -29,7 +29,7 @@ import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
 import org.eclipse.cdt.utils.envvar.EnvVarOperationProcessor;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
@@ -127,7 +127,7 @@ public class BuildfileMacroSubstitutor extends SupplierBasedCdtVariableSubstitut
     private void init(ICConfigurationDescription CfgDes) {
         fCfgDes = CfgDes;
         fVarMngr = CCorePlugin.getDefault().getCdtVariableManager();
-        AutoBuildConfigurationData autoData = AutoBuildConfigurationData.getFromConfig(CfgDes);
+        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(CfgDes);
         fConfiguration = autoData.getConfiguration();
         fBuilder = fConfiguration.getBuilder();
     }

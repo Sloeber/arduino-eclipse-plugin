@@ -73,7 +73,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
             IProgressMonitor monitor) throws CoreException {
 
         //TOFIX JABA need to add storage here
-        AutoBuildConfigurationData autoBuildBaseData = (AutoBuildConfigurationData) baseData;
+        AutoBuildConfigurationDescription autoBuildBaseData = (AutoBuildConfigurationDescription) baseData;
 
         IConfiguration baseCfg = autoBuildBaseData.getConfiguration();
 
@@ -134,8 +134,8 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
     public CConfigurationData createConfiguration(ICConfigurationDescription cfgDescription,
             ICConfigurationDescription baseCfgDescription, CConfigurationData base, boolean clone,
             IProgressMonitor monitor) throws CoreException {
-        AutoBuildConfigurationData autoBuildConfigBase = (AutoBuildConfigurationData) base;
-        return new AutoBuildConfigurationData(cfgDescription, autoBuildConfigBase);
+        AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) base;
+        return new AutoBuildConfigurationDescription(cfgDescription, autoBuildConfigBase);
 
         //        if (cfgDescription.isPreferenceConfiguration())
         //            return new AutoBuildConfigurationData(autoBuildConfigBase);

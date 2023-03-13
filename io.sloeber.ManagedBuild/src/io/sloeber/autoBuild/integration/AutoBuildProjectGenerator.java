@@ -1,11 +1,7 @@
 
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.integration;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.CProjectNature;
@@ -26,10 +22,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.core.IGenerator;
 
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
+import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
-import io.sloeber.autoBuild.integration.AutoBuildNature;
-import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
@@ -87,7 +81,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 for (IConfiguration iConfig : modelConfigs) {
                     //        for (CfgHolder cfg : cfgs) {
                     Configuration config = (Configuration) iConfig;
-                    AutoBuildConfigurationData data = new AutoBuildConfigurationData(config, myProject);
+                    AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject);
                     assert (data != null);
                     ICConfigurationDescription cdtCfgDes = des
                             .createConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, data);

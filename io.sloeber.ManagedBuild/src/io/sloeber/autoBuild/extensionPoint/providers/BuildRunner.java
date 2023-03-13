@@ -50,14 +50,14 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
 public class BuildRunner extends IBuildRunner {
 
     @Override
-    public boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
+    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
             IProgressMonitor inMonitor) throws CoreException {
         IProgressMonitor monitor = inMonitor;
@@ -129,7 +129,7 @@ public class BuildRunner extends IBuildRunner {
         return isClean;
     }
 
-    private static String[] getCommandArguments(int kind, IBuilder builder, AutoBuildConfigurationData autoData) {
+    private static String[] getCommandArguments(int kind, IBuilder builder, AutoBuildConfigurationDescription autoData) {
         String[] targets = getBuildTargets(kind, builder, autoData);
         String builderArguments = AutoBuildCommon.resolve(builder.getArguments(), autoData);
         String[] builderArgs = CommandLineUtil.argumentsToArray(builderArguments);
@@ -139,7 +139,7 @@ public class BuildRunner extends IBuildRunner {
         return args;
     }
 
-    private static String[] getBuildTargets(int kind, IBuilder builder, AutoBuildConfigurationData autoData) {
+    private static String[] getBuildTargets(int kind, IBuilder builder, AutoBuildConfigurationDescription autoData) {
         String targets = EMPTY_STRING;
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:

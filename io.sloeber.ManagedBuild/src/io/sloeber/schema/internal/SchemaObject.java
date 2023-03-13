@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 import org.osgi.framework.Version;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.ISchemaObject;
@@ -331,14 +331,14 @@ public abstract class SchemaObject implements ISchemaObject {
     }
 
     @Override
-    public boolean isEnabled(IResource resource, AutoBuildConfigurationData autoBuildConfData) {
+    public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoBuildConfData) {
         if (myEnablement.isBlank()) {
             return true;
         }
         return myEnablement.isEnabled(resource, autoBuildConfData);
     }
 
-    public Map<String, String> getDefaultOptions(IResource resource, AutoBuildConfigurationData autoData) {
+    public Map<String, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData) {
         Map<String, String> ret = new LinkedHashMap<>();
         if (isEnabled(resource, autoData)) {
             for (IOption curOption : myOptions.getOptions()) {

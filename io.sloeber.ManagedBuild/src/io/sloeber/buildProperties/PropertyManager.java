@@ -34,7 +34,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
@@ -68,7 +68,7 @@ public class PropertyManager {
             fConfigDesc = ConfigDesc;
             fProject = ConfigDesc.getProjectDescription().getProject();
             fCfgPropertyMap = cfgPropertyMap;
-            AutoBuildConfigurationData autoConfig = AutoBuildConfigurationData.getFromConfig(fConfigDesc);
+            AutoBuildConfigurationDescription autoConfig = AutoBuildConfigurationDescription.getFromConfig(fConfigDesc);
             config = autoConfig.getConfiguration();
             fCfgId = config.getId();
         }

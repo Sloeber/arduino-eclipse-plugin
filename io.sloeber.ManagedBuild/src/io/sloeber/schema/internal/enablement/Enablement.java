@@ -15,13 +15,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.internal.SchemaObject;
 
 public class Enablement {
     private List<Expression> myExpressions = new LinkedList<>();
 
-    private Expression findMatchingExpression(IResource resource, AutoBuildConfigurationData autoData) {
+    private Expression findMatchingExpression(IResource resource, AutoBuildConfigurationDescription autoData) {
         try {
             EvaluationContext evalContext = new EvaluationContext(null, autoData);
             evalContext.addVariable(CheckOptionExpression.KEY_RESOURCE, resource);
@@ -38,7 +38,7 @@ public class Enablement {
         return null;
     }
 
-    public boolean isEnabled(IResource resource, AutoBuildConfigurationData autoData) {
+    public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoData) {
         Expression foundExpression = findMatchingExpression(resource, autoData);
         if (foundExpression == null) {
             return myExpressions.size() == 0;
@@ -47,7 +47,7 @@ public class Enablement {
         return true;
     }
 
-    public String getDefaultValue(IResource resource, AutoBuildConfigurationData autoData) {
+    public String getDefaultValue(IResource resource, AutoBuildConfigurationDescription autoData) {
         Expression foundExpression = findMatchingExpression(resource, autoData);
         if (foundExpression == null) {
             return EMPTY_STRING;

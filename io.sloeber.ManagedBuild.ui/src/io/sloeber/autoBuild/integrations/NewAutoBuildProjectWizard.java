@@ -9,7 +9,7 @@ import org.eclipse.tools.templates.core.IGenerator;
 import org.eclipse.tools.templates.ui.TemplateWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
-import io.sloeber.autoBuild.api.AutoBuildProjectGenerator;
+import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 
 public class NewAutoBuildProjectWizard extends TemplateWizard {
     @Override

@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -61,7 +61,7 @@ public class InternalBuildRunner extends IBuildRunner {
     private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
     @Override
-    public boolean invokeBuild(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
+    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
             IProgressMonitor monitor) throws CoreException {
 

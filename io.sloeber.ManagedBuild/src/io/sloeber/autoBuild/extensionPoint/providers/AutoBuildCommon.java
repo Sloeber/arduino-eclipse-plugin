@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.ITool;
 
@@ -207,7 +207,7 @@ public class AutoBuildCommon {
         return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
-    public static List<String> resolvePaths(List<IPath> toResolve, AutoBuildConfigurationData autoBuildConfData) {
+    public static List<String> resolvePaths(List<IPath> toResolve, AutoBuildConfigurationDescription autoBuildConfData) {
         List<String> ret = new LinkedList<>();
         if (toResolve.isEmpty())
             return ret;
@@ -358,7 +358,7 @@ public class AutoBuildCommon {
         return escapeWhitespaces(ensureUnquoted(path));
     }
 
-    static public String getToolCommandLinePattern(AutoBuildConfigurationData autoBuildConfData, ITool tool) {
+    static public String getToolCommandLinePattern(AutoBuildConfigurationDescription autoBuildConfData, ITool tool) {
         String orgPattern = tool.getCommandLinePattern();
         if (orgPattern.contains("$")) { //$NON-NLS-1$
             //if the pattern contains a space no use to try to expand it
@@ -388,7 +388,7 @@ public class AutoBuildCommon {
     }
 
     public static String[] resolveStringListValues(String[] basicStringListValue,
-            AutoBuildConfigurationData autoConfData, boolean ignoreErrors) {
+            AutoBuildConfigurationDescription autoConfData, boolean ignoreErrors) {
         ICConfigurationDescription confDesc = autoConfData.getCdtConfigurationDescription();
         DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
                 ICoreVariableContextInfo.CONTEXT_CONFIGURATION, confDesc);
@@ -411,12 +411,12 @@ public class AutoBuildCommon {
      * @param icConfigurationDescription
      * @return a string that holds the resolved unresolved input. Never returns null
      */
-    static public String resolve(String unresolved, AutoBuildConfigurationData autoData) {
+    static public String resolve(String unresolved, AutoBuildConfigurationDescription autoData) {
         return resolve(unresolved, EMPTY_STRING, EMPTY_STRING, autoData);
     }
 
     static public String resolve(String unresolved, String nonexistentMacrosValue, String listDelimiter,
-            AutoBuildConfigurationData autoData) {
+            AutoBuildConfigurationDescription autoData) {
         DefaultVariableContextInfo contextInfo = new DefaultVariableContextInfo(
                 ICoreVariableContextInfo.CONTEXT_CONFIGURATION, autoData.getCdtConfigurationDescription());
         IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, nonexistentMacrosValue,
@@ -430,7 +430,7 @@ public class AutoBuildCommon {
     }
 
     static public String getVariableValue(String varName, String defaultvalue, boolean resolve,
-            AutoBuildConfigurationData autoBuildConfData) {
+            AutoBuildConfigurationDescription autoBuildConfData) {
         ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         try {

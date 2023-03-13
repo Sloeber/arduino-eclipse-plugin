@@ -23,7 +23,7 @@ import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * A tool-integrator defines default configurations as children of the project
@@ -256,6 +256,6 @@ public interface IConfiguration extends ISchemaObject {
     Map<String, String> getDefaultBuildProperties();
 
     public Map<IResource, Map<String, String>> getDefaultProjectOptions(
-            AutoBuildConfigurationData autoBuildConfigurationData);
+            AutoBuildConfigurationDescription autoBuildConfigurationData);
 
 }

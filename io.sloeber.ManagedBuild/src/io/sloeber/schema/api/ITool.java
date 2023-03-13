@@ -23,7 +23,7 @@ import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -270,7 +270,7 @@ public interface ITool extends ISchemaObject {
      * the environment macro references converted to the buildfile variable format,
      * all other macro references are resolved
      */
-    public String[] getToolCommandFlags(AutoBuildConfigurationData autoBuildConfData, IFile inputFile, IFile outputFile)
+    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoBuildConfData, IFile inputFile, IFile outputFile)
             throws BuildException;
 
     /**
@@ -286,10 +286,10 @@ public interface ITool extends ISchemaObject {
 
     boolean isHidden();
 
-    public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
+    public MakeRules getMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
 
-    public String getRecipe(AutoBuildConfigurationData autoBuildConfData, Set<String> flags, String outputName,
+    public String getRecipe(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags, String outputName,
             Map<String, Set<String>> nicePreReqNameList);
 
     /**

@@ -18,7 +18,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -189,7 +189,7 @@ public class MakeRule {
 
     //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
     public StringBuffer getRule(IProject project, IFolder niceBuildFolder,
-            AutoBuildConfigurationData autoBuildConfData) {
+            AutoBuildConfigurationDescription autoBuildConfData) {
 
         Set<IFile> local_targets = getTargetFiles();
         Set<IFile> local_prerequisites = getPrerequisiteFiles();
@@ -286,7 +286,7 @@ public class MakeRule {
     //        return flags;
     //    }
 
-    private String expandCommandLinePattern(AutoBuildConfigurationData autoBuildConfData, Set<String> flags,
+    private String expandCommandLinePattern(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
             String outputFlag, String outputName, Set<String> inputResources) {
         String cmd = myTool.getToolCommand();
         // try to resolve the build macros in the tool command

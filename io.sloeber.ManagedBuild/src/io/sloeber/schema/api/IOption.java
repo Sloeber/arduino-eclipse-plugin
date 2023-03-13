@@ -20,7 +20,7 @@ package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 /**
@@ -133,7 +133,7 @@ public interface IOption extends ISchemaObject {
     public String getCommand();
 
     public String[] getCommandLineContribution(IResource resource, String value,
-            AutoBuildConfigurationData autoConfData);
+            AutoBuildConfigurationDescription autoConfData);
 
     /**
      * @return a <code>String</code> containing the tooltip
@@ -169,7 +169,7 @@ public interface IOption extends ISchemaObject {
      */
     public abstract String getName(String id) throws BuildException;
 
-    public String getDefaultValue(IResource resource, AutoBuildConfigurationData autoData);
+    public String getDefaultValue(IResource resource, AutoBuildConfigurationDescription autoData);
 
     /**
      * @return the type for the value of the option.

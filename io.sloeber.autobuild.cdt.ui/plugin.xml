@@ -15,7 +15,7 @@
  <extension
          point="org.eclipse.ui.propertyPages">
         <page
-            class="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
+            class="io.sloeber.autobuild.cdt.ui.Page_head_build"
             id="io.sloeber.autoBuild.projectProperties.main"
             name="%page.c.build"
             >
@@ -75,6 +75,25 @@
          </keywordReference>
       </page>
  -->
+ </extension>
+ <extension
+       point="org.eclipse.cdt.ui.cPropertyTab">
+    <tab
+          class="io.sloeber.autobuild.cdt.ui.BuilderSettingsTab"
+          helpId="cdt_u_prop_build"
+          icon="icons/obj16/build_settings.gif"
+          name="%Builder.settings"
+          parent="io.sloeber.autobuild.cdt.ui.Page_head_build"
+          weight="040">
+    </tab>
+    <tab
+          class="io.sloeber.autobuild.cdt.ui.BuildBehaviourTab"
+          helpId="cdt_u_prop_build"
+          icon="icons/obj16/target_obj.gif"
+          name="%WBB.settings"
+          parent="io.sloeber.autobuild.cdt.ui.Page_head_build"
+          weight="050">
+    </tab>
  </extension>
 
  

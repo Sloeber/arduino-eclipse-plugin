@@ -35,7 +35,7 @@ import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOutputType;
@@ -122,7 +122,7 @@ public class Tool extends SchemaObject implements ITool {
     private IManagedCommandLineGenerator commandLineGenerator;
 
     @Override
-    public boolean isEnabled(IResource resource, AutoBuildConfigurationData autoData) {
+    public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoData) {
         if (!super.isEnabled(resource, autoData)) {
             return false;
         }
@@ -402,7 +402,7 @@ public class Tool extends SchemaObject implements ITool {
      * @return the command flags with the build macros resolved
      */
     private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
-            AutoBuildConfigurationData autoBuildConfData) {
+            AutoBuildConfigurationDescription autoBuildConfData) {
         // List<IOption> opts = getOptions();
         Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFile);
 
@@ -450,7 +450,7 @@ public class Tool extends SchemaObject implements ITool {
      * core.runtime.IPath, org.eclipse.core.runtime.IPath)
      */
     @Override
-    public String[] getToolCommandFlags(AutoBuildConfigurationData autoConfData, IFile inputFile, IFile outputFile)
+    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoConfData, IFile inputFile, IFile outputFile)
             throws BuildException {
         return getToolCommandFlags(inputFile, outputFile, autoConfData);
     }
@@ -495,7 +495,7 @@ public class Tool extends SchemaObject implements ITool {
     static private final String ACCEPTED_BY = " accepted by: "; //$NON-NLS-1$
 
     @Override
-    public MakeRules getMakeRules(AutoBuildConfigurationData autoBuildConfData, IOutputType outputTypeIn,
+    public MakeRules getMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE) {
         MakeRules ret = new MakeRules();
         if (!isEnabled(inputFile, autoBuildConfData)) {
@@ -546,7 +546,7 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     @Override
-    public String getRecipe(AutoBuildConfigurationData autoBuildConfData, Set<String> flags, String outputName,
+    public String getRecipe(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags, String outputName,
             Map<String, Set<String>> nicePreReqNameList) {
         String cmd = modelCommand[SUPER];
         // expand the command

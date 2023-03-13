@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.MultiStatus;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * @since 11.0
@@ -66,7 +66,7 @@ public interface IMakefileGenerator {
      * This method initializes the makefile generator
      */
 
-    public void initialize(int buildKind, AutoBuildConfigurationData autoBuildConfData);
+    public void initialize(int buildKind, AutoBuildConfigurationDescription autoBuildConfData);
 
     /**
      * Clients call this method when an incremental rebuild is required. The

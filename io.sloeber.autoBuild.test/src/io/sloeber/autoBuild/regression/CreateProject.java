@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import io.sloeber.autoBuild.api.AutoBuild;
+import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
@@ -39,7 +39,7 @@ class CreateProject {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
 
-        IProject testProject = AutoBuild.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
+        IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
                 natureID, codeProvider, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         String errorMessage = new String();

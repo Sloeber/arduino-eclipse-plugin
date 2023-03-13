@@ -6,7 +6,7 @@ import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 public class BuildPropertyExpression extends Expression {
 
@@ -21,7 +21,7 @@ public class BuildPropertyExpression extends Expression {
 
     @Override
     public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
-        AutoBuildConfigurationData autoData = (AutoBuildConfigurationData) context.getDefaultVariable();
+        AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) context.getDefaultVariable();
         String str = autoData.getProperty(fProperty);
         if (str == null)
             return EvaluationResult.FALSE;

@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
@@ -307,7 +307,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     @Override
     public Map<IResource, Map<String, String>> getDefaultProjectOptions(
-            AutoBuildConfigurationData autoBuildConfigurationData) {
+            AutoBuildConfigurationDescription autoBuildConfigurationData) {
         // TODO Auto-generated method stub
         Map<String, String> retOptions = getDefaultOptions(autoBuildConfigurationData.getProject(),
                 autoBuildConfigurationData);

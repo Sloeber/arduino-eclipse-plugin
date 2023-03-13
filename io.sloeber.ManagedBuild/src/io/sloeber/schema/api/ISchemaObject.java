@@ -14,7 +14,7 @@
 package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
@@ -31,7 +31,7 @@ public interface ISchemaObject {
 
     boolean hasAncestor(String id);
 
-    boolean isEnabled(IResource resource, AutoBuildConfigurationData autoBuildConfData);
+    boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoBuildConfData);
 
     IOptions getOptions();
 

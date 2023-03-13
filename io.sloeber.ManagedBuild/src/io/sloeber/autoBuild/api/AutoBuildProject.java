@@ -1,11 +1,15 @@
 package io.sloeber.autoBuild.api;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-public class AutoBuild {
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
+
+public class AutoBuildProject {
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
             String projectTypeID, String natureID, ICodeProvider codeProvider, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
@@ -27,5 +31,9 @@ public class AutoBuild {
         }
 
         return theGenerator.getProject();
+    }
+    
+    public static AutoBuildConfigurationDescription getAutoBuildConfig(ICConfigurationDescription confDesc) {
+        return AutoBuildConfigurationDescription.getFromConfig(confDesc);
     }
 }

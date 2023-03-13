@@ -7,9 +7,21 @@ Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Import-Package: org.eclipse.core.runtime
+Import-Package: io.sloeber.autoBuild.api,
+ io.sloeber.schema.api,
+ org.eclipse.core.runtime,
+ org.eclipse.core.runtime.jobs,
+ org.eclipse.ui.actions,
+ org.eclipse.ui.internal.ide.misc
 Require-Bundle: org.eclipse.cdt.managedbuilder.core;bundle-version="9.4.0",
  org.eclipse.cdt.managedbuilder.gnu.ui;bundle-version="8.4.0",
  org.eclipse.cdt.managedbuilder.ui;bundle-version="9.3.0",
- org.eclipse.core.resources;bundle-version="3.18.100"
+ org.eclipse.core.resources;bundle-version="3.18.100",
+ org.eclipse.cdt.ui,
+ org.eclipse.swt,
+ org.eclipse.cdt.core,
+ org.eclipse.osgi,
+ org.eclipse.help,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench
 Automatic-Module-Name: io.sloeber.autobuild.cdt.ui

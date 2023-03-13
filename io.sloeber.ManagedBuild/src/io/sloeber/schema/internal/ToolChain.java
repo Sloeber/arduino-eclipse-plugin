@@ -33,7 +33,7 @@ import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
@@ -385,7 +385,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return ret;
     }
 
-    public Map<String, String> getDefaultProjectOptions(AutoBuildConfigurationData autoBuildConfData) {
+    public Map<String, String> getDefaultProjectOptions(AutoBuildConfigurationDescription autoBuildConfData) {
         Map<String, String> retOptions = getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData);
         for (Tool curTool : myToolMap.values()) {
             retOptions.putAll(curTool.getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData));

@@ -59,7 +59,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationData;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
@@ -123,12 +123,12 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         if (needAllConfigBuild()) {
             ICConfigurationDescription[] cfgs = cdtProjectDescription.getConfigurations();
             for (ICConfigurationDescription cfg : cfgs) {
-                AutoBuildConfigurationData autoBuildConfData = AutoBuildConfigurationData.getFromConfig(cfg);
+                AutoBuildConfigurationDescription autoBuildConfData = AutoBuildConfigurationDescription.getFromConfig(cfg);
                 buildProjects.addAll(buildProjectAndReferences(kind, autoBuildConfData, monitor));
             }
         } else {
             ICConfigurationDescription cdtConfDesc = cdtProjectDescription.getActiveConfiguration();
-            AutoBuildConfigurationData autoData = AutoBuildConfigurationData.getFromConfig(cdtConfDesc);
+            AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(cdtConfDesc);
             buildProjects.addAll(buildProjectAndReferences(kind, autoData, monitor));
         }
 
@@ -137,7 +137,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return buildProjects.toArray(new IProject[buildProjects.size()]);
     }
 
-    private Set<IProject> buildProjectAndReferences(int kind, AutoBuildConfigurationData autoData,
+    private Set<IProject> buildProjectAndReferences(int kind, AutoBuildConfigurationDescription autoData,
             IProgressMonitor monitor) throws CoreException {
 
         IBuilder builder = autoData.getConfiguration().getBuilder();
@@ -181,7 +181,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                 continue;
             }
 
-            AutoBuildConfigurationData autoBuildConfData = AutoBuildConfigurationData.getFromConfig(cfg);
+            AutoBuildConfigurationDescription autoBuildConfData = AutoBuildConfigurationDescription.getFromConfig(cfg);
             IProject project = autoBuildConfData.getProject();
             try {
 
@@ -248,7 +248,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return new ICConfigurationDescription[0];
     }
 
-    private void buildProject(int kind, AutoBuildConfigurationData autoData, IBuilder builder, IProgressMonitor monitor)
+    private void buildProject(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder, IProgressMonitor monitor)
             throws CoreException {
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
@@ -283,7 +283,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * @param status
      * @param configName
      */
-    private static String createNoSourceMessage(int buildType, IStatus status, AutoBuildConfigurationData autoData) {
+    private static String createNoSourceMessage(int buildType, IStatus status, AutoBuildConfigurationDescription autoData) {
         StringBuilder buf = new StringBuilder();
         String[] consoleHeader = new String[3];
         String configName = autoData.getCdtConfigurationDescription().getName();
@@ -330,7 +330,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * @return true if build can continue
      * @throws CoreException
      */
-    private boolean performPrebuildGeneration(int kind, AutoBuildConfigurationData autoData, IBuilder builder,
+    private boolean performPrebuildGeneration(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
             IConsole console, IProgressMonitor monitor) throws CoreException {
         boolean canContinueBuilding = true;
         IProject project = autoData.getProject();
@@ -413,11 +413,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return;
         ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(curProject, false);
         ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
-        AutoBuildConfigurationData autoData = AutoBuildConfigurationData.getFromConfig(cdtConfigurationDescription);
+        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(cdtConfigurationDescription);
         performExternalClean(autoData, false, monitor);
     }
 
-    private void performExternalClean(AutoBuildConfigurationData autoData, boolean separateJob,
+    private void performExternalClean(AutoBuildConfigurationDescription autoData, boolean separateJob,
             IProgressMonitor monitor) throws CoreException {
         IProject project = autoData.getProject();
         IResourceRuleFactory ruleFactory = ResourcesPlugin.getWorkspace().getRuleFactory();
