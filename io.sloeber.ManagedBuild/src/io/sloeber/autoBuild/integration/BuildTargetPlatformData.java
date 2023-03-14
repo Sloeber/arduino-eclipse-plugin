@@ -11,7 +11,7 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.integration;
 
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import io.sloeber.schema.api.ITargetPlatform;
@@ -62,10 +62,6 @@ public class BuildTargetPlatformData extends CTargetPlatformData {
     @Override
     public boolean isValid() {
         return myIsValid;
-    }
-
-    public void setName(String name) {
-        myName = name;
     }
 
 }

@@ -15,16 +15,19 @@
 package io.sloeber.autoBuild.integration;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
+import org.eclipse.cdt.core.settings.model.COutputEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.autoBuild.Internal.BuildEnvironmentContributor;
 import io.sloeber.autoBuild.Internal.BuilderFactory;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IBuilder;
@@ -38,13 +41,27 @@ public class BuildBuildData extends CBuildData {
     private IProject myProject;
     ICConfigurationDescription myCdtConfigurationDescription;
     BuildEnvironmentContributor myBuildEnvironmentContributor;
+    private ICOutputEntry[] myEntries = null;// new ICOutputEntry[0];
+    private IPath myBuilderCWD;
 
     public BuildBuildData(IBuilder builder, ICConfigurationDescription configurationDescription) {
         myCdtConfigurationDescription = configurationDescription;
         myProject = myCdtConfigurationDescription.getProjectDescription().getProject();
         fBuilder = (Builder) builder;
         fCfg = (Configuration) fBuilder.getParent().getParent();
-        myBuildEnvironmentContributor = new BuildEnvironmentContributor(this);
+        myBuildEnvironmentContributor = new BuildEnvironmentContributor(fCfg);
+        myBuilderCWD = fCfg.getBuildFolder(myCdtConfigurationDescription).getLocation();
+
+        //        IPath path = new Path(myBuilderCWD.toString());
+        //        IPath projFullPath = myProject.getFullPath();
+        //        if (projFullPath.isPrefixOf(path)) {
+        //            path = path.removeFirstSegments(projFullPath.segmentCount()).makeRelative();
+        //        } else {
+        //            path = Path.EMPTY;
+        //        }
+
+        myEntries = new ICOutputEntry[] {
+                new COutputEntry(myBuilderCWD, null, ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
     }
 
     //    public BuildBuildData(Configuration fCfg2, IProject project) {
@@ -61,8 +78,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public IPath getBuilderCWD() {
-        return fCfg.getBuildFolder(myCdtConfigurationDescription).getLocation();
-        // return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
+        return myBuilderCWD;
     }
 
     //	private IPath createAbsolutePathFromWorkspacePath(IPath path){
@@ -78,14 +94,12 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public ICOutputEntry[] getOutputDirectories() {
-        return fBuilder.getOutputEntries(myProject);
+        return myEntries;
     }
 
     @Override
     public void setBuilderCWD(IPath path) {
-        //JABA not sure what to do here TOFIX
-        //fBuilder.setBuildPath(path.toString());
-        return;
+        myBuilderCWD = path;
     }
 
     @Override
@@ -95,7 +109,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public void setOutputDirectories(ICOutputEntry[] entries) {
-        //fBuilder.setOutputEntries(entries);
+        myEntries = entries;
     }
 
     @Override
@@ -113,9 +127,9 @@ public class BuildBuildData extends CBuildData {
         return fBuilder != null;
     }
 
-    public void setName(String name) {
-        //TODO
-    }
+    //    public void setName(String name) {
+    //        //TODO
+    //    }
 
     @Override
     public IEnvironmentContributor getBuildEnvironmentContributor() {
@@ -132,9 +146,9 @@ public class BuildBuildData extends CBuildData {
         }
     }
 
-    public IBuilder getBuilder() {
-        return fBuilder;
-    }
+    //    public IBuilder getBuilder() {
+    //        return fBuilder;
+    //    }
 
     public ICConfigurationDescription getCdtConfigurationDescription() {
         return myCdtConfigurationDescription;
