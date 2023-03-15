@@ -3,12 +3,18 @@ package io.sloeber.autoBuild.integration;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
+import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -27,6 +33,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
@@ -39,6 +46,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private BuildTargetPlatformData myTargetPlatformData;
     private BuildBuildData myBuildBuildData;
     private boolean isValid = false;
+    private boolean myIsApplied = false;//have all the settings been applied to the project
     private String myName = EMPTY_STRING;
     private String myDescription;
     private Map<String, String> myProperties = new HashMap<>();
@@ -58,6 +66,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private boolean myIsIncrementalBuildEnabled = true;
     private boolean myIsInternalBuilderEnabled = true;
     private String myMakeArguments = EMPTY_STRING;
+    private String myId = "io.sloeber.autoBuild.configurationDescrtion." + AutoBuildCommon.getRandomNumber();
 
     public AutoBuildConfigurationDescription(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -82,7 +91,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 myCdtConfigurationDescription);
 
         isValid = autoBuildConfigBase.isValid;
-        myName = autoBuildConfigBase.myName;
+        myName = myCdtConfigurationDescription.getName();
         myDescription = autoBuildConfigBase.myDescription;
         myRequiredErrorParserList = autoBuildConfigBase.myRequiredErrorParserList;
         myBuildFolder = autoBuildConfigBase.myBuildFolder;
@@ -175,7 +184,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public String getId() {
-        return myAutoBuildConfiguration.getId();
+        return myId;
     }
 
     @Override
@@ -494,6 +503,44 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     @Override
     public void setMakeArguments(String makeArgs) {
         myMakeArguments = makeArgs;
+    }
+
+    public void applyToConfiguration(ICConfigurationDescription baseCfgDescription) {
+        if (myIsApplied) {
+            return;
+        }
+        //        if (baseCfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+        //            String[] defaultIds = ((ILanguageSettingsProvidersKeeper) baseCfgDescription)
+        //                    .getDefaultLanguageSettingsProvidersIds();
+        //            List<ILanguageSettingsProvider> providers;
+        //            if (defaultIds == null) {
+        //                ICProjectDescription prjDescription = baseCfgDescription.getProjectDescription();
+        //                if (prjDescription != null) {
+        //                    IProject project = prjDescription.getProject();
+        //                    // propagate the preference to project properties
+        //                    ScannerDiscoveryLegacySupport.defineLanguageSettingsEnablement(project);
+        //                }
+        //
+        //                if (myAutoBuildConfiguration != null) {
+        //                    defaultIds = myAutoBuildConfiguration.getDefaultLanguageSettingsProviderIds()
+        //                            .toArray(new String[0]);
+        //                }
+        //                int a = 0;
+        //                if (defaultIds == null) {
+        //                    defaultIds = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(baseCfgDescription);
+        //                }
+        //                providers = LanguageSettingsManager.createLanguageSettingsProviders(defaultIds);
+        //            } else {
+        //                providers = ((ILanguageSettingsProvidersKeeper) baseCfgDescription).getLanguageSettingProviders();
+        //            }
+        //            if (myCdtConfigurationDescription instanceof ILanguageSettingsProvidersKeeper) {
+        //                ((ILanguageSettingsProvidersKeeper) myCdtConfigurationDescription)
+        //                        .setDefaultLanguageSettingsProvidersIds(defaultIds);
+        //                ((ILanguageSettingsProvidersKeeper) myCdtConfigurationDescription)
+        //                        .setLanguageSettingProviders(providers);
+        //            }
+        //        }
+        myIsApplied = true;
     }
 
 }

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
@@ -35,6 +37,9 @@ import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.ITool;
 
 public class AutoBuildCommon {
+    static public String ECHO_BLANK_LINE = ECHO + WHITESPACE + SINGLE_QUOTE + WHITESPACE + SINGLE_QUOTE + NEWLINE;
+    private static Random randomNumber;
+
     /**
      * Answers the argument with all whitespaces replaced with an escape sequence.
      */
@@ -178,8 +183,6 @@ public class AutoBuildCommon {
         return ECHO + WHITESPACE + SINGLE_QUOTE + escapedString + SINGLE_QUOTE + NEWLINE;
     }
 
-    static public String ECHO_BLANK_LINE = ECHO + WHITESPACE + SINGLE_QUOTE + WHITESPACE + SINGLE_QUOTE + NEWLINE;
-
     /**
      * Outputs a comment formatted as follows: ##### ....... ##### # <Comment
      * message> ##### ....... #####
@@ -207,7 +210,8 @@ public class AutoBuildCommon {
         return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
-    public static List<String> resolvePaths(List<IPath> toResolve, AutoBuildConfigurationDescription autoBuildConfData) {
+    public static List<String> resolvePaths(List<IPath> toResolve,
+            AutoBuildConfigurationDescription autoBuildConfData) {
         List<String> ret = new LinkedList<>();
         if (toResolve.isEmpty())
             return ret;
@@ -522,6 +526,22 @@ public class AutoBuildCommon {
         //Replace the @ with the file name without extension
         outName = outName.replace(AT_SYMBOL, fileNameWithExtension);
         return outName;
+    }
+
+    /**
+     * @return the a random number as a positive integer.
+     */
+    public static int getRandomNumber() {
+        if (randomNumber == null) {
+            // Set the random number seed
+            randomNumber = new Random();
+            randomNumber.setSeed(System.currentTimeMillis());
+        }
+        int i = randomNumber.nextInt();
+        if (i < 0) {
+            i *= -1;
+        }
+        return i;
     }
 
 }

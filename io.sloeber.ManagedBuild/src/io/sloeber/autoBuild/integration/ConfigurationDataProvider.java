@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
+import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.IModificationContext;
@@ -44,28 +45,28 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
     public ConfigurationDataProvider() {
     }
 
-    private static class DesApplyRunnable implements IWorkspaceRunnable {
-        IBuilder fBuilder;
-        IProject fProject;
-
-        DesApplyRunnable(IProject project, IBuilder builder) {
-            fProject = project;
-            fBuilder = builder;
-        }
-
-        @Override
-        public void run(IProgressMonitor monitor) throws CoreException {
-            try {
-                IProjectDescription eDes = fProject.getDescription();
-                if (BuilderFactory.applyBuilder(eDes, fBuilder) == BuilderFactory.CMD_CHANGED) {
-                    fProject.setDescription(eDes, monitor);
-                }
-            } catch (Exception e) {
-                Activator.log(e);
-            }
-        }
-
-    }
+    //    private static class DesApplyRunnable implements IWorkspaceRunnable {
+    //        IBuilder fBuilder;
+    //        IProject fProject;
+    //
+    //        DesApplyRunnable(IProject project, IBuilder builder) {
+    //            fProject = project;
+    //            fBuilder = builder;
+    //        }
+    //
+    //        @Override
+    //        public void run(IProgressMonitor monitor) throws CoreException {
+    //            try {
+    //                IProjectDescription eDes = fProject.getDescription();
+    //                if (BuilderFactory.applyBuilder(eDes, fBuilder) == BuilderFactory.CMD_CHANGED) {
+    //                    fProject.setDescription(eDes, monitor);
+    //                }
+    //            } catch (Exception e) {
+    //                Activator.log(e);
+    //            }
+    //        }
+    //
+    //    }
 
     @Override
     public CConfigurationData applyConfiguration(ICConfigurationDescription cfgDescription,
@@ -74,58 +75,32 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
 
         //TOFIX JABA need to add storage here
         AutoBuildConfigurationDescription autoBuildBaseData = (AutoBuildConfigurationDescription) baseData;
+        assert (cfgDescription == autoBuildBaseData.getCdtConfigurationDescription());
+        autoBuildBaseData.applyToConfiguration(baseCfgDescription);
 
         IConfiguration baseCfg = autoBuildBaseData.getConfiguration();
 
-        if (context.isBaseDataCached()) {// JABA Assume not dirty && !baseCfg.isDirty()
-            context.setConfigurationSettingsFlags(IModificationContext.CFG_DATA_STORAGE_UNMODIFIED
-                    | IModificationContext.CFG_DATA_SETTINGS_UNMODIFIED);
-        } else {
-
-            if (baseCfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-                String[] defaultIds = ((ILanguageSettingsProvidersKeeper) baseCfgDescription)
-                        .getDefaultLanguageSettingsProvidersIds();
-                List<ILanguageSettingsProvider> providers;
-                if (defaultIds == null) {
-                    ICProjectDescription prjDescription = baseCfgDescription.getProjectDescription();
-                    //                    if (prjDescription != null) {
-                    //                        IProject project = prjDescription.getProject();
-                    //                        // propagate the preference to project properties
-                    //                        ScannerDiscoveryLegacySupport.defineLanguageSettingsEnablement(project);
-                    //                    }
-
-                    if (baseCfg != null) {
-                        defaultIds = baseCfg.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
-                    }
-                    //                    if (defaultIds == null) {
-                    //                        defaultIds = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(baseCfgDescription);
-                    //                    }
-                    providers = LanguageSettingsManager.createLanguageSettingsProviders(defaultIds);
-                } else {
-                    providers = ((ILanguageSettingsProvidersKeeper) baseCfgDescription).getLanguageSettingProviders();
-                }
-                if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-                    ((ILanguageSettingsProvidersKeeper) cfgDescription)
-                            .setDefaultLanguageSettingsProvidersIds(defaultIds);
-                    ((ILanguageSettingsProvidersKeeper) cfgDescription).setLanguageSettingProviders(providers);
-                }
-            }
-        }
-
-        if (cfgDescription.isActive()) {
-            IBuilder builder = baseCfg.getBuilder();
-            IProject project = context.getProject();
-            IProjectDescription eDes = context.getEclipseProjectDescription();
-            switch (BuilderFactory.applyBuilder(eDes, builder)) {
-            case BuilderFactory.CMD_UNDEFINED:
-                IWorkspaceRunnable applyR = new DesApplyRunnable(project, builder);
-                context.addWorkspaceRunnable(applyR);
-                break;
-            case BuilderFactory.CMD_CHANGED:
-                context.setEclipseProjectDescription(eDes);
-                break;
-            }
-        }
+        //        if (context.isBaseDataCached()) {// JABA Assume not dirty && !baseCfg.isDirty()
+        //            context.setConfigurationSettingsFlags(IModificationContext.CFG_DATA_STORAGE_UNMODIFIED
+        //                    | IModificationContext.CFG_DATA_SETTINGS_UNMODIFIED);
+        //        } else {
+        //
+        //        }
+        //
+        //        if (cfgDescription.isActive()) {
+        //            IBuilder builder = baseCfg.getBuilder();
+        //            IProject project = context.getProject();
+        //            IProjectDescription eDes = context.getEclipseProjectDescription();
+        //            switch (BuilderFactory.applyBuilder(eDes, builder)) {
+        //            case BuilderFactory.CMD_UNDEFINED:
+        //                IWorkspaceRunnable applyR = new DesApplyRunnable(project, builder);
+        //                context.addWorkspaceRunnable(applyR);
+        //                break;
+        //            case BuilderFactory.CMD_CHANGED:
+        //                context.setEclipseProjectDescription(eDes);
+        //                break;
+        //            }
+        //        }
 
         return baseData;
     }
@@ -135,27 +110,28 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
             ICConfigurationDescription baseCfgDescription, CConfigurationData base, boolean clone,
             IProgressMonitor monitor) throws CoreException {
         AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) base;
-        return new AutoBuildConfigurationDescription(cfgDescription, autoBuildConfigBase);
+        AutoBuildConfigurationDescription ret = new AutoBuildConfigurationDescription(cfgDescription,
+                autoBuildConfigBase);
 
-        //        if (cfgDescription.isPreferenceConfiguration())
-        //            return new AutoBuildConfigurationData(autoBuildConfigBase);
-        //
-        //        Configuration cfg = (Configuration) ((BuildConfigurationData) base).getConfiguration();
-        //        Configuration newCfg = copyCfg(cfg, cfgDescription);
-        //
-        //        if (!newCfg.getId().equals(cfg.getId())) {
-        //            // Bug 335001: Remove existing exported settings as they point at this
-        //            // configuration
-        //            for (ICExternalSetting extSetting : newCfg.getConfigurationDescription().getExternalSettings())
-        //                newCfg.getConfigurationDescription().removeExternalSetting(extSetting);
-        //            // Now export the new settings
-        //            newCfg.exportArtifactInfo();
-        //        }
-        //
-        //        setPersistedFlag(cfgDescription);
-        //
-        //        return newCfg.getConfigurationData();
-        //        return null;
+        //                if (cfgDescription.isPreferenceConfiguration())
+        //                    return new AutoBuildConfigurationData(autoBuildConfigBase);
+        //        
+        //                Configuration cfg = (Configuration) ((BuildConfigurationData) base).getConfiguration();
+        //                Configuration newCfg = copyCfg(cfg, cfgDescription);
+        //        
+        //                if (!newCfg.getId().equals(cfg.getId())) {
+        //                    // Bug 335001: Remove existing exported settings as they point at this
+        //                    // configuration
+        //                    for (ICExternalSetting extSetting : newCfg.getConfigurationDescription().getExternalSettings())
+        //                        newCfg.getConfigurationDescription().removeExternalSetting(extSetting);
+        //                    // Now export the new settings
+        //                    newCfg.exportArtifactInfo();
+        //                }
+        //        
+        //                setPersistedFlag(cfgDescription);
+        //        
+        //                return newCfg.getConfigurationData();
+        return ret;
     }
 
     @Override
@@ -206,9 +182,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
     @Override
     public void dataCached(ICConfigurationDescription cfgDescription, CConfigurationData data,
             IProgressMonitor monitor) {
-        //		AutoBuildConfigurationDescription cfgData = (BuildConfigurationData) data;
-        //		((Configuration) cfgData.getConfiguration()).setConfigurationDescription(cfgDescription);
-        //		cfgData.clearCachedData();
+        //default implementation is empty :-)
         return;
     }
 

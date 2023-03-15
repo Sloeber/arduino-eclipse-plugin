@@ -2,9 +2,15 @@
 package io.sloeber.autoBuild.integration;
 
 import java.net.URI;
+import java.util.List;
+
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.CProjectNature;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
+import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -86,6 +92,16 @@ public class AutoBuildProjectGenerator implements IGenerator {
                     ICConfigurationDescription cdtCfgDes = des
                             .createConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, data);
                     data.setCdtConfigurationDescription(cdtCfgDes);
+
+                    //Set the language Settings
+                    String[] defaultIds = iConfig.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
+                    List<ILanguageSettingsProvider> providers = LanguageSettingsManager
+                            .createLanguageSettingsProviders(defaultIds);
+                    if (cdtCfgDes instanceof ILanguageSettingsProvidersKeeper) {
+                        ((ILanguageSettingsProvidersKeeper) cdtCfgDes)
+                                .setDefaultLanguageSettingsProvidersIds(defaultIds);
+                        ((ILanguageSettingsProvidersKeeper) cdtCfgDes).setLanguageSettingProviders(providers);
+                    }
                 }
                 des.setCdtProjectCreated();
                 mngr.setProjectDescription(myProject, des);

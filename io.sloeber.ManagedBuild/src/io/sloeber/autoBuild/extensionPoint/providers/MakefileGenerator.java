@@ -42,7 +42,7 @@ import io.sloeber.schema.api.ITool;
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public class MakefileGenerator implements IMakefileGenerator {
-    static private boolean VERBOSE = true;
+    static private boolean VERBOSE = false;
 
     // Local variables needed by generator
     IConfiguration myConfig;

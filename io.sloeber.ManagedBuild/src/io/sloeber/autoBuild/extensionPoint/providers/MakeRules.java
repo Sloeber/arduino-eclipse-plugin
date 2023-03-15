@@ -30,7 +30,7 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
 public class MakeRules implements Iterable<MakeRule> {
-    static private boolean VERBOSE = true;
+    static private boolean VERBOSE = false;
 
     static private final List<String> InputFileIgnoreList = new LinkedList<>(
             List.of(".settings", ".project", ".cproject")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -211,8 +211,8 @@ public class MakeRules implements Iterable<MakeRule> {
      * @return The MakeRules needed to buuild this configuration
      * @throws CoreException
      */
-    public MakeRules(AutoBuildConfigurationDescription autoBuildConfData, IFolder buildfolder, ICSourceEntry[] srcEntries,
-            Set<IFolder> foldersToBuild) throws CoreException {
+    public MakeRules(AutoBuildConfigurationDescription autoBuildConfData, IFolder buildfolder,
+            ICSourceEntry[] srcEntries, Set<IFolder> foldersToBuild) throws CoreException {
 
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
         subDirVisitor.myBuildfolder = buildfolder;
@@ -267,7 +267,8 @@ public class MakeRules implements Iterable<MakeRule> {
          * @param inputFile
          * @return true if a makerule has been created
          */
-        protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationDescription autoBuildConfData, IFile inputFile) {
+        protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationDescription autoBuildConfData,
+                IFile inputFile) {
 
             IConfiguration config = autoBuildConfData.getConfiguration();
             String ext = inputFile.getFileExtension();
@@ -382,7 +383,8 @@ public class MakeRules implements Iterable<MakeRule> {
      * @param buildfolder
      * @param cConfDes
      */
-    private void generateHigherLevelMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IFolder buildfolder) {
+    private void generateHigherLevelMakeRules(AutoBuildConfigurationDescription autoBuildConfData,
+            IFolder buildfolder) {
         int makeRuleSequenceID = 1;
         Map<IOutputType, Set<IFile>> generatedFiles = getTargets();
         if (VERBOSE) {

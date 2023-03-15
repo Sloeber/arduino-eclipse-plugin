@@ -29,6 +29,7 @@
      <configuration
            cleanCommand="rm -f"
            id="io.sloeber.autoBuild.configuration.release"
+           languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider;org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector"
            name="%autoBuild.configuration.name">
         <toolChain
               archList="all"
