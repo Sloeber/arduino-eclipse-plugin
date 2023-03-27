@@ -125,7 +125,7 @@ public interface IToolChain extends ISchemaObject {
      *
      * @return String[]
      */
-    public List<String> getErrorParserList();
+    public Set<String> getErrorParserList();
 
     /**
      * Returns the default language settings providers IDs.

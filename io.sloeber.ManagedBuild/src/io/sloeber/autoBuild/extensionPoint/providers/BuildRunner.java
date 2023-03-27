@@ -47,10 +47,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -94,7 +94,7 @@ public class BuildRunner extends IBuildRunner {
 
             List<IConsoleParser> parsers = new ArrayList<>();
             if (!isClean) {
-                ManagedBuildManager.collectLanguageSettingsConsoleParsers(confDesc, epm, parsers);
+                AutoBuildManager.collectLanguageSettingsConsoleParsers(confDesc, epm, parsers);
             }
 
             buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand), args, buildFolderURI, envp);

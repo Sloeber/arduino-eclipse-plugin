@@ -16,9 +16,11 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.CommandLauncherManager;
 import org.eclipse.cdt.core.ICommandLauncher;
@@ -311,31 +313,12 @@ public class Builder extends SchemaObject implements IBuilder {
     }
 
     @Override
-    public String getErrorParserIds() {
-        return modelErrorParsers[SUPER];
-    }
-
-    @Override
-    public String[] getErrorParserList() {
-        String parserIDs = getErrorParserIds();
-        String[] errorParsers = null;
-        if (parserIDs != null) {
-            // Check for an empty string
-            if (parserIDs.length() == 0) {
-                errorParsers = new String[0];
-            } else {
-                StringTokenizer tok = new StringTokenizer(parserIDs, ";"); //$NON-NLS-1$
-                List<String> list = new ArrayList<>(tok.countTokens());
-                while (tok.hasMoreElements()) {
-                    list.add(tok.nextToken());
-                }
-                String[] strArr = { "" }; //$NON-NLS-1$
-                errorParsers = list.toArray(strArr);
-            }
-        } else {
-            errorParsers = new String[0];
-        }
+    public Set<String> getErrorParserList() {
+        Set<String> errorParsers = new HashSet<>();
+        String parseArray[] = modelErrorParsers[SUPER].split(Pattern.quote(SEMICOLON));
+        errorParsers.addAll(Arrays.asList(parseArray));
         return errorParsers;
+
     }
 
     @Override

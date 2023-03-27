@@ -22,7 +22,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.integration.ConfigurationDataProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescriptionProvider;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IManagedProject;
 import io.sloeber.schema.api.IOption;
@@ -33,7 +34,7 @@ public class BuildSettingsUtil {
             IOption.MACRO_FILES, };
 
     public static ICProjectDescription checkSynchBuildInfo(IProject project) throws CoreException {
-        IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project, false);
+        IManagedBuildInfo info = AutoBuildManager.getBuildInfo(project, false);
         if (info == null)
             return null;
 
@@ -68,7 +69,7 @@ public class BuildSettingsUtil {
             throws CoreException {
         ICConfigurationDescription[] cfgs = des.getConfigurations();
         for (int i = 0; i < cfgs.length; i++) {
-            if (!ConfigurationDataProvider.CFG_DATA_PROVIDER_ID.equals(cfgs[i].getBuildSystemId()))
+            if (!AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID.equals(cfgs[i].getBuildSystemId()))
                 des.removeConfiguration(cfgs[i]);
         }
 

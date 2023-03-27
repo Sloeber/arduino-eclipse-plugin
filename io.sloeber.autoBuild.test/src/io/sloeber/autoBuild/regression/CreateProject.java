@@ -14,8 +14,8 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -68,7 +68,7 @@ class CreateProject {
                 for (IConfigurationElement element : elements) {
                     if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
                         String projectID = element.getAttribute(ID);
-                        IProjectType projectType = ManagedBuildManager.getProjectType(extensionPointID, extensionID,
+                        IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID,
                                 projectID, true);
                         if (projectType != null && projectType.isCompatibleWithLocalOS() && !projectType.isAbstract()) {
                             String buildArtifactType = projectType.getBuildArtifactType();

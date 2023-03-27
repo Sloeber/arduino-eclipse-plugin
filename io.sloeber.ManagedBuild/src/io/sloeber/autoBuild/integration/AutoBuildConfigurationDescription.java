@@ -3,18 +3,13 @@ package io.sloeber.autoBuild.integration;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
-import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
-import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
-import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
-import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -40,13 +35,36 @@ import io.sloeber.schema.internal.Configuration;
 
 public class AutoBuildConfigurationDescription extends CConfigurationData
         implements IAutoBuildConfigurationDescription {
+    private static final String MODEL = "Model"; //$NON-NLS-1$
+    private static final String CONFIGURATION = "configuration"; //$NON-NLS-1$
+    private static final String EQUALS = "="; //$NON-NLS-1$
+    private static final String PROJECT_TYPE = "projectType"; //$NON-NLS-1$
+    private static final String EXTENSION_ID = "extensionID"; //$NON-NLS-1$
+    private static final String EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$
+    private static final String PROPERTY = "property"; //$NON-NLS-1$
+    private static final String BUILDFOLDER = "buildFolder"; //$NON-NLS-1$
+    private static final String USE_DEFAULT_BUILD_COMMAND = "useDefaultBuildCommand"; //$NON-NLS-1$
+    private static final String GENERATE_MAKE_FILES_AUTOMATICALLY = "generateBuildFilesAutomatically"; //$NON-NLS-1$
+    private static final String USE_STANDARD_BUILD_ARGUMENTS = "useStandardBuildArguments"; //$NON-NLS-1$
+    private static final String IS_PARRALLEL_BUILD = "isParralelBuild"; //$NON-NLS-1$
+    private static final String IS_CLEAN_BUILD_ENABLED = "isCleanEnabled"; //$NON-NLS-1$
+    private static final String NUM_PARRALEL_BUILDS = "numberOfParralelBuilds"; //$NON-NLS-1$
+    private static final String MAKE_TARGETS = "makeTargets"; //$NON-NLS-1$
+    private static final String USE_CUSTOM_BUILD_ARGUMENTS = "useCustomBuildArguments"; //$NON-NLS-1$
+    private static final String STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
+    private static final String IS_AUTOBUILD_ENABLED = "isAutobuildEnabled"; //$NON-NLS-1$
+    private static final String IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
+    private static final String USE_INTERNAL_BUILDER = "useInternalBuilder"; //$NON-NLS-1$
+    private static final String KEY = "key"; //$NON-NLS-1$
+    private static final String VALUE = "value"; //$NON-NLS-1$
+    private static final String RESOURCE = "resource";//$NON-NLS-1$
+
     private IConfiguration myAutoBuildConfiguration;
     private IProject myProject;
     private ICConfigurationDescription myCdtConfigurationDescription;
     private BuildTargetPlatformData myTargetPlatformData;
     private BuildBuildData myBuildBuildData;
     private boolean isValid = false;
-    private boolean myIsApplied = false;//have all the settings been applied to the project
     private String myName = EMPTY_STRING;
     private String myDescription;
     private Map<String, String> myProperties = new HashMap<>();
@@ -66,7 +84,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private boolean myIsIncrementalBuildEnabled = true;
     private boolean myIsInternalBuilderEnabled = true;
     private String myMakeArguments = EMPTY_STRING;
-    private String myId = "io.sloeber.autoBuild.configurationDescrtion." + AutoBuildCommon.getRandomNumber();
+    private String myId = "io.sloeber.autoBuild.configurationDescrtion." + AutoBuildCommon.getRandomNumber(); //$NON-NLS-1$
 
     public AutoBuildConfigurationDescription(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -93,7 +111,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         isValid = autoBuildConfigBase.isValid;
         myName = myCdtConfigurationDescription.getName();
         myDescription = autoBuildConfigBase.myDescription;
-        myRequiredErrorParserList = autoBuildConfigBase.myRequiredErrorParserList;
         myBuildFolder = autoBuildConfigBase.myBuildFolder;
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
@@ -114,6 +131,135 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myIsIncrementalBuildEnabled = autoBuildConfigBase.myIsIncrementalBuildEnabled;
         myIsInternalBuilderEnabled = autoBuildConfigBase.myIsInternalBuilderEnabled;
         myMakeArguments = autoBuildConfigBase.myMakeArguments;
+    }
+
+    public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
+            String lineStart, String lineEnd) {
+        String extensionPointID = null;
+        String extensionID = null;
+        String projectTypeID = null;
+        String confName = null;
+        myCdtConfigurationDescription = cfgDescription;
+        myProject = cfgDescription.getProjectDescription().getProject();
+        String[] lines = curConfigsText.split(lineEnd);
+        Map<String, String> optionKeyMap = new HashMap<>();
+        Map<String, String> optionValueMap = new HashMap<>();
+        Map<String, String> optionResourceMap = new HashMap<>();
+
+        for (String curLine : lines) {
+            if (!curLine.startsWith(lineStart)) {
+                continue;
+            }
+            String field[] = curLine.split(EQUALS, 2);
+            String key = field[0].substring(lineStart.length());
+            String value = field[1];
+            switch (key) {
+            case MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_POINT_ID:
+                extensionPointID = value;
+                break;
+            case MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_ID:
+                extensionID = value;
+                break;
+            case MODEL + DOT + PROJECT_TYPE + DOT + ID:
+                projectTypeID = value;
+                break;
+            case MODEL + DOT + CONFIGURATION + DOT + NAME:
+                confName = value;
+                break;
+            case NAME:
+                myName = value;
+                break;
+            case DESCRIPTION:
+                myDescription = value;
+                break;
+            case ID:
+                myId = value;
+                break;
+            case BUILDFOLDER:
+                myBuildFolder = myProject.getFolder(value);
+                break;
+            case USE_DEFAULT_BUILD_COMMAND:
+                myUseDefaultBuildCommand = Boolean.parseBoolean(value);
+                break;
+            case GENERATE_MAKE_FILES_AUTOMATICALLY:
+                myGenerateMakeFilesAUtomatically = Boolean.parseBoolean(value);
+                break;
+            case USE_STANDARD_BUILD_ARGUMENTS:
+                myUseStandardBuildArguments = Boolean.parseBoolean(value);
+                break;
+            case USE_CUSTOM_BUILD_ARGUMENTS:
+                myUseCustomBuildArguments = Boolean.parseBoolean(value);
+                break;
+            case STOP_ON_FIRST_ERROR:
+                myStopOnFirstBuildError = Boolean.parseBoolean(value);
+                break;
+            case IS_PARRALLEL_BUILD:
+                myIsParallelBuild = Boolean.parseBoolean(value);
+                break;
+            case IS_AUTOBUILD_ENABLED:
+                myIsAutoBuildEnable = Boolean.parseBoolean(value);
+                break;
+            case IS_CLEAN_BUILD_ENABLED:
+                myIsCleanBuildEnabled = Boolean.parseBoolean(value);
+                break;
+            case IS_INCREMENTAL_BUILD_ENABLED:
+                myIsIncrementalBuildEnabled = Boolean.parseBoolean(value);
+                break;
+            case USE_INTERNAL_BUILDER:
+                myIsInternalBuilderEnabled = Boolean.parseBoolean(value);
+                break;
+            case NUM_PARRALEL_BUILDS:
+                myParallelizationNum = Integer.parseInt(value);
+                break;
+            case MAKE_TARGETS:
+                myMakeArguments = value;
+                break;
+
+            default:
+                if (key.startsWith(PROPERTY + DOT)) {
+                    String propKey = key.substring(PROPERTY.length() + DOT.length());
+                    myProperties.put(propKey, value);
+                }
+                if (key.startsWith(OPTION + DOT + KEY + DOT)) {
+                    String optionIndex = key.substring(OPTION.length() + KEY.length() + DOT.length() * 2);
+                    optionKeyMap.put(optionIndex, value);
+                }
+
+                if (key.startsWith(OPTION + DOT + VALUE + DOT)) {
+                    String optionIndex = key.substring(OPTION.length() + VALUE.length() + DOT.length() * 2);
+                    optionValueMap.put(optionIndex, value);
+                }
+                if (key.startsWith(OPTION + DOT + RESOURCE + DOT)) {
+                    String optionIndex = key.substring(OPTION.length() + RESOURCE.length() + DOT.length() * 2);
+                    optionResourceMap.put(optionIndex, value);
+                }
+            }
+        }
+        IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
+        myAutoBuildConfiguration = projectType.getConfiguration(confName);
+        myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
+        myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
+                myCdtConfigurationDescription);
+        myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
+
+        for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
+            String value = optionValueMap.get(curOptionIndex.getKey());
+            String resourceString = optionResourceMap.get(curOptionIndex.getKey());
+            if (value == null || resourceString == null) {
+                //This Should not happen
+            } else {
+                IResource resource = myProject;
+                if (!resourceString.isBlank()) {
+                    resource = myProject.getFile(resourceString);
+                }
+                Map<String, String> options = mySelectedOptions.get(resource);
+                if (options == null) {
+                    options = new HashMap<>();
+                    mySelectedOptions.put(resource, options);
+                }
+                options.put(curOptionIndex.getValue(), value);
+            }
+        }
     }
 
     private void doLegacyChanges() {
@@ -192,16 +338,69 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         return myName;
     }
 
+    CFolderData retTest = null;//TOFIX JABA this should not be here
+
     @Override
     public CFolderData getRootFolderData() {
-        CDataFactory factory = CDataFactory.getDefault();
-        return factory.createFolderData(null, null, getId(), false, new Path(SLACH));
+        int option = 3;
+        if (retTest != null) {
+            //option 0,2,3 same behaviour
+            return retTest;
+        }
+        if (option == 0) {
+            //when opening projectproperties->somethintg with configurations
+            //java.lang.IllegalStateException
+            // at org.eclipse.cdt.core.settings.model.util.PathSettingsContainer.getValue(PathSettingsContainer.java:608)
+            CDataFactory factory = CDataFactory.getDefault();
+            CFolderData foData = factory.createFolderData(null, null, getId(), false, new Path(SLACH));
+            retTest = foData;
+        }
+        if (option == 1) {
+            CDataFactory factory = CDataFactory.getDefault();
+            CFolderData foData = factory.createFolderData(this, null, getId(), false, new Path(SLACH));
+            factory.link(this, foData); //This fails as it assumes CDefaultFolderData and not CFolderData
+            retTest = foData;
+        }
+        if (option == 2) {
+            //project creation fails
+            //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.extension.CFolderData.getPath()" because "baseRootFolderData" is null
+            try {
+                retTest = createFolderData(new Path(""), null); //$NON-NLS-1$
+            } catch (CoreException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        if (option == 3) {
+            //When opening project properties->language settings
+            //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.ICResourceDescription.getConfiguration()" because the return value of "org.eclipse.cdt.internal.ui.language.settings.providers.LanguageSettingsEntriesTab.getResDesc()" is null
+            //at org.eclipse.cdt.internal.ui.language.settings.providers.LanguageSettingsEntriesTab.getConfigurationDescription(LanguageSettingsEntriesTab.java:256)
+            retTest = new FolderData(myProject, this);
+        }
+        //project creation fails
+        //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.extension.CFolderData.getPath()" because "baseRootFolderData" is null
+        //at org.eclipse.cdt.core.settings.model.extension.impl.CDefaultConfigurationData.copySettingsFrom(CDefaultConfigurationData.java:117)
+        return retTest;
     }
+
+    //    protected void addRcData(CResourceData data) {
+    //        IPath path = standardizePath(data.getPath());
+    //        if (path.segmentCount() == 0) {
+    //            if (data.getType() == ICSettingBase.SETTING_FOLDER)
+    //                fRootFolderData = (CFolderData) data;
+    //            else
+    //                return;
+    //        }
+    //        fResourceDataMap.put(path, data);
+    //    }
 
     @Override
     public CResourceData[] getResourceDatas() {
-        // TODO Auto-generated method stub
-        return new CResourceData[0];
+        //        CResourceData datas[] = new CResourceData[1];
+        //        datas[0] = new FolderData(myProject, this);
+        CResourceData datas[] = new CResourceData[0];
+        return datas;
+
     }
 
     @Override
@@ -217,7 +416,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     @Override
     public void removeResourceData(CResourceData data) throws CoreException {
         // TODO Auto-generated method stub
-
+        return;
     }
 
     @Override
@@ -241,13 +440,15 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     @Override
     public ICSourceEntry[] getSourceEntries() {
         // TODO Auto-generated method stub
-        return new CSourceEntry[0];
+        CSourceEntry[] ret = new CSourceEntry[1];
+        ret[0] = new CSourceEntry(myProject.getFolder("src"), null, 0); //$NON-NLS-1$
+        return ret;
     }
 
     @Override
     public void setSourceEntries(ICSourceEntry[] entries) {
         // TODO Auto-generated method stub
-
+        return;
     }
 
     @Override
@@ -505,42 +706,62 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myMakeArguments = makeArgs;
     }
 
-    public void applyToConfiguration(ICConfigurationDescription baseCfgDescription) {
-        if (myIsApplied) {
-            return;
+    public StringBuffer ToText(String linePrefix, String lineEnd) {
+        StringBuffer ret = new StringBuffer();
+        IProjectType projectType = myAutoBuildConfiguration.getProjectType();
+        ret.append(linePrefix + MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_POINT_ID + EQUALS
+                + projectType.getExtensionPointID() + lineEnd);
+        ret.append(linePrefix + MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_ID + EQUALS + projectType.getExtensionID()
+                + lineEnd);
+        ret.append(linePrefix + MODEL + DOT + PROJECT_TYPE + DOT + ID + EQUALS + projectType.getId() + lineEnd);
+        ret.append(linePrefix + MODEL + DOT + CONFIGURATION + DOT + NAME + EQUALS + myAutoBuildConfiguration.getName()
+                + lineEnd);
+
+        ret.append(linePrefix + NAME + EQUALS + myName + lineEnd);
+        ret.append(linePrefix + DESCRIPTION + EQUALS);
+        ret.append(myDescription);
+        ret.append(lineEnd);
+
+        ret.append(linePrefix + ID + EQUALS + myId + lineEnd);
+
+        for (Entry<String, String> curProp : myProperties.entrySet()) {
+            ret.append(linePrefix + PROPERTY + DOT + curProp.getKey() + EQUALS + curProp.getValue() + lineEnd);
         }
-        //        if (baseCfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-        //            String[] defaultIds = ((ILanguageSettingsProvidersKeeper) baseCfgDescription)
-        //                    .getDefaultLanguageSettingsProvidersIds();
-        //            List<ILanguageSettingsProvider> providers;
-        //            if (defaultIds == null) {
-        //                ICProjectDescription prjDescription = baseCfgDescription.getProjectDescription();
-        //                if (prjDescription != null) {
-        //                    IProject project = prjDescription.getProject();
-        //                    // propagate the preference to project properties
-        //                    ScannerDiscoveryLegacySupport.defineLanguageSettingsEnablement(project);
-        //                }
-        //
-        //                if (myAutoBuildConfiguration != null) {
-        //                    defaultIds = myAutoBuildConfiguration.getDefaultLanguageSettingsProviderIds()
-        //                            .toArray(new String[0]);
-        //                }
-        //                int a = 0;
-        //                if (defaultIds == null) {
-        //                    defaultIds = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(baseCfgDescription);
-        //                }
-        //                providers = LanguageSettingsManager.createLanguageSettingsProviders(defaultIds);
-        //            } else {
-        //                providers = ((ILanguageSettingsProvidersKeeper) baseCfgDescription).getLanguageSettingProviders();
-        //            }
-        //            if (myCdtConfigurationDescription instanceof ILanguageSettingsProvidersKeeper) {
-        //                ((ILanguageSettingsProvidersKeeper) myCdtConfigurationDescription)
-        //                        .setDefaultLanguageSettingsProvidersIds(defaultIds);
-        //                ((ILanguageSettingsProvidersKeeper) myCdtConfigurationDescription)
-        //                        .setLanguageSettingProviders(providers);
-        //            }
-        //        }
-        myIsApplied = true;
+        int counter = 0;
+        for (Entry<IResource, Map<String, String>> curOption : mySelectedOptions.entrySet()) {
+            IResource res = curOption.getKey();
+            String resourceID = res.getProjectRelativePath().toString();
+            for (Entry<String, String> resourceOptions : curOption.getValue().entrySet()) {
+                ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + EQUALS
+                        + resourceOptions.getKey() + lineEnd);
+                ret.append(linePrefix + OPTION + DOT + VALUE + DOT + String.valueOf(counter) + EQUALS
+                        + resourceOptions.getValue() + lineEnd);
+                ret.append(linePrefix + OPTION + DOT + RESOURCE + DOT + String.valueOf(counter) + EQUALS + resourceID
+                        + lineEnd);
+                counter++;
+            }
+        }
+
+        ret.append(linePrefix + BUILDFOLDER + EQUALS + myBuildFolder.getProjectRelativePath().toString() + lineEnd);
+        ret.append(
+                linePrefix + USE_DEFAULT_BUILD_COMMAND + EQUALS + String.valueOf(myUseDefaultBuildCommand) + lineEnd);
+        ret.append(linePrefix + GENERATE_MAKE_FILES_AUTOMATICALLY + EQUALS
+                + String.valueOf(myGenerateMakeFilesAUtomatically) + lineEnd);
+        ret.append(linePrefix + USE_STANDARD_BUILD_ARGUMENTS + EQUALS + String.valueOf(myUseStandardBuildArguments)
+                + lineEnd);
+        ret.append(
+                linePrefix + USE_CUSTOM_BUILD_ARGUMENTS + EQUALS + String.valueOf(myUseCustomBuildArguments) + lineEnd);
+        ret.append(linePrefix + STOP_ON_FIRST_ERROR + EQUALS + String.valueOf(myStopOnFirstBuildError) + lineEnd);
+        ret.append(linePrefix + IS_PARRALLEL_BUILD + EQUALS + String.valueOf(myIsParallelBuild) + lineEnd);
+        ret.append(linePrefix + IS_AUTOBUILD_ENABLED + EQUALS + String.valueOf(myIsAutoBuildEnable) + lineEnd);
+        ret.append(linePrefix + IS_CLEAN_BUILD_ENABLED + EQUALS + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
+        ret.append(linePrefix + IS_INCREMENTAL_BUILD_ENABLED + EQUALS + String.valueOf(myIsIncrementalBuildEnabled)
+                + lineEnd);
+        ret.append(linePrefix + USE_INTERNAL_BUILDER + EQUALS + String.valueOf(myIsInternalBuilderEnabled) + lineEnd);
+        ret.append(linePrefix + NUM_PARRALEL_BUILDS + EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
+        ret.append(linePrefix + MAKE_TARGETS + EQUALS + myMakeArguments + lineEnd);
+        return ret;
+
     }
 
 }

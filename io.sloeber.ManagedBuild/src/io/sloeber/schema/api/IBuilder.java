@@ -14,6 +14,8 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.util.Set;
+
 import org.eclipse.cdt.core.ICommandLauncher;
 //import org.eclipse.cdt.managedbuilder.macros.IFileContextBuildMacroValues;
 //import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
@@ -89,14 +91,14 @@ public interface IBuilder extends ISchemaObject {
      */
     public String getCommand();
 
-    /**
-     * Returns the semicolon separated list of unique IDs of the error parsers
-     * associated
-     * with the builder.
-     *
-     * @return String
-     */
-    public String getErrorParserIds();
+    //    /**
+    //     * Returns the semicolon separated list of unique IDs of the error parsers
+    //     * associated
+    //     * with the builder.
+    //     *
+    //     * @return String
+    //     */
+    //    public String getErrorParserIds();
 
     /**
      * Returns the ordered list of unique IDs of the error parsers associated with
@@ -105,7 +107,7 @@ public interface IBuilder extends ISchemaObject {
      *
      * @return String[]
      */
-    public String[] getErrorParserList();
+    public Set<String> getErrorParserList();
 
     /**
      * Returns the tool-chain that is the parent of this builder.

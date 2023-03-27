@@ -22,11 +22,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IProjectType;
 
 public class CreateBasicProjects {
@@ -74,7 +74,7 @@ public class CreateBasicProjects {
                     if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
                         String projectID = element.getAttribute(ID);
                         if(testProjectTypeIds.contains(projectID)) {
-                        IProjectType projectType = ManagedBuildManager.getProjectType(extensionPointID, extensionID,
+                        IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID,
                                 projectID, true);
                         if (projectType != null && projectType.isCompatibleWithLocalOS() && !projectType.isAbstract()) {
                             String buildArtifactType = projectType.getBuildArtifactType();

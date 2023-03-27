@@ -20,7 +20,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
 
@@ -62,7 +62,7 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
             try {
                 iconPathURL = new URL(modelIcon[SUPER]);
             } catch (@SuppressWarnings("unused") MalformedURLException e) {
-                ManagedBuildManager.outputIconError(modelIcon[SUPER]);
+                AutoBuildManager.outputIconError(modelIcon[SUPER]);
                 iconPathURL = null;
             }
         }

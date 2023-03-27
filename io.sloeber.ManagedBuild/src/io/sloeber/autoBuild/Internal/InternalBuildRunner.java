@@ -44,6 +44,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -105,7 +106,7 @@ public class InternalBuildRunner extends IBuildRunner {
                     errorParsers);
 
             List<IConsoleParser> parsers = new ArrayList<>();
-            ManagedBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
+            AutoBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
 
             buildRunnerHelper.prepareStreams(epm, parsers, console, parentMon.newChild(5));
 

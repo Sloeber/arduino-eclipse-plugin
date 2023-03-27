@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.core.IGenerator;
 
-import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IConfiguration;
@@ -80,7 +79,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
                 ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
 
-                IProjectType sloeberProjType = ManagedBuildManager.getProjectType(myExtensionPointID, myExtensionID,
+                IProjectType sloeberProjType = AutoBuildManager.getProjectType(myExtensionPointID, myExtensionID,
                         myProjectTypeID, true);
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
@@ -90,7 +89,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                     AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject);
                     assert (data != null);
                     ICConfigurationDescription cdtCfgDes = des
-                            .createConfiguration(ConfigurationDataProvider.CFG_DATA_PROVIDER_ID, data);
+                            .createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
                     data.setCdtConfigurationDescription(cdtCfgDes);
 
                     //Set the language Settings

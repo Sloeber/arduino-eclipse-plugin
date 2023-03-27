@@ -17,6 +17,7 @@ package io.sloeber.schema.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
@@ -257,5 +258,7 @@ public interface IConfiguration extends ISchemaObject {
 
     public Map<IResource, Map<String, String>> getDefaultProjectOptions(
             AutoBuildConfigurationDescription autoBuildConfigurationData);
+
+    public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
 
 }

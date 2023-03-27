@@ -61,7 +61,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
     private Map<String, Tool> myToolMap = new HashMap<>();
     private TargetPlatform myTargetPlatform = null;
     private Builder myBuilder;
-    List<String> myErrorParsersIDs = new LinkedList<>();
+    Set<String> myErrorParsersIDs = new HashSet<>();
     // Managed Build model attributes
     private List<String> myArchList = new ArrayList<>();
     private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
@@ -176,7 +176,8 @@ public class ToolChain extends SchemaObject implements IToolChain {
             String toolErrorIDs[] = curTool.getErrorParserList();
             myErrorParsersIDs.addAll(Arrays.asList(toolErrorIDs));
         }
-
+        myErrorParsersIDs.addAll(myBuilder.getErrorParserList());
+        myErrorParsersIDs.remove(EMPTY_STRING);
     }
 
     // 
@@ -317,7 +318,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
 
     // 
     @Override
-    public List<String> getErrorParserList() {
+    public Set<String> getErrorParserList() {
         return myErrorParsersIDs;
     }
 

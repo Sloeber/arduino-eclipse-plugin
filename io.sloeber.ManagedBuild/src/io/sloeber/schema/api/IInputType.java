@@ -45,8 +45,6 @@ public interface IInputType extends ISchemaObject {
      *
      * @return IContentType
      */
-    public IContentType getSourceContentType();
-
     public List<IContentType> getSourceContentTypes();
 
     //    public String[] getSourceContentTypeIds();
@@ -181,5 +179,7 @@ public interface IInputType extends ISchemaObject {
      *         the input files to
      */
     public String getAssignToCmdVarriable();
+
+    public String getLanguageID();
 
 }

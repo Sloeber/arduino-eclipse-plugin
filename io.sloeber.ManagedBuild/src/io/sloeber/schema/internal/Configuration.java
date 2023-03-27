@@ -20,15 +20,18 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -38,7 +41,9 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
+import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
 public class Configuration extends SchemaObject implements IConfiguration {
@@ -69,7 +74,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private List<String> defaultLanguageSettingsProviderIds = new ArrayList<>();
 
     private boolean isPreferenceConfig;
-    private List<String> myErrorParserIDs = new LinkedList<>();
+    private Set<String> myErrorParserIDs = new HashSet<>();
 
     /**
      * Create an configuration from the project manifest file element.
@@ -118,9 +123,10 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     private void resolveFields() {
         String errorParserIDs[] = modelerrorParsers[SUPER].split(SEMICOLON);
-        List<String> builderErroParserIds = myToolchain.getErrorParserList();
+        Set<String> builderErroParserIds = myToolchain.getErrorParserList();
         myErrorParserIDs.addAll(Arrays.asList(errorParserIDs));
         myErrorParserIDs.addAll(builderErroParserIds);
+        myErrorParserIDs.remove(EMPTY_STRING);
 
         if (modelcleanCommand[SUPER].isBlank()) {
             if (Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -308,7 +314,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     @Override
     public Map<IResource, Map<String, String>> getDefaultProjectOptions(
             AutoBuildConfigurationDescription autoBuildConfigurationData) {
-        // TODO Auto-generated method stub
         Map<String, String> retOptions = getDefaultOptions(autoBuildConfigurationData.getProject(),
                 autoBuildConfigurationData);
         retOptions.putAll(myToolchain.getDefaultProjectOptions(autoBuildConfigurationData));
@@ -319,6 +324,30 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     public boolean isCompatibleWithLocalOS() {
         return myToolchain.isCompatibleWithLocalOS();
+    }
+
+    @Override
+    public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData) {
+        IProject project = autoBuildConfData.getProject();
+        Map<String, Set<IInputType>> ret = new HashMap<>();
+        for (ITool curTool : myToolchain.getTools()) {
+            for (IInputType curInputType : curTool.getInputTypes()) {
+                if (!curInputType.isEnabled(project, autoBuildConfData)) {
+                    continue;
+                }
+                String languageID = curInputType.getLanguageID();
+                Set<IInputType> inputTypes = ret.get(languageID);
+                if (inputTypes == null) {
+                    inputTypes = new HashSet<>();
+                    inputTypes.add(curInputType);
+                    ret.put(languageID, inputTypes);
+                } else {
+                    inputTypes.add(curInputType);
+                }
+            }
+        }
+        ret.remove(BLANK);
+        return ret;
     }
 
 }

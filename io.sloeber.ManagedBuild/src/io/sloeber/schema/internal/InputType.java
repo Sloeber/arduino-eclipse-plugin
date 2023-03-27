@@ -144,20 +144,6 @@ public class InputType extends SchemaObject implements IInputType {
         return dependencyContentType;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.IInputType#getSourceContentType()
-     */
-    @Override
-    public IContentType getSourceContentType() {
-        List<IContentType> types = getSourceContentTypes();
-        if (types.isEmpty()) {
-            return null;
-        }
-        return types.get(0);
-    }
-
     @Override
     public List<IContentType> getSourceContentTypes() {
         return mySourceContentTypes;
@@ -279,6 +265,11 @@ public class InputType extends SchemaObject implements IInputType {
     @Override
     public String getAssignToCmdVarriable() {
         return modelAssignToCommandVarriable[SUPER];
+    }
+
+    @Override
+    public String getLanguageID() {
+        return modelLanguageID[SUPER];
     }
 
 }
