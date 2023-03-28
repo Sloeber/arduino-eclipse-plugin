@@ -59,6 +59,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
+import io.sloeber.autoBuild.ui.internal.Messages;
+
 public class CDTMainWizardPage extends WizardNewProjectCreationPage implements IWizardItemsListListener {
     public static final String PAGE_ID = "org.eclipse.cdt.managedbuilder.ui.wizard.NewModelProjectWizardPage"; //$NON-NLS-1$
 

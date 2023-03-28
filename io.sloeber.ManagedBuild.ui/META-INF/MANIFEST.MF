@@ -19,5 +19,5 @@ Require-Bundle: org.eclipse.tools.templates.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: io.sloeber.autoBuild.ui.internal.Activator2
+Bundle-Activator: io.sloeber.autoBuild.ui.internal.Activator
 Automatic-Module-Name: io.sloeber.core

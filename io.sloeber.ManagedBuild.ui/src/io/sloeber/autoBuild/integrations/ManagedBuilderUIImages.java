@@ -11,7 +11,7 @@
  * Contributors:
  * IBM Rational Software - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autobuild.cdt.ui;
+package io.sloeber.autoBuild.integrations;
 
 import java.net.MalformedURLException;
 import java.net.URL;

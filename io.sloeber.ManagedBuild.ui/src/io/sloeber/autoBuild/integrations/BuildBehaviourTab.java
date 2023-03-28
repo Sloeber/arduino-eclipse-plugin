@@ -12,7 +12,7 @@
  * Intel Corporation - Initial API and implementation
  * IBM Corporation
  *******************************************************************************/
-package io.sloeber.autobuild.cdt.ui;
+package io.sloeber.autoBuild.integrations;
 
 import java.text.MessageFormat;
 
@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.ui.internal.Messages;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

@@ -1,4 +1,4 @@
-package io.sloeber.autobuild.cdt.ui;
+package io.sloeber.autoBuild.integrations;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -17,15 +17,16 @@ public abstract class AbstractAutoBuildPropertyTab extends AbstractCPropertyTab 
 
     @Override
     public void updateData(ICResourceDescription cfgd) {
-        if (cfgd == null)
-            return;
+
         for (ICConfigurationDescription curcfg : page.getCfgsEditable()) {
             if (myAutoConfDescMap.get(curcfg.getId()) == null) {
-                IAutoBuildConfigurationDescription autoCfg = AutoBuildProject.getAutoBuildConfig(curcfg);
-                myAutoConfDescMap.put(curcfg.getId(), autoCfg);
+                myAutoConfDesc = AutoBuildProject.getAutoBuildConfig(curcfg);
+                myAutoConfDescMap.put(curcfg.getId(), myAutoConfDesc);
             }
         }
-        myAutoConfDesc = myAutoConfDescMap.get(cfgd.getConfiguration().getId());
+        if (cfgd != null) {
+            myAutoConfDesc = myAutoConfDescMap.get(cfgd.getConfiguration().getId());
+        }
         updateButtons();
     }
 

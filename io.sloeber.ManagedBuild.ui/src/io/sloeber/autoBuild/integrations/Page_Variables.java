@@ -11,7 +11,7 @@
  * Contributors:
  *     Intel Corporation - initial API and implementation
  *******************************************************************************/
-package io.sloeber.autobuild.cdt.ui;
+package io.sloeber.autoBuild.integrations;
 
 import org.eclipse.cdt.ui.newui.AbstractPage;
 

@@ -377,6 +377,10 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             //at org.eclipse.cdt.internal.ui.language.settings.providers.LanguageSettingsEntriesTab.getConfigurationDescription(LanguageSettingsEntriesTab.java:256)
             retTest = new FolderData(myProject, this);
         }
+        if (option == 4) {
+            //"src" didn't work "" is project creation failure
+            retTest = new FolderData(myProject.getFolder("src"), this);
+        }
         //project creation fails
         //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.extension.CFolderData.getPath()" because "baseRootFolderData" is null
         //at org.eclipse.cdt.core.settings.model.extension.impl.CDefaultConfigurationData.copySettingsFrom(CDefaultConfigurationData.java:117)

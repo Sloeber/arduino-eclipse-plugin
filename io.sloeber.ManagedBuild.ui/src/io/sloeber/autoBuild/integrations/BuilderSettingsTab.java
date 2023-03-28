@@ -14,7 +14,7 @@
  * Dmitry Kozlov (CodeSourcery) - save build output preferences (bug 294106)
  * Andrew Gvozdev (Quoin Inc)   - Saving build output implemented in different way (bug 306222)
  *******************************************************************************/
-package io.sloeber.autobuild.cdt.ui;
+package io.sloeber.autoBuild.integrations;
 
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
+import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.schema.api.IConfiguration;
 
 /**
