@@ -14,15 +14,14 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integrations;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.text.MessageFormat;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICMultiConfigDescription;
-import org.eclipse.cdt.core.settings.model.ICMultiItemsHolder;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -137,8 +136,8 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 if (b_parallelOptimal.getSelection()) {
-                    setParallelDef(true);
-                    setParallelNumber(IAutoBuildConfigurationDescription.PARRALLEL_BUILD_OPTIMAL_JOBS);
+                    myAutoConfDesc.setIsParallelBuild(true);
+                    myAutoConfDesc.setParallelizationNum(PARRALLEL_BUILD_OPTIMAL_JOBS);
                     updateButtons();
                 }
             }
@@ -152,8 +151,8 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 if (b_parallelSpecific.getSelection()) {
-                    setParallelDef(true);
-                    setParallelNumber(s_parallelNumber.getSelection());
+                    myAutoConfDesc.setIsParallelBuild(true);
+                    myAutoConfDesc.setParallelizationNum(s_parallelNumber.getSelection());
                     updateButtons();
                 }
             }
@@ -165,8 +164,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         s_parallelNumber.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setParallelDef(true);
-                setParallelNumber(s_parallelNumber.getSelection());
+                myAutoConfDesc.setParallelizationNum(s_parallelNumber.getSelection());
                 updateButtons();
             }
         });
@@ -186,8 +184,8 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 if (b_parallelUnlimited.getSelection()) {
-                    setParallelDef(true);
-                    setParallelNumber(Integer.MAX_VALUE);
+                    myAutoConfDesc.setIsParallelBuild(true);
+                    myAutoConfDesc.setParallelizationNum(PARRALLEL_BUILD_UNLIMITED_JOBS);
                     updateButtons();
                 }
             }
@@ -410,36 +408,8 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
 
         boolean isParallelSupported = myAutoConfDesc.supportsParallelBuild();
         boolean isParallelOn = myAutoConfDesc.isParallelBuild();
-        int triSelection = isParallelOn ? TRI_YES : TRI_NO;
 
-        int parallelizationNumInternal = myAutoConfDesc.getParallelizationNum();
         int optimalParallelNumber = myAutoConfDesc.getOptimalParallelJobNum();
-        int parallelNumber = myAutoConfDesc.getParallelizationNum();
-
-        boolean isAnyParallelOn = isParallelOn;
-        boolean isAnyParallelSupported = isParallelSupported;
-        boolean isParallelDiffers = false;
-        for (ICConfigurationDescription cfg : page.getCfgsEditable()) {
-            //TOFIX JABA add support multiple configs
-            IAutoBuildConfigurationDescription builder = AutoBuildProject.getAutoBuildConfig(cfg);
-            isParallelDiffers = isParallelDiffers || builder.isParallelBuild() != isParallelOn
-                    || builder.getParallelizationNum() != parallelizationNumInternal;
-
-            isAnyParallelOn = isAnyParallelOn || builder.isParallelBuild();
-            isAnyParallelSupported = isAnyParallelSupported || builder.supportsParallelBuild();
-        }
-
-        // reset initial display to "optimal" to enhance user experience:
-        if ((!isParallelSupported && isAnyParallelSupported) // parallel is supported by other than Active cfg
-                || (!isParallelOn && isAnyParallelOn) // prevent showing the 1 job as parallel in the spinner
-        ) {
-            isParallelSupported = true;
-            parallelizationNumInternal = -optimalParallelNumber;
-            parallelNumber = optimalParallelNumber;
-        }
-        if (isParallelSupported && isParallelDiffers) {
-            triSelection = TRI_UNKNOWN;
-        }
 
         b_parallel.setVisible(isParallelSupported);
         b_parallelOptimal.setVisible(isParallelSupported);
@@ -447,45 +417,57 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         b_parallelUnlimited.setVisible(isParallelSupported);
         s_parallelNumber.setVisible(isParallelSupported);
 
-        if (isParallelSupported) {
-            if (defaultBuildArguments) {
-                b_parallel.setEnabled(true);
-                s_parallelNumber.setEnabled(true);
-
-                setTriSelection(b_parallel, triSelection);
-                boolean isParallelSelected = b_parallel.getSelection();
-
-                b_parallelOptimal.setText(
-                        MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, optimalParallelNumber));
-                b_parallelOptimal.setEnabled(isParallelSelected);
-                b_parallelSpecific.setEnabled(isParallelSelected);
-                b_parallelUnlimited.setEnabled(isParallelSelected);
-
-                if (isParallelSelected) {
-                    boolean isOptimal = parallelizationNumInternal <= 0;
-                    boolean isUnlimited = parallelizationNumInternal == IAutoBuildConfigurationDescription.PARRALLEL_BUILD_UNLIMITED_JOBS;
-
-                    b_parallelOptimal.setSelection(isOptimal);
-                    b_parallelSpecific.setSelection(!isOptimal && !isUnlimited);
-                    b_parallelUnlimited.setSelection(isUnlimited);
-                    s_parallelNumber.setEnabled(b_parallelSpecific.getEnabled() && b_parallelSpecific.getSelection());
-                    s_parallelNumber
-                            .setSelection(s_parallelNumber.isEnabled() ? parallelNumber : optimalParallelNumber);
-                } else {
-                    b_parallelOptimal.setSelection(true);
-                    b_parallelSpecific.setSelection(false);
-                    b_parallelUnlimited.setSelection(false);
-                    s_parallelNumber.setEnabled(false);
-                    s_parallelNumber.setSelection(optimalParallelNumber);
-                }
-            } else {
-                b_parallel.setEnabled(false);
-                b_parallelOptimal.setEnabled(false);
-                b_parallelSpecific.setEnabled(false);
-                b_parallelUnlimited.setEnabled(false);
-                s_parallelNumber.setEnabled(false);
-            }
+        if (!isParallelSupported) {
+            return;
         }
+        if (!defaultBuildArguments) {
+            b_parallel.setEnabled(false);
+            b_parallelOptimal.setEnabled(false);
+            b_parallelSpecific.setEnabled(false);
+            b_parallelUnlimited.setEnabled(false);
+            s_parallelNumber.setEnabled(false);
+            return;
+        }
+        b_parallel.setEnabled(true);
+        b_parallelOptimal.setEnabled(isParallelOn);
+        b_parallelSpecific.setEnabled(isParallelOn);
+        b_parallelUnlimited.setEnabled(isParallelOn);
+
+        setTriSelection(b_parallel, isParallelOn);
+
+        b_parallelOptimal
+                .setText(MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, optimalParallelNumber));
+
+        switch (myAutoConfDesc.getParallelizationNum()) {
+        case PARRALLEL_BUILD_UNLIMITED_JOBS:
+            b_parallelUnlimited.setSelection(true);
+            s_parallelNumber.setEnabled(false);
+            break;
+        case PARRALLEL_BUILD_OPTIMAL_JOBS:
+            b_parallelOptimal.setSelection(true);
+            s_parallelNumber.setEnabled(false);
+            break;
+        default:
+            b_parallelSpecific.setSelection(true);
+            s_parallelNumber.setEnabled(true);
+            break;
+        }
+        //                if (isParallelSelected) {
+        //                    boolean isOptimal = parallelizationNumInternal <= 0;
+        //                    boolean isUnlimited = parallelizationNumInternal == PARRALLEL_BUILD_UNLIMITED_JOBS;
+        //
+        //                    b_parallelOptimal.setSelection(isOptimal);
+        //                    b_parallelSpecific.setSelection(!isOptimal && !isUnlimited);
+        //                    b_parallelUnlimited.setSelection(isUnlimited);
+        //                    s_parallelNumber.setEnabled(b_parallelSpecific.getEnabled() && b_parallelSpecific.getSelection());
+        //
+        //                } else {
+        //                    b_parallelOptimal.setSelection(true);
+        //                    b_parallelSpecific.setSelection(false);
+        //                    b_parallelUnlimited.setSelection(false);
+        //                    s_parallelNumber.setEnabled(false);
+        //                    s_parallelNumber.setSelection(optimalParallelNumber);
+        //                }
     }
 
     /**
@@ -630,33 +612,8 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         for (ICConfigurationDescription cfg : page.getCfgsEditable()) {
             //IAutoBuildConfigurationDescription b = AutoBuildProject.getAutoBuildConfig(cfg);
             //TOFIX JABA add support for multiple config select
-            myAutoConfDesc.setMakeArguments(makeArgs);
+            myAutoConfDesc.setCustomBuildCommand(makeArgs);
         }
-    }
-
-    private void setParallelDef(boolean def) {
-        for (ICConfigurationDescription cfg : page.getCfgsEditable()) {
-            //IAutoBuildConfigurationDescription b = AutoBuildProject.getAutoBuildConfig(cfg);
-            //TOFIX JABA add support for multiple config select
-            myAutoConfDesc.setIsParallelBuild(def);
-        }
-    }
-
-    private void setParallelNumber(int num) {
-        for (ICConfigurationDescription cfg : page.getCfgsEditable()) {
-            //IAutoBuildConfigurationDescription b = AutoBuildProject.getAutoBuildConfig(cfg);
-            //TOFIX JABA add support for multiple config select
-            myAutoConfDesc.setParallelizationNum(num);
-        }
-    }
-
-    private boolean isInternalBuilderEnabled() {
-        for (ICConfigurationDescription cfg : page.getCfgsEditable()) {
-            //IAutoBuildConfigurationDescription b = AutoBuildProject.getAutoBuildConfig(cfg);
-            //TOFIX JABA add support for multiple config select
-            return myAutoConfDesc.isInternalBuilderEnabled();
-        }
-        return false;
     }
 
     private void setBuildAttribute(String name, String value) {

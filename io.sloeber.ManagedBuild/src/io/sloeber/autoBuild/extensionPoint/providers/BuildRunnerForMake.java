@@ -34,7 +34,6 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.internal.core.BuildRunnerHelper;
 import org.eclipse.cdt.utils.CommandLineUtil;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -47,6 +46,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -54,7 +54,7 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
-public class BuildRunner extends IBuildRunner {
+public class BuildRunnerForMake extends IBuildRunner {
 
     @Override
     public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
@@ -71,23 +71,23 @@ public class BuildRunner extends IBuildRunner {
 
         boolean isClean = (kind == IncrementalProjectBuilder.CLEAN_BUILD);
 
-        String buildCommand = AutoBuildCommon.resolve(builder.getCommand(), autoData);
+        String buildCommand = AutoBuildCommon.resolve(autoData.getBuildCommand(false), autoData);
         if (buildCommand.isBlank()) {
             String msg = MessageFormat.format(ManagedMakeBuilder_message_undefined_build_command, builder.getId());
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, new Exception()));
         }
 
-        try (BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);) {
+        try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);) {
 
             monitor.beginTask(MakeBuilder_Invoking_Make_Builder + project.getName(), 4);
 
             String cfgName = confDesc.getName();
             ICommandLauncher launcher = builder.getCommandLauncher();
-            String[] args = getCommandArguments(kind, builder, autoData);
+            String[] args = getMakeArguments(kind, builder, autoData);
             IFolder buildFolder = configuration.getBuildFolder(confDesc);
             URI buildFolderURI = buildFolder.getLocationURI();
 
-            String[] envp = BuildRunnerHelper.envMapToEnvp(getEnvironment(confDesc, builder));
+            String[] envp = AutoBuildRunnerHelper.envMapToEnvp(getEnvironment(confDesc, builder));
 
             String[] errorParsers = autoData.getErrorParserList();
             ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator, errorParsers);
@@ -129,17 +129,19 @@ public class BuildRunner extends IBuildRunner {
         return isClean;
     }
 
-    private static String[] getCommandArguments(int kind, IBuilder builder, AutoBuildConfigurationDescription autoData) {
-        String[] targets = getBuildTargets(kind, builder, autoData);
-        String builderArguments = AutoBuildCommon.resolve(builder.getArguments(), autoData);
-        String[] builderArgs = CommandLineUtil.argumentsToArray(builderArguments);
+    private static String[] getMakeArguments(int kind, IBuilder builder, AutoBuildConfigurationDescription autoData) {
+        String[] targets = getMakeTargets(kind, builder, autoData);
+        String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),
+                autoData.stopOnFirstBuildError());
+        String resolvedBuilderArguments = AutoBuildCommon.resolve(builderArguments, autoData);
+        String[] builderArgs = CommandLineUtil.argumentsToArray(resolvedBuilderArguments);
         String[] args = new String[targets.length + builderArgs.length];
         System.arraycopy(builderArgs, 0, args, 0, builderArgs.length);
         System.arraycopy(targets, 0, args, builderArgs.length, targets.length);
         return args;
     }
 
-    private static String[] getBuildTargets(int kind, IBuilder builder, AutoBuildConfigurationDescription autoData) {
+    private static String[] getMakeTargets(int kind, IBuilder builder, AutoBuildConfigurationDescription autoData) {
         String targets = EMPTY_STRING;
         switch (kind) {
         case IncrementalProjectBuilder.AUTO_BUILD:

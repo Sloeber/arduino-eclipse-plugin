@@ -18,7 +18,6 @@ package io.sloeber.autoBuild.Internal;
 
 import static io.sloeber.autoBuild.core.Messages.*;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.internal.core.BuildRunnerHelper;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
@@ -70,17 +68,16 @@ public class InternalBuildRunner extends IBuildRunner {
         IProject project = autoData.getProject();
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
-        BuildRunnerHelper buildRunnerHelper = new BuildRunnerHelper(project);
 
-        try {
+        try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);) {
             if (monitor == null) {
                 monitor = new NullProgressMonitor();
             }
             monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
                     + TICKS_REFRESH_PROJECT);
 
-            boolean isParallel = builder.getParallelizationNum() > 1;
-            boolean resumeOnErr = !builder.isStopOnError();
+            boolean isParallel = autoData.getParallelizationNum() > 1;
+            boolean resumeOnErr = !autoData.stopOnFirstBuildError();
 
             int flags = 0;
             IResourceDelta delta = projectBuilder.getDelta(project);
@@ -101,7 +98,7 @@ public class InternalBuildRunner extends IBuildRunner {
 
             IFolder buildFolder = configuration.getBuildFolder(cfgDescription);
 
-            String[] errorParsers = builder.getErrorParsers();
+            String[] errorParsers = builder.getErrorParserList().toArray(new String[0]);
             ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
                     errorParsers);
 
@@ -171,15 +168,8 @@ public class InternalBuildRunner extends IBuildRunner {
             String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
                     new String[] { project.getName(), configuration.getName() });
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
-        } finally {
-            try {
-                buildRunnerHelper.close();
-            } catch (IOException e) {
-                Activator.log(e);
-            }
-            monitor.done();
         }
-
+        monitor.done();
         return false;
     }
 

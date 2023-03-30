@@ -22,6 +22,9 @@ public class AutoBuildConstants {
     public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
     public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
 
+    public static final int PARRALLEL_BUILD_UNLIMITED_JOBS = -1;
+    public static final int PARRALLEL_BUILD_OPTIMAL_JOBS = -2;
+
     public static final String PROJECT_NAME_VARIABLE = "${ProjName}";
 
     // preference nodes
@@ -32,6 +35,7 @@ public class AutoBuildConstants {
 
     // java stuff so I do not have to add all the time $NON-NLS-1$
     public static final String DOT = ".";
+    public static final String ASTERISK = "*";
     public static final String AT_SYMBOL = "@";
     public static final String PROCENT = "%";
     public static final String SLACH = "/";

@@ -50,7 +50,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
     private Text t_buildCmd;
     //2
     private Button b_genMakefileAuto;
-    private Button b_expandVars;
+    //private Button b_expandVars;
     //5
     private Text t_dir;
     private Button b_dirWsp;
@@ -75,7 +75,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         c_builderType.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                enableInternalBuilder(c_builderType.getSelectionIndex() == 1);
+                myAutoConfDesc.enableInternalBuilder(c_builderType.getSelectionIndex() == 1);
                 updateButtons();
             }
         });
@@ -90,9 +90,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
                 if (!canModify)
                     return;
                 String buildCommand = t_buildCmd.getText().trim();
-                //				if (!buildCommand.equals(bldr.getCommand())) {
-                //					setCommand(buildCommand);
-                //				}
+                myAutoConfDesc.setCustomBuildCommand(buildCommand);
             }
         });
 
@@ -103,7 +101,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         ((GridLayout) (g2.getLayout())).makeColumnsEqualWidth = true;
 
         b_genMakefileAuto = setupCheck(g2, Messages.BuilderSettingsTab_7, 1, GridData.BEGINNING);
-        b_expandVars = setupCheck(g2, Messages.BuilderSettingsTab_8, 1, GridData.BEGINNING);
+        //    b_expandVars = setupCheck(g2, Messages.BuilderSettingsTab_8, 1, GridData.BEGINNING);
 
         // Build location group
         group_dir = setupGroup(usercomp, Messages.BuilderSettingsTab_21, 2, GridData.FILL_HORIZONTAL);
@@ -138,48 +136,21 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
      */
     @Override
     protected void updateButtons() {
-        //bldr = icfg.getEditableBuilder();
 
         canModify = false; // avoid extra update from modifyListeners
-        int[] extStates = null;//TOFIX JABA removed multiple config for now original code =>BuildBehaviourTab.calc3states(page,  0);
+        BuildBehaviourTab.setTriSelection(b_genMakefileAuto, myAutoConfDesc.generateMakeFilesAUtomatically());
+        BuildBehaviourTab.setTriSelection(b_useDefaultBuildCommand, myAutoConfDesc.useDefaultBuildCommand());
+        c_builderType.select(myAutoConfDesc.isInternalBuilderEnabled() ? 1 : 0);
+        c_builderType.setEnabled(myAutoConfDesc.isInternalBuilderEnabled());
 
-        //		b_genMakefileAuto.setEnabled(icfg.supportsBuild(true));
-        if (extStates == null) { // no extended states available
-            //			BuildBehaviourTab.setTriSelection(b_genMakefileAuto, bldr.isManagedBuildOn());
-            //			BuildBehaviourTab.setTriSelection(b_useDefaultBuildCommand, bldr.isDefaultBuildCmdOnly());
-            //			// b_expandVars.setGrayed(false);
-            //			if (!bldr.canKeepEnvironmentVariablesInBuildfile())
-            //				b_expandVars.setEnabled(false);
-            //			else {
-            //				b_expandVars.setEnabled(true);
-            //				BuildBehaviourTab.setTriSelection(b_expandVars, !bldr.keepEnvironmentVariablesInBuildfile());
-            //			}
-        } else {
-            BuildBehaviourTab.setTriSelection(b_genMakefileAuto, extStates[0]);
-            BuildBehaviourTab.setTriSelection(b_useDefaultBuildCommand, extStates[4]);
-            if (extStates[2] != BuildBehaviourTab.TRI_YES)
-                b_expandVars.setEnabled(false);
-            else {
-                b_expandVars.setEnabled(true);
-                BuildBehaviourTab.setTriSelection(b_expandVars, extStates[3]);
-            }
-        }
-        c_builderType.select(isInternalBuilderEnabled() ? 1 : 0);
-        c_builderType.setEnabled(canEnableInternalBuilder(true) && canEnableInternalBuilder(false));
+        t_buildCmd.setText(nonNull(myAutoConfDesc.getBuildCommand(true)));
 
-        //t_buildCmd.setText(nonNull(icfg.getBuildCommand()));
-
-        if (page.isMultiCfg()) {
-            group_dir.setVisible(false);
-        } else {
-            group_dir.setVisible(true);
-            //			t_dir.setText(bldr.getBuildPath());
-            //			boolean mbOn = bldr.isManagedBuildOn();
-            //			t_dir.setEnabled(!mbOn);
-            //			b_dirVars.setEnabled(!mbOn);
-            //			b_dirWsp.setEnabled(!mbOn);
-            //			b_dirFile.setEnabled(!mbOn);
-        }
+        group_dir.setVisible(true);
+        t_dir.setText("${ProjDirPath}/" + myAutoConfDesc.getBuildFolder().getProjectRelativePath().toString());
+        t_dir.setEnabled(true);
+        b_dirVars.setEnabled(true);
+        b_dirWsp.setEnabled(true);
+        b_dirFile.setEnabled(true);
         boolean external = (c_builderType.getSelectionIndex() == 0);
 
         b_useDefaultBuildCommand.setEnabled(external);
@@ -187,8 +158,8 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         ((Control) t_buildCmd.getData()).setEnabled(external & !b_useDefaultBuildCommand.getSelection());
 
         //		b_genMakefileAuto.setEnabled(external && icfg.supportsBuild(true));
-        if (b_expandVars.getEnabled())
-            b_expandVars.setEnabled(external && b_genMakefileAuto.getSelection());
+        //        if (b_expandVars.getEnabled())
+        //            b_expandVars.setEnabled(external && b_genMakefileAuto.getSelection());
 
         if (external) { // just set relatet text widget state,
             checkPressed(b_useDefaultBuildCommand, false); // do not update
@@ -288,10 +259,10 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
             return;
 
         if (b == b_useDefaultBuildCommand) {
-            setUseDefaultBuildCmd(!val);
+            myAutoConfDesc.setUseDefaultBuildCommand(!val);
         } else if (b == b_genMakefileAuto) {
             setManagedBuild(val);
-        } else if (b == b_expandVars) {
+            //        } else if (b == b_expandVars) {
             //			if (bldr.canKeepEnvironmentVariablesInBuildfile())
             //				setKeepEnvironmentVariablesInBuildfile(!val);
         }

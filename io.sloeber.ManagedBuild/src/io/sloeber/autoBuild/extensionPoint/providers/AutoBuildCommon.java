@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -529,21 +530,19 @@ public class AutoBuildCommon {
     }
 
     /**
-     * @return the a random number as a positive integer.
+     * Returns the optimal number of parallel jobs.
+     * The number is the number of available processors on the machine.
+     *
+     * The function never returns number smaller than 1.
      */
-    public static int getRandomNumber() {
-        if (randomNumber == null) {
-            // Set the random number seed
-            randomNumber = new Random();
-            randomNumber.setSeed(System.currentTimeMillis());
-        }
-        int i = randomNumber.nextInt();
-        if (i < 0) {
-            i *= -1;
-        }
-        return i;
+    public static int getOptimalParallelJobNum() {
+        // Bug 398426: On my Mac running parallel builds at full tilt hangs the desktop.
+        // Need to pull it back one.
+        int j = Runtime.getRuntime().availableProcessors();
+        if (j > 1 && isMac)
+            return j - 1;
+        return j;
     }
-
 }
 
 ///**

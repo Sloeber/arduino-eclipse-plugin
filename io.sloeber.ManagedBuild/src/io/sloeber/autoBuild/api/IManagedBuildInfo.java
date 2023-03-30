@@ -52,15 +52,6 @@ public interface IManagedBuildInfo {
      */
 
     /**
-     * Answers a <code>String</code> containing the arguments to be passed to make.
-     * For example, if the user has selected a build that keeps going on error, the
-     * answer would contain {"-k"}.
-     *
-     * @return String
-     */
-    public String getBuildArguments();
-
-    /**
      * Answers the file extension for the receivers build goal without a separator.
      *
      * @return the extension or an empty string if none is defined
@@ -73,14 +64,6 @@ public interface IManagedBuildInfo {
      * @return Name of the build artifact
      */
     public String getBuildArtifactName();
-
-    /**
-     * Answers a <code>String</code> containing the make command invocation
-     * for the default configuration.
-     * 
-     * @return build command
-     */
-    public String getBuildCommand();
 
     /**
      * Answers the prebuild step for the default configuration
@@ -178,15 +161,15 @@ public interface IManagedBuildInfo {
      */
     public String getVersion();
 
-//    /**
-//     * Answers <code>true</code> if the extension matches one of the special
-//     * file extensions the tools for the configuration consider to be a header file.
-//     *
-//     * @param ext
-//     *            the file extension of the resource
-//     * @return boolean
-//     */
-//    public boolean isHeaderFile(String ext);
+    //    /**
+    //     * Answers <code>true</code> if the extension matches one of the special
+    //     * file extensions the tools for the configuration consider to be a header file.
+    //     *
+    //     * @param ext
+    //     *            the file extension of the resource
+    //     * @return boolean
+    //     */
+    //    public boolean isHeaderFile(String ext);
 
     /**
      * Gets the "valid" status of Managed Build Info. Managed Build Info is invalid

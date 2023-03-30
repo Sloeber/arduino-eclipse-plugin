@@ -3,74 +3,72 @@ package io.sloeber.autoBuild.api;
 import org.eclipse.core.resources.IFolder;
 
 public interface IAutoBuildConfigurationDescription {
-	static final int PARRALLEL_BUILD_UNLIMITED_JOBS =-1;
-	static final int PARRALLEL_BUILD_OPTIMAL_JOBS =0;
 
-	boolean useDefaultBuildCommand();
+    boolean useDefaultBuildCommand();
 
-	void setUseDefaultBuildCommand(boolean useDefaultBuildCommand);
+    void setUseDefaultBuildCommand(boolean useDefaultBuildCommand);
 
-	boolean generateMakeFilesAUtomatically();
+    boolean generateMakeFilesAUtomatically();
 
-	void setGenerateMakeFilesAUtomatically(boolean generateMakeFilesAUtomatically);
+    void setGenerateMakeFilesAUtomatically(boolean generateMakeFilesAUtomatically);
 
-	IFolder getBuildFolder();
+    IFolder getBuildFolder();
 
-	void setBuildFolder(IFolder buildFolder);
+    void setBuildFolder(IFolder buildFolder);
 
-	String getBuildCommand();
+    String getBuildCommand(boolean noArgs);
 
-	boolean useStandardBuildArguments();
+    boolean useStandardBuildArguments();
 
-	void setUseStandardBuildArguments(boolean useStandardBuildArguments);
+    void setUseStandardBuildArguments(boolean useStandardBuildArguments);
 
-	boolean useCustomBuildArguments();
+    boolean useCustomBuildArguments();
 
-	void setUseCustomBuildArguments(boolean useCustomBuildArguments);
+    void setUseCustomBuildArguments(boolean useCustomBuildArguments);
 
-	boolean stopOnFirstBuildError();
+    boolean stopOnFirstBuildError();
 
-	void setStopOnFirstBuildError(boolean stopOnFirstBuildError);
+    void setStopOnFirstBuildError(boolean stopOnFirstBuildError);
 
-	boolean isParallelBuild();
+    boolean isParallelBuild();
 
-	void setIsParallelBuild(boolean parallelBuild);
+    void setIsParallelBuild(boolean parallelBuild);
 
-	int getParallelizationNum();
+    int getParallelizationNum();
 
-	void setParallelizationNum(int parallelizationNum);
+    void setParallelizationNum(int parallelizationNum);
 
-	boolean isAutoBuildEnable();
+    boolean isAutoBuildEnable();
 
-	void setAutoBuildEnable(boolean b);
+    void setAutoBuildEnable(boolean b);
 
-	boolean isCleanBuildEnabled();
+    boolean isCleanBuildEnabled();
 
-	void setCleanBuildEnable(boolean cleanBuildEnabled);
+    void setCleanBuildEnable(boolean cleanBuildEnabled);
 
-	boolean isIncrementalBuildEnabled();
+    boolean isIncrementalBuildEnabled();
 
-	void setIncrementalBuildEnable(boolean incrementalBuildEnabled);
+    void setIncrementalBuildEnable(boolean incrementalBuildEnabled);
 
-	boolean isInternalBuilderEnabled();
+    boolean isInternalBuilderEnabled();
 
-	void enableInternalBuilder(boolean internalBuilderEnabled);
+    void enableInternalBuilder(boolean internalBuilderEnabled);
 
-	boolean isManagedBuildOn();
+    boolean isManagedBuildOn();
 
-	void setIsManagedBuildOn(boolean isManagedBuildOn);
+    void setIsManagedBuildOn(boolean isManagedBuildOn);
 
-	boolean supportsStopOnError(boolean b);
+    boolean supportsStopOnError(boolean b);
 
-	boolean canKeepEnvironmentVariablesInBuildfile();
+    boolean canKeepEnvironmentVariablesInBuildfile();
 
-	boolean keepEnvironmentVariablesInBuildfile();
+    boolean keepEnvironmentVariablesInBuildfile();
 
-	boolean supportsParallelBuild();
+    boolean supportsParallelBuild();
 
-	int getOptimalParallelJobNum();
-	
-	String getMakeArguments();
+    int getOptimalParallelJobNum();
 
-	void setMakeArguments(String makeArgs);
+    String getCustomBuildCommand();
+
+    void setCustomBuildCommand(String makeArgs);
 }

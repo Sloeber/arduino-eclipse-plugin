@@ -5,8 +5,6 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -19,6 +17,7 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -29,6 +28,7 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
+import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
@@ -49,7 +49,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private static final String IS_PARRALLEL_BUILD = "isParralelBuild"; //$NON-NLS-1$
     private static final String IS_CLEAN_BUILD_ENABLED = "isCleanEnabled"; //$NON-NLS-1$
     private static final String NUM_PARRALEL_BUILDS = "numberOfParralelBuilds"; //$NON-NLS-1$
-    private static final String MAKE_TARGETS = "makeTargets"; //$NON-NLS-1$
+    private static final String CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
     private static final String USE_CUSTOM_BUILD_ARGUMENTS = "useCustomBuildArguments"; //$NON-NLS-1$
     private static final String STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
     private static final String IS_AUTOBUILD_ENABLED = "isAutobuildEnabled"; //$NON-NLS-1$
@@ -72,19 +72,22 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private Map<IResource, Map<String, String>> mySelectedOptions = new HashMap<>();
     private String[] myRequiredErrorParserList;
     private IFolder myBuildFolder;
-    private boolean myUseDefaultBuildCommand = true;
+
     private boolean myGenerateMakeFilesAUtomatically = true;
-    private boolean myUseStandardBuildArguments = true;
-    private boolean myUseCustomBuildArguments = false;
     private boolean myStopOnFirstBuildError = true;
+
     private boolean myIsParallelBuild = false;
-    private int myParallelizationNum = 0;
     private boolean myIsAutoBuildEnable = true;
     private boolean myIsCleanBuildEnabled = true;
     private boolean myIsIncrementalBuildEnabled = true;
     private boolean myIsInternalBuilderEnabled = true;
-    private String myMakeArguments = EMPTY_STRING;
-    private String myId = "io.sloeber.autoBuild.configurationDescrtion." + AutoBuildCommon.getRandomNumber(); //$NON-NLS-1$
+
+    private boolean myUseDefaultBuildCommand = true;
+    private boolean myUseStandardBuildArguments = true;
+    private boolean myUseCustomBuildArguments = false;
+    private String myCustomBuildCommand = EMPTY_STRING;
+    private int myParallelizationNum = PARRALLEL_BUILD_OPTIMAL_JOBS;
+    private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion."); //$NON-NLS-1$
 
     public AutoBuildConfigurationDescription(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -130,7 +133,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myIsCleanBuildEnabled = autoBuildConfigBase.myIsCleanBuildEnabled;
         myIsIncrementalBuildEnabled = autoBuildConfigBase.myIsIncrementalBuildEnabled;
         myIsInternalBuilderEnabled = autoBuildConfigBase.myIsInternalBuilderEnabled;
-        myMakeArguments = autoBuildConfigBase.myMakeArguments;
+        myCustomBuildCommand = autoBuildConfigBase.myCustomBuildCommand;
     }
 
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
@@ -211,8 +214,8 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             case NUM_PARRALEL_BUILDS:
                 myParallelizationNum = Integer.parseInt(value);
                 break;
-            case MAKE_TARGETS:
-                myMakeArguments = value;
+            case CUSTOM_BUILD_COMMAND:
+                myCustomBuildCommand = value;
                 break;
 
             default:
@@ -379,7 +382,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         }
         if (option == 4) {
             //"src" didn't work "" is project creation failure
-            retTest = new FolderData(myProject.getFolder("src"), this);
+            retTest = new FolderData(myProject.getFolder("src"), this); //$NON-NLS-1$
         }
         //project creation fails
         //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.extension.CFolderData.getPath()" because "baseRootFolderData" is null
@@ -561,9 +564,20 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     }
 
     @Override
-    public String getBuildCommand() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getBuildCommand(boolean includeArgs) {
+        if (myUseDefaultBuildCommand) {
+            IBuilder bldr = myAutoBuildConfiguration.getBuilder();
+            if (includeArgs) {
+                String args = bldr.getArguments(myIsParallelBuild, myParallelizationNum, myStopOnFirstBuildError);
+                String command = bldr.getCommand();
+                if (args.isBlank()) {
+                    return command;
+                }
+                return command + BLANK + args;
+            }
+            return bldr.getCommand();
+        }
+        return getCustomBuildCommand();
     }
 
     @Override
@@ -696,18 +710,17 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public int getOptimalParallelJobNum() {
-        // TODO Auto-generated method stub
-        return 0;
+        return AutoBuildCommon.getOptimalParallelJobNum();
     }
 
     @Override
-    public String getMakeArguments() {
-        return myMakeArguments;
+    public String getCustomBuildCommand() {
+        return myCustomBuildCommand;
     }
 
     @Override
-    public void setMakeArguments(String makeArgs) {
-        myMakeArguments = makeArgs;
+    public void setCustomBuildCommand(String makeArgs) {
+        myCustomBuildCommand = makeArgs;
     }
 
     public StringBuffer ToText(String linePrefix, String lineEnd) {
@@ -763,7 +776,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 + lineEnd);
         ret.append(linePrefix + USE_INTERNAL_BUILDER + EQUALS + String.valueOf(myIsInternalBuilderEnabled) + lineEnd);
         ret.append(linePrefix + NUM_PARRALEL_BUILDS + EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
-        ret.append(linePrefix + MAKE_TARGETS + EQUALS + myMakeArguments + lineEnd);
+        ret.append(linePrefix + CUSTOM_BUILD_COMMAND + EQUALS + myCustomBuildCommand + lineEnd);
         return ret;
 
     }

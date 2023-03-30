@@ -1479,13 +1479,6 @@ Default is true (leaf nodes only).
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="isAbstract" type="boolean" use="default" value="false">
-            <annotation>
-               <documentation>
-                  An optional field that flags a builder as abstract.  An abstract builder must be defined as a top level object in the model definition and cannot be selected by the user in the UI, but builders derived from this builder will inherit its attributes and children.  The default is false.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="command" type="string">
             <annotation>
                <documentation>
@@ -1496,7 +1489,7 @@ Default is true (leaf nodes only).
          <attribute name="arguments" type="string">
             <annotation>
                <documentation>
-                  Specifies the additional, default arguments that will be passed to the build utility when it is called by the builder. If the user changes the flags through the UI, the overriden value will be stored in the project build settings file. The build model will default to this value if the user ever resets a change.  The default is &apos;-k&apos;.
+                  Specifies the additional, default arguments that will be passed to the build utility when it is called by the builder. If the user changes the flags through the UI, the overriden value will be stored in the project build settings file. The build model will default to this value if the user ever resets a change.
                </documentation>
             </annotation>
          </attribute>
@@ -1584,24 +1577,6 @@ If this attribute is not specified, MBS will assume that there are no reserved m
                   Specifies the command for &quot;parallel build&quot;.
 If the builder supports specifying custom number of parallel jobs the option definition may contain &quot;*&quot;. The Build System will substitute the &quot;*&quot; with the number of parallel threads to be used. In case of &quot;unlimited&quot; jobs jobs number will be omitted.
 For example, builder representing GNU make would define parallelBuildCmd as &quot;-j*&quot;.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="parallelBuildOn" type="boolean">
-            <annotation>
-               <documentation>
-                  Defines if the parallel build is enabled in newly created project by default (when parallel build is supported). The number of jobs is defined by &quot;parallelizationNumber&quot; attribute. If &quot;parallelizationNumber&quot; is not defined &quot;optimal&quot; value will be used.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="parallelizationNumber" type="string">
-            <annotation>
-               <documentation>
-                  Sets maximum number of parallel threads/jobs to be used by builder (that value can be changed after creation of project by user).
-A positive number or value &quot;optimal&quot; or &quot;unlimited&quot; are recognized:
-- number 1 will cause parallel build to be turned off,
-- &quot;optimal&quot; will set maximum number of jobs to number of processors on the system,
-- &quot;unlimited&quot; will make builder to run as many threads/jobs as possible.
                </documentation>
             </annotation>
          </attribute>

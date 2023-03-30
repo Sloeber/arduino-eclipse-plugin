@@ -54,9 +54,6 @@ public interface IBuilder extends ISchemaObject {
     public static final String ATTRIBUTE_TARGET_CLEAN = "cleanBuildTarget"; //$NON-NLS-1$
     public static final String ATTRIBUTE_IGNORE_ERR_CMD = "ignoreErrCmd"; //$NON-NLS-1$
     public static final String ATTRIBUTE_PARALLEL_BUILD_CMD = "parallelBuildCmd"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_PARALLEL_BUILD_ON = "parallelBuildOn"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_PARALLELIZATION_NUMBER = "parallelizationNumber"; //$NON-NLS-1$
-    //public static final String IS_SYSTEM = "isSystem"; this is a general field
     public static final String ATTRIBUTE_COMMAND_LAUNCHER = "commandLauncher"; //$NON-NLS-1$
     public static final String ATTRIBUTE_BUILD_RUNNER = "buildRunner"; //$NON-NLS-1$
 
@@ -75,7 +72,7 @@ public interface IBuilder extends ISchemaObject {
      *
      * @return String
      */
-    public String getArguments();
+    public String getArguments(boolean parallel, int numParallel, boolean stopOnError);
 
     /**
      * Returns the BuildfileGenerator used to generate buildfiles for this builder
@@ -117,14 +114,6 @@ public interface IBuilder extends ISchemaObject {
     public IToolChain getParent();
 
     /**
-     * Returns whether this element is abstract. Returns <code>false</code>
-     * if the attribute was not specified.
-     *
-     * @return boolean
-     */
-    public boolean isAbstract();
-
-    /**
      * Returns an array of Strings representing the patterns of the
      * builder/buildfile-generator
      * reserved variables
@@ -134,8 +123,6 @@ public interface IBuilder extends ISchemaObject {
     public String[] getReservedMacroNames();
 
     public IReservedMacroNameSupplier getReservedMacroNameSupplier();
-
-    public boolean isCustomBuilder();
 
     public ICommandLauncher getCommandLauncher();
 
@@ -155,11 +142,9 @@ public interface IBuilder extends ISchemaObject {
      */
     boolean appendEnvironment();
 
-    boolean supportsStopOnError(boolean on);
+    boolean supportsStopOnError();
 
     boolean supportsParallelBuild();
-
-    int getParallelizationNum();
 
     String getCleanBuildTarget();
 
@@ -167,15 +152,9 @@ public interface IBuilder extends ISchemaObject {
 
     boolean isAutoBuildEnable();
 
-    boolean isParallelBuildOn();
-
     String getAutoBuildTarget();
 
     boolean supportsBuild(boolean managed);
-
-    String[] getErrorParsers();
-
-    boolean isStopOnError();
 
     public String getBuilderVariablePattern();
 

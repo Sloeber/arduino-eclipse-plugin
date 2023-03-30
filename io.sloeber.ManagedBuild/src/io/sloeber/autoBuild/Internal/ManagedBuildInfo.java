@@ -320,36 +320,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return macros;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getMakeArguments()
-     */
-    @Override
-    public String getBuildArguments() {
-        if (getDefaultConfiguration() != null) {
-            IToolChain toolChain = getDefaultConfiguration().getToolChain();
-            IBuilder builder = toolChain.getBuilder();
-            if (builder != null) {
-                return builder.getArguments();
-            }
-        }
-        return "-k"; //$NON-NLS-1$
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getMakeCommand()
-     */
-    @Override
-    public String getBuildCommand() {
-        if (getDefaultConfiguration() != null) {
-            IToolChain toolChain = getDefaultConfiguration().getToolChain();
-            IBuilder builder = toolChain.getBuilder();
-            if (builder != null) {
-                return builder.getCommand();
-            }
-        }
-        return "make"; //$NON-NLS-1$
-    }
-
     @Override
     public String getPrebuildStep() {
         // Get the default configuration and use its value
@@ -637,7 +607,5 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     public void setSelectedConfiguration(IConfiguration config) {
         selectedConfig = config;
     }
-
-
 
 }
