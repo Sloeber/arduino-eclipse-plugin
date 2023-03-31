@@ -16,90 +16,52 @@ package io.sloeber.autoBuild.integration;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.settings.model.COutputEntry;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-
 import io.sloeber.autoBuild.Internal.BuilderFactory;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.Builder;
-import io.sloeber.schema.internal.Configuration;
 
 public class BuildBuildData extends CBuildData {
-    private Builder fBuilder;
-    private Configuration fCfg;
-    private IProject myProject;
-    ICConfigurationDescription myCdtConfigurationDescription;
-    BuildEnvironmentContributor myBuildEnvironmentContributor;
+    private IBuilder fBuilder;
+    private BuildEnvironmentContributor myBuildEnvironmentContributor;
     private ICOutputEntry[] myEntries = null;// new ICOutputEntry[0];
-    private IPath myBuilderCWD;
+    private AutoBuildConfigurationDescription myAutoBuildConf;
 
-    public BuildBuildData(IBuilder builder, ICConfigurationDescription configurationDescription) {
-        myCdtConfigurationDescription = configurationDescription;
-        myProject = myCdtConfigurationDescription.getProjectDescription().getProject();
-        fBuilder = (Builder) builder;
-        fCfg = (Configuration) fBuilder.getParent().getParent();
-        myBuildEnvironmentContributor = new BuildEnvironmentContributor(fCfg);
-        myBuilderCWD = fCfg.getBuildFolder(myCdtConfigurationDescription).getLocation();
+    public BuildBuildData(AutoBuildConfigurationDescription autoBuildConf) {
+        myAutoBuildConf = autoBuildConf;
+        fBuilder = myAutoBuildConf.getConfiguration().getBuilder();
+        myBuildEnvironmentContributor = new BuildEnvironmentContributor(myAutoBuildConf.getConfiguration());
 
-        //        IPath path = new Path(myBuilderCWD.toString());
-        //        IPath projFullPath = myProject.getFullPath();
-        //        if (projFullPath.isPrefixOf(path)) {
-        //            path = path.removeFirstSegments(projFullPath.segmentCount()).makeRelative();
-        //        } else {
-        //            path = Path.EMPTY;
-        //        }
-
-        myEntries = new ICOutputEntry[] {
-                new COutputEntry(myBuilderCWD, null, ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
-    }
-
-    //    public BuildBuildData(Configuration fCfg2, IProject project) {
-    //        fCfg = fCfg2;
-    //        IToolChain toolchain = fCfg.getToolChain();
-    //        fBuilder = (Builder) toolchain.getBuilder();
-    //        myProject = project;
-    //
-    //    }
-
-    public Configuration getConfiguration() {
-        return fCfg;
     }
 
     @Override
     public IPath getBuilderCWD() {
-        return myBuilderCWD;
+        return myAutoBuildConf.getBuildFolder().getFullPath();
     }
-
-    //	private IPath createAbsolutePathFromWorkspacePath(IPath path){
-    //		IStringVariableManager mngr = VariablesPlugin.getDefault().getStringVariableManager();
-    //		String locationString = mngr.generateVariableExpression("workspace_loc", path.toString()); //$NON-NLS-1$
-    //		return new Path(locationString);
-    //	}
 
     @Override
     public String[] getErrorParserIDs() {
-        return fCfg.getErrorParserList();
+        return myAutoBuildConf.getConfiguration().getErrorParserList();
     }
 
     @Override
     public ICOutputEntry[] getOutputDirectories() {
+        if (myEntries == null) {
+            myEntries = new ICOutputEntry[] { new COutputEntry(getBuilderCWD(), null,
+                    ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
+        }
         return myEntries;
     }
 
     @Override
     public void setBuilderCWD(IPath path) {
-        myBuilderCWD = path;
+        //Seems this is only used in a load data and tests
+        //so I ignore (jaba said)
     }
 
     @Override
@@ -127,10 +89,6 @@ public class BuildBuildData extends CBuildData {
         return fBuilder != null;
     }
 
-    //    public void setName(String name) {
-    //        //TODO
-    //    }
-
     @Override
     public IEnvironmentContributor getBuildEnvironmentContributor() {
         return myBuildEnvironmentContributor;
@@ -139,19 +97,11 @@ public class BuildBuildData extends CBuildData {
     @Override
     public ICommand getBuildSpecCommand() {
         try {
-            return BuilderFactory.createCommandFromBuilder(myProject, this.fBuilder);
+            return BuilderFactory.createCommandFromBuilder(myAutoBuildConf.getProject(), fBuilder);
         } catch (CoreException cx) {
             Activator.log(cx);
             return null;
         }
-    }
-
-    //    public IBuilder getBuilder() {
-    //        return fBuilder;
-    //    }
-
-    public ICConfigurationDescription getCdtConfigurationDescription() {
-        return myCdtConfigurationDescription;
     }
 
 }

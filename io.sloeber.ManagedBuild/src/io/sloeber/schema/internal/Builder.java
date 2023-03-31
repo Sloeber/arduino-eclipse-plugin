@@ -27,7 +27,8 @@ import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+
+import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;

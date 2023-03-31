@@ -12,7 +12,7 @@
  * Wind River Systems - Initial API and implementation
  * James Blackburn (Broadcom Corp.)
  *******************************************************************************/
-package io.sloeber.autoBuild.extensionPoint;
+package io.sloeber.autoBuild.api;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
@@ -54,5 +54,15 @@ public abstract class IBuildRunner {
     public abstract boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
             IProgressMonitor monitor) throws CoreException;
+
+    public abstract String getName();
+
+    public abstract boolean supportsParallelBuild();
+
+    public abstract boolean supportsStopOnError();
+
+    public abstract boolean supportsCustomCommand();
+
+    public abstract boolean supportsMakeFiles();
 
 }

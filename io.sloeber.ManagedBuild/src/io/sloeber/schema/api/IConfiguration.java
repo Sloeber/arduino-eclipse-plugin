@@ -252,8 +252,6 @@ public interface IConfiguration extends ISchemaObject {
 
     IBuilder getBuilder();
 
-    IFolder getBuildFolder(ICConfigurationDescription cfg);
-
     Map<String, String> getDefaultBuildProperties();
 
     public Map<IResource, Map<String, String>> getDefaultProjectOptions(

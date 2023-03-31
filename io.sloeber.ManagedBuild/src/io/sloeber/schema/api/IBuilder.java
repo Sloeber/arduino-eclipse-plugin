@@ -21,8 +21,9 @@ import org.eclipse.cdt.core.ICommandLauncher;
 //import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
 //import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 import org.eclipse.core.runtime.CoreException;
+
+import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 

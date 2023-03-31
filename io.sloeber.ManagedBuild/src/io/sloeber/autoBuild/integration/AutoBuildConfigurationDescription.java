@@ -3,8 +3,10 @@ package io.sloeber.autoBuild.integration;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -27,7 +29,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
+import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
@@ -52,12 +56,12 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private static final String CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
     private static final String USE_CUSTOM_BUILD_ARGUMENTS = "useCustomBuildArguments"; //$NON-NLS-1$
     private static final String STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
-    private static final String IS_AUTOBUILD_ENABLED = "isAutobuildEnabled"; //$NON-NLS-1$
     private static final String IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
-    private static final String USE_INTERNAL_BUILDER = "useInternalBuilder"; //$NON-NLS-1$
+    private static final String IS_AUTO_BUILD_ENABLED = "isAutoBuildEnabled";//$NON-NLS-1$
     private static final String KEY = "key"; //$NON-NLS-1$
     private static final String VALUE = "value"; //$NON-NLS-1$
     private static final String RESOURCE = "resource";//$NON-NLS-1$
+    private static final String BUILD_RUNNER_NAME = "buildRunnerName";//$NON-NLS-1$
 
     private IConfiguration myAutoBuildConfiguration;
     private IProject myProject;
@@ -71,23 +75,27 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     // resource OptionID Value
     private Map<IResource, Map<String, String>> mySelectedOptions = new HashMap<>();
     private String[] myRequiredErrorParserList;
-    private IFolder myBuildFolder;
 
     private boolean myGenerateMakeFilesAUtomatically = true;
     private boolean myStopOnFirstBuildError = true;
 
     private boolean myIsParallelBuild = false;
-    private boolean myIsAutoBuildEnable = true;
     private boolean myIsCleanBuildEnabled = true;
     private boolean myIsIncrementalBuildEnabled = true;
-    private boolean myIsInternalBuilderEnabled = true;
 
     private boolean myUseDefaultBuildCommand = true;
     private boolean myUseStandardBuildArguments = true;
     private boolean myUseCustomBuildArguments = false;
     private String myCustomBuildCommand = EMPTY_STRING;
     private int myParallelizationNum = PARRALLEL_BUILD_OPTIMAL_JOBS;
+    private String myBuildFolderString = CONFIG_NAME_VARIABLE;
+    private IBuildRunner myBuildRunner = staticMakeBuildRunner;
+    private boolean myIsAutoBuildEnabled;
+    private Set<IBuildRunner> myBuildRunners = createBuildRunners();
     private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion."); //$NON-NLS-1$
+
+    private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
+    private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
 
     public AutoBuildConfigurationDescription(Configuration config, IProject project) {
         myCdtConfigurationDescription = null;
@@ -100,6 +108,13 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     }
 
+    private static Set<IBuildRunner> createBuildRunners() {
+        Set<IBuildRunner> ret = new HashSet<>();
+        ret.add(staticMakeBuildRunner);
+        ret.add(staticInternalBuildRunner);
+        return ret;
+    }
+
     // Copy constructor
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription,
             AutoBuildConfigurationDescription autoBuildConfigBase) {
@@ -108,19 +123,17 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myProject = autoBuildConfigBase.myProject;
         myCdtConfigurationDescription = cfgDescription;
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
-        myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
-                myCdtConfigurationDescription);
+        myBuildBuildData = new BuildBuildData(this);
 
         isValid = autoBuildConfigBase.isValid;
         myName = myCdtConfigurationDescription.getName();
         myDescription = autoBuildConfigBase.myDescription;
-        myBuildFolder = autoBuildConfigBase.myBuildFolder;
+        myBuildFolderString = autoBuildConfigBase.myBuildFolderString;
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
         mySelectedOptions.clear();
         mySelectedOptions.putAll(autoBuildConfigBase.mySelectedOptions);
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
-        myBuildFolder = autoBuildConfigBase.myBuildFolder;
 
         myUseDefaultBuildCommand = autoBuildConfigBase.myUseDefaultBuildCommand;
         myGenerateMakeFilesAUtomatically = autoBuildConfigBase.myGenerateMakeFilesAUtomatically;
@@ -129,11 +142,11 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myStopOnFirstBuildError = autoBuildConfigBase.myStopOnFirstBuildError;
         myIsParallelBuild = autoBuildConfigBase.myIsParallelBuild;
         myParallelizationNum = autoBuildConfigBase.myParallelizationNum;
-        myIsAutoBuildEnable = autoBuildConfigBase.myIsAutoBuildEnable;
         myIsCleanBuildEnabled = autoBuildConfigBase.myIsCleanBuildEnabled;
         myIsIncrementalBuildEnabled = autoBuildConfigBase.myIsIncrementalBuildEnabled;
-        myIsInternalBuilderEnabled = autoBuildConfigBase.myIsInternalBuilderEnabled;
         myCustomBuildCommand = autoBuildConfigBase.myCustomBuildCommand;
+        myIsAutoBuildEnabled = autoBuildConfigBase.myIsAutoBuildEnabled;
+        myBuildRunner = autoBuildConfigBase.myBuildRunner;
     }
 
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
@@ -179,7 +192,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 myId = value;
                 break;
             case BUILDFOLDER:
-                myBuildFolder = myProject.getFolder(value);
+                myBuildFolderString = value;
                 break;
             case USE_DEFAULT_BUILD_COMMAND:
                 myUseDefaultBuildCommand = Boolean.parseBoolean(value);
@@ -199,23 +212,27 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             case IS_PARRALLEL_BUILD:
                 myIsParallelBuild = Boolean.parseBoolean(value);
                 break;
-            case IS_AUTOBUILD_ENABLED:
-                myIsAutoBuildEnable = Boolean.parseBoolean(value);
-                break;
             case IS_CLEAN_BUILD_ENABLED:
                 myIsCleanBuildEnabled = Boolean.parseBoolean(value);
                 break;
             case IS_INCREMENTAL_BUILD_ENABLED:
                 myIsIncrementalBuildEnabled = Boolean.parseBoolean(value);
                 break;
-            case USE_INTERNAL_BUILDER:
-                myIsInternalBuilderEnabled = Boolean.parseBoolean(value);
+            case IS_AUTO_BUILD_ENABLED:
+                myIsAutoBuildEnabled = Boolean.parseBoolean(value);
                 break;
             case NUM_PARRALEL_BUILDS:
                 myParallelizationNum = Integer.parseInt(value);
                 break;
             case CUSTOM_BUILD_COMMAND:
                 myCustomBuildCommand = value;
+                break;
+            case BUILD_RUNNER_NAME:
+                for (IBuildRunner buildRunner : getBuildRunners()) {
+                    if (myBuildRunner == null || buildRunner.getName().equals(value)) {
+                        myBuildRunner = buildRunner;
+                    }
+                }
                 break;
 
             default:
@@ -241,8 +258,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
         myAutoBuildConfiguration = projectType.getConfiguration(confName);
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
-        myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
-                myCdtConfigurationDescription);
+        myBuildBuildData = new BuildBuildData(this);
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
 
         for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
@@ -301,14 +317,13 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     public void setCdtConfigurationDescription(ICConfigurationDescription cfgDescription) {
         myCdtConfigurationDescription = cfgDescription;
-        myBuildBuildData = new BuildBuildData(myAutoBuildConfiguration.getToolChain().getBuilder(),
-                myCdtConfigurationDescription);
+        myBuildBuildData = new BuildBuildData(this);
         mySelectedOptions = myAutoBuildConfiguration.getDefaultProjectOptions(this);
-        myBuildFolder = myAutoBuildConfiguration.getBuildFolder(myCdtConfigurationDescription);
         doLegacyChanges();
         isValid = true;
     }
 
+    @Override
     public ICConfigurationDescription getCdtConfigurationDescription() {
         return myCdtConfigurationDescription;
     }
@@ -554,13 +569,22 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     }
 
     @Override
-    public void setBuildFolder(IFolder buildFolder) {
-        myBuildFolder = buildFolder;
+    public void setBuildFolderString(String buildFolder) {
+        myBuildFolderString = buildFolder;
+    }
+
+    @Override
+    public String getBuildFolderString() {
+        return myBuildFolderString;
     }
 
     @Override
     public IFolder getBuildFolder() {
-        return myBuildFolder;
+        String resolved = AutoBuildCommon.resolve(myBuildFolderString, this);
+        if (resolved.isBlank()) {
+            resolved = myCdtConfigurationDescription.getName();
+        }
+        return myProject.getFolder(resolved);
     }
 
     @Override
@@ -631,17 +655,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     }
 
     @Override
-    public boolean isAutoBuildEnable() {
-        return myIsAutoBuildEnable;
-    }
-
-    @Override
-    public void setAutoBuildEnable(boolean autoBuildEnable) {
-        myIsAutoBuildEnable = autoBuildEnable;
-
-    }
-
-    @Override
     public boolean isCleanBuildEnabled() {
         return myIsCleanBuildEnabled;
     }
@@ -660,52 +673,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     public void setIncrementalBuildEnable(boolean incrementalBuildEnabled) {
         myIsIncrementalBuildEnabled = incrementalBuildEnabled;
 
-    }
-
-    @Override
-    public boolean isInternalBuilderEnabled() {
-        return myIsInternalBuilderEnabled;
-    }
-
-    @Override
-    public void enableInternalBuilder(boolean internalBuilderEnabled) {
-        myIsInternalBuilderEnabled = internalBuilderEnabled;
-    }
-
-    @Override
-    public boolean isManagedBuildOn() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void setIsManagedBuildOn(boolean isManagedBuildOn) {
-        // TOFIX JABA this should not exists
-
-    }
-
-    @Override
-    public boolean supportsStopOnError(boolean b) {
-        // TOFIX JABA should this exist?
-        return true;
-    }
-
-    @Override
-    public boolean canKeepEnvironmentVariablesInBuildfile() {
-        // TOFIX JABA should this exist?
-        return false;
-    }
-
-    @Override
-    public boolean keepEnvironmentVariablesInBuildfile() {
-        // TOFIX JABA should this exist?
-        return false;
-    }
-
-    @Override
-    public boolean supportsParallelBuild() {
-        // TOFIX JABA should this exist?
-        return true;
     }
 
     @Override
@@ -759,7 +726,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             }
         }
 
-        ret.append(linePrefix + BUILDFOLDER + EQUALS + myBuildFolder.getProjectRelativePath().toString() + lineEnd);
+        ret.append(linePrefix + BUILDFOLDER + EQUALS + myBuildFolderString + lineEnd);
         ret.append(
                 linePrefix + USE_DEFAULT_BUILD_COMMAND + EQUALS + String.valueOf(myUseDefaultBuildCommand) + lineEnd);
         ret.append(linePrefix + GENERATE_MAKE_FILES_AUTOMATICALLY + EQUALS
@@ -770,14 +737,41 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 linePrefix + USE_CUSTOM_BUILD_ARGUMENTS + EQUALS + String.valueOf(myUseCustomBuildArguments) + lineEnd);
         ret.append(linePrefix + STOP_ON_FIRST_ERROR + EQUALS + String.valueOf(myStopOnFirstBuildError) + lineEnd);
         ret.append(linePrefix + IS_PARRALLEL_BUILD + EQUALS + String.valueOf(myIsParallelBuild) + lineEnd);
-        ret.append(linePrefix + IS_AUTOBUILD_ENABLED + EQUALS + String.valueOf(myIsAutoBuildEnable) + lineEnd);
         ret.append(linePrefix + IS_CLEAN_BUILD_ENABLED + EQUALS + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
         ret.append(linePrefix + IS_INCREMENTAL_BUILD_ENABLED + EQUALS + String.valueOf(myIsIncrementalBuildEnabled)
                 + lineEnd);
-        ret.append(linePrefix + USE_INTERNAL_BUILDER + EQUALS + String.valueOf(myIsInternalBuilderEnabled) + lineEnd);
         ret.append(linePrefix + NUM_PARRALEL_BUILDS + EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
         ret.append(linePrefix + CUSTOM_BUILD_COMMAND + EQUALS + myCustomBuildCommand + lineEnd);
+        ret.append(linePrefix + BUILD_RUNNER_NAME + EQUALS + myBuildRunner.getName() + lineEnd);
         return ret;
+
+    }
+
+    @Override
+    public IBuildRunner getBuildRunner() {
+        return myBuildRunner;
+    }
+
+    @Override
+    public Set<IBuildRunner> getBuildRunners() {
+        // TODO Auto-generated method stub
+        return myBuildRunners;
+    }
+
+    @Override
+    public void setBuildRunner(IBuildRunner buildRunner) {
+        myBuildRunner = buildRunner;
+
+    }
+
+    @Override
+    public boolean isAutoBuildEnabled() {
+        return myIsAutoBuildEnabled;
+    }
+
+    @Override
+    public void setAutoBuildEnabled(boolean enabled) {
+        myIsAutoBuildEnabled = enabled;
 
     }
 

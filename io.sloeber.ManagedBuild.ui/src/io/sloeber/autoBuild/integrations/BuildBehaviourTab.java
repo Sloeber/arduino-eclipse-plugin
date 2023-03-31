@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.ui.internal.Messages;
 
 /**
@@ -263,57 +264,57 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
      *          b.isIncrementalBuildEnabled() 2: b.isCleanBuildEnabled() 3: N/A 4:
      *          N/A 5: N/A 6: N/A
      */
-    public int[] calc3states(ICPropertyProvider p, int mode) {
-        if (p.isMultiCfg()) {
-            boolean m0 = (mode == 0);
-            boolean m1 = (mode == 1);
-
-            //IAutoBuildConfigurationDescription bldr0 = AutoBuildProject.getAutoBuildConfig(p.getCfgsEditable()[0]);
-            int[] res = new int[TRI_STATES_SIZE];
-            boolean[] b = new boolean[TRI_STATES_SIZE];
-            b[0] = m0 ? myAutoConfDesc.isManagedBuildOn()
-                    : (m1 ? myAutoConfDesc.stopOnFirstBuildError() : myAutoConfDesc.isAutoBuildEnable());
-            b[1] = m0 ? true
-                    : (m1 ? myAutoConfDesc.supportsStopOnError(true) : myAutoConfDesc.isIncrementalBuildEnabled());
-            b[2] = m0 ? myAutoConfDesc.canKeepEnvironmentVariablesInBuildfile()
-                    : (m1 ? myAutoConfDesc.supportsStopOnError(false) : myAutoConfDesc.isCleanBuildEnabled());
-            b[3] = m0 ? myAutoConfDesc.keepEnvironmentVariablesInBuildfile() : false;
-            b[4] = m0 ? myAutoConfDesc.useDefaultBuildCommand() : false;
-            b[5] = (m0 || m1) ? myAutoConfDesc.useStandardBuildArguments() : false;
-            b[6] = (m0 || m1) ? !myAutoConfDesc.useStandardBuildArguments() : false;
-            for (ICConfigurationDescription i : p.getCfgsEditable()) {
-                //TOFIX JABA add support for multiple config
-                IAutoBuildConfigurationDescription bldr = AutoBuildProject.getAutoBuildConfig(i);
-                if (b[0] != (m0 ? bldr.isManagedBuildOn()
-                        : (m1 ? bldr.stopOnFirstBuildError() : bldr.isAutoBuildEnable())))
-                    res[0] = TRI_UNKNOWN;
-                if (b[1] != (m0 ? true : (m1 ? bldr.supportsStopOnError(true) : bldr.isIncrementalBuildEnabled())))
-                    res[1] = TRI_UNKNOWN;
-                if (b[2] != (m0 ? bldr.canKeepEnvironmentVariablesInBuildfile()
-                        : (m1 ? bldr.supportsStopOnError(false) : bldr.isCleanBuildEnabled())))
-                    res[2] = TRI_UNKNOWN;
-                if (b[3] != (m0 ? bldr.keepEnvironmentVariablesInBuildfile() : false)) {
-                    res[3] = TRI_UNKNOWN;
-                }
-                if (b[4] != (m0 ? bldr.useDefaultBuildCommand() : false)) {
-                    res[4] = TRI_UNKNOWN;
-                }
-                if (b[5] != ((m0 || m1) ? bldr.useStandardBuildArguments() : false)) {
-                    res[5] = TRI_UNKNOWN;
-                }
-                if (b[6] != ((m0 || m1) ? !bldr.useStandardBuildArguments() : false)) {
-                    res[6] = TRI_UNKNOWN;
-                }
-            }
-            for (int i = 0; i < TRI_STATES_SIZE; i++) {
-                if (res[i] != TRI_UNKNOWN)
-                    res[i] = b[i] ? TRI_YES : TRI_NO;
-            }
-            return res;
-        }
-
-        return null;
-    }
+    //    public int[] calc3states(ICPropertyProvider p, int mode) {
+    //        if (p.isMultiCfg()) {
+    //            boolean m0 = (mode == 0);
+    //            boolean m1 = (mode == 1);
+    //
+    //            //IAutoBuildConfigurationDescription bldr0 = AutoBuildProject.getAutoBuildConfig(p.getCfgsEditable()[0]);
+    //            int[] res = new int[TRI_STATES_SIZE];
+    //            boolean[] b = new boolean[TRI_STATES_SIZE];
+    //            b[0] = m0 ? myAutoConfDesc.isManagedBuildOn()
+    //                    : (m1 ? myAutoConfDesc.stopOnFirstBuildError() : myAutoConfDesc.isAutoBuildEnable());
+    //            b[1] = m0 ? true
+    //                    : (m1 ? myAutoConfDesc.supportsStopOnError(true) : myAutoConfDesc.isIncrementalBuildEnabled());
+    //            b[2] = m0 ? myAutoConfDesc.canKeepEnvironmentVariablesInBuildfile()
+    //                    : (m1 ? myAutoConfDesc.supportsStopOnError(false) : myAutoConfDesc.isCleanBuildEnabled());
+    //            b[3] = m0 ? myAutoConfDesc.keepEnvironmentVariablesInBuildfile() : false;
+    //            b[4] = m0 ? myAutoConfDesc.useDefaultBuildCommand() : false;
+    //            b[5] = (m0 || m1) ? myAutoConfDesc.useStandardBuildArguments() : false;
+    //            b[6] = (m0 || m1) ? !myAutoConfDesc.useStandardBuildArguments() : false;
+    //            for (ICConfigurationDescription i : p.getCfgsEditable()) {
+    //                //TOFIX JABA add support for multiple config
+    //                IAutoBuildConfigurationDescription bldr = AutoBuildProject.getAutoBuildConfig(i);
+    //                if (b[0] != (m0 ? bldr.isManagedBuildOn()
+    //                        : (m1 ? bldr.stopOnFirstBuildError() : bldr.isAutoBuildEnable())))
+    //                    res[0] = TRI_UNKNOWN;
+    //                if (b[1] != (m0 ? true : (m1 ? bldr.supportsStopOnError(true) : bldr.isIncrementalBuildEnabled())))
+    //                    res[1] = TRI_UNKNOWN;
+    //                if (b[2] != (m0 ? bldr.canKeepEnvironmentVariablesInBuildfile()
+    //                        : (m1 ? bldr.supportsStopOnError(false) : bldr.isCleanBuildEnabled())))
+    //                    res[2] = TRI_UNKNOWN;
+    //                if (b[3] != (m0 ? bldr.keepEnvironmentVariablesInBuildfile() : false)) {
+    //                    res[3] = TRI_UNKNOWN;
+    //                }
+    //                if (b[4] != (m0 ? bldr.useDefaultBuildCommand() : false)) {
+    //                    res[4] = TRI_UNKNOWN;
+    //                }
+    //                if (b[5] != ((m0 || m1) ? bldr.useStandardBuildArguments() : false)) {
+    //                    res[5] = TRI_UNKNOWN;
+    //                }
+    //                if (b[6] != ((m0 || m1) ? !bldr.useStandardBuildArguments() : false)) {
+    //                    res[6] = TRI_UNKNOWN;
+    //                }
+    //            }
+    //            for (int i = 0; i < TRI_STATES_SIZE; i++) {
+    //                if (res[i] != TRI_UNKNOWN)
+    //                    res[i] = b[i] ? TRI_YES : TRI_NO;
+    //            }
+    //            return res;
+    //        }
+    //
+    //        return null;
+    //    }
 
     /**
      * sets widgets states
@@ -322,91 +323,38 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
     protected void updateButtons() {
 
         canModify = false;
-        int[] extStates = calc3states(page, 1);
-        boolean external = !myAutoConfDesc.isInternalBuilderEnabled();
 
-        // use standard build args
-        if (extStates == null) { // no extended states available
-            setTriSelection(r_useStandardBuildArguments, myAutoConfDesc.useStandardBuildArguments());
-            setTriSelection(r_useCustomBuildArguments, !myAutoConfDesc.useStandardBuildArguments());
-        } else {
-            int standardTri = extStates[5];
-            int customTri = extStates[6];
-            if (standardTri == TRI_UNKNOWN || customTri == TRI_UNKNOWN) {
-                setTriSelection(r_useStandardBuildArguments, TRI_UNKNOWN);
-                setTriSelection(r_useCustomBuildArguments, TRI_UNKNOWN);
-            } else {
-                setTriSelection(r_useStandardBuildArguments, standardTri);
-                setTriSelection(r_useCustomBuildArguments, customTri);
-            }
-        }
-        // t_buildArguments.setText(nonNull(icfg.getBuildArguments()));
-        r_useStandardBuildArguments.setEnabled(external);
-        r_useCustomBuildArguments.setEnabled(external);
-        if (external) {
-            checkPressed(r_useCustomBuildArguments, false); // do not update
-        }
+        setTriSelection(r_useStandardBuildArguments, myAutoConfDesc.useStandardBuildArguments());
+        setTriSelection(r_useCustomBuildArguments, !myAutoConfDesc.useStandardBuildArguments());
+        IBuildRunner buildrunner = myAutoConfDesc.getBuildRunner();
+        r_useStandardBuildArguments.setEnabled(buildrunner.supportsCustomCommand());
+        r_useCustomBuildArguments.setEnabled(buildrunner.supportsCustomCommand());
 
-        // Stop on error
-        boolean defaultBuildArguments = myAutoConfDesc.useStandardBuildArguments();
-        if (defaultBuildArguments) {
-            if (extStates != null) {
-                setTriSelection(b_stopOnError, extStates[0]);
-                b_stopOnError.setEnabled(extStates[1] == TRI_YES && extStates[2] == TRI_YES);
-            } else {
-                setTriSelection(b_stopOnError, myAutoConfDesc.stopOnFirstBuildError());
-                b_stopOnError.setEnabled(myAutoConfDesc.supportsStopOnError(false));
-            }
-        } else {
-            b_stopOnError.setEnabled(defaultBuildArguments);
-        }
+        setTriSelection(b_stopOnError, myAutoConfDesc.stopOnFirstBuildError());
+        b_stopOnError.setEnabled(buildrunner.supportsStopOnError());
 
-        updateParallelBlock(defaultBuildArguments);
+        updateParallelBlock();
 
         // Build commands
-        extStates = calc3states(page, 2);
-        if (extStates != null) {
-            // multiple configurations selected
-            setTriSelection(b_autoBuild, extStates[0]);
-            setTriSelection(b_cmdBuild, extStates[1]);
-            setTriSelection(b_cmdClean, extStates[2]);
-        } else {
-            setTriSelection(b_autoBuild, myAutoConfDesc.isAutoBuildEnable());
-            setTriSelection(b_cmdBuild, myAutoConfDesc.isIncrementalBuildEnabled());
-            setTriSelection(b_cmdClean, myAutoConfDesc.isCleanBuildEnabled());
-        }
+        setTriSelection(b_autoBuild, myAutoConfDesc.isAutoBuildEnabled());
+        setTriSelection(b_cmdBuild, myAutoConfDesc.isIncrementalBuildEnabled());
+        setTriSelection(b_cmdClean, myAutoConfDesc.isCleanBuildEnabled());
 
-        //		if (page.isMultiCfg()) {
-        //			MultiConfiguration mc = (MultiConfiguration) icfg;
-        //			t_autoBuild.setText(mc.getBuildAttribute(IBuilder.BUILD_TARGET_AUTO, EMPTY_STR));
-        //			t_cmdBuild.setText(mc.getBuildAttribute(IBuilder.BUILD_TARGET_INCREMENTAL, EMPTY_STR));
-        //			t_cmdClean.setText(mc.getBuildAttribute(IBuilder.BUILD_TARGET_CLEAN, EMPTY_STR));
-        //		} else {
-        //			t_autoBuild.setText(bldr.getBuildAttribute(IBuilder.BUILD_TARGET_AUTO, EMPTY_STR));
-        //			t_cmdBuild.setText(bldr.getBuildAttribute(IBuilder.BUILD_TARGET_INCREMENTAL, EMPTY_STR));
-        //			t_cmdClean.setText(bldr.getBuildAttribute(IBuilder.BUILD_TARGET_CLEAN, EMPTY_STR));
-        //		}
+        //        title2.setVisible(external);
+        //        t_autoBuild.setVisible(external);
+        //        ((Control) t_autoBuild.getData()).setVisible(external);
+        //        t_cmdBuild.setVisible(external);
+        //        ((Control) t_cmdBuild.getData()).setVisible(external);
+        //        t_cmdClean.setVisible(external);
+        //        ((Control) t_cmdClean.getData()).setVisible(external);
 
-        title2.setVisible(external);
-        t_autoBuild.setVisible(external);
-        ((Control) t_autoBuild.getData()).setVisible(external);
-        t_cmdBuild.setVisible(external);
-        ((Control) t_cmdBuild.getData()).setVisible(external);
-        t_cmdClean.setVisible(external);
-        ((Control) t_cmdClean.getData()).setVisible(external);
-
-        if (external) {
-            checkPressed(b_autoBuild, false);
-            checkPressed(b_cmdBuild, false);
-            checkPressed(b_cmdClean, false);
-        }
         canModify = true;
     }
 
-    private void updateParallelBlock(boolean defaultBuildArguments) {
-        // note: for multi-config selection bldr is from Active cfg
+    private void updateParallelBlock() {
+        IBuildRunner buildRunner = myAutoConfDesc.getBuildRunner();
 
-        boolean isParallelSupported = myAutoConfDesc.supportsParallelBuild();
+        boolean isParallelSupported = buildRunner.supportsParallelBuild();
         boolean isParallelOn = myAutoConfDesc.isParallelBuild();
 
         int optimalParallelNumber = myAutoConfDesc.getOptimalParallelJobNum();
@@ -420,14 +368,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         if (!isParallelSupported) {
             return;
         }
-        if (!defaultBuildArguments) {
-            b_parallel.setEnabled(false);
-            b_parallelOptimal.setEnabled(false);
-            b_parallelSpecific.setEnabled(false);
-            b_parallelUnlimited.setEnabled(false);
-            s_parallelNumber.setEnabled(false);
-            return;
-        }
+
         b_parallel.setEnabled(true);
         b_parallelOptimal.setEnabled(isParallelOn);
         b_parallelSpecific.setEnabled(isParallelOn);
@@ -452,22 +393,6 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
             s_parallelNumber.setEnabled(true);
             break;
         }
-        //                if (isParallelSelected) {
-        //                    boolean isOptimal = parallelizationNumInternal <= 0;
-        //                    boolean isUnlimited = parallelizationNumInternal == PARRALLEL_BUILD_UNLIMITED_JOBS;
-        //
-        //                    b_parallelOptimal.setSelection(isOptimal);
-        //                    b_parallelSpecific.setSelection(!isOptimal && !isUnlimited);
-        //                    b_parallelUnlimited.setSelection(isUnlimited);
-        //                    s_parallelNumber.setEnabled(b_parallelSpecific.getEnabled() && b_parallelSpecific.getSelection());
-        //
-        //                } else {
-        //                    b_parallelOptimal.setSelection(true);
-        //                    b_parallelSpecific.setSelection(false);
-        //                    b_parallelUnlimited.setSelection(false);
-        //                    s_parallelNumber.setEnabled(false);
-        //                    s_parallelNumber.setSelection(optimalParallelNumber);
-        //                }
     }
 
     /**
@@ -505,52 +430,6 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
     }
 
     @Override
-    public void checkPressed(SelectionEvent e) {
-        checkPressed((Control) e.widget, true);
-        updateButtons();
-    }
-
-    private void checkPressed(Control b, boolean needsUpdate) {
-        if (b == null)
-            return;
-
-        boolean val = false;
-        if (b instanceof Button)
-            val = ((Button) b).getSelection();
-
-        if (b.getData() instanceof Text) {
-            Text t = (Text) b.getData();
-            t.setEnabled(val);
-            if (t.getData() != null && t.getData() instanceof Control) {
-                Control c = (Control) t.getData();
-                c.setEnabled(val);
-            }
-        }
-        if (needsUpdate) {
-            //TOFIX JABA add support for multiple configs
-            //            for (ICConfigurationDescription i : page.getCfgsEditable()) {
-            //              IAutoBuildConfigurationDescription bld = AutoBuildProject.getAutoBuildConfig(i);
-            if (b == r_useStandardBuildArguments) {
-                myAutoConfDesc.setUseStandardBuildArguments(val);
-            } else if (b == r_useCustomBuildArguments) {
-                myAutoConfDesc.setUseStandardBuildArguments(!val);
-            } else if (b == b_autoBuild) {
-                myAutoConfDesc.setAutoBuildEnable(val);
-            } else if (b == b_cmdBuild) {
-                myAutoConfDesc.setIncrementalBuildEnable(val);
-            } else if (b == b_cmdClean) {
-                myAutoConfDesc.setCleanBuildEnable(val);
-            } else if (b == b_stopOnError) {
-                myAutoConfDesc.setStopOnFirstBuildError(val);
-            } else if (b == b_parallel) {
-                myAutoConfDesc.setIsParallelBuild(val);
-            }
-            //        }
-
-        }
-    }
-
-    @Override
     public void performApply(ICResourceDescription src, ICResourceDescription dst) {
         apply(src, dst, page.isMultiCfg());
     }
@@ -570,15 +449,14 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
     private static void applyToCfg(ICConfigurationDescription src, ICConfigurationDescription dst) {
         IAutoBuildConfigurationDescription srcCfg = AutoBuildProject.getAutoBuildConfig(src);
         IAutoBuildConfigurationDescription dstCfg = AutoBuildProject.getAutoBuildConfig(dst);
-        dstCfg.enableInternalBuilder(srcCfg.isInternalBuilderEnabled());
         dstCfg.setUseStandardBuildArguments(srcCfg.useStandardBuildArguments());
         dstCfg.setUseCustomBuildArguments(srcCfg.useCustomBuildArguments());
         dstCfg.setStopOnFirstBuildError(srcCfg.stopOnFirstBuildError());
         dstCfg.setIsParallelBuild(srcCfg.isParallelBuild());
         dstCfg.setParallelizationNum(srcCfg.getParallelizationNum());
-        dstCfg.setBuildFolder(srcCfg.getBuildFolder());
+        dstCfg.setBuildFolderString(srcCfg.getBuildFolderString());
 
-        dstCfg.setAutoBuildEnable((srcCfg.isAutoBuildEnable()));
+        dstCfg.setBuildRunner((srcCfg.getBuildRunner()));
         dstCfg.setCleanBuildEnable(srcCfg.isCleanBuildEnabled());
         dstCfg.setIncrementalBuildEnable(srcCfg.isIncrementalBuildEnabled());
     }

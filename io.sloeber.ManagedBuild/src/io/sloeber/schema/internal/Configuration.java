@@ -276,11 +276,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     }
 
     @Override
-    public IFolder getBuildFolder(ICConfigurationDescription cfg) {
-        return cfg.getProjectDescription().getProject().getFolder(cfg.getName());
-    }
-
-    @Override
     public Map<String, String> getDefaultBuildProperties() {
         return myBuildProperties;
     }

@@ -26,6 +26,7 @@ public class AutoBuildConstants {
     public static final int PARRALLEL_BUILD_OPTIMAL_JOBS = -2;
 
     public static final String PROJECT_NAME_VARIABLE = "${ProjName}";
+    public static final String CONFIG_NAME_VARIABLE = "${ConfigName}";
 
     // preference nodes
     public static final String NODE_ARDUINO = "io.sloeber.arduino";
@@ -71,7 +72,7 @@ public class AutoBuildConstants {
 
     public static final String STATIC_LIB_EXTENSION = "a";
     public static final String DYNAMIC_LIB_EXTENSION = isWindows ? "dll" : "so";
-    public static final String EXE_NAME = isWindows ? "${ProjName}.exe" : "${ProjName}";
+    public static final String EXE_NAME = isWindows ? PROJECT_NAME_VARIABLE + ".exe" : PROJECT_NAME_VARIABLE;
     public static final String NETWORK = "network";
     public static final String PORT = "port";
     public static final String AUTH = "auth";

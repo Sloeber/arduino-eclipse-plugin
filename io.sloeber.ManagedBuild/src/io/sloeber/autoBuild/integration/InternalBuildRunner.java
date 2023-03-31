@@ -14,7 +14,7 @@
  * IBM Corporation
  * Samuel Hultgren (STMicroelectronics) - bug #217674
  *******************************************************************************/
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.core.Messages.*;
 
@@ -39,10 +39,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 
+import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
+import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
@@ -96,7 +96,7 @@ public class InternalBuildRunner extends IBuildRunner {
             String toolchainName = configuration.getToolChain().getName();
             boolean isConfigurationSupported = configuration.isSupported();
 
-            IFolder buildFolder = configuration.getBuildFolder(cfgDescription);
+            IFolder buildFolder = autoData.getBuildFolder();
 
             String[] errorParsers = builder.getErrorParserList().toArray(new String[0]);
             ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
@@ -170,6 +170,31 @@ public class InternalBuildRunner extends IBuildRunner {
             throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
         }
         monitor.done();
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return Messages.InternalBuilderName;
+    }
+
+    @Override
+    public boolean supportsParallelBuild() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsStopOnError() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsCustomCommand() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsMakeFiles() {
         return false;
     }
 

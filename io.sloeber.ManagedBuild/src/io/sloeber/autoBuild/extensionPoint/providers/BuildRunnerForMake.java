@@ -47,8 +47,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
+import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
@@ -84,7 +85,7 @@ public class BuildRunnerForMake extends IBuildRunner {
             String cfgName = confDesc.getName();
             ICommandLauncher launcher = builder.getCommandLauncher();
             String[] args = getMakeArguments(kind, builder, autoData);
-            IFolder buildFolder = configuration.getBuildFolder(confDesc);
+            IFolder buildFolder = autoData.getBuildFolder();
             URI buildFolderURI = buildFolder.getLocationURI();
 
             String[] envp = AutoBuildRunnerHelper.envMapToEnvp(getEnvironment(confDesc, builder));
@@ -172,6 +173,31 @@ public class BuildRunnerForMake extends IBuildRunner {
         }
 
         return envMap;
+    }
+
+    @Override
+    public String getName() {
+        return Messages.ExternalBuilderName;
+    }
+
+    @Override
+    public boolean supportsParallelBuild() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsStopOnError() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCustomCommand() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsMakeFiles() {
+        return true;
     }
 
 }

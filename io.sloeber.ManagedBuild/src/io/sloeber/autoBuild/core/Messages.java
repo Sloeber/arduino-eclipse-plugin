@@ -149,7 +149,8 @@ public class Messages extends NLS {
     public static String AbstractBuiltinSpecsDetector_ScannerDiscoveryMarkerLocationProperties;
     public static String AbstractBuiltinSpecsDetector_ScannerDiscoveryTaskTitle;
     public static String AbstractBuiltinSpecsDetector_SerializingResults;
-
+    public static String ExternalBuilderName;
+    public static String InternalBuilderName;
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

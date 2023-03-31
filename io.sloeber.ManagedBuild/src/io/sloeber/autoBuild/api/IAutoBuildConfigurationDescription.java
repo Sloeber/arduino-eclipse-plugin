@@ -1,5 +1,8 @@
 package io.sloeber.autoBuild.api;
 
+import java.util.Set;
+
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFolder;
 
 public interface IAutoBuildConfigurationDescription {
@@ -11,10 +14,6 @@ public interface IAutoBuildConfigurationDescription {
     boolean generateMakeFilesAUtomatically();
 
     void setGenerateMakeFilesAUtomatically(boolean generateMakeFilesAUtomatically);
-
-    IFolder getBuildFolder();
-
-    void setBuildFolder(IFolder buildFolder);
 
     String getBuildCommand(boolean noArgs);
 
@@ -38,10 +37,6 @@ public interface IAutoBuildConfigurationDescription {
 
     void setParallelizationNum(int parallelizationNum);
 
-    boolean isAutoBuildEnable();
-
-    void setAutoBuildEnable(boolean b);
-
     boolean isCleanBuildEnabled();
 
     void setCleanBuildEnable(boolean cleanBuildEnabled);
@@ -50,25 +45,64 @@ public interface IAutoBuildConfigurationDescription {
 
     void setIncrementalBuildEnable(boolean incrementalBuildEnabled);
 
-    boolean isInternalBuilderEnabled();
-
-    void enableInternalBuilder(boolean internalBuilderEnabled);
-
-    boolean isManagedBuildOn();
-
-    void setIsManagedBuildOn(boolean isManagedBuildOn);
-
-    boolean supportsStopOnError(boolean b);
-
-    boolean canKeepEnvironmentVariablesInBuildfile();
-
-    boolean keepEnvironmentVariablesInBuildfile();
-
-    boolean supportsParallelBuild();
-
     int getOptimalParallelJobNum();
 
     String getCustomBuildCommand();
 
     void setCustomBuildCommand(String makeArgs);
+
+    /**
+     * Set a buildfolder to be the same as a string.
+     * The reason this is not set as a iFolder is that the string can be a variable
+     * that need to be resolved
+     * For instance the default build folder is ${ProjDir}/${ConfigName}
+     * Though this mùay be settable in a IFolder the GUI works with a text field so
+     * I opted to
+     * make the interface work with text fields
+     * 
+     * @param buildFolder
+     */
+    void setBuildFolderString(String buildFolder);
+
+    /**
+     * See setBuildFolderString for more info
+     * This method is solely intended to be used by the gui
+     * 
+     * @return the build folder in a editable string representation
+     */
+    String getBuildFolderString();
+
+    /**
+     * Get build folder to do build actions
+     * 
+     * @return the build folder in IFolder format based on the resolved buildfolder
+     *         string representation
+     */
+    IFolder getBuildFolder();
+
+    IBuildRunner getBuildRunner();
+
+    Set<IBuildRunner> getBuildRunners();
+
+    void setBuildRunner(IBuildRunner buildRunner);
+
+    /**
+     * Is the eclipse autobuild functionality
+     * (the build on safe) enabled for this CDT project configuration
+     * For autobuild to happen both the eclipse workspace has to have autobuild on
+     * and the cdt configuration.
+     * 
+     * @return true if the autobuild will build when eclipse workspace has autobuild
+     *         on
+     */
+    boolean isAutoBuildEnabled();
+
+    /**
+     * see isAutoBuildEnabled
+     * 
+     * @param enabled
+     */
+    void setAutoBuildEnabled(boolean enabled);
+
+    ICConfigurationDescription getCdtConfigurationDescription();
 }
