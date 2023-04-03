@@ -180,12 +180,12 @@ public class InternalBuildRunner extends IBuildRunner {
 
     @Override
     public boolean supportsParallelBuild() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supportsStopOnError() {
-        return false;
+        return true;
     }
 
     @Override
@@ -195,6 +195,21 @@ public class InternalBuildRunner extends IBuildRunner {
 
     @Override
     public boolean supportsMakeFiles() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsAutoBuild() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsIncrementalBuild() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCleanBuild() {
         return false;
     }
 

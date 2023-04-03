@@ -112,23 +112,39 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         if (!isCdtProjectCreated(project)) {
             System.err.println("The build is cancelled as the project has not yet been created."); //$NON-NLS-1$
-            return project.getReferencedProjects();
+            return null;
         }
 
         outputTrace(project.getName(), ">>build requested, type = " + kind); //$NON-NLS-1$
 
         ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
+        ICConfigurationDescription cdtConfDesc = cdtProjectDescription.getActiveConfiguration();
+        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(cdtConfDesc);
+        switch (kind) {
+        case INCREMENTAL_BUILD:
+            if (!autoData.isIncrementalBuildEnabled()) {
+                outputTrace(project.getName(), ">>The project is setup to ignore incremental builds "); //$NON-NLS-1$
+                return null;
+            }
+            break;
+        case AUTO_BUILD:
+            if (!autoData.isAutoBuildEnabled()) {
+                outputTrace(project.getName(), ">>The project setup to ignore auto builds "); //$NON-NLS-1$
+                return null;
+            }
+            break;
+        }
 
         Set<IProject> buildProjects = new HashSet<>();
         if (needAllConfigBuild()) {
             ICConfigurationDescription[] cfgs = cdtProjectDescription.getConfigurations();
             for (ICConfigurationDescription cfg : cfgs) {
-                AutoBuildConfigurationDescription autoBuildConfData = AutoBuildConfigurationDescription.getFromConfig(cfg);
+                AutoBuildConfigurationDescription autoBuildConfData = AutoBuildConfigurationDescription
+                        .getFromConfig(cfg);
                 buildProjects.addAll(buildProjectAndReferences(kind, autoBuildConfData, monitor));
             }
         } else {
-            ICConfigurationDescription cdtConfDesc = cdtProjectDescription.getActiveConfiguration();
-            AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(cdtConfDesc);
+
             buildProjects.addAll(buildProjectAndReferences(kind, autoData, monitor));
         }
 
@@ -248,8 +264,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         return new ICConfigurationDescription[0];
     }
 
-    private void buildProject(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder, IProgressMonitor monitor)
-            throws CoreException {
+    private void buildProject(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
+            IProgressMonitor monitor) throws CoreException {
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
         IProject project = autoData.getProject();
@@ -283,7 +299,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * @param status
      * @param configName
      */
-    private static String createNoSourceMessage(int buildType, IStatus status, AutoBuildConfigurationDescription autoData) {
+    private static String createNoSourceMessage(int buildType, IStatus status,
+            AutoBuildConfigurationDescription autoData) {
         StringBuilder buf = new StringBuilder();
         String[] consoleHeader = new String[3];
         String configName = autoData.getCdtConfigurationDescription().getName();
@@ -413,7 +430,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return;
         ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(curProject, false);
         ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
-        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(cdtConfigurationDescription);
+        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription
+                .getFromConfig(cdtConfigurationDescription);
         performExternalClean(autoData, false, monitor);
     }
 

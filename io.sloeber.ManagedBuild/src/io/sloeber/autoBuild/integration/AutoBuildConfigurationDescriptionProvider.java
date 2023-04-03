@@ -21,6 +21,7 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.IModificationContext;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationDataProvider;
@@ -45,17 +46,24 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
             ICConfigurationDescription baseCfgDescription, CConfigurationData baseData, IModificationContext context,
             IProgressMonitor monitor) throws CoreException {
 
-        AutoBuildConfigurationDescription autoBuildBaseData = (AutoBuildConfigurationDescription) baseData;
-        assert (cfgDescription == autoBuildBaseData.getCdtConfigurationDescription());
-        String lineStart = getLinePrefix(cfgDescription);
+        ICProjectDescription projDesc = cfgDescription.getProjectDescription();
         String lineEnd = getLineEnd();
+        StringBuffer configText = new StringBuffer();
+        for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
+            AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
+                    .getConfigurationData();
+
+            String lineStart = getLinePrefix(curConfDesc);
+
+            configText.append(autoBuildConfigBase.ToText(lineStart, lineEnd));
+        }
+
         File projectFile = getStorageFile(cfgDescription);
-        StringBuffer configText = autoBuildBaseData.ToText(lineStart, lineEnd);
         try {
             if (projectFile.exists()) {
-                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
-                String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" + lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
-                FileUtils.write(projectFile, clean + configText, Charset.defaultCharset());
+                //                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
+                //                String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" + lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
+                FileUtils.write(projectFile, configText, Charset.defaultCharset());
             } else {
                 FileUtils.write(projectFile, configText, Charset.defaultCharset());
             }
@@ -103,21 +111,26 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
     @Override
     public void removeConfiguration(ICConfigurationDescription cfgDescription, CConfigurationData data,
             IProgressMonitor monitor) {
-        AutoBuildConfigurationDescription autoBuildBaseData = (AutoBuildConfigurationDescription) data;
-        String lineStart = getLinePrefix(cfgDescription);
-        String lineEnd = getLineEnd();
-        File projectFile = getStorageFile(cfgDescription);
-        try {
-            if (projectFile.exists()) {
-                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
-                String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" + lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
-                FileUtils.write(projectFile, clean, Charset.defaultCharset());
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         return;
+        //        String configname = cfgDescription.getName();
+        //        if (cfgDescription.getProjectDescription().getConfigurationByName(configname) != null) {
+        //            //no need to remove the configuration from disk
+        //            return;
+        //        }
+        //        String lineStart = getLinePrefix(cfgDescription);
+        //        String lineEnd = getLineEnd();
+        //        File projectFile = getStorageFile(cfgDescription);
+        //        try {
+        //            if (projectFile.exists()) {
+        //                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
+        //                String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" + lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
+        //                FileUtils.write(projectFile, clean, Charset.defaultCharset());
+        //            }
+        //        } catch (IOException e) {
+        //            // TODO Auto-generated catch block
+        //            e.printStackTrace();
+        //        }
+        //        return;
     }
 
     @Override

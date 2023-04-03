@@ -25,9 +25,9 @@ public class Messages extends NLS {
     public static String BuilderSettingsTab_UseUnlimitedJobs;
     public static String BuilderSettingsTab_UseParallelJobs;
     public static String BuilderSettingsTab_14;
-    public static String BuilderSettingsTab_15;
-    public static String BuilderSettingsTab_16;
-    public static String BuilderSettingsTab_17;
+    public static String BuilderSettingsTab_workbench_build_type;
+    public static String BuilderSettingsTab_make_build_target;
+    public static String BuilderSettingsTab_auto_build;
     public static String BuilderSettingsTab_18;
     public static String BuilderSettingsTab_19;
     public static String BuilderSettingsTab_20;
@@ -38,7 +38,7 @@ public class Messages extends NLS {
     public static String BuilderSettingsTab_6;
     public static String BuilderSettingsTab_7;
     public static String BuilderSettingsTab_8;
-    public static String BuilderSettingsTab_9;
+    public static String BuildBehaviourTab_Header;
     public static String BuilderSettingsTab_Configure_Build_Arguments_In_the_Behavior_tab;
     public static String BuildOptionSettingsUI_0;
     public static String BuildPropertyPage_error_Unknown_tree_element;

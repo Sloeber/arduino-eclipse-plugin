@@ -21,10 +21,6 @@ public interface IAutoBuildConfigurationDescription {
 
     void setUseStandardBuildArguments(boolean useStandardBuildArguments);
 
-    boolean useCustomBuildArguments();
-
-    void setUseCustomBuildArguments(boolean useCustomBuildArguments);
-
     boolean stopOnFirstBuildError();
 
     void setStopOnFirstBuildError(boolean stopOnFirstBuildError);
@@ -105,4 +101,20 @@ public interface IAutoBuildConfigurationDescription {
     void setAutoBuildEnabled(boolean enabled);
 
     ICConfigurationDescription getCdtConfigurationDescription();
+
+    void setCustomBuildArguments(String arguments);
+
+    String getCustomBuildArguments();
+
+    void setAutoMakeTarget(String target);
+
+    String getAutoMakeTarget();
+
+    void setIncrementalMakeTarget(String target);
+
+    String getIncrementalMakeTarget();
+
+    void setCleanMakeTarget(String target);
+
+    String getCleanMakeTarget();
 }

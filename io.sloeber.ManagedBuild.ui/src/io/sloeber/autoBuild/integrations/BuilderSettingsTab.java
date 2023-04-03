@@ -46,6 +46,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
     private Button myUseDefaultBuildCommandButton;
     private Combo myBuilderTypeCombo;
     private Text myBuildCmdText;
+    private Button myBuildCommandButton;
     private Button myAutoGenMakefileButton;
     private Text myBuildFolderText;
 
@@ -74,7 +75,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                myAutoConfDesc.setUseDefaultBuildCommand(!myAutoConfDesc.useDefaultBuildCommand());
+                myAutoConfDesc.setUseDefaultBuildCommand(myUseDefaultBuildCommandButton.getSelection());
                 updateButtons();
             }
 
@@ -95,8 +96,8 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
                 myAutoConfDesc.setCustomBuildCommand(buildCommand);
             }
         });
-        Button buildCommandButton = setupButton(g1, VARIABLESBUTTON_NAME, 1, GridData.END);
-        buildCommandButton.addSelectionListener(new SelectionAdapter() {
+        myBuildCommandButton = setupButton(g1, VARIABLESBUTTON_NAME, 1, GridData.END);
+        myBuildCommandButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                 String x = AbstractCPropertyTab.getVariableDialog(getShell(),
@@ -160,7 +161,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         });
     }
 
-    private void updateFields() {
+    private void updateDisplayedData() {
         //as each autoConfDesc can contain a different set of builders
         //we need to replace all of them
         myBuilderTypeCombo.removeAll();
@@ -179,7 +180,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
     @Override
     public void updateData(ICResourceDescription cfgd) {
         super.updateData(cfgd);
-        updateFields();
+        updateDisplayedData();
     }
 
     /**
@@ -190,7 +191,9 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
 
         IBuildRunner buildRunner = myAutoConfDesc.getBuildRunner();
         myUseDefaultBuildCommandButton.setEnabled(buildRunner.supportsCustomCommand());
-        myBuildCmdText.setEnabled(buildRunner.supportsCustomCommand() && !myAutoConfDesc.useDefaultBuildCommand());
+        boolean enableCustomBuildcmd = buildRunner.supportsCustomCommand() && !myAutoConfDesc.useDefaultBuildCommand();
+        myBuildCmdText.setEnabled(enableCustomBuildcmd);
+        myBuildCommandButton.setEnabled(enableCustomBuildcmd);
         myAutoGenMakefileButton.setEnabled(buildRunner.supportsMakeFiles());
     }
 
@@ -203,20 +206,10 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         return b;
     }
 
-    @Override
-    public void performApply(ICResourceDescription src, ICResourceDescription dst) {
-        BuildBehaviourTab.apply(src, dst, page.isMultiCfg());
-    }
-
     // This page can be displayed for project only
     @Override
     public boolean canBeVisible() {
         return page.isForProject() || page.isForPrefs();
-    }
-
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
     }
 
     @Override
@@ -233,7 +226,4 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         //		updateData(getResDesc());
     }
 
-    private Shell getShell() {
-        return usercomp.getShell();
-    }
 }

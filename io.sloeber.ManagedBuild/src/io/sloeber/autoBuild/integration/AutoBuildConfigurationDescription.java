@@ -54,7 +54,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private static final String IS_CLEAN_BUILD_ENABLED = "isCleanEnabled"; //$NON-NLS-1$
     private static final String NUM_PARRALEL_BUILDS = "numberOfParralelBuilds"; //$NON-NLS-1$
     private static final String CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
-    private static final String USE_CUSTOM_BUILD_ARGUMENTS = "useCustomBuildArguments"; //$NON-NLS-1$
     private static final String STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
     private static final String IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
     private static final String IS_AUTO_BUILD_ENABLED = "isAutoBuildEnabled";//$NON-NLS-1$
@@ -62,6 +61,9 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private static final String VALUE = "value"; //$NON-NLS-1$
     private static final String RESOURCE = "resource";//$NON-NLS-1$
     private static final String BUILD_RUNNER_NAME = "buildRunnerName";//$NON-NLS-1$
+    private static final String AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
+    private static final String INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
+    private static final String CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
 
     private IConfiguration myAutoBuildConfiguration;
     private IProject myProject;
@@ -80,17 +82,22 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private boolean myStopOnFirstBuildError = true;
 
     private boolean myIsParallelBuild = false;
-    private boolean myIsCleanBuildEnabled = true;
-    private boolean myIsIncrementalBuildEnabled = true;
+
+    private IBuildRunner myBuildRunner = staticMakeBuildRunner;
+    private boolean myIsCleanBuildEnabled = myBuildRunner.supportsCleanBuild();
+    private boolean myIsIncrementalBuildEnabled = myBuildRunner.supportsIncrementalBuild();
+    private boolean myIsAutoBuildEnabled = myBuildRunner.supportsAutoBuild();
+    private String myCustomBuildArguments = EMPTY_STRING;
 
     private boolean myUseDefaultBuildCommand = true;
     private boolean myUseStandardBuildArguments = true;
-    private boolean myUseCustomBuildArguments = false;
     private String myCustomBuildCommand = EMPTY_STRING;
     private int myParallelizationNum = PARRALLEL_BUILD_OPTIMAL_JOBS;
     private String myBuildFolderString = CONFIG_NAME_VARIABLE;
-    private IBuildRunner myBuildRunner = staticMakeBuildRunner;
-    private boolean myIsAutoBuildEnabled;
+
+    private String myAutoMakeTarget = DEFAULT_AUTO_MAKE_TARGET;
+    private String myIncrementalMakeTarget = DEFAULT_INCREMENTAL_MAKE_TARGET;
+    private String myCleanMakeTarget = DEFAULT_CLEAN_MAKE_TARGET;
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
     private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion."); //$NON-NLS-1$
 
@@ -124,29 +131,32 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myCdtConfigurationDescription = cfgDescription;
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
         myBuildBuildData = new BuildBuildData(this);
-
         isValid = autoBuildConfigBase.isValid;
         myName = myCdtConfigurationDescription.getName();
         myDescription = autoBuildConfigBase.myDescription;
-        myBuildFolderString = autoBuildConfigBase.myBuildFolderString;
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
         mySelectedOptions.clear();
         mySelectedOptions.putAll(autoBuildConfigBase.mySelectedOptions);
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
-
-        myUseDefaultBuildCommand = autoBuildConfigBase.myUseDefaultBuildCommand;
         myGenerateMakeFilesAUtomatically = autoBuildConfigBase.myGenerateMakeFilesAUtomatically;
-        myUseStandardBuildArguments = autoBuildConfigBase.myUseStandardBuildArguments;
-        myUseCustomBuildArguments = autoBuildConfigBase.myUseCustomBuildArguments;
         myStopOnFirstBuildError = autoBuildConfigBase.myStopOnFirstBuildError;
         myIsParallelBuild = autoBuildConfigBase.myIsParallelBuild;
-        myParallelizationNum = autoBuildConfigBase.myParallelizationNum;
         myIsCleanBuildEnabled = autoBuildConfigBase.myIsCleanBuildEnabled;
         myIsIncrementalBuildEnabled = autoBuildConfigBase.myIsIncrementalBuildEnabled;
+        myCustomBuildArguments = autoBuildConfigBase.myCustomBuildArguments;
+        myUseDefaultBuildCommand = autoBuildConfigBase.myUseDefaultBuildCommand;
+        myUseStandardBuildArguments = autoBuildConfigBase.myUseStandardBuildArguments;
         myCustomBuildCommand = autoBuildConfigBase.myCustomBuildCommand;
-        myIsAutoBuildEnabled = autoBuildConfigBase.myIsAutoBuildEnabled;
+        myParallelizationNum = autoBuildConfigBase.myParallelizationNum;
+        myBuildFolderString = autoBuildConfigBase.myBuildFolderString;
         myBuildRunner = autoBuildConfigBase.myBuildRunner;
+        myIsAutoBuildEnabled = autoBuildConfigBase.myIsAutoBuildEnabled;
+
+        myAutoMakeTarget = autoBuildConfigBase.myAutoMakeTarget;
+        myIncrementalMakeTarget = autoBuildConfigBase.myIncrementalMakeTarget;
+        myCleanMakeTarget = autoBuildConfigBase.myCleanMakeTarget;
+
     }
 
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
@@ -203,9 +213,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             case USE_STANDARD_BUILD_ARGUMENTS:
                 myUseStandardBuildArguments = Boolean.parseBoolean(value);
                 break;
-            case USE_CUSTOM_BUILD_ARGUMENTS:
-                myUseCustomBuildArguments = Boolean.parseBoolean(value);
-                break;
             case STOP_ON_FIRST_ERROR:
                 myStopOnFirstBuildError = Boolean.parseBoolean(value);
                 break;
@@ -234,24 +241,41 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                     }
                 }
                 break;
+            case AUTO_MAKE_TARGET:
+                myAutoMakeTarget = value;
+                break;
+            case INCREMENTAL_MAKE_TARGET:
+                myIncrementalMakeTarget = value;
+                break;
+            case CLEAN_MAKE_TARGET:
+                myCleanMakeTarget = value;
+                break;
 
             default:
+                boolean found = false;
                 if (key.startsWith(PROPERTY + DOT)) {
                     String propKey = key.substring(PROPERTY.length() + DOT.length());
                     myProperties.put(propKey, value);
+                    found = true;
                 }
                 if (key.startsWith(OPTION + DOT + KEY + DOT)) {
                     String optionIndex = key.substring(OPTION.length() + KEY.length() + DOT.length() * 2);
                     optionKeyMap.put(optionIndex, value);
+                    found = true;
                 }
 
                 if (key.startsWith(OPTION + DOT + VALUE + DOT)) {
                     String optionIndex = key.substring(OPTION.length() + VALUE.length() + DOT.length() * 2);
                     optionValueMap.put(optionIndex, value);
+                    found = true;
                 }
                 if (key.startsWith(OPTION + DOT + RESOURCE + DOT)) {
                     String optionIndex = key.substring(OPTION.length() + RESOURCE.length() + DOT.length() * 2);
                     optionResourceMap.put(optionIndex, value);
+                    found = true;
+                }
+                if (!found) {
+                    System.err.println("Following autobuild configuration line is ignored " + curLine); //$NON-NLS-1$
                 }
             }
         }
@@ -589,19 +613,22 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public String getBuildCommand(boolean includeArgs) {
+        IBuilder bldr = myAutoBuildConfiguration.getBuilder();
+        String command = new String();
         if (myUseDefaultBuildCommand) {
-            IBuilder bldr = myAutoBuildConfiguration.getBuilder();
-            if (includeArgs) {
-                String args = bldr.getArguments(myIsParallelBuild, myParallelizationNum, myStopOnFirstBuildError);
-                String command = bldr.getCommand();
-                if (args.isBlank()) {
-                    return command;
-                }
-                return command + BLANK + args;
-            }
-            return bldr.getCommand();
+            command = bldr.getCommand();
+        } else {
+            command = getCustomBuildCommand();
         }
-        return getCustomBuildCommand();
+
+        if (includeArgs) {
+            String args = bldr.getArguments(myIsParallelBuild, myParallelizationNum, myStopOnFirstBuildError);
+            if (args.isBlank()) {
+                return command;
+            }
+            return command + BLANK + args;
+        }
+        return command;
     }
 
     @Override
@@ -612,16 +639,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     @Override
     public void setUseStandardBuildArguments(boolean useStandardBuildArguments) {
         myUseStandardBuildArguments = useStandardBuildArguments;
-    }
-
-    @Override
-    public boolean useCustomBuildArguments() {
-        return myUseCustomBuildArguments;
-    }
-
-    @Override
-    public void setUseCustomBuildArguments(boolean useCustomBuildArguments) {
-        myUseCustomBuildArguments = useCustomBuildArguments;
     }
 
     @Override
@@ -733,8 +750,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 + String.valueOf(myGenerateMakeFilesAUtomatically) + lineEnd);
         ret.append(linePrefix + USE_STANDARD_BUILD_ARGUMENTS + EQUALS + String.valueOf(myUseStandardBuildArguments)
                 + lineEnd);
-        ret.append(
-                linePrefix + USE_CUSTOM_BUILD_ARGUMENTS + EQUALS + String.valueOf(myUseCustomBuildArguments) + lineEnd);
         ret.append(linePrefix + STOP_ON_FIRST_ERROR + EQUALS + String.valueOf(myStopOnFirstBuildError) + lineEnd);
         ret.append(linePrefix + IS_PARRALLEL_BUILD + EQUALS + String.valueOf(myIsParallelBuild) + lineEnd);
         ret.append(linePrefix + IS_CLEAN_BUILD_ENABLED + EQUALS + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
@@ -743,6 +758,10 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         ret.append(linePrefix + NUM_PARRALEL_BUILDS + EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
         ret.append(linePrefix + CUSTOM_BUILD_COMMAND + EQUALS + myCustomBuildCommand + lineEnd);
         ret.append(linePrefix + BUILD_RUNNER_NAME + EQUALS + myBuildRunner.getName() + lineEnd);
+        ret.append(linePrefix + AUTO_MAKE_TARGET + EQUALS + myAutoMakeTarget + lineEnd);
+        ret.append(linePrefix + INCREMENTAL_MAKE_TARGET + EQUALS + myIncrementalMakeTarget + lineEnd);
+        ret.append(linePrefix + CLEAN_MAKE_TARGET + EQUALS + myCleanMakeTarget + lineEnd);
+
         return ret;
 
     }
@@ -754,14 +773,12 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public Set<IBuildRunner> getBuildRunners() {
-        // TODO Auto-generated method stub
         return myBuildRunners;
     }
 
     @Override
     public void setBuildRunner(IBuildRunner buildRunner) {
         myBuildRunner = buildRunner;
-
     }
 
     @Override
@@ -772,7 +789,47 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     @Override
     public void setAutoBuildEnabled(boolean enabled) {
         myIsAutoBuildEnabled = enabled;
+    }
 
+    @Override
+    public void setCustomBuildArguments(String arguments) {
+        myCustomBuildArguments = arguments;
+    }
+
+    @Override
+    public String getCustomBuildArguments() {
+        return myCustomBuildArguments;
+    }
+
+    @Override
+    public void setAutoMakeTarget(String target) {
+        myAutoMakeTarget = target;
+    }
+
+    @Override
+    public String getAutoMakeTarget() {
+        return myAutoMakeTarget;
+    }
+
+    @Override
+    public void setIncrementalMakeTarget(String target) {
+        myIncrementalMakeTarget = target;
+    }
+
+    @Override
+    public String getIncrementalMakeTarget() {
+        return myIncrementalMakeTarget;
+    }
+
+    @Override
+    public void setCleanMakeTarget(String target) {
+        myCleanMakeTarget = target;
+
+    }
+
+    @Override
+    public String getCleanMakeTarget() {
+        return myCleanMakeTarget;
     }
 
 }

@@ -65,4 +65,10 @@ public abstract class IBuildRunner {
 
     public abstract boolean supportsMakeFiles();
 
+    public abstract boolean supportsAutoBuild();
+
+    public abstract boolean supportsIncrementalBuild();
+
+    public abstract boolean supportsCleanBuild();
+
 }

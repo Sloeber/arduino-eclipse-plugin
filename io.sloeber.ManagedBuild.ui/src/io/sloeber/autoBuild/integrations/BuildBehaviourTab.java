@@ -15,21 +15,19 @@
 package io.sloeber.autoBuild.integrations;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
 import java.text.MessageFormat;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICMultiConfigDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
-import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.swt.accessibility.AccessibleListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -39,10 +37,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
-
-import io.sloeber.autoBuild.api.AutoBuildProject;
-import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.ui.internal.Messages;
 
@@ -52,55 +46,90 @@ import io.sloeber.autoBuild.ui.internal.Messages;
  */
 public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
 
-    public final static String BUILD_TARGET_INCREMENTAL = ARGS_PREFIX + ".build.target.inc"; //$NON-NLS-1$
-    public final static String BUILD_TARGET_AUTO = ARGS_PREFIX + ".build.target.auto"; //$NON-NLS-1$
-    public final static String BUILD_TARGET_CLEAN = ARGS_PREFIX + ".build.target.clean"; //$NON-NLS-1$
+    private class BuildTargetCombo {
+        Button myCheckBoxButton;
+        Text myEntryField;
+        Button myVariablesButton;
+
+        BuildTargetCombo(Composite g4, String groupLabel, SelectionAdapter checkListener, ModifyListener textListener) {
+            Font font = g4.getFont();
+            myCheckBoxButton = new Button(g4, SWT.CHECK);
+            myCheckBoxButton.setText(groupLabel);
+            myCheckBoxButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+            myCheckBoxButton.setFont(font);
+            myCheckBoxButton.addSelectionListener(checkListener);
+
+            myEntryField = new Text(g4, SWT.SINGLE | SWT.BORDER);
+            myEntryField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+            myEntryField.setFont(font);
+            myEntryField.addModifyListener(textListener);
+
+            GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+            gd.minimumWidth = BUTTON_WIDTH;
+            myVariablesButton = new Button(g4, SWT.PUSH);
+            myVariablesButton.setText(VARIABLESBUTTON_NAME);
+            myVariablesButton.setLayoutData(gd);
+            myVariablesButton.setFont(font);
+            myVariablesButton.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    String x = AbstractCPropertyTab.getVariableDialog(getShell(),
+                            myAutoConfDesc.getCdtConfigurationDescription());
+                    if (x != null)
+                        myEntryField.insert(x);
+                }
+            });
+        }
+
+        public void setEnabled(boolean check, boolean entry) {
+            myCheckBoxButton.setEnabled(check);
+            myEntryField.setEnabled(check && entry);
+            myVariablesButton.setEnabled(check && entry);
+        }
+    }
+
     private static final int SPINNER_MAX_VALUE = 10000;
     private static final int SPINNER_MIN_VALUE = 2;
 
-    private static final int TRI_STATES_SIZE = 7;
-    // Widgets
-    private Button r_useStandardBuildArguments;
-    private Button r_useCustomBuildArguments;
-    private Text t_buildArguments;
+    private Button myUseStandardBuildArgumentsButton;
+    private Button myUseCustomBuildArgumentsButton;
+    private Text myBuildArgumentsText;
+    private Button myStopOnErrorButton;
+    private Button myUseParallelBuildButton;
 
-    // 3
-    private Button b_stopOnError; // 3
-    private Button b_parallel; // 3
+    private Button myParalOpt_OptimalButton;
+    private Button myParalOpt_SpecificButton;
+    private Button myParalOpt_UnlimitedButton;
+    private Spinner myParalOpt_NumberSpinner;
 
-    private Button b_parallelOptimal;
-    private Button b_parallelSpecific;
-    private Button b_parallelUnlimited;
-    private Spinner s_parallelNumber;
-
-    private Group grp_buildSettings;
-
-    private Label title2;
-    private Button b_autoBuild; // 3
-    private Text t_autoBuild;
-    private Button b_cmdBuild; // 3
-    private Text t_cmdBuild;
-    private Button b_cmdClean; // 3
-    private Text t_cmdClean;
-
-    private boolean canModify = true;
-
-    protected final int cpuNumber = Runtime.getRuntime().availableProcessors();
+    private BuildTargetCombo myAutoBuildCombo;
+    private BuildTargetCombo myIncreBuildCombo;
+    private BuildTargetCombo myCleanBuildCombo;
+    private Button myBuildArgumentsVarButton;
 
     @Override
     public void createControls(Composite parent) {
         super.createControls(parent);
         usercomp.setLayout(new GridLayout(1, false));
+        Font font = usercomp.getFont();
 
         // Build setting group
-        grp_buildSettings = setupGroup(usercomp, Messages.BuilderSettingsTab_9, 2, GridData.FILL_HORIZONTAL);
+        Group grp_buildSettings = setupGroup(usercomp, Messages.BuildBehaviourTab_Header, 2, GridData.FILL_HORIZONTAL);
         GridLayout gl = new GridLayout(2, true);
         gl.verticalSpacing = 0;
         gl.marginWidth = 0;
         grp_buildSettings.setLayout(gl);
 
-        r_useStandardBuildArguments = setupRadio(grp_buildSettings,
-                Messages.BuildBehaviourTab_Use_standard_build_arguments, 3, GridData.BEGINNING);
+        myUseStandardBuildArgumentsButton = new Button(grp_buildSettings, SWT.RADIO);
+        myUseStandardBuildArgumentsButton.setText(Messages.BuildBehaviourTab_Use_standard_build_arguments);
+        setupControl(myUseStandardBuildArgumentsButton, 3, GridData.BEGINNING);
+        myUseStandardBuildArgumentsButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setUseStandardBuildArguments(true);
+                updateButtons();
+            }
+        });
 
         Composite c1 = new Composite(grp_buildSettings, SWT.NONE);
         setupControl(c1, 1, GridData.FILL_BOTH);
@@ -111,15 +140,37 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         gl = new GridLayout(1, false);
         c1.setLayout(gl);
 
-        b_stopOnError = setupCheck(c1, Messages.BuilderSettingsTab_10, 1, GridData.BEGINNING);
-        ((GridData) (b_stopOnError.getLayoutData())).horizontalIndent = 15;
+        //        myStopOnErrorButton = setupCheck(c1, Messages.BuilderSettingsTab_10, 1, GridData.BEGINNING);
+        //        ((GridData) (myStopOnErrorButton.getLayoutData())).horizontalIndent = 15;
+        myStopOnErrorButton = new Button(c1, SWT.CHECK);
+        myStopOnErrorButton.setText(Messages.BuilderSettingsTab_10);
+        gd = new GridData(SWT.LEFT);
+        gd.horizontalSpan = 1;
+        gd.horizontalIndent = 15;
+        myStopOnErrorButton.setLayoutData(gd);
+        myStopOnErrorButton.setFont(font);
+        myStopOnErrorButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setStopOnFirstBuildError(myStopOnErrorButton.getSelection());
+            }
+        });
 
         Composite c2 = new Composite(grp_buildSettings, SWT.NONE);
         setupControl(c2, 1, GridData.FILL_BOTH);
         gl = new GridLayout(1, false);
         c2.setLayout(gl);
 
-        b_parallel = setupCheck(c2, Messages.BuilderSettingsTab_EnableParallelBuild, 1, GridData.BEGINNING);
+        myUseParallelBuildButton = new Button(c2, SWT.CHECK);
+        myUseParallelBuildButton.setText(Messages.BuilderSettingsTab_EnableParallelBuild);
+        setupControl(myUseParallelBuildButton, 1, GridData.BEGINNING);
+        myUseParallelBuildButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setIsParallelBuild(myUseParallelBuildButton.getSelection());
+                updateButtons();
+            }
+        });
 
         Composite c3 = new Composite(grp_buildSettings, SWT.NONE);
         setupControl(c3, 1, GridData.FILL_BOTH);
@@ -129,226 +180,228 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         gl.marginHeight = 0;
         c3.setLayout(gl);
 
-        b_parallelOptimal = new Button(c3, SWT.RADIO);
-        b_parallelOptimal.setText(MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, 1));
-        setupControl(b_parallelOptimal, 2, GridData.BEGINNING);
-        ((GridData) (b_parallelOptimal.getLayoutData())).horizontalIndent = 15;
-        b_parallelOptimal.addSelectionListener(new SelectionAdapter() {
+        Integer one = Integer.valueOf(1);
+        myParalOpt_OptimalButton = new Button(c3, SWT.RADIO);
+        myParalOpt_OptimalButton.setText(MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, one));
+        setupControl(myParalOpt_OptimalButton, 2, GridData.BEGINNING);
+        ((GridData) (myParalOpt_OptimalButton.getLayoutData())).horizontalIndent = 15;
+        myParalOpt_OptimalButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                if (b_parallelOptimal.getSelection()) {
-                    myAutoConfDesc.setIsParallelBuild(true);
+                if (myParalOpt_OptimalButton.getSelection()) {
                     myAutoConfDesc.setParallelizationNum(PARRALLEL_BUILD_OPTIMAL_JOBS);
                     updateButtons();
                 }
             }
         });
 
-        b_parallelSpecific = new Button(c3, SWT.RADIO);
-        b_parallelSpecific.setText(Messages.BuilderSettingsTab_UseParallelJobs);
-        setupControl(b_parallelSpecific, 1, GridData.BEGINNING);
-        ((GridData) (b_parallelSpecific.getLayoutData())).horizontalIndent = 15;
-        b_parallelSpecific.addSelectionListener(new SelectionAdapter() {
+        myParalOpt_SpecificButton = new Button(c3, SWT.RADIO);
+        myParalOpt_SpecificButton.setText(Messages.BuilderSettingsTab_UseParallelJobs);
+        setupControl(myParalOpt_SpecificButton, 1, GridData.BEGINNING);
+        ((GridData) (myParalOpt_SpecificButton.getLayoutData())).horizontalIndent = 15;
+        myParalOpt_SpecificButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                if (b_parallelSpecific.getSelection()) {
-                    myAutoConfDesc.setIsParallelBuild(true);
-                    myAutoConfDesc.setParallelizationNum(s_parallelNumber.getSelection());
+                if (myParalOpt_SpecificButton.getSelection()) {
+                    myAutoConfDesc.setParallelizationNum(myParalOpt_NumberSpinner.getSelection());
                     updateButtons();
                 }
             }
         });
 
-        s_parallelNumber = new Spinner(c3, SWT.BORDER);
-        setupControl(s_parallelNumber, 1, GridData.BEGINNING);
-        s_parallelNumber.setValues(cpuNumber, SPINNER_MIN_VALUE, SPINNER_MAX_VALUE, 0, 1, 10);
-        s_parallelNumber.addSelectionListener(new SelectionAdapter() {
+        myParalOpt_NumberSpinner = new Spinner(c3, SWT.BORDER);
+        setupControl(myParalOpt_NumberSpinner, 1, GridData.BEGINNING);
+        myParalOpt_NumberSpinner.setValues(SPINNER_MIN_VALUE, SPINNER_MIN_VALUE, SPINNER_MAX_VALUE, 0, 1, 10);
+        myParalOpt_NumberSpinner.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                myAutoConfDesc.setParallelizationNum(s_parallelNumber.getSelection());
+                myAutoConfDesc.setParallelizationNum(myParalOpt_NumberSpinner.getSelection());
                 updateButtons();
             }
         });
-        s_parallelNumber.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+        myParalOpt_NumberSpinner.getAccessible().addAccessibleListener(new AccessibleAdapter() {
             @Override
             public void getName(AccessibleEvent e) {
                 e.result = Messages.BuilderSettingsTab_UseParallelJobs;
             }
         });
-        s_parallelNumber.setToolTipText(Messages.BuilderSettingsTab_UseParallelJobs);
+        myParalOpt_NumberSpinner.setToolTipText(Messages.BuilderSettingsTab_UseParallelJobs);
 
-        b_parallelUnlimited = new Button(c3, SWT.RADIO);
-        b_parallelUnlimited.setText(Messages.BuilderSettingsTab_UseUnlimitedJobs);
-        setupControl(b_parallelUnlimited, 2, GridData.BEGINNING);
-        ((GridData) (b_parallelUnlimited.getLayoutData())).horizontalIndent = 15;
-        b_parallelUnlimited.addSelectionListener(new SelectionAdapter() {
+        myParalOpt_UnlimitedButton = new Button(c3, SWT.RADIO);
+        myParalOpt_UnlimitedButton.setText(Messages.BuilderSettingsTab_UseUnlimitedJobs);
+        setupControl(myParalOpt_UnlimitedButton, 2, GridData.BEGINNING);
+        ((GridData) (myParalOpt_UnlimitedButton.getLayoutData())).horizontalIndent = 15;
+        myParalOpt_UnlimitedButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                if (b_parallelUnlimited.getSelection()) {
-                    myAutoConfDesc.setIsParallelBuild(true);
+                if (myParalOpt_UnlimitedButton.getSelection()) {
                     myAutoConfDesc.setParallelizationNum(PARRALLEL_BUILD_UNLIMITED_JOBS);
                     updateButtons();
                 }
             }
         });
 
-        r_useCustomBuildArguments = setupRadio(grp_buildSettings, Messages.BuildBehaviourTab_Use_custom_build_arguments,
-                3, GridData.BEGINNING);
+        myUseCustomBuildArgumentsButton = new Button(grp_buildSettings, SWT.RADIO);
+        myUseCustomBuildArgumentsButton.setText(Messages.BuildBehaviourTab_Use_custom_build_arguments);
+        setupControl(myUseCustomBuildArgumentsButton, 3, GridData.BEGINNING);
+        myUseCustomBuildArgumentsButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setUseStandardBuildArguments(false);
+                updateButtons();
+            }
+        });
+
         Composite c0 = setupComposite(grp_buildSettings, 3, GridData.FILL_BOTH);
         setupControl(c0, 2, GridData.FILL_BOTH);
         setupLabel(c0, Messages.BuildBehaviourTab_Build_arguments, 1, GridData.BEGINNING);
-        t_buildArguments = setupBlock(c0, r_useCustomBuildArguments);
-        t_buildArguments.addModifyListener(new ModifyListener() {
+        //myBuildArgumentsText = setupBlock(c0, myUseCustomBuildArgumentsButton);
+        myBuildArgumentsText = setupText(c0, 1, GridData.FILL_HORIZONTAL);
+        myBuildArgumentsVarButton = setupButton(c0, VARIABLESBUTTON_NAME, 1, GridData.END);
+        myBuildArgumentsVarButton.addSelectionListener(new SelectionAdapter() {
             @Override
-            public void modifyText(ModifyEvent e) {
-                if (!canModify)
-                    return;
-                setArguments(t_buildArguments.getText().trim());
+            public void widgetSelected(SelectionEvent event) {
+                String x = AbstractCPropertyTab.getVariableDialog(getShell(),
+                        myAutoConfDesc.getCdtConfigurationDescription());
+                if (x != null)
+                    myBuildArgumentsText.insert(x);
             }
         });
 
-        // Workbench behaviour group
-        AccessibleListener makeTargetLabelAccessibleListener = new AccessibleAdapter() {
+        myBuildArgumentsText.addModifyListener(new ModifyListener() {
             @Override
-            public void getName(AccessibleEvent e) {
-                e.result = Messages.BuilderSettingsTab_16;
+            public void modifyText(ModifyEvent e) {
+                String arguments = myBuildArgumentsText.getText().trim();
+                myAutoConfDesc.setCustomBuildArguments(arguments);
             }
-        };
+        });
+
         Group g4 = setupGroup(usercomp, Messages.BuilderSettingsTab_14, 3, GridData.FILL_HORIZONTAL);
-        setupLabel(g4, Messages.BuilderSettingsTab_15, 1, GridData.BEGINNING);
-        title2 = setupLabel(g4, Messages.BuilderSettingsTab_16, 2, GridData.BEGINNING);
-        b_autoBuild = setupCheck(g4, Messages.BuilderSettingsTab_17, 1, GridData.BEGINNING);
-        t_autoBuild = setupBlock(g4, b_autoBuild);
-        t_autoBuild.addModifyListener(new ModifyListener() {
+
+        Label l = new Label(g4, SWT.NONE);
+        l.setText(Messages.BuilderSettingsTab_workbench_build_type);
+        l.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+        l.setFont(font);
+
+        l = new Label(g4, SWT.NONE);
+        l.setText(Messages.BuilderSettingsTab_make_build_target);
+        l.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false, 2, 1));
+        l.setFont(font);
+
+        myAutoBuildCombo = new BuildTargetCombo(g4, Messages.BuilderSettingsTab_auto_build, new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setAutoBuildEnabled(myAutoBuildCombo.myCheckBoxButton.getSelection());
+                updateButtons();
+            }
+        }, new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                if (canModify)
-                    setBuildAttribute(BUILD_TARGET_AUTO, t_autoBuild.getText());
+                myAutoConfDesc.setAutoMakeTarget(myAutoBuildCombo.myEntryField.getText());
             }
         });
-        t_autoBuild.getAccessible().addAccessibleListener(makeTargetLabelAccessibleListener);
-        setupLabel(g4, Messages.BuilderSettingsTab_18, 3, GridData.BEGINNING);
-        b_cmdBuild = setupCheck(g4, Messages.BuilderSettingsTab_19, 1, GridData.BEGINNING);
-        t_cmdBuild = setupBlock(g4, b_cmdBuild);
-        t_cmdBuild.addModifyListener(new ModifyListener() {
+
+        myIncreBuildCombo = new BuildTargetCombo(g4, Messages.BuilderSettingsTab_19, new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setIncrementalBuildEnable(myIncreBuildCombo.myCheckBoxButton.getSelection());
+                updateButtons();
+            }
+        }, new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                if (canModify)
-                    setBuildAttribute(BUILD_TARGET_INCREMENTAL, t_cmdBuild.getText());
+                myAutoConfDesc.setIncrementalMakeTarget(myIncreBuildCombo.myEntryField.getText());
             }
         });
-        t_cmdBuild.getAccessible().addAccessibleListener(makeTargetLabelAccessibleListener);
-        b_cmdClean = setupCheck(g4, Messages.BuilderSettingsTab_20, 1, GridData.BEGINNING);
-        t_cmdClean = setupBlock(g4, b_cmdClean);
-        t_cmdClean.addModifyListener(new ModifyListener() {
+
+        myCleanBuildCombo = new BuildTargetCombo(g4, Messages.BuilderSettingsTab_20, new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                myAutoConfDesc.setCleanBuildEnable(myCleanBuildCombo.myCheckBoxButton.getSelection());
+                updateButtons();
+            }
+        }, new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                if (canModify)
-                    setBuildAttribute(BUILD_TARGET_CLEAN, t_cmdClean.getText());
+                myAutoConfDesc.setCleanMakeTarget(myCleanBuildCombo.myEntryField.getText());
             }
         });
-        t_cmdClean.getAccessible().addAccessibleListener(makeTargetLabelAccessibleListener);
+
     }
 
-    /**
-     * Calculate enablements when multiple configurations selected on property page.
-     *
-     * @return: Mode 0: 0: bld.isManagedBuildOn() 1: N/A 2:
-     *          bld.canKeepEnvironmentVariablesInBuildfile() 3:
-     *          bld.keepEnvironmentVariablesInBuildfile() 4:
-     *          bld.isDefaultBuildCmdOnly() 5: bld.isDefaultBuildArgsOnly() 6:
-     *          !bld.isDefaultBuildArgsOnly() Mode 1: 0: stopOnFirstBuildError 1:
-     *          supportsStopOnError(true) 2: bld.supportsStopOnError(false) 3: N/A
-     *          4: N/A 5: bld.isDefaultBuildArgsOnly() 6:
-     *          !bld.isDefaultBuildArgsOnly() Mode 2: 0: b.isAutoBuildEnable() 1:
-     *          b.isIncrementalBuildEnabled() 2: b.isCleanBuildEnabled() 3: N/A 4:
-     *          N/A 5: N/A 6: N/A
-     */
-    //    public int[] calc3states(ICPropertyProvider p, int mode) {
-    //        if (p.isMultiCfg()) {
-    //            boolean m0 = (mode == 0);
-    //            boolean m1 = (mode == 1);
-    //
-    //            //IAutoBuildConfigurationDescription bldr0 = AutoBuildProject.getAutoBuildConfig(p.getCfgsEditable()[0]);
-    //            int[] res = new int[TRI_STATES_SIZE];
-    //            boolean[] b = new boolean[TRI_STATES_SIZE];
-    //            b[0] = m0 ? myAutoConfDesc.isManagedBuildOn()
-    //                    : (m1 ? myAutoConfDesc.stopOnFirstBuildError() : myAutoConfDesc.isAutoBuildEnable());
-    //            b[1] = m0 ? true
-    //                    : (m1 ? myAutoConfDesc.supportsStopOnError(true) : myAutoConfDesc.isIncrementalBuildEnabled());
-    //            b[2] = m0 ? myAutoConfDesc.canKeepEnvironmentVariablesInBuildfile()
-    //                    : (m1 ? myAutoConfDesc.supportsStopOnError(false) : myAutoConfDesc.isCleanBuildEnabled());
-    //            b[3] = m0 ? myAutoConfDesc.keepEnvironmentVariablesInBuildfile() : false;
-    //            b[4] = m0 ? myAutoConfDesc.useDefaultBuildCommand() : false;
-    //            b[5] = (m0 || m1) ? myAutoConfDesc.useStandardBuildArguments() : false;
-    //            b[6] = (m0 || m1) ? !myAutoConfDesc.useStandardBuildArguments() : false;
-    //            for (ICConfigurationDescription i : p.getCfgsEditable()) {
-    //                //TOFIX JABA add support for multiple config
-    //                IAutoBuildConfigurationDescription bldr = AutoBuildProject.getAutoBuildConfig(i);
-    //                if (b[0] != (m0 ? bldr.isManagedBuildOn()
-    //                        : (m1 ? bldr.stopOnFirstBuildError() : bldr.isAutoBuildEnable())))
-    //                    res[0] = TRI_UNKNOWN;
-    //                if (b[1] != (m0 ? true : (m1 ? bldr.supportsStopOnError(true) : bldr.isIncrementalBuildEnabled())))
-    //                    res[1] = TRI_UNKNOWN;
-    //                if (b[2] != (m0 ? bldr.canKeepEnvironmentVariablesInBuildfile()
-    //                        : (m1 ? bldr.supportsStopOnError(false) : bldr.isCleanBuildEnabled())))
-    //                    res[2] = TRI_UNKNOWN;
-    //                if (b[3] != (m0 ? bldr.keepEnvironmentVariablesInBuildfile() : false)) {
-    //                    res[3] = TRI_UNKNOWN;
-    //                }
-    //                if (b[4] != (m0 ? bldr.useDefaultBuildCommand() : false)) {
-    //                    res[4] = TRI_UNKNOWN;
-    //                }
-    //                if (b[5] != ((m0 || m1) ? bldr.useStandardBuildArguments() : false)) {
-    //                    res[5] = TRI_UNKNOWN;
-    //                }
-    //                if (b[6] != ((m0 || m1) ? !bldr.useStandardBuildArguments() : false)) {
-    //                    res[6] = TRI_UNKNOWN;
-    //                }
-    //            }
-    //            for (int i = 0; i < TRI_STATES_SIZE; i++) {
-    //                if (res[i] != TRI_UNKNOWN)
-    //                    res[i] = b[i] ? TRI_YES : TRI_NO;
-    //            }
-    //            return res;
-    //        }
-    //
-    //        return null;
-    //    }
+    private void updateDisplayedData() {
+        int parallelnum = myAutoConfDesc.getParallelizationNum();
+        int optimalNum = myAutoConfDesc.getOptimalParallelJobNum();
+        switch (parallelnum) {
+        case PARRALLEL_BUILD_UNLIMITED_JOBS:
+            myParalOpt_NumberSpinner.setSelection(optimalNum);
+            myParalOpt_UnlimitedButton.setSelection(true);
+            break;
+        case PARRALLEL_BUILD_OPTIMAL_JOBS:
+            myParalOpt_NumberSpinner.setSelection(optimalNum);
+            myParalOpt_OptimalButton.setSelection(true);
+            break;
+        default:
+            myParalOpt_NumberSpinner.setSelection(parallelnum);
+            myParalOpt_SpecificButton.setSelection(true);
+        }
+
+        myUseParallelBuildButton.setSelection(myAutoConfDesc.isParallelBuild());
+        setTriSelection(myUseStandardBuildArgumentsButton, myAutoConfDesc.useStandardBuildArguments());
+        setTriSelection(myUseCustomBuildArgumentsButton, !myAutoConfDesc.useStandardBuildArguments());
+        setTriSelection(myStopOnErrorButton, myAutoConfDesc.stopOnFirstBuildError());
+        myBuildArgumentsText.setText(myAutoConfDesc.getCustomBuildArguments());
+
+        myAutoBuildCombo.myCheckBoxButton.setSelection(myAutoConfDesc.isAutoBuildEnabled());
+        myIncreBuildCombo.myCheckBoxButton.setSelection(myAutoConfDesc.isIncrementalBuildEnabled());
+        myCleanBuildCombo.myCheckBoxButton.setSelection(myAutoConfDesc.isCleanBuildEnabled());
+
+        myAutoBuildCombo.myEntryField.setText(myAutoConfDesc.getAutoMakeTarget());
+        myIncreBuildCombo.myEntryField.setText(myAutoConfDesc.getIncrementalMakeTarget());
+        myCleanBuildCombo.myEntryField.setText(myAutoConfDesc.getCleanMakeTarget());
+
+        //On this page we can enable the fields based on buildrunner in this call
+        //as this page does not allow changing the build runner
+        IBuildRunner runner = myAutoConfDesc.getBuildRunner();
+        myUseStandardBuildArgumentsButton.setEnabled(runner.supportsCustomCommand());
+        myUseCustomBuildArgumentsButton.setEnabled(runner.supportsCustomCommand());
+        myStopOnErrorButton.setEnabled(runner.supportsStopOnError());
+
+    }
+
+    @Override
+    public void updateData(ICResourceDescription cfgd) {
+        super.updateData(cfgd);
+        updateDisplayedData();
+    }
 
     /**
      * sets widgets states
      */
     @Override
     protected void updateButtons() {
+        IBuildRunner runner = myAutoConfDesc.getBuildRunner();
+        boolean isMake = runner.supportsMakeFiles();
+        if (myAutoConfDesc.useStandardBuildArguments()) {
+            myStopOnErrorButton.setEnabled(runner.supportsStopOnError());
+            myBuildArgumentsText.setEnabled(false);
+            myBuildArgumentsVarButton.setEnabled(false);
+            updateParallelBlock();
+        } else {
+            myStopOnErrorButton.setEnabled(false);
+            myBuildArgumentsText.setEnabled(runner.supportsCustomCommand());
+            myBuildArgumentsVarButton.setEnabled(runner.supportsCustomCommand());
 
-        canModify = false;
+            myUseParallelBuildButton.setEnabled(false);
+            myParalOpt_OptimalButton.setEnabled(false);
+            myParalOpt_SpecificButton.setEnabled(false);
+            myParalOpt_UnlimitedButton.setEnabled(false);
+        }
+        myAutoBuildCombo.setEnabled(runner.supportsAutoBuild(), myAutoConfDesc.isAutoBuildEnabled() && isMake);
+        myIncreBuildCombo.setEnabled(runner.supportsIncrementalBuild(),
+                myAutoConfDesc.isIncrementalBuildEnabled() && isMake);
+        myCleanBuildCombo.setEnabled(runner.supportsCleanBuild(), myAutoConfDesc.isCleanBuildEnabled() && isMake);
 
-        setTriSelection(r_useStandardBuildArguments, myAutoConfDesc.useStandardBuildArguments());
-        setTriSelection(r_useCustomBuildArguments, !myAutoConfDesc.useStandardBuildArguments());
-        IBuildRunner buildrunner = myAutoConfDesc.getBuildRunner();
-        r_useStandardBuildArguments.setEnabled(buildrunner.supportsCustomCommand());
-        r_useCustomBuildArguments.setEnabled(buildrunner.supportsCustomCommand());
-
-        setTriSelection(b_stopOnError, myAutoConfDesc.stopOnFirstBuildError());
-        b_stopOnError.setEnabled(buildrunner.supportsStopOnError());
-
-        updateParallelBlock();
-
-        // Build commands
-        setTriSelection(b_autoBuild, myAutoConfDesc.isAutoBuildEnabled());
-        setTriSelection(b_cmdBuild, myAutoConfDesc.isIncrementalBuildEnabled());
-        setTriSelection(b_cmdClean, myAutoConfDesc.isCleanBuildEnabled());
-
-        //        title2.setVisible(external);
-        //        t_autoBuild.setVisible(external);
-        //        ((Control) t_autoBuild.getData()).setVisible(external);
-        //        t_cmdBuild.setVisible(external);
-        //        ((Control) t_cmdBuild.getData()).setVisible(external);
-        //        t_cmdClean.setVisible(external);
-        //        ((Control) t_cmdClean.getData()).setVisible(external);
-
-        canModify = true;
     }
 
     private void updateParallelBlock() {
@@ -357,119 +410,23 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         boolean isParallelSupported = buildRunner.supportsParallelBuild();
         boolean isParallelOn = myAutoConfDesc.isParallelBuild();
 
-        int optimalParallelNumber = myAutoConfDesc.getOptimalParallelJobNum();
-
-        b_parallel.setVisible(isParallelSupported);
-        b_parallelOptimal.setVisible(isParallelSupported);
-        b_parallelSpecific.setVisible(isParallelSupported);
-        b_parallelUnlimited.setVisible(isParallelSupported);
-        s_parallelNumber.setVisible(isParallelSupported);
+        myUseParallelBuildButton.setEnabled(isParallelSupported);
 
         if (!isParallelSupported) {
             return;
         }
 
-        b_parallel.setEnabled(true);
-        b_parallelOptimal.setEnabled(isParallelOn);
-        b_parallelSpecific.setEnabled(isParallelOn);
-        b_parallelUnlimited.setEnabled(isParallelOn);
+        myParalOpt_OptimalButton.setEnabled(isParallelOn);
+        myParalOpt_SpecificButton.setEnabled(isParallelOn);
+        myParalOpt_UnlimitedButton.setEnabled(isParallelOn);
 
-        setTriSelection(b_parallel, isParallelOn);
-
-        b_parallelOptimal
-                .setText(MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, optimalParallelNumber));
-
-        switch (myAutoConfDesc.getParallelizationNum()) {
-        case PARRALLEL_BUILD_UNLIMITED_JOBS:
-            b_parallelUnlimited.setSelection(true);
-            s_parallelNumber.setEnabled(false);
-            break;
-        case PARRALLEL_BUILD_OPTIMAL_JOBS:
-            b_parallelOptimal.setSelection(true);
-            s_parallelNumber.setEnabled(false);
-            break;
-        default:
-            b_parallelSpecific.setSelection(true);
-            s_parallelNumber.setEnabled(true);
-            break;
-        }
-    }
-
-    /**
-     * Sets up text + corresponding button Checkbox can be implemented either by
-     * Button or by TriButton
-     */
-    private Text setupBlock(Composite c, Control check) {
-        Text t = setupText(c, 1, GridData.FILL_HORIZONTAL);
-        Button b = setupButton(c, VARIABLESBUTTON_NAME, 1, GridData.END);
-        b.setData(t); // to get know which text is affected
-        t.setData(b); // to get know which button to enable/disable
-        b.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                buttonVarPressed(event);
-            }
-        });
-        if (check != null)
-            check.setData(t);
-        return t;
-    }
-
-    /*
-     * Unified handler for "Variables" buttons
-     */
-    private void buttonVarPressed(SelectionEvent e) {
-        Widget b = e.widget;
-        if (b == null || b.getData() == null)
-            return;
-        if (b.getData() instanceof Text) {
-            String x = AbstractCPropertyTab.getVariableDialog(usercomp.getShell(), getResDesc().getConfiguration());
-            if (x != null)
-                ((Text) b.getData()).insert(x);
-        }
-    }
-
-    @Override
-    public void performApply(ICResourceDescription src, ICResourceDescription dst) {
-        apply(src, dst, page.isMultiCfg());
-    }
-
-    static void apply(ICResourceDescription src, ICResourceDescription dst, boolean multi) {
-        if (multi) {
-            ICMultiConfigDescription mcSrc = (ICMultiConfigDescription) src.getConfiguration();
-            ICMultiConfigDescription mcDst = (ICMultiConfigDescription) dst.getConfiguration();
-            ICConfigurationDescription[] cdsSrc = (ICConfigurationDescription[]) mcSrc.getItems();
-            ICConfigurationDescription[] cdsDst = (ICConfigurationDescription[]) mcDst.getItems();
-            for (int i = 0; i < cdsSrc.length; i++)
-                applyToCfg(cdsSrc[i], cdsDst[i]);
-        } else
-            applyToCfg(src.getConfiguration(), dst.getConfiguration());
-    }
-
-    private static void applyToCfg(ICConfigurationDescription src, ICConfigurationDescription dst) {
-        IAutoBuildConfigurationDescription srcCfg = AutoBuildProject.getAutoBuildConfig(src);
-        IAutoBuildConfigurationDescription dstCfg = AutoBuildProject.getAutoBuildConfig(dst);
-        dstCfg.setUseStandardBuildArguments(srcCfg.useStandardBuildArguments());
-        dstCfg.setUseCustomBuildArguments(srcCfg.useCustomBuildArguments());
-        dstCfg.setStopOnFirstBuildError(srcCfg.stopOnFirstBuildError());
-        dstCfg.setIsParallelBuild(srcCfg.isParallelBuild());
-        dstCfg.setParallelizationNum(srcCfg.getParallelizationNum());
-        dstCfg.setBuildFolderString(srcCfg.getBuildFolderString());
-
-        dstCfg.setBuildRunner((srcCfg.getBuildRunner()));
-        dstCfg.setCleanBuildEnable(srcCfg.isCleanBuildEnabled());
-        dstCfg.setIncrementalBuildEnable(srcCfg.isIncrementalBuildEnabled());
+        myParalOpt_NumberSpinner.setEnabled(myAutoConfDesc.getParallelizationNum() >= 0);
     }
 
     // This page can be displayed for project only
     @Override
     public boolean canBeVisible() {
         return page.isForProject() || page.isForPrefs();
-    }
-
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
     }
 
     @Override
@@ -486,38 +443,4 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         //		updateData(getResDesc());
     }
 
-    private void setArguments(String makeArgs) {
-        for (ICConfigurationDescription cfg : page.getCfgsEditable()) {
-            //IAutoBuildConfigurationDescription b = AutoBuildProject.getAutoBuildConfig(cfg);
-            //TOFIX JABA add support for multiple config select
-            myAutoConfDesc.setCustomBuildCommand(makeArgs);
-        }
-    }
-
-    private void setBuildAttribute(String name, String value) {
-        //		try {
-        //			if (icfg instanceof IMultiConfiguration) {
-        //				IConfiguration[] cfs = (IConfiguration[]) ((IMultiConfiguration) icfg).getItems();
-        //				for (int i = 0; i < cfs.length; i++) {
-        //					IBuilder b = cfs[i].getEditableBuilder();
-        //					b.setBuildAttribute(name, value);
-        //				}
-        //			} else {
-        //				icfg.getEditableBuilder().setBuildAttribute(name, value);
-        //			}
-        //		} catch (CoreException e) {
-        //			e.printStackTrace();
-        ////			ManagedBuilderUIPlugin.log(e);
-        //		}
-    }
-
-    /**
-     * Return an empty string is parameter is null
-     */
-    private String nonNull(String maybeNullString) {
-        if (maybeNullString == null) {
-            return EMPTY_STR;
-        }
-        return maybeNullString;
-    }
 }
