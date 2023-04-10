@@ -16,7 +16,7 @@ import io.sloeber.schema.api.IConfiguration;
  * @author gast1
  *
  */
-public class AutoBuildBuildRunner {//extends ExternalBuildRunner {
+public class SloeberBuildRunner {//extends ExternalBuildRunner {
 
     //@Override
     public boolean invokeBuild(int kind, IProject project, IConfiguration configuration, IBuilder builder,

@@ -17,6 +17,7 @@ package io.sloeber.autoBuild.Internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
-import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.core.runtime.CoreException;
 
 public class MapStorageElement implements ICStorageElement {
@@ -51,15 +51,12 @@ public class MapStorageElement implements ICStorageElement {
 
 		String children = map.get(getMapKey(CHILDREN_KEY));
 		if (children != null) {
-			List<String> childrenStrList = decodeList(children);
-			int size = childrenStrList.size();
-			if (size != 0) {
-				for (int i = 0; i < size; i++) {
-					Map<String, String> childMap = decodeMap(childrenStrList.get(i));
+			Set<String> childrenStrList = decodeList(children);
+				for (String curChild:childrenStrList) {
+					Map<String, String> childMap = decodeMap(curChild);
 					MapStorageElement child = createChildElement(childMap);
 					fChildren.add(child);
 				}
-			}
 		}
 	}
 
@@ -188,12 +185,12 @@ public class MapStorageElement implements ICStorageElement {
 	}
 
 	public static HashMap<String, String> decodeMap(String value) {
-		List<String> list = decodeList(value);
+		Set<String> list = decodeList(value);
 		HashMap<String, String> map = new HashMap<>();
 		char escapeChar = '\\';
 
-		for (int i = 0; i < list.size(); i++) {
-			StringBuilder line = new StringBuilder(list.get(i));
+		for (String curString: list) {
+			StringBuilder line = new StringBuilder(curString);
 			int lndx = 0;
 			while (lndx < line.length()) {
 				if (line.charAt(lndx) == '=') {
@@ -206,16 +203,15 @@ public class MapStorageElement implements ICStorageElement {
 				}
 				lndx++;
 			}
-			map.put(SafeStringInterner.safeIntern(line.substring(0, lndx)),
-					SafeStringInterner.safeIntern(line.substring(lndx + 1)));
+			map.put(line.substring(0, lndx),					line.substring(lndx + 1));
 		}
 
 		return map;
 
 	}
 
-	public static List<String> decodeList(String value) {
-		List<String> list = new ArrayList<>();
+	public static Set<String> decodeList(String value) {
+		Set<String> ret =  new HashSet<>();
 		if (value != null) {
 			StringBuilder envStr = new StringBuilder(value);
 			String escapeChars = "|\\"; //$NON-NLS-1$
@@ -251,13 +247,13 @@ public class MapStorageElement implements ICStorageElement {
 											lndx++;
 										}
 					*/
-					list.add(SafeStringInterner.safeIntern(line.toString()));
+					ret.add(line.toString());
 					envStr.delete(0, ndx + 1);
 				}
 			} catch (StringIndexOutOfBoundsException e) {
 			}
 		}
-		return list;
+		return ret;
 	}
 
 	public static String encodeMap(Map<String, String> values) {

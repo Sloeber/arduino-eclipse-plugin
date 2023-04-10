@@ -21,13 +21,16 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
@@ -35,6 +38,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
@@ -43,15 +47,13 @@ import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
-/**
- * The build runner for the internal builder.
- *
- * @author dschaefer
- * @since 8.0
- */
+
 public class InternalBuildRunner extends IBuildRunner {
     private static final int PROGRESS_MONITOR_SCALE = 100;
     private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
@@ -60,96 +62,58 @@ public class InternalBuildRunner extends IBuildRunner {
     private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
     @Override
-    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
+    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, 
             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
             IProgressMonitor monitor) throws CoreException {
 
         SubMonitor parentMon = SubMonitor.convert(monitor);
+        IBuilder builder=autoData.getConfiguration().getBuilder();
         IProject project = autoData.getProject();
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
+        IFolder buildFolder= autoData.getBuildFolder();
+        ICSourceEntry[] srcEntries=new ICSourceEntry[0];
+        Set<IFolder> foldersToBuild = new HashSet<>();
+        
+        //Generate the make Rules
+       MakeRules  myMakeRules = new MakeRules(autoData, buildFolder, srcEntries, foldersToBuild);
 
         try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);) {
-            if (monitor == null) {
-                monitor = new NullProgressMonitor();
-            }
+
             monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
                     + TICKS_REFRESH_PROJECT);
 
-            boolean isParallel = autoData.getParallelizationNum() > 1;
-            boolean resumeOnErr = !autoData.stopOnFirstBuildError();
 
-            int flags = 0;
-            IResourceDelta delta = projectBuilder.getDelta(project);
-            //            BuildStateManager bsMngr = BuildStateManager.getInstance();
-            //            IProjectBuildState pBS = bsMngr.getProjectBuildState(project);
-            //            IConfigurationBuildState cBS = pBS.getConfigurationBuildState(configuration.getId(), true);
-            //
-            //            //			if(delta != null){
-            //            flags = BuildDescriptionManager.REBUILD | BuildDescriptionManager.REMOVED | BuildDescriptionManager.DEPS;
-            //				delta = getDelta(currentProject);
-            //			}
-            boolean buildIncrementaly = delta != null;
 
             // Prepare launch parameters for BuildRunnerHelper
             String cfgName = cfgDescription.getName();
             String toolchainName = configuration.getToolChain().getName();
             boolean isConfigurationSupported = configuration.isSupported();
 
-            IFolder buildFolder = autoData.getBuildFolder();
 
-            String[] errorParsers = builder.getErrorParserList().toArray(new String[0]);
             ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
-                    errorParsers);
+            		builder.getErrorParserList().toArray(new String[0]));
 
             List<IConsoleParser> parsers = new ArrayList<>();
             AutoBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
 
             buildRunnerHelper.prepareStreams(epm, parsers, console, parentMon.newChild(5));
 
-            //            IBuildDescription des = BuildDescriptionManager.createBuildDescription(configuration, cBS, delta, flags);
-            //            DescriptionBuilder dBuilder = null;
-            //            if (!isParallel) {
-            //                dBuilder = new DescriptionBuilder(des, buildIncrementaly, resumeOnErr, cBS);
-            //                if (dBuilder.getNumCommands() <= 0) {
-            //                    buildRunnerHelper
-            //                            .printLine(MessageFormat.format(ManagedMakeBuilder_message_no_build, project.getName())); //$NON-NLS-1$
-            //                    return false;
-            //                }
-            //            }
-
             buildRunnerHelper.removeOldMarkers(project, parentMon.newChild(5));
 
-            if (buildIncrementaly) {
                 buildRunnerHelper.greeting(IncrementalProjectBuilder.INCREMENTAL_BUILD, cfgName, toolchainName,
                         isConfigurationSupported);
-            } else {
-                buildRunnerHelper.greeting(ManagedMakeBuider_type_rebuild, cfgName, toolchainName,
-                        isConfigurationSupported);
-            }
             buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
 
             OutputStream stdout = buildRunnerHelper.getOutputStream();
             OutputStream stderr = buildRunnerHelper.getErrorStream();
 
+            boolean isParallel = autoData.isParallelBuild();
+            int parrallelNum=autoData.getParallelizationNum();
+            boolean resumeOnErr = !autoData.stopOnFirstBuildError();
             int status;
             epm.deferDeDuplication();
             try {
-
-                //                if (dBuilder != null) {
-                //                    status = dBuilder.build(stdout, stderr, parentMon.newChild(5));
-                //                } else {
-                //                    status = ParallelBuilder.build(des, null, null, stdout, stderr, parentMon.newChild(5), resumeOnErr,
-                //                            buildIncrementaly, cBS);
-                //                    // Bug 403670:
-                //                    // Make sure the build configuration's rebuild status is updated with the result of
-                //                    // this successful build.  In the non-parallel case this happens within dBuilder.build
-                //                    // (the cBS is passed as an instance of IResourceRebuildStateContainer).
-                //                    if (status == ParallelBuilder.STATUS_OK)
-                //                        cBS.setState(0);
-                //                    buildRunnerHelper.printLine(
-                //                            MessageFormat.format(CommonBuilder_7, Integer.toString(ParallelBuilder.lastThreadsUsed)));
-                //                }
             } finally {
                 epm.deDuplicate();
             }

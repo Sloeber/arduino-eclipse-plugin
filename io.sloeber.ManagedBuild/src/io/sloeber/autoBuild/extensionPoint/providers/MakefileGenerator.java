@@ -63,7 +63,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize(int buildKind, AutoBuildConfigurationDescription autoData) {
+    public void initialize( AutoBuildConfigurationDescription autoData) {
         myProject = autoData.getProject();
         myAutoBuildConfData = autoData;
         myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();

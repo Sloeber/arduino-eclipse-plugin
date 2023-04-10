@@ -14,9 +14,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.Internal;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -48,43 +48,20 @@ public class BuilderFactory {
     static final String ENVIRONMENT = PREFIX + ".environment"; //$NON-NLS-1$
     static final String BUILD_APPEND_ENVIRONMENT = PREFIX + ".append_environment"; //$NON-NLS-1$
 
-    static final String CONTENTS = PREFIX + ".contents"; //$NON-NLS-1$
-    static final String CONTENTS_BUILDER = PREFIX + ".builder"; //$NON-NLS-1$
-    static final String CONTENTS_BUILDER_CUSTOMIZATION = PREFIX + ".builderCustomization"; //$NON-NLS-1$
-    static final String CONTENTS_CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
+    static public final String CONTENTS = PREFIX + ".contents"; //$NON-NLS-1$
+    static public final String CONTENTS_BUILDER = PREFIX + ".builder"; //$NON-NLS-1$
+    static public final String CONTENTS_BUILDER_CUSTOMIZATION = PREFIX + ".builderCustomization"; //$NON-NLS-1$
+    static public final String CONTENTS_CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
 
     //	static final String IDS = PREFIX + ".ids"; //$NON-NLS-1$
-    static final String CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
+    public static final String CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
 
     static final IBuilder[] EMPTY_BUILDERS_ARRAY = new IBuilder[0];
     static final String[] EMPTY_STRING_ARRAY = new String[0];
     static final IConfiguration[] EMPTY_CFG_ARAY = new IConfiguration[0];
 
-    // 
-    public static Map<String, String> createBuildArgs(IConfiguration cfgs[]) {
-        Map<String, String> map = new HashMap<>();
-        cfgsToMap(cfgs, map);
-        map.put(CONTENTS, CONTENTS_CONFIGURATION_IDS);
-        return map;
-    }
+ 
 
-    private static Map<String, String> cfgIdsToMap(String ids[], Map<String, String> map) {
-        map.put(CONFIGURATION_IDS, MapStorageElement.encodeList(Arrays.asList(ids)));
-        return map;
-    }
-
-    private static Map<String, String> cfgsToMap(IConfiguration cfgs[], Map<String, String> map) {
-        String ids[] = getCfgIds(cfgs);
-        return cfgIdsToMap(ids, map);
-    }
-
-    private static String[] getCfgIds(IConfiguration cfgs[]) {
-        String ids[] = new String[cfgs.length];
-        for (int i = 0; i < cfgs.length; i++) {
-            ids[i] = cfgs[i].getId();
-        }
-        return ids;
-    }
 
     /**
      * Creates a new build-command containing data dynamically obtained from the
@@ -158,6 +135,14 @@ public class BuilderFactory {
         }
         return changesMade;
     }
+    
+    public static Set<String> cfgIdsFromMap(Map<String, String> map) {
+    	String idsString = map.get(CONFIGURATION_IDS);
+    	if (idsString != null) {
+    	  return  MapStorageElement.decodeList(idsString);
+    	}
+    	return new HashSet<>();
+    	}
 
 }
 
@@ -326,14 +311,7 @@ public class BuilderFactory {
 //  return idsToConfigurations(ids, mProj.getConfigurations());
 //return EMPTY_CFG_ARAY;
 //}
-//private static String[] cfgIdsFromMap(Map<String, String> map) {
-//String idsString = map.get(CONFIGURATION_IDS);
-//if (idsString != null) {
-//  List<String> list = MapStorageElement.decodeList(idsString);
-//  return list.toArray(new String[list.size()]);
-//}
-//return EMPTY_STRING_ARRAY;
-//}
+
 //
 //private static IConfiguration[] idsToConfigurations(String ids[], IConfiguration allCfgs[]) {
 //List<IConfiguration> list = new ArrayList<>(ids.length);

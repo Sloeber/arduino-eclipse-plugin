@@ -66,7 +66,7 @@ public interface IMakefileGenerator {
      * This method initializes the makefile generator
      */
 
-    public void initialize(int buildKind, AutoBuildConfigurationDescription autoBuildConfData);
+    public void initialize( AutoBuildConfigurationDescription autoBuildConfData);
 
     /**
      * Clients call this method when an incremental rebuild is required. The

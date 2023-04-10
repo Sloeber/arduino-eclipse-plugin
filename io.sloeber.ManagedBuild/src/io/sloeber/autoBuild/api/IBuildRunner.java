@@ -51,8 +51,7 @@ public abstract class IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public abstract boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IBuilder builder,
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
+    public abstract boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData,             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
     public abstract String getName();
