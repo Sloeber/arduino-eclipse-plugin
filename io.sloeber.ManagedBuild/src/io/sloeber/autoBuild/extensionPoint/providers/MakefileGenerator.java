@@ -193,7 +193,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : makeRules) {
-            buffer.append(makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData));
+            buffer.append(makeRule.getRecipesInMakeFileStyle(myProject, myTopBuildDir, myAutoBuildConfData));
         }
 
         return buffer;
@@ -580,7 +580,7 @@ public class MakefileGenerator implements IMakefileGenerator {
 
         for (MakeRule makeRule : myMakeRules.getMakeRules()) {
             if (makeRule.getSequenceGroupID() != 0) {
-                buffer.append(makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData));
+                buffer.append(makeRule.getRecipesInMakeFileStyle(myProject, myTopBuildDir, myAutoBuildConfData));
             }
         }
         return buffer;

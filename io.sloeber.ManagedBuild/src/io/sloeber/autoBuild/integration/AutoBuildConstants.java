@@ -50,6 +50,7 @@ public class AutoBuildConstants {
     public static final String SEMICOLON = ";";
     public static final String COMMA = ",";
     public static final String EMPTY_STRING = "";
+    public static final String WINDOWS_NEWLINE = "\r\n";
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
     public static final String BLANK = " ";

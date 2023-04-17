@@ -4,6 +4,7 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -187,20 +188,32 @@ public class MakeRule {
         return ret;
     }
 
-    //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
-    public StringBuffer getRule(IProject project, IFolder niceBuildFolder,
-            AutoBuildConfigurationDescription autoBuildConfData) {
-
+    /**
+     * validate if the makerule contains valid recipes
+     * 
+     * @return true if valid
+     *         false if not
+     */
+    private boolean validateRecipes() {
         Set<IFile> local_targets = getTargetFiles();
         Set<IFile> local_prerequisites = getPrerequisiteFiles();
         if (local_targets.size() != 1) {
             System.err.println("Only 1 target per build rule is supported in this managed build"); //$NON-NLS-1$
-            return new StringBuffer();
+            return false;
         }
         if (local_prerequisites.size() == 0) {
             System.err.println("0 prerequisites is not supported in this managed build"); //$NON-NLS-1$
-            return new StringBuffer();
+            return false;
         }
+        return true;
+    }
+
+    public String[] getRecipes(IFolder niceBuildFolder, AutoBuildConfigurationDescription autoBuildConfData) {
+        if (!validateRecipes()) {
+            return new String[0];
+        }
+        Set<IFile> local_targets = getTargetFiles();
+
         IFile targetFile = local_targets.toArray(new IFile[1])[0];
 
         Set<String> flags = new LinkedHashSet<>();
@@ -225,14 +238,27 @@ public class MakeRule {
             }
         }
 
-        //        String buildCmd = expandCommandLinePattern(autoBuildConfData, flags, myTool.getOutputFlag(), OUT_MACRO,
-        //                niceNameList);
-        String buildCmd = myTool.getRecipe(autoBuildConfData, flags, GetNiceFileName(niceBuildFolder, targetFile),
-                niceNameList);
+        String buildRecipes[] = myTool.getRecipes(autoBuildConfData, flags,
+                GetNiceFileName(niceBuildFolder, targetFile), niceNameList);
+        ArrayList<String> ret = new ArrayList<>();
+        for (String curRecipe : buildRecipes) {
+            String resolvedCommand = resolve(curRecipe, EMPTY_STRING, WHITESPACE, autoBuildConfData);
+            if (resolvedCommand.isBlank()) {
+                resolvedCommand = curRecipe;
+            }
+            if (!resolvedCommand.isBlank()) {
+                ret.add(resolvedCommand);
+            }
+        }
+        return ret.toArray(new String[ret.size()]);
+    }
 
-        String resolvedCommand = resolve(buildCmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
-        if (resolvedCommand.isBlank())
-            resolvedCommand = buildCmd;
+    //TOFIX JABA This should not be here as this is purely make related
+    public StringBuffer getRecipesInMakeFileStyle(IProject project, IFolder niceBuildFolder,
+            AutoBuildConfigurationDescription autoBuildConfData) {
+        if (!validateRecipes()) {
+            return new StringBuffer();
+        }
 
         StringBuffer buffer = new StringBuffer();
         buffer.append(enumTargets(niceBuildFolder)).append(COLON).append(WHITESPACE);
@@ -259,7 +285,9 @@ public class MakeRule {
         //                buffer.append(TAB).append(sketchPostBuild);
         //            }
         //        } else {
-        buffer.append(TAB).append(resolvedCommand);
+        for (String resolvedCommand : getRecipes(niceBuildFolder, autoBuildConfData)) {
+            buffer.append(TAB).append(resolvedCommand);
+        }
         //        }
         //        // end JABA add sketch.prebuild and postbuild if needed
 

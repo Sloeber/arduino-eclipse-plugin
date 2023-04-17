@@ -1836,7 +1836,7 @@
       </tool>
       <tool
             command="${TOOL_FOLDER}g++"
-            dependencyGenerationFlag="-MMD -MP -MF&quot;$(@:%.o=%.d)&quot; -MT&quot;$@&quot; "
+            dependencyGenerationFlag="-MMD -MP -MF&quot;${%.d}&quot; -MT&quot;$@&quot; "
             dependencyOutputPattern="%.d"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.gnu.cpp.compiler"

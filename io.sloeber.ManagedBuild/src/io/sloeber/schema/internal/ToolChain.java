@@ -398,4 +398,18 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return myIsCompatibleWithLocalOS;
     }
 
+    @Override
+    public ArrayList<String> getPreToolRecipes(Tool tool) {
+        ArrayList<String> ret = new ArrayList<>();
+        //TODO JABA add user extension method and if it exits ask for the recipes
+        return ret;
+    }
+
+    @Override
+    public ArrayList<String> getPostToolRecipes(Tool tool) {
+        ArrayList<String> ret = new ArrayList<>();
+        //TODO JABA add user extension method and if it exits ask for the recipes
+        return ret;
+    }
+
 }

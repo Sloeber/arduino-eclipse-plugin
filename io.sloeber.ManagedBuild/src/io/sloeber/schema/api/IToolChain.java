@@ -13,11 +13,14 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
+import io.sloeber.schema.internal.Tool;
 
 /**
  * This interface represents a tool-integrator-defined, ordered set of tools
@@ -186,5 +189,9 @@ public interface IToolChain extends ISchemaObject {
      * @return IConfigurationBuildMacroSupplier
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
+
+    public ArrayList<String> getPreToolRecipes(Tool tool);
+
+    public ArrayList<String> getPostToolRecipes(Tool tool);
 
 }

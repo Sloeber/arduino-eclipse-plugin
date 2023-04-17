@@ -17,42 +17,46 @@
 package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.utils.CommandLineUtil;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
+import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
-import io.sloeber.autoBuild.extensionPoint.providers.MakefileGenerator;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-
 
 public class InternalBuildRunner extends IBuildRunner {
     private static final int PROGRESS_MONITOR_SCALE = 100;
@@ -61,38 +65,44 @@ public class InternalBuildRunner extends IBuildRunner {
     private static final int TICKS_EXECUTE_COMMAND = 1 * PROGRESS_MONITOR_SCALE;
     private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
+    private static void createFolder(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
+            throws CoreException {
+        if (!folder.exists()) {
+            IContainer parent = folder.getParent();
+            if (parent instanceof IFolder) {
+                createFolder((IFolder) parent, force, local, null);
+            }
+            folder.create(force, local, monitor);
+        }
+    }
+
     @Override
-    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, 
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
-            IProgressMonitor monitor) throws CoreException {
+    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+            IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
 
         SubMonitor parentMon = SubMonitor.convert(monitor);
-        IBuilder builder=autoData.getConfiguration().getBuilder();
+        IBuilder builder = autoData.getConfiguration().getBuilder();
         IProject project = autoData.getProject();
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
-        IFolder buildFolder= autoData.getBuildFolder();
-        ICSourceEntry[] srcEntries=new ICSourceEntry[0];
+        IFolder buildFolder = autoData.getBuildFolder();
+        ICSourceEntry[] srcEntries = new ICSourceEntry[0];
         Set<IFolder> foldersToBuild = new HashSet<>();
-        
-        //Generate the make Rules
-       MakeRules  myMakeRules = new MakeRules(autoData, buildFolder, srcEntries, foldersToBuild);
 
-        try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);) {
+        //Generate the make Rules
+        MakeRules myMakeRules = new MakeRules(autoData, buildFolder, srcEntries, foldersToBuild);
+
+        try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
+                ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
+                        builder.getErrorParserList().toArray(new String[0]));) {
 
             monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
                     + TICKS_REFRESH_PROJECT);
-
-
 
             // Prepare launch parameters for BuildRunnerHelper
             String cfgName = cfgDescription.getName();
             String toolchainName = configuration.getToolChain().getName();
             boolean isConfigurationSupported = configuration.isSupported();
-
-
-            ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
-            		builder.getErrorParserList().toArray(new String[0]));
 
             List<IConsoleParser> parsers = new ArrayList<>();
             AutoBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
@@ -101,31 +111,82 @@ public class InternalBuildRunner extends IBuildRunner {
 
             buildRunnerHelper.removeOldMarkers(project, parentMon.newChild(5));
 
-                buildRunnerHelper.greeting(IncrementalProjectBuilder.INCREMENTAL_BUILD, cfgName, toolchainName,
-                        isConfigurationSupported);
+            buildRunnerHelper.greeting(IncrementalProjectBuilder.INCREMENTAL_BUILD, cfgName, toolchainName,
+                    isConfigurationSupported);
             buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
 
             OutputStream stdout = buildRunnerHelper.getOutputStream();
             OutputStream stderr = buildRunnerHelper.getErrorStream();
 
             boolean isParallel = autoData.isParallelBuild();
-            int parrallelNum=autoData.getParallelizationNum();
+            int parrallelNum = autoData.getParallelizationNum();
             boolean resumeOnErr = !autoData.stopOnFirstBuildError();
             int status;
             epm.deferDeDuplication();
-            try {
-            } finally {
-                epm.deDuplicate();
-            }
+            for (MakeRule curRule : myMakeRules.getMakeRules()) {
+                //make sure the target folder exists
+                Set<IFile> targetFiles = curRule.getTargetFiles();
+                for (IFile curFile : targetFiles) {
+                    IContainer curPath = curFile.getParent();
+                    if (curPath instanceof IFolder) {
+                        createFolder((IFolder) curPath, true, true, null);
+                    }
+                }
 
-            // bsMngr.setProjectBuildState(project, pBS);
-            buildRunnerHelper.close();
+                for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
+                    try {
+
+                        CommandLauncher launcher = new CommandLauncher();
+                        launcher.showCommand(true);
+                        String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+                        IPath commandPath = new Path(args[0]);
+                        String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+
+                        String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription, builder.appendEnvironment());
+                        Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
+                                monitor);
+                        if (fProcess != null) {
+                            try {
+                                // Close the input of the process since we will never write to it
+                                fProcess.getOutputStream().close();
+                            } catch (IOException e) {
+                            }
+
+                            // Wrapping out and err streams to avoid their closure
+                            int st = launcher.waitAndRead(stdout, stderr, monitor);
+                            //                    switch (st) {
+                            //                    case ICommandLauncher.OK:
+                            //                        // assuming that compiler returns error code after compilation errors
+                            //                        status = fProcess.exitValue() == 0 ? STATUS_OK : STATUS_ERROR_BUILD;
+                            //                        break;
+                            //                    case ICommandLauncher.COMMAND_CANCELED:
+                            //                        status = STATUS_CANCELLED;
+                            //                        break;
+                            //                    case ICommandLauncher.ILLEGAL_COMMAND:
+                            //                    default:
+                            //                        status = STATUS_ERROR_LAUNCH;
+                            //                        break;
+                            //                    }
+                        }
+
+                        String fErrMsg = launcher.getErrorMessage();
+                        if (fErrMsg != null && !fErrMsg.isEmpty()) {
+                            printMessage(fErrMsg, stderr);
+                        }
+                    } catch (Exception e) {
+                        //don't worry be happy
+                    }
+                    epm.deDuplicate();
+
+                    // bsMngr.setProjectBuildState(project, pBS);
+
+                }
+            }
             buildRunnerHelper.goodbye();
 
             // if (status != ICommandLauncher.ILLEGAL_COMMAND) {
             buildRunnerHelper.refreshProject(cfgName, parentMon.newChild(5));
-            //}
-
+            buildRunnerHelper.close();
         } catch (Exception e) {
             projectBuilder.forgetLastBuiltState();
 
@@ -175,6 +236,18 @@ public class InternalBuildRunner extends IBuildRunner {
     @Override
     public boolean supportsCleanBuild() {
         return false;
+    }
+
+    private void printMessage(String msg, OutputStream os) {
+        if (os != null) {
+            try {
+                os.write((msg + NEWLINE).getBytes());
+                os.flush();
+            } catch (IOException e) {
+                // ignore;
+            }
+        }
+
     }
 
 }

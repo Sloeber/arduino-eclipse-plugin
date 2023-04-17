@@ -4,7 +4,9 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -450,8 +452,8 @@ public class Tool extends SchemaObject implements ITool {
      * core.runtime.IPath, org.eclipse.core.runtime.IPath)
      */
     @Override
-    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoConfData, IFile inputFile, IFile outputFile)
-            throws BuildException {
+    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoConfData, IFile inputFile,
+            IFile outputFile) throws BuildException {
         return getToolCommandFlags(inputFile, outputFile, autoConfData);
     }
 
@@ -546,8 +548,8 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     @Override
-    public String getRecipe(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags, String outputName,
-            Map<String, Set<String>> nicePreReqNameList) {
+    public String[] getRecipes(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
+            String outputName, Map<String, Set<String>> nicePreReqNameList) {
         String cmd = modelCommand[SUPER];
         // expand the command
         String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
@@ -558,7 +560,7 @@ public class Tool extends SchemaObject implements ITool {
 
         String quotedOutputName = outputName;
         // if the output name isn't a variable then quote it
-        if (quotedOutputName.length() > 0 && quotedOutputName.indexOf("$(") != 0) { //$NON-NLS-1$
+        if (!quotedOutputName.isBlank() && !quotedOutputName.contains("$(")) { //$NON-NLS-1$
             quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
         }
 
@@ -578,11 +580,17 @@ public class Tool extends SchemaObject implements ITool {
         }
 
         if (!modelDependencyGenerationFlag[SUPER].isBlank()) {
-            flags.add(modelDependencyGenerationFlag[SUPER]);
+            IProject project = autoBuildConfData.getProject();
+            IFile depFile = getDependencyFile(project.getFile(outputName));
+            String depFlag = modelDependencyGenerationFlag[SUPER];
+            depFlag = depFlag.replace(makeVariable(modelDependencyOutputPattern[SUPER]),
+                    depFile.getProjectRelativePath().toString());
+            flags.add(depFlag);
         }
         String flagsStr = String.join(WHITESPACE, flags);
 
         String command = commandLinePattern.replace(makeVariable(CMD_LINE_PRM_NAME), cmd);
+
         command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
         command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), modelOutputFlag[SUPER]);
         command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
@@ -590,8 +598,13 @@ public class Tool extends SchemaObject implements ITool {
             command = command.replace(makeVariable(curCmdVariable.getKey()), curCmdVariable.getValue());
 
         }
+        IToolChain toolchain = autoBuildConfData.getConfiguration().getToolChain();
+        ArrayList<String> toolRecipes = toolchain.getPreToolRecipes(this);
+        toolRecipes.addAll(Arrays.asList(command.split("\\r?\\n"))); //$NON-NLS-1$
 
-        return command;
+        toolRecipes.addAll(toolchain.getPostToolRecipes(this));
+
+        return toolRecipes.toArray(new String[toolRecipes.size()]);
     }
 
     @Override

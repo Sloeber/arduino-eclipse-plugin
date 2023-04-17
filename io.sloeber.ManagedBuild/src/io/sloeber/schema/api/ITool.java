@@ -270,8 +270,8 @@ public interface ITool extends ISchemaObject {
      * the environment macro references converted to the buildfile variable format,
      * all other macro references are resolved
      */
-    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoBuildConfData, IFile inputFile, IFile outputFile)
-            throws BuildException;
+    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoBuildConfData, IFile inputFile,
+            IFile outputFile) throws BuildException;
 
     /**
      * Returns an array of the Environment Build Path variable descriptors
@@ -289,8 +289,8 @@ public interface ITool extends ISchemaObject {
     public MakeRules getMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
 
-    public String getRecipe(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags, String outputName,
-            Map<String, Set<String>> nicePreReqNameList);
+    public String[] getRecipes(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
+            String outputName, Map<String, Set<String>> nicePreReqNameList);
 
     /**
      * Get the dependency file for this target

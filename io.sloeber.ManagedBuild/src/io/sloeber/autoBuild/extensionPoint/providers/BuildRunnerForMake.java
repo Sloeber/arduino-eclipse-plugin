@@ -65,19 +65,18 @@ import io.sloeber.schema.api.IConfiguration;
 public class BuildRunnerForMake extends IBuildRunner {
 
     @Override
-    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, 
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
-            IProgressMonitor monitor) throws CoreException {
+    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+            IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
 
         IProject project = autoData.getProject();
-        IBuilder builder=autoData.getConfiguration().getBuilder();
+        IBuilder builder = autoData.getConfiguration().getBuilder();
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
 
-		if (!generateMakeFiles(kind, autoData, projectBuilder, console, monitor)) {
-		return false;
-	}
-        
+        if (!generateMakeFiles(kind, autoData, projectBuilder, console, monitor)) {
+            return false;
+        }
+
         //get the make target 
         List<String> args = new LinkedList<>();
         boolean isClean = false;
@@ -123,13 +122,14 @@ public class BuildRunnerForMake extends IBuildRunner {
 
             String cfgName = confDesc.getName();
             ICommandLauncher launcher = builder.getCommandLauncher();
-            args.addAll(getMakeArguments( builder, autoData));
+            args.addAll(getMakeArguments(builder, autoData));
             IFolder buildFolder = autoData.getBuildFolder();
             URI buildFolderURI = buildFolder.getLocationURI();
 
-            String[] envp = AutoBuildRunnerHelper.envMapToEnvp(getEnvironment(confDesc, builder));
+            String[] envp = getEnvironment(confDesc, builder.appendEnvironment());
 
-            ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator,  autoData.getErrorParserList());
+            ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator,
+                    autoData.getErrorParserList());
 
             List<IConsoleParser> parsers = new ArrayList<>();
             if (!isClean) {
@@ -167,168 +167,172 @@ public class BuildRunnerForMake extends IBuildRunner {
         return isClean;
     }
 
-    private static List<String> getMakeArguments( IBuilder builder, AutoBuildConfigurationDescription autoData) {
+    private static List<String> getMakeArguments(IBuilder builder, AutoBuildConfigurationDescription autoData) {
         String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),
                 autoData.stopOnFirstBuildError());
         String resolvedBuilderArguments = AutoBuildCommon.resolve(builderArguments, autoData);
         return Arrays.asList(CommandLineUtil.argumentsToArray(resolvedBuilderArguments));
     }
 
-    private static Map<String, String> getEnvironment(ICConfigurationDescription cfgDes, IBuilder builder) {
-        Map<String, String> envMap = new HashMap<>();
-        if (builder.appendEnvironment()) {
+    public static String[] getEnvironment(ICConfigurationDescription cfgDes, boolean appendEnvironment) {
+        ArrayList<String> envMap = new ArrayList<>();
+        if (appendEnvironment) {
             IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
             IEnvironmentVariable[] vars = mngr.getVariables(cfgDes, true);
             for (IEnvironmentVariable var : vars) {
-                envMap.put(var.getName(), var.getValue());
+                envMap.add(var.getName() + EQUAL + var.getValue());
             }
         }
 
-        return envMap;
+        return envMap.toArray(new String[envMap.size()]);
     }
-    
-	/**
-	 * 
-	 * @param kind
-	 * @param autoData
-	 * @param builder
-	 * @param generator
-	 * @param monitor
-	 * @return true if build can continue
-	 * @throws CoreException
-	 */
-	private static boolean generateMakeFiles(int kind, AutoBuildConfigurationDescription autoData, IncrementalProjectBuilder projectBuilder,
-			IConsole console, IProgressMonitor monitor) throws CoreException {
-		boolean canContinueBuilding = true;
-		IProject project = autoData.getProject();
-		IBuilder builder =autoData.getConfiguration().getBuilder();
-		// performCleanning(kind, autoData, buildStatus, monitor);
-		IMakefileGenerator generator = builder.getBuildFileGenerator();
-		if (generator == null) {
-			generator = new MakefileGenerator();
-		}
-		generator.initialize( autoData);
 
-		checkCancel(monitor);
-		monitor.subTask(MessageFormat.format(ManagedMakeBuilder_message_update_makefiles, project.getName()));
+    /**
+     * 
+     * @param kind
+     * @param autoData
+     * @param builder
+     * @param generator
+     * @param monitor
+     * @return true if build can continue
+     * @throws CoreException
+     */
+    private static boolean generateMakeFiles(int kind, AutoBuildConfigurationDescription autoData,
+            IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
+        boolean canContinueBuilding = true;
+        IProject project = autoData.getProject();
+        IBuilder builder = autoData.getConfiguration().getBuilder();
+        // performCleanning(kind, autoData, buildStatus, monitor);
+        IMakefileGenerator generator = builder.getBuildFileGenerator();
+        if (generator == null) {
+            generator = new MakefileGenerator();
+        }
+        generator.initialize(autoData);
 
-		MultiStatus result = null;
-		if (isCleanBuild(kind)) {
-			result = generator.regenerateMakefiles(monitor);
-		} else {
-			result = generator.generateMakefiles(projectBuilder.getDelta(project), monitor);
-		}
+        checkCancel(monitor);
+        monitor.subTask(MessageFormat.format(ManagedMakeBuilder_message_update_makefiles, project.getName()));
 
-		if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
-			IStatus[] kids = result.getChildren();
-			for (int index = 0; index < kids.length; ++index) {
-				// One possibility is that there is nothing to build
-				IStatus status = kids[index];
-				// if(messages == null){
-				// messages = new MultiStatus(
-				// Activator.getId(),
-				// IStatus.INFO,
-				// "",
-				// null);
-				//
-				// }
-				if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
-					// performBuild = false;
-					emitMessage(console, createNoSourceMessage(kind, status, autoData));
-					canContinueBuilding = false;
-					// break;
+        MultiStatus result = null;
+        if (isCleanBuild(kind)) {
+            result = generator.regenerateMakefiles(monitor);
+        } else {
+            result = generator.generateMakefiles(projectBuilder.getDelta(project), monitor);
+        }
 
-				} else {
-					// Stick this in the list of stuff to warn the user about
+        if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
+            IStatus[] kids = result.getChildren();
+            for (int index = 0; index < kids.length; ++index) {
+                // One possibility is that there is nothing to build
+                IStatus status = kids[index];
+                // if(messages == null){
+                // messages = new MultiStatus(
+                // Activator.getId(),
+                // IStatus.INFO,
+                // "",
+                // null);
+                //
+                // }
+                if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
+                    // performBuild = false;
+                    emitMessage(console, createNoSourceMessage(kind, status, autoData));
+                    canContinueBuilding = false;
+                    // break;
 
-					// TODO: messages.add(status);
-				}
-			}
-		} else if (result.getCode() == IStatus.ERROR) {
-			StringBuilder buf = new StringBuilder();
-			buf.append(CommonBuilder_23).append(NEWLINE);
-			String message = result.getMessage();
-			if (message != null && message.length() != 0) {
-				buf.append(message).append(NEWLINE);
-			}
+                } else {
+                    // Stick this in the list of stuff to warn the user about
 
-			buf.append(CommonBuilder_24).append(NEWLINE);
-			emitMessage(console, buf.toString());
-			canContinueBuilding = false;
-		}
+                    // TODO: messages.add(status);
+                }
+            }
+        } else if (result.getCode() == IStatus.ERROR) {
+            StringBuilder buf = new StringBuilder();
+            buf.append(CommonBuilder_23).append(NEWLINE);
+            String message = result.getMessage();
+            if (message != null && message.length() != 0) {
+                buf.append(message).append(NEWLINE);
+            }
 
-		checkCancel(monitor);
+            buf.append(CommonBuilder_24).append(NEWLINE);
+            emitMessage(console, buf.toString());
+            canContinueBuilding = false;
+        }
 
-		// if(result.getSeverity() != IStatus.OK)
-		// throw new CoreException(result);
-		return canContinueBuilding;
-	}
-	
-	/**
-	 * Check whether the build has been canceled.
-	 */
-	private static void checkCancel(IProgressMonitor monitor) {
-		if (monitor != null && monitor.isCanceled())
-			throw new OperationCanceledException();
-	}
-	private static boolean isCleanBuild(int kind) {
-		switch (kind) {
-		case IncrementalProjectBuilder.AUTO_BUILD:
-		case IncrementalProjectBuilder.INCREMENTAL_BUILD:
-			return false;
-		case IncrementalProjectBuilder.CLEAN_BUILD:
-		case IncrementalProjectBuilder.FULL_BUILD:
-			return true;
-		}
-		return true;
-	}
-	/*
-	 * (non-javadoc) Emits a message to the console indicating that there were no
-	 * source files to build
-	 * 
-	 * @param buildType
-	 * 
-	 * @param status
-	 * 
-	 * @param configName
-	 */
-	private static String createNoSourceMessage(int buildType, IStatus status,
-			AutoBuildConfigurationDescription autoData) {
-		StringBuilder buf = new StringBuilder();
-		String[] consoleHeader = new String[3];
-		String configName = autoData.getCdtConfigurationDescription().getName();
-		String projName = autoData.getProject().getName();
-		if (buildType == IncrementalProjectBuilder.FULL_BUILD || buildType == IncrementalProjectBuilder.INCREMENTAL_BUILD) {
-			consoleHeader[0] = ManagedMakeBuider_type_incremental;
-		} else {
-			consoleHeader[0] = ""; //$NON-NLS-1$
-			//outputError(projName, "The given build type is not supported in this context"); //$NON-NLS-1$
-		}
-		consoleHeader[1] = configName;
-		consoleHeader[2] = projName;
-		buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append(MessageFormat.format(ManagedMakeBuilder_message_console_header, consoleHeader));
-		buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$ //$NON-NLS-2$
-		buf.append(status.getMessage());
-		buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$//$NON-NLS-2$
-		return buf.toString();
-	}
+        checkCancel(monitor);
 
-	private static void emitMessage(IConsole console, String msg) throws CoreException {
-		try (ConsoleOutputStream consoleOutStream = console.getOutputStream();) {
-			// Report a successful clean
-			consoleOutStream.write(msg);
-			consoleOutStream.write(NEWLINE);
-			consoleOutStream.flush();
-			consoleOutStream.close();
-		} catch (CoreException e) {
-			// Throw the exception back to the builder
-			throw e;
-		} catch (IOException io) { // Ignore console failures...
-			throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), io.getLocalizedMessage(), io));
-		}
-	}
+        // if(result.getSeverity() != IStatus.OK)
+        // throw new CoreException(result);
+        return canContinueBuilding;
+    }
+
+    /**
+     * Check whether the build has been canceled.
+     */
+    private static void checkCancel(IProgressMonitor monitor) {
+        if (monitor != null && monitor.isCanceled())
+            throw new OperationCanceledException();
+    }
+
+    private static boolean isCleanBuild(int kind) {
+        switch (kind) {
+        case IncrementalProjectBuilder.AUTO_BUILD:
+        case IncrementalProjectBuilder.INCREMENTAL_BUILD:
+            return false;
+        case IncrementalProjectBuilder.CLEAN_BUILD:
+        case IncrementalProjectBuilder.FULL_BUILD:
+            return true;
+        }
+        return true;
+    }
+
+    /*
+     * (non-javadoc) Emits a message to the console indicating that there were no
+     * source files to build
+     * 
+     * @param buildType
+     * 
+     * @param status
+     * 
+     * @param configName
+     */
+    private static String createNoSourceMessage(int buildType, IStatus status,
+            AutoBuildConfigurationDescription autoData) {
+        StringBuilder buf = new StringBuilder();
+        String[] consoleHeader = new String[3];
+        String configName = autoData.getCdtConfigurationDescription().getName();
+        String projName = autoData.getProject().getName();
+        if (buildType == IncrementalProjectBuilder.FULL_BUILD
+                || buildType == IncrementalProjectBuilder.INCREMENTAL_BUILD) {
+            consoleHeader[0] = ManagedMakeBuider_type_incremental;
+        } else {
+            consoleHeader[0] = ""; //$NON-NLS-1$
+            //outputError(projName, "The given build type is not supported in this context"); //$NON-NLS-1$
+        }
+        consoleHeader[1] = configName;
+        consoleHeader[2] = projName;
+        buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$ //$NON-NLS-2$
+        buf.append(MessageFormat.format(ManagedMakeBuilder_message_console_header, consoleHeader));
+        buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$ //$NON-NLS-2$
+        buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$ //$NON-NLS-2$
+        buf.append(status.getMessage());
+        buf.append(System.getProperty("line.separator", "\n")); //$NON-NLS-1$//$NON-NLS-2$
+        return buf.toString();
+    }
+
+    private static void emitMessage(IConsole console, String msg) throws CoreException {
+        try (ConsoleOutputStream consoleOutStream = console.getOutputStream();) {
+            // Report a successful clean
+            consoleOutStream.write(msg);
+            consoleOutStream.write(NEWLINE);
+            consoleOutStream.flush();
+            consoleOutStream.close();
+        } catch (CoreException e) {
+            // Throw the exception back to the builder
+            throw e;
+        } catch (IOException io) { // Ignore console failures...
+            throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), io.getLocalizedMessage(), io));
+        }
+    }
+
     @Override
     public String getName() {
         return Messages.ExternalBuilderName;
