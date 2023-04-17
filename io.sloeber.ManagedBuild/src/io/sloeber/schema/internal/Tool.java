@@ -4,7 +4,6 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

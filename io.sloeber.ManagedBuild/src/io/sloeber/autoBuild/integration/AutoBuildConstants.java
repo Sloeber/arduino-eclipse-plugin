@@ -44,6 +44,7 @@ public class AutoBuildConstants {
     public static final String AT_SYMBOL = "@";
     public static final String PROCENT = "%";
     public static final String SLACH = "/";
+    public static final String BACKSLACH = "\\";
     public static final String FALSE = "FALSE";
     public static final String TRUE = "TRUE";
     public static final String COLON = ":";

@@ -24,10 +24,8 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ConsoleOutputStream;
 import org.eclipse.cdt.core.ErrorParserManager;
@@ -108,6 +106,14 @@ public class BuildRunnerForMake extends IBuildRunner {
         } else {
             args.add(customTarget);
         }
+        if (autoData.getCustomBuildArguments().isBlank()) {
+            String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),
+                    autoData.stopOnFirstBuildError());
+            String resolvedBuilderArguments = AutoBuildCommon.resolve(builderArguments, autoData);
+            args.addAll(Arrays.asList(CommandLineUtil.argumentsToArray(resolvedBuilderArguments)));
+        } else {
+            args.addAll(Arrays.asList(CommandLineUtil.argumentsToArray(autoData.getCustomBuildArguments())));
+        }
 
         // get the make command
         String buildCommand = AutoBuildCommon.resolve(autoData.getBuildCommand(false), autoData);
@@ -122,7 +128,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 
             String cfgName = confDesc.getName();
             ICommandLauncher launcher = builder.getCommandLauncher();
-            args.addAll(getMakeArguments(builder, autoData));
+            // args.addAll(getMakeArguments(builder, autoData));
             IFolder buildFolder = autoData.getBuildFolder();
             URI buildFolderURI = buildFolder.getLocationURI();
 
@@ -165,13 +171,6 @@ public class BuildRunnerForMake extends IBuildRunner {
         }
         monitor.done();
         return isClean;
-    }
-
-    private static List<String> getMakeArguments(IBuilder builder, AutoBuildConfigurationDescription autoData) {
-        String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),
-                autoData.stopOnFirstBuildError());
-        String resolvedBuilderArguments = AutoBuildCommon.resolve(builderArguments, autoData);
-        return Arrays.asList(CommandLineUtil.argumentsToArray(resolvedBuilderArguments));
     }
 
     public static String[] getEnvironment(ICConfigurationDescription cfgDes, boolean appendEnvironment) {
@@ -374,3 +373,10 @@ public class BuildRunnerForMake extends IBuildRunner {
     }
 
 }
+
+//private static List<String> getMakeArguments(IBuilder builder, AutoBuildConfigurationDescription autoData) {
+//String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),
+//      autoData.stopOnFirstBuildError());
+//String resolvedBuilderArguments = AutoBuildCommon.resolve(builderArguments, autoData);
+//return Arrays.asList(CommandLineUtil.argumentsToArray(resolvedBuilderArguments));
+//}

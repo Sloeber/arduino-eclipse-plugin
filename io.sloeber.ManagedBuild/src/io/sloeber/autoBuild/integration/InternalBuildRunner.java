@@ -123,65 +123,80 @@ public class InternalBuildRunner extends IBuildRunner {
             boolean resumeOnErr = !autoData.stopOnFirstBuildError();
             int status;
             epm.deferDeDuplication();
-            for (MakeRule curRule : myMakeRules.getMakeRules()) {
-                //make sure the target folder exists
-                Set<IFile> targetFiles = curRule.getTargetFiles();
-                for (IFile curFile : targetFiles) {
-                    IContainer curPath = curFile.getParent();
-                    if (curPath instanceof IFolder) {
-                        createFolder((IFolder) curPath, true, true, null);
+            int sequenceID = -1;
+            boolean lastSequenceID = true;
+            do {
+                sequenceID++;
+                lastSequenceID = true;
+                for (MakeRule curRule : myMakeRules) {
+                    if (curRule.getSequenceGroupID() != sequenceID) {
+                        continue;
                     }
-                }
+                    lastSequenceID = false;
+                    if (!curRule.needsExecuting(buildFolder)) {
+                        continue;
+                    }
 
-                for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
-                    try {
+                    //make sure the target folders exists
+                    Set<IFile> targetFiles = curRule.getTargetFiles();
+                    for (IFile curFile : targetFiles) {
+                        IContainer curPath = curFile.getParent();
+                        if (curPath instanceof IFolder) {
+                            createFolder((IFolder) curPath, true, true, null);
+                        }
+                    }
 
-                        CommandLauncher launcher = new CommandLauncher();
-                        launcher.showCommand(true);
-                        String[] args = CommandLineUtil.argumentsToArray(curRecipe);
-                        IPath commandPath = new Path(args[0]);
-                        String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+                    for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
+                        try {
 
-                        String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription, builder.appendEnvironment());
-                        Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
-                                monitor);
-                        if (fProcess != null) {
-                            try {
-                                // Close the input of the process since we will never write to it
-                                fProcess.getOutputStream().close();
-                            } catch (IOException e) {
+                            CommandLauncher launcher = new CommandLauncher();
+                            launcher.showCommand(true);
+                            String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+                            IPath commandPath = new Path(args[0]);
+                            String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+
+                            String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription,
+                                    builder.appendEnvironment());
+                            Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
+                                    monitor);
+                            if (fProcess != null) {
+                                try {
+                                    // Close the input of the process since we will never write to it
+                                    fProcess.getOutputStream().close();
+                                } catch (IOException e) {
+                                }
+
+                                // Wrapping out and err streams to avoid their closure
+                                int st = launcher.waitAndRead(stdout, stderr, monitor);
+                                //                    switch (st) {
+                                //                    case ICommandLauncher.OK:
+                                //                        // assuming that compiler returns error code after compilation errors
+                                //                        status = fProcess.exitValue() == 0 ? STATUS_OK : STATUS_ERROR_BUILD;
+                                //                        break;
+                                //                    case ICommandLauncher.COMMAND_CANCELED:
+                                //                        status = STATUS_CANCELLED;
+                                //                        break;
+                                //                    case ICommandLauncher.ILLEGAL_COMMAND:
+                                //                    default:
+                                //                        status = STATUS_ERROR_LAUNCH;
+                                //                        break;
+                                //                    }
                             }
 
-                            // Wrapping out and err streams to avoid their closure
-                            int st = launcher.waitAndRead(stdout, stderr, monitor);
-                            //                    switch (st) {
-                            //                    case ICommandLauncher.OK:
-                            //                        // assuming that compiler returns error code after compilation errors
-                            //                        status = fProcess.exitValue() == 0 ? STATUS_OK : STATUS_ERROR_BUILD;
-                            //                        break;
-                            //                    case ICommandLauncher.COMMAND_CANCELED:
-                            //                        status = STATUS_CANCELLED;
-                            //                        break;
-                            //                    case ICommandLauncher.ILLEGAL_COMMAND:
-                            //                    default:
-                            //                        status = STATUS_ERROR_LAUNCH;
-                            //                        break;
-                            //                    }
+                            String fErrMsg = launcher.getErrorMessage();
+                            if (fErrMsg != null && !fErrMsg.isEmpty()) {
+                                printMessage(fErrMsg, stderr);
+                            }
+                        } catch (Exception e) {
+                            //don't worry be happy
                         }
+                        epm.deDuplicate();
 
-                        String fErrMsg = launcher.getErrorMessage();
-                        if (fErrMsg != null && !fErrMsg.isEmpty()) {
-                            printMessage(fErrMsg, stderr);
-                        }
-                    } catch (Exception e) {
-                        //don't worry be happy
+                        // bsMngr.setProjectBuildState(project, pBS);
+
                     }
-                    epm.deDuplicate();
-
-                    // bsMngr.setProjectBuildState(project, pBS);
-
                 }
-            }
+            } while (!lastSequenceID);
             buildRunnerHelper.goodbye();
 
             // if (status != ICommandLauncher.ILLEGAL_COMMAND) {

@@ -6,7 +6,6 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -63,7 +62,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     @Override
-    public void initialize( AutoBuildConfigurationDescription autoData) {
+    public void initialize(AutoBuildConfigurationDescription autoData) {
         myProject = autoData.getProject();
         myAutoBuildConfData = autoData;
         myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();
@@ -178,8 +177,8 @@ public class MakefileGenerator implements IMakefileGenerator {
             // generate the file content
             StringBuffer makeBuf = addDefaultHeader();
             MakeRules applicableMakeRules = myMakeRules.getRulesForFolder(curFolder);
-            makeBuf.append(GenerateMacroSection(myTopBuildDir, applicableMakeRules));
-            makeBuf.append(GenerateRules(applicableMakeRules));
+            makeBuf.append(generateMacroSection(myTopBuildDir, applicableMakeRules));
+            makeBuf.append(generateRules(applicableMakeRules));
 
             // Save the files
             IFolder srcFile = myTopBuildDir.getFolder(curFolder.getProjectRelativePath());
@@ -187,19 +186,19 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
     }
 
-    protected StringBuffer GenerateRules(MakeRules makeRules) {
+    protected StringBuffer generateRules(MakeRules makeRules) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
         for (MakeRule makeRule : makeRules) {
-            buffer.append(makeRule.getRecipesInMakeFileStyle(myProject, myTopBuildDir, myAutoBuildConfData));
+            buffer.append(getRecipesInMakeFileStyle(makeRule));
         }
 
         return buffer;
     }
 
-    protected static StringBuffer GenerateMacroSection(IFolder buildRoot, MakeRules makeRules) {
+    protected static StringBuffer generateMacroSection(IFolder buildRoot, MakeRules makeRules) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_module_variables)
@@ -211,14 +210,12 @@ public class MakefileGenerator implements IMakefileGenerator {
         macroNames.remove(EMPTY_STRING);
         for (String macroName : macroNames) {
             HashSet<IFile> files = new HashSet<>();
-            for (MakeRule makeRule : makeRules) {
-                files.addAll(makeRule.getMacroElements(macroName));
-            }
+            files.addAll(makeRules.getMacroElements(macroName));
             if (files.size() > 0) {
                 buffer.append(macroName).append(MAKE_ADDITION);
                 for (IFile file : files) {
                     buffer.append(LINEBREAK);
-                    buffer.append(GetNiceFileName(buildRoot, file)).append(WHITESPACE);
+                    buffer.append(getMakeSafeNiceFileName(buildRoot, file)).append(WHITESPACE);
                 }
                 buffer.append(NEWLINE);
                 buffer.append(NEWLINE);
@@ -388,7 +385,7 @@ public class MakefileGenerator implements IMakefileGenerator {
 
         for (IContainer subDir : myFoldersToBuild) {
             String includeFile = subDir.getProjectRelativePath().append(MODFILE_NAME).toOSString();
-            buffer.append("-include " + includeFile).append(NEWLINE); //$NON-NLS-1$
+            buffer.append("-include " + makeMakeFileSafe(includeFile)).append(NEWLINE); //$NON-NLS-1$
         }
         buffer.append("-include sources.mk").append(NEWLINE); //$NON-NLS-1$
         buffer.append("-include objects.mk").append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
@@ -482,7 +479,7 @@ public class MakefileGenerator implements IMakefileGenerator {
             for (ITool curTargetTool : targetTools) {
                 Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
                 for (IFile curTarget : allTargets) {
-                    String targetString = GetNiceFileName(myTopBuildDir, curTarget);
+                    String targetString = getMakeSafeNiceFileName(myTopBuildDir, curTarget);
                     buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
                     buffer.append(WHITESPACE);
                 }
@@ -490,7 +487,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         } else {
             Set<IFile> allTargets = myMakeRules.getFinalTargets();
             for (IFile curTarget : allTargets) {
-                String targetString = GetNiceFileName(myTopBuildDir, curTarget);
+                String targetString = getMakeSafeNiceFileName(myTopBuildDir, curTarget);
                 buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
                 buffer.append(WHITESPACE);
             }
@@ -564,7 +561,7 @@ public class MakefileGenerator implements IMakefileGenerator {
                     if (files.size() != 1) {
                         buffer.append(LINEBREAK);
                     }
-                    buffer.append(GetNiceFileName(myTopBuildDir, file)).append(WHITESPACE);
+                    buffer.append(getMakeSafeNiceFileName(myTopBuildDir, file)).append(WHITESPACE);
                 }
                 buffer.append(NEWLINE);
                 buffer.append(NEWLINE);
@@ -580,7 +577,7 @@ public class MakefileGenerator implements IMakefileGenerator {
 
         for (MakeRule makeRule : myMakeRules.getMakeRules()) {
             if (makeRule.getSequenceGroupID() != 0) {
-                buffer.append(makeRule.getRecipesInMakeFileStyle(myProject, myTopBuildDir, myAutoBuildConfData));
+                buffer.append(getRecipesInMakeFileStyle(makeRule));
             }
         }
         return buffer;
@@ -611,6 +608,83 @@ public class MakefileGenerator implements IMakefileGenerator {
             monitor.subTask(msg);
             monitor.worked(1);
         }
+    }
+
+    private static String makeMakeFileSafe(String fileName) {
+        if (fileName.contains(BLANK)) {
+            return fileName.replace(BLANK, BACKSLACH + BLANK);
+
+        }
+        return fileName;
+    }
+
+    private static String getMakeSafeNiceFileName(IFolder folder, IFile file) {
+        String ret = GetNiceFileName(folder, file);
+        if (ret.contains(BLANK)) {
+            return ret.replace(BLANK, BACKSLACH + BLANK);
+
+        }
+        return ret;
+    }
+
+    private static String enumTargets(MakeRule makeRule, IFolder buildFolder) {
+        String ret = new String();
+        for (IFile curFile : makeRule.getTargetFiles()) {
+            ret = ret + getMakeSafeNiceFileName(buildFolder, curFile) + WHITESPACE;
+        }
+        return ret;
+    }
+
+    private static String enumPrerequisites(MakeRule makeRule, IFolder buildFolder) {
+        String ret = new String();
+        for (IFile curFile : makeRule.getPrerequisiteFiles()) {
+            ret = ret + getMakeSafeNiceFileName(buildFolder, curFile) + WHITESPACE;
+        }
+        return ret;
+    }
+
+    public StringBuffer getRecipesInMakeFileStyle(MakeRule makeRule) {
+        //        if (!validateRecipes()) {
+        //            return new StringBuffer();
+        //        }
+
+        ITool tool = makeRule.getTool();
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(enumTargets(makeRule, myTopBuildDir)).append(COLON).append(WHITESPACE);
+        buffer.append(enumPrerequisites(makeRule, myTopBuildDir)).append(NEWLINE);
+        buffer.append(TAB).append(AT)
+                .append(escapedEcho(MakefileGenerator_message_start_file + WHITESPACE + OUT_MACRO));
+        buffer.append(TAB).append(AT).append(escapedEcho(tool.getAnnouncement()));
+
+        //        // JABA add sketch.prebuild and postbuild if needed
+        //        //TOFIX this should not be here
+        //        if ("sloeber.ino".equals(fileName)) { //$NON-NLS-1$
+        //
+        //            //            String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
+        //            //                    "sloeber.sketch.prebuild", new String(), true); //$NON-NLS-1$
+        //            //            String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
+        //            //                    "sloeber.sketch.postbuild", new String(), true); //$NON-NLS-1$
+        //            String sketchPrebuild = resolve("sloeber.sketch.prebuild", EMPTY_STRING, WHITESPACE, autoBuildConfData);
+        //            String sketchPostBuild = resolve("sloeber.sketch.postbuild", EMPTY_STRING, WHITESPACE,autoBuildConfData);
+        //            if (!sketchPrebuild.isEmpty()) {
+        //                buffer.append(TAB).append(sketchPrebuild);
+        //            }
+        //            buffer.append(TAB).append(buildCmd).append(NEWLINE);
+        //            if (!sketchPostBuild.isEmpty()) {
+        //                buffer.append(TAB).append(sketchPostBuild);
+        //            }
+        //        } else {
+        for (String resolvedCommand : makeRule.getRecipes(myTopBuildDir, myAutoBuildConfData)) {
+            buffer.append(TAB).append(resolvedCommand);
+        }
+        //        }
+        //        // end JABA add sketch.prebuild and postbuild if needed
+
+        buffer.append(NEWLINE);
+        buffer.append(TAB).append(AT)
+                .append(escapedEcho(MakefileGenerator_message_finish_file + WHITESPACE + OUT_MACRO));
+        buffer.append(TAB).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+        return buffer;
     }
 
 }

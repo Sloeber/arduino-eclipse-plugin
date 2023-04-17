@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
@@ -30,8 +28,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
@@ -39,7 +35,6 @@ import io.sloeber.schema.api.ITool;
 
 public class AutoBuildCommon {
     static public String ECHO_BLANK_LINE = ECHO + WHITESPACE + SINGLE_QUOTE + WHITESPACE + SINGLE_QUOTE + NEWLINE;
-    private static Random randomNumber;
 
     /**
      * Answers the argument with all whitespaces replaced with an escape sequence.
@@ -378,14 +373,14 @@ public class AutoBuildCommon {
     }
 
     static public String GetNiceFileName(IPath buildPath, IPath filePath) {
-        if (buildPath.isPrefixOf(filePath)) {
-            return filePath.makeRelativeTo(buildPath).toOSString();
+        String ret;
+        if (buildPath.isPrefixOf(filePath) || buildPath.removeLastSegments(1).isPrefixOf(filePath)) {
+            ret = filePath.makeRelativeTo(buildPath).toOSString();
+        } else {
+            ret = filePath.toOSString();
         }
-        if (buildPath.removeLastSegments(1).isPrefixOf(filePath)) {
-            return filePath.makeRelativeTo(buildPath).toOSString();
 
-        }
-        return filePath.toOSString();
+        return ret;
     }
 
     static public String makeVariable(String variableName) {

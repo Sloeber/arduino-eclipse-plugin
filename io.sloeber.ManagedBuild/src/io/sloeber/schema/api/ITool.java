@@ -289,6 +289,22 @@ public interface ITool extends ISchemaObject {
     public MakeRules getMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
 
+    /**
+     * Get the recipes for this tool
+     * Note it is recipes (plural) because though in most cases there will be only
+     * one recipe
+     * there can be multiple
+     * 
+     * dependencyArgument is introduced to allow the internal builder to use it's
+     * own dependency files
+     * 
+     * @param autoBuildConfData
+     * @param flags
+     * @param outputName
+     *            the target file name to be created
+     * @param nicePreReqNameList
+     * @return
+     */
     public String[] getRecipes(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
             String outputName, Map<String, Set<String>> nicePreReqNameList);
 

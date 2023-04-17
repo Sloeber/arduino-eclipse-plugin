@@ -4,6 +4,13 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.nio.file.Path;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +23,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -31,6 +37,10 @@ public class MakeRule {
     private Map<String, Set<IFile>> myDependencies = new LinkedHashMap<>(); //Macro file target map
     private ITool myTool = null;
     private int mySequenceGroupID = 0;
+
+    public ITool getTool() {
+        return myTool;
+    }
 
     public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile,
             int sequenceID) {
@@ -168,26 +178,6 @@ public class MakeRule {
         }
     }
 
-    private String enumTargets(IFolder buildFolder) {
-        String ret = new String();
-        for (Set<IFile> curFiles : myTargets.values()) {
-            for (IFile curFile : curFiles) {
-                ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
-            }
-        }
-        return ret;
-    }
-
-    private String enumPrerequisites(IFolder buildFolder) {
-        String ret = new String();
-        for (Set<IFile> curFiles : myPrerequisites.values()) {
-            for (IFile curFile : curFiles) {
-                ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
-            }
-        }
-        return ret;
-    }
-
     /**
      * validate if the makerule contains valid recipes
      * 
@@ -251,51 +241,6 @@ public class MakeRule {
             }
         }
         return ret.toArray(new String[ret.size()]);
-    }
-
-    //TOFIX JABA This should not be here as this is purely make related
-    public StringBuffer getRecipesInMakeFileStyle(IProject project, IFolder niceBuildFolder,
-            AutoBuildConfigurationDescription autoBuildConfData) {
-        if (!validateRecipes()) {
-            return new StringBuffer();
-        }
-
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(enumTargets(niceBuildFolder)).append(COLON).append(WHITESPACE);
-        buffer.append(enumPrerequisites(niceBuildFolder)).append(NEWLINE);
-        buffer.append(TAB).append(AT)
-                .append(escapedEcho(MakefileGenerator_message_start_file + WHITESPACE + OUT_MACRO));
-        buffer.append(TAB).append(AT).append(escapedEcho(myTool.getAnnouncement()));
-
-        //        // JABA add sketch.prebuild and postbuild if needed
-        //        //TOFIX this should not be here
-        //        if ("sloeber.ino".equals(fileName)) { //$NON-NLS-1$
-        //
-        //            //            String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-        //            //                    "sloeber.sketch.prebuild", new String(), true); //$NON-NLS-1$
-        //            //            String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-        //            //                    "sloeber.sketch.postbuild", new String(), true); //$NON-NLS-1$
-        //            String sketchPrebuild = resolve("sloeber.sketch.prebuild", EMPTY_STRING, WHITESPACE, autoBuildConfData);
-        //            String sketchPostBuild = resolve("sloeber.sketch.postbuild", EMPTY_STRING, WHITESPACE,autoBuildConfData);
-        //            if (!sketchPrebuild.isEmpty()) {
-        //                buffer.append(TAB).append(sketchPrebuild);
-        //            }
-        //            buffer.append(TAB).append(buildCmd).append(NEWLINE);
-        //            if (!sketchPostBuild.isEmpty()) {
-        //                buffer.append(TAB).append(sketchPostBuild);
-        //            }
-        //        } else {
-        for (String resolvedCommand : getRecipes(niceBuildFolder, autoBuildConfData)) {
-            buffer.append(TAB).append(resolvedCommand);
-        }
-        //        }
-        //        // end JABA add sketch.prebuild and postbuild if needed
-
-        buffer.append(NEWLINE);
-        buffer.append(TAB).append(AT)
-                .append(escapedEcho(MakefileGenerator_message_finish_file + WHITESPACE + OUT_MACRO));
-        buffer.append(TAB).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
-        return buffer;
     }
 
     //    private Set<String> getBuildFlags(AutoBuildConfigurationData autoBuildConfData, IFile sourceFile,
@@ -426,6 +371,85 @@ public class MakeRule {
             }
         }
         return false;
+    }
+
+    public boolean needsExecuting(IFolder buildfolder) {
+        Set<IFile> dependencyFiles = new HashSet<>();
+        //check whether all targets exists
+        //also get the timestamp of the oldest target
+        long jongestTargetTimeStamp = Long.MAX_VALUE;
+        for (Set<IFile> curTargetSet : myTargets.values()) {
+            for (IFile curTarget : curTargetSet) {
+                if (!curTarget.exists()) {
+                    return true;
+                }
+                //could be that a refresh is needed due to cached local time stamp
+                jongestTargetTimeStamp = Math.min(jongestTargetTimeStamp, curTarget.getLocalTimeStamp());
+            }
+        }
+        //check wether all dependency files exists
+        getDependencies();//TODO JABA this is very error prone.
+        for (Set<IFile> curDependencySet : myDependencies.values()) {
+            for (IFile curDependency : curDependencySet) {
+                if (!curDependency.exists()) {
+                    return true;
+                }
+                dependencyFiles.add(curDependency);
+            }
+        }
+        //get the newest prerequisite timeStamp
+        long oldestPreReqTimeStamp = Long.MIN_VALUE;
+        for (Set<IFile> curPrereqSet : myPrerequisites.values()) {
+            for (IFile curPrereq : curPrereqSet) {
+                oldestPreReqTimeStamp = Math.max(oldestPreReqTimeStamp, curPrereq.getLocalTimeStamp());
+            }
+        }
+        if (oldestPreReqTimeStamp > jongestTargetTimeStamp) {
+            return true;
+        }
+        //get the newest dependency timeStamp
+        long oldestDependencyTimeStamp = Long.MIN_VALUE;
+        for (IFile curdepFile : dependencyFiles) {
+            oldestDependencyTimeStamp = Math.max(oldestDependencyTimeStamp,
+                    getDepFileTimeStamp(curdepFile, buildfolder));
+        }
+        if (oldestDependencyTimeStamp >= jongestTargetTimeStamp) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * given a dependency file; return the time stamp of the youngest file mentioned
+     * in the dependency file
+     * 
+     * @param depFile
+     *            the dependency file created by a compiler
+     * 
+     * @return the timestamp of the oldest file in the files; 0 if a referenced file
+     *         does not exist
+     */
+    private static long getDepFileTimeStamp(IFile curdepFile, IFolder buildPath) {
+        long newestTime = Long.MIN_VALUE;
+        File depFile = curdepFile.getLocation().toFile();
+        String prefix = curdepFile.getParent().getLocation().toString();
+        try (BufferedReader reader = new BufferedReader(new FileReader(depFile));) {
+            String curLine = null;
+            while ((curLine = reader.readLine()) != null) {
+                if (curLine.endsWith(COLON)) {
+                    String headerName = curLine.substring(0, curLine.length() - 1).replace("\\ ", BLANK);
+                    headerName = buildPath.getFile(headerName).getLocation().toString();
+                    Path headerFile = Path.of(headerName);
+                    BasicFileAttributes attr = Files.readAttributes(headerFile, BasicFileAttributes.class);
+                    newestTime = Math.max(attr.lastModifiedTime().toMillis(), newestTime);
+                }
+            }
+            reader.close();
+        } catch (@SuppressWarnings("unused") IOException e) {
+            //e.printStackTrace();
+            return Long.MAX_VALUE;
+        }
+        return newestTime;
     }
 
 }
