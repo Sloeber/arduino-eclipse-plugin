@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.core.ErrorParserManager;
+import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
@@ -115,16 +116,12 @@ public class InternalBuildRunner extends IBuildRunner {
                     isConfigurationSupported);
             buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
 
-            OutputStream stdout = buildRunnerHelper.getOutputStream();
-            OutputStream stderr = buildRunnerHelper.getErrorStream();
-
             boolean isParallel = autoData.isParallelBuild();
             int parrallelNum = autoData.getParallelizationNum();
-            boolean resumeOnErr = !autoData.stopOnFirstBuildError();
-            int status;
             epm.deferDeDuplication();
             int sequenceID = -1;
             boolean lastSequenceID = true;
+            boolean isError = false;
             do {
                 sequenceID++;
                 lastSequenceID = true;
@@ -143,6 +140,10 @@ public class InternalBuildRunner extends IBuildRunner {
                         IContainer curPath = curFile.getParent();
                         if (curPath instanceof IFolder) {
                             createFolder((IFolder) curPath, true, true, null);
+                        }
+                        //GNU g++ does not delete the output file if compilation fails
+                        if (curFile.exists()) {
+                            curFile.delete(true, monitor);
                         }
                     }
 
@@ -163,40 +164,46 @@ public class InternalBuildRunner extends IBuildRunner {
                                 try {
                                     // Close the input of the process since we will never write to it
                                     fProcess.getOutputStream().close();
-                                } catch (IOException e) {
+                                } catch (@SuppressWarnings("unused") IOException e) {
+                                    //ignore error
                                 }
 
                                 // Wrapping out and err streams to avoid their closure
-                                int st = launcher.waitAndRead(stdout, stderr, monitor);
-                                //                    switch (st) {
-                                //                    case ICommandLauncher.OK:
-                                //                        // assuming that compiler returns error code after compilation errors
-                                //                        status = fProcess.exitValue() == 0 ? STATUS_OK : STATUS_ERROR_BUILD;
-                                //                        break;
-                                //                    case ICommandLauncher.COMMAND_CANCELED:
-                                //                        status = STATUS_CANCELLED;
-                                //                        break;
-                                //                    case ICommandLauncher.ILLEGAL_COMMAND:
-                                //                    default:
-                                //                        status = STATUS_ERROR_LAUNCH;
-                                //                        break;
-                                //                    }
+                                try (OutputStream stdout = buildRunnerHelper.getOutputStream();
+                                        OutputStream stderr = buildRunnerHelper.getErrorStream();) {
+                                    if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
+                                        if (autoData.stopOnFirstBuildError()) {
+                                            isError = true;
+                                            break;
+                                        }
+                                    }
+                                    String fErrMsg = launcher.getErrorMessage();
+                                    if (fErrMsg != null && !fErrMsg.isEmpty()) {
+                                        printMessage(fErrMsg, stderr);
+                                    }
+                                }
+                                if (fProcess.exitValue() != 0) {
+                                    if (autoData.stopOnFirstBuildError()) {
+                                        isError = true;
+                                        break;
+                                    }
+                                }
+
                             }
 
-                            String fErrMsg = launcher.getErrorMessage();
-                            if (fErrMsg != null && !fErrMsg.isEmpty()) {
-                                printMessage(fErrMsg, stderr);
-                            }
-                        } catch (Exception e) {
-                            //don't worry be happy
+                        } catch (@SuppressWarnings("unused") Exception e) {
+                            isError = autoData.stopOnFirstBuildError();
                         }
                         epm.deDuplicate();
 
                         // bsMngr.setProjectBuildState(project, pBS);
 
                     }
+                    if (isError) {
+                        break;
+                    }
                 }
-            } while (!lastSequenceID);
+            } while (!(lastSequenceID || isError));
             buildRunnerHelper.goodbye();
 
             // if (status != ICommandLauncher.ILLEGAL_COMMAND) {

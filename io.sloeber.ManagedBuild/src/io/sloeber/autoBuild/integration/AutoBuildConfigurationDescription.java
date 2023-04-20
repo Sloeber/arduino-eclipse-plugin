@@ -384,7 +384,8 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public CFolderData getRootFolderData() {
-        int option = 3;
+
+        int option = 5;
         if (retTest != null) {
             //option 0,2,3 same behaviour
             return retTest;
@@ -402,6 +403,10 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             CFolderData foData = factory.createFolderData(this, null, getId(), false, new Path(SLACH));
             factory.link(this, foData); //This fails as it assumes CDefaultFolderData and not CFolderData
             retTest = foData;
+        }
+        if (option == 5) {
+            CDataFactory factory = CDataFactory.getDefault();
+            retTest = factory.createFolderData(this, null, null, false, myProject.getFullPath());
         }
         if (option == 2) {
             //project creation fails
