@@ -203,6 +203,14 @@ public class InternalBuildRunner extends IBuildRunner {
                         break;
                     }
                 }
+                //only build source files when autobuildings 
+                //TOFIX JABA says: I can't do this as the incremental build only runs when there are changed files
+                // however changed files means autobuild will be triggered
+                // the is a flag in InternalBuilder that allows to run the build but it is not public
+                // so basically I can't set it.
+                //                if (kind == IncrementalProjectBuilder.AUTO_BUILD) {
+                //                    lastSequenceID = true;
+                //                }
             } while (!(lastSequenceID || isError));
             buildRunnerHelper.goodbye();
 
