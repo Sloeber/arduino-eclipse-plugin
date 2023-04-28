@@ -108,14 +108,14 @@
           class="io.sloeber.autoBuild.integrations.CPropertyVarsTab"
           helpId="cdt_u_prop_build_variables"
           name="%CPropertyVarsTab.name"
-          parent="io.sloeber.autoBuild.projectProperties.macro">
+          parent="io.sloeber.autoBuild.integrations.Page_Variables">
     </tab>
     <tab
           class="org.eclipse.cdt.ui.newui.EnvironmentTab"
           helpId="cdt_u_prop_build_environment"
           icon="icons/obj16/environment.gif"
           name="%EnvironmentTab.name"
-          parent="io.sloeber.autoBuild.projectProperties.EnvironmentVars">
+          parent="io.sloeber.autoBuild.integrations.Page_Environment">
     </tab>
  </extension>
  
