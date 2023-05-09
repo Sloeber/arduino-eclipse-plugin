@@ -419,7 +419,7 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     protected String topMakeGetPreBuildStep() {
-        String prebuildStep = myAutoBuildConfData.getConfiguration().getPrebuildStep();
+        String prebuildStep = myAutoBuildConfData.getPrebuildStep();
         // JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt
         // prebuild command if needed
         // ICConfigurationDescription confDesc =
@@ -443,29 +443,23 @@ public class MakefileGenerator implements IMakefileGenerator {
     }
 
     protected StringBuffer topMakeGetIncludeDependencies() {
-
-        // JABA add the arduino upload/program targets
         StringBuffer buffer = new StringBuffer();
 
-        String defaultTarget = "all:"; //$NON-NLS-1$
+        // Add the comment for the "All" target
+        buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
+        buffer.append(DEFAULT_AUTO_MAKE_TARGET).append(COLON).append(NEWLINE);
         String prebuildStep = topMakeGetPreBuildStep();
         if (prebuildStep.length() > 0) {
-            // Add the comment for the "All" target
-            buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
-            buffer.append(defaultTarget).append(NEWLINE);
             buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(PREBUILD)
                     .append(NEWLINE);
-            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
-                    .append(NEWLINE);
-            buffer.append(NEWLINE);
-            // defaultTarget = MAINBUILD.concat(COLON);
-            buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_mainbuildtarget)
-                    .append(NEWLINE);
-
-        } else {
-            // Add the comment for the "All" target
-            buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
         }
+        buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
+                .append(NEWLINE);
+        if (!resolve(myAutoBuildConfData.getPostbuildStep(), EMPTY_STRING, WHITESPACE, myAutoBuildConfData).isEmpty()) {
+            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(POSTBUILD)
+                    .append(NEWLINE);
+        }
+        buffer.append(NEWLINE);
         return buffer;
     }
 
@@ -473,7 +467,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         IConfiguration config = myAutoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
 
-        buffer.append("all:").append(WHITESPACE); //$NON-NLS-1$
+        buffer.append(MAINBUILD).append(COLON).append(WHITESPACE); //$NON-NLS-1$
         Set<ITool> targetTools = config.getToolChain().getTargetTools();
         if (targetTools.size() > 0) {
             for (ITool curTargetTool : targetTools) {
@@ -503,7 +497,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         String prebuildStep = topMakeGetPreBuildStep();
         if (prebuildStep.length() > 0) {
 
-            String preannouncebuildStep = config.getPreannouncebuildStep();
+            String preannouncebuildStep = myAutoBuildConfData.getPreBuildAnouncement();
             buffer.append(PREBUILD).append(COLON).append(NEWLINE);
             if (preannouncebuildStep.length() > 0) {
                 buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(preannouncebuildStep));
@@ -512,12 +506,12 @@ public class MakefileGenerator implements IMakefileGenerator {
             buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
         }
 
-        String postbuildStep = config.getPostbuildStep();
+        String postbuildStep = myAutoBuildConfData.getPostbuildStep();
         postbuildStep = resolve(postbuildStep, EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
         postbuildStep = postbuildStep.trim();
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {
-            String postannouncebuildStep = config.getPostannouncebuildStep();
+            String postannouncebuildStep = myAutoBuildConfData.getPostBuildAnouncement();
             buffer.append(POSTBUILD).append(COLON).append(NEWLINE);
             if (postannouncebuildStep.length() > 0) {
                 buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(postannouncebuildStep));

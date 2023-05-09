@@ -11,7 +11,7 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.integrations;
+package io.sloeber.autoBuild.ui.tabs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,6 +79,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import io.sloeber.autoBuild.integrations.NewVarDialog;
 import io.sloeber.autoBuild.ui.internal.Messages;
 
 /**

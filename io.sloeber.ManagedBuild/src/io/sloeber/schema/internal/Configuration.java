@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -59,10 +57,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private String[] modeldescription;
     private String[] modelbuildProperties;
     private String[] modelbuildArtefactType;
-    private String[] modelprebuildStep;
-    private String[] modelpostbuildStep;
-    private String[] modelpreannouncebuildStep;
-    private String[] modelpostannouncebuildStep;
     private String[] modelcleanCommand;
 
     private ToolChain myToolchain;
@@ -96,10 +90,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
         modelcleanCommand = getAttributes(CLEAN_COMMAND);
         modelerrorParsers = getAttributes(ERROR_PARSERS);
         modellanguageSettingsProviders = getAttributes(LANGUAGE_SETTINGS_PROVIDERS);
-        modelprebuildStep = getAttributes(PREBUILD_STEP);
-        modelpostbuildStep = getAttributes(POSTBUILD_STEP);
-        modelpreannouncebuildStep = getAttributes(PREANNOUNCEBUILD_STEP);
-        modelpostannouncebuildStep = getAttributes(POSTANNOUNCEBUILD_STEP);
         modeldescription = getAttributes(DESCRIPTION);
         modelbuildProperties = getAttributes(BUILD_PROPERTIES);
         modelbuildArtefactType = getAttributes(BUILD_ARTEFACT_TYPE);
@@ -256,26 +246,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     }
 
     @Override
-    public String getPrebuildStep() {
-        return modelprebuildStep[SUPER];
-    }
-
-    @Override
-    public String getPostbuildStep() {
-        return modelpostbuildStep[SUPER];
-    }
-
-    @Override
-    public String getPreannouncebuildStep() {
-        return modelpreannouncebuildStep[SUPER];
-    }
-
-    @Override
-    public String getPostannouncebuildStep() {
-        return modelpostannouncebuildStep[SUPER];
-    }
-
-    @Override
     public Map<String, String> getDefaultBuildProperties() {
         return myBuildProperties;
     }
@@ -292,10 +262,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
         ret.append(prepend + ERROR_PARSERS + EQUAL + modelerrorParsers[SUPER] + NEWLINE);
         ret.append(prepend + LANGUAGE_SETTINGS_PROVIDERS + EQUAL + modellanguageSettingsProviders[SUPER] + NEWLINE);
 
-        ret.append(prepend + PREBUILD_STEP + EQUAL + modelprebuildStep[SUPER] + NEWLINE);
-        ret.append(prepend + POSTBUILD_STEP + EQUAL + modelpostbuildStep[SUPER] + NEWLINE);
-        ret.append(prepend + PREANNOUNCEBUILD_STEP + EQUAL + modelpreannouncebuildStep[SUPER] + NEWLINE);
-        ret.append(prepend + POSTANNOUNCEBUILD_STEP + EQUAL + modelpostannouncebuildStep[SUPER] + NEWLINE);
         ret.append(prepend + DESCRIPTION + EQUAL + modeldescription[SUPER] + NEWLINE);
         ret.append(prepend + BUILD_PROPERTIES + EQUAL + modelbuildProperties[SUPER] + NEWLINE);
         ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelbuildArtefactType[SUPER] + NEWLINE);

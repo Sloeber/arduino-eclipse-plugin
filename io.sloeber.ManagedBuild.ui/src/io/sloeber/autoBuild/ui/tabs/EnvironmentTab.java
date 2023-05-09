@@ -12,7 +12,7 @@
  *     Intel Corporation - initial API and implementation
  *     IBM Corporation
  *******************************************************************************/
-package io.sloeber.autoBuild.integrations;
+package io.sloeber.autoBuild.ui.tabs;
 
 import java.util.ArrayList;
 import java.util.Arrays;

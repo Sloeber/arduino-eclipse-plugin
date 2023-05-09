@@ -39,31 +39,36 @@ import io.sloeber.schema.internal.Configuration;
 
 public class AutoBuildConfigurationDescription extends CConfigurationData
         implements IAutoBuildConfigurationDescription {
-    private static final String MODEL = "Model"; //$NON-NLS-1$
-    private static final String CONFIGURATION = "configuration"; //$NON-NLS-1$
-    private static final String EQUALS = "="; //$NON-NLS-1$
-    private static final String PROJECT_TYPE = "projectType"; //$NON-NLS-1$
-    private static final String EXTENSION_ID = "extensionID"; //$NON-NLS-1$
-    private static final String EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$
-    private static final String PROPERTY = "property"; //$NON-NLS-1$
-    private static final String BUILDFOLDER = "buildFolder"; //$NON-NLS-1$
-    private static final String USE_DEFAULT_BUILD_COMMAND = "useDefaultBuildCommand"; //$NON-NLS-1$
-    private static final String GENERATE_MAKE_FILES_AUTOMATICALLY = "generateBuildFilesAutomatically"; //$NON-NLS-1$
-    private static final String USE_STANDARD_BUILD_ARGUMENTS = "useStandardBuildArguments"; //$NON-NLS-1$
-    private static final String IS_PARRALLEL_BUILD = "isParralelBuild"; //$NON-NLS-1$
-    private static final String IS_CLEAN_BUILD_ENABLED = "isCleanEnabled"; //$NON-NLS-1$
-    private static final String NUM_PARRALEL_BUILDS = "numberOfParralelBuilds"; //$NON-NLS-1$
-    private static final String CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
-    private static final String STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
-    private static final String IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
-    private static final String IS_AUTO_BUILD_ENABLED = "isAutoBuildEnabled";//$NON-NLS-1$
+    private static final String KEY_MODEL = "Model"; //$NON-NLS-1$
+    private static final String KEY_CONFIGURATION = "configuration"; //$NON-NLS-1$
+    private static final String KEY_EQUALS = "="; //$NON-NLS-1$
+    private static final String KEY_PROJECT_TYPE = "projectType"; //$NON-NLS-1$
+    private static final String KEY_EXTENSION_ID = "extensionID"; //$NON-NLS-1$
+    private static final String KEY_EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$
+    private static final String KEY_PROPERTY = "property"; //$NON-NLS-1$
+    private static final String KEY_BUILDFOLDER = "buildFolder"; //$NON-NLS-1$
+    private static final String KEY_USE_DEFAULT_BUILD_COMMAND = "useDefaultBuildCommand"; //$NON-NLS-1$
+    private static final String KEY_GENERATE_MAKE_FILES_AUTOMATICALLY = "generateBuildFilesAutomatically"; //$NON-NLS-1$
+    private static final String KEY_USE_STANDARD_BUILD_ARGUMENTS = "useStandardBuildArguments"; //$NON-NLS-1$
+    private static final String KEY_IS_PARRALLEL_BUILD = "isParralelBuild"; //$NON-NLS-1$
+    private static final String KEY_IS_CLEAN_BUILD_ENABLED = "isCleanEnabled"; //$NON-NLS-1$
+    private static final String KEY_NUM_PARRALEL_BUILDS = "numberOfParralelBuilds"; //$NON-NLS-1$
+    private static final String KEY_CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
+    private static final String KEY_STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
+    private static final String KEY_IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
+    private static final String KEY_IS_AUTO_BUILD_ENABLED = "isAutoBuildEnabled";//$NON-NLS-1$
     private static final String KEY = "key"; //$NON-NLS-1$
-    private static final String VALUE = "value"; //$NON-NLS-1$
-    private static final String RESOURCE = "resource";//$NON-NLS-1$
-    private static final String BUILD_RUNNER_NAME = "buildRunnerName";//$NON-NLS-1$
-    private static final String AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
-    private static final String INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
-    private static final String CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
+    private static final String KEY_VALUE = "value"; //$NON-NLS-1$
+    private static final String KEY_RESOURCE = "resource";//$NON-NLS-1$
+    private static final String KEY_BUILD_RUNNER_NAME = "buildRunnerName";//$NON-NLS-1$
+    private static final String KEY_AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
+    private static final String KEY_INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
+    private static final String KEY_CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
+
+    private static final String KEY_PRE_BUILD_STEP = "Build.pre.step"; //$NON-NLS-1$
+    private static final String KEY_PRE_BUILD_ANNOUNCEMENT = "Build.pre.announcement"; //$NON-NLS-1$
+    private static final String KEY_POST_BUILD_STEP = "Build.post.step"; //$NON-NLS-1$
+    private static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build.post.announcement"; //$NON-NLS-1$
 
     private IConfiguration myAutoBuildConfiguration;
     private IProject myProject;
@@ -98,6 +103,10 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private String myAutoMakeTarget = DEFAULT_AUTO_MAKE_TARGET;
     private String myIncrementalMakeTarget = DEFAULT_INCREMENTAL_MAKE_TARGET;
     private String myCleanMakeTarget = DEFAULT_CLEAN_MAKE_TARGET;
+    private String myPreBuildStep = EMPTY_STRING;
+    private String myPreBuildAnnouncement = EMPTY_STRING;
+    private String myPostBuildStep = EMPTY_STRING;
+    private String myPostBuildStepAnouncement = EMPTY_STRING;
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
     private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion."); //$NON-NLS-1$
 
@@ -157,6 +166,11 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myIncrementalMakeTarget = autoBuildConfigBase.myIncrementalMakeTarget;
         myCleanMakeTarget = autoBuildConfigBase.myCleanMakeTarget;
 
+        myPreBuildStep = autoBuildConfigBase.myPreBuildStep;
+        myPreBuildAnnouncement = autoBuildConfigBase.myPreBuildAnnouncement;
+        myPostBuildStep = autoBuildConfigBase.myPostBuildStep;
+        myPostBuildStepAnouncement = autoBuildConfigBase.myPostBuildStepAnouncement;
+
     }
 
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
@@ -176,20 +190,20 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             if (!curLine.startsWith(lineStart)) {
                 continue;
             }
-            String field[] = curLine.split(EQUALS, 2);
+            String field[] = curLine.split(KEY_EQUALS, 2);
             String key = field[0].substring(lineStart.length());
             String value = field[1];
             switch (key) {
-            case MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_POINT_ID:
+            case KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID:
                 extensionPointID = value;
                 break;
-            case MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_ID:
+            case KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_ID:
                 extensionID = value;
                 break;
-            case MODEL + DOT + PROJECT_TYPE + DOT + ID:
+            case KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + ID:
                 projectTypeID = value;
                 break;
-            case MODEL + DOT + CONFIGURATION + DOT + NAME:
+            case KEY_MODEL + DOT + KEY_CONFIGURATION + DOT + NAME:
                 confName = value;
                 break;
             case NAME:
@@ -201,60 +215,73 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             case ID:
                 myId = value;
                 break;
-            case BUILDFOLDER:
+            case KEY_BUILDFOLDER:
                 myBuildFolderString = value;
                 break;
-            case USE_DEFAULT_BUILD_COMMAND:
+            case KEY_USE_DEFAULT_BUILD_COMMAND:
                 myUseDefaultBuildCommand = Boolean.parseBoolean(value);
                 break;
-            case GENERATE_MAKE_FILES_AUTOMATICALLY:
+            case KEY_GENERATE_MAKE_FILES_AUTOMATICALLY:
                 myGenerateMakeFilesAUtomatically = Boolean.parseBoolean(value);
                 break;
-            case USE_STANDARD_BUILD_ARGUMENTS:
+            case KEY_USE_STANDARD_BUILD_ARGUMENTS:
                 myUseStandardBuildArguments = Boolean.parseBoolean(value);
                 break;
-            case STOP_ON_FIRST_ERROR:
+            case KEY_STOP_ON_FIRST_ERROR:
                 myStopOnFirstBuildError = Boolean.parseBoolean(value);
                 break;
-            case IS_PARRALLEL_BUILD:
+            case KEY_IS_PARRALLEL_BUILD:
                 myIsParallelBuild = Boolean.parseBoolean(value);
                 break;
-            case IS_CLEAN_BUILD_ENABLED:
+            case KEY_IS_CLEAN_BUILD_ENABLED:
                 myIsCleanBuildEnabled = Boolean.parseBoolean(value);
                 break;
-            case IS_INCREMENTAL_BUILD_ENABLED:
+            case KEY_IS_INCREMENTAL_BUILD_ENABLED:
                 myIsIncrementalBuildEnabled = Boolean.parseBoolean(value);
                 break;
-            case IS_AUTO_BUILD_ENABLED:
+            case KEY_IS_AUTO_BUILD_ENABLED:
                 myIsAutoBuildEnabled = Boolean.parseBoolean(value);
                 break;
-            case NUM_PARRALEL_BUILDS:
+            case KEY_NUM_PARRALEL_BUILDS:
                 myParallelizationNum = Integer.parseInt(value);
                 break;
-            case CUSTOM_BUILD_COMMAND:
+            case KEY_CUSTOM_BUILD_COMMAND:
                 myCustomBuildCommand = value;
                 break;
-            case BUILD_RUNNER_NAME:
+            case KEY_BUILD_RUNNER_NAME:
                 for (IBuildRunner buildRunner : getBuildRunners()) {
                     if (myBuildRunner == null || buildRunner.getName().equals(value)) {
                         myBuildRunner = buildRunner;
                     }
                 }
                 break;
-            case AUTO_MAKE_TARGET:
+            case KEY_AUTO_MAKE_TARGET:
                 myAutoMakeTarget = value;
                 break;
-            case INCREMENTAL_MAKE_TARGET:
+            case KEY_INCREMENTAL_MAKE_TARGET:
                 myIncrementalMakeTarget = value;
                 break;
-            case CLEAN_MAKE_TARGET:
+            case KEY_CLEAN_MAKE_TARGET:
                 myCleanMakeTarget = value;
+                break;
+
+            case KEY_PRE_BUILD_STEP:
+                myPreBuildStep = value;
+                break;
+            case KEY_PRE_BUILD_ANNOUNCEMENT:
+                myPreBuildAnnouncement = value;
+                break;
+            case KEY_POST_BUILD_STEP:
+                myPostBuildStep = value;
+                break;
+            case KEY_POST_BUILD_ANNOUNCEMENT:
+                myPostBuildStepAnouncement = value;
                 break;
 
             default:
                 boolean found = false;
-                if (key.startsWith(PROPERTY + DOT)) {
-                    String propKey = key.substring(PROPERTY.length() + DOT.length());
+                if (key.startsWith(KEY_PROPERTY + DOT)) {
+                    String propKey = key.substring(KEY_PROPERTY.length() + DOT.length());
                     myProperties.put(propKey, value);
                     found = true;
                 }
@@ -264,13 +291,13 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                     found = true;
                 }
 
-                if (key.startsWith(OPTION + DOT + VALUE + DOT)) {
-                    String optionIndex = key.substring(OPTION.length() + VALUE.length() + DOT.length() * 2);
+                if (key.startsWith(OPTION + DOT + KEY_VALUE + DOT)) {
+                    String optionIndex = key.substring(OPTION.length() + KEY_VALUE.length() + DOT.length() * 2);
                     optionValueMap.put(optionIndex, value);
                     found = true;
                 }
-                if (key.startsWith(OPTION + DOT + RESOURCE + DOT)) {
-                    String optionIndex = key.substring(OPTION.length() + RESOURCE.length() + DOT.length() * 2);
+                if (key.startsWith(OPTION + DOT + KEY_RESOURCE + DOT)) {
+                    String optionIndex = key.substring(OPTION.length() + KEY_RESOURCE.length() + DOT.length() * 2);
                     optionResourceMap.put(optionIndex, value);
                     found = true;
                 }
@@ -715,57 +742,65 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     public StringBuffer ToText(String linePrefix, String lineEnd) {
         StringBuffer ret = new StringBuffer();
         IProjectType projectType = myAutoBuildConfiguration.getProjectType();
-        ret.append(linePrefix + MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_POINT_ID + EQUALS
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID + KEY_EQUALS
                 + projectType.getExtensionPointID() + lineEnd);
-        ret.append(linePrefix + MODEL + DOT + PROJECT_TYPE + DOT + EXTENSION_ID + EQUALS + projectType.getExtensionID()
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_ID + KEY_EQUALS
+                + projectType.getExtensionID() + lineEnd);
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + ID + KEY_EQUALS + projectType.getId()
                 + lineEnd);
-        ret.append(linePrefix + MODEL + DOT + PROJECT_TYPE + DOT + ID + EQUALS + projectType.getId() + lineEnd);
-        ret.append(linePrefix + MODEL + DOT + CONFIGURATION + DOT + NAME + EQUALS + myAutoBuildConfiguration.getName()
-                + lineEnd);
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_CONFIGURATION + DOT + NAME + KEY_EQUALS
+                + myAutoBuildConfiguration.getName() + lineEnd);
 
-        ret.append(linePrefix + NAME + EQUALS + myName + lineEnd);
-        ret.append(linePrefix + DESCRIPTION + EQUALS);
+        ret.append(linePrefix + NAME + KEY_EQUALS + myName + lineEnd);
+        ret.append(linePrefix + DESCRIPTION + KEY_EQUALS);
         ret.append(myDescription);
         ret.append(lineEnd);
 
-        ret.append(linePrefix + ID + EQUALS + myId + lineEnd);
+        ret.append(linePrefix + ID + KEY_EQUALS + myId + lineEnd);
 
         for (Entry<String, String> curProp : myProperties.entrySet()) {
-            ret.append(linePrefix + PROPERTY + DOT + curProp.getKey() + EQUALS + curProp.getValue() + lineEnd);
+            ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + KEY_EQUALS + curProp.getValue() + lineEnd);
         }
         int counter = 0;
         for (Entry<IResource, Map<String, String>> curOption : mySelectedOptions.entrySet()) {
             IResource res = curOption.getKey();
             String resourceID = res.getProjectRelativePath().toString();
             for (Entry<String, String> resourceOptions : curOption.getValue().entrySet()) {
-                ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + EQUALS
+                ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + KEY_EQUALS
                         + resourceOptions.getKey() + lineEnd);
-                ret.append(linePrefix + OPTION + DOT + VALUE + DOT + String.valueOf(counter) + EQUALS
+                ret.append(linePrefix + OPTION + DOT + KEY_VALUE + DOT + String.valueOf(counter) + KEY_EQUALS
                         + resourceOptions.getValue() + lineEnd);
-                ret.append(linePrefix + OPTION + DOT + RESOURCE + DOT + String.valueOf(counter) + EQUALS + resourceID
-                        + lineEnd);
+                ret.append(linePrefix + OPTION + DOT + KEY_RESOURCE + DOT + String.valueOf(counter) + KEY_EQUALS
+                        + resourceID + lineEnd);
                 counter++;
             }
         }
 
-        ret.append(linePrefix + BUILDFOLDER + EQUALS + myBuildFolderString + lineEnd);
-        ret.append(
-                linePrefix + USE_DEFAULT_BUILD_COMMAND + EQUALS + String.valueOf(myUseDefaultBuildCommand) + lineEnd);
-        ret.append(linePrefix + GENERATE_MAKE_FILES_AUTOMATICALLY + EQUALS
+        ret.append(linePrefix + KEY_BUILDFOLDER + KEY_EQUALS + myBuildFolderString + lineEnd);
+        ret.append(linePrefix + KEY_USE_DEFAULT_BUILD_COMMAND + KEY_EQUALS + String.valueOf(myUseDefaultBuildCommand)
+                + lineEnd);
+        ret.append(linePrefix + KEY_GENERATE_MAKE_FILES_AUTOMATICALLY + KEY_EQUALS
                 + String.valueOf(myGenerateMakeFilesAUtomatically) + lineEnd);
-        ret.append(linePrefix + USE_STANDARD_BUILD_ARGUMENTS + EQUALS + String.valueOf(myUseStandardBuildArguments)
-                + lineEnd);
-        ret.append(linePrefix + STOP_ON_FIRST_ERROR + EQUALS + String.valueOf(myStopOnFirstBuildError) + lineEnd);
-        ret.append(linePrefix + IS_PARRALLEL_BUILD + EQUALS + String.valueOf(myIsParallelBuild) + lineEnd);
-        ret.append(linePrefix + IS_CLEAN_BUILD_ENABLED + EQUALS + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
-        ret.append(linePrefix + IS_INCREMENTAL_BUILD_ENABLED + EQUALS + String.valueOf(myIsIncrementalBuildEnabled)
-                + lineEnd);
-        ret.append(linePrefix + NUM_PARRALEL_BUILDS + EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
-        ret.append(linePrefix + CUSTOM_BUILD_COMMAND + EQUALS + myCustomBuildCommand + lineEnd);
-        ret.append(linePrefix + BUILD_RUNNER_NAME + EQUALS + myBuildRunner.getName() + lineEnd);
-        ret.append(linePrefix + AUTO_MAKE_TARGET + EQUALS + myAutoMakeTarget + lineEnd);
-        ret.append(linePrefix + INCREMENTAL_MAKE_TARGET + EQUALS + myIncrementalMakeTarget + lineEnd);
-        ret.append(linePrefix + CLEAN_MAKE_TARGET + EQUALS + myCleanMakeTarget + lineEnd);
+        ret.append(linePrefix + KEY_USE_STANDARD_BUILD_ARGUMENTS + KEY_EQUALS
+                + String.valueOf(myUseStandardBuildArguments) + lineEnd);
+        ret.append(
+                linePrefix + KEY_STOP_ON_FIRST_ERROR + KEY_EQUALS + String.valueOf(myStopOnFirstBuildError) + lineEnd);
+        ret.append(linePrefix + KEY_IS_PARRALLEL_BUILD + KEY_EQUALS + String.valueOf(myIsParallelBuild) + lineEnd);
+        ret.append(
+                linePrefix + KEY_IS_CLEAN_BUILD_ENABLED + KEY_EQUALS + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
+        ret.append(linePrefix + KEY_IS_INCREMENTAL_BUILD_ENABLED + KEY_EQUALS
+                + String.valueOf(myIsIncrementalBuildEnabled) + lineEnd);
+        ret.append(linePrefix + KEY_NUM_PARRALEL_BUILDS + KEY_EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
+        ret.append(linePrefix + KEY_CUSTOM_BUILD_COMMAND + KEY_EQUALS + myCustomBuildCommand + lineEnd);
+        ret.append(linePrefix + KEY_BUILD_RUNNER_NAME + KEY_EQUALS + myBuildRunner.getName() + lineEnd);
+        ret.append(linePrefix + KEY_AUTO_MAKE_TARGET + KEY_EQUALS + myAutoMakeTarget + lineEnd);
+        ret.append(linePrefix + KEY_INCREMENTAL_MAKE_TARGET + KEY_EQUALS + myIncrementalMakeTarget + lineEnd);
+        ret.append(linePrefix + KEY_CLEAN_MAKE_TARGET + KEY_EQUALS + myCleanMakeTarget + lineEnd);
+
+        ret.append(linePrefix + KEY_PRE_BUILD_STEP + KEY_EQUALS + myPreBuildStep + lineEnd);
+        ret.append(linePrefix + KEY_PRE_BUILD_ANNOUNCEMENT + KEY_EQUALS + myPreBuildAnnouncement + lineEnd);
+        ret.append(linePrefix + KEY_POST_BUILD_STEP + KEY_EQUALS + myPostBuildStep + lineEnd);
+        ret.append(linePrefix + KEY_POST_BUILD_ANNOUNCEMENT + KEY_EQUALS + myPostBuildStepAnouncement + lineEnd);
 
         return ret;
 
@@ -835,6 +870,50 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     @Override
     public String getCleanMakeTarget() {
         return myCleanMakeTarget;
+    }
+
+    @Override
+    public String getPrebuildStep() {
+        return myPreBuildStep;
+    }
+
+    @Override
+    public void setPrebuildStep(String text) {
+        myPreBuildStep = text;
+
+    }
+
+    @Override
+    public String getPreBuildAnouncement() {
+        return myPreBuildAnnouncement;
+    }
+
+    @Override
+    public void setPreBuildAnouncement(String anouncement) {
+        myPreBuildAnnouncement = anouncement;
+
+    }
+
+    @Override
+    public String getPostbuildStep() {
+        return myPostBuildStep;
+    }
+
+    @Override
+    public void setPostbuildStep(String text) {
+        myPostBuildStep = text;
+
+    }
+
+    @Override
+    public String getPostBuildAnouncement() {
+        return myPostBuildStepAnouncement;
+    }
+
+    @Override
+    public void setPostBuildAnouncement(String text) {
+        myPostBuildStepAnouncement = text;
+
     }
 
 }

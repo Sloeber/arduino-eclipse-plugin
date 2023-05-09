@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.integrations;
+package io.sloeber.autoBuild.ui.tabs;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractAutoBuildPropertyTab extends AbstractCPropertyTab {
 
-    protected final static String ARGS_PREFIX = "io.sloeber.automake"; //$NON-NLS-1$
+    //protected final static String ARGS_PREFIX = "io.sloeber.automake"; //$NON-NLS-1$
     Map<String, IAutoBuildConfigurationDescription> myAutoConfDescMap = new HashMap<>();
     IAutoBuildConfigurationDescription myAutoConfDesc = null;
 

@@ -15,7 +15,7 @@
  * Andrew Gvozdev (Quoin Inc)   - Saving build output implemented in different way (bug 306222)
  * Jan Baeyens                  - adapted and rewritten for autoBuild also removed multiconfig feature
  *******************************************************************************/
-package io.sloeber.autoBuild.integrations;
+package io.sloeber.autoBuild.ui.tabs;
 
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.ui.internal.Messages;

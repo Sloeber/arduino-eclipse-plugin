@@ -96,10 +96,9 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
             if (projectFile.exists()) {
                 String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
                 return new AutoBuildConfigurationDescription(cfgDescription, curConfigsText, lineStart, lineEnd);
-            } else {
-                //This Should not happen
-                throw new CoreException(null);
             }
+            //This Should not happen
+            throw new CoreException(null);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

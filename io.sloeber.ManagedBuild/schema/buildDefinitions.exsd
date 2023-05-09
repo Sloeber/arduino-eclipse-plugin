@@ -688,40 +688,6 @@ If this field is not specified, &quot;org.eclipse.cdt.managedbuilder.core.MBSLan
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="prebuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the pre-build command, which runs prior to the standard MBS build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="postbuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the post-build command, which runs after the standard MBS build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="preannouncebuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the string to be displayed when the pre-build command step is run.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="postannouncebuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the string to be displayed when the post-build command step is run.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
          <attribute name="description" type="string">
             <annotation>
                <documentation>

@@ -4,6 +4,8 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
 import io.sloeber.autoBuild.api.BuildException;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
@@ -37,8 +40,10 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
@@ -92,35 +97,37 @@ public class Tool extends SchemaObject implements ITool {
      */
     // @formatter:on
 
-    private List<IEnvVarBuildPath> envVarBuildPathList;
+    private List<IEnvVarBuildPath> myEnvVarBuildPathList;
 
     // private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
-    private String[] modelIsAbstract;
-    private String[] modelOutputFlag;
-    private String[] modelNatureFilter;
-    private String[] modelCommand;
-    private String[] modelCommandLinePattern;
-    private String[] modelCommandLineGenerator;
-    private String[] modelErrorParsers;
-    private String[] modelCustomBuildStep;
-    private String[] modelAnnouncement;
-    private String[] modelIcon;
-    private String[] modelIsSystem;
-    private String[] modelIsHidden;
-    private String[] modelDependencyOutputPattern;
-    private String[] modelDependencyGenerationFlag;
+    private String[] myModelIsAbstract;
+    private String[] myModelOutputFlag;
+    private String[] myModelNatureFilter;
+    private String[] myModelCommand;
+    private String[] myModelCommandLinePattern;
+    private String[] myModelCommandLineGenerator;
+    private String[] myModelErrorParsers;
+    private String[] myModelCustomBuildStep;
+    private String[] myModelAnnouncement;
+    private String[] myModelIcon;
+    private String[] myModelIsSystem;
+    private String[] myModelIsHidden;
+    private String[] myModelDependencyOutputPattern;
+    private String[] myModelDependencyGenerationFlag;
 
-    private boolean isHidden;
-    private boolean customBuildStep;
-    private boolean isAbstract;
-    private boolean isSystem;
-    private ToolChain parent;
+    private boolean myIsHidden;
+    private boolean myCustomBuildStep;
+    private boolean myIsAbstract;
+    private boolean myIsSystem;
+    private ToolChain myToolchain;
     private String myAnnouncement;
-    private Map<String, InputType> inputTypeMap = new HashMap<>();
-    private Map<String, OutputType> outputTypeMap = new HashMap<>();
+    private Map<String, InputType> myInputTypeMap = new HashMap<>();
+    private Map<String, OutputType> myOutputTypeMap = new HashMap<>();
 
-    private IManagedCommandLineGenerator commandLineGenerator;
+    private IManagedCommandLineGenerator myCommandLineGenerator;
+
+    private URL myIconPathURL;
 
     @Override
     public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoData) {
@@ -128,7 +135,7 @@ public class Tool extends SchemaObject implements ITool {
             return false;
         }
         try {
-            switch (modelNatureFilter[SUPER]) {
+            switch (myModelNatureFilter[SUPER]) {
             case "both": //$NON-NLS-1$
                 return true;
             case "cnature": //$NON-NLS-1$
@@ -156,61 +163,69 @@ public class Tool extends SchemaObject implements ITool {
      *            the fileVersion of Managed Build System
      */
     public Tool(ToolChain parent, IExtensionPoint root, IConfigurationElement element) {
-        this.parent = parent;
+        this.myToolchain = parent;
         loadNameAndID(root, element);
-        modelIsAbstract = getAttributes(IS_ABSTRACT);
-        modelOutputFlag = getAttributes(OUTPUT_FLAG);
-        modelNatureFilter = getAttributes(NATURE);
-        modelCommand = getAttributes(COMMAND);
-        modelCommandLinePattern = getAttributes(COMMAND_LINE_PATTERN);
-        modelCommandLineGenerator = getAttributes(COMMAND_LINE_GENERATOR);
-        modelErrorParsers = getAttributes(ERROR_PARSERS);
-        modelCustomBuildStep = getAttributes(CUSTOM_BUILD_STEP);
-        modelAnnouncement = getAttributes(ANNOUNCEMENT);
-        modelIcon = getAttributes(ICON);
-        modelIsSystem = getAttributes(IS_SYSTEM);
-        modelIsHidden = getAttributes(IS_HIDDEN);
-        modelDependencyOutputPattern = getAttributes(DEPENDENCY_OUTPUT_PATTERN);
-        modelDependencyGenerationFlag = getAttributes(DEPENDENCY_GENERATION_FLAG);
+        myModelIsAbstract = getAttributes(IS_ABSTRACT);
+        myModelOutputFlag = getAttributes(OUTPUT_FLAG);
+        myModelNatureFilter = getAttributes(NATURE);
+        myModelCommand = getAttributes(COMMAND);
+        myModelCommandLinePattern = getAttributes(COMMAND_LINE_PATTERN);
+        myModelCommandLineGenerator = getAttributes(COMMAND_LINE_GENERATOR);
+        myModelErrorParsers = getAttributes(ERROR_PARSERS);
+        myModelCustomBuildStep = getAttributes(CUSTOM_BUILD_STEP);
+        myModelAnnouncement = getAttributes(ANNOUNCEMENT);
+        myModelIcon = getAttributes(ICON);
+        myModelIsSystem = getAttributes(IS_SYSTEM);
+        myModelIsHidden = getAttributes(IS_HIDDEN);
+        myModelDependencyOutputPattern = getAttributes(DEPENDENCY_OUTPUT_PATTERN);
+        myModelDependencyGenerationFlag = getAttributes(DEPENDENCY_GENERATION_FLAG);
 
-        isAbstract = Boolean.parseBoolean(modelIsAbstract[ORIGINAL]);
-        customBuildStep = Boolean.parseBoolean(modelCustomBuildStep[SUPER]);
-        isHidden = Boolean.parseBoolean(modelIsHidden[ORIGINAL]);
-        isSystem = Boolean.parseBoolean(modelIsSystem[ORIGINAL]);
+        myIsAbstract = Boolean.parseBoolean(myModelIsAbstract[ORIGINAL]);
+        myCustomBuildStep = Boolean.parseBoolean(myModelCustomBuildStep[SUPER]);
+        myIsHidden = Boolean.parseBoolean(myModelIsHidden[ORIGINAL]);
+        myIsSystem = Boolean.parseBoolean(myModelIsSystem[ORIGINAL]);
 
-        if (modelCommandLinePattern[SUPER].isBlank()) {
-            modelCommandLinePattern[SUPER] = DEFAULT_PATTERN;
+        if (myModelCommandLinePattern[SUPER].isBlank()) {
+            myModelCommandLinePattern[SUPER] = DEFAULT_PATTERN;
         }
 
-        if (modelAnnouncement[SUPER].isBlank()) {
+        if (myModelAnnouncement[SUPER].isBlank()) {
             myAnnouncement = Tool_default_announcement + BLANK + getName(); // + "(" + getId() + ")";
         } else {
-            myAnnouncement = modelAnnouncement[SUPER];
+            myAnnouncement = myModelAnnouncement[SUPER];
         }
 
-        if (!modelCommandLineGenerator[SUPER].isBlank()) {
-            commandLineGenerator = (IManagedCommandLineGenerator) createExecutableExtension(COMMAND_LINE_GENERATOR);
+        if (!myModelCommandLineGenerator[SUPER].isBlank()) {
+            myCommandLineGenerator = (IManagedCommandLineGenerator) createExecutableExtension(COMMAND_LINE_GENERATOR);
         }
 
         for (IConfigurationElement curChild : getFirstChildren(INPUT_TYPE_ELEMENT_NAME)) {
             InputType child = new InputType(this, root, curChild);
-            inputTypeMap.put(child.getId(), child);
+            myInputTypeMap.put(child.getId(), child);
         }
         for (IConfigurationElement curChild : getFirstChildren(OUTPUT_TYPE_ELEMENT_NAME)) {
             OutputType child = new OutputType(this, root, curChild);
-            outputTypeMap.put(child.getId(), child);
+            myOutputTypeMap.put(child.getId(), child);
+        }
+        if (!myModelIcon[SUPER].isBlank()) {
+            try {
+                myIconPathURL = new URL(myModelIcon[SUPER]);
+            } catch (@SuppressWarnings("unused") MalformedURLException e) {
+                AutoBuildManager.outputIconError(myModelIcon[SUPER]);
+                myIconPathURL = null;
+            }
         }
     }
 
     @Override
     public IToolChain getParent() {
-        return parent;
+        return myToolchain;
     }
 
     @Override
     public List<IInputType> getInputTypes() {
         List<IInputType> ret = new LinkedList<>();
-        for (InputType cur : inputTypeMap.values()) {
+        for (InputType cur : myInputTypeMap.values()) {
             ret.add(cur);
         }
         return ret;
@@ -219,7 +234,7 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public List<IOutputType> getOutputTypes() {
         List<IOutputType> out = new LinkedList<>();
-        for (OutputType cur : outputTypeMap.values()) {
+        for (OutputType cur : myOutputTypeMap.values()) {
             // if (cur.isEnabled(this)) {
             out.add(cur);
             // }
@@ -238,7 +253,7 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     public IOutputType getAllOutputTypeById(String optputTypeID) {
-        return outputTypeMap.get(optputTypeID);
+        return myOutputTypeMap.get(optputTypeID);
     }
 
     @Override
@@ -253,12 +268,12 @@ public class Tool extends SchemaObject implements ITool {
      */
     @Override
     public boolean isAbstract() {
-        return isAbstract;
+        return myIsAbstract;
     }
 
     @Override
     public String getErrorParserIds() {
-        return modelErrorParsers[SUPER];
+        return myModelErrorParsers[SUPER];
     }
 
     /*
@@ -291,22 +306,22 @@ public class Tool extends SchemaObject implements ITool {
 
     @Override
     public String getOutputFlag() {
-        return modelOutputFlag[SUPER];
+        return myModelOutputFlag[SUPER];
     }
 
     @Override
     public String getToolCommand() {
-        return modelCommand[SUPER];
+        return myModelCommand[SUPER];
     }
 
     @Override
     public String getCommandLinePattern() {
-        return modelCommandLinePattern[SUPER];
+        return myModelCommandLinePattern[SUPER];
     }
 
     @Override
     public boolean getCustomBuildStep() {
-        return customBuildStep;
+        return myCustomBuildStep;
     }
 
     @Override
@@ -316,11 +331,11 @@ public class Tool extends SchemaObject implements ITool {
 
     @Override
     public IManagedCommandLineGenerator getCommandLineGenerator() {
-        return commandLineGenerator;
+        return myCommandLineGenerator;
     }
 
     public List<InputType> getAllInputTypes() {
-        return new LinkedList<>(inputTypeMap.values());
+        return new LinkedList<>(myInputTypeMap.values());
 
     }
 
@@ -333,7 +348,7 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public IEnvVarBuildPath[] getEnvVarBuildPaths() {
         // if (envVarBuildPathList != null) {
-        return envVarBuildPathList.toArray(new IEnvVarBuildPath[envVarBuildPathList.size()]);
+        return myEnvVarBuildPathList.toArray(new IEnvVarBuildPath[myEnvVarBuildPathList.size()]);
         // } else if (getSuperClass() != null)
         // return getSuperClass().getEnvVarBuildPaths();
         // return null;
@@ -381,17 +396,17 @@ public class Tool extends SchemaObject implements ITool {
 
     @Override
     public boolean isSystemObject() {
-        return isSystem;
+        return myIsSystem;
     }
 
     @Override
     public boolean isHidden() {
-        return isHidden;
+        return myIsHidden;
     }
 
     @Override
     public IInputType getInputTypeByID(String id2) {
-        return inputTypeMap.get(id2);
+        return myInputTypeMap.get(id2);
     }
 
     /**
@@ -462,28 +477,28 @@ public class Tool extends SchemaObject implements ITool {
         ret.append(prepend + TOOL_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);
-        ret.append(prepend + IS_ABSTRACT + EQUAL + modelIsAbstract[ORIGINAL] + NEWLINE);
-        ret.append(prepend + OUTPUT_FLAG + EQUAL + modelOutputFlag[SUPER] + NEWLINE);
-        ret.append(prepend + NATURE + EQUAL + modelNatureFilter[SUPER] + NEWLINE);
-        ret.append(prepend + COMMAND + EQUAL + modelCommand[SUPER] + NEWLINE);
-        ret.append(prepend + COMMAND_LINE_PATTERN + EQUAL + modelCommandLinePattern[SUPER] + NEWLINE);
+        ret.append(prepend + IS_ABSTRACT + EQUAL + myModelIsAbstract[ORIGINAL] + NEWLINE);
+        ret.append(prepend + OUTPUT_FLAG + EQUAL + myModelOutputFlag[SUPER] + NEWLINE);
+        ret.append(prepend + NATURE + EQUAL + myModelNatureFilter[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND + EQUAL + myModelCommand[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND_LINE_PATTERN + EQUAL + myModelCommandLinePattern[SUPER] + NEWLINE);
 
-        ret.append(prepend + COMMAND_LINE_GENERATOR + EQUAL + modelCommandLineGenerator[SUPER] + NEWLINE);
-        ret.append(prepend + ERROR_PARSERS + EQUAL + modelErrorParsers[SUPER] + NEWLINE);
-        ret.append(prepend + CUSTOM_BUILD_STEP + EQUAL + modelCustomBuildStep[SUPER] + NEWLINE);
-        ret.append(prepend + ANNOUNCEMENT + EQUAL + modelAnnouncement[SUPER] + NEWLINE);
-        ret.append(prepend + ICON + EQUAL + modelIcon[SUPER] + NEWLINE);
-        ret.append(prepend + IS_HIDDEN + EQUAL + modelIsHidden[SUPER] + NEWLINE);
-        ret.append(prepend + IS_SYSTEM + EQUAL + modelIsSystem[SUPER] + NEWLINE);
+        ret.append(prepend + COMMAND_LINE_GENERATOR + EQUAL + myModelCommandLineGenerator[SUPER] + NEWLINE);
+        ret.append(prepend + ERROR_PARSERS + EQUAL + myModelErrorParsers[SUPER] + NEWLINE);
+        ret.append(prepend + CUSTOM_BUILD_STEP + EQUAL + myModelCustomBuildStep[SUPER] + NEWLINE);
+        ret.append(prepend + ANNOUNCEMENT + EQUAL + myModelAnnouncement[SUPER] + NEWLINE);
+        ret.append(prepend + ICON + EQUAL + myModelIcon[SUPER] + NEWLINE);
+        ret.append(prepend + IS_HIDDEN + EQUAL + myModelIsHidden[SUPER] + NEWLINE);
+        ret.append(prepend + IS_SYSTEM + EQUAL + myModelIsSystem[SUPER] + NEWLINE);
         if (myEnablement.isBlank()) {
             ret.append(prepend + "No enablement found" + NEWLINE); //$NON-NLS-1$
         } else {
             ret.append(prepend + "Enablement found" + NEWLINE); //$NON-NLS-1$
         }
-        for (InputType curInputType : inputTypeMap.values()) {
+        for (InputType curInputType : myInputTypeMap.values()) {
             ret.append(curInputType.dump(leadingChars + 1));
         }
-        for (OutputType curOutputType : outputTypeMap.values()) {
+        for (OutputType curOutputType : myOutputTypeMap.values()) {
             ret.append(curOutputType.dump(leadingChars + 1));
         }
         ret.append(myOptions.dump(leadingChars + 1));
@@ -506,7 +521,7 @@ public class Tool extends SchemaObject implements ITool {
             return ret;
         }
         for (IInputType inputType : getInputTypes()) {
-            if (outputTypeIn != null && outputTypeMap.get(outputTypeIn.getId()) != null) {
+            if (outputTypeIn != null && myOutputTypeMap.get(outputTypeIn.getId()) != null) {
                 //if an inputType is a outputType of this tool ignore it.
                 //if not this will create a endless loop
                 continue;
@@ -549,12 +564,12 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public String[] getRecipes(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
             String outputName, Map<String, Set<String>> nicePreReqNameList) {
-        String cmd = modelCommand[SUPER];
+        String cmd = myModelCommand[SUPER];
         // expand the command
         String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
         if (!resolvedCommand.isBlank())
             cmd = resolvedCommand.trim();
-        String commandLinePattern = modelCommandLinePattern[SUPER];
+        String commandLinePattern = myModelCommandLinePattern[SUPER];
         commandLinePattern = getVariableValue(commandLinePattern, commandLinePattern, false, autoBuildConfData);
 
         String quotedOutputName = outputName;
@@ -578,11 +593,11 @@ public class Tool extends SchemaObject implements ITool {
             preReqFiles.put(curCmdVariable, inputsStr.trim());
         }
 
-        if (!modelDependencyGenerationFlag[SUPER].isBlank()) {
+        if (!myModelDependencyGenerationFlag[SUPER].isBlank()) {
             IProject project = autoBuildConfData.getProject();
             IFile depFile = getDependencyFile(project.getFile(outputName));
-            String depFlag = modelDependencyGenerationFlag[SUPER];
-            depFlag = depFlag.replace(makeVariable(modelDependencyOutputPattern[SUPER]),
+            String depFlag = myModelDependencyGenerationFlag[SUPER];
+            depFlag = depFlag.replace(makeVariable(myModelDependencyOutputPattern[SUPER]),
                     depFile.getProjectRelativePath().toString());
             flags.add(depFlag);
         }
@@ -591,7 +606,7 @@ public class Tool extends SchemaObject implements ITool {
         String command = commandLinePattern.replace(makeVariable(CMD_LINE_PRM_NAME), cmd);
 
         command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
-        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), modelOutputFlag[SUPER]);
+        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), myModelOutputFlag[SUPER]);
         command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
         for (Entry<String, String> curCmdVariable : preReqFiles.entrySet()) {
             command = command.replace(makeVariable(curCmdVariable.getKey()), curCmdVariable.getValue());
@@ -608,13 +623,46 @@ public class Tool extends SchemaObject implements ITool {
 
     @Override
     public IFile getDependencyFile(IFile curTargetFile) {
-        String depName = AutoBuildCommon.applyPattern(modelDependencyOutputPattern[SUPER], curTargetFile);
+        String depName = AutoBuildCommon.applyPattern(myModelDependencyOutputPattern[SUPER], curTargetFile);
         IResource fileParent = curTargetFile.getParent();
         if (fileParent instanceof IFolder) {
             IFolder folder = (IFolder) fileParent;
             return folder.getFile(depName);
         }
         return null;
+    }
+
+    @Override
+    public URL getIconPath() {
+        return myIconPathURL;
+    }
+
+    @Override
+    public List<IOptionCategory> getCategories(IAutoBuildConfigurationDescription iAutoBuildConf, IResource resource) {
+        List<IOptionCategory> ret = new LinkedList<>();
+        AutoBuildConfigurationDescription autoBuildConf = (AutoBuildConfigurationDescription) iAutoBuildConf;
+        if (!isEnabled(resource, autoBuildConf)) {
+            //The tools is not enabled=>ignore
+            return ret;
+        }
+        if (resource.isDerived()) {
+            // the resource is derived=>ignore
+            return ret;
+        }
+        if (resource instanceof IFile) {
+            boolean isAssociated = false;
+            for (IInputType inputType : getInputTypes()) {
+                if (inputType.isAssociatedWith((IFile) resource, null)) {
+                    isAssociated = true;
+                    continue;
+                }
+            }
+            if (!isAssociated) {
+                //The resource is a file and this tool is not processing this file =>ignore
+                return ret;
+            }
+        }
+        return myOptions.getCategories(resource, autoBuildConf);
     }
 
 }

@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -53,10 +51,6 @@ public interface IConfiguration extends ISchemaObject {
     public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
     public static final String ERROR_PARSERS = "errorParsers"; //$NON-NLS-1$
     public static final String LANGUAGE_SETTINGS_PROVIDERS = "languageSettingsProviders"; //$NON-NLS-1$
-    public static final String PREBUILD_STEP = "prebuildStep"; //$NON-NLS-1$
-    public static final String POSTBUILD_STEP = "postbuildStep"; //$NON-NLS-1$
-    public static final String PREANNOUNCEBUILD_STEP = "preannouncebuildStep"; //$NON-NLS-1$
-    public static final String POSTANNOUNCEBUILD_STEP = "postannouncebuildStep"; //$NON-NLS-1$
     public static final String DESCRIPTION = "description"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
@@ -99,34 +93,6 @@ public interface IConfiguration extends ISchemaObject {
      * @return String
      */
     //    public String getBuildCommand();
-
-    /**
-     * Returns the prebuild step command
-     *
-     * @return String
-     */
-    public String getPrebuildStep();
-
-    /**
-     * Returns the postbuild step command
-     *
-     * @return String
-     */
-    public String getPostbuildStep();
-
-    /**
-     * Returns the display string associated with the prebuild step
-     *
-     * @return String
-     */
-    public String getPreannouncebuildStep();
-
-    /**
-     * Returns the display string associated with the postbuild step
-     *
-     * @return String
-     */
-    public String getPostannouncebuildStep();
 
     /**
      * Answers the OS-specific command to remove files created by the build

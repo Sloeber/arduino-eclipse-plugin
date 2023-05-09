@@ -117,4 +117,29 @@ public interface IAutoBuildConfigurationDescription {
     void setCleanMakeTarget(String target);
 
     String getCleanMakeTarget();
+
+    /**
+     * Get the command to run at the start of the build
+     * No environment var or build var extension is done
+     * 
+     * @return The actual command to run as provided by setPrebuildStep
+     */
+    String getPrebuildStep();
+
+    /**
+     * Set the command to run at the start of the build
+     */
+    void setPrebuildStep(String text);
+
+    String getPreBuildAnouncement();
+
+    void setPreBuildAnouncement(String AnoounceMent);
+
+    String getPostbuildStep();
+
+    void setPostbuildStep(String text);
+
+    String getPostBuildAnouncement();
+
+    void setPostBuildAnouncement(String text);
 }

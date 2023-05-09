@@ -64,6 +64,21 @@
               </adapt>
            </enabledWhen>
         </page>
+        <page
+              category="io.sloeber.autoBuild.projectProperties.main"
+              class="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+              id="io.sloeber.autoBuild.projectProperties.Page_BuildSettings"
+              name="%CDTBuildProperty.name">
+           <enabledWhen>
+              <adapt
+                    type="org.eclipse.core.resources.IResource">
+                 <test
+                       property="org.eclipse.core.resources.projectNature"
+                       value="io.sloeber.autoBuildNature">
+                 </test>
+              </adapt>
+           </enabledWhen>
+        </page>
 <!--
             <page
             class="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings"
@@ -89,7 +104,7 @@
  <extension
        point="org.eclipse.cdt.ui.cPropertyTab">
     <tab
-          class="io.sloeber.autoBuild.integrations.BuilderSettingsTab"
+          class="io.sloeber.autoBuild.ui.tabs.BuilderSettingsTab"
           helpId="cdt_u_prop_build"
           icon="icons/obj16/build_settings.gif"
           name="%Builder.settings"
@@ -97,7 +112,7 @@
           weight="040">
     </tab>
     <tab
-          class="io.sloeber.autoBuild.integrations.BuildBehaviourTab"
+          class="io.sloeber.autoBuild.ui.tabs.BuildBehaviourTab"
           helpId="cdt_u_prop_build"
           icon="icons/obj16/target_obj.gif"
           name="%WBB.settings"
@@ -105,7 +120,7 @@
           weight="050">
     </tab>
     <tab
-          class="io.sloeber.autoBuild.integrations.CPropertyVarsTab"
+          class="io.sloeber.autoBuild.ui.tabs.CPropertyVarsTab"
           helpId="cdt_u_prop_build_variables"
           name="%CPropertyVarsTab.name"
           parent="io.sloeber.autoBuild.integrations.Page_Variables">
@@ -116,6 +131,38 @@
           icon="icons/obj16/environment.gif"
           name="%EnvironmentTab.name"
           parent="io.sloeber.autoBuild.integrations.Page_Environment">
+    </tab>
+    <tab
+          class="io.sloeber.autoBuild.ui.tabs.ToolSettingsTab"
+          helpId="cdt_u_prop_build_setting_tool"
+          icon="icons/elcl16/config-tool.gif"
+          name="%Tool.settings"
+          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          weight="010">
+    </tab>
+    <tab
+          class="io.sloeber.autoBuild.ui.tabs.BuildStepsTab"
+          helpId="cdt_u_prop_build_setting_steps"
+          icon="icons/obj16/steps.gif"
+          name="%Build.steps"
+          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          weight="020">
+    </tab>
+    <tab
+          class="org.eclipse.cdt.ui.newui.BinaryParsTab"
+          helpId="cdt_u_prop_build_setting_binparser"
+          icon="icons/obj16/bin_obj.gif"
+          name="%Binary.parsers"
+          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          weight="060">
+    </tab>
+    <tab
+          class="org.eclipse.cdt.ui.newui.ErrorParsTab"
+          helpId="cdt_u_prop_build_setting_errparser"
+          icon="icons/obj16/error_obj.gif"
+          name="%Error.parsers"
+          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          weight="070">
     </tab>
  </extension>
  

@@ -320,50 +320,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return macros;
     }
 
-    @Override
-    public String getPrebuildStep() {
-        // Get the default configuration and use its value
-        String name = ""; //$NON-NLS-1$
-        IConfiguration config = getDefaultConfiguration();
-        if (config != null) {
-            name = config.getPrebuildStep();
-        }
-        return name;
-    }
-
-    @Override
-    public String getPostbuildStep() {
-        // Get the default configuration and use its value
-        String name = ""; //$NON-NLS-1$
-        IConfiguration config = getDefaultConfiguration();
-        if (config != null) {
-            name = config.getPostbuildStep();
-        }
-        return name;
-    }
-
-    @Override
-    public String getPreannouncebuildStep() {
-        // Get the default configuration and use its value
-        String name = ""; //$NON-NLS-1$
-        IConfiguration config = getDefaultConfiguration();
-        if (config != null) {
-            name = config.getPreannouncebuildStep();
-        }
-        return name;
-    }
-
-    @Override
-    public String getPostannouncebuildStep() {
-        // Get the default configuration and use its value
-        String name = ""; //$NON-NLS-1$
-        IConfiguration config = getDefaultConfiguration();
-        if (config != null) {
-            name = config.getPostannouncebuildStep();
-        }
-        return name;
-    }
-
     /**
      * @return IResource owner
      */

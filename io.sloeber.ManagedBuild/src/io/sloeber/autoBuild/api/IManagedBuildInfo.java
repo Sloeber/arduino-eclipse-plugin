@@ -66,36 +66,6 @@ public interface IManagedBuildInfo {
     public String getBuildArtifactName();
 
     /**
-     * Answers the prebuild step for the default configuration
-     *
-     * @return String
-     */
-    public String getPrebuildStep();
-
-    /**
-     * Answers the postbuild step for the default configuration
-     *
-     * @return String
-     */
-    public String getPostbuildStep();
-
-    /**
-     * Answers the display string associated with the prebuild step for the default
-     * configuration
-     *
-     * @return String
-     */
-    public String getPreannouncebuildStep();
-
-    /**
-     * Answers the display string associated with the postbuild step for the default
-     * configuration
-     *
-     * @return String
-     */
-    public String getPostannouncebuildStep();
-
-    /**
      * Answers the command needed to remove files on the build machine
      */
     public String getCleanCommand();

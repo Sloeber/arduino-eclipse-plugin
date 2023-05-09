@@ -17,6 +17,7 @@
 package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICPathEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.utils.CommandLineUtil;
 import org.eclipse.core.resources.IContainer;
@@ -122,6 +124,21 @@ public class InternalBuildRunner extends IBuildRunner {
             int sequenceID = -1;
             boolean lastSequenceID = true;
             boolean isError = false;
+            //Run ppreBuildStep if existing
+            String preBuildStep = autoData.getPrebuildStep();
+            preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+            if (!preBuildStep.isEmpty()) {
+                String announcement = autoData.getPreBuildAnouncement();
+                if (!announcement.isEmpty()) {
+                    announcement = announcement + NEWLINE;
+                    buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+                }
+                if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+                    if (autoData.stopOnFirstBuildError()) {
+                        return false;
+                    }
+                }
+            }
             do {
                 sequenceID++;
                 lastSequenceID = true;
@@ -146,50 +163,59 @@ public class InternalBuildRunner extends IBuildRunner {
                             curFile.delete(true, monitor);
                         }
                     }
-
+                    String announcement = curRule.getTool().getAnnouncement();
+                    if (!announcement.isEmpty()) {
+                        announcement = announcement + NEWLINE;
+                        buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+                    }
                     for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
                         try {
-
-                            CommandLauncher launcher = new CommandLauncher();
-                            launcher.showCommand(true);
-                            String[] args = CommandLineUtil.argumentsToArray(curRecipe);
-                            IPath commandPath = new Path(args[0]);
-                            String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
-
-                            String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription,
-                                    builder.appendEnvironment());
-                            Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
-                                    monitor);
-                            if (fProcess != null) {
-                                try {
-                                    // Close the input of the process since we will never write to it
-                                    fProcess.getOutputStream().close();
-                                } catch (@SuppressWarnings("unused") IOException e) {
-                                    //ignore error
+                            if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
+                                if (autoData.stopOnFirstBuildError()) {
+                                    isError = true;
+                                    break;
                                 }
-
-                                // Wrapping out and err streams to avoid their closure
-                                try (OutputStream stdout = buildRunnerHelper.getOutputStream();
-                                        OutputStream stderr = buildRunnerHelper.getErrorStream();) {
-                                    if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
-                                        if (autoData.stopOnFirstBuildError()) {
-                                            isError = true;
-                                            break;
-                                        }
-                                    }
-                                    String fErrMsg = launcher.getErrorMessage();
-                                    if (fErrMsg != null && !fErrMsg.isEmpty()) {
-                                        printMessage(fErrMsg, stderr);
-                                    }
-                                }
-                                if (fProcess.exitValue() != 0) {
-                                    if (autoData.stopOnFirstBuildError()) {
-                                        isError = true;
-                                        break;
-                                    }
-                                }
-
                             }
+                            //                            CommandLauncher launcher = new CommandLauncher();
+                            //                            launcher.showCommand(true);
+                            //                            String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+                            //                            IPath commandPath = new Path(args[0]);
+                            //                            String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+                            //
+                            //                            String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription,
+                            //                                    builder.appendEnvironment());
+                            //                            Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
+                            //                                    monitor);
+                            //                            if (fProcess != null) {
+                            //                                try {
+                            //                                    // Close the input of the process since we will never write to it
+                            //                                    fProcess.getOutputStream().close();
+                            //                                } catch (@SuppressWarnings("unused") IOException e) {
+                            //                                    //ignore error
+                            //                                }
+                            //
+                            //                                // Wrapping out and err streams to avoid their closure
+                            //                                try (OutputStream stdout = buildRunnerHelper.getOutputStream();
+                            //                                        OutputStream stderr = buildRunnerHelper.getErrorStream();) {
+                            //                                    if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
+                            //                                        if (autoData.stopOnFirstBuildError()) {
+                            //                                            isError = true;
+                            //                                            break;
+                            //                                        }
+                            //                                    }
+                            //                                    String fErrMsg = launcher.getErrorMessage();
+                            //                                    if (fErrMsg != null && !fErrMsg.isEmpty()) {
+                            //                                        printMessage(fErrMsg, stderr);
+                            //                                    }
+                            //                                }
+                            //                                if (fProcess.exitValue() != 0) {
+                            //                                    if (autoData.stopOnFirstBuildError()) {
+                            //                                        isError = true;
+                            //                                        break;
+                            //                                    }
+                            //                                }
+                            //
+                            //                            }
 
                         } catch (@SuppressWarnings("unused") Exception e) {
                             isError = autoData.stopOnFirstBuildError();
@@ -212,6 +238,19 @@ public class InternalBuildRunner extends IBuildRunner {
                 //                    lastSequenceID = true;
                 //                }
             } while (!(lastSequenceID || isError));
+            //Run ppreBuildStep if existing
+            String postBuildStep = autoData.getPostbuildStep();
+            postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+            if (!postBuildStep.isEmpty()) {
+                String announcement = autoData.getPostBuildAnouncement();
+                if (!announcement.isEmpty()) {
+                    announcement = announcement + NEWLINE;
+                    buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+                }
+                if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+                    return false;
+                }
+            }
             buildRunnerHelper.goodbye();
 
             // if (status != ICommandLauncher.ILLEGAL_COMMAND) {
@@ -226,6 +265,44 @@ public class InternalBuildRunner extends IBuildRunner {
         }
         monitor.done();
         return false;
+    }
+
+    private int launchCommand(String curRecipe, AutoBuildConfigurationDescription autoData, IProgressMonitor monitor,
+            AutoBuildRunnerHelper buildRunnerHelper) throws IOException {
+        CommandLauncher launcher = new CommandLauncher();
+        launcher.showCommand(true);
+        String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+        IPath commandPath = new Path(args[0]);
+        String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+
+        String[] envp = BuildRunnerForMake.getEnvironment(autoData.getCdtConfigurationDescription(),
+                autoData.getConfiguration().getBuilder().appendEnvironment());
+        Process fProcess = null;
+        try (OutputStream stdout = buildRunnerHelper.getOutputStream();
+                OutputStream stderr = buildRunnerHelper.getErrorStream();) {
+            try {
+                fProcess = launcher.execute(commandPath, onlyArgs, envp, autoData.getBuildFolder().getLocation(),
+                        monitor);
+            } catch (CoreException e1) {
+                // ignore and handle null case
+            }
+            if (fProcess == null) {
+                String error = "Failed to execute" + NEWLINE + curRecipe + NEWLINE;
+                stdout.write(error.getBytes());
+                return -999;
+            }
+
+            if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
+                if (autoData.stopOnFirstBuildError()) {
+                    return -999;
+                }
+            }
+            String fErrMsg = launcher.getErrorMessage();
+            if (fErrMsg != null && !fErrMsg.isEmpty()) {
+                printMessage(fErrMsg, stderr);
+            }
+        }
+        return fProcess.exitValue();
     }
 
     @Override

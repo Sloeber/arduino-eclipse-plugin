@@ -122,11 +122,6 @@ public interface IOption extends ISchemaObject {
     public String[] getBuiltIns();
 
     /**
-     * @return the category for this option.
-     */
-    public IOptionCategory getCategory();
-
-    /**
      * @return a <code>String</code> containing the actual command line
      *         option associated with the option
      */

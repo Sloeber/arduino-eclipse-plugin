@@ -25,30 +25,27 @@ import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
 
 public class OptionCategory extends SchemaObject implements IOptionCategory {
-    private IOptionCategory owner; // The logical Option Category parent
-    private URL iconPathURL;
+    private IOptionCategory myOwner; // The logical Option Category parent
+    private URL myIconPathURL;
 
-    private String[] modelOwner;
-    private String[] modelIcon;
+    private String[] myModelOwner;
+    private String[] myModelIcon;
 
     /**
      * This constructor is called to create an option category defined by an
-     * extension point in a plugin manifest file, or returned by a dynamic element
-     * provider
+     * extension point in a plugin manifest file
      *
      * @param parent
-     *            The IHoldsOptions parent of this category, or
-     *            <code>null</code> if defined at the top level
+     *            The parejnt in the manifest file
      * @param element
-     *            The category definition from the manifest file or a dynamic
-     *            element provider
+     *            The category definition from the manifest file
      */
     public OptionCategory(ISchemaObject parent, IExtensionPoint root, IConfigurationElement element) {
 
         loadNameAndID(root, element);
 
-        modelOwner = getAttributes(OWNER);
-        modelIcon = getAttributes(ICON);
+        myModelOwner = getAttributes(OWNER);
+        myModelIcon = getAttributes(ICON);
 
         //		myOptionEnablementExpressions.clear();
         //		IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
@@ -58,12 +55,12 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
         //
         //		booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpressions);
 
-        if (!modelIcon[SUPER].isBlank()) {
+        if (!myModelIcon[SUPER].isBlank()) {
             try {
-                iconPathURL = new URL(modelIcon[SUPER]);
+                myIconPathURL = new URL(myModelIcon[SUPER]);
             } catch (@SuppressWarnings("unused") MalformedURLException e) {
-                AutoBuildManager.outputIconError(modelIcon[SUPER]);
-                iconPathURL = null;
+                AutoBuildManager.outputIconError(myModelIcon[SUPER]);
+                myIconPathURL = null;
             }
         }
         resolveFields();
@@ -97,12 +94,12 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
 
     @Override
     public IOptionCategory getOwner() {
-        return owner;
+        return myOwner;
     }
 
     @Override
     public URL getIconPath() {
-        return iconPathURL;
+        return myIconPathURL;
     }
 
 }

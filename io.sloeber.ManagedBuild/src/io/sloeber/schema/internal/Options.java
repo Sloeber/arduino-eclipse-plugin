@@ -17,12 +17,16 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IResource;
 
 import io.sloeber.schema.api.IOptions;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
 
@@ -98,6 +102,33 @@ public class Options implements IOptions {
             ret.append(NEWLINE);
         }
 
+        return ret;
+    }
+
+    /**
+     * Get all the categories that are applicable for this resource
+     * That mmeans: all the categories that are enabled for this resource and
+     * contain at least one
+     * enabled option
+     * 
+     * @param resource
+     *            The resource we are querying for
+     * @param autoBuildConf
+     *            the autobuild configuration we are dealing with
+     * @return a list of enabled categories that contain at least one enabled option
+     */
+    public List<IOptionCategory> getCategories(IResource resource, AutoBuildConfigurationDescription autoBuildConf) {
+        // TODO Auto-generated method stub
+        List<IOptionCategory> ret = new LinkedList<>();
+        for (Option curOption : myOptionMap.values()) {
+            if (curOption.isEnabled(resource, autoBuildConf)) {
+                IOptionCategory cat = getOptionCategory(curOption.getCategoryID());
+                if (cat != null || cat.isEnabled(resource, autoBuildConf)) {
+                    ret.add(cat);
+                }
+            }
+        }
+        ret.remove(null);
         return ret;
     }
 

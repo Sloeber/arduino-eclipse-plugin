@@ -13,13 +13,17 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+
 import io.sloeber.autoBuild.api.BuildException;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
@@ -38,7 +42,6 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
  */
 public interface ITool extends ISchemaObject {
     public static final String TOOL_ELEMENT_NAME = "tool"; //$NON-NLS-1$
-    // Schema element names
 
     /**
      * Returns the tool-chain or resource configuration that is the parent of this
@@ -61,28 +64,6 @@ public interface ITool extends ISchemaObject {
     public List<IInputType> getInputTypes();
 
     public IInputType getInputTypeByID(String id);
-
-    /**
-     * Returns the primary <code>IInputType</code> in this tool
-     *
-     * <p>
-     * If the receiver has no InputTypes,
-     * the method returns <code>null</code>. It is the responsibility of the
-     * caller to verify the return value.
-     *
-     * @return <code>IInputType</code>
-     * @since 3.0
-     */
-    //    public IInputType getPrimaryInputType();
-
-    /**
-     * Returns all of the additional dependency resources of all InputType children.
-     * Note: This does not include the primary InputType and does not include
-     * additional inputs.
-     *
-     * @return IPath[]
-     */
-    //    public IPath[] getAdditionalDependencies();
 
     /**
      * Returns the complete list of output types that are available for this tool.
@@ -112,22 +93,6 @@ public interface ITool extends ISchemaObject {
      */
     public IOutputType getOutputTypeById(String id);
 
-    //    /**
-    //     * Returns the <code>IOutputType</code> in the tool that creates the
-    //     * specified extension.
-    //     *
-    //     * <p>
-    //     * If the receiver does not have an OutputType that creates the extension,
-    //     * the method returns <code>null</code>. It is the responsibility of the
-    //     * caller to verify the return value.
-    //     *
-    //     * @param outputExtension
-    //     *            File extension
-    //     * @return <code>IOutputType</code>
-    //     * @since 3.0
-    //     */
-    //    public IOutputType getOutputType(String outputExtension);
-
     /**
      * Returns whether this element is abstract. Returns <code>false</code>
      * if the attribute was not specified.
@@ -153,67 +118,6 @@ public interface ITool extends ISchemaObject {
      * @return String[]
      */
     public String[] getErrorParserList();
-
-    //    /**
-    //     * Returns the array of valid primary source extensions this tool knows how to
-    //     * build.
-    //     * The array may be empty but will never be <code>null</code>.
-    //     *
-    //     * @return String[]
-    //     */
-    //    public List<String> getPrimaryInputExtensions();
-
-    /**
-     * Returns the array of all valid source extensions this tool knows how to
-     * build.
-     * The array may be empty but will never be <code>null</code>.
-     *
-     * @return String[]
-     */
-    //   public String[] getAllInputExtensions();
-
-    /**
-     * Returns the default input extension for the primary input of the tool
-     *
-     * @return String
-     */
-    // public String getDefaultInputExtension();
-
-    /**
-     * Returns the array of all valid dependency extensions for this tool's inputs.
-     * The array may be empty but will never be <code>null</code>.
-     *
-     * @return String[]
-     */
-    ///  public String[] getAllDependencyExtensions();
-
-    //    /**
-    //     * Answers a constant corresponding to the project nature the tool should be
-    //     * used
-    //     * for. Possible answers are:
-    //     *
-    //     * <dl>
-    //     * <dt>ITool.FILTER_C
-    //     * <dd>The tool should only be displayed for C projects. <i>Notes:</i> even
-    //     * though a C++ project has a C nature, this flag will mask the tool for C++
-    //     * projects.
-    //     * <dt>ITool.FILTER_CC
-    //     * <dd>The tool should only be displayed for C++ projects.
-    //     * <dt>ITool.FILTER_BOTH
-    //     * <dd>The tool should be displayed for projects with both natures.
-    //     * </dl>
-    //     *
-    //     * @return int
-    //     */
-    //    public int getNatureFilter();
-
-    /**
-     * Answers all of the output extensions that the receiver can build,
-     * from the value of the outputs attribute
-     *
-     * @return <code>String[]</code> of extensions
-     */
-    //  public String[] getOutputsAttribute();
 
     /**
      * Answers the argument that must be passed to a specific tool in order to
@@ -315,5 +219,9 @@ public interface ITool extends ISchemaObject {
      * @return the dependency file
      */
     public IFile getDependencyFile(IFile curTargetFile);
+
+    public URL getIconPath();
+
+    public List<IOptionCategory> getCategories(IAutoBuildConfigurationDescription myAutoBuildConf, IResource resource);
 
 }

@@ -12,7 +12,7 @@
  * Intel Corporation - Initial API and implementation
  * IBM Corporation
  *******************************************************************************/
-package io.sloeber.autoBuild.integrations;
+package io.sloeber.autoBuild.ui.tabs;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
