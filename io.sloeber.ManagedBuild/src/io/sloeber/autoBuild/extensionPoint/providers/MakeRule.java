@@ -61,9 +61,9 @@ public class MakeRule {
     public void getDependencies() {
         myDependencies.clear();
         for (Entry<IOutputType, Set<IFile>> curTarget : myTargets.entrySet()) {
-            IOutputType curoutputType = curTarget.getKey();
+            IOutputType curOutputType = curTarget.getKey();
             Set<IFile> files = curTarget.getValue();
-            String depkey = curoutputType.getBuildVariable() + DEPENDENCY_SUFFIX;
+            String depkey = curOutputType.getBuildVariable() + DEPENDENCY_SUFFIX;
             Set<IFile> depFiles = new HashSet<>();
             for (IFile curTargetFile : files) {
                 depFiles.add(myTool.getDependencyFile(curTargetFile));
@@ -94,6 +94,7 @@ public class MakeRule {
     }
 
     public Set<IFile> getDependencyFiles() {
+        getDependencies();
         Set<IFile> ret = new HashSet<>();
         for (Set<IFile> cur : myDependencies.values()) {
             ret.addAll(cur);

@@ -111,144 +111,149 @@ public class InternalBuildRunner extends IBuildRunner {
             AutoBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
 
             buildRunnerHelper.prepareStreams(epm, parsers, console, parentMon.newChild(5));
-
-            buildRunnerHelper.removeOldMarkers(project, parentMon.newChild(5));
-
-            buildRunnerHelper.greeting(IncrementalProjectBuilder.INCREMENTAL_BUILD, cfgName, toolchainName,
-                    isConfigurationSupported);
-            buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
-
-            boolean isParallel = autoData.isParallelBuild();
-            int parrallelNum = autoData.getParallelizationNum();
-            epm.deferDeDuplication();
-            int sequenceID = -1;
-            boolean lastSequenceID = true;
-            boolean isError = false;
-            //Run ppreBuildStep if existing
-            String preBuildStep = autoData.getPrebuildStep();
-            preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-            if (!preBuildStep.isEmpty()) {
-                String announcement = autoData.getPreBuildAnouncement();
-                if (!announcement.isEmpty()) {
-                    announcement = announcement + NEWLINE;
-                    buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+            buildRunnerHelper.greeting(kind, cfgName, toolchainName, isConfigurationSupported);
+            if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
+                for (IFile curFile : myMakeRules.getBuildFiles()) {
+                    curFile.delete(true, false, monitor);
                 }
-                if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
-                    if (autoData.stopOnFirstBuildError()) {
-                        return false;
-                    }
-                }
-            }
-            do {
-                sequenceID++;
-                lastSequenceID = true;
-                for (MakeRule curRule : myMakeRules) {
-                    if (curRule.getSequenceGroupID() != sequenceID) {
-                        continue;
-                    }
-                    lastSequenceID = false;
-                    if (!curRule.needsExecuting(buildFolder)) {
-                        continue;
-                    }
+            } else {
 
-                    //make sure the target folders exists
-                    Set<IFile> targetFiles = curRule.getTargetFiles();
-                    for (IFile curFile : targetFiles) {
-                        IContainer curPath = curFile.getParent();
-                        if (curPath instanceof IFolder) {
-                            createFolder((IFolder) curPath, true, true, null);
-                        }
-                        //GNU g++ does not delete the output file if compilation fails
-                        if (curFile.exists()) {
-                            curFile.delete(true, monitor);
-                        }
-                    }
-                    String announcement = curRule.getTool().getAnnouncement();
+                buildRunnerHelper.removeOldMarkers(project, parentMon.newChild(5));
+
+                buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
+
+                boolean isParallel = autoData.isParallelBuild();
+                int parrallelNum = autoData.getParallelizationNum();
+                epm.deferDeDuplication();
+                int sequenceID = -1;
+                boolean lastSequenceID = true;
+                boolean isError = false;
+                //Run ppreBuildStep if existing
+                String preBuildStep = autoData.getPrebuildStep();
+                preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+                if (!preBuildStep.isEmpty()) {
+                    String announcement = autoData.getPreBuildAnouncement();
                     if (!announcement.isEmpty()) {
                         announcement = announcement + NEWLINE;
                         buildRunnerHelper.getOutputStream().write(announcement.getBytes());
                     }
-                    for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
-                        try {
-                            if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
-                                if (autoData.stopOnFirstBuildError()) {
-                                    isError = true;
-                                    break;
-                                }
-                            }
-                            //                            CommandLauncher launcher = new CommandLauncher();
-                            //                            launcher.showCommand(true);
-                            //                            String[] args = CommandLineUtil.argumentsToArray(curRecipe);
-                            //                            IPath commandPath = new Path(args[0]);
-                            //                            String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
-                            //
-                            //                            String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription,
-                            //                                    builder.appendEnvironment());
-                            //                            Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
-                            //                                    monitor);
-                            //                            if (fProcess != null) {
-                            //                                try {
-                            //                                    // Close the input of the process since we will never write to it
-                            //                                    fProcess.getOutputStream().close();
-                            //                                } catch (@SuppressWarnings("unused") IOException e) {
-                            //                                    //ignore error
-                            //                                }
-                            //
-                            //                                // Wrapping out and err streams to avoid their closure
-                            //                                try (OutputStream stdout = buildRunnerHelper.getOutputStream();
-                            //                                        OutputStream stderr = buildRunnerHelper.getErrorStream();) {
-                            //                                    if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
-                            //                                        if (autoData.stopOnFirstBuildError()) {
-                            //                                            isError = true;
-                            //                                            break;
-                            //                                        }
-                            //                                    }
-                            //                                    String fErrMsg = launcher.getErrorMessage();
-                            //                                    if (fErrMsg != null && !fErrMsg.isEmpty()) {
-                            //                                        printMessage(fErrMsg, stderr);
-                            //                                    }
-                            //                                }
-                            //                                if (fProcess.exitValue() != 0) {
-                            //                                    if (autoData.stopOnFirstBuildError()) {
-                            //                                        isError = true;
-                            //                                        break;
-                            //                                    }
-                            //                                }
-                            //
-                            //                            }
-
-                        } catch (@SuppressWarnings("unused") Exception e) {
-                            isError = autoData.stopOnFirstBuildError();
+                    if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+                        if (autoData.stopOnFirstBuildError()) {
+                            return false;
                         }
-                        epm.deDuplicate();
-
-                        // bsMngr.setProjectBuildState(project, pBS);
-
-                    }
-                    if (isError) {
-                        break;
                     }
                 }
-                //only build source files when autobuildings 
-                //TOFIX JABA says: I can't do this as the incremental build only runs when there are changed files
-                // however changed files means autobuild will be triggered
-                // the is a flag in InternalBuilder that allows to run the build but it is not public
-                // so basically I can't set it.
-                //                if (kind == IncrementalProjectBuilder.AUTO_BUILD) {
-                //                    lastSequenceID = true;
-                //                }
-            } while (!(lastSequenceID || isError));
-            //Run ppreBuildStep if existing
-            String postBuildStep = autoData.getPostbuildStep();
-            postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-            if (!postBuildStep.isEmpty()) {
-                String announcement = autoData.getPostBuildAnouncement();
-                if (!announcement.isEmpty()) {
-                    announcement = announcement + NEWLINE;
-                    buildRunnerHelper.getOutputStream().write(announcement.getBytes());
-                }
-                if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
-                    return false;
+                do {
+                    sequenceID++;
+                    lastSequenceID = true;
+                    for (MakeRule curRule : myMakeRules) {
+                        if (curRule.getSequenceGroupID() != sequenceID) {
+                            continue;
+                        }
+                        lastSequenceID = false;
+                        if (!curRule.needsExecuting(buildFolder)) {
+                            continue;
+                        }
+
+                        //make sure the target folders exists
+                        Set<IFile> targetFiles = curRule.getTargetFiles();
+                        for (IFile curFile : targetFiles) {
+                            IContainer curPath = curFile.getParent();
+                            if (curPath instanceof IFolder) {
+                                createFolder((IFolder) curPath, true, true, null);
+                            }
+                            //GNU g++ does not delete the output file if compilation fails
+                            if (curFile.exists()) {
+                                curFile.delete(true, monitor);
+                            }
+                        }
+                        String announcement = curRule.getTool().getAnnouncement();
+                        if (!announcement.isEmpty()) {
+                            announcement = announcement + NEWLINE;
+                            buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+                        }
+                        for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
+                            try {
+                                if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
+                                    if (autoData.stopOnFirstBuildError()) {
+                                        isError = true;
+                                        break;
+                                    }
+                                }
+                                //                            CommandLauncher launcher = new CommandLauncher();
+                                //                            launcher.showCommand(true);
+                                //                            String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+                                //                            IPath commandPath = new Path(args[0]);
+                                //                            String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+                                //
+                                //                            String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription,
+                                //                                    builder.appendEnvironment());
+                                //                            Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
+                                //                                    monitor);
+                                //                            if (fProcess != null) {
+                                //                                try {
+                                //                                    // Close the input of the process since we will never write to it
+                                //                                    fProcess.getOutputStream().close();
+                                //                                } catch (@SuppressWarnings("unused") IOException e) {
+                                //                                    //ignore error
+                                //                                }
+                                //
+                                //                                // Wrapping out and err streams to avoid their closure
+                                //                                try (OutputStream stdout = buildRunnerHelper.getOutputStream();
+                                //                                        OutputStream stderr = buildRunnerHelper.getErrorStream();) {
+                                //                                    if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
+                                //                                        if (autoData.stopOnFirstBuildError()) {
+                                //                                            isError = true;
+                                //                                            break;
+                                //                                        }
+                                //                                    }
+                                //                                    String fErrMsg = launcher.getErrorMessage();
+                                //                                    if (fErrMsg != null && !fErrMsg.isEmpty()) {
+                                //                                        printMessage(fErrMsg, stderr);
+                                //                                    }
+                                //                                }
+                                //                                if (fProcess.exitValue() != 0) {
+                                //                                    if (autoData.stopOnFirstBuildError()) {
+                                //                                        isError = true;
+                                //                                        break;
+                                //                                    }
+                                //                                }
+                                //
+                                //                            }
+
+                            } catch (@SuppressWarnings("unused") Exception e) {
+                                isError = autoData.stopOnFirstBuildError();
+                            }
+                            epm.deDuplicate();
+
+                            // bsMngr.setProjectBuildState(project, pBS);
+
+                        }
+                        if (isError) {
+                            break;
+                        }
+                    }
+                    //only build source files when autobuildings 
+                    //TOFIX JABA says: I can't do this as the incremental build only runs when there are changed files
+                    // however changed files means autobuild will be triggered
+                    // the is a flag in InternalBuilder that allows to run the build but it is not public
+                    // so basically I can't set it.
+                    //                if (kind == IncrementalProjectBuilder.AUTO_BUILD) {
+                    //                    lastSequenceID = true;
+                    //                }
+                } while (!(lastSequenceID || isError));
+                //Run ppreBuildStep if existing
+                String postBuildStep = autoData.getPostbuildStep();
+                postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+                if (!postBuildStep.isEmpty()) {
+                    String announcement = autoData.getPostBuildAnouncement();
+                    if (!announcement.isEmpty()) {
+                        announcement = announcement + NEWLINE;
+                        buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+                    }
+                    if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+                        return false;
+                    }
                 }
             }
             buildRunnerHelper.goodbye();
@@ -342,7 +347,7 @@ public class InternalBuildRunner extends IBuildRunner {
 
     @Override
     public boolean supportsCleanBuild() {
-        return false;
+        return true;
     }
 
     private void printMessage(String msg, OutputStream os) {

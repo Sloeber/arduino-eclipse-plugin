@@ -1,5 +1,8 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -436,6 +439,15 @@ public class MakeRules implements Iterable<MakeRule> {
             ret.addAll(makeRule.getDependencyMacros());
         }
         return ret;
+    }
+
+    public Set<IFile> getBuildFiles() {
+        Set<IFile> targetFiles = new HashSet<>();
+        for (MakeRule makeRule : myMakeRules) {
+            targetFiles.addAll(makeRule.getTargetFiles());
+            targetFiles.addAll(makeRule.getDependencyFiles());
+        }
+        return targetFiles;
     }
 
     //	public Map<IOutputType, Set<IFile>> getTargets() {

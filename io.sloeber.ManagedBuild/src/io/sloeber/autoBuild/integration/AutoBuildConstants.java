@@ -207,6 +207,8 @@ public class AutoBuildConstants {
     public static final String PREBUILD = "pre-build";
     public static final String MAINBUILD = "main-build";
     public static final String POSTBUILD = "post-build";
+    public static final String CLEAN = "clean";
+    public static final String PHONY = ".PHONY";
     public static final String SECONDARY_OUTPUTS = "secondary-outputs";
 
     public static final IPath DOT_SLASH_PATH = new Path("./");

@@ -374,7 +374,7 @@ public class MakefileGenerator implements IMakefileGenerator {
                 + "\t${tools.${program.tool}.program.pattern}\n\n"); //$NON-NLS-1$
         buffer.append(topMakeGetMacros());
         buffer.append(topMakeGetMakeRules());
-        buffer.append(topMakeGetFinalTargets("", "")); //$NON-NLS-1$ //$NON-NLS-2$
+        buffer.append(topMakeGetFinalTargets());
 
         IFile fileHandle = myTopBuildDir.getFile(MAKEFILE_NAME);
         save(buffer, fileHandle);
@@ -467,7 +467,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         IConfiguration config = myAutoBuildConfData.getConfiguration();
         StringBuffer buffer = new StringBuffer();
 
-        buffer.append(MAINBUILD).append(COLON).append(WHITESPACE); //$NON-NLS-1$
+        buffer.append(MAINBUILD).append(COLON).append(WHITESPACE);
         Set<ITool> targetTools = config.getToolChain().getTargetTools();
         if (targetTools.size() > 0) {
             for (ITool curTargetTool : targetTools) {
@@ -523,20 +523,31 @@ public class MakefileGenerator implements IMakefileGenerator {
         return buffer;
     }
 
-    private static StringBuffer topMakeGetFinalTargets(String prebuildStep, String postbuildStep) {
+    protected StringBuffer topMakeGetFinalTargets() {
+
+        String cleanCommand = "\t-$(RM)"; //$NON-NLS-1$
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE).append(NEWLINE);
+        buffer.append(CLEAN).append(COLON).append(NEWLINE);
+        StringBuffer cleanFiles = new StringBuffer();
+        for (IFile curFile : myMakeRules.getBuildFiles()) {
+            cleanFiles.append(BLANK).append(DOUBLE_QUOTE).append(GetNiceFileName(myTopBuildDir, curFile))
+                    .append(DOUBLE_QUOTE);
+            if (cleanFiles.length() > 1000) {
+                buffer.append(cleanCommand).append(cleanFiles);
+                buffer.append(NEWLINE);
+                cleanFiles.setLength(0);
+            }
+        }
+        if (cleanFiles.length() > 0) {
+            buffer.append(cleanCommand).append(cleanFiles);
+            buffer.append(NEWLINE);
+        }
+        buffer.append(NEWLINE);
 
         // Add all the needed dummy and phony targets
-        buffer.append(".PHONY: all clean dependents"); //$NON-NLS-1$
-        if (prebuildStep.length() > 0) {
-            buffer.append(WHITESPACE).append(MAINBUILD).append(WHITESPACE).append(PREBUILD);
-        }
-        if (postbuildStep.length() > 0) {
-            buffer.append(WHITESPACE).append(POSTBUILD);
-        }
-
-        buffer.append(NEWLINE);
+        buffer.append(PHONY).append(COLON).append(ALL).append(WHITESPACE).append(MAINBUILD).append(WHITESPACE)
+                .append(CLEAN).append(WHITESPACE).append(POSTBUILD).append(NEWLINE);
         // Include makefile.targets supplemental makefile
         buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_TARGETS).append(NEWLINE); //$NON-NLS-1$
         return buffer;

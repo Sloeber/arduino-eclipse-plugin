@@ -370,7 +370,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
         AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription
                 .getFromConfig(cdtConfigurationDescription);
-        performExternalClean(autoData, false, monitor);
+        IConsole console = CCorePlugin.getDefault().getConsole();
+        console.start(curProject);
+        autoData.getBuildRunner().invokeBuild(IncrementalProjectBuilder.CLEAN_BUILD, autoData, this, this, console,
+                monitor);
+        //performExternalClean(autoData, false, monitor);
     }
 
     private void performExternalClean(AutoBuildConfigurationDescription autoData, boolean separateJob,

@@ -624,6 +624,9 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public IFile getDependencyFile(IFile curTargetFile) {
         String depName = AutoBuildCommon.applyPattern(myModelDependencyOutputPattern[SUPER], curTargetFile);
+        if (depName.isBlank()) {
+            return null;
+        }
         IResource fileParent = curTargetFile.getParent();
         if (fileParent instanceof IFolder) {
             IFolder folder = (IFolder) fileParent;
