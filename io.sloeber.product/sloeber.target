@@ -10,7 +10,7 @@
 			<unit id="org.apache.commons.lang" version="2.6.0.v20220406-2305"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
+			<repository location="https://download.eclipse.org/nebula/releases/2.7.2/"/>
 			<unit id="org.eclipse.nebula.widgets.oscilloscope.css.feature.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.nebula.widgets.oscilloscope.feature.feature.group" version="0.0.0"/>
 		</location>

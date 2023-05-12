@@ -280,13 +280,12 @@ United States, other countries, or both.
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
-      <repository location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="true" />
-      <repository location="http://https://download.eclipse.org/justj/jres/15/updates/release/latest/" enabled="true" />
+      <repository location="https://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
+      <repository location="https://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
+      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="false" />
+      <repository location="https://download.eclipse.org/nebula/releases/2.7.2/" enabled="true" />
+      <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" enabled="true" />
+      <repository location="https://download.eclipse.org/releases/latest/" enabled="true" />
       <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
    </repositories>
 
