@@ -17,9 +17,11 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
@@ -107,9 +109,8 @@ public class Options implements IOptions {
 
     /**
      * Get all the categories that are applicable for this resource
-     * That mmeans: all the categories that are enabled for this resource and
-     * contain at least one
-     * enabled option
+     * That means: all the categories that are enabled for this resource and
+     * contain at least one enabled option
      * 
      * @param resource
      *            The resource we are querying for
@@ -117,13 +118,13 @@ public class Options implements IOptions {
      *            the autobuild configuration we are dealing with
      * @return a list of enabled categories that contain at least one enabled option
      */
-    public List<IOptionCategory> getCategories(IResource resource, AutoBuildConfigurationDescription autoBuildConf) {
+    public Set<IOptionCategory> getCategories(IResource resource, AutoBuildConfigurationDescription autoBuildConf) {
         // TODO Auto-generated method stub
-        List<IOptionCategory> ret = new LinkedList<>();
+        Set<IOptionCategory> ret = new HashSet<>();
         for (Option curOption : myOptionMap.values()) {
             if (curOption.isEnabled(resource, autoBuildConf)) {
                 IOptionCategory cat = getOptionCategory(curOption.getCategoryID());
-                if (cat != null || cat.isEnabled(resource, autoBuildConf)) {
+                if (cat != null && cat.isEnabled(resource, autoBuildConf)) {
                     ret.add(cat);
                 }
             }

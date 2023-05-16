@@ -35,6 +35,7 @@ import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.Configuration;
 
 public class AutoBuildConfigurationDescription extends CConfigurationData
@@ -70,6 +71,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private static final String KEY_POST_BUILD_STEP = "Build.post.step"; //$NON-NLS-1$
     private static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build.post.announcement"; //$NON-NLS-1$
 
+    //Start of fields that need to be copied/made persistent
     private IConfiguration myAutoBuildConfiguration;
     private IProject myProject;
     private ICConfigurationDescription myCdtConfigurationDescription;
@@ -107,6 +109,10 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     private String myPreBuildAnnouncement = EMPTY_STRING;
     private String myPostBuildStep = EMPTY_STRING;
     private String myPostBuildStepAnouncement = EMPTY_STRING;
+    private Map<ITool, Map<IResource, String>> myCustomToolCommands = new HashMap<>();
+    private Map<ITool, Map<IResource, String>> myCustomToolPattern = new HashMap<>();
+    //End of fields that need to be copied/made persistent
+
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
     private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion."); //$NON-NLS-1$
 
@@ -146,7 +152,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
         mySelectedOptions.clear();
-        mySelectedOptions.putAll(autoBuildConfigBase.mySelectedOptions);
+        mySelectedOptions.putAll(autoBuildConfigBase.mySelectedOptions);//TODO JABA says this will probably cause issues
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
         myGenerateMakeFilesAUtomatically = autoBuildConfigBase.myGenerateMakeFilesAUtomatically;
         myStopOnFirstBuildError = autoBuildConfigBase.myStopOnFirstBuildError;
@@ -170,7 +176,18 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myPreBuildAnnouncement = autoBuildConfigBase.myPreBuildAnnouncement;
         myPostBuildStep = autoBuildConfigBase.myPostBuildStep;
         myPostBuildStepAnouncement = autoBuildConfigBase.myPostBuildStepAnouncement;
-
+        myCustomToolCommands.clear();
+        for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : autoBuildConfigBase.myCustomToolCommands
+                .entrySet()) {
+            Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
+            myCustomToolCommands.put(curCustomToolEntry.getKey(), newMap);
+        }
+        myCustomToolPattern.clear();
+        for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : autoBuildConfigBase.myCustomToolPattern
+                .entrySet()) {
+            Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
+            myCustomToolPattern.put(curCustomToolEntry.getKey(), newMap);
+        }
     }
 
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
@@ -185,6 +202,12 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         Map<String, String> optionKeyMap = new HashMap<>();
         Map<String, String> optionValueMap = new HashMap<>();
         Map<String, String> optionResourceMap = new HashMap<>();
+        Map<String, String> customToolKeyMap = new HashMap<>();
+        Map<String, String> customToolResourceMap = new HashMap<>();
+        Map<String, String> customToolValueMap = new HashMap<>();
+        Map<String, String> customToolPatternKeyMap = new HashMap<>();
+        Map<String, String> customToolPatternResourceMap = new HashMap<>();
+        Map<String, String> customToolPatternValueMap = new HashMap<>();
 
         for (String curLine : lines) {
             if (!curLine.startsWith(lineStart)) {
@@ -301,6 +324,47 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                     optionResourceMap.put(optionIndex, value);
                     found = true;
                 }
+
+                if (key.startsWith(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT)) {
+                    String optionIndex = key
+                            .substring(KEY_CUSTOM_TOOL_COMMAND.length() + KEY.length() + DOT.length() * 2);
+                    customToolKeyMap.put(optionIndex, value);
+                    found = true;
+                }
+
+                if (key.startsWith(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_VALUE + DOT)) {
+                    String optionIndex = key
+                            .substring(KEY_CUSTOM_TOOL_COMMAND.length() + KEY_VALUE.length() + DOT.length() * 2);
+                    customToolValueMap.put(optionIndex, value);
+                    found = true;
+                }
+                if (key.startsWith(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_RESOURCE + DOT)) {
+                    String optionIndex = key
+                            .substring(KEY_CUSTOM_TOOL_COMMAND.length() + KEY_RESOURCE.length() + DOT.length() * 2);
+                    customToolResourceMap.put(optionIndex, value);
+                    found = true;
+                }
+
+                if (key.startsWith(KEY_CUSTOM_TOOL_PATTERN + DOT + KEY + DOT)) {
+                    String optionIndex = key
+                            .substring(KEY_CUSTOM_TOOL_PATTERN.length() + KEY.length() + DOT.length() * 2);
+                    customToolPatternKeyMap.put(optionIndex, value);
+                    found = true;
+                }
+
+                if (key.startsWith(KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_VALUE + DOT)) {
+                    String optionIndex = key
+                            .substring(KEY_CUSTOM_TOOL_PATTERN.length() + KEY_VALUE.length() + DOT.length() * 2);
+                    customToolPatternValueMap.put(optionIndex, value);
+                    found = true;
+                }
+                if (key.startsWith(KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_RESOURCE + DOT)) {
+                    String optionIndex = key
+                            .substring(KEY_CUSTOM_TOOL_PATTERN.length() + KEY_RESOURCE.length() + DOT.length() * 2);
+                    customToolPatternResourceMap.put(optionIndex, value);
+                    found = true;
+                }
+
                 if (!found) {
                     System.err.println("Following autobuild configuration line is ignored " + curLine); //$NON-NLS-1$
                 }
@@ -330,6 +394,49 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 options.put(curOptionIndex.getValue(), value);
             }
         }
+
+        for (Entry<String, String> curOptionIndex : customToolKeyMap.entrySet()) {
+            String cmd = customToolValueMap.get(curOptionIndex.getKey());
+            String resourceString = customToolResourceMap.get(curOptionIndex.getKey());
+            ITool tool = myAutoBuildConfiguration.getToolChain().getTool(curOptionIndex.getValue());
+            if (cmd == null || resourceString == null || tool == null) {
+                //This Should not happen
+            } else {
+                IResource resource = myProject;
+                if (!resourceString.isBlank()) {
+                    resource = myProject.getFile(resourceString);
+                }
+
+                Map<IResource, String> resourceCmds = myCustomToolCommands.get(tool);
+                if (resourceCmds == null) {
+                    resourceCmds = new HashMap<>();
+                    myCustomToolCommands.put(tool, resourceCmds);
+                }
+                resourceCmds.put(resource, cmd);
+            }
+        }
+
+        for (Entry<String, String> curOptionIndex : customToolPatternKeyMap.entrySet()) {
+            String cmd = customToolPatternValueMap.get(curOptionIndex.getKey());
+            String resourceString = customToolPatternResourceMap.get(curOptionIndex.getKey());
+            ITool tool = myAutoBuildConfiguration.getToolChain().getTool(curOptionIndex.getValue());
+            if (cmd == null || resourceString == null || tool == null) {
+                //This Should not happen
+            } else {
+                IResource resource = myProject;
+                if (!resourceString.isBlank()) {
+                    resource = myProject.getFile(resourceString);
+                }
+
+                Map<IResource, String> resourceCmds = myCustomToolPattern.get(tool);
+                if (resourceCmds == null) {
+                    resourceCmds = new HashMap<>();
+                    myCustomToolPattern.put(tool, resourceCmds);
+                }
+                resourceCmds.put(resource, cmd);
+            }
+        }
+
     }
 
     private void doLegacyChanges() {
@@ -546,6 +653,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         return isValid;
     }
 
+    @Override
     public String getProperty(String propertyName) {
         String ret = myProperties.get(propertyName);
         if (ret == null) {
@@ -571,6 +679,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
      *            the resource you want the selected options for
      * @return a Map of <optionID,Selectedvalue>
      */
+    @Override
     public Map<String, String> getSelectedOptions(IResource resource) {
         Map<String, String> retProject = new HashMap<>();
         Map<String, String> retFolder = new HashMap<>();
@@ -740,6 +849,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     }
 
     public StringBuffer ToText(String linePrefix, String lineEnd) {
+        int counterStart = 0;
         StringBuffer ret = new StringBuffer();
         IProjectType projectType = myAutoBuildConfiguration.getProjectType();
         ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID + KEY_EQUALS
@@ -761,7 +871,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         for (Entry<String, String> curProp : myProperties.entrySet()) {
             ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + KEY_EQUALS + curProp.getValue() + lineEnd);
         }
-        int counter = 0;
+        int counter = counterStart;
         for (Entry<IResource, Map<String, String>> curOption : mySelectedOptions.entrySet()) {
             IResource res = curOption.getKey();
             String resourceID = res.getProjectRelativePath().toString();
@@ -801,6 +911,40 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         ret.append(linePrefix + KEY_PRE_BUILD_ANNOUNCEMENT + KEY_EQUALS + myPreBuildAnnouncement + lineEnd);
         ret.append(linePrefix + KEY_POST_BUILD_STEP + KEY_EQUALS + myPostBuildStep + lineEnd);
         ret.append(linePrefix + KEY_POST_BUILD_ANNOUNCEMENT + KEY_EQUALS + myPostBuildStepAnouncement + lineEnd);
+
+        counter = counterStart;
+        for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolCommands.entrySet()) {
+            ITool tool = curCustomToolCommands.getKey();
+
+            for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
+                IResource res = curResourceCommand.getKey();
+                String resourceID = res.getProjectRelativePath().toString();
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT + String.valueOf(counter) + KEY_EQUALS
+                        + tool.getId() + lineEnd);
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_VALUE + DOT + String.valueOf(counter)
+                        + KEY_EQUALS + curResourceCommand.getValue() + lineEnd);
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_RESOURCE + DOT + String.valueOf(counter)
+                        + KEY_EQUALS + resourceID + lineEnd);
+                counter++;
+            }
+        }
+
+        counter = counterStart;
+        for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolPattern.entrySet()) {
+            ITool tool = curCustomToolCommands.getKey();
+
+            for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
+                IResource res = curResourceCommand.getKey();
+                String resourceID = res.getProjectRelativePath().toString();
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY + DOT + String.valueOf(counter) + KEY_EQUALS
+                        + tool.getId() + lineEnd);
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_VALUE + DOT + String.valueOf(counter)
+                        + KEY_EQUALS + curResourceCommand.getValue() + lineEnd);
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_RESOURCE + DOT + String.valueOf(counter)
+                        + KEY_EQUALS + resourceID + lineEnd);
+                counter++;
+            }
+        }
 
         return ret;
 
@@ -916,4 +1060,118 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     }
 
+    @Override
+    public void setCustomToolCommand(ITool tool, IResource resource, String customCommand) {
+        if (tool == null) {
+            //This should not happen; ignore
+            return;
+        }
+        if (resource == null) {
+            //request to remove all custom commands for this tool
+            myCustomToolCommands.remove(tool);
+            return;
+        }
+        Map<IResource, String> customCommands = myCustomToolCommands.get(tool);
+        if (customCommands == null && customCommand == null) {
+            //Request to remove something that doesn't exists => nothing to do
+            return;
+        }
+        if (customCommands == null) {
+            customCommands = new HashMap<>();
+            myCustomToolCommands.put(tool, customCommands);
+        }
+        customCommands.put(resource, customCommand);
+    }
+
+    @Override
+    public String getToolCommand(ITool tool, IResource resource) {
+        String retProject = null;
+        String retFolder = null;
+
+        Map<IResource, String> customToolCommands = myCustomToolCommands.get(tool);
+        if (customToolCommands == null) {
+            return tool.getDefaultommandLineCommand();
+        }
+        for (Entry<IResource, String> curCustomCommand : customToolCommands.entrySet()) {
+            IResource curResource = curCustomCommand.getKey();
+            if (curResource instanceof IProject) {
+                // null means project level and as sutch is valid for all resources
+                retProject = curCustomCommand.getValue();
+                continue;
+            }
+            if ((curResource instanceof IFolder)
+                    && (curResource.getProjectRelativePath().equals(resource.getParent().getProjectRelativePath()))) {
+                retFolder = curCustomCommand.getValue();
+                continue;
+            }
+            if ((curResource instanceof IFile) && (curResource.equals(resource))) {
+                return curCustomCommand.getValue();
+            }
+        }
+        if (retFolder != null) {
+            return retFolder;
+        }
+        if (retProject != null) {
+            return retProject;
+        }
+        return tool.getDefaultommandLineCommand();
+    }
+
+    @Override
+    public void setCustomToolPattern(ITool tool, IResource resource, String pattern) {
+        if (tool == null) {
+            //This should not happen; ignore
+            return;
+        }
+        if (resource == null) {
+            //request to remove all custom patterns for this tool
+            myCustomToolPattern.remove(tool);
+            return;
+        }
+        Map<IResource, String> customCommands = myCustomToolPattern.get(tool);
+        if (customCommands == null && pattern == null) {
+            //Request to remove something that doesn't exists => nothing to do
+            return;
+        }
+        if (customCommands == null) {
+            customCommands = new HashMap<>();
+            myCustomToolPattern.put(tool, customCommands);
+        }
+        customCommands.put(resource, pattern);
+
+    }
+
+    @Override
+    public String getToolPattern(ITool tool, IResource resource) {
+        String retProject = null;
+        String retFolder = null;
+
+        Map<IResource, String> customToolCommands = myCustomToolPattern.get(tool);
+        if (customToolCommands == null) {
+            return tool.getDefaultCommandLinePattern();
+        }
+        for (Entry<IResource, String> curCustomCommand : customToolCommands.entrySet()) {
+            IResource curResource = curCustomCommand.getKey();
+            if (curResource instanceof IProject) {
+                // null means project level and as sutch is valid for all resources
+                retProject = curCustomCommand.getValue();
+                continue;
+            }
+            if ((curResource instanceof IFolder)
+                    && (curResource.getProjectRelativePath().equals(resource.getParent().getProjectRelativePath()))) {
+                retFolder = curCustomCommand.getValue();
+                continue;
+            }
+            if ((curResource instanceof IFile) && (curResource.equals(resource))) {
+                return curCustomCommand.getValue();
+            }
+        }
+        if (retFolder != null) {
+            return retFolder;
+        }
+        if (retProject != null) {
+            return retProject;
+        }
+        return tool.getDefaultCommandLinePattern();
+    }
 }

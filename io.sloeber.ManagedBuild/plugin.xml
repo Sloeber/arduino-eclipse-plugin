@@ -92,7 +92,7 @@
               </outputType>
            </tool>
            <tool
-                 commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS} ${DYNLIBS} ${STATICLIBS} "
+                 commandLinePattern="${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS} ${DYNLIBS} ${STATICLIBS}"
                  id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.exe"
                  name="%autoBuild.tool.gpp.linker.exe"
                  superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.exe.base">
@@ -438,7 +438,7 @@
             fileVersion="4.0.0">
       </managedBuildRevision>
       <tool
-            command="${TOOL_FOLDER}gcc"
+            command="gcc"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.gnu.c.linker"
             name="%ToolName.linker.gnu.c"
@@ -637,7 +637,7 @@
          </option>
       </tool>
       <tool
-            command="${TOOL_FOLDER}g++"
+            command="g++"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.gnu.cpp.linker"
             name="%ToolName.linker.gnu.cpp"
@@ -830,7 +830,7 @@
          </option>
       </tool>
       <tool
-            command="${TOOL_FOLDER}ar"
+            command="ar"
             id="cdt.managedbuild.tool.gnu.archiver"
             isAbstract="true"
             name="%ToolName.archiver.gnu"
@@ -875,7 +875,7 @@
          </outputType>
       </tool>
       <tool
-            command="${TOOL_FOLDER}as"
+            command="as"
             errorParsers="org.eclipse.cdt.core.GASErrorParser"
             id="cdt.managedbuild.tool.gnu.assembler"
             name="%ToolName.assembler.gnu"
@@ -928,7 +928,7 @@
          </outputType>
       </tool>
       <tool
-            command="${TOOL_FOLDER}gcc"
+            command="gcc"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.macosx.c.linker"
             name="%ToolName.linker.macosx.c"
@@ -1123,7 +1123,7 @@
          </outputType>
       </tool>
       <tool
-            command="${TOOL_FOLDER}g++"
+            command="g++"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.macosx.cpp.linker"
             name="%ToolName.linker.macosx.cpp"
@@ -1290,7 +1290,7 @@
          </outputType>
       </tool>
       <tool
-            command="${TOOL_FOLDER}gcc"
+            command="gcc"
             dependencyGenerationFlag="-MMD -MP -MF&quot;$(@:%.o=%.d)&quot; -MT&quot;$@&quot; "
             dependencyOutputPattern="%.d"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
@@ -1834,7 +1834,7 @@
          </outputType>
       </tool>
       <tool
-            command="${TOOL_FOLDER}g++"
+            command="g++"
             dependencyGenerationFlag="-MMD -MP -MF&quot;${%.d}&quot; -MT&quot;$@&quot; "
             dependencyOutputPattern="%.d"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
@@ -4718,7 +4718,6 @@
       </managedBuildRevision>
       <tool
             command="llvm-ld"
-            commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS}"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.llvm.c.linker"
             isAbstract="true"
@@ -9885,7 +9884,6 @@
       </managedBuildRevision>
       <tool
             command="cl /c"
-            commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}"
             errorParsers="org.eclipse.cdt.core.VCErrorParser"
             id="org.eclipse.cdt.msvc.cl.abstract"
             isAbstract="true"
@@ -10243,7 +10241,6 @@
          </tool>
          <tool
                command="link"
-               commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}"
                errorParsers="org.eclipse.cdt.core.VCErrorParser"
                id="org.eclipse.cdt.msvc.link"
                name="%linker.name"
@@ -10361,7 +10358,6 @@
          </tool>
          <tool
                command="lib"
-               commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}"
                id="org.eclipse.cdt.msvc.lib"
                name="%lib.name"
                natureFilter="both"

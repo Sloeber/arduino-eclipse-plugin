@@ -1,8 +1,9 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -26,7 +27,7 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
     }
 
     @Override
-    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationDescription autoData, IInputType inputType,
+    public String getOutputFileName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType,
             IOutputType outputType) {
         ITool tool = inputType.getParent();
         if (tool.getId().endsWith(DOT + COMPILER)) {

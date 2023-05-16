@@ -27,7 +27,6 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -148,14 +147,14 @@ public interface ITool extends ISchemaObject {
      *
      * @return String
      */
-    public String getToolCommand();
+    public String getDefaultommandLineCommand();
 
     /**
      * Returns command line pattern for this tool
      * 
      * @return String
      */
-    public String getCommandLinePattern();
+    public String getDefaultCommandLinePattern();
 
     /**
      * Returns the command line generator specified for this tool
@@ -174,8 +173,8 @@ public interface ITool extends ISchemaObject {
      * the environment macro references converted to the buildfile variable format,
      * all other macro references are resolved
      */
-    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoBuildConfData, IFile inputFile,
-            IFile outputFile) throws BuildException;
+    public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoBuildConfData,
+            IResource mySelectedResource) throws BuildException;
 
     /**
      * Returns an array of the Environment Build Path variable descriptors
@@ -190,7 +189,7 @@ public interface ITool extends ISchemaObject {
 
     boolean isHidden();
 
-    public MakeRules getMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
+    public MakeRules getMakeRules(IAutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
 
     /**
@@ -199,18 +198,23 @@ public interface ITool extends ISchemaObject {
      * one recipe
      * there can be multiple
      * 
-     * dependencyArgument is introduced to allow the internal builder to use it's
-     * own dependency files
+     * If there are multiple input files and a project level custom command is
+     * provided the project level custom command will be used.
+     * If there is only one input file (and a custom command is provided that
+     * matches
+     * the input file) that custom command will be used
      * 
      * @param autoBuildConfData
+     * @param inputFiles
+     *            the files used as input for the recipes
      * @param flags
      * @param outputName
      *            the target file name to be created
      * @param nicePreReqNameList
      * @return
      */
-    public String[] getRecipes(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
-            String outputName, Map<String, Set<String>> nicePreReqNameList);
+    public String[] getRecipes(IAutoBuildConfigurationDescription autoBuildConfData, Set<IFile> inputFiles,
+            Set<String> flags, String outputName, Map<String, Set<String>> nicePreReqNameList);
 
     /**
      * Get the dependency file for this target

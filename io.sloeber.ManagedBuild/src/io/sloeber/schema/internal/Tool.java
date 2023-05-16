@@ -130,7 +130,7 @@ public class Tool extends SchemaObject implements ITool {
     private URL myIconPathURL;
 
     @Override
-    public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoData) {
+    public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData) {
         if (!super.isEnabled(resource, autoData)) {
             return false;
         }
@@ -139,9 +139,9 @@ public class Tool extends SchemaObject implements ITool {
             case "both": //$NON-NLS-1$
                 return true;
             case "cnature": //$NON-NLS-1$
-                return !autoData.getProject().hasNature(CCProjectNature.CC_NATURE_ID);
+                return !resource.getProject().hasNature(CCProjectNature.CC_NATURE_ID);
             case "ccnature": //$NON-NLS-1$
-                return autoData.getProject().hasNature(CCProjectNature.CC_NATURE_ID);
+                return resource.getProject().hasNature(CCProjectNature.CC_NATURE_ID);
             }
         } catch (CoreException e) {
             e.printStackTrace();
@@ -310,12 +310,12 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     @Override
-    public String getToolCommand() {
+    public String getDefaultommandLineCommand() {
         return myModelCommand[SUPER];
     }
 
     @Override
-    public String getCommandLinePattern() {
+    public String getDefaultCommandLinePattern() {
         return myModelCommandLinePattern[SUPER];
     }
 
@@ -417,12 +417,12 @@ public class Tool extends SchemaObject implements ITool {
      *
      * @return the command flags with the build macros resolved
      */
-    private String[] getToolCommandFlags(IFile inputFile, IFile outputFile,
-            AutoBuildConfigurationDescription autoBuildConfData) {
+    private String[] getToolCommandFlagsInternal(AutoBuildConfigurationDescription autoBuildConfData,
+            IResource resource) {
         // List<IOption> opts = getOptions();
-        Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFile);
+        Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(resource);
 
-        ArrayList<String> flags = new ArrayList<>();
+        List<String> flags = new LinkedList<>();
 
         for (IOption curOption : getOptions().getOptions()) {
             String optionValue = selectedOptions.get(curOption.getId());
@@ -435,7 +435,7 @@ public class Tool extends SchemaObject implements ITool {
                 continue;
             }
 
-            String[] cmdContrib = curOption.getCommandLineContribution(inputFile, optionValue, autoBuildConfData);
+            String[] cmdContrib = curOption.getCommandLineContribution(resource, optionValue, autoBuildConfData);
             java.util.Collections.addAll(flags, cmdContrib);
             //
             // } catch (BuildException e) {
@@ -454,6 +454,11 @@ public class Tool extends SchemaObject implements ITool {
             // Activator.log(new CoreException(s));
             // }
         }
+        for (int curFlag = flags.size() - 1; curFlag >= 0; curFlag--) {
+            if (flags.get(curFlag).isBlank()) {
+                flags.remove(curFlag);
+            }
+        }
         return flags.toArray(new String[flags.size()]);
 
     }
@@ -466,9 +471,9 @@ public class Tool extends SchemaObject implements ITool {
      * core.runtime.IPath, org.eclipse.core.runtime.IPath)
      */
     @Override
-    public String[] getToolCommandFlags(AutoBuildConfigurationDescription autoConfData, IFile inputFile,
-            IFile outputFile) throws BuildException {
-        return getToolCommandFlags(inputFile, outputFile, autoConfData);
+    public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoConfData, IResource resource)
+            throws BuildException {
+        return getToolCommandFlagsInternal((AutoBuildConfigurationDescription) autoConfData, resource);
     }
 
     public StringBuffer dump(int leadingChars) {
@@ -511,7 +516,7 @@ public class Tool extends SchemaObject implements ITool {
     static private final String ACCEPTED_BY = " accepted by: "; //$NON-NLS-1$
 
     @Override
-    public MakeRules getMakeRules(AutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
+    public MakeRules getMakeRules(IAutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE) {
         MakeRules ret = new MakeRules();
         if (!isEnabled(inputFile, autoBuildConfData)) {
@@ -562,15 +567,25 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     @Override
-    public String[] getRecipes(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
-            String outputName, Map<String, Set<String>> nicePreReqNameList) {
+    public String[] getRecipes(IAutoBuildConfigurationDescription autoBuildConfIn, Set<IFile> inputFiles,
+            Set<String> flags, String outputName, Map<String, Set<String>> nicePreReqNameList) {
+        AutoBuildConfigurationDescription autoBuildConf = (AutoBuildConfigurationDescription) autoBuildConfIn;
         String cmd = myModelCommand[SUPER];
+        String commandLinePattern = myModelCommandLinePattern[SUPER];
+        if (inputFiles.size() == 1) {
+            IFile selectedInputFile = inputFiles.iterator().next();
+            cmd = autoBuildConf.getToolCommand(this, selectedInputFile);
+            commandLinePattern = autoBuildConf.getToolPattern(this, selectedInputFile);
+        } else {
+            cmd = autoBuildConf.getToolCommand(this, autoBuildConf.getProject());
+            commandLinePattern = autoBuildConf.getToolPattern(this, autoBuildConf.getProject());
+        }
         // expand the command
-        String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
+        String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConf);
         if (!resolvedCommand.isBlank())
             cmd = resolvedCommand.trim();
-        String commandLinePattern = myModelCommandLinePattern[SUPER];
-        commandLinePattern = getVariableValue(commandLinePattern, commandLinePattern, false, autoBuildConfData);
+
+        commandLinePattern = getVariableValue(commandLinePattern, commandLinePattern, false, autoBuildConf);
 
         String quotedOutputName = outputName;
         // if the output name isn't a variable then quote it
@@ -594,7 +609,7 @@ public class Tool extends SchemaObject implements ITool {
         }
 
         if (!myModelDependencyGenerationFlag[SUPER].isBlank()) {
-            IProject project = autoBuildConfData.getProject();
+            IProject project = autoBuildConf.getProject();
             IFile depFile = getDependencyFile(project.getFile(outputName));
             String depFlag = myModelDependencyGenerationFlag[SUPER];
             depFlag = depFlag.replace(makeVariable(myModelDependencyOutputPattern[SUPER]),
@@ -612,7 +627,7 @@ public class Tool extends SchemaObject implements ITool {
             command = command.replace(makeVariable(curCmdVariable.getKey()), curCmdVariable.getValue());
 
         }
-        IToolChain toolchain = autoBuildConfData.getConfiguration().getToolChain();
+        IToolChain toolchain = autoBuildConf.getConfiguration().getToolChain();
         ArrayList<String> toolRecipes = toolchain.getPreToolRecipes(this);
         toolRecipes.addAll(Arrays.asList(command.split("\\r?\\n"))); //$NON-NLS-1$
 
@@ -665,7 +680,8 @@ public class Tool extends SchemaObject implements ITool {
                 return ret;
             }
         }
-        return myOptions.getCategories(resource, autoBuildConf);
+        ret.addAll(myOptions.getCategories(resource, autoBuildConf));
+        return ret;
     }
 
 }

@@ -15,11 +15,22 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.ui.tabs;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
+import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.CDTPrefUtil;
+import org.eclipse.cdt.ui.newui.MultiLineTextFieldEditor;
 import org.eclipse.cdt.ui.newui.PageLayout;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -34,12 +45,16 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 
+import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.integrations.ToolListLabelProvider;
 import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.schema.api.IOptionCategory;
@@ -52,6 +67,7 @@ import io.sloeber.schema.api.ITool;
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
 public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
+    private static final String WHITESPACE = " "; //$NON-NLS-1$
     //	private static ToolListElement selectedElement;
 
     /*
@@ -62,7 +78,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     private StyleRange styleRange;
     private SashForm sashForm;
     private SashForm sashForm2;
-    private Composite settingsPageContainer;
+    private Composite mySettingsPageContainer;
     private ScrolledComposite containerSC;
 
     /*
@@ -72,7 +88,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     //	private IPreferenceStore settingsStore;
     //	private AbstractToolSettingUI currentSettingsPage;
     private ToolListContentProvider listprovider;
-    private Object propertyObject;
+    private IResource mySelectedResource;
 
     //	private IResourceInfo fInfo;
 
@@ -81,6 +97,68 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     private int[] hideTipBoxWeights = new int[] { 1, 0 };
 
     private boolean isIndexerAffected;
+    private static String COMMAND_LINE_PATTERN = "command Line Pattern"; //$NON-NLS-1$
+    private static String COMMAND = "command"; //$NON-NLS-1$
+
+    //  Label class for a preference page.
+    class LabelFieldEditor extends FieldEditor {
+        private String fTitle;
+        private Label fTitleLabel;
+
+        public LabelFieldEditor(Composite parent, String title) {
+            fTitle = title;
+            this.createControl(parent);
+        }
+
+        @Override
+        protected void adjustForNumColumns(int numColumns) {
+            ((GridData) fTitleLabel.getLayoutData()).horizontalSpan = 2;
+        }
+
+        @Override
+        protected void doFillIntoGrid(Composite parent, int numColumns) {
+            fTitleLabel = new Label(parent, SWT.WRAP);
+            fTitleLabel.setText(fTitle);
+            GridData gd = new GridData();
+            gd.verticalAlignment = SWT.TOP;
+            gd.grabExcessHorizontalSpace = false;
+            gd.horizontalSpan = 2;
+            fTitleLabel.setLayoutData(gd);
+        }
+
+        @Override
+        public int getNumberOfControls() {
+            return 1;
+        }
+
+        @Override
+        protected void doLoad() {
+            /**
+             * The label field editor is only used to present a text label on a preference
+             * page.
+             */
+        }
+
+        @Override
+        protected void doLoadDefault() {
+            /**
+             * The label field editor is only used to present a text label on a preference
+             * page.
+             */
+        }
+
+        @Override
+        protected void doStore() {
+            /**
+             * The label field editor is only used to present a text label on a preference
+             * page.
+             */
+        }
+    }
+
+    protected FieldEditor createLabelEditor(Composite parent, String title) {
+        return new LabelFieldEditor(parent, title);
+    }
 
     @Override
     public void createControls(Composite par) {
@@ -117,7 +195,15 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
             }
         });
 
-        propertyObject = page.getElement();
+        IAdaptable pageElement = page.getElement();
+        if (pageElement instanceof IResource) {
+            mySelectedResource = (IResource) pageElement;
+        } else {
+            //the line below is only here for development so I know there will only be resources
+            //TODO remove the line below after evaluation this never ever happens
+            System.err.println("Element should be resource " + pageElement);
+        }
+
         setValues();
         specificResize();
     }
@@ -156,9 +242,8 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
             public boolean select(Viewer viewer, Object parent, Object element) {
                 if (/*parent instanceof IResourceConfiguration &&*/ element instanceof ITool) {
                     return !((ITool) element).getCustomBuildStep();
-                } else {
-                    return true;
                 }
+                return true;
             }
         });
     }
@@ -264,60 +349,67 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
      * @param tool
      */
     private void displayOptionsForTool(ITool tool) {
-        //        selectedElement = toolListElement;
-        //        ITool tool = toolListElement.getTool();
+        for (Control curChild : mySettingsPageContainer.getChildren()) {
+            curChild.dispose();
+        }
+        FontMetrics fm = AbstractCPropertyTab.getFontMetrics(mySettingsPageContainer);
+        StringFieldEditor commandStringField = new StringFieldEditor(COMMAND,
+                Messages.BuildToolSettingsPage_tool_command, mySettingsPageContainer);
+        commandStringField.setEmptyStringAllowed(false);
+        GridData gd = ((GridData) commandStringField.getTextControl(mySettingsPageContainer).getLayoutData());
+        gd.grabExcessHorizontalSpace = true;
+        gd.minimumWidth = Dialog.convertWidthInCharsToPixels(fm, 3);
+        //addField(commandStringField);
+        // Add a field editor that displays overall build options
+        MultiLineTextFieldEditor allOptionFieldEditor = new MultiLineTextFieldEditor(EMPTY_STRING,
+                Messages.BuildToolSettingsPage_alloptions, mySettingsPageContainer);
+        allOptionFieldEditor.getTextControl(mySettingsPageContainer).setEditable(false);
+        gd = ((GridData) allOptionFieldEditor.getTextControl(mySettingsPageContainer).getLayoutData());
+        gd.grabExcessHorizontalSpace = true;
+        gd.minimumWidth = Dialog.convertWidthInCharsToPixels(fm, 20);
+        //addField(allOptionFieldEditor);
 
-        // Cache the current build setting page
-        //        AbstractToolSettingUI oldPage = currentSettingsPage;
-        //        currentSettingsPage = null;
+        //addField(
+        createLabelEditor(mySettingsPageContainer, WHITESPACE);//);
+        //addField(
+        createLabelEditor(mySettingsPageContainer, Messages.BuildToolSettingsPage_tool_advancedSettings);//);
 
-        // Create a new page if we need one
-        //        List<AbstractToolSettingUI> pages = getPagesForConfig();
-        //        for (AbstractToolSettingUI page : pages) {
-        //            if (page.isFor(tool, null)) {
-        //                currentSettingsPage = page;
-        //                break;
-        //            }
-        //        }
+        // Add a string editor to edit the tool command line pattern
+        //parent = getFieldEditorParent();
+        StringFieldEditor commandLinePatternField = new StringFieldEditor(COMMAND_LINE_PATTERN,
+                Messages.BuildToolSettingsPage_tool_commandLinePattern, mySettingsPageContainer);
+        gd = ((GridData) commandLinePatternField.getTextControl(mySettingsPageContainer).getLayoutData());
+        gd.grabExcessHorizontalSpace = true;
+        gd.widthHint = Dialog.convertWidthInCharsToPixels(fm, 30);
+        gd.minimumWidth = Dialog.convertWidthInCharsToPixels(fm, 20);
+        //addField(commandLinePatternField);
+        commandStringField.setStringValue(myAutoConfDesc.getToolCommand(tool, mySelectedResource));
+        commandLinePatternField.setStringValue(myAutoConfDesc.getToolPattern(tool, mySelectedResource));
+        try {
+            allOptionFieldEditor
+                    .setStringValue(String.join(BLANK, tool.getToolCommandFlags(myAutoConfDesc, mySelectedResource)));
+        } catch (BuildException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        commandStringField.setPropertyChangeListener(new IPropertyChangeListener() {
 
-        //        if (currentSettingsPage == null) {
-        //            currentSettingsPage = new BuildToolSettingUI(this, fInfo, tool);
-        //            pages.add(currentSettingsPage);
-        //            currentSettingsPage.setContainer(this);
-        //            if (currentSettingsPage.getControl() == null) {
-        //                currentSettingsPage.createControl(settingsPageContainer);
-        //            }
-        //        }
-        //        // Make all the other pages invisible
-        //        Control[] children = settingsPageContainer.getChildren();
-        //        Control currentControl = currentSettingsPage.getControl();
-        //        for (Control element : children) {
-        //            if (element != currentControl)
-        //                element.setVisible(false);
-        //        }
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                myAutoConfDesc.setCustomToolCommand(tool, mySelectedResource, commandStringField.getStringValue());
 
-        //        if (displayFixedTip == true) {
-        //            // eliminate the tool tip area
-        //            sashForm2.setWeights(hideTipBoxWeights);
-        //            sashForm2.layout();
-        //        }
-        //
-        //        // Make the current page visible
-        //        currentSettingsPage.setVisible(true);
-        //
-        //        // Save the last page build options.
-        //        if (oldPage != null && oldPage != currentSettingsPage) {
-        //            oldPage.storeSettings();
-        //        }
-        //currentSettingsPage.
-        setValues();
+            }
+        });
+        commandLinePatternField.setPropertyChangeListener(new IPropertyChangeListener() {
 
-        //        if (oldPage != null && oldPage != currentSettingsPage)
-        //            oldPage.setVisible(false);
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                myAutoConfDesc.setCustomToolPattern(tool, mySelectedResource, commandLinePatternField.getStringValue());
 
-        // Set the size of the scrolled area
-        // containerSC.setMinSize(currentSettingsPage.computeSize());
-        settingsPageContainer.layout();
+            }
+        });
+        mySettingsPageContainer.layout();
+        mySettingsPageContainer.redraw();
     }
 
     /* (non-Javadoc)
@@ -351,12 +443,12 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         containerSC.setExpandVertical(true);
 
         // Add a container for the build settings page
-        settingsPageContainer = new Composite(containerSC, SWT.NULL);
-        settingsPageContainer.setLayout(new PageLayout());
+        mySettingsPageContainer = new Composite(containerSC, SWT.NULL);
+        mySettingsPageContainer.setLayout(new PageLayout());
 
-        containerSC.setContent(settingsPageContainer);
-        containerSC.setMinSize(settingsPageContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-        settingsPageContainer.layout();
+        containerSC.setContent(mySettingsPageContainer);
+        containerSC.setMinSize(mySettingsPageContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        mySettingsPageContainer.layout();
     }
 
     @Override
@@ -368,6 +460,9 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     }
 
     protected void setValues() {
+        if (myAutoConfDesc == null) {
+            return;
+        }
         /*
          *  This method updates the context of the build property pages
          *   - Which configuration/resource configuration is selected
@@ -381,17 +476,16 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
         //  Create the Tree Viewer content provider if first time
         if (listprovider == null) {
-            IResource resource = (IResource) propertyObject;
-            listprovider = new ToolListContentProvider(resource, myAutoConfDesc);
+            listprovider = new ToolListContentProvider(mySelectedResource, myAutoConfDesc);
             optionList.setContentProvider(listprovider);
         }
 
-        //        //  Update the selected configuration and the Tree Viewer
-        //        ToolListElement[] newElements;
-        //
-        //        optionList.setInput(fInfo);
-        //        newElements = (ToolListElement[]) listprovider.getElements(fInfo);
-        //        optionList.expandAll();
+        //  Update the selected configuration and the Tree Viewer
+        //                ToolListElement[] newElements;
+        //        
+        optionList.setInput(myAutoConfDesc);
+        //                newElements = (ToolListElement[]) listprovider.getElements(fInfo);
+        optionList.expandAll();
         //
         //        //  Determine what the selection in the tree should be
         //        //  If the saved selection is not null, try to match the saved selection
@@ -457,26 +551,23 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
     private void handleOptionSelection() {
         // Get the selection from the tree list
-        //        if (optionList == null)
-        //            return;
-        //        IStructuredSelection selection = (IStructuredSelection) optionList.getSelection();
-        //
-        //        // Set the option page based on the selection
-        //        ToolListElement toolListElement = (ToolListElement) selection.getFirstElement();
-        //        if (toolListElement != null) {
-        //            IOptionCategory cat = toolListElement.getOptionCategory();
-        //            if (cat == null)
-        //                cat = (IOptionCategory) toolListElement.getTool();
-        //            if (cat != null)
-        //                ((ToolSettingsPrefStore) settingsStore).setSelection(getResDesc(), toolListElement, cat);
-        //
-        //            cat = toolListElement.getOptionCategory();
-        //            if (cat != null) {
-        //                displayOptionsForCategory(toolListElement);
-        //            } else {
-        //                displayOptionsForTool(toolListElement);
-        //            }
-        //        }
+        if (optionList == null) {
+            return;
+        }
+        IStructuredSelection selection = (IStructuredSelection) optionList.getSelection();
+
+        // Set the option page based on the selection
+        Object toolListElement = selection.getFirstElement();
+        if (toolListElement != null) {
+            if (toolListElement instanceof IOptionCategory) {
+                IOptionCategory cat = (IOptionCategory) toolListElement;
+                displayOptionsForCategory(cat);
+            }
+            if (toolListElement instanceof ITool) {
+                ITool tool = (ITool) toolListElement;
+                displayOptionsForTool(tool);
+            }
+        }
     }
 
     /*
@@ -729,6 +820,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     @Override
     public void updateData(ICResourceDescription cfgd) {
         //        fInfo = getResCfg(cfgd);
+        super.updateData(cfgd);
         setValues();
         //        specificResize();
         //        handleOptionSelection();

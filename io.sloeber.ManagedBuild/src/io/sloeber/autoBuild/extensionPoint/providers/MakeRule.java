@@ -1,6 +1,5 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
@@ -203,15 +202,17 @@ public class MakeRule {
         if (!validateRecipes()) {
             return new String[0];
         }
-        Set<IFile> local_targets = getTargetFiles();
+        Set<IFile> targetFiles = getTargetFiles();
 
-        IFile targetFile = local_targets.toArray(new IFile[1])[0];
+        IFile targetFile = targetFiles.toArray(new IFile[targetFiles.size()])[0];
 
         Set<String> flags = new LinkedHashSet<>();
         Map<String, Set<String>> niceNameList = new HashMap<>();
+        Set<IFile> inputFiles = new HashSet<>();
         for (Entry<IInputType, Set<IFile>> cur : myPrerequisites.entrySet()) {
             String cmdVariable = cur.getKey().getAssignToCmdVarriable();
             for (IFile curPrereqFile : cur.getValue()) {
+                inputFiles.add(curPrereqFile);
                 Set<String> niceNames = niceNameList.get(cmdVariable);
                 if (niceNames == null) {
                     niceNames = new HashSet<>();
@@ -221,15 +222,14 @@ public class MakeRule {
                 niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
                 //JABA I'm not sure it is necessary to loop through all the prerequisites to add all flags
                 try {
-                    flags.addAll(
-                            Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile, targetFile)));
+                    flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile)));
                 } catch (BuildException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        String buildRecipes[] = myTool.getRecipes(autoBuildConfData, flags,
+        String buildRecipes[] = myTool.getRecipes(autoBuildConfData, inputFiles, flags,
                 GetNiceFileName(niceBuildFolder, targetFile), niceNameList);
         ArrayList<String> ret = new ArrayList<>();
         for (String curRecipe : buildRecipes) {
@@ -262,7 +262,7 @@ public class MakeRule {
 
     private String expandCommandLinePattern(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
             String outputFlag, String outputName, Set<String> inputResources) {
-        String cmd = myTool.getToolCommand();
+        String cmd = myTool.getDefaultommandLineCommand();
         // try to resolve the build macros in the tool command
         String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
         if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
@@ -433,12 +433,11 @@ public class MakeRule {
     private static long getDepFileTimeStamp(IFile curdepFile, IFolder buildPath) {
         long newestTime = Long.MIN_VALUE;
         File depFile = curdepFile.getLocation().toFile();
-        String prefix = curdepFile.getParent().getLocation().toString();
         try (BufferedReader reader = new BufferedReader(new FileReader(depFile));) {
             String curLine = null;
             while ((curLine = reader.readLine()) != null) {
                 if (curLine.endsWith(COLON)) {
-                    String headerName = curLine.substring(0, curLine.length() - 1).replace("\\ ", BLANK);
+                    String headerName = curLine.substring(0, curLine.length() - 1).replace(BACKSLACH + BLANK, BLANK);
                     headerName = buildPath.getFile(headerName).getLocation().toString();
                     Path headerFile = Path.of(headerName);
                     BasicFileAttributes attr = Files.readAttributes(headerFile, BasicFileAttributes.class);

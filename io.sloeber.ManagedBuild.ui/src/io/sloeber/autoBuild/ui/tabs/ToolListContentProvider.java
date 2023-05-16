@@ -16,7 +16,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.ui.tabs;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
@@ -25,7 +26,6 @@ import org.eclipse.jface.viewers.Viewer;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ITool;
 
@@ -42,6 +42,7 @@ public class ToolListContentProvider implements ITreeContentProvider {
      */
     @Override
     public void dispose() {
+        //Nothing to do here
     }
 
     public ToolListContentProvider(IResource resource, IAutoBuildConfigurationDescription myAutoConfDesc) {
@@ -70,9 +71,24 @@ public class ToolListContentProvider implements ITreeContentProvider {
      */
     @Override
     public Object[] getElements(Object inputElement) {
-        if (inputElement instanceof IConfiguration) {
-            List<ITool> tools = ((IConfiguration) inputElement).getToolChain().getTools();
-            return tools.toArray();
+        if (inputElement instanceof AutoBuildConfigurationDescription) {
+            AutoBuildConfigurationDescription autoDesc = (AutoBuildConfigurationDescription) inputElement;
+            List<ITool> tools = autoDesc.getConfiguration().getToolChain().getTools();
+            //only keep the enabled tools
+            List<ITool> enabledTools = new LinkedList<>();
+            for (ITool curTool : tools) {
+                if (curTool.isEnabled(myResource, autoDesc)) {
+                    enabledTools.add(curTool);
+                }
+            }
+            //Sort the tools alphabetically 
+            enabledTools.sort(new Comparator<ITool>() {
+                @Override
+                public int compare(ITool o1, ITool o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
+            return enabledTools.toArray();
         }
         return new Object[0];
     }

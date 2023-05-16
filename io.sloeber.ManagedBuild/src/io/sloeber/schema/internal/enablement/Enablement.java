@@ -14,17 +14,19 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.internal.SchemaObject;
 
 public class Enablement {
     private List<Expression> myExpressions = new LinkedList<>();
 
-    private Expression findMatchingExpression(IResource resource, AutoBuildConfigurationDescription autoData) {
+    private Expression findMatchingExpression(IResource resource, IAutoBuildConfigurationDescription autoData) {
         try {
             EvaluationContext evalContext = new EvaluationContext(null, autoData);
-            evalContext.addVariable(CheckOptionExpression.KEY_RESOURCE, resource);
+            if (resource != null) {
+                evalContext.addVariable(CheckOptionExpression.KEY_RESOURCE, resource);
+            }
             for (Expression curExpression : myExpressions) {
 
                 EvaluationResult result = curExpression.evaluate(evalContext);
@@ -38,16 +40,15 @@ public class Enablement {
         return null;
     }
 
-    public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoData) {
+    public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData) {
         Expression foundExpression = findMatchingExpression(resource, autoData);
         if (foundExpression == null) {
             return myExpressions.size() == 0;
         }
-        int a = 0;
         return true;
     }
 
-    public String getDefaultValue(IResource resource, AutoBuildConfigurationDescription autoData) {
+    public String getDefaultValue(IResource resource, IAutoBuildConfigurationDescription autoData) {
         Expression foundExpression = findMatchingExpression(resource, autoData);
         if (foundExpression == null) {
             return EMPTY_STRING;

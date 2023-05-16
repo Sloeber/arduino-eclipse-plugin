@@ -3,6 +3,8 @@ package io.sloeber.schema.internal.legacy;
 import java.util.Map;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import org.eclipse.core.resources.IFile;
+
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -21,7 +23,7 @@ import io.sloeber.schema.internal.OutputType;
 public class OutputNameProviderCompatibilityClass implements IOutputNameProvider {
 
     @Override
-    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationDescription autoData, IInputType inputType,
+    public String getOutputFileName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType,
             IOutputType outputType) {
         ITool tool = inputType.getParent();
 

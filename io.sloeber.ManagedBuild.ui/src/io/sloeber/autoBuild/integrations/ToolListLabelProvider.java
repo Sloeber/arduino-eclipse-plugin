@@ -44,7 +44,7 @@ public class ToolListLabelProvider extends LabelProvider {
      */
     private Image getIconFromOptionCategory(URL url, Image defaultImage) {
 
-        Image img = null;
+        Image img = defaultImage;
 
         // Get the image from the URL.
         if (url != null) {

@@ -1,51 +1,56 @@
 package io.sloeber.autoBuild.api;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+
+import io.sloeber.schema.api.ITool;
 
 public interface IAutoBuildConfigurationDescription {
 
-    boolean useDefaultBuildCommand();
+    public boolean useDefaultBuildCommand();
 
-    void setUseDefaultBuildCommand(boolean useDefaultBuildCommand);
+    public void setUseDefaultBuildCommand(boolean useDefaultBuildCommand);
 
-    boolean generateMakeFilesAUtomatically();
+    public boolean generateMakeFilesAUtomatically();
 
-    void setGenerateMakeFilesAUtomatically(boolean generateMakeFilesAUtomatically);
+    public void setGenerateMakeFilesAUtomatically(boolean generateMakeFilesAUtomatically);
 
-    String getBuildCommand(boolean noArgs);
+    public String getBuildCommand(boolean noArgs);
 
-    boolean useStandardBuildArguments();
+    public boolean useStandardBuildArguments();
 
-    void setUseStandardBuildArguments(boolean useStandardBuildArguments);
+    public void setUseStandardBuildArguments(boolean useStandardBuildArguments);
 
-    boolean stopOnFirstBuildError();
+    public boolean stopOnFirstBuildError();
 
-    void setStopOnFirstBuildError(boolean stopOnFirstBuildError);
+    public void setStopOnFirstBuildError(boolean stopOnFirstBuildError);
 
-    boolean isParallelBuild();
+    public boolean isParallelBuild();
 
-    void setIsParallelBuild(boolean parallelBuild);
+    public void setIsParallelBuild(boolean parallelBuild);
 
-    int getParallelizationNum();
+    public int getParallelizationNum();
 
-    void setParallelizationNum(int parallelizationNum);
+    public void setParallelizationNum(int parallelizationNum);
 
-    boolean isCleanBuildEnabled();
+    public boolean isCleanBuildEnabled();
 
-    void setCleanBuildEnable(boolean cleanBuildEnabled);
+    public void setCleanBuildEnable(boolean cleanBuildEnabled);
 
-    boolean isIncrementalBuildEnabled();
+    public boolean isIncrementalBuildEnabled();
 
-    void setIncrementalBuildEnable(boolean incrementalBuildEnabled);
+    public void setIncrementalBuildEnable(boolean incrementalBuildEnabled);
 
-    int getOptimalParallelJobNum();
+    public int getOptimalParallelJobNum();
 
-    String getCustomBuildCommand();
+    public String getCustomBuildCommand();
 
-    void setCustomBuildCommand(String makeArgs);
+    public void setCustomBuildCommand(String makeArgs);
 
     /**
      * Set a buildfolder to be the same as a string.
@@ -58,7 +63,7 @@ public interface IAutoBuildConfigurationDescription {
      * 
      * @param buildFolder
      */
-    void setBuildFolderString(String buildFolder);
+    public void setBuildFolderString(String buildFolder);
 
     /**
      * See setBuildFolderString for more info
@@ -66,7 +71,7 @@ public interface IAutoBuildConfigurationDescription {
      * 
      * @return the build folder in a editable string representation
      */
-    String getBuildFolderString();
+    public String getBuildFolderString();
 
     /**
      * Get build folder to do build actions
@@ -74,13 +79,13 @@ public interface IAutoBuildConfigurationDescription {
      * @return the build folder in IFolder format based on the resolved buildfolder
      *         string representation
      */
-    IFolder getBuildFolder();
+    public IFolder getBuildFolder();
 
-    IBuildRunner getBuildRunner();
+    public IBuildRunner getBuildRunner();
 
-    Set<IBuildRunner> getBuildRunners();
+    public Set<IBuildRunner> getBuildRunners();
 
-    void setBuildRunner(IBuildRunner buildRunner);
+    public void setBuildRunner(IBuildRunner buildRunner);
 
     /**
      * Is the eclipse autobuild functionality
@@ -91,32 +96,32 @@ public interface IAutoBuildConfigurationDescription {
      * @return true if the autobuild will build when eclipse workspace has autobuild
      *         on
      */
-    boolean isAutoBuildEnabled();
+    public boolean isAutoBuildEnabled();
 
     /**
      * see isAutoBuildEnabled
      * 
      * @param enabled
      */
-    void setAutoBuildEnabled(boolean enabled);
+    public void setAutoBuildEnabled(boolean enabled);
 
-    ICConfigurationDescription getCdtConfigurationDescription();
+    public ICConfigurationDescription getCdtConfigurationDescription();
 
-    void setCustomBuildArguments(String arguments);
+    public void setCustomBuildArguments(String arguments);
 
-    String getCustomBuildArguments();
+    public String getCustomBuildArguments();
 
-    void setAutoMakeTarget(String target);
+    public void setAutoMakeTarget(String target);
 
-    String getAutoMakeTarget();
+    public String getAutoMakeTarget();
 
-    void setIncrementalMakeTarget(String target);
+    public void setIncrementalMakeTarget(String target);
 
-    String getIncrementalMakeTarget();
+    public String getIncrementalMakeTarget();
 
-    void setCleanMakeTarget(String target);
+    public void setCleanMakeTarget(String target);
 
-    String getCleanMakeTarget();
+    public String getCleanMakeTarget();
 
     /**
      * Get the command to run at the start of the build
@@ -124,22 +129,49 @@ public interface IAutoBuildConfigurationDescription {
      * 
      * @return The actual command to run as provided by setPrebuildStep
      */
-    String getPrebuildStep();
+    public String getPrebuildStep();
 
     /**
      * Set the command to run at the start of the build
      */
-    void setPrebuildStep(String text);
+    public void setPrebuildStep(String text);
 
-    String getPreBuildAnouncement();
+    public String getPreBuildAnouncement();
 
-    void setPreBuildAnouncement(String AnoounceMent);
+    public void setPreBuildAnouncement(String AnoounceMent);
 
-    String getPostbuildStep();
+    public String getPostbuildStep();
 
-    void setPostbuildStep(String text);
+    public void setPostbuildStep(String text);
 
-    String getPostBuildAnouncement();
+    public String getPostBuildAnouncement();
 
-    void setPostBuildAnouncement(String text);
+    public void setPostBuildAnouncement(String text);
+
+    public Map<String, String> getSelectedOptions(IResource resource);
+
+    public String getProperty(String propertyName);
+
+    /**
+     * Sets or removes a custom command for a tool for a specific resource
+     * Note that there is no get custom command because getCommand will return
+     * the custom command if appropriate
+     * Use null as custom command to remove the custom command.
+     * use null as resource to remove all custom commands for this tool
+     * 
+     * @param tool
+     *            the tool the custom command is provided for
+     * @param resource
+     *            the resource the custom command is to be used for
+     * @param customCommand
+     *            the custom command that replaces the original command or null to
+     *            replace the current customisation
+     */
+    public void setCustomToolCommand(ITool tool, IResource resource, String customCommand);
+
+    public String getToolCommand(ITool tool, IResource resource);
+
+    public void setCustomToolPattern(ITool tool, IResource resource, String pattern);
+
+    String getToolPattern(ITool tool, IResource resource);
 }

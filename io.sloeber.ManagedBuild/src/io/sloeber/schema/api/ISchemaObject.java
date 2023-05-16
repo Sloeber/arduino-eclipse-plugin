@@ -14,7 +14,8 @@
 package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
@@ -24,14 +25,13 @@ public interface ISchemaObject {
     //property ID's
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_ID = "org.eclipse.cdt.build.core.buildArtefactType"; //$NON-NLS-1$
 
-
     public String getId();
 
     public String getName();
 
     boolean hasAncestor(String id);
 
-    boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoBuildConfData);
+    boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoBuildConfData);
 
     IOptions getOptions();
 

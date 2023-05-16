@@ -392,14 +392,16 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
          <attribute name="command" type="string">
             <annotation>
                <documentation>
-                  The command that invokes the tool. For example, gcc for the Gnu C compiler, or g++ for the Gnu C++ compiler.  This attribute supports MBS file context macros.
+                  The command that invokes the tool. For example, gcc for the Gnu C compiler, or g++ for the Gnu C++ compiler.  This attribute is stored in the environment variable COMMAND
                </documentation>
             </annotation>
          </attribute>
          <attribute name="commandLinePattern" type="string">
             <annotation>
                <documentation>
-                  Specifies the command &quot;pattern&quot; that indicates how the parts of the command line are used to create the entire command line.  The pattern consists of the replaceable variables COMMAND, FLAGS, OUTPUT_FLAG, OUTPUT_PREFIX, OUTPUT and INPUTS.  The default command line pattern is ${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}, except when customBuildStep is true, where the default is $(COMMAND). White space and other characters are significant and are copied to the generated command.  This attribute supports MBS file context macros.
+                  Specifies the command &quot;pattern&quot; that indicates how the parts of the command line are used to create the entire command line.  
+The pattern can consists replaceable variables like COMMAND, FLAGS, OUTPUT_FLAG, OUTPUT_PREFIX, OUTPUT and INPUTS.  The default command line pattern is ${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}
+If specified; the command line generator overrules the commandLinePattern
                </documentation>
             </annotation>
          </attribute>

@@ -1,16 +1,9 @@
 package io.sloeber.autoBuild.extensionPoint;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
 
 public interface IOutputNameProvider {
     /***********
@@ -34,6 +27,6 @@ public interface IOutputNameProvider {
      * @return the file name the tool should generate or null if the inputFile
      *         should be ignored
      */
-    public String getOutputFileName(IFile inputFile, AutoBuildConfigurationDescription autoData, IInputType inputType,
+    public String getOutputFileName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType,
             IOutputType outputType);
 }

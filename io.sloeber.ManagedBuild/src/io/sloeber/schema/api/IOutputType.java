@@ -16,7 +16,7 @@ package io.sloeber.schema.api;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.content.IContentType;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 
 /**
  * This interface represents an outputType instance in the managed build system.
@@ -105,7 +105,8 @@ public interface IOutputType extends ISchemaObject {
      * @param inputType
      * @return
      */
-    public IFile getOutputName(IFile inputFile, AutoBuildConfigurationDescription autoBuildConfData, IInputType inputType);
+    public IFile getOutputName(IFile inputFile, IAutoBuildConfigurationDescription autoBuildConfData,
+            IInputType inputType);
 
     /**
      * Get the outputName as if the nameProvider was null

@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 import org.osgi.framework.Version;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
@@ -142,8 +143,10 @@ public abstract class SchemaObject implements ISchemaObject {
      * Crreate the executable component given in the extension (of one of the
      * superclasses)
      * 
-	 * @param attributeName     the attributename containing the class info
-	 * @param compatibilityType the compatibility type requested 0= no compatibility
+     * @param attributeName
+     *            the attributename containing the class info
+     * @param compatibilityType
+     *            the compatibility type requested 0= no compatibility
      * @return
      */
     protected Object createExecutableExtension(String attributeName) {
@@ -179,7 +182,8 @@ public abstract class SchemaObject implements ISchemaObject {
      * 
      * @param element
      * 
-	 * @param className     the FQN classname (can not be null)
+     * @param className
+     *            the FQN classname (can not be null)
      * @param attributeName
      * @return the loaded class or null if failed
      */
@@ -331,7 +335,7 @@ public abstract class SchemaObject implements ISchemaObject {
     }
 
     @Override
-    public boolean isEnabled(IResource resource, AutoBuildConfigurationDescription autoBuildConfData) {
+    public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoBuildConfData) {
         if (myEnablement.isBlank()) {
             return true;
         }

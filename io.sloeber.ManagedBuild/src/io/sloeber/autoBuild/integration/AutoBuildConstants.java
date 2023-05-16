@@ -216,7 +216,7 @@ public class AutoBuildConstants {
     // Enumerations
     public static final int PROJECT_RELATIVE = 1, PROJECT_SUBDIR_RELATIVE = 2, ABSOLUTE = 3;
 
-    public static final String DEFAULT_PATTERN = "${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}";
+    public static final String DEFAULT_PATTERN = "${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}";
     public static final String DOUBLE_QUOTE = "\"";
 
     public static final String CMD_LINE_PRM_NAME = "COMMAND";
@@ -262,6 +262,8 @@ public class AutoBuildConstants {
     public static final String EXTENSIONS = "extensions";
     public static final String OUTPUT_TYPE_ID = "outputTypeID";
     public static final String OPTION = "option";
+    public static final String KEY_CUSTOM_TOOL_COMMAND = "custom.tool.command";
+    public static final String KEY_CUSTOM_TOOL_PATTERN = "custom.tool.pattern";
     public static final String SCANNER_CONFIG_PROFILE_ID = "scannerConfigDiscoveryProfileId";
     public static final String LANGUAGE_ID = "languageId";
     public static final String LANGUAGE_INFO_CALCULATOR = "languageInfoCalculator";

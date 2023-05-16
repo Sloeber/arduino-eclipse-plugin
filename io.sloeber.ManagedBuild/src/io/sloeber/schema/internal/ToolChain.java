@@ -180,16 +180,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         myErrorParsersIDs.remove(EMPTY_STRING);
     }
 
-    // 
-    //  
-    /*
-     * E L E M E N T A T T R I B U T E R E A D E R S A N D W R I T E R S
-     */
-
-    /*
-     * P A R E N T A N D C H I L D H A N D L I N G
-     */
-
     @Override
     public IConfiguration getParent() {
         return myConfiguration;
@@ -207,66 +197,8 @@ public class ToolChain extends SchemaObject implements IToolChain {
 
     @Override
     public List<ITool> getTools() {
-        return new LinkedList<>(getAllTools(false));
-        //        ITool tools[] = getAllTools(false);
-        //        if (!isExtensionToolChain) {
-        //            for (int i = 0; i < tools.length; i++) {
-        //                if (tools[i].isExtensionElement()) {
-        //                    String subId = ManagedBuildManager.calculateChildId(tools[i].getId(), null);
-        //                    tools[i] = createTool(tools[i], subId, tools[i].getName(), false);
-        //                }
-        //            }
-        //        }
-
-        //        return tools;
+        return new LinkedList<>(myToolMap.values());
     }
-
-    public List<Tool> getAllTools(boolean includeCurrentUnused) {
-        return new LinkedList<>(myToolMap.values()); // TOFIX jaba maybe the stuff below will need to be in the resolve
-                                                     // fields stuff
-                                                     //		// Merge our tools with our superclass' tools
-                                                     //		if (getSuperClass() != null) {
-                                                     //			tools = ((ToolChain) getSuperClass()).getAllTools(false);
-                                                     //		}
-                                                     //		// Our tools take precedence
-                                                     //		if (tools != null) {
-                                                     //			for (Tool tool : getToolList()) {
-                                                     //				int j = 0;
-                                                     //				for (; j < tools.length; j++) {
-                                                     //					ITool superTool = tool.getSuperClass();
-                                                     //					if (superTool != null) {
-                                                     //						superTool = null;// TOFIX JABA ManagedBuildManager.getExtensionTool(superTool);
-                                                     //						if (superTool != null && superTool.getId().equals(tools[j].getId())) {
-                                                     //							tools[j] = tool;
-                                                     //							break;
-                                                     //						}
-                                                     //					}
-                                                     //				}
-                                                     //				// No Match? Insert it (may be re-ordered)
-                                                     //				if (j == tools.length) {
-                                                     //					Tool[] newTools = new Tool[tools.length + 1];
-                                                     //					for (int k = 0; k < tools.length; k++) {
-                                                     //						newTools[k] = tools[k];
-                                                     //					}
-                                                     //					newTools[j] = tool;
-                                                     //					tools = newTools;
-                                                     //				}
-                                                     //			}
-                                                     //		} else {
-                                                     //			tools = new Tool[getToolList().size()];
-                                                     //			int i = 0;
-                                                     //			for (Tool tool : getToolList()) {
-                                                     //				tools[i++] = tool;
-                                                     //			}
-                                                     //		}
-                                                     //		if (includeCurrentUnused)
-                                                     //			return tools;
-                                                     //		return filterUsedTools(tools, true);
-    }
-
-    //	private Tool[] filterUsedTools(Tool tools[], boolean used) {
-    //		return used ? tools : new Tool[0];
-    //	}
 
     @Override
     public ITool getTool(String toolID) {
@@ -278,11 +210,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
     public String getName() {
         return myName;
     }
-
-    //    @Override
-    //    public String getErrorParserIds() {
-    //        return modelErrorParsers[SUPER];
-    //    }
 
     @Override
     public List<IOutputType> getSecondaryOutputs() {
