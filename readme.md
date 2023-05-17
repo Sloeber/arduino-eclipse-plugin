@@ -42,17 +42,17 @@ Mac OSX and Linux
 You can control the maven build with the following profiles:
 
 * latest (default, builds against the latest versions)
-* 2018-09 (builds against the 2018-09 release. Eclipse stopped naming their releases)
 * SDK (builds a Sloeber you can program Sloeber in. With Java.)
 * win32 (builds for 32 bit windows)
 * win64
 * linux64
 * mac64
+* macm1
 
 ### Examples
-    mvn clean verify -Plinux32,latest -DskipTests=true (builds for neon and linux 32 bits)
-    mvn clean verify -PSDK,latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
-    mvn clean verify -P2018-09,linux64 -DskipTests=true (builds against 2018-09 and produces linux64 product) 
+    mvn clean verify -Pwin64,latest,NOSDK -DskipTests=true (builds for latest eclipse and windows bits)
+    mvn clean verify -Plinux32,latest.NOSDK -DskipTests=true (builds for latest eclipse and linux 32 bits)
+    mvn clean verify -PSDK,win64,latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
     
 To build for latest and the platform you are running on:
 
