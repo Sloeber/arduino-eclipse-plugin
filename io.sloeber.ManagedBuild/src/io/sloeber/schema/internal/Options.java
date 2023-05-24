@@ -16,9 +16,9 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.schema.api.IOptions;
-import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
@@ -53,8 +53,8 @@ import io.sloeber.schema.api.IOptionCategory;
  */
 public class Options implements IOptions {
 
-    protected Map<String, IOptionCategory> categoryMap = new HashMap<>();
-    protected Map<String, Option> myOptionMap = new HashMap<>();
+    protected Map<String, IOptionCategory> categoryMap = new LinkedHashMap<>();
+    protected Map<String, Option> myOptionMap = new LinkedHashMap<>();
 
     public Options() {
         // nothing to do here
@@ -75,14 +75,6 @@ public class Options implements IOptions {
     @Override
     public IOption getOptionById(String id) {
         return myOptionMap.get(id);
-    }
-
-    /* (non-Javadoc)
-     * org.eclipse.cdt.managedbuilder.core.IHoldsOptions#getOptionCategory()
-     */
-    @Override
-    public IOptionCategory getOptionCategory(String id) {
-        return categoryMap.get(id);
     }
 
     public void add(OptionCategory optionCategory) {
@@ -119,18 +111,53 @@ public class Options implements IOptions {
      * @return a list of enabled categories that contain at least one enabled option
      */
     public Set<IOptionCategory> getCategories(IResource resource, AutoBuildConfigurationDescription autoBuildConf) {
-        // TODO Auto-generated method stub
         Set<IOptionCategory> ret = new HashSet<>();
+        Set<IOptionCategory> retOrdered = new LinkedHashSet<>();
         for (Option curOption : myOptionMap.values()) {
-            if (curOption.isEnabled(resource, autoBuildConf)) {
-                IOptionCategory cat = getOptionCategory(curOption.getCategoryID());
-                if (cat != null && cat.isEnabled(resource, autoBuildConf)) {
+            if (curOption.isEnabled(MBSEnablementExpression.ENABLEMENT_GUI_VISIBLE, resource, autoBuildConf)) {
+                IOptionCategory cat = categoryMap.get(curOption.getCategoryID());
+                if (cat != null
+                        && cat.isEnabled(MBSEnablementExpression.ENABLEMENT_GUI_VISIBLE, resource, autoBuildConf)) {
                     ret.add(cat);
                 }
             }
         }
         ret.remove(null);
-        return ret;
+        //make sure the order is the same as in the plugin.xml
+        for (IOptionCategory curCat : categoryMap.values()) {
+            if (ret.contains(curCat)) {
+                retOrdered.add(curCat);
+            }
+        }
+        return retOrdered;
     }
 
+    /**
+     * Get all the categories that are applicable for this resource
+     * That means: all the categories that are enabled for this resource and
+     * contain at least one enabled option
+     * 
+     * @param resource
+     *            The resource we are querying for
+     * @param autoBuildConf
+     *            the autobuild configuration we are dealing with
+     * @return a list of enabled categories that contain at least one enabled option
+     */
+    public Set<IOption> getOptionsOfCategory(IOptionCategory cat, IResource resource,
+            AutoBuildConfigurationDescription autoBuildConf) {
+        Set<IOption> ret = new LinkedHashSet<>();
+        if (!cat.isEnabled(MBSEnablementExpression.ENABLEMENT_GUI_VISIBLE, resource, autoBuildConf)) {
+            return ret;
+        }
+        String catID = cat.getId();
+
+        for (Option curOption : myOptionMap.values()) {
+            if (curOption.isEnabled(MBSEnablementExpression.ENABLEMENT_GUI_VISIBLE, resource, autoBuildConf)
+                    && catID.equals(curOption.getCategoryID())) {
+                ret.add(curOption);
+            }
+        }
+        ret.remove(null);
+        return ret;
+    }
 }

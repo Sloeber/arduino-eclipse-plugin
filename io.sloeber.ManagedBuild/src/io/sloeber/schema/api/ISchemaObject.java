@@ -31,7 +31,7 @@ public interface ISchemaObject {
 
     boolean hasAncestor(String id);
 
-    boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoBuildConfData);
+    boolean isEnabled(int enablementType, IResource resource, IAutoBuildConfigurationDescription autoBuildConfData);
 
     IOptions getOptions();
 

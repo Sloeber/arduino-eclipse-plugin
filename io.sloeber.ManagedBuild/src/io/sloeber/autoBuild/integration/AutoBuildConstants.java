@@ -75,6 +75,7 @@ public class AutoBuildConstants {
     public static final String END_OF_CHILDREN = "end of children ";
     public static final String BEGIN_OF_CHILDREN = "Begin of children ";
     public static final String DUMPLEAD = " ";
+    public static final String NULL = "null";
 
     public static final String STATIC_LIB_EXTENSION = "a";
     public static final String DYNAMIC_LIB_EXTENSION = isWindows ? "dll" : "so";
@@ -321,8 +322,6 @@ public class AutoBuildConstants {
     public static final String TYPE_UNDEF_SYMBOL_FILES = "undefSymbolFiles";
     public static final String TYPE_TREE = "tree";
     public static final String VALUE_TYPE = "valueType";
-    public static final String VALUE_HANDLER = "valueHandler";
-    public static final String VALUE_HANDLER_EXTRA_ARGUMENT = "valueHandlerExtraArgument";
     public static final String FIELD_EDITOR_ID = "fieldEditor";
     public static final String FIELD_EDITOR_EXTRA_ARGUMENT = "fieldEditorExtraArgument";
     public static final String LIST_ITEM_VALUE = "value";

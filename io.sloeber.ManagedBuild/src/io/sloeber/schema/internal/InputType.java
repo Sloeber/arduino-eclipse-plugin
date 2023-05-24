@@ -37,7 +37,7 @@ public class InputType extends SchemaObject implements IInputType {
 
     private static final String DEFAULT_SEPARATOR = ","; //$NON-NLS-1$
     // Parent and children
-    private ITool parent;
+    private ITool myTool;
 
     // Superclass
     private IInputType superClass;
@@ -72,7 +72,7 @@ public class InputType extends SchemaObject implements IInputType {
      *            element provider
      */
     public InputType(ITool parent, IExtensionPoint root, IConfigurationElement element) {
-        this.parent = parent;
+        this.myTool = parent;
 
         loadNameAndID(root, element);
         modelSourceContentType = getAttributes(SOURCE_CONTENT_TYPE);
@@ -105,8 +105,8 @@ public class InputType extends SchemaObject implements IInputType {
      * @see org.eclipse.cdt.core.build.managed.IInputType#getParent()
      */
     @Override
-    public ITool getParent() {
-        return parent;
+    public ITool getTool() {
+        return myTool;
     }
 
     /*

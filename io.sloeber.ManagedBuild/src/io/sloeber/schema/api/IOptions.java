@@ -58,35 +58,9 @@ public interface IOptions {
      * options of its superclasses. The lowest option instance in the hierarchy
      * takes precedence.
      *
-     * @return IOption[]
+     * @return List<IOption>
      */
     public List<IOption> getOptions();
-
-    //    /**
-    //     * Returns the option category children of this tool.
-    //     *
-    //     * @return IOptionCategory[]
-    //     */
-    //    public List<IOptionCategory> getChildCategories();
-
-    /*
-     *  M E T H O D S   M O V E D   F R O M   T O O L   I N   3 . 0
-     */
-
-    /*
-     *  N E W   M E T H O D S   A D D E D   I N   3 . 0
-     */
-
-    /**
-     * Answers the <code>IOptionCategory</code> that has the unique identifier
-     * specified in the argument.
-     *
-     * @param id
-     *            The unique identifier of the option category
-     * @return <code>IOptionCategory</code> with the id specified in the argument
-     * @since 3.0
-     */
-    public IOptionCategory getOptionCategory(String id);
 
     /**
      * 

@@ -28,4 +28,9 @@ public class Activator extends Plugin {
     public static Activator getPlugin() {
         return plugin;
     }
+
+    public static void log(Exception e) {
+        e.printStackTrace();
+
+    }
 }

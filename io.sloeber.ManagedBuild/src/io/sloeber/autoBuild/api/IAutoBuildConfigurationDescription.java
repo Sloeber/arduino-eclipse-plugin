@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
+import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ITool;
 
 public interface IAutoBuildConfigurationDescription {
@@ -148,7 +149,7 @@ public interface IAutoBuildConfigurationDescription {
 
     public void setPostBuildAnouncement(String text);
 
-    public Map<String, String> getSelectedOptions(IResource resource);
+    public Map<String, String> getSelectedOptions(IResource resource, ITool tool);
 
     public String getProperty(String propertyName);
 
@@ -174,4 +175,8 @@ public interface IAutoBuildConfigurationDescription {
     public void setCustomToolPattern(ITool tool, IResource resource, String pattern);
 
     String getToolPattern(ITool tool, IResource resource);
+
+    public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID);
+
+    public String getOptionValue(IResource resource, ITool tool, IOption option);
 }

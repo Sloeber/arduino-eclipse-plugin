@@ -30,6 +30,7 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
 
 public class OutputType extends SchemaObject implements IOutputType {
 
@@ -46,6 +47,7 @@ public class OutputType extends SchemaObject implements IOutputType {
     private String buildVariable;
     private IContentType outputContentType;
     private String myNamePattern;
+    private ITool myTool;
 
     //    private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
     //
@@ -69,6 +71,7 @@ public class OutputType extends SchemaObject implements IOutputType {
      */
     public OutputType(ITool parent, IExtensionPoint root, IConfigurationElement element) {
 
+        myTool = parent;
         loadNameAndID(root, element);
 
         modelOutputContentType = getAttributes(OUTPUT_CONTENT_TYPE);
@@ -159,7 +162,7 @@ public class OutputType extends SchemaObject implements IOutputType {
 
     @Override
     public IFile getOutputName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType) {
-        if (!isEnabled(inputFile, autoData)) {
+        if (!isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, inputFile, autoData)) {
             return null;
         }
         IFolder buildFolder = autoData.getBuildFolder();
@@ -219,6 +222,10 @@ public class OutputType extends SchemaObject implements IOutputType {
     @Override
     public String getOutputExtension() {
         return modelOutputExtension[SUPER];
+    }
+
+    public ITool getTool() {
+        return myTool;
     }
 
     public StringBuffer dump(int leadingChars) {

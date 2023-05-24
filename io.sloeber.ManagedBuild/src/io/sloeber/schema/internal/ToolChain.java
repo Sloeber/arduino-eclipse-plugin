@@ -33,11 +33,9 @@ import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IFolderInfo;
-import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
@@ -68,7 +66,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
     private IConfigurationBuildMacroSupplier myBuildMacroSupplier = null;
 
     private Configuration myConfiguration;
-    private List<OptionCategory> myCategories = new ArrayList<>();
     private boolean myIsCompatibleWithLocalOS = false;
 
     /**
@@ -132,11 +129,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         //            Option newOption = new Option(this, root, optionElement);
         //            myOptionMap.put(newOption.getName(), newOption);
         //        }
-
-        List<IConfigurationElement> categoryElements = getFirstChildren(IOptions.OPTION_CAT);
-        for (IConfigurationElement categoryElement : categoryElements) {
-            myCategories.add(new OptionCategory(this, root, categoryElement));
-        }
 
         resolveFields();
     }
@@ -311,14 +303,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         ret.append(prepend + END_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
 
         return ret;
-    }
-
-    public Map<String, String> getDefaultProjectOptions(AutoBuildConfigurationDescription autoBuildConfData) {
-        Map<String, String> retOptions = getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData);
-        for (Tool curTool : myToolMap.values()) {
-            retOptions.putAll(curTool.getDefaultOptions(autoBuildConfData.getProject(), autoBuildConfData));
-        }
-        return retOptions;
     }
 
     public boolean isCompatibleWithLocalOS() {

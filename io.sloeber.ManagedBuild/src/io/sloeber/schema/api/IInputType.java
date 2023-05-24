@@ -35,7 +35,7 @@ public interface IInputType extends ISchemaObject {
      *
      * @return ITool
      */
-    public ITool getParent();
+    public ITool getTool();
 
     /**
      * Returns the Eclipse <code>IContentType</code> that describes this

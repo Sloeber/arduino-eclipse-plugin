@@ -16,23 +16,40 @@
 package io.sloeber.autoBuild.ui.tabs;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
+import org.eclipse.cdt.ui.newui.AbstractPage;
 import org.eclipse.cdt.ui.newui.CDTPrefUtil;
 import org.eclipse.cdt.ui.newui.MultiLineTextFieldEditor;
 import org.eclipse.cdt.ui.newui.PageLayout;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -43,20 +60,29 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 
 import io.sloeber.autoBuild.api.BuildException;
+import io.sloeber.autoBuild.api.ICustomBuildOptionEditor;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integrations.ToolListLabelProvider;
+import io.sloeber.autoBuild.ui.internal.Activator;
 import io.sloeber.autoBuild.ui.internal.Messages;
+import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ITool;
 
@@ -232,7 +258,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         optionList.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                handleOptionSelection();
+                handleOptionSelection(false);
             }
         });
         optionList.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -281,74 +307,260 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
      * Method displayOptionsForCategory
      * @param category
      */
-    private void displayOptionsForCategory(IOptionCategory category) {
+    private void displayOptionsForCategory(IOptionCategory category, ITool tool, boolean forceDefaultValues) {
+        //erase current content
+        for (Control curChild : mySettingsPageContainer.getChildren()) {
+            curChild.dispose();
+        }
+        Set<IOption> options = tool.getOptionsOfCategory(category, mySelectedResource, myAutoConfDesc);
+        for (IOption curOption : options) {
+            if (forceDefaultValues) {
+                String defaultValue = curOption.getDefaultValue(mySelectedResource, tool, myAutoConfDesc);
+                myAutoConfDesc.setOptionValue(mySelectedResource, tool, curOption, defaultValue);
+            }
+            final String nameStr = curOption.getName();
+            String tipStr = curOption.getToolTip();
+            String contextId = curOption.getContextId();
+            String optId = curOption.getId();
+            String optionValue = myAutoConfDesc.getOptionValue(mySelectedResource, tool, curOption);
 
-        //        selectedElement = toolListElement;
-        //        IOptionCategory category = toolListElement.getOptionCategory();
-        //        IHoldsOptions optionHolder = toolListElement.getHoldOptions();
-        //
-        //        AbstractToolSettingUI oldPage = currentSettingsPage;
-        //        currentSettingsPage = null;
-        //
-        //        // Create a new settings page if necessary
-        //        List<AbstractToolSettingUI> pages = getPagesForConfig();
-        //        for (AbstractToolSettingUI page : pages) {
-        //            if (page.isFor(optionHolder, category)) {
-        //                currentSettingsPage = page;
-        //                break;
-        //            }
-        //        }
-        //        if (currentSettingsPage == null) {
-        //            currentSettingsPage = new BuildOptionSettingsUI(this, fInfo, optionHolder, category, displayFixedTip);
-        //            boolean needToolTipBox = false;
-        //            if (displayFixedTip == true) {
-        //                needToolTipBox = ((BuildOptionSettingsUI) currentSettingsPage).needToolTipBox(optionHolder, category);
-        //            }
-        //            pages.add(currentSettingsPage);
-        //            currentSettingsPage.setContainer(this);
-        //            currentSettingsPage.setToolTipBoxNeeded(needToolTipBox);
-        //            if (currentSettingsPage.getControl() == null) {
-        //                currentSettingsPage.createControl(settingsPageContainer);
-        //            }
-        //        }
+            if (tipStr == null || tipStr.isBlank()) {
+                tipStr = Messages.BuildOptionSettingsUI_0;
+            }
 
-        //        // Make all the other pages invisible
-        //        Control[] children = settingsPageContainer.getChildren();
-        //        Control currentControl = currentSettingsPage.getControl();
-        //        for (Control element : children) {
-        //            if (element != currentControl)
-        //                element.setVisible(false);
-        //        }
+            try {
+                // Figure out which type the option is and add a proper field
+                // editor for it
+                FieldEditor fieldEditor = null;
 
-        //        if (displayFixedTip == true) {
-        //            if (currentSettingsPage.isToolTipBoxNeeded() == false) {
-        //                // eliminate the option tip box
-        //                sashForm2.setWeights(hideTipBoxWeights);
-        //                sashForm2.layout();
-        //            } else {
-        //                // display the option tip box
-        //                sashForm2.setWeights(defaultWeights);
-        //                sashForm2.layout();
-        //            }
-        //        }
-        //        currentSettingsPage.setVisible(true);
-        //        currentSettingsPage.updateFields();
-        //
-        //        if (oldPage != null && oldPage != currentSettingsPage) {
-        //            oldPage.setVisible(false);
-        //            resetTipText();
-        //        }
-        //
-        //        // Set the size of the scrolled area
-        //        containerSC.setMinSize(currentSettingsPage.computeSize());
-        //        settingsPageContainer.layout();
+                String customFieldEditorId = curOption.getFieldEditorId();
+                if (!customFieldEditorId.isBlank()) {
+                    fieldEditor = createCustomFieldEditor(customFieldEditorId);
+                    if (fieldEditor != null) {
+                        ICustomBuildOptionEditor customFieldEditor = (ICustomBuildOptionEditor) fieldEditor;
+                        if (customFieldEditor.init(curOption, curOption.getFieldEditorExtraArgument(), optId,
+                                mySettingsPageContainer)) {
+                            Control[] toolTipSources = customFieldEditor.getToolTipSources();
+                            if (toolTipSources != null) {
+                                for (Control control : toolTipSources) {
+                                    //                                    if (pageHasToolTipBox) {
+                                    //                                        control.setData(new TipInfo(nameStr, tipStr));
+                                    //                                        control.addListener(selectAction, tipSetListener);
+                                    //                                    } else {
+                                    control.setToolTipText(tipStr);
+                                    //                                    }
+                                }
+                            }
+                        } else {
+                            fieldEditor = null;
+                        }
+                    }
+                }
+
+                if (fieldEditor == null) {
+                    switch (curOption.getValueType()) {
+                    case IOption.STRING: {
+                        StringFieldEditor stringField;
+                        String filterPath = null;
+                        if (curOption.getBrowseFilterPath() != null) {
+                            filterPath = AutoBuildCommon.resolve(curOption.getBrowseFilterPath(), myAutoConfDesc);
+                        }
+
+                        // If browsing is set, use a field editor that has a
+                        // browse button of the appropriate type.
+                        switch (curOption.getBrowseType()) {
+                        case IOption.BROWSE_DIR: {
+                            DirectoryFieldEditor field = new DirectoryFieldEditor(optId, nameStr,
+                                    mySettingsPageContainer);
+                            if (filterPath != null) {
+                                field.setFilterPath(new File(filterPath));
+                            }
+                            stringField = field;
+                            break;
+                        }
+
+                        case IOption.BROWSE_FILE: {
+                            FileFieldEditor field = new FileFieldEditor(optId, nameStr, mySettingsPageContainer);
+                            //This issue is supposedly fixed
+                            //                            {
+                            //                                /**
+                            //                                 * Do not perform validity check on the file name due to losing focus,
+                            //                                 * see http://bugs.eclipse.org/289448
+                            //                                 */
+                            //                                @Override
+                            //                                protected boolean checkState() {
+                            //                                    clearErrorMessage();
+                            //                                    return true;
+                            //                                }
+                            //                            };
+                            if (filterPath != null) {
+                                field.setFilterPath(new File(filterPath));
+                            }
+                            field.setFileExtensions(curOption.getBrowseFilterExtensions());
+                            stringField = field;
+                            break;
+                        }
+
+                        case IOption.BROWSE_NONE: {
+                            final StringFieldEditorM field = new StringFieldEditorM(optId, nameStr,
+                                    mySettingsPageContainer);
+
+                            Text localText = field.getTextControl();
+                            localText.addModifyListener(new ModifyListener() {
+
+                                @Override
+                                public void modifyText(ModifyEvent e) {
+                                    field.valueChanged();
+                                }
+                            });
+                            stringField = field;
+                            break;
+                        }
+
+                        default: {
+                            throw new BuildException(null);
+                        }
+                        }
+
+                        Label label = stringField.getLabelControl(mySettingsPageContainer);
+                        Text text = stringField.getTextControl(mySettingsPageContainer);
+                        text.setText(optionValue);
+                        //    if(pageHasToolTipBox)
+                        //    {
+                        //        label.setData(new TipInfo(nameStr, tipStr));
+                        //        label.addListener(selectAction, tipSetListener);
+                        //        text.setData(new TipInfo(nameStr, tipStr));
+                        //        text.addListener(selectAction, tipSetListener);
+                        //    }else
+                        //    {
+                        //        label.setToolTipText(tipStr);
+                        //        text.setToolTipText(tipStr);
+                        //    }
+                        if (!contextId.equals(AbstractPage.EMPTY_STR)) {
+                            PlatformUI.getWorkbench().getHelpSystem().setHelp(text, contextId);
+                        }
+                        fieldEditor = stringField;
+                        break;
+                    }
+
+                    case IOption.BOOLEAN: {
+                        Boolean originalValue = Boolean.valueOf(optionValue);
+                        fieldEditor = new TriStateBooleanFieldEditor(optId, nameStr, tipStr, mySettingsPageContainer,
+                                contextId, originalValue);
+                        // tipStr is handled in TriStateBooleanFieldEditor constructor
+                        break;
+                    }
+
+                    case IOption.ENUMERATED: {
+                        String selId = optionValue;
+                        String sel = curOption.getEnumName(selId);
+
+                        // if (displayFixedTip==false), tooltip was already set in BuildOptionComboFieldEditor constructor.
+                        String tooltipHoverStr = displayFixedTip ? null : tipStr;
+                        fieldEditor = new BuildOptionComboFieldEditor(optId, nameStr, tooltipHoverStr, contextId,
+                                curOption, sel, curOption.getDefaultValue(mySelectedResource, tool, myAutoConfDesc),
+                                mySettingsPageContainer);
+
+                        //    if(pageHasToolTipBox)
+                        //    {
+                        //        Combo combo = ((BuildOptionComboFieldEditor) fieldEditor).getComboControl();
+                        //        Label label = fieldEditor.getLabelControl(mySettingsPageContainer);
+                        //        combo.setData(new TipInfo(nameStr, tipStr));
+                        //        combo.addListener(selectAction, tipSetListener);
+                        //        label.setData(new TipInfo(nameStr, tipStr));
+                        //        label.addListener(selectAction, tipSetListener);
+                        //    }
+                        break;
+                    }
+
+                    case IOption.TREE:
+                        fieldEditor = new TreeBrowseFieldEditor(optId, nameStr, mySettingsPageContainer, nameStr,
+                                curOption, contextId);
+                        ((StringButtonFieldEditor) fieldEditor).setChangeButtonText("..."); //$NON-NLS-1$
+
+                        //    if(pageHasToolTipBox){
+                        //    Text text = ((StringButtonFieldEditor) fieldEditor).getTextControl(mySettingsPageContainer);
+                        //    Label label = fieldEditor.getLabelControl(
+                        //            mySettingsPageContainer);text.setData(new TipInfo(nameStr,tipStr));text.addListener(selectAction,tipSetListener);label.setData(new TipInfo(nameStr,tipStr));label.addListener(selectAction,tipSetListener);
+                        //            }
+                        break;
+
+                    case IOption.INCLUDE_PATH:
+                    case IOption.STRING_LIST:
+                    case IOption.PREPROCESSOR_SYMBOLS:
+                    case IOption.LIBRARIES:
+                    case IOption.OBJECTS:
+                    case IOption.INCLUDE_FILES:
+                    case IOption.LIBRARY_PATHS:
+                    case IOption.LIBRARY_FILES:
+                    case IOption.MACRO_FILES:
+                    case IOption.UNDEF_INCLUDE_PATH:
+                    case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
+                    case IOption.UNDEF_INCLUDE_FILES:
+                    case IOption.UNDEF_LIBRARY_PATHS:
+                    case IOption.UNDEF_LIBRARY_FILES:
+                    case IOption.UNDEF_MACRO_FILES: {
+                        // if (displayFixedTip==false), tooltip was already set in FileListControlFieldEditor constructor.
+                        String tooltipHoverStr = displayFixedTip ? null : tipStr;
+                        fieldEditor = new FileListControlFieldEditor(optId, nameStr, tooltipHoverStr, contextId,
+                                mySettingsPageContainer, curOption.getBrowseType());
+                        if (curOption.getBrowseFilterPath() != null) {
+                            String filterPath = AutoBuildCommon.resolve(curOption.getBrowseFilterPath(),
+                                    myAutoConfDesc);
+                            ((FileListControlFieldEditor) fieldEditor).setFilterPath(filterPath);
+                        }
+                        ((FileListControlFieldEditor) fieldEditor)
+                                .setFilterExtensions(curOption.getBrowseFilterExtensions());
+
+                        //    if(pageHasToolTipBox){
+                        //    Label label = fieldEditor.getLabelControl(
+                        //            mySettingsPageContainer);label.setData(new TipInfo(nameStr,tipStr));label.addListener(selectAction,tipSetListener);
+                        //            }
+                        break;
+                    }
+
+                    default:
+                        throw new BuildException(null);
+                    }
+                }
+
+                fieldEditor.setPropertyChangeListener(new IPropertyChangeListener() {
+
+                    @Override
+                    public void propertyChange(PropertyChangeEvent event) {
+                        String newValue = null;
+                        if (event.getNewValue() instanceof String) {
+                            newValue = (String) event.getNewValue();
+                        }
+                        if (event.getNewValue() instanceof Boolean) {
+                            newValue = Boolean.toString((Boolean) event.getNewValue());
+                        }
+                        if (event.getSource() instanceof BuildOptionComboFieldEditor) {
+                            BuildOptionComboFieldEditor comboClass = (BuildOptionComboFieldEditor) event.getSource();
+                            newValue = comboClass.getSelectionAsID();
+                        }
+                        myAutoConfDesc.setOptionValue(mySelectedResource, tool, curOption, newValue);
+                    }
+                });
+
+                //    addField(fieldEditor);
+                //    fieldsMap.put(optId,fieldEditor);
+                //    fieldEditorsToParentMap.put(fieldEditor,mySettingsPageContainer);
+
+            } catch (BuildException e) {
+                //ignore
+            }
+        }
+        mySettingsPageContainer.layout();
+        mySettingsPageContainer.redraw();
     }
 
     /* (non-Javadoc)
      * Method displayOptionsForTool
      * @param tool
      */
-    private void displayOptionsForTool(ITool tool) {
+    private void displayOptionsForTool(ITool tool, boolean forceDefaultValues) {
+        //erase current content
         for (Control curChild : mySettingsPageContainer.getChildren()) {
             curChild.dispose();
         }
@@ -480,92 +692,40 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
             optionList.setContentProvider(listprovider);
         }
 
-        //  Update the selected configuration and the Tree Viewer
-        //                ToolListElement[] newElements;
-        //        
         optionList.setInput(myAutoConfDesc);
         //                newElements = (ToolListElement[]) listprovider.getElements(fInfo);
         optionList.expandAll();
-        //
-        //        //  Determine what the selection in the tree should be
-        //        //  If the saved selection is not null, try to match the saved selection
-        //        //  with an object in the new element list.
-        //        //  Otherwise, select the first tool in the tree
-        //        Object primaryObject = null;
-        //        if (selectedElement != null && newElements != null) {
-        //            selectedElement = matchSelectionElement(selectedElement, newElements);
-        //        }
-        //
-        //        if (selectedElement == null) {
-        //            selectedElement = (newElements != null && newElements.length > 0 ? newElements[0] : null);
-        //        }
-        //
-        //        if (selectedElement != null) {
-        //            primaryObject = selectedElement.getTool();
-        //            if (primaryObject == null) {
-        //                primaryObject = selectedElement.getOptionCategory();
-        //            }
-        //            if (primaryObject != null) {
-        //                if (primaryObject instanceof IOptionCategory) {
-        //                    ((ToolSettingsPrefStore) settingsStore).setSelection(getResDesc(), selectedElement,
-        //                            (IOptionCategory) primaryObject);
-        //                }
-        //                optionList.setSelection(new StructuredSelection(selectedElement), true);
-        //            }
-        //        }
+
     }
 
-    //    private ToolListElement matchSelectionElement(ToolListElement currentElement, ToolListElement[] elements) {
-    //        //  First, look for an exact match
-    //        ToolListElement match = exactMatchSelectionElement(currentElement, elements);
-    //        if (match == null)
-    //            //  Else, look for the same tool/category in the new set of elements
-    //            match = equivalentMatchSelectionElement(currentElement, elements);
-    //        return match;
-    //    }
-    //
-    //    private ToolListElement exactMatchSelectionElement(ToolListElement currentElement, ToolListElement[] elements) {
-    //        for (ToolListElement e : elements) {
-    //            if (e == currentElement) {
-    //                return currentElement;
-    //            }
-    //            e = exactMatchSelectionElement(currentElement, e.getChildElements());
-    //            if (e != null)
-    //                return e;
-    //        }
-    //        return null;
-    //    }
-    //
-    //    private ToolListElement equivalentMatchSelectionElement(ToolListElement currentElement,
-    //            ToolListElement[] elements) {
-    //        for (ToolListElement e : elements) {
-    //            if (e.isEquivalentTo(currentElement)) {
-    //                return e;
-    //            }
-    //            e = equivalentMatchSelectionElement(currentElement, e.getChildElements());
-    //            if (e != null)
-    //                return e;
-    //        }
-    //        return null;
-    //    }
-
-    private void handleOptionSelection() {
+    private void handleOptionSelection(boolean forceDefaultValues) {
         // Get the selection from the tree list
         if (optionList == null) {
             return;
         }
         IStructuredSelection selection = (IStructuredSelection) optionList.getSelection();
+        ITreeSelection treeSel = optionList.getStructuredSelection();
+        TreePath[] path = treeSel.getPaths();
+        ITool tool = null;
+        if (path.length == 1) {
+            Object parent = path[0].getParentPath().getLastSegment();
+            if (parent instanceof ITool) {
+                tool = (ITool) parent;
+            }
+        }
 
         // Set the option page based on the selection
         Object toolListElement = selection.getFirstElement();
         if (toolListElement != null) {
             if (toolListElement instanceof IOptionCategory) {
                 IOptionCategory cat = (IOptionCategory) toolListElement;
-                displayOptionsForCategory(cat);
+                //TODO JABA null needs to be the parent tool
+                //if no parent tool use toolchain method (to be created)
+                displayOptionsForCategory(cat, tool, forceDefaultValues);
             }
             if (toolListElement instanceof ITool) {
-                ITool tool = (ITool) toolListElement;
-                displayOptionsForTool(tool);
+                tool = (ITool) toolListElement;
+                displayOptionsForTool(tool, forceDefaultValues);
             }
         }
     }
@@ -578,27 +738,11 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     protected void performDefaults() {
         //        if (page.isForProject()) {
         //            ManagedBuildManager.resetConfiguration(page.getProject(), getCfg());
+        handleOptionSelection(true);
         //        } else {
         //            ManagedBuildManager.resetOptionSettings(fInfo);
         //        }
-        //        ITool tools[];
-        //        if (page.isForProject())
-        //            tools = getCfg().getFilteredTools();
-        //        else
-        //            tools = getResCfg(getResDesc()).getTools();
-        //        for (int i = 0; i < tools.length; i++) {
-        //            if (!tools[i].getCustomBuildStep()) {
-        //                tools[i].setToolCommand(null);
-        //                tools[i].setCommandLinePattern(null);
-        //            }
-        //        }
-        //        // Reset the category or tool selection and run selection event handler
-        //        selectedElement = null;
-        //        setDirty(true);
-        //
-        //        fInfo = getResCfg(getResDesc());
-        //        setValues();
-        //        handleOptionSelection();
+
     }
 
     //    /*
@@ -969,4 +1113,174 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     //        else
     //            return cfg.getBuilder().isManagedBuildOn();
     //    }
+
+    private Map<String, CustomFieldEditorDescriptor> customFieldEditorDescriptorIndex;
+
+    /**
+     * Instantiates the custom-field editor registered under the given id.
+     */
+    private FieldEditor createCustomFieldEditor(String customFieldEditorId) {
+        if (this.customFieldEditorDescriptorIndex == null) {
+            loadCustomFieldEditorDescriptors();
+        }
+
+        CustomFieldEditorDescriptor editorDescriptor = this.customFieldEditorDescriptorIndex.get(customFieldEditorId);
+        if (editorDescriptor != null) {
+            return editorDescriptor.createEditor();
+        }
+
+        return null;
+    }
+
+    /**
+     * Holds all the information necessary to instantiate a custom field-editor.
+     * Also acts as a factory - instantiates and returns a non-initialized
+     * field-editor.
+     */
+    private class CustomFieldEditorDescriptor {
+        private final IConfigurationElement element;
+
+        public CustomFieldEditorDescriptor(IConfigurationElement providerElement) {
+            this.element = providerElement;
+        }
+
+        FieldEditor createEditor() {
+            try {
+                Object editor = element.createExecutableExtension("class"); //$NON-NLS-1$
+                if (editor instanceof FieldEditor && editor instanceof ICustomBuildOptionEditor) {
+                    return (FieldEditor) editor;
+                }
+            } catch (Exception x) {
+                Activator.log(x);
+            }
+
+            return null;
+        }
+    }
+
+    /**
+     * Loads all the registered custom field-editor descriptors.
+     * Synchronization is not necessary as this would always be invoked on the UI
+     * thread.
+     */
+    private void loadCustomFieldEditorDescriptors() {
+        if (this.customFieldEditorDescriptorIndex != null)
+            return;
+
+        this.customFieldEditorDescriptorIndex = new HashMap<>();
+
+        IExtensionPoint ep = Platform.getExtensionRegistry()
+                .getExtensionPoint(Activator.getId() + ".buildDefinitionsUI"); //$NON-NLS-1$
+
+        for (IExtension e : ep.getExtensions()) {
+            for (IConfigurationElement providerElement : e.getConfigurationElements()) {
+                String editorId = providerElement.getAttribute("id"); //$NON-NLS-1$
+
+                this.customFieldEditorDescriptorIndex.put(editorId, new CustomFieldEditorDescriptor(providerElement));
+            }
+        }
+    }
+
+    class TriStateBooleanFieldEditor extends BooleanFieldEditor {
+        protected Button button = null;
+        private boolean myOriginalValue = true;
+
+        public TriStateBooleanFieldEditor(String name, String labelText, String tooltip, Composite parent,
+                String contextId, boolean curValue) {
+            super(name, labelText, parent);
+            myOriginalValue = curValue;
+            button = getChangeControl(parent);
+            button.setSelection(myOriginalValue);
+            //            if (displayFixedTip && isToolTipBoxNeeded()) {
+            //                button.setData(new TipInfo(labelText, tooltip));
+            //                button.addListener(selectAction, tipSetListener);
+            //            } else {
+            //                button.setToolTipText(tooltip);
+            //            }
+            if (!contextId.equals(AbstractPage.EMPTY_STR)) {
+                PlatformUI.getWorkbench().getHelpSystem().setHelp(button, contextId);
+            }
+
+        }
+
+        @Override
+        protected void valueChanged(boolean oldValue, boolean newValue) {
+            button.setGrayed(false);
+            super.valueChanged(!newValue, newValue);
+        }
+
+        @Override
+        protected void doLoad() {
+
+            //            //            if (enable3 && holders != null && button != null) {
+            //            //                String id = getPreferenceName();
+            //            //                IOption op = holders[current].getOptionById(id);
+            //            //                if (op != null) {
+            //            //                    if (op.getSuperClass() != null)
+            //            //                        id = op.getSuperClass().getId();
+            //            //                    int[] vals = new int[2];
+            //            //                    for (int i = 0; i < holders.length; i++) {
+            //            //                        op = holders[i].getOptionBySuperClassId(id);
+            //            //                        try {
+            //            //                            if (op != null)
+            //            //                                vals[op.getBooleanValue() ? 1 : 0]++;
+            //            //                        } catch (BuildException e) {
+            //            //                        }
+            //            //                    }
+            //            //                    boolean value = false;
+            //            //                    boolean gray = false;
+            //            //                    if (vals[1] > 0) {
+            //            //                        value = true;
+            //            //                        if (vals[0] > 0)
+            //            //                            gray = true;
+            //            //                    }
+            //            //                    button.setGrayed(gray);
+            //            //                    button.setSelection(value);
+            //            //                    return;
+            //            //                }
+            //            //            }
+            //            super.doLoad(); // default case
+        }
+
+    }
+
+    private final class TreeBrowseFieldEditor extends StringButtonFieldEditor {
+        private final String nameStr;
+        private final IOption option;
+        private String contextId;
+
+        private TreeBrowseFieldEditor(String name, String labelText, Composite parent, String nameStr, IOption option,
+                String contextId) {
+            super(name, labelText, parent);
+            this.nameStr = nameStr;
+            this.option = option;
+            this.contextId = contextId;
+        }
+
+        @Override
+        protected String changePressed() {
+            //            ITreeRoot treeRoot;
+            //            try {
+            //                treeRoot = option.getTreeRoot();
+            //                TreeSelectionDialog dlg = new TreeSelectionDialog(getShell(), treeRoot, nameStr, contextId);
+            //                String name = getStringValue();
+            //                if (name != null) {
+            //                    String treeId = option.getId(name);
+            //                    if (treeId != null) {
+            //                        ITreeOption node = treeRoot.findNode(treeId);
+            //                        if (node != null) {
+            //                            dlg.setSelection(node);
+            //                        }
+            //                    }
+            //                }
+            //
+            //                if (dlg.open() == Window.OK) {
+            //                    ITreeOption selected = dlg.getSelection();
+            //                    return selected.getName();
+            //                }
+            //            } catch (BuildException e) {
+            //            }
+            return null;
+        }
+    }
 }

@@ -20,6 +20,7 @@ package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.BuildException;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
@@ -146,30 +147,15 @@ public interface IOption extends ISchemaObject {
      * @param id
      *            - enumeration id
      * @return the "name" associated with the enumeration id.
+     *         null if the option is not a enumeration or when the provided id==null
+     *         empty string if the option id is not found
      */
-    public String getEnumName(String id) throws BuildException;
-
-    /**
-     * Returns the name associated with the child of this option
-     * with the given id. Applies to options of types that has children
-     * for example {@link #TREE} or {@link #ENUMERATED}
-     *
-     * @param id
-     *            The id to look for
-     * @return Name of the child with the passed id or <code>null</code> if not
-     *         found.
-     * @throws BuildException
-     *             if any issue happened while searching.
-     * @since 8.1
-     */
-    public abstract String getName(String id) throws BuildException;
-
-    public String getDefaultValue(IResource resource, AutoBuildConfigurationDescription autoData);
+    public String getEnumName(String id);
 
     /**
      * @return the type for the value of the option.
      */
-    public int getValueType() throws BuildException;
+    public int getValueType();
 
     /**
      * @return the custom field-editor ID for this build-option. This ID should
@@ -294,8 +280,6 @@ public interface IOption extends ISchemaObject {
 
         ITreeOption[] getChildren();
 
-        boolean isContainer();
-
         String getCommand();
 
         String getIcon();
@@ -347,4 +331,22 @@ public interface IOption extends ISchemaObject {
         boolean isDefault();
 
     }
+
+    public String[] getBrowseFilterExtensions();
+
+    public String getBrowseFilterPath();
+
+    /**
+     * @return If this option is defined as an enumeration, this function returns
+     *         the list of possible values for that enum.
+     *
+     *         If this option is not defined as an enumeration, it returns
+     *         <code>null</code>.
+     */
+    public String[] getEnumIDs();
+
+    String getDefaultValue(IResource resource, ITool tool, IAutoBuildConfigurationDescription myAutoConfDesc);
+
+    public String getEnumIDFromName(String enumOptionName);
+
 }

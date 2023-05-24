@@ -19,6 +19,7 @@ package io.sloeber.autoBuild.ui.tabs;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -60,7 +61,7 @@ public class ToolListContentProvider implements ITreeContentProvider {
         //            return tools.toArray();
         //        }
         if (parentElement instanceof ITool) {
-            List<IOptionCategory> categories = ((ITool) parentElement).getCategories(myAutoBuildConf, myResource);
+            Set<IOptionCategory> categories = ((ITool) parentElement).getCategories(myAutoBuildConf, myResource);
             return categories.toArray();
         }
         return new Object[0];

@@ -43,6 +43,7 @@ import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
 
 public class Configuration extends SchemaObject implements IConfiguration {
 
@@ -277,7 +278,8 @@ public class Configuration extends SchemaObject implements IConfiguration {
             AutoBuildConfigurationDescription autoBuildConfigurationData) {
         Map<String, String> retOptions = getDefaultOptions(autoBuildConfigurationData.getProject(),
                 autoBuildConfigurationData);
-        retOptions.putAll(myToolchain.getDefaultProjectOptions(autoBuildConfigurationData));
+        retOptions.putAll(
+                myToolchain.getDefaultOptions(autoBuildConfigurationData.getProject(), autoBuildConfigurationData));
         Map<IResource, Map<String, String>> ret = new LinkedHashMap<>();
         ret.put(autoBuildConfigurationData.getProject(), retOptions);
         return ret;
@@ -293,7 +295,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
         Map<String, Set<IInputType>> ret = new HashMap<>();
         for (ITool curTool : myToolchain.getTools()) {
             for (IInputType curInputType : curTool.getInputTypes()) {
-                if (!curInputType.isEnabled(project, autoBuildConfData)) {
+                if (!curInputType.isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, project, autoBuildConfData)) {
                     continue;
                 }
                 String languageID = curInputType.getLanguageID();

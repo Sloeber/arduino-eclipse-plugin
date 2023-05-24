@@ -20,6 +20,8 @@ public class CheckOptionExpression extends Expression {
     private static final String KEY_OTHER_HOLDER_ID = "OtherHolderId"; //$NON-NLS-1$
     private static final String KEY_OTHER_OPTION_ID = "otherOptionId"; //$NON-NLS-1$
     public static final String KEY_RESOURCE = "resource"; //$NON-NLS-1$
+    public static final String KEY_TOOL = "tool"; //$NON-NLS-1$
+    public static final String KEY_EXPRESSION_ELEMENT_TYPE = "element_type"; //$NON-NLS-1$
 
     private String myOptionID;
     private String myHolderID;
@@ -49,7 +51,8 @@ public class CheckOptionExpression extends Expression {
     public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
         AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) context.getDefaultVariable();
         IResource resource = (IResource) context.getVariable(KEY_RESOURCE);
-        String selectedOption = autoData.getSelectedOptions(resource).get(myOptionID);
+        ITool tool = (ITool) context.getVariable(KEY_TOOL);
+        String selectedOption = autoData.getSelectedOptions(resource, tool).get(myOptionID);
         boolean selectedBoolean = "true".equals(selectedOption); //$NON-NLS-1$
         boolean expectedBoolean = "true".equals(myExpectedValue); //$NON-NLS-1$
         if (selectedBoolean == expectedBoolean) {

@@ -269,23 +269,6 @@ Additional special types exist to flag options of special relevance to the build
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="valueHandler" type="string">
-            <annotation>
-               <documentation>
-                  The id of a class that implements the IManagedOptionValueHandler interface.  This interface is used to dynamically manage the value of an option.
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="valueHandlerExtraArgument" type="string">
-            <annotation>
-               <documentation>
-                  An optional extra text string that is passed into the valueHandler.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="applicabilityCalculator" type="string">
             <annotation>
                <documentation>

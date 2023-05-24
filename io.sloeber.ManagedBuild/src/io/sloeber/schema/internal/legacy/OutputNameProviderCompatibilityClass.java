@@ -25,14 +25,14 @@ public class OutputNameProviderCompatibilityClass implements IOutputNameProvider
     @Override
     public String getOutputFileName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType,
             IOutputType outputType) {
-        ITool tool = inputType.getParent();
+        ITool tool = inputType.getTool();
 
         boolean isToolCLinker = tool.hasAncestor("cdt.managedbuild.tool.gnu.c.linker"); //$NON-NLS-1$
         boolean isToolCPPLinker = tool.hasAncestor("cdt.managedbuild.tool.gnu.cpp.linker"); //$NON-NLS-1$
 
         if (isToolCLinker || isToolCPPLinker) {
             // it is a linker tool
-            Map<String, String> projectOptions = autoData.getSelectedOptions(inputFile);
+            Map<String, String> projectOptions = autoData.getSelectedOptions(inputFile, tool);
 
             if (isToolCLinker) {
                 // Are we building a dynamically shared C library?

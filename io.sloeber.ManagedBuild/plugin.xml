@@ -141,20 +141,6 @@
               </outputType>
            </tool>
            <tool
-                 id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.staticLib"
-                 name="%autoBuild.tool.gcc.linker.staticLib"
-                 superClass="cdt.managedbuild.tool.gnu.archiver">
-              <outputType
-                    id="io.sloeber.autoBuild.outputType.staticLib"
-                    name="%autoBuild.outputType.staticLib.name"
-                    nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
-              </outputType>
-              <inputType
-                    id="io.sloeber.autoBuild.inputType.gcc.staticLib.object"
-                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.staticLib">
-              </inputType>
-           </tool>
-           <tool
                  id="io.sloeber.autoBuild.tool.gnu.cross.c.linker.sharedLib"
                  name="%autoBuild.tool.gcc.linker.sharedLib"
                  superClass="cdt.managedbuild.tool.gnu.c.linker.to.sharedLib.base">
@@ -850,7 +836,6 @@
          </optionCategory>
          <option
                category="gnu.lib.category.general"
-               defaultValue="-crs"
                id="gnu.both.lib.option.flags"
                name="%Option.Posix.Archiver.Flags"
                valueType="string">
@@ -873,6 +858,16 @@
                nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.a">
          </outputType>
+         <option
+               category="gnu.lib.category.general"
+               defaultValue="-crs"
+               id="gnu.both.lib.required.flags"
+               name="Required flags"
+               valueType="string">
+            <enablement
+                  type="CMD_USAGE">
+            </enablement>
+         </option>
       </tool>
       <tool
             command="as"
@@ -1781,6 +1776,9 @@
                id="gnu.c.compiler.option.misc.other"
                name="%Option.OtherFlags"
                valueType="string">
+            <enablement
+                  type="CMD_USAGE">
+            </enablement>
          </option>
          <option
                category="gnu.c.compiler.category.other"
@@ -2382,6 +2380,9 @@
                id="gnu.cpp.compiler.option.other.other"
                name="%Option.OtherFlags"
                valueType="string">
+            <enablement
+                  type="CMD_USAGE">
+            </enablement>
          </option>
          <option
                category="gnu.cpp.compiler.category.other"

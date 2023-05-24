@@ -35,7 +35,9 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.ISchemaObject;
+import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.enablement.Enablement;
+import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
 import io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass;
 
 public abstract class SchemaObject implements ISchemaObject {
@@ -335,21 +337,50 @@ public abstract class SchemaObject implements ISchemaObject {
     }
 
     @Override
-    public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoBuildConfData) {
+    public boolean isEnabled(int enablementType, IResource resource,
+            IAutoBuildConfigurationDescription autoBuildConfData) {
+        return isEnabledInternal(enablementType, resource, getTool(), autoBuildConfData);
+    }
+
+    private ITool getTool() {
+        if (this instanceof ITool) {
+            return (ITool) this;
+        }
+        if (this instanceof OutputType) {
+            return ((OutputType) this).getTool();
+        }
+        if (this instanceof InputType) {
+            return ((InputType) this).getTool();
+        }
+        if (this instanceof Option) {
+            ISchemaObject parent = ((Option) this).getParent();
+            if (parent instanceof ITool) {
+                return (ITool) parent;
+            }
+        }
+        return null;
+
+    }
+
+    private boolean isEnabledInternal(int enablementType, IResource resource, ITool tool,
+            IAutoBuildConfigurationDescription autoBuildConfData) {
         if (myEnablement.isBlank()) {
             return true;
         }
-        return myEnablement.isEnabled(resource, autoBuildConfData);
+        return myEnablement.isEnabled(enablementType, resource, tool, autoBuildConfData);
     }
 
     public Map<String, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData) {
         Map<String, String> ret = new LinkedHashMap<>();
-        if (isEnabled(resource, autoData)) {
-            for (IOption curOption : myOptions.getOptions()) {
-                if (curOption.isEnabled(resource, autoData)) {
-                    String optionValue = curOption.getDefaultValue(resource, autoData);
+        if (isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoData)) {
+            for (IOption curIOption : myOptions.getOptions()) {
+                Option curOption = (Option) curIOption;
+                if (curOption.isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoData)) {
+                    String optionValue = curOption.getDefaultValue(resource, getTool(), autoData);
                     if (!optionValue.isBlank()) {
-                        ret.put(curOption.getId(), optionValue);
+                        if (!curOption.isCommandLineContributionBlank(resource, optionValue, autoData)) {
+                            ret.put(curOption.getId(), optionValue);
+                        }
                     }
                 }
             }

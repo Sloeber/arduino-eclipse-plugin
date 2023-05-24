@@ -27,6 +27,7 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -226,6 +227,11 @@ public interface ITool extends ISchemaObject {
 
     public URL getIconPath();
 
-    public List<IOptionCategory> getCategories(IAutoBuildConfigurationDescription myAutoBuildConf, IResource resource);
+    public Set<IOptionCategory> getCategories(IAutoBuildConfigurationDescription myAutoBuildConf, IResource resource);
+
+    Set<IOption> getOptionsOfCategory(IOptionCategory cat, IResource resource,
+            IAutoBuildConfigurationDescription autoBuildConf);
+
+    boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData);
 
 }

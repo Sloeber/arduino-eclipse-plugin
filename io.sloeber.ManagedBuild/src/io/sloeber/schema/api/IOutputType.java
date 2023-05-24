@@ -123,4 +123,6 @@ public interface IOutputType extends ISchemaObject {
 
     String getOutputName();
 
+    public ITool getTool();
+
 }

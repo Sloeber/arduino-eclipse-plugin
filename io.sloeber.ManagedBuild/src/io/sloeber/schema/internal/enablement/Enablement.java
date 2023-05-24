@@ -1,8 +1,11 @@
 package io.sloeber.schema.internal.enablement;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.expressions.ElementHandler;
 import org.eclipse.core.expressions.EvaluationContext;
@@ -16,19 +19,40 @@ import org.eclipse.core.runtime.IConfigurationElement;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.SchemaObject;
 
 public class Enablement {
     private List<Expression> myExpressions = new LinkedList<>();
 
-    private Expression findMatchingExpression(IResource resource, IAutoBuildConfigurationDescription autoData) {
+    private Set<Expression> findExpressionsOfType(int enablementType) {
+        Set<Expression> ret = new HashSet<>();
+        for (Expression curExpression : myExpressions) {
+            if (curExpression instanceof MBSEnablementExpression) {
+                MBSEnablementExpression curMBSExpression = (MBSEnablementExpression) curExpression;
+                if (curMBSExpression.isOfType(enablementType)) {
+                    ret.add(curExpression);
+                }
+
+            } else {
+                ret.add(curExpression);
+            }
+        }
+        return ret;
+    }
+
+    private static Expression findMatchingExpression(int enablementType, Set<Expression> relevantExpressions,
+            IResource resource, ITool tool, IAutoBuildConfigurationDescription autoData) {
         try {
             EvaluationContext evalContext = new EvaluationContext(null, autoData);
             if (resource != null) {
                 evalContext.addVariable(CheckOptionExpression.KEY_RESOURCE, resource);
             }
-            for (Expression curExpression : myExpressions) {
-
+            if (tool != null) {
+                evalContext.addVariable(CheckOptionExpression.KEY_TOOL, tool);
+            }
+            evalContext.addVariable(CheckOptionExpression.KEY_EXPRESSION_ELEMENT_TYPE, enablementType);
+            for (Expression curExpression : relevantExpressions) {
                 EvaluationResult result = curExpression.evaluate(evalContext);
                 if (result == EvaluationResult.TRUE) {
                     return curExpression;
@@ -40,16 +64,30 @@ public class Enablement {
         return null;
     }
 
-    public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData) {
-        Expression foundExpression = findMatchingExpression(resource, autoData);
+    public boolean isEnabled(int enablementType, IResource resource, ITool tool,
+            IAutoBuildConfigurationDescription autoData) {
+        Set<Expression> relevantExpressions = findExpressionsOfType(enablementType);
+        if (relevantExpressions.size() == 0) {
+            //No expressions are relevant so this is enabled
+            return true;
+        }
+        Expression foundExpression = findMatchingExpression(enablementType, relevantExpressions, resource, tool,
+                autoData);
         if (foundExpression == null) {
-            return myExpressions.size() == 0;
+            return false;
         }
         return true;
     }
 
-    public String getDefaultValue(IResource resource, IAutoBuildConfigurationDescription autoData) {
-        Expression foundExpression = findMatchingExpression(resource, autoData);
+    public String getDefaultValue(IResource resource, ITool tool, IAutoBuildConfigurationDescription autoData) {
+        int enablementType = MBSEnablementExpression.ENABLEMENT_TYPE_VALUE;
+        Set<Expression> relevantExpressions = findExpressionsOfType(enablementType);
+        if (relevantExpressions.size() == 0) {
+            //No expressions are relevant so this is enabled
+            return EMPTY_STRING;
+        }
+        Expression foundExpression = findMatchingExpression(enablementType, relevantExpressions, resource, tool,
+                autoData);
         if (foundExpression == null) {
             return EMPTY_STRING;
         }
@@ -58,10 +96,7 @@ public class Enablement {
             return EMPTY_STRING;
         }
         MBSEnablementExpression exp = (MBSEnablementExpression) foundExpression;
-        if (exp.isContainerType() && exp.isDefaultValue()) {
-            return exp.getValue();
-        }
-        return EMPTY_STRING;
+        return exp.getValue();
     }
 
     public Enablement(IConfigurationElement element, SchemaObject schemaObject) {

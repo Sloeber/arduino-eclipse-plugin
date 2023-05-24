@@ -29,7 +29,7 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
     @Override
     public String getOutputFileName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType,
             IOutputType outputType) {
-        ITool tool = inputType.getParent();
+        ITool tool = inputType.getTool();
         if (tool.getId().endsWith(DOT + COMPILER)) {
             return getOutputFileNameForCompiler(inputFile, outputType);
         }

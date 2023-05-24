@@ -36,10 +36,12 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -50,6 +52,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.api.BuildException;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
@@ -57,8 +60,9 @@ import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
+import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
 
 public class Option extends SchemaObject implements IOption {
     // Static default return values
@@ -82,8 +86,6 @@ public class Option extends SchemaObject implements IOption {
     private String[] modelIsForSD;
     private String[] modelTip;
     private String[] modelContextId;
-    private String[] modelValueHandlerString;
-    private String[] modelValueHandlerExtraArgument;
     private String[] modelApplicabilityCalculatorStr;
     private String[] modelFieldEditorId;
     private String[] modelFieldEditorExtraArgument;
@@ -98,6 +100,7 @@ public class Option extends SchemaObject implements IOption {
     private int resourceFilter;
     private TreeRoot myTreeRoot;
     private Map<String, EnumOptionValue> myEnumOptionValues = new LinkedHashMap<>();
+    private String[] myBrowseFilterExtensions;
 
     /**
      * This constructor is called to create an option defined by an extension point
@@ -128,8 +131,6 @@ public class Option extends SchemaObject implements IOption {
         modelIsForSD = getAttributes(USE_BY_SCANNER_DISCOVERY);
         modelTip = getAttributes(TOOL_TIP);
         modelContextId = getAttributes(CONTEXT_ID);
-        modelValueHandlerString = getAttributes(VALUE_HANDLER);
-        modelValueHandlerExtraArgument = getAttributes(VALUE_HANDLER_EXTRA_ARGUMENT);
         modelApplicabilityCalculatorStr = getAttributes(APPLICABILITY_CALCULATOR);
         modelFieldEditorId = getAttributes(FIELD_EDITOR_ID);
         modelFieldEditorExtraArgument = getAttributes(FIELD_EDITOR_EXTRA_ARGUMENT);
@@ -174,6 +175,8 @@ public class Option extends SchemaObject implements IOption {
 
         browseType = resolveBrowseType(modelBrowseTypeStr[SUPER]);
         resourceFilter = resolveResourceFilter(modelResFilterStr[SUPER]);
+
+        myBrowseFilterExtensions = modelBrowseFilterExtensionsStr[SUPER].split("\\s*,\\s*"); //$NON-NLS-1$
 
     }
 
@@ -292,39 +295,24 @@ public class Option extends SchemaObject implements IOption {
     }
 
     @Override
-    public String getEnumName(String commandID) throws BuildException {
-        return getName(commandID);
-    }
+    public String getEnumName(String enumID) {
+        if (enumID == null) {
+            return null;
+        }
 
-    @Override
-    public String getName(String commandID) throws BuildException {
-        // Sanity
-        if (commandID == null) {
+        if (valueType != ENUMERATED) {
+            return null;
+        }
+        EnumOptionValue ret = myEnumOptionValues.get(enumID);
+        if (ret == null) {
             return EMPTY_STRING;
         }
+        return ret.getName();
 
-        // Does this option instance have the list of values?
-        // if (applicableValuesList == null) {
-        // return EMPTY_STRING;
-        // }
-        if (getValueType() != ENUMERATED) {
-            throw new BuildException(Option_error_bad_value_type);
-        }
-
-        // First check for the command in ID->name map
-        // String nameFromMap = namesMap.get(commandID);
-        // if (nameFromMap == null) {
-        // // This may be a 1.2 project or plugin manifest. If so, the argument is the
-        // human readable
-        // // name of the enumeration.
-        // nameFromMap = commandID;
-        // }
-        // return nameFromMap;
-        return commandID;
     }
 
     @Override
-    public int getValueType() throws BuildException {
+    public int getValueType() {
         return valueType;
     }
 
@@ -522,12 +510,6 @@ public class Option extends SchemaObject implements IOption {
         }
 
         @Override
-        public boolean isContainer() {
-            return children != null && !children.isEmpty(); // TODO do we need explicit marking as container for empty
-                                                            // ones
-        }
-
-        @Override
         public String getName() {
             return treeNodeName;
         }
@@ -656,8 +638,6 @@ public class Option extends SchemaObject implements IOption {
         ret.append(prepend + USE_BY_SCANNER_DISCOVERY + EQUAL + modelIsForSD[SUPER] + NEWLINE);
         ret.append(prepend + TOOL_TIP + EQUAL + modelTip[SUPER] + NEWLINE);
         ret.append(prepend + CONTEXT_ID + EQUAL + modelContextId[SUPER] + NEWLINE);
-        ret.append(prepend + VALUE_HANDLER + EQUAL + modelValueHandlerString[SUPER] + NEWLINE);
-        ret.append(prepend + VALUE_HANDLER_EXTRA_ARGUMENT + EQUAL + modelValueHandlerExtraArgument[SUPER] + NEWLINE);
         ret.append(prepend + APPLICABILITY_CALCULATOR + EQUAL + modelApplicabilityCalculatorStr[SUPER] + NEWLINE);
         ret.append(prepend + FIELD_EDITOR_ID + EQUAL + modelFieldEditorId[SUPER] + NEWLINE);
         ret.append(prepend + FIELD_EDITOR_EXTRA_ARGUMENT + EQUAL + modelFieldEditorExtraArgument[SUPER] + NEWLINE);
@@ -665,14 +645,14 @@ public class Option extends SchemaObject implements IOption {
     }
 
     @Override
-    public String getDefaultValue(IResource resource, AutoBuildConfigurationDescription autoData) {
+    public String getDefaultValue(IResource resource, ITool tool, IAutoBuildConfigurationDescription autoData) {
         String ret = EMPTY_STRING;
         if (defaultValueGenerator != null) {
             return defaultValueGenerator.generateDefaultValue(this);
         }
 
         if (!myEnablement.isBlank()) {
-            ret = myEnablement.getDefaultValue(resource, autoData);
+            ret = myEnablement.getDefaultValue(resource, tool, autoData);
             if (!ret.isBlank()) {
                 return ret;
             }
@@ -705,7 +685,7 @@ public class Option extends SchemaObject implements IOption {
             AutoBuildConfigurationDescription autoConfData) {
         String[] retString = new String[1];
         String[] retNothing = new String[0];
-        if (!isEnabled(resource, autoConfData)) {
+        if (!isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoConfData)) {
             return new String[0];
         }
         if (commandGenerator != null) {
@@ -858,6 +838,137 @@ public class Option extends SchemaObject implements IOption {
 
     public String getCategoryID() {
         return modelCategoryId[SUPER];
+    }
+
+    @Override
+    public String[] getBrowseFilterExtensions() {
+        return myBrowseFilterExtensions;
+    }
+
+    @Override
+    public String getBrowseFilterPath() {
+        return modelBrowseFilterPath[SUPER];
+    }
+
+    @Override
+    public String[] getEnumIDs() {
+        Set<String> ret = new HashSet<>();
+        for (EnumOptionValue enumoptionValue : myEnumOptionValues.values()) {
+            ret.add(enumoptionValue.getID());
+        }
+        return ret.toArray(new String[ret.size()]);
+        //        // Does this option instance have the list of values?
+        //        if (applicableValuesList == null) {
+        //            if (superClass != null) {
+        //                return superClass.getApplicableValues();
+        //            } else {
+        //      return EMPTY_STRING_ARRAY;
+        //            }
+        //        }
+        //        // Get all of the enumerated names from the option
+        //        if (applicableValuesList.size() == 0) {
+        //            return EMPTY_STRING_ARRAY;
+        //        } else {
+        //            // Return the elements in the order they are specified in the manifest
+        //            String[] enumNames = new String[applicableValuesList.size()];
+        //            for (int index = 0; index < applicableValuesList.size(); ++index) {
+        //                enumNames[index] = getNameMap().get(applicableValuesList.get(index));
+        //            }
+        //            return enumNames;
+        //        }
+    }
+
+    public boolean isCommandLineContributionBlank(IResource resource, String optionValue,
+            AutoBuildConfigurationDescription autoConfData) {
+        if (!isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoConfData)) {
+            return true;
+        }
+        if (commandGenerator != null) {
+            String command[] = commandGenerator.generateCommand(this, optionValue, autoConfData);
+            if (command != null) {
+                for (String curCommand : command) {
+                    if (!curCommand.isBlank()) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            // if commandGenerator returns null do the default command
+        }
+        switch (valueType) {
+        case IOption.BOOLEAN:
+            if (Boolean.parseBoolean(optionValue)) {
+                return modelCommand[SUPER].isBlank();
+            }
+            return modelCommandFalse[SUPER].isBlank();
+        case IOption.ENUMERATED: {
+            EnumOptionValue selectedEnumValue = myEnumOptionValues.get(optionValue);
+            if (selectedEnumValue == null) {
+                // This should not happen
+                return true;
+            }
+            return selectedEnumValue.getCommandLIneDistribution().isBlank();
+        }
+        case IOption.TREE: {
+            String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
+            if (myTreeRoot != null) {
+                for (String curptionValue : values) {
+                    ITreeOption treeNode = myTreeRoot.findNode(curptionValue);
+                    if (treeNode != null) {
+                        String command = treeNode.getCommand();
+                        if (!command.isBlank()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        case IOption.STRING:
+            return evaluateCommand(modelCommand[SUPER], AutoBuildCommon.resolve(optionValue, autoConfData)).isBlank();
+        case IOption.STRING_LIST:
+        case IOption.INCLUDE_FILES:
+        case IOption.INCLUDE_PATH:
+        case IOption.LIBRARY_PATHS:
+        case IOption.LIBRARY_FILES:
+        case IOption.MACRO_FILES:
+        case IOption.UNDEF_INCLUDE_FILES:
+        case IOption.UNDEF_INCLUDE_PATH:
+        case IOption.UNDEF_LIBRARY_PATHS:
+        case IOption.UNDEF_LIBRARY_FILES:
+        case IOption.UNDEF_MACRO_FILES:
+        case IOption.PREPROCESSOR_SYMBOLS:
+        case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
+            String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
+            String[] resolvedList = AutoBuildCommon.resolveStringListValues(values, autoConfData, true);
+            for (String curResolved : resolvedList) {
+                if (!curResolved.isBlank() && !curResolved.contains(EMPTY_QUOTED_STRING))
+                    return false;
+            }
+            return true;
+        }
+        default:
+            break;
+        }
+        return true;
+    }
+
+    @Override
+    public String getEnumIDFromName(String enumOptionName) {
+        if (enumOptionName == null) {
+            return null;
+        }
+
+        if (valueType != ENUMERATED) {
+            return null;
+        }
+
+        for (EnumOptionValue curOptionValue : myEnumOptionValues.values()) {
+            if (enumOptionName.equals(curOptionValue.getName())) {
+                return curOptionValue.getID();
+            }
+        }
+        return EMPTY_STRING;
     }
 
 }

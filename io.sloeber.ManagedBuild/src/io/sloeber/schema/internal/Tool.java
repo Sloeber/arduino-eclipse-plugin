@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,11 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
+import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
 
 /**
  * Represents a tool that can be invoked during a build. Note that this class
@@ -131,7 +134,7 @@ public class Tool extends SchemaObject implements ITool {
 
     @Override
     public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData) {
-        if (!super.isEnabled(resource, autoData)) {
+        if (!super.isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoData)) {
             return false;
         }
         try {
@@ -207,6 +210,7 @@ public class Tool extends SchemaObject implements ITool {
             OutputType child = new OutputType(this, root, curChild);
             myOutputTypeMap.put(child.getId(), child);
         }
+
         if (!myModelIcon[SUPER].isBlank()) {
             try {
                 myIconPathURL = new URL(myModelIcon[SUPER]);
@@ -420,7 +424,7 @@ public class Tool extends SchemaObject implements ITool {
     private String[] getToolCommandFlagsInternal(AutoBuildConfigurationDescription autoBuildConfData,
             IResource resource) {
         // List<IOption> opts = getOptions();
-        Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(resource);
+        Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(resource, this);
 
         List<String> flags = new LinkedList<>();
 
@@ -533,7 +537,8 @@ public class Tool extends SchemaObject implements ITool {
             }
             if (inputType.isAssociatedWith(inputFile, outputTypeIn)) {
                 for (IOutputType outputType : getOutputTypes()) {
-                    if (!outputType.isEnabled(inputFile, autoBuildConfData)) {
+                    if (!outputType.isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, inputFile,
+                            autoBuildConfData)) {
                         if (VERBOSE) {
                             System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName() + DISABLED
                                     + outputType.getName());
@@ -656,8 +661,8 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     @Override
-    public List<IOptionCategory> getCategories(IAutoBuildConfigurationDescription iAutoBuildConf, IResource resource) {
-        List<IOptionCategory> ret = new LinkedList<>();
+    public Set<IOptionCategory> getCategories(IAutoBuildConfigurationDescription iAutoBuildConf, IResource resource) {
+        Set<IOptionCategory> ret = new LinkedHashSet<>();
         AutoBuildConfigurationDescription autoBuildConf = (AutoBuildConfigurationDescription) iAutoBuildConf;
         if (!isEnabled(resource, autoBuildConf)) {
             //The tools is not enabled=>ignore
@@ -680,7 +685,37 @@ public class Tool extends SchemaObject implements ITool {
                 return ret;
             }
         }
-        ret.addAll(myOptions.getCategories(resource, autoBuildConf));
+
+        return myOptions.getCategories(resource, autoBuildConf);
+    }
+
+    @Override
+    public Set<IOption> getOptionsOfCategory(IOptionCategory cat, IResource resource,
+            IAutoBuildConfigurationDescription iAutoBuildConf) {
+        Set<IOption> ret = new LinkedHashSet<>();
+        AutoBuildConfigurationDescription autoBuildConf = (AutoBuildConfigurationDescription) iAutoBuildConf;
+        if (!isEnabled(resource, autoBuildConf)) {
+            //The tools is not enabled=>ignore
+            return ret;
+        }
+        if (resource.isDerived()) {
+            // the resource is derived=>ignore
+            return ret;
+        }
+        if (resource instanceof IFile) {
+            boolean isAssociated = false;
+            for (IInputType inputType : getInputTypes()) {
+                if (inputType.isAssociatedWith((IFile) resource, null)) {
+                    isAssociated = true;
+                    continue;
+                }
+            }
+            if (!isAssociated) {
+                //The resource is a file and this tool is not processing this file =>ignore
+                return ret;
+            }
+        }
+        ret.addAll(myOptions.getOptionsOfCategory(cat, resource, autoBuildConf));
         return ret;
     }
 
