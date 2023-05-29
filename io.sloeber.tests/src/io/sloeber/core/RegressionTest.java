@@ -14,6 +14,7 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -369,6 +370,46 @@ public class RegressionTest {
             fail("Failed to compile the project after config rename");
         }
     }
+
+    //    /**
+    //     * Does Sloeber still compile after a project rename
+    //     * 
+    //     * @throws Exception
+    //     */
+    //    @Test
+    //    public void rename_Project() throws Exception {
+    //        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+    //
+    //        IProject theTestProject = null;
+    //        String projectName = "rename_project";
+    //        String projectNameRenamed = "renamed_project";
+    //
+    //        CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
+    //
+    //        NullProgressMonitor monitor = new NullProgressMonitor();
+    //        theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+    //                new CompileDescription(), new NullProgressMonitor());
+    //
+    //        Shared.waitForAllJobsToFinish(); // for the indexer
+    //        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    //        if (Shared.hasBuildErrors(theTestProject)) {
+    //            fail("Failed to compile the project before project rename");
+    //        }
+    //        theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+    //
+    //        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+    //        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(theTestProject);
+    //
+    //        IProjectDescription descr = theTestProject.getDescription();
+    //        descr.ren(projectNameRenamed);
+    //        theTestProject.setDescription(descr, null);
+    //
+    //        Shared.waitForAllJobsToFinish(); // for the indexer
+    //        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    //        if (Shared.hasBuildErrors(theTestProject)) {
+    //            fail("Failed to compile the project after project rename");
+    //        }
+    //    }
 
     /**
      * open and close a project should keep the compileDescription and
