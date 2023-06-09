@@ -4,7 +4,7 @@
    <extension-point id="io.sloeber.autoBuild.buildDefinitions" name="sloeber autoBuild" schema="schema/buildDefinitions.exsd"/>
  
  
-	<extension id="io.sloeber.builddef"
+	<extension id="io.sloeber.autoBuilkd.builddef"
         point="io.sloeber.autoBuild.buildDefinitions"
 		name="%extension.name.0" >
 		
