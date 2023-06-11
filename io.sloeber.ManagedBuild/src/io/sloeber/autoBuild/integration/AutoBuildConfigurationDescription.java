@@ -96,7 +96,9 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
      * When the tool is not null this option is only valid when we deal with this tool
      *  
      */
+    private Map<ITool, Map<IResource, Map<String, String>>> myDefaultOptions = new HashMap<>();
     private Map<ITool, Map<IResource, Map<String, String>>> mySelectedOptions = new HashMap<>();
+    private Map<ITool, Map<IResource, Map<String, String>>> myCombinedOptions = new HashMap<>();
     private String[] myRequiredErrorParserList;
 
     private boolean myGenerateMakeFilesAUtomatically = true;
@@ -166,7 +168,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
         mySelectedOptions.clear();
-        mySelectedOptions.putAll(autoBuildConfigBase.mySelectedOptions);//TODO JABA says this will probably cause issues
+        options_copy(autoBuildConfigBase.mySelectedOptions, mySelectedOptions);
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
         myGenerateMakeFilesAUtomatically = autoBuildConfigBase.myGenerateMakeFilesAUtomatically;
         myStopOnFirstBuildError = autoBuildConfigBase.myStopOnFirstBuildError;
@@ -202,6 +204,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
             myCustomToolPattern.put(curCustomToolEntry.getKey(), newMap);
         }
+        options_updateDefault();
     }
 
     /**
@@ -438,33 +441,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     }
 
-    private void doLegacyChanges() {
-        IProjectType projectType = myAutoBuildConfiguration.getProjectType();
-        if ("io.sloeber.autoBuild.buildDefinitions".equals(projectType.getExtensionPointID())) { //$NON-NLS-1$
-            if ("cdt.cross.gnu".equals(projectType.getExtensionID())) { //$NON-NLS-1$
-                switch (projectType.getId()) {
-                case "cdt.managedbuild.target.gnu.cross.exe": { //$NON-NLS-1$
-                    Map<String, String> options = mySelectedOptions.get(null).get(myProject);
-                    options.put("gnu.c.link.option.shared", FALSE); //$NON-NLS-1$
-                    options.put("gnu.cpp.link.option.shared", FALSE); //$NON-NLS-1$
-                    // mySelectedOptions.put(myProject, options);
-                    break;
-                }
-                case "cdt.managedbuild.target.gnu.cross.so": { //$NON-NLS-1$
-                    Map<String, String> options = mySelectedOptions.get(null).get(myProject);
-                    options.put("gnu.c.link.option.shared", TRUE.toLowerCase()); //$NON-NLS-1$
-                    options.put("gnu.cpp.link.option.shared", TRUE.toLowerCase()); //$NON-NLS-1$
-                    options.put("gnu.cpp.link.option.soname", PROJECT_NAME_VARIABLE + ".so"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                    // mySelectedOptions.put(myProject, options);
-                    break;
-                }
-                }
-            }
-        }
-
-    }
-
     public static AutoBuildConfigurationDescription getFromConfig(ICConfigurationDescription confDesc) {
         // TOFIX JABA as CDT does a create on the configuration data in this call
         // I will need to make a lookup table to avoid doing this call
@@ -472,10 +448,12 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         return (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
     }
 
-    public void setCdtConfigurationDescription(ICConfigurationDescription cfgDescription) {
-        myCdtConfigurationDescription = cfgDescription;
-        myBuildBuildData = new BuildBuildData(this);
-        mySelectedOptions.put(null, myAutoBuildConfiguration.getDefaultProjectOptions(this));
+    /**
+     * get the default options and update the combined options
+     */
+    private void options_updateDefault() {
+        myDefaultOptions.clear();
+        myDefaultOptions.put(null, myAutoBuildConfiguration.getDefaultProjectOptions(this));
         IToolChain toolchain = myAutoBuildConfiguration.getToolChain();
 
         for (ITool curITool : toolchain.getTools()) {
@@ -485,10 +463,54 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             }
             Map<IResource, Map<String, String>> resourceOptions = new HashMap<>();
             resourceOptions.put(myProject, curTool.getDefaultOptions(myProject, this));
-            mySelectedOptions.put(curTool, resourceOptions);
+            myDefaultOptions.put(curTool, resourceOptions);
         }
+        options_combine();
+    }
 
-        doLegacyChanges();
+    /*
+     * take myDefaultOptions and mySelected options and combine them in myCombinedOptions
+     */
+    private void options_combine() {
+        myCombinedOptions.clear();
+        options_copy(myDefaultOptions, myCombinedOptions);
+        options_copy(mySelectedOptions, myCombinedOptions);
+
+    }
+
+    /*
+     * take options and make a copy
+     */
+    private void options_copy(Map<ITool, Map<IResource, Map<String, String>>> from,
+            Map<ITool, Map<IResource, Map<String, String>>> to) {
+        for (Entry<ITool, Map<IResource, Map<String, String>>> toolEntrySet : from.entrySet()) {
+            ITool curTool = toolEntrySet.getKey();
+            Map<IResource, Map<String, String>> curFromResourceOptions = toolEntrySet.getValue();
+
+            Map<IResource, Map<String, String>> curToResourceOptions = to.get(curTool);
+            if (curToResourceOptions == null) {
+                curToResourceOptions = new HashMap<>();
+                to.put(curTool, curToResourceOptions);
+            }
+            for (Entry<IResource, Map<String, String>> fromResourceSet : curFromResourceOptions.entrySet()) {
+                IResource curResource = fromResourceSet.getKey();
+                Map<String, String> curFromOptions = fromResourceSet.getValue();
+
+                Map<String, String> curToOptions = curToResourceOptions.get(curResource);
+                if (curToOptions == null) {
+                    curToOptions = new HashMap<>();
+                    curToResourceOptions.put(curResource, curToOptions);
+                }
+                curToOptions.putAll(curFromOptions);
+            }
+        }
+    }
+
+    public void setCdtConfigurationDescription(ICConfigurationDescription cfgDescription) {
+        myCdtConfigurationDescription = cfgDescription;
+        myBuildBuildData = new BuildBuildData(this);
+        options_updateDefault();
+
         isValid = true;
     }
 
@@ -606,6 +628,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setDescription(String description) {
+        checkIfWeCanWrite();
         myDescription = description;
     }
 
@@ -655,6 +678,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setName(String name) {
+        checkIfWeCanWrite();
         myName = name;
 
     }
@@ -677,17 +701,22 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     }
 
     public String setProperty(String key, String value) {
+        checkIfWeCanWrite();
         return myProperties.put(key, value);
     }
 
     /**
-     * Get the options selected by the user. At project creation time the options
-     * are set to the defaults. File specific values overrule folder specific values
+     * Get the options selected by the user combined with the default options.
+     * 
+     * File specific values overrule folder specific values
      * which overrule project specific values Only the parentfolder options are
      * taken into account
      * 
      * @param resource
      *            the resource you want the selected options for
+     * @param tool
+     *            The tool you want the options for
+     * 
      * @return a Map of <optionID,Selectedvalue>
      */
     @Override
@@ -695,7 +724,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         Map<String, String> retProject = new HashMap<>();
         Map<String, String> retFolder = new HashMap<>();
         Map<String, String> retFile = new HashMap<>();
-        for (Entry<ITool, Map<IResource, Map<String, String>>> curToolOptions : mySelectedOptions.entrySet()) {
+        for (Entry<ITool, Map<IResource, Map<String, String>>> curToolOptions : myCombinedOptions.entrySet()) {
             ITool curTool = curToolOptions.getKey();
             if (curTool != null && curTool != tool) {
                 continue;
@@ -737,6 +766,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setUseDefaultBuildCommand(boolean useDefaultBuildCommand) {
+        checkIfWeCanWrite();
         myUseDefaultBuildCommand = useDefaultBuildCommand;
     }
 
@@ -747,11 +777,13 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setGenerateMakeFilesAUtomatically(boolean generateMakeFilesAUtomatically) {
+        checkIfWeCanWrite();
         myGenerateMakeFilesAUtomatically = generateMakeFilesAUtomatically;
     }
 
     @Override
     public void setBuildFolderString(String buildFolder) {
+        checkIfWeCanWrite();
         myBuildFolderString = buildFolder;
     }
 
@@ -796,16 +828,19 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setUseStandardBuildArguments(boolean useStandardBuildArguments) {
+        checkIfWeCanWrite();
         myUseStandardBuildArguments = useStandardBuildArguments;
     }
 
     @Override
     public boolean stopOnFirstBuildError() {
+        checkIfWeCanWrite();
         return myStopOnFirstBuildError;
     }
 
     @Override
     public void setStopOnFirstBuildError(boolean stopOnFirstBuildError) {
+        checkIfWeCanWrite();
         myStopOnFirstBuildError = stopOnFirstBuildError;
     }
 
@@ -816,6 +851,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setIsParallelBuild(boolean parallelBuild) {
+        checkIfWeCanWrite();
         myIsParallelBuild = parallelBuild;
     }
 
@@ -826,6 +862,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setParallelizationNum(int parallelizationNum) {
+        checkIfWeCanWrite();
         myParallelizationNum = parallelizationNum;
     }
 
@@ -836,6 +873,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setCleanBuildEnable(boolean cleanBuildEnabled) {
+        checkIfWeCanWrite();
         myIsCleanBuildEnabled = cleanBuildEnabled;
     }
 
@@ -846,6 +884,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setIncrementalBuildEnable(boolean incrementalBuildEnabled) {
+        checkIfWeCanWrite();
         myIsIncrementalBuildEnabled = incrementalBuildEnabled;
 
     }
@@ -862,6 +901,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setCustomBuildCommand(String makeArgs) {
+        checkIfWeCanWrite();
         myCustomBuildCommand = makeArgs;
     }
 
@@ -988,6 +1028,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setBuildRunner(IBuildRunner buildRunner) {
+        checkIfWeCanWrite();
         myBuildRunner = buildRunner;
     }
 
@@ -998,11 +1039,13 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setAutoBuildEnabled(boolean enabled) {
+        checkIfWeCanWrite();
         myIsAutoBuildEnabled = enabled;
     }
 
     @Override
     public void setCustomBuildArguments(String arguments) {
+        checkIfWeCanWrite();
         myCustomBuildArguments = arguments;
     }
 
@@ -1013,6 +1056,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setAutoMakeTarget(String target) {
+        checkIfWeCanWrite();
         myAutoMakeTarget = target;
     }
 
@@ -1023,6 +1067,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setIncrementalMakeTarget(String target) {
+        checkIfWeCanWrite();
         myIncrementalMakeTarget = target;
     }
 
@@ -1033,6 +1078,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setCleanMakeTarget(String target) {
+        checkIfWeCanWrite();
         myCleanMakeTarget = target;
 
     }
@@ -1049,8 +1095,14 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setPrebuildStep(String text) {
+        checkIfWeCanWrite();
         myPreBuildStep = text;
+    }
 
+    private void checkIfWeCanWrite() {
+        if (myCdtConfigurationDescription.isReadOnly()) {
+            myCdtConfigurationDescription.setDescription(null);
+        }
     }
 
     @Override
@@ -1088,6 +1140,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setCustomToolCommand(ITool tool, IResource resource, String customCommand) {
+        checkIfWeCanWrite();
         if (tool == null) {
             //This should not happen; ignore
             return;
@@ -1145,6 +1198,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public void setCustomToolPattern(ITool tool, IResource resource, String pattern) {
+        checkIfWeCanWrite();
         if (tool == null) {
             //This should not happen; ignore
             return;
@@ -1216,25 +1270,21 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         if (!resourceString.isBlank()) {
             resource = myProject.getFile(resourceString);
         }
-        ;
         return resource;
     }
 
     @Override
     public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID) {
         setOptionValueInternal(resource, tool, option.getId(), valueID);
+        options_combine();
     }
 
     private void setOptionValueInternal(IResource resource, ITool tool, String optionID, String valueIDin) {
         String valueID = valueIDin;
-        Option option = (Option) tool.getOptions().getOptionById(optionID);
-        //        if (option.isCommandLineContributionBlank(resource, valueID, this)) {
-        //            valueID = null;
-        //        }
         Map<IResource, Map<String, String>> resourceOptions = mySelectedOptions.get(tool);
         if (resourceOptions == null) {
             if (valueID == null || valueID.isBlank()) {
-                //as it does not exist and we want to erese do nothing
+                //as it does not exist and we want to erase do nothing
                 return;
             }
             resourceOptions = new HashMap<>();
@@ -1244,7 +1294,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         Map<String, String> options = resourceOptions.get(resource);
         if (options == null) {
             if (valueID == null || valueID.isBlank()) {
-                //as it does not exist and we want to erese do nothing
+                //as it does not exist and we want to erase do nothing
                 return;
             }
             options = new HashMap<>();
@@ -1260,7 +1310,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public String getOptionValue(IResource resource, ITool tool, IOption option) {
-        Map<IResource, Map<String, String>> toolOptions = mySelectedOptions.get(tool);
+        Map<IResource, Map<String, String>> toolOptions = myCombinedOptions.get(tool);
 
         if (toolOptions == null) {
             return EMPTY_STRING;
@@ -1275,5 +1325,36 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             return EMPTY_STRING;
         }
         return ret;
+    }
+
+    @Override
+    public String getExtensionPointID() {
+        return myAutoBuildConfiguration.getProjectType().getExtensionPointID();
+    }
+
+    @Override
+    public String getExtensionID() {
+        return myAutoBuildConfiguration.getProjectType().getExtensionID();
+    }
+
+    @Override
+    public IProjectType getProjectType() {
+        return myAutoBuildConfiguration.getProjectType();
+    }
+
+    @Override
+    public IConfiguration getAutoBuildConfiguration() {
+        return myAutoBuildConfiguration;
+    }
+
+    @Override
+    public void setModelConfiguration(IConfiguration newConfiguration) {
+        checkIfWeCanWrite();
+        myAutoBuildConfiguration = newConfiguration;
+        myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
+        //   myName = myAutoBuildConfiguration.getName();
+        //   myDescription = myAutoBuildConfiguration.getDescription();
+        myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
+        options_updateDefault();
     }
 }

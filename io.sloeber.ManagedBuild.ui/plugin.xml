@@ -79,6 +79,21 @@
               </adapt>
            </enabledWhen>
         </page>
+        <page
+              category="io.sloeber.autoBuild.projectProperties.main"
+              class="io.sloeber.autoBuild.integrations.Page_ProjectSettings"
+              id="io.sloeber.autoBuild.projectProperties.Page_ProjectSettings"
+              name="%CDTProjectProperty.name">
+           <enabledWhen>
+              <adapt
+                    type="org.eclipse.core.resources.IResource">
+                 <test
+                       property="org.eclipse.core.resources.projectNature"
+                       value="io.sloeber.autoBuildNature">
+                 </test>
+              </adapt>
+           </enabledWhen>
+        </page>
 <!--
             <page
             class="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings"
@@ -163,6 +178,12 @@
           name="%Error.parsers"
           parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
           weight="070">
+    </tab>
+    <tab
+          class="io.sloeber.autoBuild.ui.tabs.ProjectSettingsTab"
+          icon="icons/obj16/environment.gif"
+          name="%ProjectSettingsTab.name"
+          parent="io.sloeber.autoBuild.integrations.Page_ProjectSettings">
     </tab>
  </extension>
  

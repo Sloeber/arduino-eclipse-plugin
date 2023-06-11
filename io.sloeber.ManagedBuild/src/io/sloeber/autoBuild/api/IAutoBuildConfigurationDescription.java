@@ -4,11 +4,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
+import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 
 public interface IAutoBuildConfigurationDescription {
@@ -174,9 +175,19 @@ public interface IAutoBuildConfigurationDescription {
 
     public void setCustomToolPattern(ITool tool, IResource resource, String pattern);
 
-    String getToolPattern(ITool tool, IResource resource);
+    public String getToolPattern(ITool tool, IResource resource);
 
     public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID);
 
     public String getOptionValue(IResource resource, ITool tool, IOption option);
+
+    public String getExtensionPointID();
+
+    public String getExtensionID();
+
+    public IProjectType getProjectType();
+
+    public IConfiguration getAutoBuildConfiguration();
+
+    public void setModelConfiguration(IConfiguration newConfiguration);
 }

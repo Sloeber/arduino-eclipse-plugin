@@ -20,8 +20,12 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.cdt.core.AbstractCExtension;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.language.settings.providers.ICBuildOutputParser;
@@ -70,6 +74,10 @@ public class AutoBuildManager extends AbstractCExtension {
 
     static {
         supportedExtensionPointIDs.add("io.sloeber.autoBuild.buildDefinitions"); //$NON-NLS-1$
+    }
+
+    public static String[] supportedExtensionPointIDs() {
+        return supportedExtensionPointIDs.toArray(new String[supportedExtensionPointIDs.size()]);
     }
 
     @SuppressWarnings("nls")
@@ -385,4 +393,64 @@ public class AutoBuildManager extends AbstractCExtension {
         }
     }
 
+    public static String[] getSupportedExtensionIDs(String extensionPointID) {
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(extensionPointID);
+        if (extensionPoint == null) {
+            return new String[0];
+        }
+        Set<String> ret = new HashSet<>();
+        IExtension extensions[] = extensionPoint.getExtensions();
+        for (IExtension extension : extensions) {
+            ret.add(extension.getUniqueIdentifier());
+        }
+        return ret.toArray(new String[ret.size()]);
+    }
+
+    public static Map<String, String> getProjectIDs(String extensionPointID, String extensionID) {
+        Map<String, String> ret = new HashMap<>();
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(extensionPointID);
+        if (extensionPoint == null) {
+            return ret;
+        }
+        IExtension extension = extensionPoint.getExtension(extensionID);
+        if (extension == null) {
+            return ret;
+        }
+        IConfigurationElement[] elements = extension.getConfigurationElements();
+        if (elements == null) {
+            return ret;
+        }
+        for (IConfigurationElement element : elements) {
+            if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
+                ret.put(element.getAttribute(ID), element.getAttribute(NAME));
+            }
+
+        }
+        return ret;
+    }
+
+    public static Set<IProjectType> getProjectTypes(String extensionPointID, String extensionID) {
+        Set<IProjectType> ret = new HashSet<>();
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(extensionPointID);
+        if (extensionPoint == null) {
+            return ret;
+        }
+        IExtension extension = extensionPoint.getExtension(extensionID);
+        if (extension == null) {
+            return ret;
+        }
+        IConfigurationElement[] elements = extension.getConfigurationElements();
+        if (elements == null) {
+            return ret;
+        }
+        for (IConfigurationElement element : elements) {
+            if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
+                IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID,
+                        element.getAttribute(ID), true);
+                ret.add(projectType);
+            }
+
+        }
+        return ret;
+    }
 }
