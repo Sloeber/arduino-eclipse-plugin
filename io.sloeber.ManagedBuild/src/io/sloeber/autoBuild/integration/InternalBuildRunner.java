@@ -128,7 +128,7 @@ public class InternalBuildRunner extends IBuildRunner {
                 int sequenceID = -1;
                 boolean lastSequenceID = true;
                 boolean isError = false;
-                //Run ppreBuildStep if existing
+                //Run preBuildStep if existing
                 String preBuildStep = autoData.getPrebuildStep();
                 preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
                 if (!preBuildStep.isEmpty()) {
@@ -242,7 +242,7 @@ public class InternalBuildRunner extends IBuildRunner {
                     //                    lastSequenceID = true;
                     //                }
                 } while (!(lastSequenceID || isError));
-                //Run ppreBuildStep if existing
+                //Run postBuildStep if existing
                 String postBuildStep = autoData.getPostbuildStep();
                 postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
                 if (!postBuildStep.isEmpty()) {
