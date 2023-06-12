@@ -106,7 +106,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     private boolean myIsParallelBuild = false;
 
-    private IBuildRunner myBuildRunner = staticMakeBuildRunner;
+    private IBuildRunner myBuildRunner = staticInternalBuildRunner; //internal builder is default
     private boolean myIsCleanBuildEnabled = myBuildRunner.supportsCleanBuild();
     private boolean myIsIncrementalBuildEnabled = myBuildRunner.supportsIncrementalBuild();
     private boolean myIsAutoBuildEnabled = myBuildRunner.supportsAutoBuild();
