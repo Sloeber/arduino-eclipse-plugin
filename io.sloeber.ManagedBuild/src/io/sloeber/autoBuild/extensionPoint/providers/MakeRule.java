@@ -216,7 +216,6 @@ public class MakeRule {
                 Set<String> niceNames = niceNameList.get(cmdVariable);
                 if (niceNames == null) {
                     niceNames = new HashSet<>();
-                    niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
                     niceNameList.put(cmdVariable, niceNames);
                 }
                 niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
