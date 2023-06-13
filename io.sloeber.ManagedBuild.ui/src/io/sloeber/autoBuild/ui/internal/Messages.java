@@ -302,6 +302,14 @@ public class Messages extends NLS {
     public static String NewModelProjectWizard_5;
     public static String CProjectWizard_0;
 
+    public static String ProjectImportConfigurator_Checking;
+
+    public static String TemplateWizard_CannotBeCreated;
+    public static String TemplateWizard_ErrorCreating;
+    public static String TemplateWizard_FailedToOpen;
+    public static String TemplateWizard_Generating;
+    public static String TemplateWizard_InternalError;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
