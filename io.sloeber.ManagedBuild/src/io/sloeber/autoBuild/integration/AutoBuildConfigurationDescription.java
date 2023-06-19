@@ -10,6 +10,8 @@ import java.util.Set;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -547,58 +549,11 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         return myName;
     }
 
-    CFolderData retTest = null;//TOFIX JABA this should not be here
-
     @Override
     public CFolderData getRootFolderData() {
 
-        int option = 5;
-        if (retTest != null) {
-            //option 0,2,3 same behaviour
-            return retTest;
-        }
-        if (option == 0) {
-            //when opening projectproperties->somethintg with configurations
-            //java.lang.IllegalStateException
-            // at org.eclipse.cdt.core.settings.model.util.PathSettingsContainer.getValue(PathSettingsContainer.java:608)
-            CDataFactory factory = CDataFactory.getDefault();
-            CFolderData foData = factory.createFolderData(null, null, getId(), false, new Path(SLACH));
-            retTest = foData;
-        }
-        if (option == 1) {
-            CDataFactory factory = CDataFactory.getDefault();
-            CFolderData foData = factory.createFolderData(this, null, getId(), false, new Path(SLACH));
-            factory.link(this, foData); //This fails as it assumes CDefaultFolderData and not CFolderData
-            retTest = foData;
-        }
-        if (option == 5) {
-            CDataFactory factory = CDataFactory.getDefault();
-            retTest = factory.createFolderData(this, null, null, false, myProject.getFullPath());
-        }
-        if (option == 2) {
-            //project creation fails
-            //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.extension.CFolderData.getPath()" because "baseRootFolderData" is null
-            try {
-                retTest = createFolderData(new Path(""), null); //$NON-NLS-1$
-            } catch (CoreException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        if (option == 3) {
-            //When opening project properties->language settings
-            //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.ICResourceDescription.getConfiguration()" because the return value of "org.eclipse.cdt.internal.ui.language.settings.providers.LanguageSettingsEntriesTab.getResDesc()" is null
-            //at org.eclipse.cdt.internal.ui.language.settings.providers.LanguageSettingsEntriesTab.getConfigurationDescription(LanguageSettingsEntriesTab.java:256)
-            retTest = new FolderData(myProject, this);
-        }
-        if (option == 4) {
-            //"src" didn't work "" is project creation failure
-            retTest = new FolderData(myProject.getFolder("src"), this); //$NON-NLS-1$
-        }
-        //project creation fails
-        //java.lang.NullPointerException: Cannot invoke "org.eclipse.cdt.core.settings.model.extension.CFolderData.getPath()" because "baseRootFolderData" is null
-        //at org.eclipse.cdt.core.settings.model.extension.impl.CDefaultConfigurationData.copySettingsFrom(CDefaultConfigurationData.java:117)
-        return retTest;
+        CDataFactory factory = CDataFactory.getDefault();
+        return factory.createFolderData(this, null, null, false, new Path(SLACH));
     }
 
     //    protected void addRcData(CResourceData data) {
@@ -661,6 +616,9 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         // TODO Auto-generated method stub
         CSourceEntry[] ret = new CSourceEntry[1];
         ret[0] = new CSourceEntry(myProject.getFolder("src"), null, 0); //$NON-NLS-1$
+        //        int flags = ICSettingEntry.RESOLVED;
+        //        String name = "";//myProject.getFullPath().toString();
+        //        ret[0] = new CSourceEntry(name, null, flags);
         return ret;
     }
 
