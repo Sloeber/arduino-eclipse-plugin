@@ -20,6 +20,12 @@ public abstract class AbstractAutoBuildPropertyTab extends AbstractCPropertyTab 
         if (cfgd != null) {
             myAutoConfDesc = AutoBuildConfigurationDescription.getFromConfig(cfgd.getConfiguration());
         }
+        if (page.isMultiCfg()) {
+            setAllVisible(false, null);
+        } else {
+            setAllVisible(true, null);
+        }
+
         updateButtons();
     }
 
