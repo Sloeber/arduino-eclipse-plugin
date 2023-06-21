@@ -1,12 +1,10 @@
 package io.sloeber.autoBuild.ui.tabs;
 
-import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.swt.widgets.Shell;
@@ -19,15 +17,8 @@ public abstract class AbstractAutoBuildPropertyTab extends AbstractCPropertyTab 
 
     @Override
     public void updateData(ICResourceDescription cfgd) {
-
-        for (ICConfigurationDescription curcfg : page.getCfgsEditable()) {
-            if (myAutoConfDescMap.get(curcfg.getId()) == null) {
-                myAutoConfDesc = AutoBuildProject.getAutoBuildConfig(curcfg);
-                myAutoConfDescMap.put(curcfg.getId(), myAutoConfDesc);
-            }
-        }
         if (cfgd != null) {
-            myAutoConfDesc = myAutoConfDescMap.get(cfgd.getConfiguration().getId());
+            myAutoConfDesc = AutoBuildConfigurationDescription.getFromConfig(cfgd.getConfiguration());
         }
         updateButtons();
     }

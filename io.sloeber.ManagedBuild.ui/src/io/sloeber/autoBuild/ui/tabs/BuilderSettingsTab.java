@@ -164,7 +164,7 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         //as each autoConfDesc can contain a different set of builders
         //we need to replace all of them
         myBuilderTypeCombo.removeAll();
-        for (IBuildRunner buildRunner : myAutoConfDesc.getBuildRunners()) {
+        for (IBuildRunner buildRunner : myAutoConfDesc.getCompatibleBuildRunners()) {
             myBuilderTypeCombo.add(buildRunner.getName());
             myBuilderTypeCombo.setData(buildRunner.getName(), buildRunner);
         }

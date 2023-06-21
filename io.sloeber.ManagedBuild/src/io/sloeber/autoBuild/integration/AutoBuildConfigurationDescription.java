@@ -10,8 +10,6 @@ import java.util.Set;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
-import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -41,7 +39,6 @@ import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.Option;
 import io.sloeber.schema.internal.Tool;
 
 public class AutoBuildConfigurationDescription extends CConfigurationData
@@ -132,7 +129,9 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     //End of fields that need to be copied/made persistent
 
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
-    private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion."); //$NON-NLS-1$
+    private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion"); //$NON-NLS-1$
+    private CFolderData myRootFolderData;
+    private String myRootFolderID = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion.rootFolder"); //$NON-NLS-1$;
 
     private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
     private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
@@ -167,6 +166,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         isValid = autoBuildConfigBase.isValid;
         myName = myCdtConfigurationDescription.getName();
         myDescription = autoBuildConfigBase.myDescription;
+        myRootFolderID = autoBuildConfigBase.myRootFolderID;
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
         mySelectedOptions.clear();
@@ -322,7 +322,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
                 myCustomBuildCommand = value;
                 break;
             case KEY_BUILD_RUNNER_NAME:
-                for (IBuildRunner buildRunner : getBuildRunners()) {
+                for (IBuildRunner buildRunner : getCompatibleBuildRunners()) {
                     if (myBuildRunner == null || buildRunner.getName().equals(value)) {
                         myBuildRunner = buildRunner;
                     }
@@ -448,6 +448,12 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         // I will need to make a lookup table to avoid doing this call
         // I currently keep this with side effects
         return (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
+        //        The code above always returns a readable configdesc
+        //        eventhough the method below exists it is not defined in ICConfigurationDescription 
+        //        and as sutch not usable
+        //        boolean writable =!confDesc.isReadOnly();
+        //        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData(writable);
+
     }
 
     /**
@@ -551,9 +557,11 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public CFolderData getRootFolderData() {
-
-        CDataFactory factory = CDataFactory.getDefault();
-        return factory.createFolderData(this, null, null, false, new Path(SLACH));
+        if (myRootFolderData == null) {
+            CDataFactory factory = CDataFactory.getDefault();
+            myRootFolderData = factory.createFolderData(this, null, myRootFolderID, false, Path.ROOT);
+        }
+        return myRootFolderData;
     }
 
     //    protected void addRcData(CResourceData data) {
@@ -569,9 +577,8 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     @Override
     public CResourceData[] getResourceDatas() {
-        //        CResourceData datas[] = new CResourceData[1];
-        //        datas[0] = new FolderData(myProject, this);
-        CResourceData datas[] = new CResourceData[0];
+        CResourceData datas[] = new CResourceData[1];
+        datas[0] = getRootFolderData();
         return datas;
 
     }
@@ -980,7 +987,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     }
 
     @Override
-    public Set<IBuildRunner> getBuildRunners() {
+    public Set<IBuildRunner> getCompatibleBuildRunners() {
         return myBuildRunners;
     }
 
@@ -1211,24 +1218,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
             return retProject;
         }
         return tool.getDefaultCommandLinePattern();
-    }
-
-    private String makeKey(IResource resource, ITool tool) {
-        return resource.getProjectRelativePath().toString() + SEMICOLON + tool.getId();
-
-    }
-
-    private String getToolIDFromKey(String key) {
-        return key.split(SEMICOLON)[1];
-    }
-
-    private IResource getResourceFromKey(String key) {
-        String resourceString = key.split(SEMICOLON)[0];
-        IResource resource = myProject;
-        if (!resourceString.isBlank()) {
-            resource = myProject.getFile(resourceString);
-        }
-        return resource;
     }
 
     @Override

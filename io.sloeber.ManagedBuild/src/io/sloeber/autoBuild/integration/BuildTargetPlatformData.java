@@ -14,6 +14,8 @@
 package io.sloeber.autoBuild.integration;
 
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.internal.TargetPlatform;
 
@@ -28,12 +30,12 @@ public class BuildTargetPlatformData extends CTargetPlatformData {
         fTargetPlatform = (TargetPlatform) iTargetPlatform;
         if (fTargetPlatform != null) {
             myBinaryParserIds = fTargetPlatform.getBinaryParserList().toArray(new String[0]);
-            myId = fTargetPlatform.getId();
+            myId = CDataUtil.genId(fTargetPlatform.getId());
             myName = fTargetPlatform.getName();
             myIsValid = true;
         } else {
             myBinaryParserIds = new String[0];
-            myId = "my.stupid.id.because.i.fake.existance.but.in.matters.of.fatc.I.do.not.exist"; //$NON-NLS-1$
+            myId = CDataUtil.genId("my.stupid.id.because.i.fake.existance.but.in.matters.of.fact.I.do.not.exist"); //$NON-NLS-1$
             myName = "to be or not to be; that is the questions"; //$NON-NLS-1$
             myIsValid = false;
         }
@@ -61,7 +63,7 @@ public class BuildTargetPlatformData extends CTargetPlatformData {
 
     @Override
     public boolean isValid() {
-        return myIsValid;
+        return true;
     }
 
 }

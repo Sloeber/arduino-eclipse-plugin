@@ -14,11 +14,14 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.settings.model.COutputEntry;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -31,10 +34,12 @@ public class BuildBuildData extends CBuildData {
     private BuildEnvironmentContributor myBuildEnvironmentContributor;
     private ICOutputEntry[] myEntries = null;// new ICOutputEntry[0];
     private AutoBuildConfigurationDescription myAutoBuildConf;
+    private String myID;
 
     public BuildBuildData(AutoBuildConfigurationDescription autoBuildConf) {
         myAutoBuildConf = autoBuildConf;
         fBuilder = myAutoBuildConf.getConfiguration().getBuilder();
+        myID = CDataUtil.genId(fBuilder.getId());
         myBuildEnvironmentContributor = new BuildEnvironmentContributor(myAutoBuildConf.getConfiguration());
 
     }
@@ -76,7 +81,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public String getId() {
-        return fBuilder.getId();
+        return myID;
     }
 
     @Override

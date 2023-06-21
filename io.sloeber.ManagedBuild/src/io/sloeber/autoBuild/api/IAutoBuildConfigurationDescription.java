@@ -85,7 +85,7 @@ public interface IAutoBuildConfigurationDescription {
 
     public IBuildRunner getBuildRunner();
 
-    public Set<IBuildRunner> getBuildRunners();
+    public Set<IBuildRunner> getCompatibleBuildRunners();
 
     public void setBuildRunner(IBuildRunner buildRunner);
 
