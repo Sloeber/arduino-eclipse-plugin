@@ -214,14 +214,14 @@ public class MakeRules implements Iterable<MakeRule> {
      * @throws CoreException
      */
     public MakeRules(AutoBuildConfigurationDescription autoBuildConfData, IFolder buildfolder,
-            ICSourceEntry[] srcEntries, Set<IFolder> foldersToBuild) throws CoreException {
+            Set<IFolder> foldersToBuild) throws CoreException {
 
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
         subDirVisitor.myBuildfolder = buildfolder;
         subDirVisitor.myAutoBuildConfData = autoBuildConfData;
         subDirVisitor.myConfig = autoBuildConfData.getConfiguration();
         subDirVisitor.myFoldersToBuild = foldersToBuild;
-        subDirVisitor.mySrcEntries = srcEntries;
+        subDirVisitor.mySrcEntries = autoBuildConfData.getSourceEntries();
         autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
 
         // Now we have the makeRules for the source files generate the MakeRules for the
@@ -249,7 +249,7 @@ public class MakeRules implements Iterable<MakeRule> {
             if (InputFileIgnoreList.contains(resource.getName())) {
                 return false;
             }
-            boolean isExcluded = !CDataUtil.isExcluded(resource.getLocation(), mySrcEntries);
+            boolean isExcluded = CDataUtil.isExcluded(resource.getProjectRelativePath(), mySrcEntries);
             if (isExcluded) {
                 return false;
             }

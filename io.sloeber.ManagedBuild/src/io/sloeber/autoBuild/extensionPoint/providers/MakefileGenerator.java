@@ -48,7 +48,6 @@ public class MakefileGenerator implements IMakefileGenerator {
     IProject myProject;
     ICConfigurationDescription myCConfigurationDescription;
     IFolder myTopBuildDir;
-    ICSourceEntry[] mySrcEntries;
     MakeRules myMakeRules = null;
     Set<IFolder> myFoldersToBuild = null;
     AutoBuildConfigurationDescription myAutoBuildConfData;
@@ -88,24 +87,6 @@ public class MakefileGenerator implements IMakefileGenerator {
             buildTargetExt = EMPTY_STRING;
         }
 
-        // TOFIX JABA currently the source entries are always null
-        // need to revisit this after storing the data to activate the exclude from
-        // build functionality
-        // get the source entries
-        List<ICSourceEntry> srcEntries = myConfig.getSourceEntries();
-        if (srcEntries.size() == 0) {
-            // srcEntries = new LinkedList<ICSourceEntry>();
-            srcEntries.add(
-                    new CSourceEntry(Path.EMPTY, null, ICSettingEntry.RESOLVED | ICSettingEntry.VALUE_WORKSPACE_PATH));
-        } else {
-
-            ICSourceEntry[] resolvedEntries = CDataUtil.resolveEntries(srcEntries.toArray(new ICSourceEntry[0]),
-                    myCConfigurationDescription);
-            for (ICSourceEntry curEntry : resolvedEntries) {
-                srcEntries.add(curEntry);
-            }
-        }
-        mySrcEntries = srcEntries.toArray(new ICSourceEntry[srcEntries.size()]);
     }
 
     @Override
@@ -135,7 +116,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         MultiStatus status;
         //This object remains alive between builds; therefore we need to reset the field values
         myFoldersToBuild = new HashSet<>();
-        myMakeRules = new MakeRules(myAutoBuildConfData, myTopBuildDir, mySrcEntries, myFoldersToBuild);
+        myMakeRules = new MakeRules(myAutoBuildConfData, myTopBuildDir, myFoldersToBuild);
 
         if (myMakeRules.size() == 0) {
             // Throw an error if no source file make rules have been created

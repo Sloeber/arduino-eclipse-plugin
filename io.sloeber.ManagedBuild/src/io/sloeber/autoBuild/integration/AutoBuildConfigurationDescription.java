@@ -8,26 +8,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
-import org.eclipse.cdt.core.settings.model.extension.CFileData;
-import org.eclipse.cdt.core.settings.model.extension.CFolderData;
-import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
-import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
-import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -41,7 +29,7 @@ import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.Tool;
 
-public class AutoBuildConfigurationDescription extends CConfigurationData
+public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         implements IAutoBuildConfigurationDescription {
     private static final String KEY_MODEL = "Model"; //$NON-NLS-1$
     private static final String KEY_CONFIGURATION = "configuration"; //$NON-NLS-1$
@@ -77,7 +65,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     //Start of fields that need to be copied/made persistent
     private IConfiguration myAutoBuildConfiguration;
-    private IProject myProject;
+
     private ICConfigurationDescription myCdtConfigurationDescription;
     private BuildTargetPlatformData myTargetPlatformData;
     private BuildBuildData myBuildBuildData;
@@ -130,8 +118,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
 
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
     private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion"); //$NON-NLS-1$
-    private CFolderData myRootFolderData;
-    private String myRootFolderID = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion.rootFolder"); //$NON-NLS-1$;
 
     private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
     private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
@@ -157,7 +143,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     // Copy constructor
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription,
             AutoBuildConfigurationDescription autoBuildConfigBase) {
-
+        super(cfgDescription, autoBuildConfigBase);
         myAutoBuildConfiguration = autoBuildConfigBase.myAutoBuildConfiguration;
         myProject = autoBuildConfigBase.myProject;
         myCdtConfigurationDescription = cfgDescription;
@@ -166,7 +152,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         isValid = autoBuildConfigBase.isValid;
         myName = myCdtConfigurationDescription.getName();
         myDescription = autoBuildConfigBase.myDescription;
-        myRootFolderID = autoBuildConfigBase.myRootFolderID;
         myProperties.clear();
         myProperties.putAll(autoBuildConfigBase.myProperties);
         mySelectedOptions.clear();
@@ -227,6 +212,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
      */
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
             String lineStart, String lineEnd) {
+        super(cfgDescription, curConfigsText, lineStart, lineEnd);
         String extensionPointID = null;
         String extensionID = null;
         String projectTypeID = null;
@@ -489,7 +475,7 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     /*
      * take options and make a copy
      */
-    private void options_copy(Map<ITool, Map<IResource, Map<String, String>>> from,
+    private static void options_copy(Map<ITool, Map<IResource, Map<String, String>>> from,
             Map<ITool, Map<IResource, Map<String, String>>> to) {
         for (Entry<ITool, Map<IResource, Map<String, String>>> toolEntrySet : from.entrySet()) {
             ITool curTool = toolEntrySet.getKey();
@@ -555,15 +541,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         return myName;
     }
 
-    @Override
-    public CFolderData getRootFolderData() {
-        if (myRootFolderData == null) {
-            CDataFactory factory = CDataFactory.getDefault();
-            myRootFolderData = factory.createFolderData(this, null, myRootFolderID, false, Path.ROOT);
-        }
-        return myRootFolderData;
-    }
-
     //    protected void addRcData(CResourceData data) {
     //        IPath path = standardizePath(data.getPath());
     //        if (path.segmentCount() == 0) {
@@ -576,14 +553,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     //    }
 
     @Override
-    public CResourceData[] getResourceDatas() {
-        CResourceData datas[] = new CResourceData[1];
-        datas[0] = getRootFolderData();
-        return datas;
-
-    }
-
-    @Override
     public String getDescription() {
         return myDescription;
     }
@@ -592,47 +561,6 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
     public void setDescription(String description) {
         checkIfWeCanWrite();
         myDescription = description;
-    }
-
-    @Override
-    public void removeResourceData(CResourceData data) throws CoreException {
-        // TODO Auto-generated method stub
-        return;
-    }
-
-    @Override
-    public CFolderData createFolderData(IPath path, CFolderData base) throws CoreException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CFileData createFileData(IPath path, CFileData base) throws CoreException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CFileData createFileData(IPath path, CFolderData base, CLanguageData langData) throws CoreException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ICSourceEntry[] getSourceEntries() {
-        // TODO Auto-generated method stub
-        CSourceEntry[] ret = new CSourceEntry[1];
-        ret[0] = new CSourceEntry(myProject.getFolder("src"), null, 0); //$NON-NLS-1$
-        //        int flags = ICSettingEntry.RESOLVED;
-        //        String name = "";//myProject.getFullPath().toString();
-        //        ret[0] = new CSourceEntry(name, null, flags);
-        return ret;
-    }
-
-    @Override
-    public void setSourceEntries(ICSourceEntry[] entries) {
-        // TODO Auto-generated method stub
-        return;
     }
 
     @Override
@@ -1064,7 +992,8 @@ public class AutoBuildConfigurationDescription extends CConfigurationData
         myPreBuildStep = text;
     }
 
-    private void checkIfWeCanWrite() {
+    @Override
+    protected void checkIfWeCanWrite() {
         if (myCdtConfigurationDescription.isReadOnly()) {
             myCdtConfigurationDescription.setDescription(null);
         }

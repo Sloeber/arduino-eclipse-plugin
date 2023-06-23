@@ -89,11 +89,10 @@ public class InternalBuildRunner extends IBuildRunner {
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
         IFolder buildFolder = autoData.getBuildFolder();
-        ICSourceEntry[] srcEntries = new ICSourceEntry[0];
         Set<IFolder> foldersToBuild = new HashSet<>();
 
         //Generate the make Rules
-        MakeRules myMakeRules = new MakeRules(autoData, buildFolder, srcEntries, foldersToBuild);
+        MakeRules myMakeRules = new MakeRules(autoData, buildFolder, foldersToBuild);
 
         try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
                 ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
@@ -337,7 +336,7 @@ public class InternalBuildRunner extends IBuildRunner {
 
     @Override
     public boolean supportsAutoBuild() {
-        return false;
+        return true;
     }
 
     @Override
