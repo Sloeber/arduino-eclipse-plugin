@@ -71,8 +71,10 @@ public class BuildRunnerForMake extends IBuildRunner {
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
 
-        if (!generateMakeFiles(kind, autoData, projectBuilder, console, monitor)) {
-            return false;
+        if (autoData.generateMakeFilesAUtomatically()) {
+            if (!generateMakeFiles(kind, autoData, projectBuilder, console, monitor)) {
+                return false;
+            }
         }
 
         //get the make target 

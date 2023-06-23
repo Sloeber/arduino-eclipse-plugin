@@ -113,6 +113,20 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         ((GridLayout) (g2.getLayout())).makeColumnsEqualWidth = true;
 
         myAutoGenMakefileButton = setupCheck(g2, Messages.BuilderSettingsTab_7, 1, GridData.BEGINNING);
+        myAutoGenMakefileButton.addSelectionListener(new SelectionListener() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                myAutoConfDesc.setGenerateMakeFilesAUtomatically(myAutoGenMakefileButton.getSelection());
+                updateButtons();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // TODO Auto-generated method stub
+                return;
+            }
+        });
 
         // Build location group
         Group group_dir = setupGroup(usercomp, Messages.BuilderSettingsTab_21, 2, GridData.FILL_HORIZONTAL);
