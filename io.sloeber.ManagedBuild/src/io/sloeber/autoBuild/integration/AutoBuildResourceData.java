@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.extension.CFileData;
@@ -109,14 +110,13 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 
     @Override
     public ICSourceEntry[] getSourceEntries() {
-        return mySourceEntries != null ? (ICSourceEntry[]) mySourceEntries.clone() : new ICSourceEntry[0];
-        // TODO Auto-generated method stub
-        //        CSourceEntry[] ret = new CSourceEntry[1];
-        //        ret[0] = new CSourceEntry(myProject.getFolder("src"), null, 0); //$NON-NLS-1$
-        //        //        int flags = ICSettingEntry.RESOLVED;
-        //        String name = "";//myProject.getFullPath().toString();
-        //        ret[0] = new CSourceEntry(name, null, flags);
-        // return mySourceEntries.toArray(new ICSourceEntry[mySourceEntries.size()]);
+        if (mySourceEntries != null) {
+            return mySourceEntries.clone();
+        }
+        ICSourceEntry[] ret = new ICSourceEntry[1];
+        ret[0] = new CSourceEntry(Path.ROOT.toString(), null, ICSettingEntry.RESOLVED);
+        //ret[0] = new CSourceEntry("", null, 0);
+        return ret;
     }
 
     @Override
