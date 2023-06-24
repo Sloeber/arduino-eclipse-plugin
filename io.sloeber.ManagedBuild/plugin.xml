@@ -203,10 +203,10 @@
  </extension>
  <extension
        id="io.sloeber.autoBuild.AutoMakeBuilder"
-       name="Make builder with automagically created makefile"
+       name="AutoBuild builder builds internally or with automagically created makefile"
        point="org.eclipse.core.resources.builders">
     <builder
-          callOnEmptyDelta="false"
+          callOnEmptyDelta="true"
           hasNature="true"
           isConfigurable="false"
           supportsConfigurations="true">

@@ -363,13 +363,13 @@ public class MakefileGenerator implements IMakefileGenerator {
 
     protected StringBuffer topMakeGetIncludeSubDirs() {
         StringBuffer buffer = new StringBuffer();
+        buffer.append("-include ").append(OBJECTS_MAKFILE).append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
+        buffer.append("-include ").append(SRCSFILE_NAME).append(NEWLINE); //$NON-NLS-1$
 
         for (IContainer subDir : myFoldersToBuild) {
             String includeFile = subDir.getProjectRelativePath().append(MODFILE_NAME).toOSString();
             buffer.append("-include " + makeMakeFileSafe(includeFile)).append(NEWLINE); //$NON-NLS-1$
         }
-        buffer.append("-include sources.mk").append(NEWLINE); //$NON-NLS-1$
-        buffer.append("-include objects.mk").append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
         return buffer;
     }
 
@@ -428,18 +428,29 @@ public class MakefileGenerator implements IMakefileGenerator {
 
         // Add the comment for the "All" target
         buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
-        buffer.append(DEFAULT_AUTO_MAKE_TARGET).append(COLON).append(NEWLINE);
+
         String prebuildStep = topMakeGetPreBuildStep();
-        if (prebuildStep.length() > 0) {
-            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(PREBUILD)
+        String postbuildStep = resolve(myAutoBuildConfData.getPostbuildStep(), EMPTY_STRING, WHITESPACE,
+                myAutoBuildConfData);
+        if (prebuildStep.isBlank() && postbuildStep.isBlank()) {
+            buffer.append(DEFAULT_AUTO_MAKE_TARGET).append(COLON).append(WHITESPACE).append(MAINBUILD).append(NEWLINE);
+        } else {
+            buffer.append(DEFAULT_AUTO_MAKE_TARGET).append(COLON).append(NEWLINE);
+            if (!prebuildStep.isBlank()) {
+                buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE)
+                        .append(PREBUILD).append(NEWLINE);
+            }
+            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
                     .append(NEWLINE);
+            if (!postbuildStep.isBlank()) {
+                buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE)
+                        .append(POSTBUILD).append(NEWLINE);
+            }
+
         }
-        buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
-                .append(NEWLINE);
-        if (!resolve(myAutoBuildConfData.getPostbuildStep(), EMPTY_STRING, WHITESPACE, myAutoBuildConfData).isEmpty()) {
-            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(POSTBUILD)
-                    .append(NEWLINE);
-        }
+        buffer.append(NEWLINE);
+        buffer.append(TARGET_OBJECTS + COLON + WHITESPACE + "$(OBJS)"); //$NON-NLS-1$
+        buffer.append(NEWLINE);
         buffer.append(NEWLINE);
         return buffer;
     }
@@ -528,7 +539,8 @@ public class MakefileGenerator implements IMakefileGenerator {
 
         // Add all the needed dummy and phony targets
         buffer.append(PHONY).append(COLON).append(ALL).append(WHITESPACE).append(MAINBUILD).append(WHITESPACE)
-                .append(CLEAN).append(WHITESPACE).append(POSTBUILD).append(NEWLINE);
+                .append(CLEAN).append(WHITESPACE).append(POSTBUILD).append(WHITESPACE).append(TARGET_OBJECTS)
+                .append(NEWLINE);
         // Include makefile.targets supplemental makefile
         buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_TARGETS).append(NEWLINE); //$NON-NLS-1$
         return buffer;

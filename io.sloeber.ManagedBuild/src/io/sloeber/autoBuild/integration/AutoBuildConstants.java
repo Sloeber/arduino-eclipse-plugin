@@ -28,9 +28,12 @@ public class AutoBuildConstants {
     public static final String PROJECT_NAME_VARIABLE = "${ProjName}";
     public static final String CONFIG_NAME_VARIABLE = "${ConfigName}";
 
-    public static final String DEFAULT_AUTO_MAKE_TARGET = "all";
-    public static final String DEFAULT_INCREMENTAL_MAKE_TARGET = "all";
-    public static final String DEFAULT_CLEAN_MAKE_TARGET = "clean";
+    public static final String TARGET_OBJECTS = "objects";
+    public static final String TARGET_ALL = "all";
+    public static final String TARGET_CLEAN = "clean";
+    public static final String DEFAULT_AUTO_MAKE_TARGET = TARGET_OBJECTS;
+    public static final String DEFAULT_INCREMENTAL_MAKE_TARGET = TARGET_ALL;
+    public static final String DEFAULT_CLEAN_MAKE_TARGET = TARGET_CLEAN;
 
     // preference nodes
     public static final String NODE_ARDUINO = "io.sloeber.arduino";

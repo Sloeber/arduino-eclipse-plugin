@@ -104,9 +104,10 @@ public class BuildRunnerForMake extends IBuildRunner {
         defaultTarget = AutoBuildCommon.resolve(defaultTarget, autoData);
         customTarget = AutoBuildCommon.resolve(customTarget, autoData);
         if (customTarget.isBlank()) {
-            args.add(defaultTarget);
-        } else {
-            args.add(customTarget);
+            customTarget = defaultTarget;
+        }
+        for (String curArg : customTarget.split("\\s+")) { //$NON-NLS-1$
+            args.add(curArg);
         }
         if (autoData.getCustomBuildArguments().isBlank()) {
             String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),

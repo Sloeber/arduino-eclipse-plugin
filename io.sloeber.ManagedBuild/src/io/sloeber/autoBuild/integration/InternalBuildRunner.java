@@ -179,46 +179,6 @@ public class InternalBuildRunner extends IBuildRunner {
                                         break;
                                     }
                                 }
-                                //                            CommandLauncher launcher = new CommandLauncher();
-                                //                            launcher.showCommand(true);
-                                //                            String[] args = CommandLineUtil.argumentsToArray(curRecipe);
-                                //                            IPath commandPath = new Path(args[0]);
-                                //                            String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
-                                //
-                                //                            String[] envp = BuildRunnerForMake.getEnvironment(cfgDescription,
-                                //                                    builder.appendEnvironment());
-                                //                            Process fProcess = launcher.execute(commandPath, onlyArgs, envp, buildFolder.getLocation(),
-                                //                                    monitor);
-                                //                            if (fProcess != null) {
-                                //                                try {
-                                //                                    // Close the input of the process since we will never write to it
-                                //                                    fProcess.getOutputStream().close();
-                                //                                } catch (@SuppressWarnings("unused") IOException e) {
-                                //                                    //ignore error
-                                //                                }
-                                //
-                                //                                // Wrapping out and err streams to avoid their closure
-                                //                                try (OutputStream stdout = buildRunnerHelper.getOutputStream();
-                                //                                        OutputStream stderr = buildRunnerHelper.getErrorStream();) {
-                                //                                    if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
-                                //                                        if (autoData.stopOnFirstBuildError()) {
-                                //                                            isError = true;
-                                //                                            break;
-                                //                                        }
-                                //                                    }
-                                //                                    String fErrMsg = launcher.getErrorMessage();
-                                //                                    if (fErrMsg != null && !fErrMsg.isEmpty()) {
-                                //                                        printMessage(fErrMsg, stderr);
-                                //                                    }
-                                //                                }
-                                //                                if (fProcess.exitValue() != 0) {
-                                //                                    if (autoData.stopOnFirstBuildError()) {
-                                //                                        isError = true;
-                                //                                        break;
-                                //                                    }
-                                //                                }
-                                //
-                                //                            }
 
                             } catch (@SuppressWarnings("unused") Exception e) {
                                 isError = autoData.stopOnFirstBuildError();
@@ -232,14 +192,10 @@ public class InternalBuildRunner extends IBuildRunner {
                             break;
                         }
                     }
-                    //only build source files when autobuildings 
-                    //TOFIX JABA says: I can't do this as the incremental build only runs when there are changed files
-                    // however changed files means autobuild will be triggered
-                    // the is a flag in InternalBuilder that allows to run the build but it is not public
-                    // so basically I can't set it.
-                    //                if (kind == IncrementalProjectBuilder.AUTO_BUILD) {
-                    //                    lastSequenceID = true;
-                    //                }
+                    if (kind == IncrementalProjectBuilder.AUTO_BUILD
+                            && autoData.getAutoMakeTarget().equals(TARGET_OBJECTS)) {
+                        lastSequenceID = true;
+                    }
                 } while (!(lastSequenceID || isError));
                 //Run postBuildStep if existing
                 String postBuildStep = autoData.getPostbuildStep();
