@@ -144,6 +144,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription,
             AutoBuildConfigurationDescription autoBuildConfigBase) {
         super(cfgDescription, autoBuildConfigBase);
+        myId = autoBuildConfigBase.myId;
         myAutoBuildConfiguration = autoBuildConfigBase.myAutoBuildConfiguration;
         myProject = autoBuildConfigBase.myProject;
         myCdtConfigurationDescription = cfgDescription;
