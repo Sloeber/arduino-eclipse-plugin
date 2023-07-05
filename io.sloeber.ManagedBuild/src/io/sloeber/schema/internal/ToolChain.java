@@ -253,11 +253,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
 
     @Override
     public String getDefaultLanguageSettingsProviderIds() {
-        return null;
-        //		if (defaultLanguageSettingsProviderIds == null && superClass instanceof IToolChain) {
-        //			defaultLanguageSettingsProviderIds = ((IToolChain) superClass).getDefaultLanguageSettingsProviderIds();
-        //		}
-        //		return defaultLanguageSettingsProviderIds;
+        return modelLanguageSettingsProviders[SUPER];
     }
 
     @Override

@@ -6,40 +6,44 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
+import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultFolderData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultLanguageData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 
 import io.sloeber.schema.api.IInputType;
 
-public class FolderData extends CFolderData {
+public class FolderData extends CDefaultFolderData {
     private AutoBuildConfigurationDescription myAutoBuildConf;
-    private String myID;
 
     private Set<CDefaultLanguageData> myLanguageDatas = new HashSet<>();
-    private IPath myPath;
 
+    /**
+     * Constructor for project
+     * Only here because I didn't know how to load the language data's
+     * 
+     * @param myProject Not really used but Currently I only use this for the project base folder
+     * @param autoBuildConf
+     */
     FolderData(IProject myProject, AutoBuildConfigurationDescription autoBuildConf) {
-        super();
-        myPath = myProject.getFullPath();
+        super( CDataUtil.genId(autoBuildConf.getId()), Path.ROOT, null,autoBuildConf, null, false);
         myAutoBuildConf = autoBuildConf;
         resolve();
     }
 
-    FolderData(IFolder folder, AutoBuildConfigurationDescription autoBuildConf) {
-        super();
-        myPath = folder.getFullPath();
-        myAutoBuildConf = autoBuildConf;
-        resolve();
-
-    }
+//    FolderData(IFolder folder, AutoBuildConfigurationDescription autoBuildConf) {
+//        super();
+//        myAutoBuildConf = autoBuildConf;
+//        resolve();
+//
+//    }
 
     private void resolve() {
-        myID = CDataUtil.genId(myAutoBuildConf.getId());
         Map<String, Set<IInputType>> languageIDs = myAutoBuildConf.getConfiguration().getLanguageIDs(myAutoBuildConf);
         for (String languageID : languageIDs.keySet()) {
             Set<IContentType> contentType = new HashSet<>();
@@ -69,52 +73,11 @@ public class FolderData extends CFolderData {
 
     }
 
-    @Override
-    public IPath getPath() {
-        return myPath;
-    }
-
-    @Override
-    public void setPath(IPath path) {
-        // DO NOT implement
-        return;
-    }
-
-    @Override
-    public boolean hasCustomSettings() {
-        return false;
-    }
-
-    @Override
-    public String getId() {
-        return myID;
-    }
-
-    @Override
-    public String getName() {
-        return myID;
-    }
-
-    @Override
-    public boolean isValid() {
-        return true;
-    }
-
+ 
     @Override
     public CLanguageData[] getLanguageDatas() {
         return myLanguageDatas.toArray(new CLanguageData[myLanguageDatas.size()]);
     }
 
-    @Override
-    public CLanguageData createLanguageDataForContentTypes(String languageId, String[] cTypesIds) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public CLanguageData createLanguageDataForExtensions(String languageId, String[] extensions) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }
