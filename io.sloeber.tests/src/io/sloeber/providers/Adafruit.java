@@ -8,17 +8,17 @@ import io.sloeber.core.api.BoardsManager;
 @SuppressWarnings("nls")
 public class Adafruit extends MCUBoard {
     public final static String packageURL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
-    private static final String AVRArchitectureName = "avr";
-    private static final String SAMDArchitectureName = "samd";
+    private static final String AVRArchitectureID = "avr";
+    private static final String SAMDArchitectureID = "samd";
     //private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
-    private static final String NFR52ArchitectureName = "nRF52";
+    private static final String NFR52ArchitectureID = "nrf52";
     //private static final String XICEDPlatformName = "Adafruit WICED";
     public static final String metroM4ID = "adafruit_metro_m4";
 
-    public Adafruit(String architectureName, String boardName) {
+    public Adafruit(String architectureID, String boardName) {
 
-        myBoardDescriptor = BoardsManager.getBoardDescription("package_adafruit_index.json", "adafruit",
-                architectureName, boardName, null);
+        myBoardDescriptor = BoardsManager.getBoardDescription("package_adafruit_index.json", "adafruit", architectureID,
+                boardName, null);
         if (myBoardDescriptor == null) {
             fail(boardName + " Board not found");
         }
@@ -33,19 +33,19 @@ public class Adafruit extends MCUBoard {
     }
 
     public static MCUBoard feather() {
-        return new Adafruit(NFR52ArchitectureName, "feather52832");
+        return new Adafruit(NFR52ArchitectureID, "feather52832");
     }
 
     public static MCUBoard trinket8MH() {
-        return new Adafruit(AVRArchitectureName, "trinket3");
+        return new Adafruit(AVRArchitectureID, "trinket3");
     }
 
     public static MCUBoard featherMO() {
-        return new Adafruit(SAMDArchitectureName, "adafruit_feather_m0");
+        return new Adafruit(SAMDArchitectureID, "adafruit_feather_m0");
     }
 
     public static MCUBoard metroM4() {
-        return new Adafruit(SAMDArchitectureName, metroM4ID);
+        return new Adafruit(SAMDArchitectureID, metroM4ID);
     }
 
     @Override
