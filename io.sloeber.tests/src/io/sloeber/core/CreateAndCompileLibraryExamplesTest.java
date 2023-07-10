@@ -55,7 +55,7 @@ public class CreateAndCompileLibraryExamplesTest {
         Shared.waitForAllJobsToFinish();
         installMyStuff();
 
-        MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(), Adafruit.feather(),
+        MCUBoard myBoards[] = { Arduino.uno(), Arduino.leonardo(), Arduino.esplora(), Adafruit.feather(),
                 Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(), ESP8266.nodeMCU(), ESP8266.wemosD1(),
                 ESP8266.ESPressoLite(), Teensy.Teensy3_6(), Arduino.zeroProgrammingPort(),
                 Arduino.cirquitPlaygroundExpress(), Arduino.gemma(), Adafruit.trinket8MH(), Arduino.yun(),

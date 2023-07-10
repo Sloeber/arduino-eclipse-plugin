@@ -52,13 +52,12 @@ public class ESP8266 extends MCUBoard {
 
     @Override
     protected void setAttributes() {
-        // No attributes to set
+        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
 
     }
 
     @Override
     public MCUBoard createMCUBoard(BoardDescription boardDesc) {
-        // TODO Auto-generated method stub
         return new ESP8266(boardDesc);
     }
 

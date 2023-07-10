@@ -50,13 +50,14 @@ public class Adafruit extends MCUBoard {
 
     @Override
     protected void setAttributes() {
-        String BoardID = myBoardDescriptor.getBoardID();
-        switch (BoardID) {
-        case metroM4ID:
-        case "adafruit_feather_m0":
-            myAttributes.mo_mcu = true;
-            return;
-        }
+        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
+        //            String BoardID = myBoardDescriptor.getBoardID();
+        //            switch (BoardID) {
+        //            case metroM4ID:
+        //            case "adafruit_feather_m0":
+        //                myAttributes.mo_mcu = true;
+        //                return;
+        //            }
 
     }
 

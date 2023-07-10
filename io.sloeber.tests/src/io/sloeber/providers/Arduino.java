@@ -126,8 +126,8 @@ public class Arduino extends MCUBoard {
 
     }
 
-    public Arduino(BoardDescription boardDescriptor) {
-        myBoardDescriptor = boardDescriptor;
+    public Arduino(BoardDescription boardDesc) {
+        myBoardDescriptor = boardDesc;
         myBoardDescriptor.setUploadPort("none");
         setAttributes();
     }
@@ -136,6 +136,7 @@ public class Arduino extends MCUBoard {
     protected void setAttributes() {
         String boardID = myBoardDescriptor.getBoardID();
         sharedsetAttributes(boardID, myAttributes);
+        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
         //        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
         //        myAttributes.serial1 = supportSerial1List().contains(boardID);
         //        myAttributes.keyboard = supportKeyboardList().contains(boardID);

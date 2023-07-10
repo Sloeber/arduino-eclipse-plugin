@@ -33,7 +33,9 @@ public abstract class MCUBoard {
                 List<BoardDescription> boardDescriptions = BoardDescription
                         .makeBoardDescriptors(curPlatformVersion.getBoardsFile());
                 for (BoardDescription curBoardDesc : boardDescriptions) {
-                    ret.add(creator.createMCUBoard(curBoardDesc));
+                    MCUBoard curBoard = creator.createMCUBoard(curBoardDesc);
+                    curBoard.myAttributes.boardID = curBoardDesc.getBoardID();
+                    ret.add(curBoard);
                 }
             }
         }
@@ -60,7 +62,6 @@ public abstract class MCUBoard {
                 }
             }
         }
-        myAttributes.boardName = myBoardDescriptor.getBoardID();
         return myAttributes.compatibleWithExampleRequirements(example.getRequiredBoardAttributes());
     }
 

@@ -23,6 +23,7 @@ public class Teensy extends MCUBoard {
     public final static String Teensy3_5_ID = "teensy35";
     public final static String Teensy3_6_ID = "teensy36";
     public final static String Teensy_LC_ID = "teensyLC";
+    public final static String TEENSY_ARCHITECTURE_ID = "teensy";
 
     public static MCUBoard Teensy_LC() {
         return new Teensy(Teensy_LC_ID);
@@ -126,8 +127,8 @@ public class Teensy extends MCUBoard {
 
     }
 
-    public Teensy(BoardDescription boardDescriptor) {
-        myBoardDescriptor = boardDescriptor;
+    public Teensy(BoardDescription boardDesc) {
+        myBoardDescriptor = boardDesc;
         myBoardDescriptor.setUploadPort("none");
         setAttributes();
 
@@ -142,7 +143,7 @@ public class Teensy extends MCUBoard {
         myAttributes.mouse = true;
         myAttributes.serial = true;
         myAttributes.serial1 = true;
-        myAttributes.teensy = true;
         myAttributes.wire1 = true;
+        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
     }
 }
