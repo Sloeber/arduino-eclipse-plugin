@@ -94,7 +94,7 @@ public class BoardsManager {
      *            if jsonFileName equals "local" the filename of the boards.txt
      *            containing the boards. otherwise the name of the package
      *            containing the board
-     * @param architectureName
+     * @param architectureID
      *            ignored if jsonFileName equals "local" otherwise the architecture
      *            name of the platform containing the board (this assumes the
      *            architecture is the unique id for the platform)
@@ -105,26 +105,25 @@ public class BoardsManager {
      *            file) or null for defaults
      * @return The class BoardDescriptor or null
      */
-    static public BoardDescription getBoardDescription(String jsonFileName, String packageName, String architectureName,
+    static public BoardDescription getBoardDescription(String jsonFileName, String packageName, String architectureID,
             String boardID, Map<String, String> options) {
         if (LOCAL.equals(jsonFileName)) {
             return new BoardDescription(new File(packageName), boardID, options);
         }
-        return getNewestBoardIDFromBoardsManager(jsonFileName, packageName, architectureName, boardID, options);
+        return getNewestBoardIDFromBoardsManager(jsonFileName, packageName, architectureID, boardID, options);
     }
 
     static private BoardDescription getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
-            String architectureName, String boardID, Map<String, String> options) {
+            String architectureID, String boardID, Map<String, String> options) {
 
         ArduinoPackage thePackage = getPackage(jsonFileName, packageName);
         if (thePackage == null) {
-            // fail("failed to find package:" + this.mPackageName);
+            System.err.println("failed to find package:" + packageName); //$NON-NLS-1$
             return null;
         }
-        ArduinoPlatform platform = thePackage.getPlatform(architectureName);
+        ArduinoPlatform platform = thePackage.getPlatform(architectureID);
         if (platform == null) {
-            // fail("failed to find platform " + this.mPlatform + " in
-            // package:" + this.mPackageName);
+            System.err.println("failed to find architecture ID " + architectureID + " in package:" + packageName); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
         ArduinoPlatformVersion platformVersion = platform.getNewestVersion();
