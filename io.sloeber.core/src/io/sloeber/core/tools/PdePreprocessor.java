@@ -358,7 +358,7 @@ public class PdePreprocessor {
         if (curResource.isLinked()) {
             addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE;
         } else {
-            addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE;
+            addLine = "#include \"" + curResource.getProjectRelativePath().toString() + "\"" + NEWLINE;
         }
         // if the name of the ino/pde file matches the project put
         // the file in front
