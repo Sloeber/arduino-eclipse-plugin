@@ -32,112 +32,112 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
-	private static final boolean reinstall_boards_and_examples = true;
-	private static final int maxFails = 100;
-	private static final int mySkipAtStart = 0;
+    private static final boolean reinstall_boards_and_examples = false;
+    private static final int maxFails = 100;
+    private static final int mySkipAtStart = 0;
 
-	private static int myBuildCounter = 0;
-	private static int myTotalFails = 0;
-	private Example myExample;
-	private MCUBoard myBoard;
+    private static int myBuildCounter = 0;
+    private static int myTotalFails = 0;
+    private Example myExample;
+    private MCUBoard myBoard;
 
-	@SuppressWarnings("unused")
-	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Example example) {
-		myBoard = boardID;
-		myExample = example;
-	}
+    @SuppressWarnings("unused")
+    public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Example example) {
+        myBoard = boardID;
+        myExample = example;
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Parameters(name = "{index}: {0}")
-	public static Collection examples() {
-		Preferences.setUseBonjour(false);
-		Preferences.setUseArduinoToolSelection(true);
-		Shared.waitForAllJobsToFinish();
-		installMyStuff();
+    @SuppressWarnings("rawtypes")
+    @Parameters(name = "{index}: {0}")
+    public static Collection examples() {
+        Preferences.setUseBonjour(false);
+        Preferences.setUseArduinoToolSelection(true);
+        Shared.waitForAllJobsToFinish();
+        installMyStuff();
 
-		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(), Adafruit.feather(),
-				Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(), ESP8266.nodeMCU(), ESP8266.wemosD1(),
-				ESP8266.ESPressoLite(), Teensy.Teensy3_6(), Arduino.zeroProgrammingPort(),
-				Arduino.cirquitPlaygroundExpress(), Arduino.gemma(), Adafruit.trinket8MH(), Arduino.yun(),
-				Arduino.arduino_101(), Arduino.zeroProgrammingPort(), Arduino.ethernet() };
+        MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(), Adafruit.feather(),
+                Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(), ESP8266.nodeMCU(), ESP8266.wemosD1(),
+                ESP8266.ESPressoLite(), Teensy.Teensy3_6(), Arduino.zeroProgrammingPort(),
+                Arduino.cirquitPlaygroundExpress(), Arduino.gemma(), Adafruit.trinket8MH(), Arduino.yun(),
+                Arduino.arduino_101(), Arduino.zeroProgrammingPort(), Arduino.ethernet() };
 
-		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
-		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			String fqn = curexample.getKey().trim();
-			IPath examplePath = curexample.getValue();
-			Example example = new Example(fqn, examplePath);
+        LinkedList<Object[]> examples = new LinkedList<>();
+        TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
+        for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
+            String fqn = curexample.getKey().trim();
+            IPath examplePath = curexample.getValue();
+            Example example = new Example(fqn, examplePath);
 
-			// with the current amount of examples only do one
-			MCUBoard curBoard = Example.pickBestBoard(example, myBoards);
+            // with the current amount of examples only do one
+            MCUBoard curBoard = Example.pickBestBoard(example, myBoards);
 
-			if (curBoard != null) {
-				Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
-						example };
-				examples.add(theData);
-			}
+            if (curBoard != null) {
+                Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
+                        example };
+                examples.add(theData);
+            }
 
-		}
+        }
 
-		return examples;
+        return examples;
 
-	}
+    }
 
-	/*
-	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we can
-	 * start testing
-	 */
+    /*
+     * In new new installations (of the Sloeber development environment) the
+     * installer job will trigger downloads These mmust have finished before we can
+     * start testing
+     */
 
-	public static void installMyStuff() {
+    public static void installMyStuff() {
 
-		installAdditionalBoards();
-		Shared.waitForAllJobsToFinish();
-	}
+        installAdditionalBoards();
+        Shared.waitForAllJobsToFinish();
+    }
 
-	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL, ESP32.packageURL };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
-		if (reinstall_boards_and_examples) {
-			BoardsManager.installAllLatestPlatforms();
-			BoardsManager.onlyKeepLatestPlatforms();
-			// deal with removal of json files or libs from json files
-			LibraryManager.unInstallAllLibs();
-			LibraryManager.installAllLatestLibraries();
-			// LibraryManager.onlyKeepLatestPlatforms();
-		}
-		if (MySystem.getTeensyPlatform().isEmpty()) {
-			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
-		} else {
-			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-		}
-		BoardsManager.installAllLatestPlatforms();
+    public static void installAdditionalBoards() {
+        String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL, ESP32.packageURL };
+        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
+        if (reinstall_boards_and_examples) {
+            BoardsManager.installAllLatestPlatforms();
+            BoardsManager.onlyKeepLatestPlatforms();
+            // deal with removal of json files or libs from json files
+            LibraryManager.unInstallAllLibs();
+            LibraryManager.installAllLatestLibraries();
+            // LibraryManager.onlyKeepLatestPlatforms();
+        }
+        if (MySystem.getTeensyPlatform().isEmpty()) {
+            System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
+        } else {
+            BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+        }
+        BoardsManager.installAllLatestPlatforms();
 
-	}
+    }
 
-	@Test
-	public void testExamples() {
+    @Test
+    public void testExamples() {
 
-		Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
-		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-		if (!myBoard.isExampleSupported(myExample)) {
-			fail("Trying to run a test on unsoprted board");
-			myTotalFails++;
-			return;
-		}
-		ArrayList<IPath> paths = new ArrayList<>();
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        if (!myBoard.isExampleSupported(myExample)) {
+            fail("Trying to run a test on unsoprted board");
+            myTotalFails++;
+            return;
+        }
+        ArrayList<IPath> paths = new ArrayList<>();
 
-		paths.add(myExample.getPath());
-		CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
+        paths.add(myExample.getPath());
+        CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
-		Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
-		BoardDescription boardDescriptor = myBoard.getBoardDescriptor();
-		boardDescriptor.setOptions(boardOptions);
-		if (!Shared.BuildAndVerify(boardDescriptor, codeDescriptor)) {
-			myTotalFails++;
-			fail(Shared.getLastFailMessage());
-		}
+        Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
+        BoardDescription boardDescriptor = myBoard.getBoardDescriptor();
+        boardDescriptor.setOptions(boardOptions);
+        if (!Shared.BuildAndVerify(boardDescriptor, codeDescriptor)) {
+            myTotalFails++;
+            fail(Shared.getLastFailMessage());
+        }
 
-	}
+    }
 
 }
