@@ -39,16 +39,20 @@ public class Example {
         myRequiredBoardAttributes.tone = examplesUsingTone().contains(myFQN);
         myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(myFQN);
         myRequiredBoardAttributes.midi = examplesUsingMidi().contains(myFQN) || myFQN.contains("USB_MIDI");
-        myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
+        //        myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
         myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(myFQN);
-        myRequiredBoardAttributes.boardName = getRequiredBoardID(myFQN);
-        myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
+        myRequiredBoardAttributes.boardID = getRequiredBoardID(myFQN);
+        //        myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
         myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
         myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink");
         myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
         myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
 
-        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibName()));
+        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibFolder()));
+    }
+
+    private IPath getLibFolder() {//Need to remove the examples folder and the example folder
+        return myPath.removeLastSegments(2);
     }
 
     private static int getNumADCUsedInExample(String myFQN2) {
@@ -237,12 +241,6 @@ public class Example {
         return ret;
     }
 
-    private static LinkedList<String> examplesUsingMCUmo() {
-        LinkedList<String> ret = new LinkedList<>();
-        ret.add("Library/Adafruit_Circuit_Playground/CircuitPlaygroundFirmata_Express_CodeOrg");
-        return ret;
-    }
-
     /*
      * These examples that are known to fail
      */
@@ -258,8 +256,8 @@ public class Example {
         // These examples are the processing part and are not a deal of sloeber
         ret.add("Library/Adafruit_BNO055/bunny/processing/cuberotate");
         // manual action is needed for following examples
+        ret.add("Library/AbsoluteMouse/DevKit");
         ret.add("Library/Accessories/CANCommander");
-        ret.add("Library/Accessories_CANCommander");
         ret.add("Library/Accessories/Demo");
         ret.add("Library/Accessories/Full");
         ret.add("Library/Accessories/Group");
@@ -428,6 +426,8 @@ public class Example {
         ret.add("Library/Blinker/Blinker_AUTO/AUTO_MQTT");
         // 3: error: 'StaticJsonBuffer' was not declared in this scope
         ret.add("Library/Boodskap_Message_library/SimpleMessageUsage");
+        //uses #include <ArduinoDebug.hpp>
+        ret.add("Library/107-Arduino-BoostUnits/Basic");
         return ret;
     }
 
@@ -442,83 +442,90 @@ public class Example {
         String libName = example.getLibName();
         String fqn = example.getFQN();
         if (myBoards.length == 0) {
+            //No boards =>no match
+            System.out.println("No boards to select from found for ");
+            return null;
+        }
+        //examples using DHT_sensor_library libraries are not found as the include is
+        // DHT.h
+        if (!libName.equals("DHT_sensor_library") && fqn.contains("DHT")) {
+            System.out.println("Ignore Lib as it is known to fail " + libName);
+            return null;
+        }
+        if (!example.getRequiredBoardAttributes().worksOutOfTheBox) {
+            System.out.println("Example is known to fail " + example.getFQN());
             return null;
         }
 
-        if (example.getRequiredBoardAttributes().worksOutOfTheBox) {
+        // if example states which board it wants use that board
+        if (example.getRequiredBoardAttributes().boardID != null) {
+            String wantedBoardName = example.getRequiredBoardAttributes().boardID;
+            for (MCUBoard curBoard : myBoards) {
+                if (curBoard.getID().equals(wantedBoardName)) {
+                    return curBoard;
+                }
+            }
+            System.out.println(
+                    "Example " + example.getFQN() + " requires board " + wantedBoardName + " that is not listed");
+            return null;
+        }
 
-            // if example states which board it wants use that board
-            if (example.getRequiredBoardAttributes().boardName != null) {
-                String wantedBoardName = example.getRequiredBoardAttributes().boardName;
-                for (MCUBoard curBoard : myBoards) {
-                    if (curBoard.getID().equals(wantedBoardName)) {
-                        return curBoard;
-                    }
-                }
-            } else {
-                // examples using DHT_sensor_library libraries are not found as the include is
-                // DHT.h
-                if (!libName.equals("DHT_sensor_library") && fqn.contains("DHT")) {
-                    return null;
-                }
-                // if the boardname is in the libname or ino name pick this one
-                for (MCUBoard curBoard : myBoards) {
-                    String curBoardName = curBoard.getName();
-                    List<String> curBoardExampleNames = getSlangNames(curBoardName);
-                    for (String curBoardExampleName : curBoardExampleNames) {
-                        if (libName.toLowerCase().contains(curBoardName)
-                                || fqn.toLowerCase().contains(curBoardExampleName)) {
-                            if (curBoard.isExampleSupported(example)) {
-                                return curBoard;
-                            }
-                        }
-                    }
-                }
-                // If the architecture is in the libname or boardname pick this one
-                for (MCUBoard curBoard : myBoards) {
-                    String curArchitectureName = curBoard.getBoardDescriptor().getArchitecture().toLowerCase();
-                    if (libName.toLowerCase().contains(curArchitectureName)
-                            || fqn.toLowerCase().contains(curArchitectureName)) {
-                        if (curBoard.isExampleSupported(example)) {
-                            return curBoard;
-                        }
-                    }
-                }
-                // if the example name contains teensy try teensy board
-                if (example.getFQN().toLowerCase().contains("teensy")) {
-                    for (MCUBoard curBoard : myBoards) {
-                        if (Teensy.class.isInstance(curBoard)) {
-                            return curBoard;
-                        }
-                    }
-                }
-                // if the example name contains ESP32 try ESP32 board
-                if (example.getFQN().toLowerCase().contains("esp32")) {
-                    for (MCUBoard curBoard : myBoards) {
-                        if (ESP32.class.isInstance(curBoard)) {
-                            return curBoard;
-                        }
-                    }
-                }
-                // if the example name contains ESP try ESP8266 board
-                //				if (example.getFQN().toLowerCase().contains("esp")) {
-                //					for (MCUBoard curBoard : myBoards) {
-                //						if (ESP8266.class.isInstance(curBoard)) {
-                //							return curBoard;
-                //						}
-                //					}
-                //				}
-                //causes issues with response
-
-                // Out of guesses based on the name. Take the first ok one
-                for (MCUBoard curBoard : myBoards) {
+        // if the boardname is in the libname or ino name pick this one
+        for (MCUBoard curBoard : myBoards) {
+            String curBoardName = curBoard.getName();
+            List<String> curBoardExampleNames = getSlangNames(curBoardName);
+            for (String curBoardExampleName : curBoardExampleNames) {
+                if (libName.toLowerCase().contains(curBoardName) || fqn.toLowerCase().contains(curBoardExampleName)) {
                     if (curBoard.isExampleSupported(example)) {
                         return curBoard;
                     }
                 }
             }
         }
-        System.out.println("No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getFQN());
+        // If the architecture is in the libname or boardname pick this one
+        for (MCUBoard curBoard : myBoards) {
+            String curArchitectureName = curBoard.getBoardDescriptor().getArchitecture().toLowerCase();
+            if (libName.toLowerCase().contains(curArchitectureName)
+                    || fqn.toLowerCase().contains(curArchitectureName)) {
+                if (curBoard.isExampleSupported(example)) {
+                    return curBoard;
+                }
+            }
+        }
+        // if the example name contains teensy try teensy board
+        if (example.getFQN().toLowerCase().contains("teensy")) {
+            for (MCUBoard curBoard : myBoards) {
+                if (Teensy.class.isInstance(curBoard)) {
+                    return curBoard;
+                }
+            }
+        }
+        // if the example name contains ESP32 try ESP32 board
+        if (example.getFQN().toLowerCase().contains("esp32")) {
+            for (MCUBoard curBoard : myBoards) {
+                if (ESP32.class.isInstance(curBoard)) {
+                    return curBoard;
+                }
+            }
+        }
+        // if the example name contains ESP try ESP8266 board
+        //				if (example.getFQN().toLowerCase().contains("esp")) {
+        //					for (MCUBoard curBoard : myBoards) {
+        //						if (ESP8266.class.isInstance(curBoard)) {
+        //							return curBoard;
+        //						}
+        //					}
+        //				}
+        //causes issues with response
+
+        // Out of guesses based on the name. Take the first ok one
+        for (MCUBoard curBoard : myBoards) {
+            if (curBoard.isExampleSupported(example)) {
+                return curBoard;
+            }
+        }
+        System.out.println(
+                "No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getPath().toOSString());
         return null;
     }
 

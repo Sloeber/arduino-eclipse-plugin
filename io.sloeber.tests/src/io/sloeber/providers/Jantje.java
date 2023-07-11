@@ -48,8 +48,8 @@ public class Jantje extends MCUBoard {
 
     }
 
-    public Jantje(BoardDescription boardDescriptor) {
-        myBoardDescriptor = boardDescriptor;
+    public Jantje(BoardDescription boardDesc) {
+        myBoardDescriptor = boardDesc;
         setAttributes();
     }
 
@@ -73,6 +73,7 @@ public class Jantje extends MCUBoard {
         String boardID = myBoardDescriptor.getBoardID();
         Arduino.sharedsetAttributes(boardID, myAttributes);
         setUploadPort("none");
+        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
 
     }
 
