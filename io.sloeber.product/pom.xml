@@ -34,7 +34,7 @@
 				<configuration>
 					<formats>
 						<win32>zip</win32>
-						<linux>zip</linux>
+						<linux>tar.gz</linux>
 						<macosx>zip</macosx>
 					</formats>
 					<products>
