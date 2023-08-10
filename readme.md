@@ -21,6 +21,9 @@ Please install [git](http://git-scm.com/downloads) and [maven](http://maven.apac
 
 Java 17 is required.
 
+A 64-bit OS is required.
+
+
 ## Build from the command line from source for your os and the default eclipse instance
 ```bash
 git clone https://github.com/Sloeber/arduino-eclipse-plugin sloeber
@@ -45,7 +48,6 @@ You can control the maven build with the following profiles:
 
 * latest (default, builds against the latest versions)
 * SDK (builds a Sloeber you can program Sloeber in. With Java.)
-* win32 (builds for 32 bit windows)
 * win64
 * linux64
 * mac64
@@ -55,7 +57,7 @@ You can control the maven build with the following profiles:
 
 * Build the latest version for the platform you are running on:
 
-    `mvn clean verify -DskipTests=true`
+    `mvn clean verify -PNOSDK -DskipTests=true`
 
 * Build Eclipse + Sloeber for 64-bit Windows:
     `mvn clean verify -Pwin64,latest,NOSDK -DskipTests=true`
@@ -63,10 +65,7 @@ You can control the maven build with the following profiles:
 * Build Eclipse + Sloeber for 64-bit Linux:
     `mvn clean verify -Plinux64,latest,NOSDK -DskipTests=true`
 		
-* Build Eclipse + Sloeber for 32-bit Linux:
-    `mvn clean verify -Plinux32,latest,NOSDK -DskipTests=true`
-		
-* Build the Sloeber SDK (for Sloeber programmers):
+* Build the Sloeber SDK for 64-bit Windows (for Sloeber programmers):
     `mvn clean verify -PSDK,win64,latest -DskipTests=true`
     
 # Importing your build into another Eclipse
