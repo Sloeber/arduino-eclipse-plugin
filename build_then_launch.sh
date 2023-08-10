@@ -1,7 +1,6 @@
 #!/bin/bash
 
-file_x86="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86/sloeber/sloeber-ide"
-file_x86_64="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86_64/sloeber/sloeber-ide"
+file_x86_64="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86_64/Sloeber/sloeber-ide"
 file=""
 
 echo "Trying to build and then launch the Arduino Eclipse IDE"
@@ -23,11 +22,6 @@ fi
 
 echo "Searching for the Eclipse executable (with our plugin pre-packaged) to launch"
 #Find an executable if we made it successfully
-if [[ -x "$file_x86" ]]
-then
-    #echo "File '$file_x86' is executable"
-    file=$file_x86
-fi
 
 if [[ -x "$file_x86_64" ]]
 then
