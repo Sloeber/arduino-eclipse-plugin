@@ -19,6 +19,11 @@ You only need to do one.
 ## Prerequisites
 Please install [git](http://git-scm.com/downloads) and [maven](http://maven.apache.org/download.cgi).
 
+Java 17 is required.
+
+A 64-bit OS is required.
+
+
 ## Build from the command line from source for your os and the default eclipse instance
 ```bash
 git clone https://github.com/Sloeber/arduino-eclipse-plugin sloeber
@@ -43,21 +48,26 @@ You can control the maven build with the following profiles:
 
 * latest (default, builds against the latest versions)
 * SDK (builds a Sloeber you can program Sloeber in. With Java.)
-* win32 (builds for 32 bit windows)
 * win64
 * linux64
 * mac64
 * macm1
 
 ### Examples
-    mvn clean verify -Pwin64,latest,NOSDK -DskipTests=true (builds for latest eclipse and windows bits)
-    mvn clean verify -Plinux32,latest.NOSDK -DskipTests=true (builds for latest eclipse and linux 32 bits)
-    mvn clean verify -PSDK,win64,latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
+
+* Build the latest version for the platform you are running on:
+
+    `mvn clean verify -PNOSDK -DskipTests=true`
+
+* Build Eclipse + Sloeber for 64-bit Windows:
+    `mvn clean verify -Pwin64,latest,NOSDK -DskipTests=true`
+		
+* Build Eclipse + Sloeber for 64-bit Linux:
+    `mvn clean verify -Plinux64,latest,NOSDK -DskipTests=true`
+		
+* Build the Sloeber SDK for 64-bit Windows (for Sloeber programmers):
+    `mvn clean verify -PSDK,win64,latest -DskipTests=true`
     
-To build for latest and the platform you are running on:
-
-    mvn clean verify -DskipTests=true
-
 # Importing your build into another Eclipse
 If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local repository with location ```arduino-eclipse-plugin/io.sloeber.product/target/repository```
 
