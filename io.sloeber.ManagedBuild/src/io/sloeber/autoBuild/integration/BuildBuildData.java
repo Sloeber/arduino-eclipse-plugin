@@ -40,7 +40,7 @@ public class BuildBuildData extends CBuildData {
         myAutoBuildConf = autoBuildConf;
         fBuilder = myAutoBuildConf.getConfiguration().getBuilder();
         myID = CDataUtil.genId(fBuilder.getId());
-        myBuildEnvironmentContributor = new BuildEnvironmentContributor(myAutoBuildConf.getConfiguration());
+        myBuildEnvironmentContributor = new BuildEnvironmentContributor(myAutoBuildConf);
 
     }
 

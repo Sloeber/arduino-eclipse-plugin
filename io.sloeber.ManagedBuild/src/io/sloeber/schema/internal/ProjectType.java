@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.schema.api.IConfiguration;
@@ -44,7 +44,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
     private boolean myIsTest;
 
     private IConfigurationNameProvider myConfigurationNameProvider = null;
-    private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
+    private IEnvironmentVariableProvider myEnvironmentVariableProvider = null;
     private IProjectBuildMacroSupplier myBuildMacroSupplier = null;
     private String myExtensionPointID;
     private String myExtensionID;
@@ -70,7 +70,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
         modelEnvironmentVariableSupplier = getAttributes(PROJECT_ENVIRONMENT_SUPPLIER);
         modelBuildMacroSupplier = getAttributes(PROJECT_BUILD_MACRO_SUPPLIER);
 
-        myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(
+        myEnvironmentVariableProvider = (IEnvironmentVariableProvider) createExecutableExtension(
                 PROJECT_ENVIRONMENT_SUPPLIER);
         myConfigurationNameProvider = (IConfigurationNameProvider) createExecutableExtension(
                 CONFIGURATION_NAME_PROVIDER);
@@ -157,8 +157,8 @@ public class ProjectType extends SchemaObject implements IProjectType {
      * getEnvironmentVariableSupplier()
      */
     @Override
-    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
-        return myEnvironmentVariableSupplier;
+    public IEnvironmentVariableProvider getEnvironmentVariableProvider() {
+        return myEnvironmentVariableProvider;
     }
 
     /*
@@ -184,7 +184,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
         ret.append(prepend + CONFIGURATION_NAME_PROVIDER + EQUAL + modelConfigurationNameProvider[SUPER]
                 + resolvedState(myConfigurationNameProvider) + NEWLINE);
         ret.append(prepend + PROJECT_ENVIRONMENT_SUPPLIER + EQUAL + modelEnvironmentVariableSupplier[SUPER]
-                + resolvedState(myEnvironmentVariableSupplier) + NEWLINE);
+                + resolvedState(myEnvironmentVariableProvider) + NEWLINE);
         ret.append(prepend + PROJECT_BUILD_MACRO_SUPPLIER + EQUAL + modelBuildMacroSupplier[SUPER]
                 + resolvedState(myBuildMacroSupplier) + NEWLINE);
         ret.append(prepend + BEGIN_OF_CHILDREN + myConfigMap.size() + BLANK + IConfiguration.CONFIGURATION_ELEMENT_NAME

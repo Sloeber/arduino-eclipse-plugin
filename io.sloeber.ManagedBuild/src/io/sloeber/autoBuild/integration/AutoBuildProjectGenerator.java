@@ -69,7 +69,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 AutoBuildNature.addNature(myProject, monitor);
 
                 IFolder srcFolder = myProject.getFolder("src"); //$NON-NLS-1$
-                srcFolder.create(true, true, monitor);
+                if (!srcFolder.exists()) {
+                    srcFolder.create(true, true, monitor);
+                }
                 if (myCodeProvider != null) {
                     myCodeProvider.createFiles(srcFolder, monitor);
                 }

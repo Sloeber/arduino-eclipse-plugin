@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
@@ -62,7 +62,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
     Set<String> myErrorParsersIDs = new HashSet<>();
     // Managed Build model attributes
     private List<String> myArchList = new ArrayList<>();
-    private IEnvironmentVariableSupplier myEnvironmentVariableSupplier = null;
+    private IEnvironmentVariableProvider myEnvironmentVariableProvider = null;
     private IConfigurationBuildMacroSupplier myBuildMacroSupplier = null;
 
     private Configuration myConfiguration;
@@ -158,7 +158,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
 
         myBuildMacroSupplier = (IConfigurationBuildMacroSupplier) createExecutableExtension(
                 CONFIGURATION_MACRO_SUPPLIER);
-        myEnvironmentVariableSupplier = (IEnvironmentVariableSupplier) createExecutableExtension(
+        myEnvironmentVariableProvider = (IEnvironmentVariableProvider) createExecutableExtension(
                 CONFIGURATION_ENVIRONMENT_SUPPLIER);
 
         //collect all the error parser ID's
@@ -262,8 +262,8 @@ public class ToolChain extends SchemaObject implements IToolChain {
     }
 
     @Override
-    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
-        return myEnvironmentVariableSupplier;
+    public IEnvironmentVariableProvider getEnvironmentVariableProvider() {
+        return myEnvironmentVariableProvider;
     }
 
     @Override

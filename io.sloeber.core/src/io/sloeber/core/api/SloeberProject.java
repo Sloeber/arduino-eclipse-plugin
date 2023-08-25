@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
@@ -27,12 +28,7 @@ import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.make.core.IMakeTarget;
 import org.eclipse.cdt.make.core.IMakeTargetManager;
 import org.eclipse.cdt.make.core.MakeCorePlugin;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-import org.eclipse.cdt.managedbuilder.core.IProjectType;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
+import org.eclipse.cdt.make.internal.core.MakeTarget;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -52,6 +48,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.autoBuild.Internal.ManagedCProjectNature;
+import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.autoBuild.integration.AutoBuildNature;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
@@ -63,8 +64,13 @@ import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
+import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IProjectType;
 
 public class SloeberProject extends Common {
+    public static String LATEST_EXTENSION_POINT_ID = "io.sloeber.autoBuild.buildDefinitions"; //$NON-NLS-1$
+    public static String LATEST_EXTENSION_ID = "io.sloeber.builddef"; //$NON-NLS-1$
+    public static String PROJECT_ID = "io.sloeber.core.sketch"; //$NON-NLS-1$
     private static QualifiedName sloeberQualifiedName = new QualifiedName(NODE_ARDUINO, "SloeberProject"); //$NON-NLS-1$
     private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
@@ -114,103 +120,99 @@ public class SloeberProject extends Common {
      * @return
      */
     public static void convertToArduinoProject(IProject project, IProgressMonitor monitor) {
-        if (project == null) {
-            return;
-        }
-        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
-        ICoreRunnable runnable = new ICoreRunnable() {
-            @Override
-            public void run(IProgressMonitor internalMonitor) throws CoreException {
-                IndexerController.doNotIndex(project);
-
-                try {
-
-                    // create a sloeber project
-                    SloeberProject sloeberProject = new SloeberProject(project);
-                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project, true);
-                    upgradeArduinoProject(sloeberProject, prjCDesc);
-                    if (!sloeberProject.readConfigFromFiles()) {
-                        sloeberProject.setBoardDescription(RELEASE, new BoardDescription(), false);
-                        sloeberProject.setCompileDescription(RELEASE, new CompileDescription());
-                        sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
-                        // we failed to read from disk so we set up some values
-                        // faking the stuff is in memory
-
-                    }
-                    String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
-                    BoardDescription boardDescriptor = sloeberProject.getBoardDescription(configName, true);
-
-                    // Add the arduino code folders
-                    List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(project, boardDescriptor);
-
-                    // make the eclipse project a cdt project
-                    CCorePlugin.getDefault().createCProject(null, project, new NullProgressMonitor(),
-                            ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
-
-                    // add the required natures
-                    ManagedCProjectNature.addManagedNature(project, internalMonitor);
-                    ManagedCProjectNature.addManagedBuilder(project, internalMonitor);
-                    ManagedCProjectNature.addNature(project, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
-                    ManagedCProjectNature.addNature(project, Const.ARDUINO_NATURE_ID, internalMonitor);
-
-                    // make the cdt project a managed build project
-                    IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
-                    ManagedBuildManager.createBuildInfo(project);
-                    IManagedProject newProject = ManagedBuildManager.createManagedProject(project, sloeberProjType);
-                    ManagedBuildManager.setNewProjectVersion(project);
-                    // Copy over the Sloeber configs
-                    IConfiguration defaultConfig = null;
-                    IConfiguration[] configs = sloeberProjType.getConfigurations();
-                    for (int i = 0; i < configs.length; ++i) {
-                        IConfiguration curConfig = newProject.createConfiguration(configs[i],
-                                sloeberProjType.getId() + "." + i); //$NON-NLS-1$
-                        curConfig.setArtifactName(newProject.getDefaultArtifactName());
-                        // Make the first configuration the default
-                        if (i == 0) {
-                            defaultConfig = curConfig;
-                        }
-                    }
-
-                    ManagedBuildManager.setDefaultConfiguration(project, defaultConfig);
-
-                    ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
-
-                    for (String curConfigName : sloeberProject.myBoardDescriptions.keySet()) {
-                        ICConfigurationDescription curConfigDesc = prjCDesc.getConfigurationByName(curConfigName);
-                        if (curConfigDesc == null) {
-                            String id = CDataUtil.genId(null);
-                            curConfigDesc = prjCDesc.createConfiguration(id, curConfigName, activeConfig);
-                        }
-                        Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
-
-                        String curConfigKey = getConfigKey(curConfigDesc);
-                        sloeberProject.myEnvironmentVariables.put(curConfigKey,
-                                sloeberProject.getEnvVars(curConfigKey));
-
-                    }
-                    sloeberProject.myIsInMemory = true;
-                    sloeberProject.createSloeberConfigFiles();
-                    SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
-                    project.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
-                    cCorePlugin.setProjectDescription(project, prjCDesc, true, null);
-
-                } catch (Exception e) {
-                    Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                            "Project conversion failed: ", e)); //$NON-NLS-1$
-                }
-
-                IndexerController.index(project);
-            }
-
-        };
-
-        try {
-            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
-        } catch (Exception e) {
-            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(), "Project conversion failed: ", e)); //$NON-NLS-1$
-        }
+        //        if (project == null) {
+        //            return;
+        //        }
+        //        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        //        IWorkspaceRoot root = workspace.getRoot();
+        //        ICoreRunnable runnable = new ICoreRunnable() {
+        //            @Override
+        //            public void run(IProgressMonitor internalMonitor) throws CoreException {
+        //                IndexerController.doNotIndex(project);
+        //
+        //                try {
+        //
+        //                    // create a sloeber project
+        //                    SloeberProject sloeberProject = new SloeberProject(project);
+        //                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        //                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project, true);
+        //                    upgradeArduinoProject(sloeberProject, prjCDesc);
+        //                    if (!sloeberProject.readConfigFromFiles()) {
+        //                        sloeberProject.setBoardDescription(RELEASE, new BoardDescription(), false);
+        //                        sloeberProject.setCompileDescription(RELEASE, new CompileDescription());
+        //                        sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
+        //                        // we failed to read from disk so we set up some values
+        //                        // faking the stuff is in memory
+        //
+        //                    }
+        //                    String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
+        //                    BoardDescription boardDescriptor = sloeberProject.getBoardDescription(configName, true);
+        //
+        //                    // Add the arduino code folders
+        //                    List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(project, boardDescriptor);
+        //
+        //                    // make the eclipse project a cdt project
+        //                    CCorePlugin.getDefault().createCProject(null, project, new NullProgressMonitor(),
+        //                            ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
+        //
+        //                    // add the required natures
+        //                    AutoBuildNature.addNature(project, internalMonitor);
+        //
+        //                    // make the cdt project a managed build project
+        //                    IProjectType sloeberProjType = AutoBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
+        //                    ManagedBuildManager.createBuildInfo(project);
+        //                    IManagedProject newProject = ManagedBuildManager.createManagedProject(project, sloeberProjType);
+        //                    ManagedBuildManager.setNewProjectVersion(project);
+        //                    // Copy over the Sloeber configs
+        //                    IConfiguration defaultConfig = null;
+        //                    IConfiguration[] configs = sloeberProjType.getConfigurations();
+        //                    for (int i = 0; i < configs.length; ++i) {
+        //                        IConfiguration curConfig = newProject.createConfiguration(configs[i],
+        //                                sloeberProjType.getId() + "." + i); //$NON-NLS-1$
+        //                        curConfig.setArtifactName(newProject.getDefaultArtifactName());
+        //                        // Make the first configuration the default
+        //                        if (i == 0) {
+        //                            defaultConfig = curConfig;
+        //                        }
+        //                    }
+        //
+        //                    ManagedBuildManager.setDefaultConfiguration(project, defaultConfig);
+        //
+        //                    ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
+        //
+        //                    for (String curConfigName : sloeberProject.myBoardDescriptions.keySet()) {
+        //                        ICConfigurationDescription curConfigDesc = prjCDesc.getConfigurationByName(curConfigName);
+        //                        if (curConfigDesc == null) {
+        //                            String id = CDataUtil.genId(null);
+        //                            curConfigDesc = prjCDesc.createConfiguration(id, curConfigName, activeConfig);
+        //                        }
+        //                        Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
+        //
+        //                        String curConfigKey = getConfigKey(curConfigDesc);
+        //                        sloeberProject.myEnvironmentVariables.put(curConfigKey,
+        //                                sloeberProject.getEnvVars(curConfigKey));
+        //
+        //                    }
+        //                    sloeberProject.createSloeberConfigFiles();
+        //                    SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
+        //                    project.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
+        //                    cCorePlugin.setProjectDescription(project, prjCDesc, true, null);
+        //
+        //                } catch (Exception e) {
+        //                    Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+        //                            "Project conversion failed: ", e)); //$NON-NLS-1$
+        //                }
+        //
+        //                IndexerController.index(project);
+        //            }
+        //
+        //        };
+        //
+        //        try {
+        //            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
+        //        } catch (Exception e) {
+        //            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(), "Project conversion failed: ", e)); //$NON-NLS-1$
+        //        }
 
     }
 
@@ -249,98 +251,60 @@ public class SloeberProject extends Common {
                 IProject newProjectHandle = root.getProject(realProjectName);
                 IndexerController.doNotIndex(newProjectHandle);
 
-                try {
-                    // create a eclipse project
-                    IProjectDescription description = workspace.newProjectDescription(realProjectName);
-                    if (projectURI != null) {
-                        description.setLocationURI(projectURI);
-                    }
-                    newProjectHandle.create(description, internalMonitor);
-                    newProjectHandle.open(internalMonitor);
+                ICodeProvider codeProvider = null;//TOFIX Add code provider based on code descriiptor
+                newProjectHandle = AutoBuildProject.createProject(realProjectName, LATEST_EXTENSION_POINT_ID,
+                        LATEST_EXTENSION_ID, PROJECT_ID, CCProjectNature.CC_NATURE_ID, codeProvider, internalMonitor);
 
-                    // Add the sketch code
-                    Map<String, IPath> librariesToAdd = codeDesc.createFiles(newProjectHandle, internalMonitor);
+                // Add the sketch code
+                Map<String, IPath> librariesToAdd = codeDesc.createFiles(newProjectHandle, internalMonitor);
 
-                    // Add the arduino code folders
-                    List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(newProjectHandle, boardDescriptor);
+                // Add the arduino code folders
+                List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(newProjectHandle, boardDescriptor);
 
-                    Map<String, List<IPath>> pathMods = Libraries.addLibrariesToProject(newProjectHandle,
-                            librariesToAdd);
+                Map<String, List<IPath>> pathMods = Libraries.addLibrariesToProject(newProjectHandle, librariesToAdd);
 
-                    // make the eclipse project a cdt project
-                    CCorePlugin.getDefault().createCProject(description, newProjectHandle, new NullProgressMonitor(),
-                            ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
+                AutoBuildNature.addNature(newProjectHandle, internalMonitor);
 
-                    // add the required natures
-                    ManagedCProjectNature.addManagedNature(newProjectHandle, internalMonitor);
-                    ManagedCProjectNature.addManagedBuilder(newProjectHandle, internalMonitor);
-                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
-                    ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
+                // create a sloeber project
+                SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
+                //the line below will trigger environment var requests causing loops if called to early
+                //                ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
 
-                    // make the cdt project a managed build project
-                    IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
-                    ManagedBuildManager.createBuildInfo(newProjectHandle);
-                    IManagedProject newProject = ManagedBuildManager.createManagedProject(newProjectHandle,
-                            sloeberProjType);
-                    ManagedBuildManager.setNewProjectVersion(newProjectHandle);
-                    // Copy over the Sloeber configs
-                    IConfiguration defaultConfig = null;
-                    IConfiguration[] configs = sloeberProjType.getConfigurations();
-                    for (int i = 0; i < configs.length; ++i) {
-                        IConfiguration curConfig = newProject.createConfiguration(configs[i],
-                                sloeberProjType.getId() + "." + i); //$NON-NLS-1$
-                        curConfig.setArtifactName(newProject.getDefaultArtifactName());
-                        curConfig.getEditableBuilder().setParallelBuildOn(compileDescriptor.isParallelBuildEnabled());
-                        // Make the first configuration the default
-                        if (i == 0) {
-                            defaultConfig = curConfig;
-                        }
-                    }
+                CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+                ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle, true);
+                Set<String> configKeys = GetConfigKeysFromProjectDescription(prjCDesc);
 
-                    // create a sloeber project
-                    SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
-                    arduinoProjDesc.myIsInMemory = true;
-                    //the line below will trigger environment var requests causing loops if called to early
-                    ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
+                for (String curConfigKey : configKeys) {
 
-                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle, true);
-                    Set<String> configKeys = GetConfigKeysFromProjectDescription(prjCDesc);
+                    arduinoProjDesc.myCompileDescriptions.put(curConfigKey, compileDescriptor);
+                    arduinoProjDesc.myBoardDescriptions.put(curConfigKey, boardDescriptor);
+                    arduinoProjDesc.myOtherDescriptions.put(curConfigKey, otherDesc);
+                    ICConfigurationDescription curConfigDesc = prjCDesc.getConfigurationByName(curConfigKey);
+                    Libraries.adjustProjectDescription(curConfigDesc, pathMods);
+                    Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
+                    //TOFIX pretty sure the line below can be deleted because of the setAllEnvironmentVars below.
+                    //                        arduinoProjDesc.myEnvironmentVariables.put(curConfigKey,
+                    //                                arduinoProjDesc.getEnvVars(curConfigKey));
 
-                    for (String curConfigKey : configKeys) {
-
-                        arduinoProjDesc.myCompileDescriptions.put(curConfigKey, compileDescriptor);
-                        arduinoProjDesc.myBoardDescriptions.put(curConfigKey, boardDescriptor);
-                        arduinoProjDesc.myOtherDescriptions.put(curConfigKey, otherDesc);
-                        ICConfigurationDescription curConfigDesc = prjCDesc.getConfigurationByName(curConfigKey);
-                        Libraries.adjustProjectDescription(curConfigDesc, pathMods);
-                        Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
-                        //TOFIX pretty sure the line below can be deleted because of the setAllEnvironmentVars below.
-                        //                        arduinoProjDesc.myEnvironmentVariables.put(curConfigKey,
-                        //                                arduinoProjDesc.getEnvVars(curConfigKey));
-
-                    }
-
-                    arduinoProjDesc.createSloeberConfigFiles();
-                    arduinoProjDesc.setAllEnvironmentVars();
-                    arduinoProjDesc.myIsInMemory = true;
-
-                    SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
-                    newProjectHandle.open(refreshMonitor);
-                    newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
-                    cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, null);
-
-                } catch (Exception e) {
-                    Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                            "Project creation failed: " + realProjectName, e)); //$NON-NLS-1$
                 }
+
+                arduinoProjDesc.createSloeberConfigFiles();
+                arduinoProjDesc.setAllEnvironmentVars();
+
+                SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
+                newProjectHandle.open(refreshMonitor);
+                newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
+                cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, null);
+
                 Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
                         "internal creation of project is done: " + realProjectName)); //$NON-NLS-1$
                 IndexerController.index(newProjectHandle);
             }
         };
 
-        try {
+        try
+
+        {
             workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
         } catch (Exception e) {
             Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
@@ -496,7 +460,6 @@ public class SloeberProject extends Common {
             }
         }
 
-        myIsInMemory = true;
         myIsDirty = false;
         return saveProjDesc;
 
@@ -1058,7 +1021,6 @@ public class SloeberProject extends Common {
         //CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         //ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject, true);
         ///ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
-        myIsInMemory = false;
         configure();
         //all configs may have changed so only deleting the active config does not make sense
         //Helpers.deleteBuildFolder(myProject, activeConfig.getName());
@@ -1138,14 +1100,16 @@ public class SloeberProject extends Common {
         try {
             IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
             IContainer targetResource = myProject.getFolder(RELEASE);
-            IMakeTarget target = targetManager.findTarget(targetResource, targetName);
-            if (target == null) {
-                target = targetManager.createTarget(myProject, targetName, "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
-                target.setBuildTarget(targetName);
-                targetManager.addTarget(targetResource, target);
+            IMakeTarget itarget = targetManager.findTarget(targetResource, targetName);
+            if (itarget == null) {
+                itarget = targetManager.createTarget(myProject, targetName, "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
+                if (itarget instanceof MakeTarget) {
+                    ((MakeTarget) itarget).setBuildTarget(targetName);
+                    targetManager.addTarget(targetResource, itarget);
+                }
             }
-            if (target != null) {
-                target.build(new NullProgressMonitor());
+            if (itarget != null) {
+                itarget.build(new NullProgressMonitor());
             }
         } catch (CoreException e) {
             return new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e);

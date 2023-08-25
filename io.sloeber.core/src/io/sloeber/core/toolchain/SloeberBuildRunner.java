@@ -1,5 +1,6 @@
 package io.sloeber.core.toolchain;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import static io.sloeber.core.common.Const.*;
 
 import java.net.URL;
@@ -7,9 +8,7 @@ import java.util.List;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
-import org.eclipse.cdt.managedbuilder.core.ExternalBuildRunner;
-import org.eclipse.cdt.managedbuilder.core.IBuilder;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -21,6 +20,9 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.autoBuild.api.IBuildRunner;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Preferences;
@@ -28,15 +30,54 @@ import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
+import io.sloeber.schema.api.IBuilder;
+import io.sloeber.schema.api.IConfiguration;
 
-public class SloeberBuildRunner extends ExternalBuildRunner {
+public class SloeberBuildRunner extends IBuildRunner {
 
+    /**
+     * The sloeber builder stops the serial connection of the project on the serial
+     * monitor
+     * before starting the default builder
+     * and restarts the serial connection on the serial monitor after the build
+     * The serial connection is not stopped in case of a clean command
+     */
     @Override
-    public boolean invokeBuild(int kind, IProject project, IConfiguration configuration, IBuilder builder,
-            IConsole console, IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder,
-            IProgressMonitor monitor) throws CoreException {
+    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+            IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
+        IProject project = autoData.getProject();
+        IBuilder builder = autoData.getConfiguration().getBuilder();
 
-        String theBuildTarget = builder.getFullBuildTarget();
+        //get the target that is build
+        String defaultTarget = EMPTY_STRING;
+        String customTarget = EMPTY_STRING;
+        boolean isClean = false;
+        switch (kind) {
+        case IncrementalProjectBuilder.AUTO_BUILD: {
+            defaultTarget = builder.getAutoBuildTarget();
+            customTarget = autoData.getAutoMakeTarget();
+            break;
+        }
+        case IncrementalProjectBuilder.INCREMENTAL_BUILD:
+        case IncrementalProjectBuilder.FULL_BUILD: {
+            defaultTarget = builder.getIncrementalBuildTarget();
+            customTarget = autoData.getIncrementalMakeTarget();
+            break;
+        }
+        case IncrementalProjectBuilder.CLEAN_BUILD: {
+            defaultTarget = builder.getCleanBuildTarget();
+            customTarget = autoData.getCleanMakeTarget();
+            isClean = true;
+            break;
+        }
+        }
+        defaultTarget = AutoBuildCommon.resolve(defaultTarget, autoData);
+        customTarget = AutoBuildCommon.resolve(customTarget, autoData);
+        if (customTarget.isBlank()) {
+            customTarget = defaultTarget;
+        }
+        //We finally have the target 
+        String theBuildTarget = customTarget;
 
         String actualUploadPort = Const.EMPTY;
 
@@ -44,7 +85,7 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
         if (stopSerialOnBuildTargets.contains(theBuildTarget)) {
             SloeberProject sloeberProject = SloeberProject.getSloeberProject(project);
             if (sloeberProject != null) {
-                BoardDescription myBoardDescriptor = sloeberProject.getBoardDescription(configuration.getName(), true);
+                BoardDescription myBoardDescriptor = sloeberProject.getBoardDescription(autoData.getName(), true);
                 if (myBoardDescriptor != null) {
                     actualUploadPort = myBoardDescriptor.getActualUploadPort();
                     if (actualUploadPort == null) {
@@ -55,7 +96,7 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
         }
 
         boolean theComPortIsPaused = false;
-        if (!actualUploadPort.isBlank()) {
+        if (!(isClean || actualUploadPort.isBlank())) {
             try {
                 theComPortIsPaused = SerialManager.pauseSerialMonitor(actualUploadPort);
             } catch (Exception e) {
@@ -90,7 +131,7 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
         job.setPriority(Job.DECORATE);
         job.schedule();
 
-        boolean ret = super.invokeBuild(kind, project, configuration, builder, console, markerGenerator, projectBuilder,
+        boolean ret = autoData.getBuildRunner().invokeBuild(kind, autoData, markerGenerator, projectBuilder, console,
                 monitor);
 
         if (theComPortIsPaused) {
@@ -104,6 +145,46 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
         }
 
         return ret;
+    }
+
+    @Override
+    public String getName() {
+        return "Sloeber build engine"; //$NON-NLS-1$
+    }
+
+    @Override
+    public boolean supportsParallelBuild() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsStopOnError() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCustomCommand() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsMakeFiles() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsAutoBuild() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsIncrementalBuild() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCleanBuild() {
+        return true;
     }
 
 }

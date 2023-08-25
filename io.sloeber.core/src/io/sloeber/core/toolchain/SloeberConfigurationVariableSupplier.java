@@ -4,31 +4,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.cdt.core.envvar.EnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
-import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
-import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.resources.IProject;
 
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
 
-public class SloeberConfigurationVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
+public class SloeberConfigurationVariableSupplier implements IEnvironmentVariableProvider {
 
-    private static SloeberProject getSloeberProject(IConfiguration configuration) {
-        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(configuration);
+    private static SloeberProject getSloeberProject(ICConfigurationDescription confDesc) {
         ICProjectDescription projDesc = confDesc.getProjectDescription();
         IProject project = projDesc.getProject();
         return SloeberProject.getSloeberProject(project);
     }
 
     @Override
-    public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration,
-            IEnvironmentVariableProvider provider) {
+    public IEnvironmentVariable getVariable(String variableName, ICConfigurationDescription configuration,
+            boolean resolveMacros) {
         String ret = null;
+        if (configuration == null) {
+            return null;
+        }
         SloeberProject sloeberProject = getSloeberProject(configuration);
         if (sloeberProject == null) {
             return null;
@@ -44,12 +44,15 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
         if (ret == null) {
             return null;
         }
-        return new BuildEnvironmentVariable(variableName, ret);
+        return new EnvironmentVariable(variableName, ret);
     }
 
     @Override
-    public IBuildEnvironmentVariable[] getVariables(IConfiguration configuration,
-            IEnvironmentVariableProvider provider) {
+    public IEnvironmentVariable[] getVariables(ICConfigurationDescription configuration, boolean resolveMacros) {
+        if (configuration == null) {
+            return new IEnvironmentVariable[0];
+        }
+
         Map<String, String> retVars = new HashMap<>();
         Map<String, String> workbenchVars = BoardsManager.getEnvironmentVariables();
         if (workbenchVars != null) {
@@ -64,10 +67,10 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
             }
         }
 
-        IBuildEnvironmentVariable[] ret = new BuildEnvironmentVariable[retVars.size()];
+        EnvironmentVariable[] ret = new EnvironmentVariable[retVars.size()];
         int i = 0;
         for (Entry<String, String> curVar : retVars.entrySet()) {
-            ret[i++] = new BuildEnvironmentVariable(curVar.getKey(), curVar.getValue());
+            ret[i++] = new EnvironmentVariable(curVar.getKey(), curVar.getValue());
         }
         return ret;
     }

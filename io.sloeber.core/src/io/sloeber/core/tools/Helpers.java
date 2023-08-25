@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
-import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -36,6 +36,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
@@ -367,12 +368,12 @@ public class Helpers {
      * @param project
      */
     public static void deleteBuildFolder(IProject project, String cfgName) {
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        if (buildInfo == null) {
-            return; // Project is not a managed build project
-        }
+        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
+        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getConfigurationByName(cfgName);
+        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription
+                .getFromConfig(cdtConfigurationDescription);
 
-        IFolder buildFolder = project.getFolder(cfgName);
+        IFolder buildFolder = autoData.getBuildFolder();
         if (buildFolder.exists()) {
             try {
                 buildFolder.delete(true, null);
@@ -381,23 +382,6 @@ public class Helpers {
                         Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgName), e));
             }
         }
-    }
-
-    /**
-     * Given a source file calculates the base of the output file. this method may
-     * not be needed if I can used the eclipse default behavior. However the eclipse
-     * default behavior is different from the arduino default behavior. So I keep it
-     * for now and we'll see how it goes The eclipse default behavior is (starting
-     * from the project folder [configuration]/Source The Arduino default behavior
-     * is all in 1 location (so no subfolders)
-     *
-     * @param Source
-     *            The source file to find the
-     * @return The base file name for the ouput if Source is "file.cpp" the output
-     *         is "file.cpp"
-     */
-    public static IPath GetOutputName(IPath Source) {
-        return Source;
     }
 
     /**

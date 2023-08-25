@@ -14,10 +14,7 @@
 package io.sloeber.autoBuild.api;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-
-import io.sloeber.autoBuild.Internal.IEnvironmentBuildPathsChangeListener;
-import io.sloeber.schema.api.IConfiguration;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 
 /**
  * this interface represent the environment variable provider - the main
@@ -86,7 +83,7 @@ public interface IEnvironmentVariableProvider {
      * @return variable defined for the configuration or the workspace.
      *         Returns {@code null} if variable is not defined.
      */
-    public IEnvironmentVariable getVariable(String variableName, IConfiguration cfg, boolean resolveMacros);
+    public IEnvironmentVariable getVariable(String variableName, ICConfigurationDescription cfg, boolean resolveMacros);
 
     /**
      * if environment variable names are case insensitive in the current OS,
@@ -119,55 +116,6 @@ public interface IEnvironmentVariableProvider {
      * @return array of variables defined for the configuration or the workspace.
      *         Returns an empty array if no variables are defined.
      */
-    public IEnvironmentVariable[] getVariables(IConfiguration cfg, boolean resolveMacros);
+    public IEnvironmentVariable[] getVariables(ICConfigurationDescription cfg, boolean resolveMacros);
 
-    /**
-     * @return the String representing default system delimiter. That is the ":" for
-     *         Unix-like
-     *         systems and the ";" for Win32 systems. This method will be used by
-     *         the
-     *         tool-integrator provided variable supplier e.g. in order to
-     *         concatenate the list of paths into the
-     *         environment variable, etc.
-     */
-    public String getDefaultDelimiter();
-
-    /**
-     * This method is defined to be used basically by the UI classes and should not
-     * be used by the
-     * tool-integrator
-     * 
-     * @return the array of the provider-internal suppliers for the given level
-     */
-    IEnvironmentVariableSupplier[] getSuppliers(Object level);
-
-    /**
-     * @return the array of String that holds the build paths of the specified type
-     *
-     * @param configuration
-     *            represent the configuration for which the paths were changed
-     * @param buildPathType
-     *            can be set to one of the IEnvVarBuildPath.BUILDPATH _xxx
-     *            (the IEnvVarBuildPath will represent the build environment
-     *            variables, see also
-     *            the "Specifying the Includes and Library paths environment
-     *            variables",
-     *            the "envVarBuildPath schema" and the "Expected CDT/MBS code
-     *            changes" sections)
-     */
-    String[] getBuildPaths(IConfiguration configuration, int buildPathType);
-
-    /**
-     * adds the listener that will return notifications about the include and
-     * library paths changes.
-     * The ManagedBuildManager will register the change listener and will notify all
-     * registered
-     * Scanned Info Change Listeners about the include paths change.
-     */
-    void subscribe(IEnvironmentBuildPathsChangeListener listener);
-
-    /**
-     * removes the include and library paths change listener
-     */
-    void unsubscribe(IEnvironmentBuildPathsChangeListener listener);
 }

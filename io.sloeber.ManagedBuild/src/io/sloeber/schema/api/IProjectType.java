@@ -15,7 +15,7 @@ package io.sloeber.schema.api;
 
 import java.util.Map;
 
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 
@@ -117,7 +117,7 @@ public interface IProjectType extends ISchemaObject {
      *
      * @return IProjectEnvironmentVariableSupplier
      */
-    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier();
+    public IEnvironmentVariableProvider getEnvironmentVariableProvider();
 
     /**
      * Returns the tool-integrator provided implementation of the project build

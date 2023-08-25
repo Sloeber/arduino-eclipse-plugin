@@ -14,11 +14,10 @@
 package io.sloeber.schema.api;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.internal.Tool;
 
@@ -179,7 +178,7 @@ public interface IToolChain extends ISchemaObject {
      *
      * @return IConfigurationEnvironmentVariableSupplier
      */
-    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier();
+    public IEnvironmentVariableProvider getEnvironmentVariableProvider();
 
     /**
      * Returns the tool-integrator provided implementation of the configuration

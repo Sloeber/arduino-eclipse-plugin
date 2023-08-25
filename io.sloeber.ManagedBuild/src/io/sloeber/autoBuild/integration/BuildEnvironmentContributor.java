@@ -9,54 +9,60 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.core.resources.IProject;
-
-import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IManagedProject;
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.schema.api.IProjectType;
 
 public class BuildEnvironmentContributor implements IEnvironmentContributor {
-    IEnvironmentVariableSupplier myProjectEnvironmentVariableProvider = null;
-    IEnvironmentVariableSupplier myConfigurationEnvironmentVariableProvider = null;
-    IConfiguration myConfiguration;
+    IEnvironmentVariableProvider myProjectEnvironmentVariableProvider = null;
+    IEnvironmentVariableProvider myConfigurationEnvironmentVariableProvider = null;
+    AutoBuildConfigurationDescription myAutoData;
 
-    public BuildEnvironmentContributor(IConfiguration fCfg) {
-        myConfiguration = fCfg;
-        IProjectType pType = myConfiguration.getProjectType();
+    public BuildEnvironmentContributor(AutoBuildConfigurationDescription autoData) {
+        myAutoData = autoData;
+        IProjectType pType = myAutoData.getProjectType();
         if (pType != null) {
-            myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableSupplier();
+            myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableProvider();
         }
-        myConfigurationEnvironmentVariableProvider = myConfiguration.getToolChain().getEnvironmentVariableSupplier();
+        myConfigurationEnvironmentVariableProvider = myAutoData.getConfiguration().getToolChain()
+                .getEnvironmentVariableProvider();
     }
 
     @Override
     public IEnvironmentVariable getVariable(String name, IEnvironmentVariableManager provider) {
-        return internalGetVariables(provider).get(name);
+
+        IEnvironmentVariable environmentVariable = null;
+        if (myConfigurationEnvironmentVariableProvider != null) {
+            environmentVariable = myConfigurationEnvironmentVariableProvider.getVariable(name,
+                    myAutoData.getCdtConfigurationDescription(), false);
+            if (environmentVariable == null && myProjectEnvironmentVariableProvider != null) {
+                environmentVariable = myProjectEnvironmentVariableProvider.getVariable(name,
+                        myAutoData.getCdtConfigurationDescription(), false);
+            }
+        }
+
+        return environmentVariable;
     }
 
     @Override
     public IEnvironmentVariable[] getVariables(IEnvironmentVariableManager provider) {
-        return internalGetVariables(provider).values().toArray(new EnvironmentVariable[0]);
-    }
-
-    private Map<String, IEnvironmentVariable> internalGetVariables(IEnvironmentVariableManager provider) {
-        Map<String, IEnvironmentVariable> allVars = new HashMap<>();
+        Set<IEnvironmentVariable> allVars = new HashSet<>();
         if (myProjectEnvironmentVariableProvider != null) {
-            allVars.putAll(myProjectEnvironmentVariableProvider.getVariables(myConfiguration));
+            Collections.addAll(allVars, myProjectEnvironmentVariableProvider
+                    .getVariables(myAutoData.getCdtConfigurationDescription(), false));
         }
         if (myConfigurationEnvironmentVariableProvider != null) {
-            allVars.putAll(myConfigurationEnvironmentVariableProvider.getVariables(myConfiguration));
+            Collections.addAll(allVars, myConfigurationEnvironmentVariableProvider
+                    .getVariables(myAutoData.getCdtConfigurationDescription(), false));
         }
 
-        return allVars;
+        return allVars.toArray(new IEnvironmentVariable[allVars.size()]);
     }
 
 }

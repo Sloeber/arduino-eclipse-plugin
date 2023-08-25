@@ -35,9 +35,6 @@ public class AutoBuildConstants {
     public static final String DEFAULT_INCREMENTAL_MAKE_TARGET = TARGET_ALL;
     public static final String DEFAULT_CLEAN_MAKE_TARGET = TARGET_CLEAN;
 
-    // preference nodes
-    public static final String NODE_ARDUINO = "io.sloeber.arduino";
-
     //for debug messages
     public static final int SLOEBER_STATUS_DEBUG = IStatus.CANCEL;
 

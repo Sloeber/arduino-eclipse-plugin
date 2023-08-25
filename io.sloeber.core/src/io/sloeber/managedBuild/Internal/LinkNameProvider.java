@@ -1,35 +1,40 @@
 package io.sloeber.managedBuild.Internal;
 
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.ITool;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.tools.Helpers;
-import io.sloeber.managedBuild.api.INewManagedOutputNameProvider;
+import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOutputType;
 
-public class LinkNameProvider implements INewManagedOutputNameProvider {
+public class LinkNameProvider implements IOutputNameProvider {
 
     @Override
-    public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
+    public String getOutputFileName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType,
+            IOutputType outputType) {
+        ICConfigurationDescription confdesc = autoData.getCdtConfigurationDescription();
+        IProject project = inputFile.getProject();
+        String fileExt = inputFile.getFileExtension();
         boolean bUseArchiver = Common
-                .getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
+                .getBuildEnvironmentVariable(project, confdesc.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
                 .equalsIgnoreCase(Const.TRUE);
-        if (inputName.toString().startsWith(Const.ARDUINO_CODE_FOLDER_PATH) && (bUseArchiver)) {
+        if (inputFile.getProjectRelativePath().toString().startsWith(Const.ARDUINO_CODE_FOLDER_PATH)
+                && (bUseArchiver)) {
             return null;
         }
-        if (inputName.toString().endsWith(".ino")) { //$NON-NLS-1$
+        if ("ino".equals(fileExt)) { //$NON-NLS-1$
             return null;
         }
-        if (inputName.toString().endsWith(".pde")) { //$NON-NLS-1$
+        if ("pde".equals(fileExt)) { //$NON-NLS-1$
             return null;
         }
-        if (inputName.toString().endsWith(".cxx")) { //$NON-NLS-1$
+        if ("cxx".equals(fileExt)) { //$NON-NLS-1$
             return null;
         }
-        return Helpers.GetOutputName(inputName).addFileExtension("o"); //$NON-NLS-1$
+        return inputFile.getName() + 'o';
     }
 
 }

@@ -571,10 +571,10 @@ If specified; the command line generator overrules the commandLinePattern
          <attribute name="environmentSupplier" type="string">
             <annotation>
                <documentation>
-                  Specifies the name of the class that implements IConfigurationEnvironmentVariableSupplier in order to provide configuration level environment variables.
+                  Specifies the name of the class that implements io.sloeber.autoBuild.api.IEnvironmentVariableProvider in order to provide configuration level environment variables.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.api.IEnvironmentVariableProvider"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -758,10 +758,10 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
          <attribute name="environmentSupplier" type="string">
             <annotation>
                <documentation>
-                  Specifies the name of the class that implements IProjectEnvironmentVariableSupplier in order to provide project level environment variables.
+                  Specifies the name of the class that implements io.sloeber.autoBuild.api.IEnvironmentVariableProvider in order to provide project level environment variables.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IProjectEnvironmentVariableSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.api.IEnvironmentVariableProvider"/>
                </appinfo>
             </annotation>
          </attribute>

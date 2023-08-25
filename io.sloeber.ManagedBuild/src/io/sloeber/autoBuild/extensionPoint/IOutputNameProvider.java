@@ -8,7 +8,7 @@ import io.sloeber.schema.api.IOutputType;
 public interface IOutputNameProvider {
     /***********
      * Given a file provide the name of the file that should be created
-     * oly the filename should be provided the final location of the file is not
+     * only the filename should be provided the final location of the file is not
      * relevant for the name provider
      * Assume the file is c:\X/Y/Z/c.cpp a correct return value could be the string
      * "c.cpp.o"

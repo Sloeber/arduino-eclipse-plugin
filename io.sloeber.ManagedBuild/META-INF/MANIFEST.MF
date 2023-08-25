@@ -23,6 +23,7 @@ Automatic-Module-Name: io.sloeber.core
 Bundle-Activator: io.sloeber.autoBuild.core.Activator
 Export-Package: io.sloeber.autoBuild.Internal;x-friends:="io.sloeber.autoBuild.test",
  io.sloeber.autoBuild.api,
+ io.sloeber.autoBuild.extensionPoint,
  io.sloeber.autoBuild.extensionPoint.providers,
  io.sloeber.autoBuild.integration,
  io.sloeber.schema.api
