@@ -22,6 +22,7 @@ import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICBuildSetting;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
@@ -51,6 +52,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import io.sloeber.autoBuild.Internal.ManagedCProjectNature;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.integration.AutoBuildNature;
 import io.sloeber.core.Activator;
@@ -251,9 +253,8 @@ public class SloeberProject extends Common {
                 IProject newProjectHandle = root.getProject(realProjectName);
                 IndexerController.doNotIndex(newProjectHandle);
 
-                ICodeProvider codeProvider = null;//TOFIX Add code provider based on code descriiptor
                 newProjectHandle = AutoBuildProject.createProject(realProjectName, LATEST_EXTENSION_POINT_ID,
-                        LATEST_EXTENSION_ID, PROJECT_ID, CCProjectNature.CC_NATURE_ID, codeProvider, internalMonitor);
+                        LATEST_EXTENSION_ID, PROJECT_ID, CCProjectNature.CC_NATURE_ID, null, internalMonitor);
 
                 // Add the sketch code
                 Map<String, IPath> librariesToAdd = codeDesc.createFiles(newProjectHandle, internalMonitor);
@@ -266,35 +267,39 @@ public class SloeberProject extends Common {
                 AutoBuildNature.addNature(newProjectHandle, internalMonitor);
 
                 // create a sloeber project
-                SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
+                //SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
                 //the line below will trigger environment var requests causing loops if called to early
                 //                ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
 
                 CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                 ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle, true);
-                Set<String> configKeys = GetConfigKeysFromProjectDescription(prjCDesc);
 
-                for (String curConfigKey : configKeys) {
-
-                    arduinoProjDesc.myCompileDescriptions.put(curConfigKey, compileDescriptor);
-                    arduinoProjDesc.myBoardDescriptions.put(curConfigKey, boardDescriptor);
-                    arduinoProjDesc.myOtherDescriptions.put(curConfigKey, otherDesc);
-                    ICConfigurationDescription curConfigDesc = prjCDesc.getConfigurationByName(curConfigKey);
-                    Libraries.adjustProjectDescription(curConfigDesc, pathMods);
-                    Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
+                for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
+                	ICBuildSetting buildSettings = curConfig.getBuildSetting();
+                	if(!(buildSettings instanceof AutoBuildConfigurationDescription)) {
+                		//this should not happen as we just created a autoBuild project
+                        Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                                "\"Auto build created a project that does not seem to be a autobuild project :-s : " + realProjectName)); //$NON-NLS-1$
+                	}
+//                	AutoBuildConfigurationDescription autoBuildConfDesc = (AutoBuildConfigurationDescription)buildSettings;
+//                	new ArduinoConfDesc(boardDescriptor,            compileDescriptor,  otherDesc);
+//                	autoBuildConfDesc.setUserCofiguration(ArduinoConfDesc);
+//
+//                    Libraries.adjustProjectDescription(curConfigDesc, pathMods);
+//                    Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
                     //TOFIX pretty sure the line below can be deleted because of the setAllEnvironmentVars below.
                     //                        arduinoProjDesc.myEnvironmentVariables.put(curConfigKey,
                     //                                arduinoProjDesc.getEnvVars(curConfigKey));
 
                 }
 
-                arduinoProjDesc.createSloeberConfigFiles();
-                arduinoProjDesc.setAllEnvironmentVars();
+//                arduinoProjDesc.createSloeberConfigFiles();
+//                arduinoProjDesc.setAllEnvironmentVars();
 
                 SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                 newProjectHandle.open(refreshMonitor);
                 newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
-                cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, null);
+                cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, SubMonitor.convert(internalMonitor, 1));
 
                 Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
                         "internal creation of project is done: " + realProjectName)); //$NON-NLS-1$
@@ -342,14 +347,6 @@ public class SloeberProject extends Common {
             }
         }
         return saveProjDesc;
-    }
-
-    private static Set<String> GetConfigKeysFromProjectDescription(ICProjectDescription prjCDesc) {
-        Set<String> ret = new HashSet<>();
-        for (ICConfigurationDescription curconfig : prjCDesc.getConfigurations()) {
-            ret.add(getConfigKey(curconfig));
-        }
-        return ret;
     }
 
     private HashMap<String, String> getEnvVars(String configKey) {

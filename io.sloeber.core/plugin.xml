@@ -10,7 +10,7 @@
 ####################################################################################### 
 ####################################################################################### 
 -->
-<!-- 
+
 <extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 <provider
       class="io.sloeber.core.toolchain.ArduinoLanguageProvider"
@@ -23,7 +23,7 @@
 </provider>
 </extension>
 
--->
+
 
 
 <!-- 
