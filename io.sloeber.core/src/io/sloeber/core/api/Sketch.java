@@ -98,13 +98,7 @@ public class Sketch {
 
     }
 
-    public static boolean addLibrariesToProject(IProject project, ICConfigurationDescription confDesc,
-            Set<String> libraries) {
-        Map<String, List<IPath>> foldersToChange = Libraries.addLibrariesToProject(project, confDesc, libraries);
-        return Libraries.adjustProjectDescription(confDesc, foldersToChange);
-    }
-
-    public static Map<String, IPath> getAllAvailableLibraries(ICConfigurationDescription confDesc) {
+    public static Map<String, IPath> getAllAvailableLibraries(SloeberConfiguration confDesc) {
         return Libraries.getAllInstalledLibraries(confDesc);
     }
 
@@ -128,7 +122,7 @@ public class Sketch {
         CoreModel coreModel = CoreModel.getDefault();
         ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
 
-        List<IPath> includeFolders = Helpers.addCodeFolder(project, path, path.lastSegment(), false);
+        List<IPath> includeFolders = Helpers.addCodeFolder(project, path, project.getFolder(path.lastSegment()), false);
         for (ICConfigurationDescription curConfig : projectDescription.getConfigurations()) {
             if (Helpers.addIncludeFolder(curConfig, includeFolders, true)) {
                 projDescNeedsSaving = true;

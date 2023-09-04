@@ -37,8 +37,9 @@ public class ArduinoLanguageProvider implements ILanguageSettingsProvider {
         List<ICLanguageSettingEntry> ret = new LinkedList<>();
         IProject project = rc.getProject();
         //JABA TOFIX : I hard coded this to make things work to see this is the way to go
-        IFolder coreFolder = project.getFolder("core/core");
-        IFolder variansFolder = project.getFolder("core/variant");
+        String cfgName = cfgDescription.getName();
+        IFolder coreFolder = project.getFolder("arduino/" + cfgName + "/core");
+        IFolder variansFolder = project.getFolder("arduino/" + cfgName + "/variant");
         int flags = ICSettingEntry.READONLY | ICSettingEntry.VALUE_WORKSPACE_PATH;
         ret.add(CDataUtil.getPooledEntry(new CIncludePathEntry(coreFolder, flags)));
         ret.add(CDataUtil.getPooledEntry(new CIncludePathEntry(variansFolder, flags)));

@@ -39,6 +39,7 @@ import org.eclipse.ui.console.MessageConsole;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.SloeberConfiguration;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 
 /**
@@ -168,18 +169,18 @@ public class Helpers {
      *
      * @param project
      *            the project the newly created folder will belong to
-     * @param target
+     * @param projectFolder
      *            the folder name relative to the project
      * @param source
      *            the fully qualified name of the folder to link to
      */
-    public static void LinkFolderToFolder(IProject project, IPath source, IPath target) {
+    public static void LinkFolderToFolder(IProject project, IPath source, IFolder projectFolder) {
 
         // create target parent folder and grandparents
-        IPath ParentFolders = new Path(target.toString()).removeLastSegments(1);
+        IPath ParentFolders = projectFolder.getProjectRelativePath().removeLastSegments(1);
         for (int curfolder = ParentFolders.segmentCount() - 1; curfolder >= 0; curfolder--) {
             try {
-                createNewFolder(project, ParentFolders.removeLastSegments(curfolder).toString(), null);
+                createNewFolder(project, project.getFolder(ParentFolders.removeLastSegments(curfolder)), null);
             } catch (@SuppressWarnings("unused") CoreException e) {// ignore this error as the parent
                 // folders may have been created yet
             }
@@ -187,10 +188,10 @@ public class Helpers {
 
         // create the actual link
         try {
-            createNewFolder(project, target.toString(), source);
+            createNewFolder(project, projectFolder, source);
         } catch (CoreException e) {
             log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                    Messages.Helpers_Create_folder_failed.replace(FOLDER, target.toString()), e));
+                    Messages.Helpers_Create_folder_failed.replace(FOLDER, projectFolder.toString()), e));
         }
     }
 
@@ -206,11 +207,11 @@ public class Helpers {
      *
      * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
      */
-    public static List<IPath> addCodeFolder(IProject project, IPath toLinkFolder, String LinkName, boolean forceRoot) {
+    public static List<IPath> addCodeFolder(IProject project, IPath toLinkFolder, IFolder projectFolder,
+            boolean forceRoot) {
         List<IPath> addToIncludePath = new ArrayList<>();
-        IFolder link = project.getFolder(LinkName);
 
-        LinkFolderToFolder(project, toLinkFolder, new Path(LinkName));
+        LinkFolderToFolder(project, toLinkFolder, projectFolder);
 
         // Now the folder has been created we need to make sure the special
         // folders are added to the path
@@ -218,43 +219,28 @@ public class Helpers {
         String possibleIncludeFolder = "utility"; //$NON-NLS-1$
         File file = toLinkFolder.append(possibleIncludeFolder).toFile();
         if (file.exists()) {
-            addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));
+            addToIncludePath.add(projectFolder.getFullPath().append(possibleIncludeFolder));
         }
 
         if (forceRoot) {
-            addToIncludePath.add(link.getFullPath());
+            addToIncludePath.add(projectFolder.getFullPath());
         } else {
             // add src or root give priority to src
             possibleIncludeFolder = ArduinoLibraryVersion.LIBRARY_SOURCE_FODER;
             file = toLinkFolder.append(possibleIncludeFolder).toFile();
             if (file.exists()) {
-                addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));
+                addToIncludePath.add(projectFolder.getFullPath().append(possibleIncludeFolder));
             } else {
-                addToIncludePath.add(link.getFullPath());
+                addToIncludePath.add(projectFolder.getFullPath());
             }
         }
-        // TOFIX removed this code as part of libraries not included in project after
-        // creation,
-        // Should run a lib test to see how this works without this code
-        // if this is needed I should create a include with a environment var so I do
-        // not need to get the boardDescriptor
-
-        // possibleIncludeFolder = "arch"; //$NON-NLS-1$
-        // file = toLinkFolder.append(possibleIncludeFolder).toFile();
-        // if (file.exists()) {
-        // InternalBoardDescriptor boardDescriptor = new
-        // InternalBoardDescriptor(configurationDescription);
-        // addIncludeFolder(rootFolderDescr,
-        // link.getFullPath().append(possibleIncludeFolder).append(boardDescriptor.getArchitecture()));
-        // }
         return addToIncludePath;
     }
 
-    public static void removeCodeFolder(IProject project, String LinkName) {
-        IFolder link = project.getFolder(LinkName);
-        if (link.exists()) {
+    public static void removeCodeFolder(IProject project, IFolder deleteFolder) {
+        if (deleteFolder.exists()) {
             try {
-                link.delete(true, null);
+                deleteFolder.delete(true, null);
             } catch (CoreException e) {
                 e.printStackTrace();
             }
@@ -312,24 +298,21 @@ public class Helpers {
      * @param boardDescriptor
      *            The board that is used
      * 
-     * @return returns a list of paths that need to be added to the link folders
      */
-    public static List<IPath> addArduinoCodeToProject(IProject project, BoardDescription boardDescriptor) {
-        List<IPath> addToIncludePath = new ArrayList<>();
+    public static void addArduinoCodeForConfig(SloeberConfiguration cfg, BoardDescription boardDescriptor) {
         IPath corePath = boardDescriptor.getActualCoreCodePath();
+        IProject project = cfg.getProject();
+        IFolder arduinoVariantFolder = cfg.getArduinoVariantFolder();
         if (corePath != null) {
-            addToIncludePath.addAll(addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_PATH, true));
+            addCodeFolder(project, corePath, cfg.getArduinoCoreFolder(), true);
             IPath variantPath = boardDescriptor.getActualVariantPath();
             if ((variantPath == null) || (!variantPath.toFile().exists())) {
                 // remove the existing link
-                Helpers.removeCodeFolder(project, ARDUINO_VARIANT_FOLDER_PATH);
+                Helpers.removeCodeFolder(project, arduinoVariantFolder);
             } else {
-                IPath redirectVariantPath = boardDescriptor.getActualVariantPath();
-                addToIncludePath
-                        .addAll(addCodeFolder(project, redirectVariantPath, ARDUINO_VARIANT_FOLDER_PATH, false));
+                addCodeFolder(project, variantPath, arduinoVariantFolder, false);
             }
         }
-        return addToIncludePath;
     }
 
     /**
@@ -337,7 +320,7 @@ public class Helpers {
      *
      * @param Project
      *            the project the folder is added to
-     * @param newFolderName
+     * @param newFolder
      *            the new folder to create (can contain subfolders)
      * @param linklocation
      *            if null a local folder is created using newFolderName if not null
@@ -347,15 +330,13 @@ public class Helpers {
      * @return nothing
      * @throws CoreException
      */
-    public static void createNewFolder(IProject Project, String newFolderName, IPath linklocation)
-            throws CoreException {
-        final IFolder newFolderHandle = Project.getFolder(newFolderName);
+    public static void createNewFolder(IProject Project, IFolder newFolder, IPath linklocation) throws CoreException {
         if (linklocation != null) {
             URI relativeLinklocation = Project.getPathVariableManager().convertToRelative(URIUtil.toURI(linklocation),
                     false, null);
-            newFolderHandle.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
+            newFolder.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
         } else {
-            newFolderHandle.create(0, true, null);
+            newFolder.create(0, true, null);
         }
 
     }
@@ -392,10 +373,10 @@ public class Helpers {
      * @param target
      *            the location where the links are to be created
      */
-    public static void linkDirectory(IProject project, IPath source, IPath target) {
+    public static void linkDirectory(IProject project, IPath source, IFolder target) {
 
-        File[] a = source.toFile().listFiles();
-        if (a == null) {
+        File[] sourceFiles = source.toFile().listFiles();
+        if (sourceFiles == null) {
             if (!myHasBeenLogged) {
                 log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
                         Messages.Helpers_error_link_folder_is_empty.replace(FILE, source.toOSString()), null));
@@ -403,13 +384,12 @@ public class Helpers {
             }
             return;
         }
-        for (File f : a) {
-            if (f.isDirectory()) {
-                LinkFolderToFolder(project, source.append(f.getName()), target.append(f.getName()));
+        for (File curFile : sourceFiles) {
+            if (curFile.isDirectory()) {
+                LinkFolderToFolder(project, source.append(curFile.getName()), target.getFolder(curFile.getName()));
             } else {
-                final IFile newFileHandle = project.getFile(target.append(f.getName()));
                 try {
-                    newFileHandle.createLink(source.append(f.getName()),
+                    target.getFile(curFile.getName()).createLink(source.append(curFile.getName()),
                             IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
                 } catch (CoreException e) {
                     e.printStackTrace();

@@ -3,8 +3,12 @@ package io.sloeber.managedBuild.Internal;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
+
+import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.core.api.SloeberConfiguration;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.schema.api.IInputType;
@@ -21,9 +25,14 @@ public class LinkNameProvider implements IOutputNameProvider {
         boolean bUseArchiver = Common
                 .getBuildEnvironmentVariable(project, confdesc.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
                 .equalsIgnoreCase(Const.TRUE);
-        if (inputFile.getProjectRelativePath().toString().startsWith(Const.ARDUINO_CODE_FOLDER_PATH)
-                && (bUseArchiver)) {
-            return null;
+
+        AutoBuildConfigurationExtensionDescription extDesc = autoData.getAutoBuildConfigurationExtensionDescription();
+        if (extDesc != null && extDesc instanceof SloeberConfiguration) {
+            SloeberConfiguration sloeberCfg = (SloeberConfiguration) extDesc;
+            IPath coreFolder = sloeberCfg.getArduinoCoreFolder().getProjectRelativePath();
+            if (coreFolder.isPrefixOf(inputFile.getProjectRelativePath()) && (bUseArchiver)) {
+                return null;
+            }
         }
         if ("ino".equals(fileExt)) { //$NON-NLS-1$
             return null;

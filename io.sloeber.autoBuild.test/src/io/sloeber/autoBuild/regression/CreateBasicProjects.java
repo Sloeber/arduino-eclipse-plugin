@@ -43,7 +43,7 @@ public class CreateBasicProjects {
         Shared.setCloseProjects(false);
 
         IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
-                natureID, codeProvider, null);
+                natureID, codeProvider, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         String errorMessage = new String();
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {

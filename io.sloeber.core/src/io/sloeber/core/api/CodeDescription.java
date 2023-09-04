@@ -12,7 +12,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -203,7 +205,8 @@ public class CodeDescription {
             try {
                 for (IPath curPath : myExamples) {
                     if (myMakeLinks) {
-                        Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
+                        IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(project.getLocation());
+                        Helpers.linkDirectory(project, curPath, folder);
                     } else {
                         FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
                         FileModifiers.addPragmaOnce(curPath);

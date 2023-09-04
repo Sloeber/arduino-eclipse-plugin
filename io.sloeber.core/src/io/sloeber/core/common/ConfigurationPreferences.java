@@ -73,7 +73,7 @@ public class ConfigurationPreferences {
     }
 
     public static IPath getInstallationPathLibraries() {
-        return getInstallationPath().append(LIBRARY_PATH_SUFFIX);
+        return getInstallationPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
     }
 
     public static IPath getInstallationPathExamples() {

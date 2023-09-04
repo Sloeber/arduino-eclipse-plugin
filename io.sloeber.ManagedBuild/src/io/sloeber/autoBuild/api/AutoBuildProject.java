@@ -26,12 +26,17 @@ public class AutoBuildProject {
      *            are currently ignored
      * @param codeProvider
      *            a provider that gives the code to add to the project
+     * @param needsMoreWork
+     *            if true the projectDescription will be marked as created
+     *            if false you will need to call setCdtProjectCreated and
+     *            setProjectDescription
      * @param monitor
      * 
      * @return the created project
      */
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider, IProgressMonitor monitor) {
+            String projectTypeID, String natureID, ICodeProvider codeProvider, boolean needsMoreWork,
+            IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
             IProgressMonitor internalMonitor = monitor;
@@ -44,6 +49,7 @@ public class AutoBuildProject {
             theGenerator.setProjectName(projectName);
             theGenerator.setCodeProvider(codeProvider);
             theGenerator.setNatureID(natureID);
+            theGenerator.setNeedsMoreWork(needsMoreWork);
             theGenerator.generate(internalMonitor);
         } catch (CoreException e) {
             // TODO Auto-generated catch block

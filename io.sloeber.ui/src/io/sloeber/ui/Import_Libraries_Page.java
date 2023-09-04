@@ -30,7 +30,9 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
 import io.sloeber.core.api.Sketch;
+import io.sloeber.core.api.SloeberConfiguration;
 import io.sloeber.core.common.Const;
+import io.sloeber.core.tools.Libraries;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {
 
@@ -91,11 +93,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 
 		// find the items to add to the list
 		Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(myProject);
-		if (prjDesc != null) {
-			ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
-			allLibraries = Sketch.getAllAvailableLibraries(confDesc);
-		}
+		allLibraries = Sketch.getAllAvailableLibraries(SloeberConfiguration.getActiveConfig(myProject));
 
 		// Get the data in the tree
 		Set<String> allLibrariesAlreadyUsed = Sketch.getAllImportedLibraries(this.myProject);
@@ -126,7 +124,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		// check if there is a incompatibility in the library folder name
 		// windows only
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			IFolder folder = this.myProject.getFolder(Const.LIBRARY_PATH_SUFFIX);
+			IFolder folder = this.myProject.getFolder(Const.ARDUINO_LIBRARY_FOLDER_NAME);
 			if (!folder.exists()) {
 				try {
 					folder.create(false, true, null);
@@ -150,10 +148,10 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		}
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		ICProjectDescription projDesc = mngr.getProjectDescription(myProject, true);
-		ICConfigurationDescription activeConfDesc = projDesc.getActiveConfiguration();
+		SloeberConfiguration activeConfDesc = SloeberConfiguration.getActiveConfig(myProject);
 		boolean descNeedsSaving1 = Sketch.removeLibrariesFromProject(myProject, projDesc, unselectedLibraries);
-		boolean descNeedsSaving2 = Sketch.addLibrariesToProject(myProject, activeConfDesc, selectedLibraries);
-		if (descNeedsSaving1 || descNeedsSaving2) {
+		Libraries.addLibrariesToProject(myProject, activeConfDesc, selectedLibraries);
+		if (descNeedsSaving1) {
 			try {
 
 				mngr.setProjectDescription(myProject, projDesc, true, null);

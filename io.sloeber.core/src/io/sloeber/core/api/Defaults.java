@@ -35,7 +35,7 @@ public class Defaults {
         if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_WINDOWS) {
             homPath = homPath.append("Documents");
         }
-        return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString();
+        return homPath.append("Arduino").append(ARDUINO_LIBRARY_FOLDER_NAME).toString();
     }
 
     public static String getPrivateHardwarePath() {

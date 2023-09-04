@@ -121,7 +121,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
             return mySourceEntries.clone();
         }
         ICSourceEntry[] ret = new ICSourceEntry[1];
-        ret[0] = new CSourceEntry(Path.ROOT.toString(), null, ICSettingEntry.RESOLVED);
+        ret[0] = new CSourceEntry(myProject.getFolder("src").toString(), null, ICSettingEntry.RESOLVED);
         //ret[0] = new CSourceEntry("", null, 0);
         return ret;
     }
@@ -137,11 +137,10 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
         if (myRootFolderData == null) {
             //CDataFactory factory = CDataFactory.getDefault();
             //myRootFolderData = factory.createFolderData(this, null, myRootFolderID, false, Path.ROOT);
-            AutoBuildConfigurationDescription autoBuildConfDesc =((AutoBuildConfigurationDescription)this);
-            FolderData rootFolderData= new FolderData(myProject,autoBuildConfDesc);
+            AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
+            FolderData rootFolderData = new FolderData(myProject, autoBuildConfDesc);
 
-  
-            myRootFolderData=rootFolderData;
+            myRootFolderData = rootFolderData;
             myResourceDatas.put(myRootFolderData.getId(), myRootFolderData);
         }
         return myRootFolderData;

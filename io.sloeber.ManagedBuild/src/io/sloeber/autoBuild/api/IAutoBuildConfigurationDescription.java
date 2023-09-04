@@ -190,4 +190,36 @@ public interface IAutoBuildConfigurationDescription {
     public IConfiguration getAutoBuildConfiguration();
 
     public void setModelConfiguration(IConfiguration newConfiguration);
+
+    /**
+     * Get the AutoBuildConfigurationExtensionDescription for this
+     * IAutoBuildConfigurationDescription
+     * 
+     * see setAutoBuildConfigurationExtensionDescription for more explenation on
+     * IAutoBuildConfigurationExtensionDescription
+     * 
+     * @return null if no extension is given
+     */
+    public AutoBuildConfigurationExtensionDescription getAutoBuildConfigurationExtensionDescription();
+
+    /**
+     * set the IAutoBuildConfigurationExtensionDescription for this
+     * IAutoBuildConfigurationDescription
+     * The IAutoBuildConfigurationExtensionDescription allows java developers to
+     * extend autoBuild with custom implementations
+     * The main problem IAutoBuildConfigurationExtensionDescription focuses on is
+     * the synchronization of the classes between
+     * CDT AutoBuild and the extension.
+     * The creation; request to save or load all happen in one place triggered
+     * sequentional
+     * This makes it easier to handle configuration additions/name changes and
+     * startup code. (lets hope)
+     * Current thinking is that you should only set the
+     * IAutoBuildConfigurationExtensionDescription once
+     * at configuration creation and that the clone load save methods should deal
+     * with changes
+     * 
+     * @param newExtension
+     */
+    public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension);
 }

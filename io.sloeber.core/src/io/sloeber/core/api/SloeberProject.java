@@ -8,12 +8,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.CCProjectNature;
@@ -25,6 +23,7 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICBuildSetting;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.make.core.IMakeTarget;
 import org.eclipse.cdt.make.core.IMakeTargetManager;
@@ -33,7 +32,6 @@ import org.eclipse.cdt.make.internal.core.MakeTarget;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -49,7 +47,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
-import io.sloeber.autoBuild.Internal.ManagedCProjectNature;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -59,15 +56,12 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IProjectType;
 
 public class SloeberProject extends Common {
     public static String LATEST_EXTENSION_POINT_ID = "io.sloeber.autoBuild.buildDefinitions"; //$NON-NLS-1$
@@ -86,15 +80,6 @@ public class SloeberProject extends Common {
     //this only happens when we were not able to write the data to disk
     //due to a locked workspace
     private boolean myNeedToPersist = false;
-
-    private static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
-    private static final String ENV_KEY_BUILD_PATH = BUILD + DOT + PATH;
-    private static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH; //$NON-NLS-1$
-    private static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
-    private static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location"; //$NON-NLS-1$
-    private static final String SLOEBER_AWK_LOCATION = ENV_KEY_SLOEBER_START + "awk.path"; //$NON-NLS-1$
-    private static final String CONFIG = "Config";//$NON-NLS-1$
-    private static final String CONFIG_DOT = CONFIG + DOT;
 
     private SloeberProject(IProject project) {
         myProject = project;
@@ -251,18 +236,27 @@ public class SloeberProject extends Common {
             @Override
             public void run(IProgressMonitor internalMonitor) throws CoreException {
                 IProject newProjectHandle = root.getProject(realProjectName);
-                IndexerController.doNotIndex(newProjectHandle);
+                //IndexerController.doNotIndex(newProjectHandle);
+
+                //                String extensionPointID = AutoBuildManager.supportedExtensionPointIDs()[0];
+                //                String extensionID = AutoBuildManager.getSupportedExtensionIDs(extensionPointID)[0];
+                //                String projectTypeID = AutoBuildManager.getProjectIDs(extensionPointID, extensionID).keySet()
+                //                        .toArray(new String[10])[0];
+                //                String natureID = CCProjectNature.CC_NATURE_ID;
+                //                ICodeProvider codeProvider = null;
+                //
+                //                AutoBuildProject.createProject(projectName, extensionPointID, extensionID, projectTypeID, natureID,
+                //                        codeProvider, internalMonitor);
+
+                //                newProjectHandle = AutoBuildProject.createProject(realProjectName,
+                //                        "io.sloeber.autoBuild.buildDefinitions", "cdt.cross.gnu",
+                //                        "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID, null, internalMonitor);
 
                 newProjectHandle = AutoBuildProject.createProject(realProjectName, LATEST_EXTENSION_POINT_ID,
-                        LATEST_EXTENSION_ID, PROJECT_ID, CCProjectNature.CC_NATURE_ID, null, internalMonitor);
+                        LATEST_EXTENSION_ID, PROJECT_ID, CCProjectNature.CC_NATURE_ID, null, false, internalMonitor);
 
                 // Add the sketch code
                 Map<String, IPath> librariesToAdd = codeDesc.createFiles(newProjectHandle, internalMonitor);
-
-                // Add the arduino code folders
-                List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(newProjectHandle, boardDescriptor);
-
-                Map<String, List<IPath>> pathMods = Libraries.addLibrariesToProject(newProjectHandle, librariesToAdd);
 
                 AutoBuildNature.addNature(newProjectHandle, internalMonitor);
 
@@ -275,35 +269,44 @@ public class SloeberProject extends Common {
                 ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle, true);
 
                 for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
-                	ICBuildSetting buildSettings = curConfig.getBuildSetting();
-                	if(!(buildSettings instanceof AutoBuildConfigurationDescription)) {
-                		//this should not happen as we just created a autoBuild project
-                        Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-                                "\"Auto build created a project that does not seem to be a autobuild project :-s : " + realProjectName)); //$NON-NLS-1$
-                	}
-//                	AutoBuildConfigurationDescription autoBuildConfDesc = (AutoBuildConfigurationDescription)buildSettings;
-//                	new ArduinoConfDesc(boardDescriptor,            compileDescriptor,  otherDesc);
-//                	autoBuildConfDesc.setUserCofiguration(ArduinoConfDesc);
-//
-//                    Libraries.adjustProjectDescription(curConfigDesc, pathMods);
-//                    Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
+                    CConfigurationData buildSettings = curConfig.getConfigurationData();
+                    if (!(buildSettings instanceof AutoBuildConfigurationDescription)) {
+                        //this should not happen as we just created a autoBuild project
+                        Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
+                                "\"Auto build created a project that does not seem to be a autobuild project :-s : " //$NON-NLS-1$
+                                        + realProjectName));
+                    }
+                    AutoBuildConfigurationDescription autoBuildConfig = (AutoBuildConfigurationDescription) buildSettings;
+
+                    SloeberConfiguration sloeberConfiguration = new SloeberConfiguration(boardDescriptor, otherDesc,
+                            compileDescriptor);
+                    autoBuildConfig.setAutoBuildConfigurationExtensionDescription(sloeberConfiguration);
+                    sloeberConfiguration.addLibrariesToProject(newProjectHandle, librariesToAdd);
+                    Map<String, List<IPath>> pathMods = Libraries.addLibrariesForConfiguration(sloeberConfiguration,
+                            librariesToAdd);
+                    // Add the arduino code folders
+                    Helpers.addArduinoCodeForConfig(sloeberConfiguration, boardDescriptor);
+
+                    //                    Libraries.adjustProjectDescription(curConfigDesc, pathMods);
+                    //                    Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
                     //TOFIX pretty sure the line below can be deleted because of the setAllEnvironmentVars below.
                     //                        arduinoProjDesc.myEnvironmentVariables.put(curConfigKey,
                     //                                arduinoProjDesc.getEnvVars(curConfigKey));
 
                 }
 
-//                arduinoProjDesc.createSloeberConfigFiles();
-//                arduinoProjDesc.setAllEnvironmentVars();
+                //                arduinoProjDesc.createSloeberConfigFiles();
+                //                arduinoProjDesc.setAllEnvironmentVars();
 
                 SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                 newProjectHandle.open(refreshMonitor);
                 newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
-                cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, SubMonitor.convert(internalMonitor, 1));
+                cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true,
+                        SubMonitor.convert(internalMonitor, 1));
 
-                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
                         "internal creation of project is done: " + realProjectName)); //$NON-NLS-1$
-                IndexerController.index(newProjectHandle);
+                //                IndexerController.index(newProjectHandle);
             }
         };
 
@@ -617,65 +620,6 @@ public class SloeberProject extends Common {
             }
         }
         return ret;
-    }
-
-    /**
-     * This method set the active configuration This means the core and library
-     * folders of the project are updated. To avoid many update notifications this
-     * is done in a runnable with AVOID_UPDATE
-     * 
-     * @param confDesc
-     *            a writable configuration setting to be made active
-     * 
-     * @return true if the configuration setting has been changed and needs to be
-     *         saved
-     */
-    private boolean setActiveConfig(ICConfigurationDescription confDesc) {
-
-        BoardDescription boardDescription = myBoardDescriptions.get(getConfigKey(confDesc));
-        List<IPath> pathsToInclude = Helpers.addArduinoCodeToProject(myProject, boardDescription);
-        boolean projConfMustBeSaved = Helpers.addIncludeFolder(confDesc, pathsToInclude, true);
-        boolean includeFoldersRemoved = Helpers.removeInvalidIncludeFolders(confDesc);
-        if (includeFoldersRemoved) {
-            Helpers.deleteBuildFolder(myProject, confDesc.getName());
-        }
-
-        return projConfMustBeSaved || includeFoldersRemoved;
-    }
-
-    /**
-     * This method set the active configuration This means the core and library
-     * folders of the project are updated. To avoid many update notifications this
-     * is done in a runnable with AVOID_UPDATE
-     * 
-     * @param confDesc
-     *            a writable configuration setting to be made active
-     * 
-     * @return true if the configuration setting has been changed and needs tioo be
-     *         saved
-     */
-    private boolean setActiveConfigInRunnable(ICConfigurationDescription confDesc) {
-
-        class MyRunnable implements ICoreRunnable {
-            public boolean projConfMustBeSaved = false;
-
-            @Override
-            public void run(IProgressMonitor internalMonitor) throws CoreException {
-                projConfMustBeSaved = setActiveConfig(confDesc);
-            }
-        }
-
-        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
-        MyRunnable runnable = new MyRunnable();
-        try {
-            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, null);
-        } catch (Exception e) {
-            String confDescName = confDesc.getName();
-            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Setting config " + confDescName + " for project " + myProject.getName() + " failed", e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
-        return runnable.projConfMustBeSaved;
     }
 
     /**
@@ -999,14 +943,7 @@ public class SloeberProject extends Common {
             }
         }
 
-        // in many cases we also need to set the active config
-        boolean needsConfigSet = myIsDirty || !newActiveConfig.getName().equals(oldActiveConfig.getName());
-
         configure(newProjDesc, true);
-
-        if (needsConfigSet) {
-            setActiveConfigInRunnable(newActiveConfig);
-        }
 
     }
 

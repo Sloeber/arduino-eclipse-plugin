@@ -27,21 +27,23 @@ public class FolderData extends CDefaultFolderData {
      * Constructor for project
      * Only here because I didn't know how to load the language data's
      * 
-     * @param myProject Not really used but Currently I only use this for the project base folder
+     * @param myProject
+     *            Not really used but Currently I only use this for the project base
+     *            folder
      * @param autoBuildConf
      */
     FolderData(IProject myProject, AutoBuildConfigurationDescription autoBuildConf) {
-        super( CDataUtil.genId(autoBuildConf.getId()), Path.ROOT, null,autoBuildConf, null, false);
+        super(CDataUtil.genId(autoBuildConf.getId()), Path.ROOT, null, autoBuildConf, null, false);
         myAutoBuildConf = autoBuildConf;
         resolve();
     }
 
-//    FolderData(IFolder folder, AutoBuildConfigurationDescription autoBuildConf) {
-//        super();
-//        myAutoBuildConf = autoBuildConf;
-//        resolve();
-//
-//    }
+    //    FolderData(IFolder folder, AutoBuildConfigurationDescription autoBuildConf) {
+    //        super();
+    //        myAutoBuildConf = autoBuildConf;
+    //        resolve();
+    //
+    //    }
 
     private void resolve() {
         Map<String, Set<IInputType>> languageIDs = myAutoBuildConf.getConfiguration().getLanguageIDs(myAutoBuildConf);
@@ -73,11 +75,9 @@ public class FolderData extends CDefaultFolderData {
 
     }
 
- 
     @Override
     public CLanguageData[] getLanguageDatas() {
         return myLanguageDatas.toArray(new CLanguageData[myLanguageDatas.size()]);
     }
-
 
 }

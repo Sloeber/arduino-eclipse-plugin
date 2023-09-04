@@ -44,7 +44,7 @@ public class BoardDescription {
     private static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
+    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + ARDUINO_VARIANTS_FOLDER_NAME + DOT + PATH;
     private static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
     private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
@@ -534,10 +534,10 @@ public class BoardDescription {
             return null;
         }
         if (myReferencedPlatformVariant == null) {
-            return new Path(myUserSelectedBoardsTxtFile.getParent().toString()).append(VARIANTS_FOLDER_NAME)
+            return new Path(myUserSelectedBoardsTxtFile.getParent().toString()).append(ARDUINO_VARIANTS_FOLDER_NAME)
                     .append(boardVariant);
         }
-        return myReferencedPlatformVariant.getInstallPath().append(VARIANTS_FOLDER_NAME).append(boardVariant);
+        return myReferencedPlatformVariant.getInstallPath().append(ARDUINO_VARIANTS_FOLDER_NAME).append(boardVariant);
     }
 
     private String getBoardVariant() {
@@ -601,12 +601,12 @@ public class BoardDescription {
         if (myReferencedPlatformCore == null) {
             return null;
         }
-        return this.myReferencedPlatformCore.getInstallPath().append(LIBRARY_PATH_SUFFIX);
+        return this.myReferencedPlatformCore.getInstallPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
     }
 
     public IPath getReferencingLibraryPath() {
         updateWhenDirty();
-        return this.getreferencingPlatformPath().append(LIBRARY_PATH_SUFFIX);
+        return this.getreferencingPlatformPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
     }
 
     public String getUploadPatternKey() {

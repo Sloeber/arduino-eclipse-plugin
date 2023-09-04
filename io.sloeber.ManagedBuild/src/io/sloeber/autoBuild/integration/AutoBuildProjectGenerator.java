@@ -42,6 +42,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private String myProjectTypeID = null;
     private ICodeProvider myCodeProvider = null;
     private String myNatureID;
+    private boolean myNeedsMoreWork = false;
 
     public AutoBuildProjectGenerator() {
 
@@ -53,6 +54,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot root = workspace.getRoot();
         ICoreRunnable runnable = new ICoreRunnable() {
+
             @Override
             public void run(IProgressMonitor internalMonitor) throws CoreException {
                 IProjectDescription description = workspace.newProjectDescription(myProjectName);
@@ -104,7 +106,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
                         ((ILanguageSettingsProvidersKeeper) cdtCfgDes).setLanguageSettingProviders(providers);
                     }
                 }
-                des.setCdtProjectCreated();
+                if (!myNeedsMoreWork) {
+                    des.setCdtProjectCreated();
+                }
                 mngr.setProjectDescription(myProject, des);
             }
         };
@@ -145,17 +149,18 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
     public void setProjectTypeID(String projectTypeID) {
         myProjectTypeID = projectTypeID;
-
     }
 
     public void setCodeProvider(ICodeProvider codeProvider) {
         myCodeProvider = codeProvider;
-
     }
 
     public void setNatureID(String natureID) {
         myNatureID = natureID;
+    }
 
+    public void setNeedsMoreWork(boolean needsMoreWork) {
+        myNeedsMoreWork = needsMoreWork;
     }
 
 }

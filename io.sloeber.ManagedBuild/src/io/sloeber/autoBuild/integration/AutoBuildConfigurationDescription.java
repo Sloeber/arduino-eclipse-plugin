@@ -2,6 +2,8 @@ package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,6 +18,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+
+import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -114,6 +118,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     private String myPostBuildStepAnouncement = EMPTY_STRING;
     private Map<ITool, Map<IResource, String>> myCustomToolCommands = new HashMap<>();
     private Map<ITool, Map<IResource, String>> myCustomToolPattern = new HashMap<>();
+    private AutoBuildConfigurationExtensionDescription myAutoBuildConfigurationExtensionDescription = null;
     //End of fields that need to be copied/made persistent
 
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
@@ -193,6 +198,41 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             myCustomToolPattern.put(curCustomToolEntry.getKey(), newMap);
         }
         options_updateDefault();
+        if (autoBuildConfigBase.getAutoBuildConfigurationExtensionDescription() != null) {
+            AutoBuildConfigurationExtensionDescription base = autoBuildConfigBase
+                    .getAutoBuildConfigurationExtensionDescription();
+
+            try {
+                //TOFIX JABA is this ever going to work?
+                @SuppressWarnings("rawtypes")
+                Constructor ctor = base.getClass().getDeclaredConstructor(AutoBuildConfigurationDescription.class,
+                        AutoBuildConfigurationExtensionDescription.class);
+
+                ctor.setAccessible(true);
+
+                myAutoBuildConfigurationExtensionDescription = (AutoBuildConfigurationExtensionDescription) ctor
+                        .newInstance(this, base);
+            } catch (NoSuchMethodException e) {
+                System.err.println(
+                        "ERROR: Classed derived from AutoBuildConfigurationExtensionDescription need to implement a constructor with parameters AutoBuildConfigurationDescription and AutoBuildConfigurationExtensionDescription"); //$NON-NLS-1$
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -427,15 +467,31 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 resourceCmds.put(resource, cmd);
             }
         }
+        //read the class from the input
+        String autoCfgExtentionDesc = "";
+
+        try {
+            @SuppressWarnings("rawtypes")
+            Class autoCfgExtentionDescClass = Class.forName(autoCfgExtentionDesc);
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            Constructor ctor = autoCfgExtentionDescClass.getDeclaredConstructor(AutoBuildConfigurationDescription.class,
+                    String.class, String.class, String.class);
+            ctor.setAccessible(true);
+
+            myAutoBuildConfigurationExtensionDescription = (AutoBuildConfigurationExtensionDescription) ctor
+                    .newInstance(this, curConfigsText, lineStart, lineEnd);
+        } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+                | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
     public static AutoBuildConfigurationDescription getFromConfig(ICConfigurationDescription confDesc) {
-        // TOFIX JABA as CDT does a create on the configuration data in this call
-        // I will need to make a lookup table to avoid doing this call
-        // I currently keep this with side effects
         return (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
-        //        The code above always returns a readable configdesc
+        //      TOFIX  
+        //      The code above always returns a readable configdesc
         //        eventhough the method below exists it is not defined in ICConfigurationDescription 
         //        and as sutch not usable
         //        boolean writable =!confDesc.isReadOnly();
@@ -1234,4 +1290,17 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
         options_updateDefault();
     }
+
+    @Override
+    public AutoBuildConfigurationExtensionDescription getAutoBuildConfigurationExtensionDescription() {
+        return myAutoBuildConfigurationExtensionDescription;
+    }
+
+    @Override
+    public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension) {
+        newExtension.setAutoBuildDescription(this);
+        myAutoBuildConfigurationExtensionDescription = newExtension;
+
+    }
+
 }

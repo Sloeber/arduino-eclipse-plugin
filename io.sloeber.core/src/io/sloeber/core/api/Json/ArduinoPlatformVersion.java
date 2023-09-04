@@ -101,7 +101,7 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
     public List<IPath> getIncludePath() {
         IPath installPath = getInstallPath();
         return Arrays.asList(installPath.append("cores/{build.core}"), //$NON-NLS-1$
-                installPath.append(VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
+                installPath.append(ARDUINO_VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
     }
 
     @Override

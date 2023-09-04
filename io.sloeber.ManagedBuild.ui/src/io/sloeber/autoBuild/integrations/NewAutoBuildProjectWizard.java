@@ -50,7 +50,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
                     SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
                     AutoBuildProject.createProject(projectName, extensionPointID, extensionID, projectTypeID, natureID,
-                            codeProvider, sub);
+                            codeProvider, false, sub);
                     //                    generator.generate(model, sub);
                     //                    getWorkbench().getDisplay().asyncExec(new Runnable() {
                     //                        @Override

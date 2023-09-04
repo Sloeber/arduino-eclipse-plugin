@@ -1,5 +1,7 @@
 package io.sloeber.core.common;
 
+import static io.sloeber.core.common.Const.*;
+
 import org.eclipse.core.runtime.IStatus;
 
 /**
@@ -28,6 +30,7 @@ public class Const {
     public static final String SPACE = " ";
 
     // arduino txt basic keys
+    public static final String VARIANTS = "variants";
     public static final String VARIANT = "variant";
     public static final String CORE = "core";
     public static final String CORES = "cores";
@@ -74,12 +77,14 @@ public class Const {
     // Folder and file Information
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = HARDWARE;
     public static final String ARDUINO_CODE_FOLDER_NAME = CORE;
+    public static final String ARDUINO_VARIANTS_FOLDER_NAME = VARIANTS;
+    public static final String ARDUINO_LIBRARY_FOLDER_NAME = "libraries";
+    public static final String SLOEBER_VARIANT_FOLDER_NAME = VARIANT;
+    public static final String SLOEBER_CODE_FOLDER_NAME = CORE;
+    public static final String SLOEBER_LIBRARY_FOLDER_NAME = ARDUINO_LIBRARY_FOLDER_NAME;
     public static final String BOARDS_FILE_NAME = "boards" + DOT + TXT;
     public static final String PLATFORM_FILE_NAME = PLATFORM + DOT + TXT;
-    public static final String VARIANTS_FOLDER_NAME = "variants";
-    public static final String LIBRARY_PATH_SUFFIX = "libraries";
-    public static final String ARDUINO_VARIANT_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + VARIANT;
-    public static final String ARDUINO_CODE_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + CORE;
+
     public static final String SLOEBER_CFG = "sloeber.cfg";
     public static final String SLOEBER_PROJECT = ".sproject";
 
@@ -92,6 +97,14 @@ public class Const {
     public static final String ENV_KEY_NETWORK_AUTH = NETWORK + DOT + AUTH;
     public static final String ENV_KEY_NETWORK_PASSWORD = NETWORK + DOT + "password";
     public static final String ENV_KEY_UPLOAD_VERBOSE = UPLOAD + DOT + "verbose";
+    public static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
+    public static final String ENV_KEY_BUILD_PATH = BUILD + DOT + PATH;
+    public static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH;
+    public static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
+    public static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location";
+    public static final String SLOEBER_AWK_LOCATION = ENV_KEY_SLOEBER_START + "awk.path";
+    public static final String CONFIG = "Config";
+    public static final String CONFIG_DOT = CONFIG + DOT;
 
     public static final String ENV_KEY_USE_ARCHIVER = BUILD + DOT + "use_archiver";
     public static final String ENV_KEY_BUILD_MCU = BUILD + DOT + "mcu";

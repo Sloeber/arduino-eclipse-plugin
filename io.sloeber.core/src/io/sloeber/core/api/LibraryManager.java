@@ -357,7 +357,7 @@ public class LibraryManager {
         if (boardDescriptor != null) {
             IPath platformPath = boardDescriptor.getreferencingPlatformPath();
             if (platformPath.toFile().exists()) {
-                examples.putAll(getLibExampleFolders(platformPath.append(LIBRARY_PATH_SUFFIX).toFile()));
+                examples.putAll(getLibExampleFolders(platformPath.append(ARDUINO_LIBRARY_FOLDER_NAME).toFile()));
             }
         }
         return examples;
