@@ -38,18 +38,13 @@ public class ArduinoLanguageProvider implements ILanguageSettingsProvider {
         IProject project = rc.getProject();
         //JABA TOFIX : I hard coded this to make things work to see this is the way to go
         String cfgName = cfgDescription.getName();
-        IFolder coreFolder = project.getFolder("arduino/" + cfgName + "/core");
-        IFolder variansFolder = project.getFolder("arduino/" + cfgName + "/variant");
-        int flags = ICSettingEntry.READONLY | ICSettingEntry.VALUE_WORKSPACE_PATH;
+        IFolder cfgFolder = project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFolder(cfgName);
+        IFolder coreFolder = cfgFolder.getFolder(SLOEBER_CODE_FOLDER_NAME);
+        IFolder variansFolder = cfgFolder.getFolder(SLOEBER_VARIANT_FOLDER_NAME);
+        int flags = ICSettingEntry.READONLY | ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED;
         ret.add(CDataUtil.getPooledEntry(new CIncludePathEntry(coreFolder, flags)));
         ret.add(CDataUtil.getPooledEntry(new CIncludePathEntry(variansFolder, flags)));
-        /*
-         * TOFIX
-         * @return the list of setting entries or {@code null} if no settings defined.
-                 *    The list needs to be a pooled list created by {@link LanguageSettingsStorage#getPooledList(List)}
-                 *    to save memory and avoid deep equality comparisons.
-                 */
-        return ret;
+        return LanguageSettingsStorage.getPooledList(ret);
     }
 
     //    @Override

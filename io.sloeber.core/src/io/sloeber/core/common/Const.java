@@ -1,7 +1,5 @@
 package io.sloeber.core.common;
 
-import static io.sloeber.core.common.Const.*;
-
 import org.eclipse.core.runtime.IStatus;
 
 /**
@@ -12,6 +10,9 @@ import org.eclipse.core.runtime.IStatus;
  */
 @SuppressWarnings("nls")
 public class Const {
+    //Some private stuff as you should use other defines to get to this name
+    private static final String ARDUINO = "arduino";
+
     // preference nodes
     public static final String NODE_ARDUINO = "io.sloeber.arduino";
 
@@ -56,10 +57,11 @@ public class Const {
     public static final String BUILD = "build";
     public static final String SYSTEM = "system";
     public static final String COM_PORT = "com_port";
-    public static final String ARDUINO = "arduino";
+
     public static final String PATH = "path";
     public static final String PROTOCOL = "protocol";
     public static final String VendorArduino = "arduino";
+    public static final String VENDOR_ARDUINO = ARDUINO;
 
     // arduino txt pre and suffix
     public static final String NETWORK_PREFIX = "network_";
@@ -79,6 +81,7 @@ public class Const {
     public static final String ARDUINO_CODE_FOLDER_NAME = CORE;
     public static final String ARDUINO_VARIANTS_FOLDER_NAME = VARIANTS;
     public static final String ARDUINO_LIBRARY_FOLDER_NAME = "libraries";
+    public static final String SLOEBER_ARDUINO_FOLDER_NAME = ARDUINO;
     public static final String SLOEBER_VARIANT_FOLDER_NAME = VARIANT;
     public static final String SLOEBER_CODE_FOLDER_NAME = CORE;
     public static final String SLOEBER_LIBRARY_FOLDER_NAME = ARDUINO_LIBRARY_FOLDER_NAME;

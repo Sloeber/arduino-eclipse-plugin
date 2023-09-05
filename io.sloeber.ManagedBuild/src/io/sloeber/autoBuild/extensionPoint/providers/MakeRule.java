@@ -16,12 +16,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -227,6 +236,52 @@ public class MakeRule {
                 }
             }
         }
+        ICConfigurationDescription cfgDescription = autoBuildConfData.getCdtConfigurationDescription();
+        IProject project = autoBuildConfData.getProject();
+        for (ILanguageSettingsProvider provider : ((ILanguageSettingsProvidersKeeper) cfgDescription)
+                .getLanguageSettingProviders()) {
+            for (IInputType curInputType : myPrerequisites.keySet()) {
+                String languageId = curInputType.getLanguageID();
+                if (languageId == null || languageId.isEmpty()) {
+                    continue;
+                }
+                for (IFile curFile : myPrerequisites.get(curInputType)) {
+                    List<ICLanguageSettingEntry> configEntries = provider.getSettingEntries(cfgDescription, curFile,
+                            languageId);
+                    if (configEntries != null) {
+                        for (ICLanguageSettingEntry curEntry : configEntries) {
+                            if (curEntry.isBuiltIn()) {
+                                //ignore build in settings
+                                continue;
+                            }
+                            switch (curEntry.getKind()) {
+                            case ICSettingEntry.INCLUDE_FILE: {
+                                IFile file = project.getWorkspace().getRoot()
+                                        .getFile(IPath.forPosix(curEntry.getValue()));
+                                flags.add(DOUBLE_QUOTE + CMD_LINE_INCLUDE_FILE + file.getLocation().toString()
+                                        + DOUBLE_QUOTE);
+                                break;
+                            }
+                            case ICSettingEntry.INCLUDE_PATH: {
+                                IFolder folder = project.getWorkspace().getRoot()
+                                        .getFolder(IPath.forPosix(curEntry.getValue()));
+                                flags.add(DOUBLE_QUOTE + CMD_LINE_INCLUDE_FOLDER + folder.getLocation().toString()
+                                        + DOUBLE_QUOTE);
+                                break;
+                            }
+                            case ICSettingEntry.MACRO: {
+                                flags.add(DOUBLE_QUOTE + CMD_LINE_DEFINE + curEntry.getValue() + DOUBLE_QUOTE);
+                                break;
+                            }
+
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        List<ICLanguageSettingEntry> configEntries;
 
         String buildRecipes[] = myTool.getRecipes(autoBuildConfData, inputFiles, flags,
                 GetNiceFileName(niceBuildFolder, targetFile), niceNameList);

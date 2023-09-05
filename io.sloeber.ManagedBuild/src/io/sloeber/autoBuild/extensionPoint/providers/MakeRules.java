@@ -15,14 +15,18 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IContainer;
 //import org.eclipse.cdt.managedbuilder.core.IInputType;
 //import org.eclipse.cdt.managedbuilder.core.IOutputType;
 //import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -255,7 +259,13 @@ public class MakeRules implements Iterable<MakeRule> {
             }
             if (proxy.getType() == IResource.FILE) {
                 if (getMakeRulesFromSourceFile(myAutoBuildConfData, (IFile) resource)) {
-                    myFoldersToBuild.add((IFolder) ((IFile) resource).getParent());
+                    IContainer parent = ((IFile) resource).getParent();
+                    if (parent instanceof IProject) {
+                        IProject proj = (IProject) parent;
+                        myFoldersToBuild.add(ResourcesPlugin.getWorkspace().getRoot().getFolder(proj.getFullPath()));
+                    } else {
+                        myFoldersToBuild.add((IFolder) parent);
+                    }
                 }
                 return false;
             }

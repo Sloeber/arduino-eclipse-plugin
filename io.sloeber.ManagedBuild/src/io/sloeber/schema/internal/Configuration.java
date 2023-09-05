@@ -299,6 +299,9 @@ public class Configuration extends SchemaObject implements IConfiguration {
                     continue;
                 }
                 String languageID = curInputType.getLanguageID();
+                if (languageID.isEmpty()) {
+                    continue;
+                }
                 Set<IInputType> inputTypes = ret.get(languageID);
                 if (inputTypes == null) {
                     inputTypes = new HashSet<>();
@@ -309,7 +312,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
                 }
             }
         }
-        ret.remove(BLANK);
         return ret;
     }
 

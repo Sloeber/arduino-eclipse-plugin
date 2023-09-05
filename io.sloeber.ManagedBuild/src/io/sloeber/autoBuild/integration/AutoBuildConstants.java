@@ -163,6 +163,9 @@ public class AutoBuildConstants {
     public static final String DOUBLE_QUOTE = "\"";
 
     public static final String CMD_LINE_PRM_NAME = "COMMAND";
+    public static final String CMD_LINE_INCLUDE_FILE = "-I";
+    public static final String CMD_LINE_INCLUDE_FOLDER = "-I";
+    public static final String CMD_LINE_DEFINE = "-D";
     public static final String FLAGS_PRM_NAME = "FLAGS";
     public static final String OUTPUT_FLAG_PRM_NAME = "OUTPUT_FLAG";
     public static final String OUTPUT_PREFIX_PRM_NAME = "OUTPUT_PREFIX";

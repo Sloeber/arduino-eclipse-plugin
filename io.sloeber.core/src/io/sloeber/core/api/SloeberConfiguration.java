@@ -113,7 +113,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     public IFolder getArduinoCodeFolder() {
         String cdtConfDescName = getAutoBuildDescription().getCdtConfigurationDescription().getName();
         IProject project = getProject();
-        return project.getFolder(ARDUINO).getFolder(cdtConfDescName);
+        return project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFolder(cdtConfDescName);
     }
 
     public IFolder getArduinoCoreFolder() {

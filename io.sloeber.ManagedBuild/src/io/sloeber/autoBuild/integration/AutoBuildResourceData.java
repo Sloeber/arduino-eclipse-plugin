@@ -10,12 +10,7 @@ import java.util.Arrays;
  * 3) I think CDT should provide a default which could be this
  */
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
@@ -26,16 +21,11 @@ import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
-import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultFolderData;
-import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultLanguageData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.content.IContentType;
-
-import io.sloeber.schema.api.IInputType;
 
 public abstract class AutoBuildResourceData extends CConfigurationData {
     protected IProject myProject;
@@ -117,13 +107,13 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 
     @Override
     public ICSourceEntry[] getSourceEntries() {
-        if (mySourceEntries != null) {
-            return mySourceEntries.clone();
+        if (mySourceEntries == null) {
+            mySourceEntries = new ICSourceEntry[1];
+            //mySourceEntries[0] = new CSourceEntry(myProject.getFolder("src").toString(), null, ICSettingEntry.RESOLVED);
+            mySourceEntries[0] = new CSourceEntry(Path.ROOT.toString(), null, ICSettingEntry.RESOLVED);
         }
-        ICSourceEntry[] ret = new ICSourceEntry[1];
-        ret[0] = new CSourceEntry(myProject.getFolder("src").toString(), null, ICSettingEntry.RESOLVED);
-        //ret[0] = new CSourceEntry("", null, 0);
-        return ret;
+
+        return mySourceEntries.clone();
     }
 
     @Override

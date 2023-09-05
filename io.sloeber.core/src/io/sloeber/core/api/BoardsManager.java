@@ -221,12 +221,11 @@ public class BoardsManager {
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    @SuppressWarnings("nls")
     private static IStatus install(ArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
         boolean forceDownload = false;
-        String name = platformVersion.getName();
-        String architecture = platformVersion.getArchitecture();
-        String version = platformVersion.getVersion().toString();
+        //        String name = platformVersion.getName();
+        //        String architecture = platformVersion.getArchitecture();
+        //        String version = platformVersion.getVersion().toString();
         // Check if we're installed already
         if (platformVersion.isInstalled()) {
             System.out.println("reusing platform " + platformVersion.toString()); //$NON-NLS-1$
@@ -620,9 +619,9 @@ public class BoardsManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.AVR);
-        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAMD);
-        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAM);
+        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.AVR);
+        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.SAMD);
+        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.SAM);
 
         if (latestSamdPlatform != null) {
             myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamdPlatform));

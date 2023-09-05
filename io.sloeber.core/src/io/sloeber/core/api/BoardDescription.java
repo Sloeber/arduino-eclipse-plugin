@@ -877,7 +877,7 @@ public class BoardDescription {
             //there is no need to specify tool path as they do not use them
             return ret;
         }
-        ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.ARDUINO,
+        ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
                 referencingPlatform.getArchitecture());
         if (latestArduinoPlatform != null) {
             ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
