@@ -38,8 +38,9 @@ import io.sloeber.schema.api.ITool;
 public class MakeRules implements Iterable<MakeRule> {
     static private boolean VERBOSE = false;
 
+    @SuppressWarnings("nls")
     static private final List<String> InputFileIgnoreList = new LinkedList<>(
-            List.of(".settings", ".project", ".cproject")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            List.of(".settings", ".project", ".cproject", ".autoBuildProject"));
 
     private Set<MakeRule> myMakeRules = new LinkedHashSet<>();
 
