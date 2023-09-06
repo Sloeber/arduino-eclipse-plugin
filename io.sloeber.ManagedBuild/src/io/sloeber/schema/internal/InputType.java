@@ -202,7 +202,7 @@ public class InputType extends SchemaObject implements IInputType {
         }
 
         for (IContentType curContentType : mySourceContentTypes) {
-            if (curContentType.isAssociatedWith(file.getName())) {
+            if (isAssociatedWith(curContentType, file.getName())) {
                 return true;
             }
         }
@@ -272,4 +272,33 @@ public class InputType extends SchemaObject implements IInputType {
         return modelLanguageID[SUPER];
     }
 
+    /**
+     * this is some code to work around issue
+     * https://github.com/eclipse-cdt/cdt/issues/539
+     * 
+     */
+    private static String getFileExtension(String fileName) {
+        int dotPosition = fileName.lastIndexOf('.');
+        return (dotPosition == -1 || dotPosition == fileName.length() - 1) ? "" : fileName.substring(dotPosition + 1); //$NON-NLS-1$
+    }
+
+    private static boolean hasFileSpec(IContentType contentType, String text, int typeMask) {
+        String[] fileSpecs = contentType.getFileSpecs(typeMask);
+        for (String fileSpec : fileSpecs)
+            if (text.equals(fileSpec))
+                return true;
+        return false;
+    }
+
+    private static boolean isAssociatedWith(IContentType contentType, String fileName) {
+        if (hasFileSpec(contentType, fileName, IContentType.FILE_NAME_SPEC))
+            return true;
+        String fileExtension = getFileExtension(fileName);
+        if (hasFileSpec(contentType, fileExtension, IContentType.FILE_EXTENSION_SPEC))
+            return true;
+        return false;
+    }
+    /*
+     * end of : this is some code to work around issue
+     * */
 }
