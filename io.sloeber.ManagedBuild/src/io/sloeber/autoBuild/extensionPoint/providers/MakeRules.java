@@ -1,8 +1,5 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,18 +12,12 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IContainer;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -181,51 +172,46 @@ public class MakeRules implements Iterable<MakeRule> {
         return myMakeRules.iterator();
     }
 
-    public MakeRules getRulesForFolder(IFolder curFolder) {
-        MakeRules rulesForFolder = new MakeRules();
+    public MakeRules getRulesForContainer(IContainer container) {
+        MakeRules rulesForContainer = new MakeRules();
         for (MakeRule curMakeRule : myMakeRules) {
-            if ((curMakeRule.getSequenceGroupID() == 0) && curMakeRule.isForFolder(curFolder)) {
-                rulesForFolder.addRule(curMakeRule);
+            if ((curMakeRule.getSequenceGroupID() == 0) && curMakeRule.isForContainer(container)) {
+                rulesForContainer.addRule(curMakeRule);
             }
         }
-        return rulesForFolder;
+        return rulesForContainer;
     }
 
     /**
-     * generate the makeRules for the source files
-     * This method also calculates the list of folders that
+     * generate the makeRules for the source files of this configuration
+     * This method also calculates the list of containers that
      * contain source code leading to make rules
-     * Those are stored in myFoldersToBuild
+     * Those are stored in containersToBuild parameter
      * The generated Make rules will have a MakeRuleSequenceID
      * starting from 0 and going up (there may be gaps)
      * Rules with the same MakeRuleSequenceID can be run in parallel
-     * A rule can only be run if all rules with a lower MakeRuleSequenceID
-     * have finished
+     * A rule is always safe to run if all rules with a lower MakeRuleSequenceID
+     * have finished (but it might be safe earlier)
      * 
-     * @param project
-     *            the project to make rules for
-     * @param cConfDes
+     * @param autoBuildConfData
      *            the configuration to make rules for
      * @param buildfolder
      *            the folder the build is going to be executed in
-     * @param config
-     *            the configuration used to create the cConfDes
-     * @param crcEntries
-     *            the entries that should not be build
-     * @param foldersToBuild
-     *            The folders that contain make rules are added to this list
+     * @param containersToBuild
+     *            returns the containers (=folders and project) that contain make
+     *            rules are added to this list
      * 
-     * @return The MakeRules needed to buuild this configuration
+     * @return The MakeRules needed to build this autobuild configuration
      * @throws CoreException
      */
     public MakeRules(AutoBuildConfigurationDescription autoBuildConfData, IFolder buildfolder,
-            Set<IFolder> foldersToBuild) throws CoreException {
+            Set<IContainer> containersToBuild) throws CoreException {
 
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
         subDirVisitor.myBuildfolder = buildfolder;
         subDirVisitor.myAutoBuildConfData = autoBuildConfData;
         subDirVisitor.myConfig = autoBuildConfData.getConfiguration();
-        subDirVisitor.myFoldersToBuild = foldersToBuild;
+        subDirVisitor.myContainersToBuild = containersToBuild;
         subDirVisitor.mySrcEntries = autoBuildConfData.getSourceEntries();
         autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
 
@@ -241,7 +227,7 @@ public class MakeRules implements Iterable<MakeRule> {
     class SourceLevelMakeRuleGenerator implements IResourceProxyVisitor {
         IFolder myBuildfolder;
         IConfiguration myConfig;
-        Set<IFolder> myFoldersToBuild;
+        Set<IContainer> myContainersToBuild;
         ICSourceEntry[] mySrcEntries;
         AutoBuildConfigurationDescription myAutoBuildConfData;
 
@@ -261,12 +247,7 @@ public class MakeRules implements Iterable<MakeRule> {
             if (proxy.getType() == IResource.FILE) {
                 if (getMakeRulesFromSourceFile(myAutoBuildConfData, (IFile) resource)) {
                     IContainer parent = ((IFile) resource).getParent();
-                    if (parent instanceof IProject) {
-                        IProject proj = (IProject) parent;
-                        myFoldersToBuild.add(ResourcesPlugin.getWorkspace().getRoot().getFolder(proj.getFullPath()));
-                    } else {
-                        myFoldersToBuild.add((IFolder) parent);
-                    }
+                    myContainersToBuild.add(parent);
                 }
                 return false;
             }

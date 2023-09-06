@@ -26,6 +26,7 @@ import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvide
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -417,7 +418,7 @@ public class MakeRule {
         this.mySequenceGroupID = mySequenceGroupID;
     }
 
-    public boolean isForFolder(IFolder folder) {
+    public boolean isForContainer(IContainer folder) {
         for (Set<IFile> files : myPrerequisites.values()) {
             for (IFile file : files) {
                 if (file.getParent().equals(folder)) {

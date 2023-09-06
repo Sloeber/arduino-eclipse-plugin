@@ -8,11 +8,7 @@ import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICSettingEntry;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -24,7 +20,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.core.Activator;
@@ -47,9 +42,9 @@ public class MakefileGenerator implements IMakefileGenerator {
     IConfiguration myConfig;
     IProject myProject;
     ICConfigurationDescription myCConfigurationDescription;
-    IFolder myTopBuildDir;
+    IFolder myBuildRoot;
     MakeRules myMakeRules = null;
-    Set<IFolder> myFoldersToBuild = null;
+    Set<IContainer> myContainersToBuild = null;
     AutoBuildConfigurationDescription myAutoBuildConfData;
 
     /****************************************************************************************
@@ -66,7 +61,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         myAutoBuildConfData = autoData;
         myCConfigurationDescription = myAutoBuildConfData.getCdtConfigurationDescription();
         myConfig = myAutoBuildConfData.getConfiguration();
-        myTopBuildDir = myAutoBuildConfData.getBuildFolder();
+        myBuildRoot = myAutoBuildConfData.getBuildFolder();
 
         // Get the target info
         String buildTargetName;
@@ -115,8 +110,8 @@ public class MakefileGenerator implements IMakefileGenerator {
         beforeRuleGeneration();
         MultiStatus status;
         //This object remains alive between builds; therefore we need to reset the field values
-        myFoldersToBuild = new HashSet<>();
-        myMakeRules = new MakeRules(myAutoBuildConfData, myTopBuildDir, myFoldersToBuild);
+        myContainersToBuild = new HashSet<>();
+        myMakeRules = new MakeRules(myAutoBuildConfData, myBuildRoot, myContainersToBuild);
 
         if (myMakeRules.size() == 0) {
             // Throw an error if no source file make rules have been created
@@ -154,16 +149,16 @@ public class MakefileGenerator implements IMakefileGenerator {
      ************************************************************************/
 
     protected void generateSrcMakefiles() throws CoreException {
-        for (IFolder curFolder : myFoldersToBuild) {
+        for (IContainer curContainer : myContainersToBuild) {
             // generate the file content
             StringBuffer makeBuf = addDefaultHeader();
-            MakeRules applicableMakeRules = myMakeRules.getRulesForFolder(curFolder);
-            makeBuf.append(generateMacroSection(myTopBuildDir, applicableMakeRules));
+            MakeRules applicableMakeRules = myMakeRules.getRulesForContainer(curContainer);
+            makeBuf.append(generateMacroSection(myBuildRoot, applicableMakeRules));
             makeBuf.append(generateRules(applicableMakeRules));
 
             // Save the files
-            IFolder srcFile = myTopBuildDir.getFolder(curFolder.getProjectRelativePath());
-            save(makeBuf, srcFile.getFile(MODFILE_NAME));
+            IFolder targetFolder = myBuildRoot.getFolder(curContainer.getProjectRelativePath());
+            save(makeBuf, targetFolder.getFile(MODFILE_NAME));
         }
     }
 
@@ -287,7 +282,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_module_list).append(NEWLINE);
         buffer.append("SUBDIRS := ").append(LINEBREAK); //$NON-NLS-1$
 
-        for (IFolder container : myFoldersToBuild) {
+        for (IContainer container : myContainersToBuild) {
             if (container.getFullPath() == myProject.getFullPath()) {
                 buffer.append(DOT).append(WHITESPACE).append(LINEBREAK);
             } else {
@@ -297,7 +292,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         }
         buffer.append(NEWLINE);
         // Save the file
-        IFile fileHandle = myTopBuildDir.getFile(SRCSFILE_NAME);
+        IFile fileHandle = myBuildRoot.getFile(SRCSFILE_NAME);
         save(buffer, fileHandle);
     }
 
@@ -319,7 +314,7 @@ public class MakefileGenerator implements IMakefileGenerator {
                 macroBuffer.append(NEWLINE);
             }
         }
-        IFile fileHandle = myTopBuildDir.getFile(OBJECTS_MAKFILE);
+        IFile fileHandle = myBuildRoot.getFile(OBJECTS_MAKFILE);
         save(macroBuffer, fileHandle);
     }
 
@@ -357,7 +352,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         buffer.append(topMakeGetMakeRules());
         buffer.append(topMakeGetFinalTargets());
 
-        IFile fileHandle = myTopBuildDir.getFile(MAKEFILE_NAME);
+        IFile fileHandle = myBuildRoot.getFile(MAKEFILE_NAME);
         save(buffer, fileHandle);
     }
 
@@ -366,7 +361,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         buffer.append("-include ").append(OBJECTS_MAKFILE).append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
         buffer.append("-include ").append(SRCSFILE_NAME).append(NEWLINE); //$NON-NLS-1$
 
-        for (IContainer subDir : myFoldersToBuild) {
+        for (IContainer subDir : myContainersToBuild) {
             String includeFile = subDir.getProjectRelativePath().append(MODFILE_NAME).toOSString();
             buffer.append("-include " + makeMakeFileSafe(includeFile)).append(NEWLINE); //$NON-NLS-1$
         }
@@ -465,7 +460,7 @@ public class MakefileGenerator implements IMakefileGenerator {
             for (ITool curTargetTool : targetTools) {
                 Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
                 for (IFile curTarget : allTargets) {
-                    String targetString = getMakeSafeNiceFileName(myTopBuildDir, curTarget);
+                    String targetString = getMakeSafeNiceFileName(myBuildRoot, curTarget);
                     buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
                     buffer.append(WHITESPACE);
                 }
@@ -473,7 +468,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         } else {
             Set<IFile> allTargets = myMakeRules.getFinalTargets();
             for (IFile curTarget : allTargets) {
-                String targetString = getMakeSafeNiceFileName(myTopBuildDir, curTarget);
+                String targetString = getMakeSafeNiceFileName(myBuildRoot, curTarget);
                 buffer.append(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(targetString));
                 buffer.append(WHITESPACE);
             }
@@ -523,7 +518,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         buffer.append(CLEAN).append(COLON).append(NEWLINE);
         StringBuffer cleanFiles = new StringBuffer();
         for (IFile curFile : myMakeRules.getBuildFiles()) {
-            cleanFiles.append(BLANK).append(DOUBLE_QUOTE).append(GetNiceFileName(myTopBuildDir, curFile))
+            cleanFiles.append(BLANK).append(DOUBLE_QUOTE).append(GetNiceFileName(myBuildRoot, curFile))
                     .append(DOUBLE_QUOTE);
             if (cleanFiles.length() > 1000) {
                 buffer.append(cleanCommand).append(cleanFiles);
@@ -559,7 +554,7 @@ public class MakefileGenerator implements IMakefileGenerator {
                     if (files.size() != 1) {
                         buffer.append(LINEBREAK);
                     }
-                    buffer.append(getMakeSafeNiceFileName(myTopBuildDir, file)).append(WHITESPACE);
+                    buffer.append(getMakeSafeNiceFileName(myBuildRoot, file)).append(WHITESPACE);
                 }
                 buffer.append(NEWLINE);
                 buffer.append(NEWLINE);
@@ -648,8 +643,8 @@ public class MakefileGenerator implements IMakefileGenerator {
 
         ITool tool = makeRule.getTool();
         StringBuffer buffer = new StringBuffer();
-        buffer.append(enumTargets(makeRule, myTopBuildDir)).append(COLON).append(WHITESPACE);
-        buffer.append(enumPrerequisites(makeRule, myTopBuildDir)).append(NEWLINE);
+        buffer.append(enumTargets(makeRule, myBuildRoot)).append(COLON).append(WHITESPACE);
+        buffer.append(enumPrerequisites(makeRule, myBuildRoot)).append(NEWLINE);
         buffer.append(TAB).append(AT)
                 .append(escapedEcho(MakefileGenerator_message_start_file + WHITESPACE + OUT_MACRO));
         buffer.append(TAB).append(AT).append(escapedEcho(tool.getAnnouncement()));
@@ -672,7 +667,7 @@ public class MakefileGenerator implements IMakefileGenerator {
         //                buffer.append(TAB).append(sketchPostBuild);
         //            }
         //        } else {
-        for (String resolvedCommand : makeRule.getRecipes(myTopBuildDir, myAutoBuildConfData)) {
+        for (String resolvedCommand : makeRule.getRecipes(myBuildRoot, myAutoBuildConfData)) {
             buffer.append(TAB).append(resolvedCommand);
         }
         //        }

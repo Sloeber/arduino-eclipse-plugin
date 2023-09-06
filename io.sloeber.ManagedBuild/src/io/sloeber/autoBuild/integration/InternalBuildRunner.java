@@ -36,8 +36,6 @@ import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICPathEntry;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.utils.CommandLineUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -88,14 +86,13 @@ public class InternalBuildRunner extends IBuildRunner {
         IProject project = autoData.getProject();
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
-        IFolder buildFolder = autoData.getBuildFolder();
-        Set<IFolder> foldersToBuild = new HashSet<>();
+        IFolder buildRoot = autoData.getBuildFolder();
 
         //Generate the make Rules
-        MakeRules myMakeRules = new MakeRules(autoData, buildFolder, foldersToBuild);
+        MakeRules myMakeRules = new MakeRules(autoData, buildRoot, new HashSet<>());
 
         try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
-                ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
+                ErrorParserManager epm = new ErrorParserManager(project, buildRoot.getLocationURI(), markerGenerator,
                         builder.getErrorParserList().toArray(new String[0]));) {
 
             monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
@@ -150,7 +147,7 @@ public class InternalBuildRunner extends IBuildRunner {
                             continue;
                         }
                         lastSequenceID = false;
-                        if (!curRule.needsExecuting(buildFolder)) {
+                        if (!curRule.needsExecuting(buildRoot)) {
                             continue;
                         }
 
@@ -171,7 +168,7 @@ public class InternalBuildRunner extends IBuildRunner {
                             announcement = announcement + NEWLINE;
                             buildRunnerHelper.getOutputStream().write(announcement.getBytes());
                         }
-                        for (String curRecipe : curRule.getRecipes(buildFolder, autoData)) {
+                        for (String curRecipe : curRule.getRecipes(buildRoot, autoData)) {
                             try {
                                 if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
                                     if (autoData.stopOnFirstBuildError()) {
@@ -247,7 +244,7 @@ public class InternalBuildRunner extends IBuildRunner {
                 // ignore and handle null case
             }
             if (fProcess == null) {
-                String error = "Failed to execute" + NEWLINE + curRecipe + NEWLINE;
+                String error = "Failed to execute" + NEWLINE + curRecipe + NEWLINE; //$NON-NLS-1$
                 stdout.write(error.getBytes());
                 return -999;
             }
