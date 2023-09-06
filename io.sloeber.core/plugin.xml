@@ -285,8 +285,14 @@
               </outputType>
               <inputType
                     extensions="o"
-                    id="io.sloeber.tool.archiver.input"
-                    name="%inputType.archiver.name">
+                    id="io.sloeber.tool.archiver.c.input"
+                    name="%inputType.archiver.c.name"
+                    outputTypeID="io.sloeber.compiler.c.ar.output">
+              </inputType>
+              <inputType
+                    id="io.sloeber.tool.archiver.cpp.input"
+                    name="%inputType.archiver.cpp.name"
+                    outputTypeID="io.sloeber.compiler.cpp.ar.output">
               </inputType>
            </tool>
            <tool
@@ -305,14 +311,19 @@
                     outputExtension="elf">
               </outputType>
                             <inputType
-                                  id="io.sloeber.tool.combiner.ob.input"
-                                  name="%inputType.linker.name"
+                                  id="io.sloeber.tool.combiner.c_ob.input"
+                                  name="%inputType.linker.c.name"
                                   outputTypeID="io.sloeber.compiler.c.link.output">
               </inputType>
               <inputType
                     id="io.sloeber.tool.combiner.ar.input"
                     name="Build Archives"
                     outputTypeID="io.sloeber.tool.archiver.output">
+              </inputType>
+              <inputType
+                    id="io.sloeber.tool.combiner.cpp_ob.input"
+                    name="%inputType.linker.c.name"
+                    outputTypeID="io.sloeber.compiler.cpp.sketch.link.output">
               </inputType>
            </tool>
            <tool
