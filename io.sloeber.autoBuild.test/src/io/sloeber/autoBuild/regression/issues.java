@@ -50,4 +50,14 @@ public class issues {
         }
     }
 
+    @Test
+    public void c_associates_with_C() {
+        IContentTypeManager manager = Platform.getContentTypeManager();
+        IContentType contentType = manager.getContentType("org.eclipse.cdt.core.cSource");
+        if (contentType.isAssociatedWith("test.C")) {
+            fail("org.eclipse.cdt.core.cxxSource should not associate with CPP files");
+
+        }
+    }
+
 }
