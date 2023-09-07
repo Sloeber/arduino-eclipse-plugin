@@ -284,15 +284,9 @@
                     outputName="${archive_file_path}">
               </outputType>
               <inputType
-                    extensions="o"
-                    id="io.sloeber.tool.archiver.c.input"
-                    name="%inputType.archiver.c.name"
-                    outputTypeID="io.sloeber.compiler.c.ar.output">
-              </inputType>
-              <inputType
-                    id="io.sloeber.tool.archiver.cpp.input"
-                    name="%inputType.archiver.cpp.name"
-                    outputTypeID="io.sloeber.compiler.cpp.ar.output">
+                    id="io.sloeber.tool.archiver.obj.input"
+                    name="%inputType.archiver.obj.name"
+                    outputTypeIDs="io.sloeber.compiler.cpp.ar.output,io.sloeber.compiler.c.ar.output">
               </inputType>
            </tool>
            <tool
@@ -313,23 +307,18 @@
                             <inputType
                                   id="io.sloeber.tool.combiner.c_ob.input"
                                   name="%inputType.linker.c.name"
-                                  outputTypeID="io.sloeber.compiler.c.link.output">
+                                  outputTypeIDs="io.sloeber.compiler.c.link.output,io.sloeber.compiler.cpp.sketch.link.output">
               </inputType>
               <inputType
                     id="io.sloeber.tool.combiner.ar.input"
                     name="Build Archives"
-                    outputTypeID="io.sloeber.tool.archiver.output">
-              </inputType>
-              <inputType
-                    id="io.sloeber.tool.combiner.cpp_ob.input"
-                    name="%inputType.linker.c.name"
-                    outputTypeID="io.sloeber.compiler.cpp.sketch.link.output">
+                    outputTypeIDs="io.sloeber.tool.archiver.output">
               </inputType>
            </tool>
            <tool
                  announcement="%tool.obcopy.announcement"
-                 command="all objcopy commands"
-                 commandLinePattern="${sloeber.objcopy}"
+                 command="${sloeber.objcopy}"
+                 commandLinePattern="sloeber.objcopy"
                  id="io.sloeber.tool.objcopy.eep"
                  isAbstract="false"
                  name="%tool.objcopy.name"
@@ -337,7 +326,7 @@
               <inputType
                     id="io.sloeber.tool.objcopy.eep.input"
                     name="%inputType.objcopy.name"
-                    outputTypeID="io.sloeber.tool.combiner.output">
+                    outputTypeIDs="io.sloeber.tool.combiner.output">
               </inputType>
               <outputType
                     buildVariable="HEX"
@@ -356,7 +345,7 @@
                  name="%tool.printsize.name">
               <inputType
                     id="io.sloeber.tool.size.input"
-                    outputTypeID="io.sloeber.tool.objcopy.output">
+                    outputTypeIDs="io.sloeber.tool.objcopy.output">
               </inputType>
               <outputType
                     buildVariable="SIZEDUMMY"
