@@ -17,34 +17,26 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 public class AutoBuildNature implements IProjectNature {
 
     private static final String BUILDER_ID = "io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
-    private static final String AUTO_BUILD_NATURE_ID = "io.sloeber.autoBuildNature"; //$NON-NLS-1$
+    private static final String NATURE_ID = "io.sloeber.autoBuildNature"; //$NON-NLS-1$
     private IProject myProject;
 
-    public static void addNature(IProject project, IProgressMonitor monitor) throws CoreException {
-        try {
-            if (monitor == null) {
-                monitor = new NullProgressMonitor();
-            }
-            IProjectDescription description = project.getDescription();
-            String[] prevNatures = description.getNatureIds();
-            for (String prevNature : prevNatures) {
-                if (AUTO_BUILD_NATURE_ID.equals(prevNature))
-                    return;
-            }
-            String[] newNatures = new String[prevNatures.length + 1];
-            System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-            newNatures[prevNatures.length] = AUTO_BUILD_NATURE_ID;
-            description.setNatureIds(newNatures);
-            project.setDescription(description, monitor);
+    public static void addNature(IProject project, IProgressMonitor inMonitor) throws CoreException {
+        IProgressMonitor monitor = inMonitor;
+        if (monitor == null) {
+            monitor = new NullProgressMonitor();
         }
-
-        catch (CoreException e) {
-            CCorePlugin.log(e);
+        IProjectDescription description = project.getDescription();
+        String[] prevNatures = description.getNatureIds();
+        for (String prevNature : prevNatures) {
+            if (NATURE_ID.equals(prevNature))
+                return;
         }
-
-        finally {
-            monitor.done();
-        }
+        String[] newNatures = new String[prevNatures.length + 1];
+        System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
+        newNatures[prevNatures.length] = NATURE_ID;
+        description.setNatureIds(newNatures);
+        project.setDescription(description, monitor);
+        monitor.done();
     }
 
     @Override

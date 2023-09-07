@@ -3,14 +3,13 @@ package io.sloeber.autoBuild.integration;
 import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.schema.api.IToolChain;
 
 /**
- * ArduinoConst only contains global strings used in sloeber.
+ * ArduinoConst only contains global strings used in this plugin.
  *
  * @author Jan Baeyens
  *
@@ -35,9 +34,6 @@ public class AutoBuildConstants {
     public static final String DEFAULT_INCREMENTAL_MAKE_TARGET = TARGET_ALL;
     public static final String DEFAULT_CLEAN_MAKE_TARGET = TARGET_CLEAN;
 
-    //for debug messages
-    public static final int SLOEBER_STATUS_DEBUG = IStatus.CANCEL;
-
     // java stuff so I do not have to add all the time $NON-NLS-1$
     public static final String DOT = ".";
     public static final String ASTERISK = "*";
@@ -56,21 +52,7 @@ public class AutoBuildConstants {
     public static final String EQUAL = "=";
     public static final String BLANK = " ";
     public static final String ALL = "all";
-    public static final String VARIANT = "variant";
-    public static final String CORE = "core";
-    public static final String CORES = "cores";
-    public static final String UPLOAD = "upload";
-    public static final String PROGRAM = "program";
-    public static final String TOOL = "tool";
-    public static final String TOOLS = "tools";
-    public static final String RUNTIME = "runtime";
-    public static final String MENU = "menu";
-    public static final String STEP = "step";
-    public static final String PATTERN = "pattern";
-    public static final String HARDWARE = "hardware";
-    public static final String PLATFORM = "platform";
-    public static final String TXT = "txt";
-    public static final String SOURCE = "source";
+
     public static final String COMPILER = "compiler";
     public static final String END_OF_CHILDREN = "end of children ";
     public static final String BEGIN_OF_CHILDREN = "Begin of children ";
@@ -80,29 +62,6 @@ public class AutoBuildConstants {
     public static final String STATIC_LIB_EXTENSION = "a";
     public static final String DYNAMIC_LIB_EXTENSION = isWindows ? "dll" : "so";
     public static final String EXE_NAME = isWindows ? PROJECT_NAME_VARIABLE + ".exe" : PROJECT_NAME_VARIABLE;
-    public static final String NETWORK = "network";
-    public static final String PORT = "port";
-    public static final String AUTH = "auth";
-    public static final String RECIPE = "recipe";
-    public static final String BUILD = "build";
-    public static final String SYSTEM = "system";
-    public static final String COM_PORT = "com_port";
-    public static final String ARDUINO = "arduino";
-    public static final String PATH = "path";
-    public static final String PROTOCOL = "protocol";
-    public static final String VendorArduino = "arduino";
-
-    // arduino txt pre and suffix
-    public static final String NETWORK_PREFIX = "network_";
-    public static final String REMOTE_SUFFIX = "_remote";
-
-    // General stuff
-    public static final String PLUGIN_ID = "io.sloeber.core";
-    public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
-    public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
-    public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
-    public static final String SLOEBER_HOME = "SLOEBER_HOME";
-    public static final String LOCAL = "local";
 
     public static final String LIBRARY_PATH_SUFFIX = "libraries";
     public static final int COLS_PER_LINE = 80;
@@ -174,27 +133,6 @@ public class AutoBuildConstants {
     public static final String VARIABLE_PREFIX = "${";
     public static final String VARIABLE_SUFFIX = "}";
     public static final String DEPENDENCY_SUFFIX = "_DEPS";
-
-    //    public static final String MESSAGE_FINISH_BUILD = ManagedMakeMessages
-    //            .getResourceString("MakefileGenerator.message.finish.build");
-    //    public static final String MESSAGE_FINISH_FILE = ManagedMakeMessages
-    //            .getResourceString("MakefileGenerator.message.finish.file");
-    //    public static final String MESSAGE_START_BUILD = ManagedMakeMessages
-    //            .getResourceString("MakefileGenerator.message.start.build");
-    //    public static final String MESSAGE_START_FILE = ManagedMakeMessages
-    //            .getResourceString("MakefileGenerator.message.start.file");
-    //    public static final String MESSAGE_START_DEPENDENCY = ManagedMakeMessages
-    //            .getResourceString("MakefileGenerator.message.start.dependency");
-    //    public static final String MESSAGE_NO_TARGET_TOOL = ManagedMakeMessages
-    //            .getResourceString("MakefileGenerator.message.no.target");
-    //    public static final String MESSAGE_MOD_VARS = MakefileGenerator_comment_module_variables;
-    //    public static final String MESSAGE_MOD_RULES = MakefileGenerator_comment_build_rule;
-    //    public static final String MOD_LIST_MESSAGE = MakefileGenerator_comment_module_list;
-    //    public static final String MESSAGE_MAINBUILD_TARGET = ManagedMakeMessages
-    //            .getResourceString(MakefileGenerator_comment_build_mainbuildtarget");
-    //        public static final String MESSAGE_ALL_TARGET = ManagedMakeMessages.getResourceString(MakefileGenerator_comment_build_alltarget");
-    //    public static final String MESSAGE_SRC_LISTS = ManagedMakeMessages.getResourceString(COMMENT + ".source.list");
-    //    public static final String MESSAGE_HEADER = ManagedMakeMessages.getResourceString(HEADER);
 
     // Schema element names
     public static final String ID = "id";
