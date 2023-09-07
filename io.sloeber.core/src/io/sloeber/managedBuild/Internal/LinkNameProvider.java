@@ -43,7 +43,7 @@ public class LinkNameProvider implements IOutputNameProvider {
         if ("cxx".equals(fileExt)) { //$NON-NLS-1$
             return null;
         }
-        return inputFile.getName() + 'o';
+        return outputType.getOutputNameWithoutNameProvider(inputFile);
     }
 
 }

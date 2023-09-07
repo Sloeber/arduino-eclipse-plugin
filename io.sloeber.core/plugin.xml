@@ -174,15 +174,15 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.cpp.sketch.link.output"
                     name="%outputType.CPP.link.name"
-                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider"
-                    outputExtension="o">
+                    namePattern="%.o"
+                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider">
               </outputType>
               <outputType
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.cpp.ar.output"
                     name="%outputType.CPP.AR.name"
-                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider"
-                    outputExtension="o">
+                    namePattern="%.o"
+                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider">
               </outputType>
            </tool>
            <tool
@@ -216,15 +216,15 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.c.link.output"
                     name="%outputType.C.link.name"
-                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider"
-                    outputExtension="o">
+                    namePattern="%.o"
+                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider">
               </outputType>
               <outputType
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.c.ar.output"
                     name="%outputType.C.AR.name"
-                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider"
-                    outputExtension="o">
+                    namePattern="%.o"
+                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider">
               </outputType>
            </tool>
            <tool
@@ -259,14 +259,14 @@
                     id="io.sloeber.compiler.S.sketch.link.output"
                     name="%outputType.S.link.name"
                     nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider"
-                    outputExtension="o">
+                    outputName="%.o">
               </outputType>
               <outputType
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.S.ar.output"
                     name="%outputType.S.AR.name"
                     nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider"
-                    outputExtension="o">
+                    outputName="%.o">
               </outputType>
            </tool>
            <tool
@@ -286,7 +286,7 @@
               <inputType
                     id="io.sloeber.tool.archiver.obj.input"
                     name="%inputType.archiver.obj.name"
-                    outputTypeIDs="io.sloeber.compiler.cpp.ar.output,io.sloeber.compiler.c.ar.output">
+                    outputTypeIDs="io.sloeber.compiler.cpp.ar.output,io.sloeber.compiler.c.ar.output,io.sloeber.compiler.S.ar.output">
               </inputType>
            </tool>
            <tool
@@ -307,7 +307,7 @@
                             <inputType
                                   id="io.sloeber.tool.combiner.c_ob.input"
                                   name="%inputType.linker.c.name"
-                                  outputTypeIDs="io.sloeber.compiler.c.link.output,io.sloeber.compiler.cpp.sketch.link.output">
+                                  outputTypeIDs="io.sloeber.compiler.c.link.output,io.sloeber.compiler.cpp.sketch.link.output,io.sloeber.compiler.S.sketch.link.output">
               </inputType>
               <inputType
                     id="io.sloeber.tool.combiner.ar.input"

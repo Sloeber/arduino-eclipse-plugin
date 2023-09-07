@@ -35,7 +35,7 @@ public class ArchiveNameProvider implements IOutputNameProvider {
             SloeberConfiguration sloeberCfg = (SloeberConfiguration) extDesc;
             IPath coreFolder = sloeberCfg.getArduinoCoreFolder().getProjectRelativePath();
             if (coreFolder.isPrefixOf(inputFile.getProjectRelativePath()) && (!"cxx".equals(fileExt))) { //$NON-NLS-1$
-                return inputFile.getName() + 'o';
+                return outputType.getOutputNameWithoutNameProvider(inputFile);
             }
         }
         return null;
