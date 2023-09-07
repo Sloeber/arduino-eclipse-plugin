@@ -993,12 +993,13 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="outputTypeID" type="string">
+         <attribute name="outputTypeIDs" type="string">
             <annotation>
                <documentation>
-                  The ID of an output type.
-All files from that output type will match this input type.
+                  A comma seperated list of ID&apos;s of an output type.
+All files from these output type will match this input type.
 If this set all other filter options (like extensions,sourceContentType) are ignored.
+It is a list of ids because quite often you get multiple ids like one outputType of c files and one from cpp files.
                </documentation>
             </annotation>
          </attribute>

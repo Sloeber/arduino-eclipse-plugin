@@ -16,7 +16,6 @@ package io.sloeber.schema.api;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentType;
 
 /**
@@ -47,8 +46,6 @@ public interface IInputType extends ISchemaObject {
      */
     public List<IContentType> getSourceContentTypes();
 
-    //    public String[] getSourceContentTypeIds();
-
     /**
      * Returns the list of valid source extensions from the
      * sourceExtensions attribute. Note that this value is not used
@@ -60,18 +57,6 @@ public interface IInputType extends ISchemaObject {
      */
     public List<String> getSourceExtensionsAttribute();
 
-    //    /**
-    //     * Returns the list of valid source extensions for this input type.
-    //     * Note that the list will come from the sourceContentType if it
-    //     * is specified and registered with Eclipse. Otherwise the
-    //     * sourceExtensions attribute will be used.
-    //     *
-    //     * @param tool
-    //     *            the tool that contains the input-type
-    //     * @return String[]
-    //     */
-    //    public List<String> getSourceExtensions(ITool tool);
-
     /**
      * Returns the Eclipse <code>IContentType</code> that describes the
      * dependency files of this input type. If both the dependencyExtensions
@@ -81,55 +66,6 @@ public interface IInputType extends ISchemaObject {
      * @return IContentType
      */
     public IContentType getDependencyContentType();
-
-    //    /**
-    //     * Returns the list of valid dependency extensions from the
-    //     * dependencyExtensions attribute. Note that this value is not used
-    //     * if dependency content type is specified and registered with Eclipse.
-    //     * Also, the user will not be able to modify the set of file
-    //     * extensions as they can when dependencyContentType is specified.
-    //     *
-    //     * @return String[]
-    //     */
-    //    public String[] getDependencyExtensionsAttribute();
-
-    //    /**
-    //     * Returns the list of valid dependency extensions for this input type.
-    //     * Note that the list will come from the dependencyContentType if it
-    //     * is specified and registered with Eclipse. Otherwise the
-    //     * dependencyExtensions attribute will be used.
-    //     *
-    //     * @param tool
-    //     *            the tool that contains the input-type
-    //     * @return String[]
-    //     */
-    //    public String[] getDependencyExtensions(ITool tool);
-
-    /**
-     * Answers <code>true</code> if the input type considers the file extension to
-     * be
-     * one associated with a dependency file.
-     *
-     * @param tool
-     *            the tool that contains the input-type
-     * @param ext
-     *            file extension of the source
-     * @return boolean
-     */
-    //    public boolean isDependencyExtension(ITool tool, String ext);
-
-    //    /**
-    //     * Returns the id of the option whose value is to be assigned to the
-    //     * file(s) calculated for this input type. The default is not to
-    //     * assign the input file(s) to a command line option but to assign the
-    //     * files to the ${Inputs} part of the command line. Note that the
-    //     * option value is only updated during build file generation and therefore
-    //     * could be out of sync with the project until build file generation
-    //     * occurs.
-    //     *
-    //     * @return String
-    //     */
-    //    public String getAssignToOptionId();
 
     /**
      * Returns the name of the build variable associated this this input type's
@@ -146,8 +82,6 @@ public interface IInputType extends ISchemaObject {
      */
     public String getBuildVariable();
 
-    //    String getLanguageName(ITool tool);
-
     String getDiscoveryProfileId(ITool tool);
 
     /**
@@ -163,13 +97,6 @@ public interface IInputType extends ISchemaObject {
      * @return true if the file matches the inputType
      */
     public boolean isAssociatedWith(IFile file, IOutputType outputType);
-
-    /**
-     * Get the ID of the output tye this input type processes
-     * 
-     * @return an ID of a outputType or an empty string
-     */
-    public String getOutputTypeID();
 
     /**
      * Get the attribute assignToCommandVarriable

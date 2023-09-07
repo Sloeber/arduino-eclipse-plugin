@@ -30,7 +30,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.BuildException;
@@ -237,6 +236,7 @@ public class MakeRule {
                 }
             }
         }
+        //Get the flags from the CdtConfigurationDescription
         ICConfigurationDescription cfgDescription = autoBuildConfData.getCdtConfigurationDescription();
         IProject project = autoBuildConfData.getProject();
         for (ILanguageSettingsProvider provider : ((ILanguageSettingsProvidersKeeper) cfgDescription)
@@ -282,7 +282,6 @@ public class MakeRule {
                 }
             }
         }
-        List<ICLanguageSettingEntry> configEntries;
 
         String buildRecipes[] = myTool.getRecipes(autoBuildConfData, inputFiles, flags,
                 GetNiceFileName(niceBuildFolder, targetFile), niceNameList);
@@ -315,56 +314,56 @@ public class MakeRule {
     //        return flags;
     //    }
 
-    private String expandCommandLinePattern(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
-            String outputFlag, String outputName, Set<String> inputResources) {
-        String cmd = myTool.getDefaultommandLineCommand();
-        // try to resolve the build macros in the tool command
-        String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
-        if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
-            cmd = resolvedCommand;
-        return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
-                getToolCommandLinePattern(autoBuildConfData, myTool));
-    }
+    //    private String expandCommandLinePattern(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
+    //            String outputFlag, String outputName, Set<String> inputResources) {
+    //        String cmd = myTool.getDefaultommandLineCommand();
+    //        // try to resolve the build macros in the tool command
+    //        String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
+    //        if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
+    //            cmd = resolvedCommand;
+    //        return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
+    //                getToolCommandLinePattern(autoBuildConfData, myTool));
+    //    }
 
-    private static String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag,
-            String outputName, Set<String> inputResources, String commandLinePattern) {
-
-        String command = commandLinePattern;
-        if (commandLinePattern == null || commandLinePattern.length() <= 0) {
-            command = DEFAULT_PATTERN;
-        }
-
-        String quotedOutputName = outputName;
-        // if the output name isn't a variable then quote it
-        if (quotedOutputName.length() > 0 && quotedOutputName.indexOf("$(") != 0) { //$NON-NLS-1$
-            quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
-        }
-
-        String inputsStr = ""; //$NON-NLS-1$
-        if (inputResources != null) {
-            for (String inp : inputResources) {
-                if (inp != null && !inp.isEmpty()) {
-                    // if the input resource isn't a variable then quote it
-                    if (inp.indexOf("$(") != 0) { //$NON-NLS-1$
-                        inp = DOUBLE_QUOTE + inp + DOUBLE_QUOTE;
-                    }
-                    inputsStr = inputsStr + inp + WHITESPACE;
-                }
-            }
-            inputsStr = inputsStr.trim();
-        }
-
-        String flagsStr = String.join(WHITESPACE, flags);
-
-        command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
-        command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
-        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
-        // command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
-        command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
-        command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
-
-        return command;
-    }
+    //    private static String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag,
+    //            String outputName, Set<String> inputResources, String commandLinePattern) {
+    //
+    //        String command = commandLinePattern;
+    //        if (commandLinePattern == null || commandLinePattern.length() <= 0) {
+    //            command = DEFAULT_PATTERN;
+    //        }
+    //
+    //        String quotedOutputName = outputName;
+    //        // if the output name isn't a variable then quote it
+    //        if (quotedOutputName.length() > 0 && quotedOutputName.indexOf("$(") != 0) { //$NON-NLS-1$
+    //            quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
+    //        }
+    //
+    //        String inputsStr = ""; //$NON-NLS-1$
+    //        if (inputResources != null) {
+    //            for (String inp : inputResources) {
+    //                if (inp != null && !inp.isEmpty()) {
+    //                    // if the input resource isn't a variable then quote it
+    //                    if (inp.indexOf("$(") != 0) { //$NON-NLS-1$
+    //                        inp = DOUBLE_QUOTE + inp + DOUBLE_QUOTE;
+    //                    }
+    //                    inputsStr = inputsStr + inp + WHITESPACE;
+    //                }
+    //            }
+    //            inputsStr = inputsStr.trim();
+    //        }
+    //
+    //        String flagsStr = String.join(WHITESPACE, flags);
+    //
+    //        command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
+    //        command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
+    //        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
+    //        // command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
+    //        command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
+    //        command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
+    //
+    //        return command;
+    //    }
 
     public void addPrerequisites(IInputType inputType, Set<IFile> files) {
         Set<IFile> entrypoint = myPrerequisites.get(inputType);

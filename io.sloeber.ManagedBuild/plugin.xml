@@ -68,8 +68,8 @@
                  name="%autoBuild.tool.gpp.linker.staticLib"
                  superClass="cdt.managedbuild.tool.gnu.archiver">
               <inputType
-                    id="io.sloeber.autoBuild.inputType.cpp.staticLibs"
-                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.staticLib">
+                    id="io.sloeber.autoBuild.inputType.staticLibs"
+                    outputTypeIDs="io.sloeber.autoBuild.gpp.compiler.outputType.staticLib,io.sloeber.autoBuild.gcc.compiler.outputType.staticLib">
               </inputType>
               <outputType
                     id="io.sloeber.autoBuild.outputType.link.staticLib"
@@ -82,8 +82,8 @@
                  name="%autoBuild.tool.gpp.linker.sharedLib"
                  superClass="cdt.managedbuild.tool.gnu.cpp.linker.to.sharedLib.base">
               <inputType
-                    id="io.sloeber.autoBuild.inputType.cpp.sharedLib"
-                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.sharedLib">
+                    id="io.sloeber.autoBuild.inputType.sharedLib"
+                    outputTypeIDs="io.sloeber.autoBuild.gpp.compiler.outputType.sharedLib,io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib">
               </inputType>
               <outputType
                     id="io.sloeber.autoBuild.outputType.link.sharedLib"
@@ -99,7 +99,7 @@
               <inputType
                     assignToCommandVarriable="DYNLIBS"
                     id="io.sloeber.autoBuild.inputType.cpp.sharedLib"
-                    outputTypeID="io.sloeber.autoBuild.outputType.link.sharedLib">
+                    outputTypeIDs="io.sloeber.autoBuild.outputType.link.sharedLib">
               </inputType>
               <outputType
                     id="io.sloeber.autoBuild.outputType.link.exe"
@@ -110,11 +110,11 @@
               <inputType
                     assignToCommandVarriable="STATICLIBS"
                     id="io.sloeber.autoBuild.inputType.cpp.staticLib"
-                    outputTypeID="io.sloeber.autoBuild.outputType.link.staticLib">
+                    outputTypeIDs="io.sloeber.autoBuild.outputType.link.staticLib">
               </inputType>
               <inputType
-                    id="io.sloeber.autoBuild.inputType.cpp.objects"
-                    outputTypeID="io.sloeber.autoBuild.gpp.compiler.outputType.exe">
+                    id="io.sloeber.autoBuild.inputType.objects"
+                    outputTypeIDs="io.sloeber.autoBuild.gpp.compiler.outputType.exe,io.sloeber.autoBuild.gcc.compiler.outputType.exe">
               </inputType>
            </tool>
            <tool
@@ -150,8 +150,8 @@
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <inputType
-                    id="io.sloeber.autoBuild.inputType.gcc.sharedLib.Object"
-                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib">
+                    id="io.sloeber.autoBuild.inputType.sharedLib.Object"
+                    outputTypeIDs="io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib,io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib">
               </inputType>
            </tool>
            <tool
@@ -164,8 +164,18 @@
                     nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
               </outputType>
               <inputType
-                    id="io.sloeber.autoBuild.inputType.gcc.exe.object"
-                    outputTypeID="io.sloeber.autoBuild.gcc.compiler.outputType.exe">
+                    id="io.sloeber.autoBuild.inputTypec.exe.object"
+                    outputTypeIDs="io.sloeber.autoBuild.gcc.compiler.outputType.exe,io.sloeber.autoBuild.gcc.compiler.outputType.exe">
+              </inputType>
+              <inputType
+                    assignToCommandVarriable="DYNLIBS"
+                    id="io.sloeber.autoBuild.inputType.cpp.sharedLib"
+                    outputTypeIDs="io.sloeber.autoBuild.outputType.link.sharedLib">
+              </inputType>
+              <inputType
+                    assignToCommandVarriable="STATICLIBS"
+                    id="io.sloeber.autoBuild.inputType.cpp.staticLib"
+                    outputTypeIDs="io.sloeber.autoBuild.outputType.link.staticLib">
               </inputType>
            </tool>
            <builder
@@ -1286,13 +1296,13 @@
       </tool>
       <tool
             command="gcc"
-            dependencyGenerationFlag="-MMD -MP -MF&quot;$(%.d)&quot; -MT&quot;$@&quot; "
+            dependencyGenerationFlag="-MMD -MP -MF&quot;${%.d}&quot; -MT&quot;$@&quot; "
             dependencyOutputPattern="%.d"
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.gnu.c.compiler"
             isAbstract="true"
             name="%ToolName.compiler.gnu.c"
-            natureFilter="cnature"
+            natureFilter="both"
             outputFlag="-o">
          <supportedProperties>
             <property

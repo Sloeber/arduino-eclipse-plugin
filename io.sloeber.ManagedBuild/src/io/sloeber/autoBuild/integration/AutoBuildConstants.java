@@ -206,7 +206,7 @@ public class AutoBuildConstants {
     public static final String INPUT_TYPE_ELEMENT_NAME = "inputType";
     public static final String SOURCE_CONTENT_TYPE = "sourceContentType";
     public static final String EXTENSIONS = "extensions";
-    public static final String OUTPUT_TYPE_ID = "outputTypeID";
+    public static final String OUTPUT_TYPE_IDS = "outputTypeIDs";
     public static final String OPTION = "option";
     public static final String KEY_CUSTOM_TOOL_COMMAND = "custom.tool.command";
     public static final String KEY_CUSTOM_TOOL_PATTERN = "custom.tool.pattern";

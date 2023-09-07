@@ -18,16 +18,20 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
+import org.eclipse.core.runtime.content.IContentTypeSettings;
 
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -44,14 +48,15 @@ public class InputType extends SchemaObject implements IInputType {
 
     // Managed Build model attributes
     private List<IContentType> mySourceContentTypes = new ArrayList<>();
+    private Set<String> myOutputTypeIDs = new HashSet<>();
 
-    private List<String> inputExtensions = new ArrayList<>();
+    private List<String> myInputExtensions = new ArrayList<>();
     private IContentType dependencyContentType;
 
     // read from model
     private String[] modelSourceContentType;
     private String[] modelExtensions;
-    private String[] modelOutputTypeID;
+    private String[] modelOutputTypeIDs;
     private String[] modelScannerConfigDiscoveryProfileID;
     private String[] modelLanguageID;
     private String[] modelLanguageInfoCalculator;
@@ -77,7 +82,7 @@ public class InputType extends SchemaObject implements IInputType {
         loadNameAndID(root, element);
         modelSourceContentType = getAttributes(SOURCE_CONTENT_TYPE);
         modelExtensions = getAttributes(EXTENSIONS);
-        modelOutputTypeID = getAttributes(OUTPUT_TYPE_ID);
+        modelOutputTypeIDs = getAttributes(OUTPUT_TYPE_IDS);
         modelScannerConfigDiscoveryProfileID = getAttributes(SCANNER_CONFIG_PROFILE_ID);
         modelLanguageID = getAttributes(LANGUAGE_ID);
         modelLanguageInfoCalculator = getAttributes(LANGUAGE_INFO_CALCULATOR);
@@ -129,11 +134,6 @@ public class InputType extends SchemaObject implements IInputType {
         return EMPTY_STRING;
     }
 
-    @Override
-    public String getOutputTypeID() {
-        return modelOutputTypeID[SUPER];
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -151,7 +151,7 @@ public class InputType extends SchemaObject implements IInputType {
 
     @Override
     public List<String> getSourceExtensionsAttribute() {
-        return inputExtensions;
+        return myInputExtensions;
     }
 
     //  
@@ -195,51 +195,59 @@ public class InputType extends SchemaObject implements IInputType {
     @Override
     public boolean isAssociatedWith(IFile file, IOutputType outputType) {
         if (outputType != null) {
-            if (modelOutputTypeID[SUPER].equals(outputType.getId())
-                    || inputExtensions.contains(file.getFileExtension())) {
+            if (myOutputTypeIDs.contains(outputType.getId())) {
                 return true;
             }
         }
 
+        if (myInputExtensions.contains(file.getFileExtension())) {
+            return true;
+        }
+
+        //TOFIX see issue https://github.com/eclipse-cdt/cdt/issues/539
+        //        ProjectScope scopeCtx = new ProjectScope(file.getProject());
         for (IContentType curContentType : mySourceContentTypes) {
+            //            IContentTypeSettings settings = curContentType.getSettings(scopeCtx);
+            //            if( isStrictlyAssociatedWith(settings, file.getName())) {
+            //            return true;
+            //        }
             if (isAssociatedWith(curContentType, file.getName())) {
                 return true;
             }
-        }
-        if (mySourceContentTypes.size() > 0) {
-            return false;
-        }
-        if (inputExtensions.contains(file.getFileExtension())) {
-            return true;
         }
 
         return false;
     }
 
     private void resolveFields() throws Exception {
-        if (modelSourceContentType[SUPER] != null) {
-            IContentTypeManager manager = Platform.getContentTypeManager();
-            StringTokenizer tokenizer = new StringTokenizer(modelSourceContentType[SUPER], DEFAULT_SEPARATOR);
-            while (tokenizer.hasMoreElements()) {
-                String curToken = tokenizer.nextToken();
-                IContentType type = manager.getContentType(curToken);
-                if (type != null) {
-                    mySourceContentTypes.add(type);
-                } else {
-                    System.err.println("failed to load source content type :" + curToken); //$NON-NLS-1$
-                }
+        IContentTypeManager manager = Platform.getContentTypeManager();
+        StringTokenizer tokenizer = new StringTokenizer(modelSourceContentType[SUPER], DEFAULT_SEPARATOR);
+        while (tokenizer.hasMoreElements()) {
+            String curToken = tokenizer.nextToken();
+            IContentType type = manager.getContentType(curToken);
+            if (type != null) {
+                mySourceContentTypes.add(type);
+            } else {
+                System.err.println("failed to load source content type :" + curToken); //$NON-NLS-1$
             }
         }
 
         // Get the supported input file extensions
         if (!modelExtensions[SUPER].isBlank()) {
-            StringTokenizer tokenizer = new StringTokenizer(modelExtensions[SUPER], DEFAULT_SEPARATOR);
+            tokenizer = new StringTokenizer(modelExtensions[SUPER], DEFAULT_SEPARATOR);
             while (tokenizer.hasMoreElements()) {
-                inputExtensions.add(tokenizer.nextToken());
+                myInputExtensions.add(tokenizer.nextToken());
             }
         }
 
-        //if no assignment to variablez is done assign to files
+        //Make the , seperated string a Set
+        tokenizer = new StringTokenizer(modelOutputTypeIDs[SUPER], DEFAULT_SEPARATOR);
+        while (tokenizer.hasMoreElements()) {
+            String curToken = tokenizer.nextToken();
+            myOutputTypeIDs.add(curToken);
+        }
+
+        //if no assignment to variables is done assign to files
         if (modelAssignToCommandVarriable[SUPER].isBlank()) {
             modelAssignToCommandVarriable[SUPER] = INPUTS_PRM_NAME;
         }
@@ -253,7 +261,7 @@ public class InputType extends SchemaObject implements IInputType {
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);
         ret.append(prepend + SOURCE_CONTENT_TYPE + EQUAL + modelSourceContentType[SUPER] + NEWLINE);
         ret.append(prepend + EXTENSIONS + EQUAL + modelExtensions[SUPER] + NEWLINE);
-        ret.append(prepend + OUTPUT_TYPE_ID + EQUAL + modelOutputTypeID[SUPER] + NEWLINE);
+        ret.append(prepend + OUTPUT_TYPE_IDS + EQUAL + modelOutputTypeIDs[SUPER] + NEWLINE);
 
         ret.append(prepend + SCANNER_CONFIG_PROFILE_ID + EQUAL + modelScannerConfigDiscoveryProfileID[SUPER] + NEWLINE);
         ret.append(prepend + LANGUAGE_ID + EQUAL + modelLanguageID[SUPER] + NEWLINE);
