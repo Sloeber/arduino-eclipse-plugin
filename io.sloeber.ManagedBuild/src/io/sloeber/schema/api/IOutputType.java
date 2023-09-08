@@ -98,14 +98,14 @@ public interface IOutputType extends ISchemaObject {
     public String getOutputExtension();
 
     /**
-     * Get the actual outputName
+     * Get the actual output file
      * 
      * @param inputFile
      * @param autoBuildConfData
      * @param inputType
      * @return
      */
-    public IFile getOutputName(IFile inputFile, IAutoBuildConfigurationDescription autoBuildConfData,
+    public IFile getOutputFile(IFile inputFile, IAutoBuildConfigurationDescription autoBuildConfData,
             IInputType inputType);
 
     /**

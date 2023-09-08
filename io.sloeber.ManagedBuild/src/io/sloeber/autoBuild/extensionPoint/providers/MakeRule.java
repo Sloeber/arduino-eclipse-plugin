@@ -506,6 +506,20 @@ public class MakeRule {
         return newestTime;
     }
 
+    public String getAnnouncement() {
+        String announcement = getTool().getAnnouncement();
+        if (announcement.isBlank()) {
+            announcement = DEFAULT_BUILDSTEP_ANNOUNCEMENT;
+        }
+        String targetFileNames = new String();
+        String separator = new String();
+        for (IFile curFile : getTargetFiles()) {
+            targetFileNames = targetFileNames + separator + curFile.getName();
+            separator = COMMA + BLANK;
+        }
+        return announcement + COLON + BLANK + targetFileNames;
+    }
+
 }
 //    /**
 //     * Returns the dependency <code>IPath</code>s relative to the build directory

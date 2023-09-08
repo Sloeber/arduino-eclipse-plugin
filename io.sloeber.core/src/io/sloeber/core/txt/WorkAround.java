@@ -630,11 +630,11 @@ public class WorkAround extends Const {
             // delete if outdated
             String firstLine = null;
             try (BufferedReader Buff = new BufferedReader(new FileReader(actualProgrammersTXT));) {
-                firstLine = Buff.readLine();
+                firstLine = Buff.readLine().trim();
             } catch (Exception e) {
                 // ignore and delete the file
             }
-            if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine.trim())) {
+            if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine)) {
                 actualProgrammersTXT.delete();
             }
         }

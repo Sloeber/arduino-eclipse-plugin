@@ -467,7 +467,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 resourceCmds.put(resource, cmd);
             }
         }
-        //read the class from the input
+        //TOFIX add code to write and read the class from the input
         String autoCfgExtentionDesc = "";
 
         try {

@@ -1,6 +1,6 @@
 package io.sloeber.ui.project.properties;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -16,6 +16,7 @@ import io.sloeber.ui.Messages;
 public class OtherProperties extends SloeberCpropertyTab {
 
 	private Button myOtherProperties;
+	private OtherDescription myOtherDesc = new OtherDescription();
 
 	private Listener buttonListener = new Listener() {
 		@Override
@@ -27,7 +28,6 @@ public class OtherProperties extends SloeberCpropertyTab {
 			}
 		}
 	};
-
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -50,45 +50,24 @@ public class OtherProperties extends SloeberCpropertyTab {
 	}
 
 	@Override
-	protected String getQualifierString() {
-		return "SloeberOtherDescription"; //$NON-NLS-1$
-	}
-
-	@Override
 	protected void updateScreen() {
-		OtherDescription otherDesc = (OtherDescription) getDescription(getConfdesc());
-		myOtherProperties.setSelection(otherDesc.IsVersionControlled());
+		myOtherProperties.setSelection(myOtherDesc.IsVersionControlled());
+	}
+
+	private void getFromScreen() {
+		myOtherDesc.setVersionControlled(myOtherProperties.getSelection());
 	}
 
 	@Override
-	protected Object getFromScreen() {
-		OtherDescription otherDesc = (OtherDescription) getDescription(getConfdesc());
-		otherDesc.setVersionControlled(myOtherProperties.getSelection());
-		return otherDesc;
-	}
-
-	@Override
-	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
-		return mySloeberProject.getOtherDescription(confDesc.getName(), true);
+	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	protected Object makeCopy(Object srcObject) {
-		return new OtherDescription((OtherDescription) srcObject);
-	}
-
-	@Override
-	protected void updateSloeber(ICConfigurationDescription confDesc) {
-		OtherDescription theObjectToStore = (OtherDescription) getDescription(confDesc);
-		mySloeberProject.setOtherDescription(confDesc.getName(), theObjectToStore);
+	protected void performDefaults() {
+		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	protected Object getnewDefaultObject() {
-		return new OtherDescription();
-	}
-
 
 }

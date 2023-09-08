@@ -163,11 +163,8 @@ public class InternalBuildRunner extends IBuildRunner {
                                 curFile.delete(true, monitor);
                             }
                         }
-                        String announcement = curRule.getTool().getAnnouncement();
-                        if (!announcement.isEmpty()) {
-                            announcement = announcement + NEWLINE;
-                            buildRunnerHelper.getOutputStream().write(announcement.getBytes());
-                        }
+                        buildRunnerHelper.getOutputStream().write(curRule.getAnnouncement().getBytes());
+                        buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
                         for (String curRecipe : curRule.getRecipes(buildRoot, autoData)) {
                             try {
                                 if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {

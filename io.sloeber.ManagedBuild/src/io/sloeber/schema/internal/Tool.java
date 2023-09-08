@@ -45,7 +45,6 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
@@ -545,7 +544,7 @@ public class Tool extends SchemaObject implements ITool {
                         }
                         continue;
                     }
-                    IFile outputFile = outputType.getOutputName(inputFile, autoBuildConfData, inputType);
+                    IFile outputFile = outputType.getOutputFile(inputFile, autoBuildConfData, inputType);
                     if (outputFile == null) {
                         if (VERBOSE) {
                             System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName()

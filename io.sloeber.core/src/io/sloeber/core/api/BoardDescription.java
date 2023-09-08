@@ -930,23 +930,19 @@ public class BoardDescription {
     /**
      * Following post processing is done
      *
-     * CDT uses different keys to identify the input and output files then the
-     * arduino recipes. Therefore I split the arduino recipes into parts (based on
-     * the arduino keys) and connect them again in the plugin.xml using the CDT
-     * keys. This code assumes that the command is in following order ${first part}
-     * ${files} ${second part} [${archive_file} ${third part}] with [optional]
      *
-     * Secondly The handling of the upload variables is done differently in arduino
-     * than here. This is taken care of here. for example the output of this input
+     * The handling of the upload variables is done differently in arduino
+     * than in Sloeber. This is taken care of here. for example the output of this
+     * input
      * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose}
      * is changed as if it were the output of this input
      * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
      * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
      *
-     * thirdly if a programmer is selected different from default some extra actions
+     * if a programmer is selected different from default some extra actions
      * are done here so no special code is needed to handle programmers
      *
-     * Fourthly The build path for the core is {BUILD.PATH}/core/core in sloeber
+     * The build path for the core is {build.path}/core/core in sloeber
      * where it is {build.path}/core/ in arduino world and used to be {build.path}/
      * This only gives problems in the link command as sometimes there are hardcoded
      * links to some sys files so ${build.path}/core/sys* ${build.path}/sys* is

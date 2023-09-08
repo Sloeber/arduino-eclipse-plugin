@@ -53,6 +53,8 @@ public class AutoBuildConstants {
     public static final String BLANK = " ";
     public static final String ALL = "all";
 
+    public static final String DEFAULT_BUILDSTEP_ANNOUNCEMENT = "Building";
+
     public static final String COMPILER = "compiler";
     public static final String END_OF_CHILDREN = "end of children ";
     public static final String BEGIN_OF_CHILDREN = "Begin of children ";

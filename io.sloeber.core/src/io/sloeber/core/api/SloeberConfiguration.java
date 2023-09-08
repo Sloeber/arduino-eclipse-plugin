@@ -42,6 +42,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     //derived data
     private Map<String, String> myEnvironmentVariables = new HashMap<>();
+    private boolean myIsConfiguring;
 
     /**
      * copy constructor
@@ -154,22 +155,22 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     }
 
     public Map<String, String> getEnvironmentVariables() {
-        if (myIsDirty) {
+        if (myIsDirty && !myIsConfiguring) {
             configure();
         }
 
         return myEnvironmentVariables;
     }
 
-    public synchronized void configure() {
+    public void configure() {
         if (getAutoBuildDescription() == null) {
             //We can not configure if the AutoBuildDescription is not known
             System.err.println("SloeberConfiguration can not be configured if the AutoBuildDescription is not known"); //$NON-NLS-1$
             return;
         }
-
+        myIsConfiguring = true;
         getEnvVars();
-
+        myIsConfiguring = false;
         myIsDirty = false;
         return;
 
@@ -181,7 +182,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         myEnvironmentVariables.clear();
 
         myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
-        myEnvironmentVariables.put(ENV_KEY_BUILD_PATH, getAutoBuildDescription().getBuildFolderString());
+        myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
+                getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
 
         if (myBoardDescription != null) {
             myEnvironmentVariables.putAll(myBoardDescription.getEnvVars());

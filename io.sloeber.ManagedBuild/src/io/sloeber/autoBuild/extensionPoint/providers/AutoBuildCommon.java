@@ -520,8 +520,10 @@ public class AutoBuildCommon {
         String fileNameWithExtension = inputFile.getName();
         //  Replace the % with the file name without extension
         String outName = myNamePattern.replace(PROCENT, fileNameWithoutExtension);
-        //Replace the @ with the file name without extension
+        //Replace the @ with the file name with extension
         outName = outName.replace(AT_SYMBOL, fileNameWithExtension);
+        //Replace the * with the file name with extension
+        outName = outName.replace(ASTERISK, fileNameWithExtension);
         return outName;
     }
 

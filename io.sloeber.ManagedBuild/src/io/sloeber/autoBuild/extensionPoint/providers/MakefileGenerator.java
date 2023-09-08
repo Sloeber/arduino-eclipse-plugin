@@ -428,9 +428,9 @@ public class MakefileGenerator implements IMakefileGenerator {
         String postbuildStep = resolve(myAutoBuildConfData.getPostbuildStep(), EMPTY_STRING, WHITESPACE,
                 myAutoBuildConfData);
         if (prebuildStep.isBlank() && postbuildStep.isBlank()) {
-            buffer.append(DEFAULT_AUTO_MAKE_TARGET).append(COLON).append(WHITESPACE).append(MAINBUILD).append(NEWLINE);
+            buffer.append(TARGET_ALL).append(COLON).append(WHITESPACE).append(MAINBUILD).append(NEWLINE);
         } else {
-            buffer.append(DEFAULT_AUTO_MAKE_TARGET).append(COLON).append(NEWLINE);
+            buffer.append(TARGET_ALL).append(COLON).append(NEWLINE);
             if (!prebuildStep.isBlank()) {
                 buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE)
                         .append(PREBUILD).append(NEWLINE);

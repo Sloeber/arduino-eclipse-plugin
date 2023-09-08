@@ -161,7 +161,7 @@ public class OutputType extends SchemaObject implements IOutputType {
     }
 
     @Override
-    public IFile getOutputName(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType) {
+    public IFile getOutputFile(IFile inputFile, IAutoBuildConfigurationDescription autoData, IInputType inputType) {
         if (!isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, inputFile, autoData)) {
             return null;
         }
@@ -184,7 +184,7 @@ public class OutputType extends SchemaObject implements IOutputType {
      * Given the buildFolder, the inputFile and the outputfileName
      * Provides the IFile basically the FQN
      * 
-     * If the inputFioe is in the build folder the output file is in the root of the
+     * If the inputFile is in the build folder the output file is in the root of the
      * buildfolder
      * Else the outputfile is in in the buildfolder with a relative path that
      * is equal to the project relative path
@@ -224,6 +224,7 @@ public class OutputType extends SchemaObject implements IOutputType {
         return modelOutputExtension[SUPER];
     }
 
+    @Override
     public ITool getTool() {
         return myTool;
     }
