@@ -287,12 +287,12 @@ public class MakeRule {
                 GetNiceFileName(niceBuildFolder, targetFile), niceNameList);
         ArrayList<String> ret = new ArrayList<>();
         for (String curRecipe : buildRecipes) {
-            String resolvedCommand = resolve(curRecipe, EMPTY_STRING, WHITESPACE, autoBuildConfData);
+            String resolvedCommand = resolveRecursive(curRecipe, EMPTY_STRING, WHITESPACE, autoBuildConfData);
             if (resolvedCommand.isBlank()) {
                 resolvedCommand = curRecipe;
             }
             if (!resolvedCommand.isBlank()) {
-                ret.add(resolvedCommand);
+                ret.addAll(Arrays.asList(resolvedCommand.split("\\r?\\n")));
             }
         }
         return ret.toArray(new String[ret.size()]);

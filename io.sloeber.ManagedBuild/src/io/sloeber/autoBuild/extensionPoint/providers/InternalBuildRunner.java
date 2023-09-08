@@ -14,7 +14,7 @@
  * IBM Corporation
  * Samuel Hultgren (STMicroelectronics) - bug #217674
  *******************************************************************************/
-package io.sloeber.autoBuild.integration;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
@@ -53,9 +53,8 @@ import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
-import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 

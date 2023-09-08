@@ -9,12 +9,17 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
+import org.eclipse.cdt.core.cdtvariables.ICdtVariableStatus;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.internal.core.cdtvariables.DefaultVariableContextInfo;
 import org.eclipse.cdt.internal.core.cdtvariables.ICoreVariableContextInfo;
+import org.eclipse.cdt.internal.core.envvar.EnvironmentVariableManager;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.cdt.utils.cdtvariables.IVariableSubstitutor;
 import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
@@ -423,11 +428,38 @@ public class AutoBuildCommon {
         IVariableSubstitutor varSubs = new SupplierBasedCdtVariableSubstitutor(contextInfo, nonexistentMacrosValue,
                 listDelimiter);
         try {
-            return CdtVariableResolver.resolveToString(unresolved, varSubs);
+            return resolveToString(unresolved, varSubs);
         } catch (CdtVariableException e) {
             Activator.log(e);
         }
         return EMPTY_STRING;
+    }
+
+    /**
+     * resolves a string untill it contains no more environment variable references
+     * (read ${xx})
+     * That is: it will try maximum 20 times and then stop
+     * 
+     * @param unresolved
+     * @param nonexistentMacrosValue
+     * @param listDelimiter
+     * @param autoData
+     * @return
+     */
+    static public String resolveRecursive(String unresolved, String nonexistentMacrosValue, String listDelimiter,
+            IAutoBuildConfigurationDescription autoData) {
+        int count = 0;
+        String inString = unresolved;
+        do {
+
+            String resolved = resolve(inString, nonexistentMacrosValue, listDelimiter, autoData);
+            if (resolved.equals(inString)) {
+                return resolved;
+            }
+            inString = resolved;
+        } while (++count < 20);
+        System.err.println("String relovement of string failed " + unresolved + " final value" + inString); //$NON-NLS-1$ //$NON-NLS-2$
+        return inString;
     }
 
     static public String getVariableValue(String varName, String defaultvalue, boolean resolve,
@@ -541,206 +573,67 @@ public class AutoBuildCommon {
             return j - 1;
         return j;
     }
+
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //I copied the code below from the CDT code base because the CDT code contain historical 
+    // backwards limitation (not expanding when there is a newline)
+    //I opted to just copy the code
+    //I didn't feel like asking if it was an option to remove the limitation because "to much time/frustration to little result"
+    //Anyway this code comes from CdtVariableResolver.resolveToString
+
+    /**
+     * Resolves macros of kind ${Macro} in the given string by calling the macro
+     * substitutor
+     * for each macro reference found. Macros can be inside one another like
+     * ${workspace_loc:/${ProjName}/} but resolved just once. No recursive
+     * macro names are allowed.
+     * It is not possible to prevent macros from expanding.
+     *
+     * @param string
+     *            - macro expression.
+     * @param substitutor
+     *            - macro resolution provider to retrieve macro values.
+     * @return resolved string
+     *
+     * @throws CdtVariableException
+     *             if substitutor can't handle the macro and returns null or throws.
+     */
+    static private String resolveToString(String string, IVariableSubstitutor substitutor) throws CdtVariableException {
+        if (string == null) {
+            return EMPTY_STRING;
+        }
+
+        final Pattern pattern = Pattern.compile("(\\$\\{([^${}]*)\\})"); //$NON-NLS-1$
+        final String VARIABLE_PREFIX_MASKED = "$\1"; //$NON-NLS-1$
+        final String VARIABLE_SUFFIX_MASKED = "\2"; //$NON-NLS-1$
+
+        StringBuilder buffer = new StringBuilder(string);
+        int limit = string.length();
+        Matcher matcher = pattern.matcher(buffer);
+        while (matcher.find()) {
+            String name = matcher.group(2);
+            String resolved = name.length() > 0 ? substitutor.resolveToString(name) : EMPTY_STRING;
+            if (resolved == null) {
+                throw new CdtVariableException(ICdtVariableStatus.TYPE_MACRO_UNDEFINED, null, string, name);
+            }
+
+            if (limit-- < 0) {
+                // to prevent incidental endless looping
+                throw new CdtVariableException(ICdtVariableStatus.TYPE_ERROR, name, string, resolved);
+            }
+            // Only one expansion is allowed, so hide any text interfering with macro syntax
+            resolved = resolved.replace(VARIABLE_PREFIX, VARIABLE_PREFIX_MASKED);
+            resolved = resolved.replace(VARIABLE_SUFFIX, VARIABLE_SUFFIX_MASKED);
+
+            buffer.replace(matcher.start(1), matcher.end(1), resolved);
+            matcher = pattern.matcher(buffer);
+        }
+        String result = buffer.toString();
+        // take hidden data back
+        result = result.replace(VARIABLE_PREFIX_MASKED, VARIABLE_PREFIX);
+        result = result.replace(VARIABLE_SUFFIX_MASKED, VARIABLE_SUFFIX);
+
+        return result;
+    }
+
 }
-
-///**
-//* Adds a file to an entry in a map of macro names to entries. File additions
-//* look like: example.c, \
-//*/
-//private static  void addMacroAdditionFile(MakefileGenerator caller, HashMap<String, String> map, String macroName,
-//     String relativePath, IPath sourceLocation, boolean generatedSource) {
-// // Add the source file path to the makefile line that adds source files
-// // to the build variable
-// IProject project = caller.getProject();
-// IPath buildWorkingDir = caller.getBuildFolder().getProjectRelativePath();
-// String srcName;
-// IPath projectLocation = getPathForResource(project);
-// IPath dirLocation = projectLocation;
-// if (generatedSource) {
-//     dirLocation = dirLocation.append(buildWorkingDir);
-// }
-// if (dirLocation.isPrefixOf(sourceLocation)) {
-//     IPath srcPath = sourceLocation.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
-//     if (generatedSource) {
-//         srcName = DOT_SLASH_PATH.append(srcPath).toOSString();
-//     } else {
-//         srcName = ROOT + FILE_SEPARATOR + srcPath.toOSString();
-//     }
-// } else {
-//     if (generatedSource && !sourceLocation.isAbsolute()) {
-//         srcName = DOT_SLASH_PATH.append(relativePath).append(sourceLocation.lastSegment()).toOSString();
-//     } else {
-//         srcName = sourceLocation.toOSString();
-//     }
-// }
-// addMacroAdditionFile(map, macroName, srcName);
-//}
-
-//static public boolean populateDummyTargets(IResourceInfo rcInfo, IFile makefile, boolean force)
-//throws CoreException, IOException {
-//if (makefile == null || !makefile.exists())
-//return false;
-//// Get the contents of the dependency file
-//InputStream contentStream = makefile.getContents(false);
-//StringBuffer inBuffer = null;
-//// JABA made sure thgere are no emory leaks
-//try (Reader in = new InputStreamReader(contentStream);) {
-//int chunkSize = contentStream.available();
-//inBuffer = new StringBuffer(chunkSize);
-//char[] readBuffer = new char[chunkSize];
-//int n = in.read(readBuffer);
-//while (n > 0) {
-//  inBuffer.append(readBuffer);
-//  n = in.read(readBuffer);
-//}
-//contentStream.close();
-//in.close();
-//}
-//// The rest of this operation is equally expensive, so
-//// if we are doing an incremental build, only update the
-//// files that do not have a comment
-//String inBufferString = inBuffer.toString();
-//if (!force && inBufferString.startsWith(COMMENT_SYMBOL)) {
-//return false;
-//}
-//// Try to determine if this file already has dummy targets defined.
-//// If so, we will only add the comment.
-//String[] bufferLines = inBufferString.split("[\\r\\n]");
-//for (String bufferLine : bufferLines) {
-//if (bufferLine.endsWith(":")) {
-//  StringBuffer outBuffer = addDefaultHeader();
-//  outBuffer.append(inBuffer);
-//  save(outBuffer, makefile);
-//  return true;
-//}
-//}
-//// Reconstruct the buffer tokens into useful chunks of dependency
-//// information
-//Vector<String> bufferTokens = new Vector<>(Arrays.asList(inBufferString.split("\\s")));
-//Vector<String> deps = new Vector<>(bufferTokens.size());
-//Iterator<String> tokenIter = bufferTokens.iterator();
-//while (tokenIter.hasNext()) {
-//String token = tokenIter.next();
-//if (token.lastIndexOf("\\") == token.length() - 1 && token.length() > 1) {
-//  // This is escaped so keep adding to the token until we find the
-//  // end
-//  while (tokenIter.hasNext()) {
-//      String nextToken = tokenIter.next();
-//      token += WHITESPACE + nextToken;
-//      if (!nextToken.endsWith("\\")) {
-//          break;
-//      }
-//  }
-//}
-//deps.add(token);
-//}
-//deps.trimToSize();
-//// Now find the header file dependencies and make dummy targets for them
-//boolean save = false;
-//StringBuffer outBuffer = null;
-//// If we are doing an incremental build, only update the files that do
-//// not have a comment
-//String firstToken;
-//try {
-//firstToken = deps.get(0);
-//} catch (@SuppressWarnings("unused") ArrayIndexOutOfBoundsException e) {
-//// This makes no sense so bail
-//return false;
-//}
-//// Put the generated comments in the output buffer
-//if (!firstToken.startsWith(COMMENT_SYMBOL)) {
-//outBuffer = addDefaultHeader();
-//} else {
-//outBuffer = new StringBuffer();
-//}
-//// Some echo implementations misbehave and put the -n and newline in the
-//// output
-//if (firstToken.startsWith("-n")) {
-//// Now let's parse:
-//// Win32 outputs -n '<path>/<file>.d <path>/'
-//// POSIX outputs -n <path>/<file>.d <path>/
-//// Get the dep file name
-//String secondToken;
-//try {
-//  secondToken = deps.get(1);
-//} catch (ArrayIndexOutOfBoundsException e) {
-//  secondToken = "";
-//}
-//if (secondToken.startsWith("'")) {
-//  // This is the Win32 implementation of echo (MinGW without MSYS)
-//  outBuffer.append(secondToken.substring(1)).append(WHITESPACE);
-//} else {
-//  outBuffer.append(secondToken).append(WHITESPACE);
-//}
-//// The relative path to the build goal comes next
-//String thirdToken;
-//try {
-//  thirdToken = deps.get(2);
-//} catch (ArrayIndexOutOfBoundsException e) {
-//  thirdToken = "";
-//}
-//int lastIndex = thirdToken.lastIndexOf("'");
-//if (lastIndex != -1) {
-//  if (lastIndex == 0) {
-//      outBuffer.append(WHITESPACE);
-//  } else {
-//      outBuffer.append(thirdToken.substring(0, lastIndex - 1));
-//  }
-//} else {
-//  outBuffer.append(thirdToken);
-//}
-//// Followed by the target output by the compiler plus ':'
-//// If we see any empty tokens here, assume they are the result of
-//// a line feed output by "echo" and skip them
-//String fourthToken;
-//int nToken = 3;
-//try {
-//  do {
-//      fourthToken = deps.get(nToken++);
-//  } while (fourthToken.length() == 0);
-//} catch (ArrayIndexOutOfBoundsException e) {
-//  fourthToken = "";
-//}
-//outBuffer.append(fourthToken).append(WHITESPACE);
-//// Followed by the actual dependencies
-//try {
-//  for (String nextElement : deps) {
-//      if (nextElement.endsWith("\\")) {
-//          outBuffer.append(nextElement).append(NEWLINE).append(WHITESPACE);
-//      } else {
-//          outBuffer.append(nextElement).append(WHITESPACE);
-//      }
-//  }
-//} catch (IndexOutOfBoundsException e) {
-//  /* JABA is not going to write this code */
-//}
-//} else {
-//outBuffer.append(inBuffer);
-//}
-//outBuffer.append(NEWLINE);
-//save = true;
-//IFolderInfo fo = null;
-//if (rcInfo instanceof IFolderInfo) {
-//fo = (IFolderInfo) rcInfo;
-////        } else {
-////            IConfiguration c = rcInfo.getParent();
-////            fo = (IFolderInfo) c.getResourceInfo(rcInfo.getPath().removeLastSegments(1), false);
-//}
-//// Dummy targets to add to the makefile
-//for (String dummy : deps) {
-//IPath dep = new Path(dummy);
-//String extension = dep.getFileExtension();
-////            if (fo.isHeaderFile(extension)) {
-////                /*
-////                 * The formatting here is <dummy_target>:
-////                 */
-////                outBuffer.append(dummy).append(COLON).append(NEWLINE).append(NEWLINE);
-////            }
-//}
-//// Write them out to the makefile
-//if (save) {
-//save(outBuffer, makefile);
-//return true;
-//}
-//return false;
-//}

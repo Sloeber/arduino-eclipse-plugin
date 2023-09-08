@@ -633,6 +633,7 @@ public class Tool extends SchemaObject implements ITool {
         }
         IToolChain toolchain = autoBuildConf.getConfiguration().getToolChain();
         ArrayList<String> toolRecipes = toolchain.getPreToolRecipes(this);
+        //make sure all environment variables are resolved
         toolRecipes.addAll(Arrays.asList(command.split("\\r?\\n"))); //$NON-NLS-1$
 
         toolRecipes.addAll(toolchain.getPostToolRecipes(this));
