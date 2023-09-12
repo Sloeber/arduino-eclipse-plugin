@@ -1016,35 +1016,6 @@ public class BoardDescription {
         return extraVars;
     }
 
-    /**
-     * method to get the configuration info from the old way Sloeber stored data
-     * 
-     * @param confDesc
-     * @return
-     */
-    @SuppressWarnings("nls")
-    public static BoardDescription getFromCDT(ICConfigurationDescription confDesc) {
-        BoardDescription ret = new BoardDescription();
-        ret.myUploadPort = getOldWayEnvVar(confDesc, "JANTJE.com_port");
-        ret.myProgrammer = getOldWayEnvVar(confDesc, "JANTJE.upload");
-        ret.myBoardID = getOldWayEnvVar(confDesc, "JANTJE.board_ID");
-        String optinconcat = getOldWayEnvVar(confDesc, "JANTJE.menu");
-        ret.myOptions = KeyValue.makeMap(optinconcat);
-
-        String referencingBoardsFile = getOldWayEnvVar(confDesc, "JANTJE.boards_file");
-        int packagesIndex = referencingBoardsFile.indexOf("\\arduinoPlugin\\packages\\");
-        if (packagesIndex == -1) {
-            packagesIndex = referencingBoardsFile.indexOf("/arduinoPlugin/packages/");
-        }
-        if (packagesIndex != -1) {
-            referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
-        }
-        ret.myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
-        ret.mySloeberBoardTxtFile = new BoardTxtFile(ret.myUserSelectedBoardsTxtFile);
-
-        return ret;
-    }
-
     public boolean isValid() {
         if (!myUserSelectedBoardsTxtFile.exists()) {
             return false;

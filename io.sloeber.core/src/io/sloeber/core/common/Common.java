@@ -24,6 +24,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.ISloeberConfiguration;
+import io.sloeber.core.internal.SloeberConfiguration;
 
 public class Common {
 
@@ -150,27 +152,6 @@ public class Common {
 
     /**
      *
-     * Provides the build environment variable based on project and string This
-     * method does not add any knowledge.(like adding A.)
-     *
-     * @param project
-     *            the project that contains the environment variable
-     * @param configName
-     *            the project configuration to use
-     * @param envName
-     *            the key that describes the variable
-     * @param defaultvalue
-     *            The return value if the variable is not found.
-     * @return The expanded build environment variable
-     */
-    static public String getBuildEnvironmentVariable(IProject project, String configName, String envName,
-            String defaultvalue) {
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        return getBuildEnvironmentVariable(prjDesc.getConfigurationByName(configName), envName, defaultvalue);
-    }
-
-    /**
-     *
      * Provides the build environment variable based on project default
      * configuration and string This
      * method does not add any knowledge.(like adding A.)
@@ -186,7 +167,15 @@ public class Common {
      */
     static public String getBuildEnvironmentVariable(IProject project, String envName, String defaultvalue) {
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        return getBuildEnvironmentVariable(prjDesc.getDefaultSettingConfiguration(), envName, defaultvalue, true);
+        ISloeberConfiguration SloeberConf = null;
+        if (prjDesc != null) {
+            ICConfigurationDescription cConf = prjDesc.getActiveConfiguration();
+            if (cConf != null) {
+                SloeberConf = ISloeberConfiguration.getConfig(cConf);
+
+            }
+        }
+        return getBuildEnvironmentVariable(SloeberConf, envName, defaultvalue, true);
     }
 
     /**
@@ -202,19 +191,21 @@ public class Common {
      *            The return value if the variable is not found.
      * @return The expanded build environment variable
      */
-    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
-            String envName, String defaultvalue) {
-
-        return getBuildEnvironmentVariable(configurationDescription, envName, defaultvalue, true);
+    static public String getBuildEnvironmentVariable(ISloeberConfiguration sloeberConf, String envName,
+            String defaultvalue) {
+        return getBuildEnvironmentVariable(sloeberConf, envName, defaultvalue, true);
     }
 
-    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
-            String envName, String defaultvalue, boolean expanded) {
-
-        IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-        try {
-            return envManager.getVariable(envName, configurationDescription, expanded).getValue();
-        } catch (Exception e) {// ignore all errors and return the default value
+    static public String getBuildEnvironmentVariable(ISloeberConfiguration sloeberConf, String envName,
+            String defaultvalue, boolean expanded) {
+        if (sloeberConf != null) {
+            IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+            try {
+                ICConfigurationDescription configurationDescription = sloeberConf.getAutoBuildDesc()
+                        .getCdtConfigurationDescription();
+                return envManager.getVariable(envName, configurationDescription, expanded).getValue();
+            } catch (Exception e) {// ignore all errors and return the default value
+            }
         }
         return defaultvalue;
     }
@@ -262,20 +253,6 @@ public class Common {
      */
     public static String makeEnvironmentVar(String variableName) {
         return "${" + variableName + '}'; //$NON-NLS-1$
-    }
-
-    /**
-     * read a environment variable in the way it was stored in older Sloeber
-     * versions That is as a environment variable both with upper case and lowercase
-     * key
-     * 
-     * @param confDesc
-     * @param envName
-     * @return
-     */
-    static public String getOldWayEnvVar(ICConfigurationDescription confDesc, String envName) {
-        return getBuildEnvironmentVariable(confDesc, envName,
-                getBuildEnvironmentVariable(confDesc, envName.toUpperCase(), EMPTY, false), false);
     }
 
 }

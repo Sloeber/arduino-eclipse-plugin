@@ -1,36 +1,43 @@
-package io.sloeber.core.api;
+package io.sloeber.core.internal;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import static io.sloeber.core.common.Const.*;
 import static io.sloeber.core.common.Common.*;
 
-import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICBuildSetting;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
+import org.eclipse.cdt.make.core.IMakeTarget;
+import org.eclipse.cdt.make.core.IMakeTargetManager;
+import org.eclipse.cdt.make.core.MakeCorePlugin;
+import org.eclipse.cdt.make.internal.core.MakeTarget;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.ISloeberConfiguration;
+import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
-public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescription {
+public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescription implements ISloeberConfiguration {
+
+    @Override
+    public IAutoBuildConfigurationDescription getAutoBuildDesc() {
+        return getAutoBuildDescription();
+    }
 
     //configuration data
     BoardDescription myBoardDescription;
@@ -65,20 +72,24 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         myCompileDescription = new CompileDescription(src.getCompileDescription());
     }
 
-    SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc, CompileDescription compileDescriptor) {
+    public SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc,
+            CompileDescription compileDescriptor) {
         myBoardDescription = boardDesc;
         myOtherDesc = otherDesc;
         myCompileDescription = compileDescriptor;
     }
 
+    @Override
     public BoardDescription getBoardDescription() {
         return new BoardDescription(myBoardDescription);
     }
 
+    @Override
     public OtherDescription getOtherDescription() {
         return new OtherDescription(myOtherDesc);
     }
 
+    @Override
     public CompileDescription getCompileDescription() {
         return new CompileDescription(myCompileDescription);
     }
@@ -107,53 +118,34 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     }
 
+    @Override
     public IProject getProject() {
         return getAutoBuildDescription().getCdtConfigurationDescription().getProjectDescription().getProject();
     }
 
+    @Override
     public IFolder getArduinoCodeFolder() {
         String cdtConfDescName = getAutoBuildDescription().getCdtConfigurationDescription().getName();
         IProject project = getProject();
         return project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFolder(cdtConfDescName);
     }
 
+    @Override
     public IFolder getArduinoCoreFolder() {
         return getArduinoCodeFolder().getFolder(SLOEBER_CODE_FOLDER_NAME);
     }
 
+    @Override
     public IFolder getArduinoVariantFolder() {
         return getArduinoCodeFolder().getFolder(SLOEBER_VARIANT_FOLDER_NAME);
     }
 
+    @Override
     public IFolder getArduinoLibraryFolder() {
         return getArduinoCodeFolder().getFolder(SLOEBER_LIBRARY_FOLDER_NAME);
     }
 
-    public static SloeberConfiguration getActiveConfig(IProject project) {
-        CoreModel coreModel = CoreModel.getDefault();
-        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
-        ICConfigurationDescription activeCfg = projectDescription.getActiveConfiguration();
-        AutoBuildConfigurationDescription autoCfg = (AutoBuildConfigurationDescription) activeCfg
-                .getConfigurationData();
-        return (SloeberConfiguration) autoCfg.getAutoBuildConfigurationExtensionDescription();
-    }
-
-    public static SloeberConfiguration getConfig(ICConfigurationDescription config) {
-        CConfigurationData buildSettings = config.getConfigurationData();
-        if (!(buildSettings instanceof AutoBuildConfigurationDescription)) {
-            //this should not happen as we just created a autoBuild project
-            Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
-                    "\"Auto build created a project that does not seem to be a autobuild project :-s : " //$NON-NLS-1$
-                            + config.getProjectDescription().getName()));
-            return null;
-        }
-        return getConfig((IAutoBuildConfigurationDescription) buildSettings);
-    }
-
-    public static SloeberConfiguration getConfig(IAutoBuildConfigurationDescription autoBuildConfig) {
-        return (SloeberConfiguration) autoBuildConfig.getAutoBuildConfigurationExtensionDescription();
-    }
-
+    @Override
     public Map<String, String> getEnvironmentVariables() {
         if (myIsDirty && !myIsConfiguring) {
             configure();
@@ -214,4 +206,107 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         }
     }
 
+    /**
+     * get the text for the decorator
+     * 
+     * @param text
+     * @return
+     */
+    @Override
+    public String getDecoratedText(String text) {
+        if (myIsDirty && !myIsConfiguring) {
+            configure();
+        }
+        String boardName = myBoardDescription.getBoardName();
+        String portName = myBoardDescription.getActualUploadPort();
+        if (portName.isEmpty()) {
+            portName = Messages.decorator_no_port;
+        }
+        if (boardName.isEmpty()) {
+            boardName = Messages.decorator_no_platform;
+        }
+
+        return text + ' ' + boardName + ' ' + ':' + portName;
+    }
+
+    /**
+     * Synchronous upload of the sketch to the board returning the status.
+     *
+     * @param project
+     * @return the status of the upload. Status.OK means upload is OK
+     */
+    @Override
+    public IStatus upload() {
+
+        Job upLoadJob = UploadSketchWrapper.upload(this);
+
+        if (upLoadJob == null)
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, null);
+        try {
+            upLoadJob.join();
+            return upLoadJob.getResult();
+        } catch (InterruptedException e) {
+            // not sure if this is needed
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, e);
+        }
+    }
+
+    @Override
+    public IStatus upLoadUsingProgrammer() {
+        return BuildTarget("uploadWithProgrammerWithoutBuild"); //$NON-NLS-1$
+    }
+
+    @Override
+    public IStatus burnBootloader() {
+        return BuildTarget("BurnBootLoader"); //$NON-NLS-1$
+    }
+
+    private IStatus BuildTarget(String targetName) {
+
+        try {
+            IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
+            IContainer targetResource = getAutoBuildDesc().getBuildFolder();
+            IMakeTarget itarget = targetManager.findTarget(targetResource, targetName);
+            if (itarget == null) {
+                itarget = targetManager.createTarget(getProject(), targetName,
+                        "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
+                if (itarget instanceof MakeTarget) {
+                    ((MakeTarget) itarget).setBuildTarget(targetName);
+                    targetManager.addTarget(targetResource, itarget);
+                }
+            }
+            if (itarget != null) {
+                itarget.build(new NullProgressMonitor());
+            }
+        } catch (CoreException e) {
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e);
+        }
+        return Status.OK_STATUS;
+    }
+
+    @Override
+    public boolean canBeIndexed() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public void setBoardDescription(BoardDescription boardDescription) {
+        myBoardDescription = new BoardDescription(boardDescription);
+        setIsDirty();
+    }
+
+    private void setIsDirty() {
+        myIsDirty = true;
+    }
+
+    @Override
+    public IFile getTargetFile() {
+        // I assume the extension is .hex as the Arduino Framework does not provide the
+        // extension nor a key for the uploadable sketch (=build target)
+        // as currently this method is only used for network upload via yun this is ok
+        // for now
+        IProject project = getProject();
+        return getAutoBuildDescription().getBuildFolder().getFile(project.getName() + ".hex"); //$NON-NLS-1$
+    }
 }

@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.SloeberProject;
 
 public class ExplorerLabelDecorator implements ILabelDecorator {
@@ -41,9 +42,9 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	public String decorateText(String text, Object element) {
 		IProject proj = (IProject) element;
 		if (proj != null) {
-			SloeberProject arduinoProject = SloeberProject.getSloeberProject(proj);
-			if (arduinoProject != null) {
-				return arduinoProject.getDecoratedText(text);
+			ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(proj);
+			if (sloeberConf != null) {
+				return sloeberConf.getDecoratedText(text);
 			}
 		}
 		return text;

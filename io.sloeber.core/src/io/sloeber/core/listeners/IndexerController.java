@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
@@ -23,9 +24,9 @@ public class IndexerController extends IndexerSetupParticipant {
     @Override
     public boolean postponeIndexerSetup(ICProject cProject) {
         IProject project = cProject.getProject();
-        SloeberProject sloeberProject = SloeberProject.getSloeberProject(project);
-        if (sloeberProject != null) {
-            if (!sloeberProject.isInMemory()) {
+        ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(project);
+        if (sloeberConf != null) {
+            if (!sloeberConf.canBeIndexed()) {
                 doNotIndexProjects.add(project);
             }
         }

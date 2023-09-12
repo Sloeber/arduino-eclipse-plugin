@@ -38,14 +38,15 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.SloeberConfiguration;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.internal.SloeberConfiguration;
 
 public class Libraries {
     public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
@@ -112,7 +113,7 @@ public class Libraries {
      *            the project to find all hardware libraries for
      * @return all the library folder names. May contain empty values.
      */
-    private static Map<String, IPath> findAllHarwareLibraries(SloeberConfiguration sloeberCfg) {
+    private static Map<String, IPath> findAllHarwareLibraries(ISloeberConfiguration sloeberCfg) {
         Map<String, IPath> ret = new HashMap<>();
         BoardDescription boardDescriptor = sloeberCfg.getBoardDescription();
         // first add the referenced
@@ -226,7 +227,7 @@ public class Libraries {
         return Helpers.removeInvalidIncludeFolders(confdesc);
     }
 
-    public static Map<String, IPath> getAllInstalledLibraries(SloeberConfiguration confdesc) {
+    public static Map<String, IPath> getAllInstalledLibraries(ISloeberConfiguration confdesc) {
         TreeMap<String, IPath> libraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         // lib folder name
         libraries.putAll(findAllArduinoManagerLibraries());
@@ -245,7 +246,7 @@ public class Libraries {
      *            the libraries to add
      * @return return true if the projdesc needs to be set
      */
-    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, SloeberConfiguration confdesc,
+    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, ISloeberConfiguration confdesc,
             Set<String> librariesToAdd) {
         Map<String, IPath> libraries = getAllInstalledLibraries(confdesc);
         libraries.keySet().retainAll(librariesToAdd);
@@ -266,7 +267,7 @@ public class Libraries {
      *            the list of libraries to add
      * @return true if the configuration description has changed
      */
-    public static Map<String, List<IPath>> addLibrariesForConfiguration(SloeberConfiguration sloeberCfg,
+    public static Map<String, List<IPath>> addLibrariesForConfiguration(ISloeberConfiguration sloeberCfg,
             Map<String, IPath> libraries) {
 
         List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
@@ -324,7 +325,7 @@ public class Libraries {
         ICProjectDescription projDesc = mngr.getProjectDescription(project, true);
         ICConfigurationDescription configurationDescriptions[] = projDesc.getConfigurations();
         for (ICConfigurationDescription curconfDesc : configurationDescriptions) {
-            SloeberConfiguration sloeberCfg = SloeberConfiguration.getConfig(curconfDesc);
+            ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getConfig(curconfDesc);
             Map<String, List<IPath>> foldersToChange = addLibrariesToProject(project, sloeberCfg,
                     AllLibrariesOriginallyUsed);
             descNeedsSet = descNeedsSet || adjustProjectDescription(curconfDesc, foldersToChange);
@@ -397,7 +398,7 @@ public class Libraries {
             ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
             if (projectDescription != null) {
                 ICConfigurationDescription confDesc = projectDescription.getActiveConfiguration();
-                SloeberConfiguration SloeberCfg = SloeberConfiguration.getActiveConfig(affectedProject);
+                ISloeberConfiguration SloeberCfg = ISloeberConfiguration.getActiveConfig(affectedProject);
                 if (confDesc != null) {
 
                     Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
@@ -447,7 +448,7 @@ public class Libraries {
                                 + affectedProject.getName() + ": " //$NON-NLS-1$
                                 + installedLibs.keySet().toString()));
                         Map<String, List<IPath>> foldersToChange = addLibrariesForConfiguration(
-                                SloeberConfiguration.getActiveConfig(affectedProject), installedLibs);
+                                ISloeberConfiguration.getActiveConfig(affectedProject), installedLibs);
 
                         if (adjustProjectDescription(confDesc, foldersToChange)) {
                             try {

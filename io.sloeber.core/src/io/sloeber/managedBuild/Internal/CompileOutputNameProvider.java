@@ -2,14 +2,12 @@ package io.sloeber.managedBuild.Internal;
 
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.core.api.SloeberConfiguration;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.schema.api.IInputType;
@@ -32,11 +30,13 @@ public class CompileOutputNameProvider implements IOutputNameProvider {
             return null;
         }
 
-        ICConfigurationDescription confdesc = autoData.getCdtConfigurationDescription();
-        IProject project = inputFile.getProject();
+        ISloeberConfiguration sloeberConf = ISloeberConfiguration.getConfig(autoData);
+        if (sloeberConf == null) {
+            //This should not happen
+            return null;
+        }
 
-        boolean bUseArchiver = Common
-                .getBuildEnvironmentVariable(project, confdesc.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
+        boolean bUseArchiver = Common.getBuildEnvironmentVariable(sloeberConf, Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
                 .equalsIgnoreCase(Const.TRUE);
         boolean isArchiver = archiveOutputTypeIDs.contains(outputType.getId());
         if (!bUseArchiver) {
@@ -46,17 +46,12 @@ public class CompileOutputNameProvider implements IOutputNameProvider {
             return isArchiver ? null : outputType.getOutputNameWithoutNameProvider(inputFile);
         }
 
-        SloeberConfiguration sloeberCfg = SloeberConfiguration.getConfig(autoData);
-        if (sloeberCfg == null) {
-            //This should not happen
-            return null;
-        }
-        IPath coreFolder = sloeberCfg.getArduinoCoreFolder().getProjectRelativePath();
+        IPath coreFolder = sloeberConf.getArduinoCoreFolder().getProjectRelativePath();
         boolean isCoreCode = coreFolder.isPrefixOf(inputFile.getProjectRelativePath());
         if (isCoreCode) {
             return isArchiver ? outputType.getOutputNameWithoutNameProvider(inputFile) : null;
         }
-        IPath libraryFolder = sloeberCfg.getArduinoLibraryFolder().getProjectRelativePath();
+        IPath libraryFolder = sloeberConf.getArduinoLibraryFolder().getProjectRelativePath();
         boolean isLibraryCode = libraryFolder.isPrefixOf(inputFile.getProjectRelativePath());
         if (!isLibraryCode) {
             return isArchiver ? null : outputType.getOutputNameWithoutNameProvider(inputFile);

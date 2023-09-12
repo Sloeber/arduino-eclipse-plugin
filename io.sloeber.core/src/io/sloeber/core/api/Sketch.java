@@ -9,47 +9,25 @@ import java.util.Set;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.make.core.IMakeTarget;
+import org.eclipse.cdt.make.core.IMakeTargetManager;
+import org.eclipse.cdt.make.core.MakeCorePlugin;
+import org.eclipse.cdt.make.internal.core.MakeTarget;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.Messages;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 
 public class Sketch {
-
-    public static IStatus isUploadableProject(IProject project) {
-        try {
-            if (project == null || !project.hasNature(ARDUINO_NATURE_ID)) {
-                return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null);
-            }
-        } catch (CoreException e) {
-            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e);
-        }
-        return Status.OK_STATUS;
-    }
-
-    /**
-     * Synchronous upload of the sketch returning the status.
-     *
-     * @param project
-     * @return the status of the upload. Status.OK means upload is OK
-     */
-    public static IStatus syncUpload(IProject project) {
-
-        IStatus ret = isUploadableProject(project);
-        if (!ret.isOK()) {
-            return ret;
-        }
-        SloeberProject sProject = SloeberProject.getSloeberProject(project);
-        return sProject.upload();
-    }
 
     /**
      * given a project look in the source code for the line of code that sets the
@@ -98,7 +76,7 @@ public class Sketch {
 
     }
 
-    public static Map<String, IPath> getAllAvailableLibraries(SloeberConfiguration confDesc) {
+    public static Map<String, IPath> getAllAvailableLibraries(ISloeberConfiguration confDesc) {
         return Libraries.getAllInstalledLibraries(confDesc);
     }
 

@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,13 +23,13 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
+import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
 
 public class SloeberBuildRunner extends IBuildRunner {
 
@@ -45,7 +43,6 @@ public class SloeberBuildRunner extends IBuildRunner {
     @Override
     public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
             IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
-        IProject project = autoData.getProject();
         IBuilder builder = autoData.getConfiguration().getBuilder();
 
         //get the target that is build
@@ -83,9 +80,10 @@ public class SloeberBuildRunner extends IBuildRunner {
 
         List<String> stopSerialOnBuildTargets = List.of(Preferences.getDisconnectSerialTargetsList());
         if (stopSerialOnBuildTargets.contains(theBuildTarget)) {
-            SloeberProject sloeberProject = SloeberProject.getSloeberProject(project);
-            if (sloeberProject != null) {
-                BoardDescription myBoardDescriptor = sloeberProject.getBoardDescription(autoData.getName(), true);
+
+            ISloeberConfiguration sloeberConfig = ISloeberConfiguration.getConfig(autoData);
+            if (sloeberConfig != null) {
+                BoardDescription myBoardDescriptor = sloeberConfig.getBoardDescription();
                 if (myBoardDescriptor != null) {
                     actualUploadPort = myBoardDescriptor.getActualUploadPort();
                     if (actualUploadPort == null) {

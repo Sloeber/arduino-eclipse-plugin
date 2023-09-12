@@ -9,7 +9,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.SloeberConfiguration;
+import io.sloeber.core.api.ISloeberConfiguration;
 
 public class SloeberConfigurationVariableSupplier implements IEnvironmentVariableProvider {
 
@@ -20,7 +20,7 @@ public class SloeberConfigurationVariableSupplier implements IEnvironmentVariabl
         if (configuration == null) {
             return null;
         }
-        SloeberConfiguration sloeberCfg = SloeberConfiguration.getConfig(configuration);
+        ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getConfig(configuration);
         if (sloeberCfg != null) {
             Map<String, String> sloeberCfgEnvVars = sloeberCfg.getEnvironmentVariables();
             if (null != sloeberCfgEnvVars) {
@@ -50,7 +50,7 @@ public class SloeberConfigurationVariableSupplier implements IEnvironmentVariabl
             retVars.putAll(workbenchVars);
         }
 
-        SloeberConfiguration sloeberCfg = SloeberConfiguration.getConfig(configuration);
+        ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getConfig(configuration);
         if (sloeberCfg != null) {
             Map<String, String> sloeberCfgEnvVars = sloeberCfg.getEnvironmentVariables();
             if (sloeberCfgEnvVars != null) {

@@ -375,21 +375,4 @@ public class CompileDescription {
                 && (my_All_CompileOptions.equals(other.my_All_CompileOptions));
     }
 
-    @SuppressWarnings("nls")
-    public static CompileDescription getFromCDT(ICConfigurationDescription confDesc) {
-        CompileDescription ret = new CompileDescription();
-        ret.my_C_andCPP_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.compile");
-        ret.my_CPP_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.cpp.compile");
-        ret.my_C_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.c.compile");
-        ret.my_Assembly_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.assembly");
-        ret.my_Archive_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.archive");
-        ret.my_Link_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.link");
-        ret.my_All_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.all");
-        ret.myWarningLevel = WarningLevels.NONE;
-        if (TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.warning_level"))) {
-            ret.myWarningLevel = WarningLevels.ALL;
-        }
-        ret.mySizeCommand = SizeCommands.RAW_RESULT;
-        return ret;
-    }
 }

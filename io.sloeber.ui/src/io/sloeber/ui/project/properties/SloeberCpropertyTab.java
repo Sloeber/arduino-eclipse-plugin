@@ -8,11 +8,11 @@ import org.eclipse.cdt.ui.newui.ICPropertyTab;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
-import io.sloeber.core.api.SloeberConfiguration;
+import io.sloeber.core.api.ISloeberConfiguration;
 
 public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 
-	protected SloeberConfiguration mySloeberCfg = null;
+	protected ISloeberConfiguration mySloeberCfg = null;
 
 	/**
 	 * updte the screen based on the data stored in the properties
@@ -22,7 +22,7 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
-		mySloeberCfg = SloeberConfiguration.getConfig(getConfdesc());
+		mySloeberCfg = ISloeberConfiguration.getConfig(getConfdesc());
 	}
 
 	/**

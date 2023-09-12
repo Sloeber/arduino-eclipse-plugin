@@ -7,15 +7,13 @@ import static io.sloeber.core.common.Const.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import io.sloeber.core.api.SloeberProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Serial;
-
 
 public class ArduinoSerial {
 
@@ -102,7 +100,7 @@ public class ArduinoSerial {
             // code to capture the case: the com port reappears with a name that
             // was in the original list
             int newPortsCopySize = newPorts.size();
-            if ((newPortsCopy.isEmpty()) && (newPortsCopySize > prefNewPortsCopySize )) {
+            if ((newPortsCopy.isEmpty()) && (newPortsCopySize > prefNewPortsCopySize)) {
                 console.println(ArduinoSerial_Comport_Appeared_and_disappeared);
                 console.println(ArduinoSerial_Comport_reset_took.replace(MS_TAG, Integer.toString(numTries * delayMs)));
                 return defaultComPort;
@@ -144,13 +142,12 @@ public class ArduinoSerial {
      *            The name of the com port to reset
      * @return The com port to upload to
      */
-    public static String makeArduinoUploadready(MessageConsoleStream console, SloeberProject project,
-            ICConfigurationDescription confDesc) {
+    public static String makeArduinoUploadready(MessageConsoleStream console, ISloeberConfiguration sloeberConf) {
 
-        BoardDescription boardDescriptor = project.getBoardDescription(confDesc.getName(), true);
-        boolean use_1200bps_touch = getBuildEnvironmentVariable(confDesc, ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, FALSE)
+        BoardDescription boardDescriptor = sloeberConf.getBoardDescription();
+        boolean use_1200bps_touch = getBuildEnvironmentVariable(sloeberConf, ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, FALSE)
                 .equalsIgnoreCase(TRUE);
-        boolean bWaitForUploadPort = getBuildEnvironmentVariable(confDesc, ENV_KEY_WAIT_FOR_UPLOAD_PORT, FALSE)
+        boolean bWaitForUploadPort = getBuildEnvironmentVariable(sloeberConf, ENV_KEY_WAIT_FOR_UPLOAD_PORT, FALSE)
                 .equalsIgnoreCase(TRUE);
         String comPort = boardDescriptor.getActualUploadPort();
 

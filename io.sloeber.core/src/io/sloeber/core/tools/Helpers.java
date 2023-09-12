@@ -39,8 +39,8 @@ import org.eclipse.ui.console.MessageConsole;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.SloeberConfiguration;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
+import io.sloeber.core.internal.SloeberConfiguration;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions

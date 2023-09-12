@@ -9,12 +9,10 @@ import java.util.HashSet;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -29,6 +27,7 @@ import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SloeberProject;
@@ -61,7 +60,6 @@ public class RegressionTest {
         if (reinstall_boards_and_libraries) {
             BoardsManager.removeAllInstalledPlatforms();
         }
-        ;
         // make sure the needed boards are available
         ESP8266.installLatest();
         ESP32.installLatest();
@@ -75,9 +73,11 @@ public class RegressionTest {
     /**
      * make sure when switching between a board with variant file and without the
      * build still succeeds
+     * 
+     * @throws CoreException
      */
     @Test
-    public void issue555() {
+    public void issue555() throws CoreException {
         if (MySystem.getTeensyPlatform().isEmpty()) {
             // skip test due to no teensy install folder provided
             // do not fail as this will always fail on travis
@@ -110,11 +110,19 @@ public class RegressionTest {
             e.printStackTrace();
             fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
         }
-        SloeberProject arduinoProject = SloeberProject.getSloeberProject(theTestProject);
-        ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
-        arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration().getName(), teensyBoardid, true);
+
+        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        ICProjectDescription cProjectDescription = cCorePlugin.getProjectDescription(theTestProject);
+        ICConfigurationDescription activeCfg = cProjectDescription.getActiveConfiguration();
+        ISloeberConfiguration sloeberConf = ISloeberConfiguration.getConfig(activeCfg);
+        sloeberConf.setBoardDescription(teensyBoardid);
+        cCorePlugin.setProjectDescription(theTestProject, cProjectDescription);
 
         Shared.waitForAllJobsToFinish();
+        if (sloeberConf.getArduinoVariantFolder().exists()) {
+            fail("variant folder exists");
+        }
+
         try {
             theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
             if (Shared.hasBuildErrors(theTestProject)) {
@@ -431,11 +439,10 @@ public class RegressionTest {
 
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
-        SloeberProject sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
-        ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
-        ICConfigurationDescription confDesc = projDesc.getActiveConfiguration();
-        BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc.getName(), false);
-        CompileDescription createdCompileDesc = sloeberDesc.getCompileDescription(confDesc.getName(), false);
+
+        ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(theTestProject);
+        BoardDescription createdBoardDesc = sloeberConf.getBoardDescription();
+        CompileDescription createdCompileDesc = sloeberConf.getCompileDescription();
 
         // close and reopen the project
         theTestProject.close(null);
@@ -446,11 +453,12 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish();
 
         // read the data we want to test
-        sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
-        projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
-        confDesc = projDesc.getActiveConfiguration();
-        BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc.getName(), false);
-        CompileDescription reopenedCompileDesc = sloeberDesc.getCompileDescription(confDesc.getName(), false);
+        sloeberConf = ISloeberConfiguration.getActiveConfig(theTestProject);
+        if (sloeberConf == null) {
+            fail("failed to open and close project");
+        }
+        BoardDescription reopenedBoardDesc = sloeberConf.getBoardDescription();
+        CompileDescription reopenedCompileDesc = sloeberConf.getCompileDescription();
 
         // check the data is equal
         boolean createBoardsDiff = !unoBoardid.equals(createdBoardDesc);
@@ -527,19 +535,13 @@ public class RegressionTest {
 
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
-        SloeberProject proj1SloeberDesc = SloeberProject.getSloeberProject(proj1);
-        ICProjectDescription proj1Desc = CoreModel.getDefault().getProjectDescription(proj1);
-        ICConfigurationDescription proj1ConfDesc = proj1Desc.getActiveConfiguration();
-        BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc.getName(), false);
-        CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc.getName(),
-                false);
+        ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(proj1);
+        BoardDescription proj1CreatedBoardDesc = sloeberConf.getBoardDescription();
+        CompileDescription proj1CreatedCompileDesc = sloeberConf.getCompileDescription();
 
-        SloeberProject proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
-        ICProjectDescription proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
-        ICConfigurationDescription proj2ConfDesc = proj2Desc.getActiveConfiguration();
-        BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc.getName(), false);
-        CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc.getName(),
-                false);
+        ISloeberConfiguration sloeberConf2 = ISloeberConfiguration.getActiveConfig(proj2);
+        BoardDescription proj2CreatedBoardDesc = sloeberConf2.getBoardDescription();
+        CompileDescription proj2CreatedCompileDesc = sloeberConf2.getCompileDescription();
 
         // get the filenames to copy
         IFile file = proj1.getFile(SLOEBER_CFG);
@@ -563,12 +565,9 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish();
 
         // reread project 2
-        proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
-        proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
-        proj2ConfDesc = proj2Desc.getActiveConfiguration();
-        BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc.getName(), false);
-        CompileDescription proj2OpenedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc.getName(),
-                false);
+        ISloeberConfiguration sloebercfg2 = ISloeberConfiguration.getActiveConfig(proj2);
+        BoardDescription proj2OpenedBoardDesc = sloebercfg2.getBoardDescription();
+        CompileDescription proj2OpenedCompileDesc = sloebercfg2.getCompileDescription();
 
         // check the setup was done correctly
         if (!proj1BoardDesc.equals(proj1CreatedBoardDesc)) {

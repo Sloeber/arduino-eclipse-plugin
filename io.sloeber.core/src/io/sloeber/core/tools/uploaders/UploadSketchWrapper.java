@@ -43,6 +43,7 @@ import cc.arduino.packages.ssh.SSHConfigFileSetup;
 import cc.arduino.packages.ssh.SSHPwdSetup;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
@@ -67,17 +68,17 @@ public class UploadSketchWrapper {
         return myThis;
     }
 
-    static public Job upload(SloeberProject sProject, ICConfigurationDescription confDesc) {
-        return getUploadSketchWrapper().internalUpload(sProject, confDesc);
+    static public Job upload(ISloeberConfiguration SloeberConf) {
+        return getUploadSketchWrapper().internalUpload(SloeberConf);
     }
 
-    private Job internalUpload(SloeberProject sProject, ICConfigurationDescription confDesc) {
+    private Job internalUpload(ISloeberConfiguration sloeberConf) {
 
-        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc.getName(), false);
+        BoardDescription boardDescriptor = sloeberConf.getBoardDescription();
 
         String uploadJobName = boardDescriptor.getuploadTool();
 
-        Job uploadjob = new UploadJobWrapper(uploadJobName, sProject, confDesc);
+        Job uploadjob = new UploadJobWrapper(uploadJobName, sloeberConf);
         uploadjob.setRule(null);
         uploadjob.setPriority(Job.LONG);
         uploadjob.setUser(true);
@@ -117,18 +118,16 @@ public class UploadSketchWrapper {
      *
      */
     private class UploadJobWrapper extends Job {
-        private SloeberProject mySProject;
-        private ICConfigurationDescription myConfDes;
+        private ISloeberConfiguration mySloeberConf;
         private String myNAmeTag;
         private IProject myProject;
         private String myProvidedUploadPort;
 
-        public UploadJobWrapper(String name, SloeberProject project, ICConfigurationDescription cConf) {
+        public UploadJobWrapper(String name, ISloeberConfiguration sloeberConf) {
             super(name);
             myNAmeTag = name;
-            mySProject = project;
-            myConfDes = cConf;
-            myProject = mySProject.getProject();
+            mySloeberConf = sloeberConf;
+            myProject = mySloeberConf.getProject();
         }
 
         @Override
@@ -137,7 +136,7 @@ public class UploadSketchWrapper {
             boolean theComPortIsPaused = false;
 
             String projectName = myProject.getName();
-            BoardDescription boardDescriptor = mySProject.getBoardDescription(myConfDes.getName(), true);
+            BoardDescription boardDescriptor = mySloeberConf.getBoardDescription();
             myProvidedUploadPort = boardDescriptor.getActualUploadPort();
 
             MessageConsole console = Helpers.findConsole(Upload_console_name.replace(PROJECT_TAG, projectName));
@@ -213,7 +212,8 @@ public class UploadSketchWrapper {
 
         private boolean actualUpload(IProgressMonitor monitor, MessageConsoleStream highStream,
                 MessageConsoleStream outStream, MessageConsoleStream errStream) {
-            BoardDescription boardDescr = mySProject.getBoardDescription(myConfDes.getName(), true);
+            BoardDescription boardDescr = mySloeberConf.getBoardDescription();
+            ICConfigurationDescription confDec = mySloeberConf.getAutoBuildDesc().getCdtConfigurationDescription();
             String uploadPort = myProvidedUploadPort;
             boolean isSSHUpload = false;// only true for yun
 
@@ -222,17 +222,17 @@ public class UploadSketchWrapper {
 
             String uploadRecipoeKey = boardDescr.getUploadPatternKey();
             if (boardDescr.isNetworkUpload()) {
-                setEnvironmentvarsForAutorizedUpload(contribEnv, myConfDes);
+                setEnvironmentvarsForAutorizedUpload(contribEnv, confDec);
                 highStream.println(uploader_no_reset_using_network);
                 isSSHUpload = boardDescr.isSSHUpload();
                 if (isSSHUpload) {
                     uploadRecipoeKey = "tools.avrdude_remote.upload.pattern"; //$NON-NLS-1$
                 }
             } else {
-                uploadPort = ArduinoSerial.makeArduinoUploadready(highStream, mySProject, myConfDes);
+                uploadPort = ArduinoSerial.makeArduinoUploadready(highStream, mySloeberConf);
             }
 
-            String command = getBuildEnvironmentVariable(myConfDes, uploadRecipoeKey, EMPTY);
+            String command = getBuildEnvironmentVariable(mySloeberConf, uploadRecipoeKey, EMPTY);
             if (command.isEmpty()) {
                 log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                         uploadRecipoeKey + " : not found in the platform.txt file")); //$NON-NLS-1$
@@ -244,8 +244,8 @@ public class UploadSketchWrapper {
             }
 
             if (isSSHUpload) {
-                sshUpload(monitor, highStream, outStream, errStream, mySProject.getTargetFile(), boardDescr.getHost(),
-                        command);
+                sshUpload(monitor, highStream, outStream, errStream, mySloeberConf.getTargetFile(),
+                        boardDescr.getHost(), command);
             } else {
                 ExternalCommandLauncher cmdLauncher = new ExternalCommandLauncher(command);
 

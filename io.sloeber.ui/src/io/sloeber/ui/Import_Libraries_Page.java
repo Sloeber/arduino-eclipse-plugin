@@ -9,7 +9,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.core.resources.IFolder;
@@ -29,8 +28,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.api.SloeberConfiguration;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Libraries;
 
@@ -93,7 +92,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 
 		// find the items to add to the list
 		Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		allLibraries = Sketch.getAllAvailableLibraries(SloeberConfiguration.getActiveConfig(myProject));
+		allLibraries = Sketch.getAllAvailableLibraries(ISloeberConfiguration.getActiveConfig(myProject));
 
 		// Get the data in the tree
 		Set<String> allLibrariesAlreadyUsed = Sketch.getAllImportedLibraries(this.myProject);
@@ -148,7 +147,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		}
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		ICProjectDescription projDesc = mngr.getProjectDescription(myProject, true);
-		SloeberConfiguration activeConfDesc = SloeberConfiguration.getActiveConfig(myProject);
+		ISloeberConfiguration activeConfDesc = ISloeberConfiguration.getActiveConfig(myProject);
 		boolean descNeedsSaving1 = Sketch.removeLibrariesFromProject(myProject, projDesc, unselectedLibraries);
 		Libraries.addLibrariesToProject(myProject, activeConfDesc, selectedLibraries);
 		if (descNeedsSaving1) {
