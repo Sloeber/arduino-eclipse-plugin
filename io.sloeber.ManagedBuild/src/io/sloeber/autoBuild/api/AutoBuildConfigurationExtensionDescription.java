@@ -1,7 +1,5 @@
 package io.sloeber.autoBuild.api;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-
 /**
  * this abstract class is the basis to extend AutoBuild with your own project
  * data/methods
@@ -56,6 +54,8 @@ public abstract class AutoBuildConfigurationExtensionDescription {
     /**
      * convert the object to a string that can be stored (or store it yourself
      * somehow)
+     * Note that there is no deserialize as deserialisation is happening in a
+     * constructor
      * 
      * @param linePrefix
      * @param lineEnd
@@ -99,4 +99,5 @@ public abstract class AutoBuildConfigurationExtensionDescription {
             String curConfigsText, String lineStart, String lineEnd) {
         deserialize(autoCfgDescription, curConfigsText, lineStart, lineEnd);
     }
+
 }

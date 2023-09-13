@@ -18,7 +18,7 @@ public abstract class AbstractAutoBuildPropertyTab extends AbstractCPropertyTab 
     @Override
     public void updateData(ICResourceDescription cfgd) {
         if (cfgd != null) {
-            myAutoConfDesc = AutoBuildConfigurationDescription.getFromConfig(cfgd.getConfiguration());
+            myAutoConfDesc = IAutoBuildConfigurationDescription.getConfig(cfgd.getConfiguration());
         }
         if (page.isMultiCfg()) {
             setAllVisible(false, null);

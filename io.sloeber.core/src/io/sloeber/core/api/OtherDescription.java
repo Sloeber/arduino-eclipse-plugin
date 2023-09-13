@@ -35,22 +35,16 @@ public class OtherDescription {
         return allVars;
     }
 
-    public Map<String, String> getEnvVarsConfig(String prefix) {
+    public Map<String, String> getEnvVarsConfig() {
         Map<String, String> allVars = new TreeMap<>();
 
-        allVars.put(prefix + KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
+        allVars.put(KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
 
         return allVars;
     }
 
-    public Map<String, String> getEnvVarsVersion(String prefix) {
-        return getEnvVarsConfig(prefix);
-    }
-
-    public static OtherDescription getFromCDT(ICConfigurationDescription confDesc) {
-        OtherDescription ret = new OtherDescription();
-        ret.myIsVersionControlled = false;
-        return ret;
+    public Map<String, String> getEnvVarsVersion() {
+        return getEnvVarsConfig();
     }
 
     public boolean IsVersionControlled() {
@@ -60,4 +54,5 @@ public class OtherDescription {
     public void setVersionControlled(boolean myIsVersionControlled) {
         this.myIsVersionControlled = myIsVersionControlled;
     }
+
 }

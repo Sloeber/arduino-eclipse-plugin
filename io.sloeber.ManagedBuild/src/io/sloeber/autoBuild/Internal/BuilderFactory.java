@@ -60,9 +60,6 @@ public class BuilderFactory {
     static final String[] EMPTY_STRING_ARRAY = new String[0];
     static final IConfiguration[] EMPTY_CFG_ARAY = new IConfiguration[0];
 
- 
-
-
     /**
      * Creates a new build-command containing data dynamically obtained from the
      * Builder.
@@ -135,14 +132,6 @@ public class BuilderFactory {
         }
         return changesMade;
     }
-    
-    public static Set<String> cfgIdsFromMap(Map<String, String> map) {
-    	String idsString = map.get(CONFIGURATION_IDS);
-    	if (idsString != null) {
-    	  return  MapStorageElement.decodeList(idsString);
-    	}
-    	return new HashSet<>();
-    	}
 
 }
 

@@ -213,7 +213,7 @@
  </extension>
  <extension
        id="io.sloeber.autoBuild.AutoMakeBuilder"
-       name="AutoBuild builder builds internally or with automagically created makefile"
+       name="AutoBuild builder"
        point="org.eclipse.core.resources.builders">
     <builder
           callOnEmptyDelta="true"

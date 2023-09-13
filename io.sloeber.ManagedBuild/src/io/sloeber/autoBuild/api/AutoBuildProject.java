@@ -1,21 +1,29 @@
 package io.sloeber.autoBuild.api;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.core.Messages;
+import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
+import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 
 public class AutoBuildProject {
+    public static final String BUILDER_ID = "io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
+    public static final String ARGS_BUILDER_KEY = "The key to specify the value is a builder key"; //$NON-NLS-1$
+    public static final String ARGS_TARGET_KEY = "The key to specify the value is the target to build"; //$NON-NLS-1$
+    public static final String ARGS_INTERNAL_BUILDER_KEY = InternalBuildRunner.RUNNER_NAME;
+    public static final String ARGS_MAKE_BUILDER_KEY = BuildRunnerForMake.RUNNER_NAME;
+    public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
+
     /**
      * 
      * @param projectName
      *            The name of the project
      * @param extensionPointID
-     *            The ID of the extention point that describes the project to be
+     *            The ID of the extension point that describes the project to be
      *            created
      * @param extensionID
      *            The ID of the extension defined by the extensionpoindID
@@ -59,7 +67,4 @@ public class AutoBuildProject {
         return theGenerator.getProject();
     }
 
-    public static AutoBuildConfigurationDescription getAutoBuildConfig(ICConfigurationDescription confDesc) {
-        return AutoBuildConfigurationDescription.getFromConfig(confDesc);
-    }
 }

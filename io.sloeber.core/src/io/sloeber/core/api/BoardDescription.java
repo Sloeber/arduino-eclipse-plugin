@@ -720,17 +720,17 @@ public class BoardDescription {
      * 
      * @return the minimum list of environment variables to recreate the project
      */
-    public Map<String, String> getEnvVarsConfig(String prefix) {
+    public Map<String, String> getEnvVarsConfig() {
         Map<String, String> allVars = new TreeMap<>();
         String board_txt = makePathVersionString(getReferencingBoardsFile());
 
-        allVars.put(prefix + KEY_SLOEBER_PROGRAMMER, myProgrammer);
-        allVars.put(prefix + KEY_SLOEBER_BOARD_ID, myBoardID);
-        allVars.put(prefix + KEY_SLOEBER_BOARD_TXT, board_txt);
-        allVars.put(prefix + KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
+        allVars.put(KEY_SLOEBER_PROGRAMMER, myProgrammer);
+        allVars.put(KEY_SLOEBER_BOARD_ID, myBoardID);
+        allVars.put(KEY_SLOEBER_BOARD_TXT, board_txt);
+        allVars.put(KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
 
         for (Entry<String, String> curOption : myOptions.entrySet()) {
-            allVars.put(prefix + KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+            allVars.put(KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
         }
         return allVars;
     }

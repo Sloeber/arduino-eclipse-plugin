@@ -14,6 +14,7 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -27,25 +28,29 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IProjectType;
 
 @SuppressWarnings({ "static-method", "nls" })
-public class CreateBasicProjects {
+public class regression {
+    static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
 
     @BeforeAll
-    static void beforeAll() {
+    void beforeAll() {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
     }
 
-    void actualTest(String builderName, String projectName, String extensionID, String extensionImpID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider) throws Exception {
+    @Test
+    void closeOpenProjectSavesConfig() throws Exception {
+        String projectName = "closeOpenProjectSavesConfig";
 
-        IProject testProject = AutoBuildProject.createProject(projectName, extensionID, extensionImpID, projectTypeID,
-                natureID, codeProvider, false, null);
+        IProject testProject = AutoBuildProject.createProject(extensionPointID, projectName,
+                "cdt.managedbuild.target.gnu.cross.exe", "cdt.cross.gnu", CCProjectNature.CC_NATURE_ID,
+                new TemplateTestCodeProvider("exe"), false, null);
+
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         String errorMessage = new String();
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            if (!Shared.BuildAndVerify(testProject, builderName, null)) {
+            if (!Shared.BuildAndVerify(testProject, null, null)) {
                 errorMessage += "\n\t" + curConfig.getName();
             }
         }
@@ -54,34 +59,8 @@ public class CreateBasicProjects {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("projectCreationInfoProvider")
-    void testDefaultBuilder(String projectName, String extensionID, String extensionImpID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
-        actualTest(null, projectName, extensionID, extensionImpID, projectTypeID, natureID, codeProvider);
-
-    }
-
-    @ParameterizedTest
-    @MethodSource("projectCreationInfoProvider")
-    void testInternaltBuilder(String inProjectName, String extensionID, String extensionImpID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
-        String projectName = "Internal_build_" + inProjectName;
-        actualTest(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionID, extensionImpID, projectTypeID,
-                natureID, codeProvider);
-    }
-
-    @ParameterizedTest
-    @MethodSource("projectCreationInfoProvider")
-    void testExternalBuilder(String inProjectName, String extensionID, String extensionImpID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
-        String projectName = "make_build_" + inProjectName;
-        actualTest(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionID, extensionImpID, projectTypeID,
-                natureID, codeProvider);
-    }
-
     static Stream<Arguments> projectCreationInfoProvider() {
-        String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
+
         Map<String, String> testProjectTypeIds = new HashMap<>();
         testProjectTypeIds.put("io.sloeber.autoBuild.projectType.exe", "io.sloeber.autoBuild");
         testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.exe", "cdt.cross.gnu");

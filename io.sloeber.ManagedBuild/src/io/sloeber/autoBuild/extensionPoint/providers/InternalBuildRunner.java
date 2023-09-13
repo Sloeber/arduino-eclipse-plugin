@@ -59,6 +59,7 @@ import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
 public class InternalBuildRunner extends IBuildRunner {
+    static public final String RUNNER_NAME = Messages.InternalBuilderName;
     private static final int PROGRESS_MONITOR_SCALE = 100;
     private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
     private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
@@ -210,7 +211,6 @@ public class InternalBuildRunner extends IBuildRunner {
             buildRunnerHelper.refreshProject(cfgName, parentMon.newChild(5));
             buildRunnerHelper.close();
         } catch (Exception e) {
-            projectBuilder.forgetLastBuiltState();
 
             String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
                     new String[] { project.getName(), configuration.getName() });
@@ -260,7 +260,7 @@ public class InternalBuildRunner extends IBuildRunner {
 
     @Override
     public String getName() {
-        return Messages.InternalBuilderName;
+        return RUNNER_NAME;
     }
 
     @Override

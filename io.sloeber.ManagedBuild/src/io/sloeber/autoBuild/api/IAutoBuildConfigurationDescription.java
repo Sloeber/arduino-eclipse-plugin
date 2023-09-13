@@ -3,8 +3,11 @@ package io.sloeber.autoBuild.api;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.schema.api.IConfiguration;
@@ -13,6 +16,29 @@ import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 
 public interface IAutoBuildConfigurationDescription {
+
+    public static IAutoBuildConfigurationDescription getActiveConfig(IProject project) {
+        CoreModel coreModel = CoreModel.getDefault();
+        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
+        return getActiveConfig(projectDescription);
+    }
+
+    public static IAutoBuildConfigurationDescription getActiveConfig(ICProjectDescription projectDescription) {
+        return getConfig(projectDescription.getActiveConfiguration());
+    }
+
+    public static IAutoBuildConfigurationDescription getConfig(ICConfigurationDescription confDesc) {
+        if (confDesc == null)
+            return null;
+        return (IAutoBuildConfigurationDescription) confDesc.getConfigurationData();
+        //      TOFIX  
+        //      The code above always returns a readable configdesc
+        //        eventhough the method below exists it is not defined in ICConfigurationDescription 
+        //        and as sutch not usable
+        //        boolean writable =!confDesc.isReadOnly();
+        //        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData(writable);
+
+    }
 
     public boolean useDefaultBuildCommand();
 

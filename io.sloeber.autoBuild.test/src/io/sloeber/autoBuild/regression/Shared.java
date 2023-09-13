@@ -8,13 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -29,6 +29,10 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 
+import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+
+@SuppressWarnings("nls")
 public class Shared {
     private static boolean deleteProjects = true;
     private static boolean closeFailedProjects = false;
@@ -57,18 +61,16 @@ public class Shared {
                 return true;
             }
         }
-        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
-        ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
+        IAutoBuildConfigurationDescription autoBuild = IAutoBuildConfigurationDescription.getActiveConfig(project);
 
-        IPath resultPath = project.getLocation().append(activeConfig.getName());
+        IFolder buildRootFolder = autoBuild.getBuildFolder();
         String projName = project.getName();
+
         String[] validOutputs = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
                 "lib_" + projName + ".so", projName + ".so", "lib_" + projName + ".a", projName + ".dll",
                 "application.axf" };
         for (String validOutput : validOutputs) {
-            File validFile = resultPath.append(validOutput).toFile();
-            if (validFile.exists()) {
+            if (buildRootFolder.getFile(validOutput).exists()) {
                 return false;
             }
         }
@@ -110,23 +112,34 @@ public class Shared {
     }
 
     /**
-     * Convenience method to call BuildAndVerify with default project name and null
-     * as compile options
+     * Convenience method to call BuildAndVerify for the active config of a project
+     * and a builder
      *
-     * @param boardDescriptor
-     * @param codeDescriptor
-     * @param compileOptions
-     *            can be null
+     * @param theTestProject
+     *            The project to build
+     * @param builderName
+     *            if null use the default builder else use the builder with the
+     *            provided name
      * @return true if build is successful otherwise false
-     * @throws CoreException
      * @throws Exception
      */
-    public static boolean BuildAndVerify(IProject theTestProject) throws Exception, Exception {
+    public static boolean BuildAndVerify(IProject theTestProject, String builderName, String configs) throws Exception {
 
         NullProgressMonitor monitor = new NullProgressMonitor();
 
         waitForAllJobsToFinish(); // for the indexer
-        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+        if (builderName == null && configs == null) {
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+        } else {
+            Map<String, String> args = new HashMap<>();
+            if (builderName != null) {
+                args.put(AutoBuildProject.ARGS_BUILDER_KEY, builderName);
+            }
+            if (configs != null) {
+                args.put(AutoBuildProject.ARGS_CONFIGS_KEY, configs);
+            }
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, AutoBuildProject.BUILDER_ID, args, monitor);
+        }
         if (hasBuildErrors(theTestProject)) {
             if (closeFailedProjects) {
                 theTestProject.close(null);

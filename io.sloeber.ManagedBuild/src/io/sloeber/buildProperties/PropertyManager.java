@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
@@ -68,7 +69,8 @@ public class PropertyManager {
             fConfigDesc = ConfigDesc;
             fProject = ConfigDesc.getProjectDescription().getProject();
             fCfgPropertyMap = cfgPropertyMap;
-            AutoBuildConfigurationDescription autoConfig = AutoBuildConfigurationDescription.getFromConfig(fConfigDesc);
+            AutoBuildConfigurationDescription autoConfig = (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
+                    .getConfig(fConfigDesc);
             config = autoConfig.getConfiguration();
             fCfgId = config.getId();
         }

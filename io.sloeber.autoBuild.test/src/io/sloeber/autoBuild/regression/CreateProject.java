@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,13 +26,17 @@ import org.eclipse.core.resources.IProject;
 @SuppressWarnings("nls")
 class CreateProject {
 
+    @BeforeAll
+    static void beforeAll() {
+        Shared.setDeleteProjects(false);
+        Shared.setCloseProjects(false);
+    }
+
     @SuppressWarnings("static-method")
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID,
             String natureID, ICodeProvider codeProvider) throws Exception {
-        Shared.setDeleteProjects(false);
-        Shared.setCloseProjects(false);
 
         IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
                 natureID, codeProvider, false, null);
@@ -40,7 +45,7 @@ class CreateProject {
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            if (!Shared.BuildAndVerify(testProject)) {
+            if (!Shared.BuildAndVerify(testProject, null, null)) {
                 errorMessage += "\n\t" + curConfig.getName();
             }
         }

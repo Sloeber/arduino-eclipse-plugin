@@ -36,6 +36,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
@@ -351,8 +352,8 @@ public class Helpers {
     public static void deleteBuildFolder(IProject project, String cfgName) {
         ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
         ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getConfigurationByName(cfgName);
-        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription
-                .getFromConfig(cdtConfigurationDescription);
+        IAutoBuildConfigurationDescription autoData = IAutoBuildConfigurationDescription
+                .getConfig(cdtConfigurationDescription);
 
         IFolder buildFolder = autoData.getBuildFolder();
         if (buildFolder.exists()) {

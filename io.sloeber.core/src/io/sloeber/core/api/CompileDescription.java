@@ -279,25 +279,25 @@ public class CompileDescription {
      * 
      * @return the minimum list of environment variables to recreate the project
      */
-    public Map<String, String> getEnvVarsConfig(String prefix) {
+    public Map<String, String> getEnvVarsConfig() {
         Map<String, String> ret = new HashMap<>();
-        ret.put(prefix + SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
-        ret.put(prefix + SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
-        ret.put(prefix + SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
-        ret.put(prefix + SLOEBER_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
-        ret.put(prefix + SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
-        ret.put(prefix + SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
-        ret.put(prefix + SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-        ret.put(prefix + SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
-        ret.put(prefix + SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
-        ret.put(prefix + SLOEBER_SIZE_TYPE, mySizeCommand.toString());
-        ret.put(prefix + SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
+        ret.put(SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
+        ret.put(SLOEBER_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
+        ret.put(SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
+        ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
+        ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
+        ret.put(SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
+        ret.put(SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
+        ret.put(SLOEBER_SIZE_TYPE, mySizeCommand.toString());
+        ret.put(SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
 
         return ret;
     }
 
-    public Map<String, String> getEnvVarsVersion(String prefix) {
-        return getEnvVarsConfig(prefix);
+    public Map<String, String> getEnvVarsVersion() {
+        return getEnvVarsConfig();
     }
 
     public CompileDescription(TxtFile configFile, String prefix) {

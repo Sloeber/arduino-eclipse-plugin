@@ -61,6 +61,7 @@ import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
 public class BuildRunnerForMake extends IBuildRunner {
+    static public final String RUNNER_NAME = Messages.ExternalBuilderName;
 
     @Override
     public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
@@ -215,11 +216,11 @@ public class BuildRunnerForMake extends IBuildRunner {
         monitor.subTask(MessageFormat.format(ManagedMakeBuilder_message_update_makefiles, project.getName()));
 
         MultiStatus result = null;
-        if (isCleanBuild(kind)) {
-            result = generator.regenerateMakefiles(monitor);
-        } else {
-            result = generator.generateMakefiles(projectBuilder.getDelta(project), monitor);
-        }
+        //        if (isCleanBuild(kind)) {
+        result = generator.regenerateMakefiles(monitor);
+        //        } else {
+        //            result = generator.generateMakefiles(projectBuilder.getDelta(project), monitor);
+        //        }
 
         if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
             IStatus[] kids = result.getChildren();
@@ -337,7 +338,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 
     @Override
     public String getName() {
-        return Messages.ExternalBuilderName;
+        return RUNNER_NAME;
     }
 
     @Override

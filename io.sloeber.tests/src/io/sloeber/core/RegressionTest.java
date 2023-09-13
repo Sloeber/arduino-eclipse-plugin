@@ -40,6 +40,7 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings({ "nls", "static-method" })
 public class RegressionTest {
     private static final boolean reinstall_boards_and_libraries = false;
+    private final static String AUTOBUILD_CFG = ".AutoBuildProject";
 
     /*
      * In new new installations (of the Sloeber development environment) the
@@ -544,10 +545,10 @@ public class RegressionTest {
         CompileDescription proj2CreatedCompileDesc = sloeberConf2.getCompileDescription();
 
         // get the filenames to copy
-        IFile file = proj1.getFile(SLOEBER_CFG);
+        IFile file = proj1.getFile(AUTOBUILD_CFG);
         File proj1SloeberFile = file.getLocation().toFile();
 
-        file = proj2.getFile(SLOEBER_CFG);
+        file = proj2.getFile(AUTOBUILD_CFG);
         File proj2SloeberFile = file.getLocation().toFile();
 
         // close and reopen the project
@@ -566,6 +567,9 @@ public class RegressionTest {
 
         // reread project 2
         ISloeberConfiguration sloebercfg2 = ISloeberConfiguration.getActiveConfig(proj2);
+        if (sloebercfg2 == null) {
+            fail("failed to load the sloeber configuration");
+        }
         BoardDescription proj2OpenedBoardDesc = sloebercfg2.getBoardDescription();
         CompileDescription proj2OpenedCompileDesc = sloebercfg2.getCompileDescription();
 

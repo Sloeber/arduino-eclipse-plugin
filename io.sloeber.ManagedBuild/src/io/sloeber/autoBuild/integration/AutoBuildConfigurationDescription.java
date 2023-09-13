@@ -25,6 +25,7 @@ import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
 import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
+import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
@@ -489,17 +490,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     }
 
-    public static AutoBuildConfigurationDescription getFromConfig(ICConfigurationDescription confDesc) {
-        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
-        //      TOFIX  
-        //      The code above always returns a readable configdesc
-        //        eventhough the method below exists it is not defined in ICConfigurationDescription 
-        //        and as sutch not usable
-        //        boolean writable =!confDesc.isReadOnly();
-        //        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData(writable);
-
-    }
-
     /**
      * get the default options and update the combined options
      */
@@ -856,7 +846,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myCustomBuildCommand = makeArgs;
     }
 
-    public StringBuffer ToText(String linePrefix, String lineEnd) {
+    public StringBuffer serialize(String linePrefix, String lineEnd) {
         int counterStart = 0;
         StringBuffer ret = new StringBuffer();
         IProjectType projectType = myAutoBuildConfiguration.getProjectType();
@@ -963,6 +953,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             }
         }
 
+        if (myAutoBuildConfigurationExtensionDescription != null) {
+            ret.append(myAutoBuildConfigurationExtensionDescription.serialize(linePrefix, lineEnd));
+        }
+
         return ret;
 
     }
@@ -981,6 +975,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     public void setBuildRunner(IBuildRunner buildRunner) {
         checkIfWeCanWrite();
         myBuildRunner = buildRunner;
+        myIsCleanBuildEnabled = myIsCleanBuildEnabled && myBuildRunner.supportsCleanBuild();
+        myIsIncrementalBuildEnabled = myIsIncrementalBuildEnabled && myBuildRunner.supportsIncrementalBuild();
+        myIsAutoBuildEnabled = myIsAutoBuildEnabled && myBuildRunner.supportsAutoBuild();
     }
 
     @Override
@@ -1304,4 +1301,13 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     }
 
+    public IBuildRunner getBuildRunner(String buildRunnerName) {
+        if (AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY.equals(buildRunnerName)) {
+            return staticInternalBuildRunner;
+        }
+        if (AutoBuildProject.ARGS_MAKE_BUILDER_KEY.equals(buildRunnerName)) {
+            return staticMakeBuildRunner;
+        }
+        return getBuildRunner();
+    }
 }

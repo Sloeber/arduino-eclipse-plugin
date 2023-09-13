@@ -55,7 +55,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 
             String lineStart = getLinePrefix(curConfDesc);
 
-            configText.append(autoBuildConfigBase.ToText(lineStart, lineEnd));
+            configText.append(autoBuildConfigBase.serialize(lineStart, lineEnd));
         }
 
         File projectFile = getStorageFile(cfgDescription);

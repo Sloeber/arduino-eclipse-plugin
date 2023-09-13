@@ -2,6 +2,8 @@ package io.sloeber.core.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import static io.sloeber.core.common.Const.*;
 import static io.sloeber.core.common.Common.*;
 
@@ -109,8 +111,14 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public StringBuffer serialize(String linePrefix, String lineEnd) {
-        // TODO Auto-generated method stub
-        return null;
+        StringBuffer ret = new StringBuffer();
+        Map<String, String> envVars = myBoardDescription.getEnvVarsConfig();
+        envVars.putAll(myOtherDesc.getEnvVarsConfig());
+        envVars.putAll(myCompileDescription.getEnvVarsConfig());
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            ret.append(linePrefix + curEnvVar.getKey() + EQUAL + curEnvVar.getValue() + lineEnd);
+        }
+        return ret;
     }
 
     public void addLibrariesToProject(IProject newProjectHandle, Map<String, IPath> librariesToAdd) {
@@ -154,7 +162,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         return myEnvironmentVariables;
     }
 
-    public void configure() {
+    private void configure() {
         if (getAutoBuildDescription() == null) {
             //We can not configure if the AutoBuildDescription is not known
             System.err.println("SloeberConfiguration can not be configured if the AutoBuildDescription is not known"); //$NON-NLS-1$
@@ -309,4 +317,5 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         IProject project = getProject();
         return getAutoBuildDescription().getBuildFolder().getFile(project.getName() + ".hex"); //$NON-NLS-1$
     }
+
 }

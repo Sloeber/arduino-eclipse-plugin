@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -56,6 +57,8 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.autoBuild.Internal.MapStorageElement;
+import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -127,14 +130,13 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     private void internalBuild(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
         IProject project = getProject();
 
-        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
-        Set<ICConfigurationDescription> cfgToBuild = getConfigsToBuild(cdtProjectDescription, kind, args);
+        Set<AutoBuildConfigurationDescription> cfgToBuild = getConfigsToBuild(project, kind, args);
 
         //For the configurations to build: get the cdt referenced configurations
         Set<ICConfigurationDescription> referencedCfgs = new HashSet<>();
-        for (ICConfigurationDescription curConfig : cfgToBuild) {
-            referencedCfgs
-                    .addAll(Arrays.asList(CoreModelUtil.getReferencedConfigurationDescriptions(curConfig, false)));
+        for (AutoBuildConfigurationDescription curConfig : cfgToBuild) {
+            referencedCfgs.addAll(Arrays.asList(CoreModelUtil
+                    .getReferencedConfigurationDescriptions(curConfig.getCdtConfigurationDescription(), false)));
         }
 
         //build the cdt referenced configurations
@@ -168,9 +170,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         //now that all referenced projects and configs are build.
         //build the configs requested to build
-        for (ICConfigurationDescription curConfig : cfgToBuild) {
-            AutoBuildConfigurationDescription autoConf = AutoBuildConfigurationDescription.getFromConfig(curConfig);
-            buildProjectConfiguration(kind, autoConf, monitor);
+        for (AutoBuildConfigurationDescription curAutoConfig : cfgToBuild) {
+            buildProjectConfiguration(kind, args, curAutoConfig, monitor);
         }
 
     }
@@ -239,58 +240,29 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      *         an empty list is returned.
      *         This method does not return null.
      */
-    private static Set<ICConfigurationDescription> getConfigsToBuild(ICProjectDescription cdtProjectDescription,
-            int kind, Map<String, String> args) {
+    private static Set<AutoBuildConfigurationDescription> getConfigsToBuild(IProject project, int kind,
+            Map<String, String> args) {
         // get the configurations that need to be build
-        Set<ICConfigurationDescription> cfgToBuild = new HashSet<>();
-        if (args == null) {
-            cfgToBuild.add(cdtProjectDescription.getActiveConfiguration());
-
-        } else {
-            String argsContentType = args.get(CONTENTS);
-            if (argsContentType == null) {
-                argsContentType = EMPTY_STRING;
-            }
-            switch (argsContentType) {
-            default:
-                cfgToBuild.add(cdtProjectDescription.getActiveConfiguration());
-                break;
-            case CONTENTS_BUILDER:
-                /*
-                 * JABA: not sure what this is about. keep it as active config for now
-                 */
-                cfgToBuild.add(cdtProjectDescription.getActiveConfiguration());
-                break;
-            case CONTENTS_CONFIGURATION_IDS:
-                for (String curConfigId : cfgIdsFromMap(args)) {
+        Set<AutoBuildConfigurationDescription> cfgToBuild = new HashSet<>();
+        if (args != null) {
+            ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
+            String configIDs = args.get(CONTENTS_CONFIGURATION_IDS);
+            if (configIDs != null) {
+                for (String curConfigId : MapStorageElement.decodeList(configIDs)) {
                     // JABA: Should I log that a config is not found?
-                    cfgToBuild.add(cdtProjectDescription.getConfigurationById(curConfigId));
+                    ICConfigurationDescription config = cdtProjectDescription.getConfigurationById(curConfigId);
+                    cfgToBuild.add(
+                            (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription.getConfig(config));
                 }
-                break;
-            case CONTENTS_BUILDER_CUSTOMIZATION:
-                /*
-                 * JABA: again I am not sure what this is about. keep it as active config for now
-                 */
-                cfgToBuild.add(cdtProjectDescription.getActiveConfiguration());
-                //						String idsString = args.get(CONFIGURATION_IDS);
-                //						if (idsString != null) {
-                //							String[] ids = CDataUtil.stringToArray(idsString, SEPARATOR);
-                //							if (ids.length != 0) {
-                //								IManagedProject mProj = info.getManagedProject();
-                //								List list = new ArrayList(ids.length);
-                //								for (int i = 0; i < ids.length; i++) {
-                //									IConfiguration cfg = mProj.getConfiguration(ids[i]);
-                //									if (cfg != null) {
-                //										IBuilder builder = customizeBuilder(cfg.getEditableBuilder(), args);
-                //										if (builder != null)
-                //											list.add(builder);
-                //									}
-                //								}
-                //								builders = (IBuilder[]) list.toArray(new IBuilder[list.size()]);
-                //							}
-                //						}
-                break;
-
+            }
+            String configs = args.get(AutoBuildProject.ARGS_CONFIGS_KEY);
+            if (configs != null) {
+                for (String curConfigName : MapStorageElement.decodeList(configs)) {
+                    // JABA: Should I log that a config is not found?
+                    ICConfigurationDescription config = cdtProjectDescription.getConfigurationByName(curConfigName);
+                    cfgToBuild.add(
+                            (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription.getConfig(config));
+                }
             }
         }
 
@@ -299,37 +271,46 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         //check whether all the configs to build should actually be build for 
         // this kind of build
-        String projectName = cdtProjectDescription.getProject().getName();
-        Set<ICConfigurationDescription> cfgToIgnore = new HashSet<>();
-        for (ICConfigurationDescription curConfig : cfgToBuild) {
-            AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription.getFromConfig(curConfig);
+        String projectName = project.getName();
+        Set<AutoBuildConfigurationDescription> cfgToIgnore = new HashSet<>();
+        for (AutoBuildConfigurationDescription curAutoConf : cfgToBuild) {
             switch (kind) {
             case INCREMENTAL_BUILD:
-                if (!autoData.isIncrementalBuildEnabled()) {
+                //TOFIX JABA this does no longer make sense. As you can specify the buider and
+                // it is the builder that decides on the incremental
+                if (!curAutoConf.isIncrementalBuildEnabled()) {
                     outputTrace(projectName,
-                            curConfig.getName() + " >>The config is setup to ignore incremental builds ");
-                    cfgToIgnore.add(curConfig);
+                            curAutoConf.getName() + " >>The config is setup to ignore incremental builds ");
+                    cfgToIgnore.add(curAutoConf);
                 }
                 break;
             case AUTO_BUILD:
-                if (!autoData.isAutoBuildEnabled()) {
-                    outputTrace(projectName, curConfig.getName() + ">>The config is setup to ignore auto builds ");
-                    cfgToIgnore.add(curConfig);
+                if (!curAutoConf.isAutoBuildEnabled()) {
+                    outputTrace(projectName, curAutoConf.getName() + ">>The config is setup to ignore auto builds ");
+                    cfgToIgnore.add(curAutoConf);
                 }
                 break;
             }
         }
         cfgToBuild.removeAll(cfgToIgnore);
+
+        //if no configs found add active config
+        if (cfgToBuild.size() == 0) {
+            cfgToBuild.add(
+                    (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription.getActiveConfig(project));
+        }
         return cfgToBuild;
 
     }
 
-    private void buildProjectConfiguration(int kind, AutoBuildConfigurationDescription autoData,
-            IProgressMonitor monitor) throws CoreException {
+    private void buildProjectConfiguration(int kind, Map<String, String> args,
+            AutoBuildConfigurationDescription autoData, IProgressMonitor monitor) throws CoreException {
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
         IProject project = autoData.getProject();
-        IBuildRunner builder = autoData.getBuildRunner();
+        String BuildRunnerName = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
+        IBuildRunner builder = autoData.getBuildRunner(BuildRunnerName);
+
         IConsole console = CCorePlugin.getDefault().getConsole();
         console.start(project);
         outputTrace(project.getName(), "building cfg " + configName //$NON-NLS-1$
@@ -368,8 +349,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return;
         ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(curProject, false);
         ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
-        AutoBuildConfigurationDescription autoData = AutoBuildConfigurationDescription
-                .getFromConfig(cdtConfigurationDescription);
+        AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
+                .getConfig(cdtConfigurationDescription);
         IConsole console = CCorePlugin.getDefault().getConsole();
         console.start(curProject);
         autoData.getBuildRunner().invokeBuild(IncrementalProjectBuilder.CLEAN_BUILD, autoData, this, this, console,
