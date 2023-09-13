@@ -56,7 +56,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
-import io.sloeber.autoBuild.Internal.MapStorageElement;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
@@ -130,11 +129,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     private void internalBuild(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
         IProject project = getProject();
 
-        Set<AutoBuildConfigurationDescription> cfgToBuild = getConfigsToBuild(project, kind, args);
+        Set<AutoBuildConfigurationDescription> cfgsToBuild = getConfigsToBuild(project, kind, args);
 
         //For the configurations to build: get the cdt referenced configurations
         Set<ICConfigurationDescription> referencedCfgs = new HashSet<>();
-        for (AutoBuildConfigurationDescription curConfig : cfgToBuild) {
+        for (AutoBuildConfigurationDescription curConfig : cfgsToBuild) {
             referencedCfgs.addAll(Arrays.asList(CoreModelUtil
                     .getReferencedConfigurationDescriptions(curConfig.getCdtConfigurationDescription(), false)));
         }
@@ -170,7 +169,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         //now that all referenced projects and configs are build.
         //build the configs requested to build
-        for (AutoBuildConfigurationDescription curAutoConfig : cfgToBuild) {
+        for (AutoBuildConfigurationDescription curAutoConfig : cfgsToBuild) {
             buildProjectConfiguration(kind, args, curAutoConfig, monitor);
         }
 
@@ -205,13 +204,13 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     private static Map<String, String> createBuildArgs(Set<ICConfigurationDescription> cfgs) {
         Map<String, String> map = new HashMap<>();
-        map.put(CONFIGURATION_IDS, MapStorageElement.encodeList(getCfgIds(cfgs)));
+        map.put(CONFIGURATION_IDS, AutoBuildProject.encode(getCfgIds(cfgs)));
         map.put(CONTENTS, CONTENTS_CONFIGURATION_IDS);
         return map;
     }
 
-    private static List<String> getCfgIds(Set<ICConfigurationDescription> cfgs) {
-        List<String> ids = new ArrayList<>();
+    private static Set<String> getCfgIds(Set<ICConfigurationDescription> cfgs) {
+        Set<String> ids = new HashSet<>();
         for (ICConfigurationDescription cfg : cfgs) {
             ids.add(cfg.getId());
         }
@@ -248,7 +247,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
             String configIDs = args.get(CONTENTS_CONFIGURATION_IDS);
             if (configIDs != null) {
-                for (String curConfigId : MapStorageElement.decodeList(configIDs)) {
+                for (String curConfigId : AutoBuildProject.decodeList(configIDs)) {
                     // JABA: Should I log that a config is not found?
                     ICConfigurationDescription config = cdtProjectDescription.getConfigurationById(curConfigId);
                     cfgToBuild.add(
@@ -257,7 +256,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             }
             String configs = args.get(AutoBuildProject.ARGS_CONFIGS_KEY);
             if (configs != null) {
-                for (String curConfigName : MapStorageElement.decodeList(configs)) {
+                for (String curConfigName : AutoBuildProject.decodeList(configs)) {
                     // JABA: Should I log that a config is not found?
                     ICConfigurationDescription config = cdtProjectDescription.getConfigurationByName(curConfigName);
                     cfgToBuild.add(

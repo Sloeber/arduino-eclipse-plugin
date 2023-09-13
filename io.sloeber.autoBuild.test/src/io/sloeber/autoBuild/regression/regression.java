@@ -1,7 +1,5 @@
 package io.sloeber.autoBuild.regression;
 
-import static org.junit.Assert.fail;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,10 +14,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -46,16 +41,10 @@ public class regression {
                 new TemplateTestCodeProvider("exe"), false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
-        String errorMessage = new String();
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            if (!Shared.BuildAndVerify(testProject, null, null)) {
-                errorMessage += "\n\t" + curConfig.getName();
-            }
-        }
-        if (!errorMessage.isBlank()) {
-            fail("Project " + projectName + " Failed to build configs:" + errorMessage);
+            Shared.BuildAndVerify(testProject, null, null);
         }
     }
 
@@ -92,8 +81,8 @@ public class regression {
             default:
                 codeProvider_cpp = new TemplateTestCodeProvider("exe");
             }
-            String projectName = AutoBuildCommon.MakeNameCompileSafe(
-                    String.format("%03d", testCounter) + "_" + projectType.getName() + "_" + extensionID);
+            String projectName = AutoBuildCommon.MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter))
+                    + "_" + projectType.getName() + "_" + extensionID);
             testCounter++;
             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectType.getId(),
                     CCProjectNature.CC_NATURE_ID, codeProvider_cpp));

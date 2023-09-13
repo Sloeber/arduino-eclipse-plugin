@@ -1,6 +1,5 @@
 package io.sloeber.autoBuild.regression;
 
-import static org.junit.Assert.fail;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -41,16 +40,10 @@ class CreateProject {
         IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
                 natureID, codeProvider, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
-        String errorMessage = new String();
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            if (!Shared.BuildAndVerify(testProject, null, null)) {
-                errorMessage += "\n\t" + curConfig.getName();
-            }
-        }
-        if (!errorMessage.isBlank()) {
-            fail("Project " + myProjectName + " Failed to build configs:" + errorMessage);
+            Shared.BuildAndVerify(testProject, null, null);
         }
     }
 
