@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -620,7 +619,7 @@ public class Option extends SchemaObject implements IOption {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + IOption.ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);

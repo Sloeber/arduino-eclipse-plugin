@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -253,7 +252,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + CONFIGURATION_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);

@@ -17,7 +17,6 @@ package io.sloeber.schema.internal;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
@@ -173,7 +172,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + PROJECTTYPE_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);

@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
@@ -481,7 +480,7 @@ public class Tool extends SchemaObject implements ITool {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + TOOL_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);

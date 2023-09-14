@@ -15,7 +15,6 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -231,7 +230,7 @@ public class OutputType extends SchemaObject implements IOutputType {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + OUTPUT_TYPE_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);

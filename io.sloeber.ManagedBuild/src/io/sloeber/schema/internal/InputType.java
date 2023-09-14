@@ -23,16 +23,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
-import org.eclipse.core.runtime.content.IContentTypeSettings;
-
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -255,7 +251,7 @@ public class InputType extends SchemaObject implements IInputType {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + INPUT_TYPE_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);

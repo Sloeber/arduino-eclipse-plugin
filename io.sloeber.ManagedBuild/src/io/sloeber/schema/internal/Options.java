@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.schema.api.IOptions;
@@ -89,7 +88,7 @@ public class Options implements IOptions {
 
     public StringBuffer dump(int leadingChars) {
         StringBuffer ret = new StringBuffer();
-        String prepend = StringUtils.repeat(DUMPLEAD, leadingChars);
+        String prepend = DUMPLEAD.repeat(leadingChars);
         ret.append(prepend + IOption.ELEMENT_NAME + BLANK + myOptionMap.size() + NEWLINE);
         for (Option curOption : myOptionMap.values()) {
             ret.append(curOption.dump(leadingChars));
