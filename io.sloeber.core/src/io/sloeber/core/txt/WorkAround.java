@@ -1,10 +1,14 @@
 package io.sloeber.core.txt;
 
+import static io.sloeber.core.common.Common.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +17,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -114,12 +116,13 @@ public class WorkAround extends Const {
 
         // generate the workaround file
         try {
-            String boardsTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
+            String boardsTXT = Files.readString(requestedFileToWorkAround.toPath(), Charset.defaultCharset());
 
             boardsTXT = boardsApplyWorkArounds(boardsTXT);
 
             boardsTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + boardsTXT;
-            FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
+            Files.write(boardsSloeberTXT.toPath(), boardsTXT.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.CREATE);
         } catch (IOException e) {
             Common.log(new Status(IStatus.WARNING, Activator.getId(),
                     "Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
@@ -199,12 +202,13 @@ public class WorkAround extends Const {
         // generate the workaround file
         try {
 
-            String platformTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
+            String platformTXT = Files.readString(requestedFileToWorkAround.toPath(), Charset.defaultCharset());
 
             platformTXT = platformApplyWorkArounds(platformTXT, requestedFileToWorkAround);
 
             platformTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + platformTXT;
-            FileUtils.write(platformSloeberTXT, platformTXT, Charset.defaultCharset());
+            Files.write(platformSloeberTXT.toPath(), platformTXT.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.CREATE);
         } catch (IOException e) {
             Common.log(new Status(IStatus.WARNING, Activator.getId(),
                     "Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
@@ -512,15 +516,15 @@ public class WorkAround extends Const {
 
         String thisOSKey = null;
         // do not use platform as I run this in plain junit tests
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             thisOSKey = WINDOWSKEY;
             Otherosses.add(LINUXKEY);
             Otherosses.add(MACKEY);
-        } else if (SystemUtils.IS_OS_LINUX) {
+        } else if (isLinux) {
             thisOSKey = LINUXKEY;
             Otherosses.add(WINDOWSKEY);
             Otherosses.add(MACKEY);
-        } else if (SystemUtils.IS_OS_MAC_OSX) {
+        } else if (isMac) {
             thisOSKey = MACKEY;
             Otherosses.add(WINDOWSKEY);
             Otherosses.add(LINUXKEY);
@@ -596,11 +600,12 @@ public class WorkAround extends Const {
         // generate the workaround file
         try {
 
-            String programmersTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
+            String programmersTXT = Files.readString(requestedFileToWorkAround.toPath(), Charset.defaultCharset());
             programmersTXT = programmersApplyWorkArounds(programmersTXT);
 
             programmersTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + programmersTXT;
-            FileUtils.write(actualProgrammersTXT, programmersTXT, Charset.defaultCharset());
+            Files.write(actualProgrammersTXT.toPath(), programmersTXT.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.CREATE);
         } catch (IOException e) {
             Common.log(new Status(IStatus.WARNING, Activator.getId(),
                     "Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));

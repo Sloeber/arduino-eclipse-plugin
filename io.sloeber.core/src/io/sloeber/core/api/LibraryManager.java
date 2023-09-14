@@ -2,6 +2,7 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.common.Common.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -16,8 +17,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -163,7 +162,7 @@ public class LibraryManager {
         }
 
         try {
-            FileUtils.deleteDirectory(lib.getInstallPath().toFile().getParentFile());
+            deleteDirectory(lib.getInstallPath().removeLastSegments(1));
         } catch (IOException e) {
             return new Status(IStatus.ERROR, Activator.getId(),
                     "Failed to remove folder" + lib.getInstallPath().toString(), //$NON-NLS-1$
@@ -207,7 +206,7 @@ public class LibraryManager {
 
     public static void unInstallAllLibs() {
         try {
-            FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathLibraries().toFile());
+            deleteDirectory(ConfigurationPreferences.getInstallationPathLibraries());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -337,7 +336,7 @@ public class LibraryManager {
         }
         int newmaxDepth = maxDepth - 1;
         for (File exampleFolder : children) {
-            String extension = FilenameUtils.getExtension(exampleFolder.toString()).toLowerCase();
+            String extension = getFileExtension(exampleFolder.getName());
             if (exampleFolder.isDirectory()) {
                 examples.putAll(
                         getExamplesFromFolder(prefix + '/' + exampleFolder.getName(), exampleFolder, newmaxDepth));

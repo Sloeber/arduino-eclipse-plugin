@@ -5,6 +5,7 @@ import static io.sloeber.core.common.Const.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexFile;
@@ -62,6 +62,7 @@ public class Libraries {
      *         method returns a key value pair of key equals foldername and value
      *         equals full path.
      */
+    @SuppressWarnings("nls")
     private static Map<String, IPath> findAllSubFolders(IPath ipath) {
         String[] children = ipath.toFile().list();
         Map<String, IPath> ret = new HashMap<>();
@@ -71,9 +72,9 @@ public class Libraries {
             // if the folder contains any of the following it is considered a
             // library itself
             // src library.properties or examples
-            if (ArrayUtils.contains(children, "src") //$NON-NLS-1$
-                    || ArrayUtils.contains(children, "library.properties") //$NON-NLS-1$
-                    || ArrayUtils.contains(children, "examples")) { //$NON-NLS-1$
+            if (Arrays.stream(children).anyMatch("src"::equals)
+                    || Arrays.stream(children).anyMatch("library.properties"::equals)
+                    || Arrays.stream(children).anyMatch("examples"::equals)) {
                 ret.put(ipath.lastSegment(), ipath);
                 return ret;
             }
@@ -83,10 +84,9 @@ public class Libraries {
                 // Get filename of file or directory
                 IPath LibPath = ipath.append(curFolder);
                 File LibPathFile = LibPath.toFile();
-                if (LibPathFile.isFile() && (!LibPathFile.getName().startsWith(".")) //$NON-NLS-1$
-                        && ("cpp".equalsIgnoreCase(LibPath.getFileExtension()) //$NON-NLS-1$
-                                || "h".equalsIgnoreCase( //$NON-NLS-1$
-                                        LibPath.getFileExtension()))) {
+                if (LibPathFile.isFile() && (!LibPathFile.getName().startsWith(DOT))
+                        && ("cpp".equalsIgnoreCase(LibPath.getFileExtension())
+                                || "h".equalsIgnoreCase(LibPath.getFileExtension()))) {
                     ret.put(ipath.lastSegment(), ipath);
                     return ret;
                 }
@@ -531,7 +531,8 @@ public class Libraries {
                     return name.toLowerCase().endsWith(".h"); //$NON-NLS-1$
                 }
             });
-            if (ArrayUtils.contains(allHeaderFiles, new File(curLibName + ".h"))) { //$NON-NLS-1$
+            if (Arrays.stream(allHeaderFiles).anyMatch(new File(curLibName + ".h")::equals)) { //$NON-NLS-1$
+                //if (ArrayUtils.contains(allHeaderFiles, new File(curLibName + ".h"))) { //$NON-NLS
                 // We found a one to one match make sure others do not
                 // overrule
                 doubleHeaders.add(curLibName);

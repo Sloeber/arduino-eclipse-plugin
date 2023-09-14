@@ -6,12 +6,12 @@ import static io.sloeber.core.common.Const.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -208,7 +208,7 @@ public class CodeDescription {
                         IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(project.getLocation());
                         Helpers.linkDirectory(project, curPath, folder);
                     } else {
-                        FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
+                        Files.copy(curPath.toPath(), project.getLocation().toPath());
                         FileModifiers.addPragmaOnce(curPath);
                     }
                     String libName = getLibraryName(curPath);
@@ -240,7 +240,7 @@ public class CodeDescription {
 
     private void saveLastUsedExamples() {
         if (myExamples != null) {
-            String toStore = StringUtils.join(myExamples, "\n"); //$NON-NLS-1$
+            String toStore = myExamples.stream().map(Object::toString).collect(Collectors.joining("\n")); //$NON-NLS-1$
             InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, toStore);
         } else {
             InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, new String());

@@ -3,6 +3,7 @@ package io.sloeber.core.api;
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.common.ConfigurationPreferences.*;
 import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.common.Common.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +26,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -384,9 +384,9 @@ public class BoardsManager {
             return Status.OK_STATUS;
         }
 
-        File installFolder = curPlatform.getInstallPath().toFile();
+        IPath installFolder = curPlatform.getInstallPath();
         try {
-            FileUtils.deleteDirectory(installFolder);
+            deleteDirectory(installFolder);
         } catch (IOException e) {
             return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toString(), //$NON-NLS-1$
                     e);
@@ -599,7 +599,7 @@ public class BoardsManager {
             return;
         }
         try {
-            FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathPackages().toFile());
+            deleteDirectory(ConfigurationPreferences.getInstallationPathPackages());
         } catch (IOException e) {
             e.printStackTrace();
         }

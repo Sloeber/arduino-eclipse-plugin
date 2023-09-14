@@ -196,7 +196,7 @@ public class SloeberProject extends Common {
             CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,
             IProgressMonitor monitor) {
 
-        String realProjectName = Common.MakeNameCompileSafe(projectName);
+        String realProjectName = Common.makeNameCompileSafe(projectName);
 
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot root = workspace.getRoot();
