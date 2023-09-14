@@ -43,7 +43,7 @@ class CreateProject {
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            Shared.BuildAndVerify(testProject, null, null);
+            Shared.BuildAndVerifyActiveConfig(testProject);
         }
     }
 

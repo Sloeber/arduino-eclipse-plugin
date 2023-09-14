@@ -5,7 +5,12 @@ import static org.junit.Assert.*;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -123,6 +128,53 @@ public class Shared {
         return new Path(resolvedFileURL.toURI().getPath());
     }
 
+    public static void buildProjectUsingActivConfig(IProject iProject, String builderName) throws Exception {
+        ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(iProject, true);
+        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+            cProjectDesc.setActiveConfiguration(curConfig);
+            CCorePlugin.getDefault().setProjectDescription(iProject, cProjectDesc);
+            build(iProject, builderName, null);
+        }
+    }
+
+    public static void buildAndVerifyProjectUsingActivConfig(IProject project, String builderName,
+            Boolean shouldMakefileExists) throws Exception {
+        ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(project, true);
+        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+            cProjectDesc.setActiveConfiguration(curConfig);
+            CCorePlugin.getDefault().setProjectDescription(project, cProjectDesc);
+            project.build(IncrementalProjectBuilder.FULL_BUILD, AutoBuildProject.BUILDER_ID, null,
+                    new NullProgressMonitor());
+            verifyConfig(project, IAutoBuildConfigurationDescription.getConfig(curConfig), shouldMakefileExists);
+        }
+    }
+
+    /**
+     * clean all the configuration by looping over all the configurations and
+     * setting them active
+     * and then call a clean build
+     * 
+     * @param iProject
+     * @throws CoreException
+     */
+    public static void cleanProject(IProject iProject) throws CoreException {
+        ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(iProject, true);
+        //clean all configurations and verify clean has been done properly
+        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+            cProjectDesc.setActiveConfiguration(curConfig);
+            CCorePlugin.getDefault().setProjectDescription(iProject, cProjectDesc);
+
+            IAutoBuildConfigurationDescription autoConf = IAutoBuildConfigurationDescription.getConfig(curConfig);
+            IFolder buildRoot = autoConf.getBuildFolder();
+            int membersBeforeClean = buildRoot.members().length;
+
+            iProject.build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor());
+
+            int membersAfterClean = buildRoot.members().length;
+            assertTrue("clean did not remove files", membersAfterClean < membersBeforeClean);
+        }
+    }
+
     /**
      * Convenience method to call BuildAndVerify for the active config of a project
      * and a builder
@@ -135,14 +187,13 @@ public class Shared {
      * @return true if build is successful otherwise false
      * @throws Exception
      */
-    public static void BuildAndVerify(IProject theTestProject, String builderName, String configs) throws Exception {
-        BuildAndVerify(theTestProject, builderName, configs, null);
-
+    public static void BuildAndVerifyActiveConfig(IProject theTestProject) throws Exception {
+        BuildAndVerifyActiveConfig(theTestProject, null, null);
     }
 
-    public static void BuildAndVerify(IProject theTestProject, String builderName, String configs,
+    public static void BuildAndVerifyActiveConfig(IProject theTestProject, String builderName,
             Boolean shouldMakefileExists) throws Exception {
-        build(theTestProject, builderName, configs);
+        build(theTestProject, builderName, null);
 
         verifyConfig(theTestProject, IAutoBuildConfigurationDescription.getActiveConfig(theTestProject),
                 shouldMakefileExists);
@@ -152,7 +203,7 @@ public class Shared {
     public static void build(IProject theTestProject, String builderName, String configs) throws Exception {
         NullProgressMonitor monitor = new NullProgressMonitor();
 
-        waitForAllJobsToFinish(); // for the indexer
+        waitForAllJobsToFinish();
         if (builderName == null && configs == null) {
             theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
         } else {

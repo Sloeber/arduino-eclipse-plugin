@@ -68,6 +68,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     private static final String KEY_PRE_BUILD_ANNOUNCEMENT = "Build.pre.announcement"; //$NON-NLS-1$
     private static final String KEY_POST_BUILD_STEP = "Build.post.step"; //$NON-NLS-1$
     private static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build.post.announcement"; //$NON-NLS-1$
+    private static final String KEY_AUTOBUILD_EXTENSION_CLASS = "Extension class name"; //$NON-NLS-1$
 
     //Start of fields that need to be copied/made persistent
     private IConfiguration myAutoBuildConfiguration;
@@ -260,6 +261,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         String extensionID = null;
         String projectTypeID = null;
         String confName = null;
+        String autoCfgExtentionDesc = null;
         myCdtConfigurationDescription = cfgDescription;
         myProject = cfgDescription.getProjectDescription().getProject();
         String[] lines = curConfigsText.split(lineEnd);
@@ -379,7 +381,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             case KEY_POST_BUILD_ANNOUNCEMENT:
                 myPostBuildStepAnouncement = value;
                 break;
-
+            case KEY_AUTOBUILD_EXTENSION_CLASS:
+                autoCfgExtentionDesc = value;
+                break;
             default:
                 boolean found = false;
 
@@ -469,23 +473,23 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 resourceCmds.put(resource, cmd);
             }
         }
-        //TOFIX add code to write and read the class from the input
-        String autoCfgExtentionDesc = "";
 
-        try {
-            @SuppressWarnings("rawtypes")
-            Class autoCfgExtentionDescClass = Class.forName(autoCfgExtentionDesc);
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            Constructor ctor = autoCfgExtentionDescClass.getDeclaredConstructor(AutoBuildConfigurationDescription.class,
-                    String.class, String.class, String.class);
-            ctor.setAccessible(true);
+        if (autoCfgExtentionDesc != null && (!autoCfgExtentionDesc.isBlank())) {
+            try {
+                @SuppressWarnings("rawtypes")
+                Class autoCfgExtentionDescClass = Class.forName(autoCfgExtentionDesc);
+                @SuppressWarnings({ "unchecked", "rawtypes" })
+                Constructor ctor = autoCfgExtentionDescClass.getDeclaredConstructor(
+                        AutoBuildConfigurationDescription.class, String.class, String.class, String.class);
+                ctor.setAccessible(true);
 
-            myAutoBuildConfigurationExtensionDescription = (AutoBuildConfigurationExtensionDescription) ctor
-                    .newInstance(this, curConfigsText, lineStart, lineEnd);
-        } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
-                | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                myAutoBuildConfigurationExtensionDescription = (AutoBuildConfigurationExtensionDescription) ctor
+                        .newInstance(this, curConfigsText, lineStart, lineEnd);
+            } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
     }
@@ -954,6 +958,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         }
 
         if (myAutoBuildConfigurationExtensionDescription != null) {
+            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_CLASS + KEY_EQUALS
+                    + myAutoBuildConfigurationExtensionDescription.getClass().getName());
             ret.append(myAutoBuildConfigurationExtensionDescription.serialize(linePrefix, lineEnd));
         }
 
@@ -1300,6 +1306,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myAutoBuildConfigurationExtensionDescription = newExtension;
 
     }
+
+    /**
+     * Get the buildrunner with the specified name
+     * 
+     * @param buildRunnerName
+     * @return the buildrunner with the name. If the buildrunner is not found
+     *         returns the default buildrunner
+     */
 
     public IBuildRunner getBuildRunner(String buildRunnerName) {
         if (AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY.equals(buildRunnerName)) {

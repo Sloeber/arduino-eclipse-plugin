@@ -20,16 +20,12 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.Internal.BuilderFactory.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -307,7 +303,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
         IProject project = autoData.getProject();
-        String BuildRunnerName = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
+        String BuildRunnerName = null;
+        if (args != null) {
+            BuildRunnerName = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
+        }
         IBuildRunner builder = autoData.getBuildRunner(BuildRunnerName);
 
         IConsole console = CCorePlugin.getDefault().getConsole();

@@ -1,92 +1,63 @@
 package io.sloeber.autoBuild.regression;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Stream;
-
 import org.eclipse.cdt.core.CCProjectNature;
-import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.provider.Arguments;
 import io.sloeber.autoBuild.api.AutoBuildProject;
-import io.sloeber.autoBuild.api.ICodeProvider;
-import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
-import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.schema.api.IProjectType;
 
 @SuppressWarnings({ "static-method", "nls" })
 public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
+    static int testCounter = 1;
 
     @BeforeAll
-    void beforeAll() {
+    public static void beforeAll() throws CoreException {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
+        // turn off auto building to make sure autobuild does not start a build behind our backs
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceDescription workspaceDesc = workspace.getDescription();
+        workspaceDesc.setAutoBuilding(false);
+        workspace.setDescription(workspaceDesc);
     }
 
+    /*
+     * Create a project build it
+     * clean it
+     * close it
+     * open it
+     * build it
+     * 
+     */
     @Test
-    void closeOpenProjectSavesConfig() throws Exception {
-        String projectName = "closeOpenProjectSavesConfig";
+    public void createCloseOpenProject() throws Exception {
+        beforeAll();// for one reason or another the beforeall is not called
+        String projectName = "createCloseOpenProject";
 
-        IProject testProject = AutoBuildProject.createProject(extensionPointID, projectName,
-                "cdt.managedbuild.target.gnu.cross.exe", "cdt.cross.gnu", CCProjectNature.CC_NATURE_ID,
+        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, "cdt.cross.gnu",
+                "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID,
                 new TemplateTestCodeProvider("exe"), false, null);
 
-        ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
-        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
-            cProjectDesc.setActiveConfiguration(curConfig);
-            CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            Shared.BuildAndVerify(testProject, null, null);
-        }
+        //Build all the configurations and verify proper building
+        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null, null);
+        //clean all configurations and verify clean has been done properly
+        Shared.cleanProject(testProject);
+
+        //close the project
+        testProject.close(new NullProgressMonitor());
+        //wait a while
+        Thread.sleep(5000);
+        //open the project 
+        testProject.open(new NullProgressMonitor());
+        //Build all the configurations and verify proper building
+        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null, null);
     }
 
-    static Stream<Arguments> projectCreationInfoProvider() {
-
-        Map<String, String> testProjectTypeIds = new HashMap<>();
-        testProjectTypeIds.put("io.sloeber.autoBuild.projectType.exe", "io.sloeber.autoBuild");
-        testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.exe", "cdt.cross.gnu");
-        testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.so", "cdt.cross.gnu");
-        testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.lib", "cdt.cross.gnu");
-        int testCounter = 1;
-        List<Arguments> ret = new LinkedList<>();
-        for (Entry<String, String> testProjectEntry : testProjectTypeIds.entrySet()) {
-            String extensionID = testProjectEntry.getValue();
-            String projectID = testProjectEntry.getKey();
-            IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectID, true);
-            if (projectType == null || !projectType.isCompatibleWithLocalOS() || projectType.isAbstract()) {
-                System.err.println("Skipping " + extensionID + " " + projectID);
-                continue;
-            }
-            String buildArtifactType = projectType.getBuildArtifactType();
-            ICodeProvider codeProvider_cpp = null;
-            switch (buildArtifactType) {
-            case "org.eclipse.cdt.build.core.buildArtefactType.exe":
-                codeProvider_cpp = new TemplateTestCodeProvider("exe");
-                break;
-            case "org.eclipse.cdt.build.core.buildArtefactType.staticLib":
-            case "org.eclipse.cdt.build.core.buildArtefactType.sharedLib":
-                codeProvider_cpp = new TemplateTestCodeProvider("lib");
-                break;
-            case "org.eclipse.cdt.build.core.buildArtefactType.compound":
-                codeProvider_cpp = new TemplateTestCodeProvider("compound");
-                break;
-            default:
-                codeProvider_cpp = new TemplateTestCodeProvider("exe");
-            }
-            String projectName = AutoBuildCommon.MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter))
-                    + "_" + projectType.getName() + "_" + extensionID);
-            testCounter++;
-            ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectType.getId(),
-                    CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
-        }
-        return ret.stream();
-    }
 }
