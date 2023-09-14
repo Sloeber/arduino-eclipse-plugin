@@ -14,6 +14,9 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,6 +38,10 @@ public class CreateBasicProjects {
     static void beforeAll() {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
+        // turn off auto building to make sure autobuild does not start a build behind our backs
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceDescription workspaceDesc = workspace.getDescription();
+        workspaceDesc.setAutoBuilding(false);
     }
 
     static void buildAllConfigsAsActive(String builderName, String projectName, String extensionID,
