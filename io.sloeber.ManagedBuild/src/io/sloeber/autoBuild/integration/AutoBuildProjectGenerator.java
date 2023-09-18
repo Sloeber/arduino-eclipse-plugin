@@ -42,6 +42,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private String myProjectTypeID = null;
     private ICodeProvider myCodeProvider = null;
     private String myNatureID;
+    private String myBuildRunnerName = null;
     private boolean myNeedsMoreWork = false;
 
     public AutoBuildProjectGenerator() {
@@ -88,13 +89,13 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) modelConfigs[0];
                 for (IConfiguration iConfig : modelConfigs) {
-                    //        for (CfgHolder cfg : cfgs) {
                     Configuration config = (Configuration) iConfig;
                     AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject);
                     assert (data != null);
                     ICConfigurationDescription cdtCfgDes = des
                             .createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
                     data.setCdtConfigurationDescription(cdtCfgDes);
+                    data.setBuildRunner(myBuildRunnerName);
 
                     //Set the language Settings
                     String[] defaultIds = iConfig.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
@@ -161,6 +162,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
     public void setNeedsMoreWork(boolean needsMoreWork) {
         myNeedsMoreWork = needsMoreWork;
+    }
+
+    public void setBuilderName(String builderName) {
+        myBuildRunnerName = builderName;
     }
 
 }

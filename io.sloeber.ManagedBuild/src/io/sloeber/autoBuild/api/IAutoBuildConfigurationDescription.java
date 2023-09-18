@@ -248,4 +248,6 @@ public interface IAutoBuildConfigurationDescription {
      * @param newExtension
      */
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension);
+
+    void setBuildRunner(String buildRunnerName);
 }

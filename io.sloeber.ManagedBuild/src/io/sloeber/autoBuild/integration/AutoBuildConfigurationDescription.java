@@ -868,7 +868,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         ret.append(myDescription);
         ret.append(lineEnd);
 
-        ret.append(linePrefix + ID + KEY_EQUALS + myId + lineEnd);
+        //ret.append(linePrefix + ID + KEY_EQUALS + myId + lineEnd);
 
         for (Entry<String, String> curProp : myProperties.entrySet()) {
             ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + KEY_EQUALS + curProp.getValue() + lineEnd);
@@ -984,6 +984,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myIsCleanBuildEnabled = myIsCleanBuildEnabled && myBuildRunner.supportsCleanBuild();
         myIsIncrementalBuildEnabled = myIsIncrementalBuildEnabled && myBuildRunner.supportsIncrementalBuild();
         myIsAutoBuildEnabled = myIsAutoBuildEnabled && myBuildRunner.supportsAutoBuild();
+    }
+
+    @Override
+    public void setBuildRunner(String buildRunnerName) {
+        checkIfWeCanWrite();
+        if (buildRunnerName == null) {
+            return;
+        }
+        setBuildRunner(getBuildRunner(buildRunnerName));
     }
 
     @Override

@@ -21,6 +21,13 @@ public class AutoBuildProject {
     public static final String ARGS_MAKE_BUILDER_KEY = BuildRunnerForMake.RUNNER_NAME;
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
+    public static IProject createProject(String projectName, String extensionPointID, String extensionID,
+            String projectTypeID, String natureID, ICodeProvider codeProvider, boolean needsMoreWork,
+            IProgressMonitor monitor) {
+        return createProject(projectName, extensionPointID, extensionID, projectTypeID, null, natureID, codeProvider,
+                needsMoreWork, monitor);
+    }
+
     /**
      * 
      * @param projectName
@@ -32,6 +39,8 @@ public class AutoBuildProject {
      *            The ID of the extension defined by the extensionpoindID
      * @param projectTypeID
      *            the projectTypeID of type extension ID
+     * @param builderName
+     *            The name of the builder to use (null is default)
      * @param natureID
      *            use CCProjectNature.CC_NATURE_ID for C++ project; all other values
      *            are currently ignored
@@ -46,8 +55,8 @@ public class AutoBuildProject {
      * @return the created project
      */
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider, boolean needsMoreWork,
-            IProgressMonitor monitor) {
+            String projectTypeID, String builderName, String natureID, ICodeProvider codeProvider,
+            boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
             IProgressMonitor internalMonitor = monitor;
@@ -59,6 +68,7 @@ public class AutoBuildProject {
             theGenerator.setProjectTypeID(projectTypeID);
             theGenerator.setProjectName(projectName);
             theGenerator.setCodeProvider(codeProvider);
+            theGenerator.setBuilderName(builderName);
             theGenerator.setNatureID(natureID);
             theGenerator.setNeedsMoreWork(needsMoreWork);
             theGenerator.generate(internalMonitor);

@@ -165,14 +165,28 @@ public class Shared {
             CCorePlugin.getDefault().setProjectDescription(iProject, cProjectDesc);
 
             IAutoBuildConfigurationDescription autoConf = IAutoBuildConfigurationDescription.getConfig(curConfig);
-            IFolder buildRoot = autoConf.getBuildFolder();
-            int membersBeforeClean = buildRoot.members().length;
-
-            iProject.build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor());
-
-            int membersAfterClean = buildRoot.members().length;
-            assertTrue("clean did not remove files", membersAfterClean < membersBeforeClean);
+            cleanConfiguration(autoConf);
         }
+    }
+
+    /**
+     * clean all the configuration by looping over all the configurations and
+     * setting them active
+     * and then call a clean build
+     * 
+     * @param iProject
+     * @throws CoreException
+     */
+    public static void cleanConfiguration(IAutoBuildConfigurationDescription autoConf) throws CoreException {
+        IFolder buildRoot = autoConf.getBuildFolder();
+        IProject iProject = buildRoot.getProject();
+        int membersBeforeClean = buildRoot.members().length;
+
+        iProject.build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor());
+
+        int membersAfterClean = buildRoot.members().length;
+        assertTrue("clean did not remove files", membersAfterClean < membersBeforeClean);
+        int a = 0;
     }
 
     /**
