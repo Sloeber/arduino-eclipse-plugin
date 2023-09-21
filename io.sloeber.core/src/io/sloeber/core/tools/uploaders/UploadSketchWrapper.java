@@ -1,8 +1,8 @@
 package io.sloeber.core.tools.uploaders;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.io.IOException;

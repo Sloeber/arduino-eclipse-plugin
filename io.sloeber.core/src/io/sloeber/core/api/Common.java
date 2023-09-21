@@ -1,6 +1,6 @@
-package io.sloeber.core.common;
+package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.ISloeberConfiguration;
 
 public class Common {
 

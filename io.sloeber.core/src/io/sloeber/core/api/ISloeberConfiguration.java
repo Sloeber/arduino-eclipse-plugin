@@ -1,6 +1,6 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.Map;
 
@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
-import io.sloeber.core.common.Common;
 
 public interface ISloeberConfiguration {
     public static ISloeberConfiguration getActiveConfig(IProject project) {

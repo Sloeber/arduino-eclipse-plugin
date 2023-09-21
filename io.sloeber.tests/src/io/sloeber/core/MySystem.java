@@ -2,7 +2,7 @@ package io.sloeber.core;
 
 import static org.junit.Assert.*;
 
-import io.sloeber.core.common.Common;
+import io.sloeber.core.api.Common;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;

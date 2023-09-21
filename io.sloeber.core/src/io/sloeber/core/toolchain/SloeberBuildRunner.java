@@ -1,7 +1,7 @@
 package io.sloeber.core.toolchain;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.net.URL;
 import java.util.List;
@@ -23,11 +23,11 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.schema.api.IBuilder;
 

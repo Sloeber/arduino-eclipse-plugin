@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Libraries;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {

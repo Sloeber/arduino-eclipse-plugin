@@ -1,7 +1,7 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.api.Const.*;
 import static io.sloeber.core.common.ConfigurationPreferences.*;
-import static io.sloeber.core.common.Const.*;
 
 import java.util.HashSet;
 

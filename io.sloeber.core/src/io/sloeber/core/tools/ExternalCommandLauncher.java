@@ -30,8 +30,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.Messages;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 
 /**
  * Launch external programs.

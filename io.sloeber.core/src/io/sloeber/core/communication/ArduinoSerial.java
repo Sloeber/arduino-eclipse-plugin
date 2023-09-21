@@ -1,8 +1,8 @@
 package io.sloeber.core.communication;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
 import java.util.List;

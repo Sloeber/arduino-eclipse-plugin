@@ -3,21 +3,18 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber Tests
 Bundle-SymbolicName: io.sloeber.tests
 Bundle-Version: 4.4.1.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Require-Bundle: io.sloeber.core,
  org.eclipse.cdt.core,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.junit,
- org.apache.commons.lang,
  io.sloeber.ui,
  org.eclipse.swt,
- org.eclipse.cdt.managedbuilder.core;bundle-version="9.0.0"
+ org.eclipse.cdt.managedbuilder.core;bundle-version="9.0.0",
+ junit-platform-commons
 Bundle-ActivationPolicy: lazy
-Import-Package: io.sloeber.ui,
- io.sloeber.ui.monitor,
- org.apache.commons.io;version="2.6.0"
 Automatic-Module-Name: io.sloeber.tests
 Export-Package: io.sloeber.core;x-internal:=true,
  io.sloeber.junit;x-internal:=true,
@@ -30,3 +27,4 @@ Export-Package: io.sloeber.core;x-internal:=true,
  templates.fastBlink;x-internal:=true,
  templates.issue1047_Board_Names_Can_Be_used_as_Strings;x-internal:=true,
  templates.issue687;x-internal:=true
+Import-Package: org.apache.commons.io

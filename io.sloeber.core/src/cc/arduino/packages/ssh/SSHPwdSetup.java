@@ -38,9 +38,9 @@ import com.jcraft.jsch.Session;
 
 import cc.arduino.packages.BoardPort;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.PasswordManager;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 
 @SuppressWarnings({})
 public class SSHPwdSetup implements SSHClientSetupChainRing {

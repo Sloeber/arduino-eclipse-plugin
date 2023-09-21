@@ -1,6 +1,6 @@
 package io.sloeber.core.listeners;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
 
@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.SloeberProject;
-import io.sloeber.core.common.Common;
 
 public class resourceChangeListener implements IResourceChangeListener {
 

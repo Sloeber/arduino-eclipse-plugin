@@ -5,7 +5,6 @@ import java.util.TreeMap;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 
-import io.sloeber.core.common.Const;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 

@@ -1,7 +1,7 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.HashMap;
 import java.util.Map;

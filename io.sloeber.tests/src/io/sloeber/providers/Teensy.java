@@ -1,6 +1,6 @@
 package io.sloeber.providers;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 import static org.junit.Assert.*;
 
 import java.util.List;

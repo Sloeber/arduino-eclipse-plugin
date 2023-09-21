@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
 import io.sloeber.core.api.ISloeberConfiguration;
-import io.sloeber.core.api.SloeberProject;
 
 public class ExplorerLabelDecorator implements ILabelDecorator {
 

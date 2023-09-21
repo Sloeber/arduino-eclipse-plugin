@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.common.Common;
+import io.sloeber.core.api.Common;
 import io.sloeber.core.common.InstancePreferences;
 
 public class FileModifiers {

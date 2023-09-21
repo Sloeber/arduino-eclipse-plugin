@@ -44,8 +44,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import io.sloeber.core.Messages;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 
 @SuppressWarnings({ "nls", "unused" })
 public class SSH {

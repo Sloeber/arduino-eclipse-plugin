@@ -1,6 +1,6 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.natures.ArduinoNature;
 import io.sloeber.core.tools.Helpers;

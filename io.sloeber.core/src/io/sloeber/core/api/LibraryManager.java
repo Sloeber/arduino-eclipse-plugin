@@ -1,8 +1,8 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Const.*;
-import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,7 +31,6 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.api.Json.ArduinoLibrary;
 import io.sloeber.core.api.Json.ArduinoLibraryIndex;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;

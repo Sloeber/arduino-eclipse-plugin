@@ -1,6 +1,6 @@
 package io.sloeber.core.txt;
 
-import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.api.Common.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,10 +22,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.FileModifiers;
 
 /**

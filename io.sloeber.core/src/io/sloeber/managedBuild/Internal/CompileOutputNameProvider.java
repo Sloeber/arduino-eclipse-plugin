@@ -7,9 +7,9 @@ import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.ISloeberConfiguration;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 

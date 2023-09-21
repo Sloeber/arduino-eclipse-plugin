@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import io.sloeber.core.common.Const;
+import io.sloeber.core.api.Const;
 
 public class ArduinoNature implements IProjectNature {
     public static final String NATURE_ID = Const.ARDUINO_NATURE_ID;

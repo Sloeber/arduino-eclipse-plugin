@@ -1,4 +1,4 @@
-package io.sloeber.core.common;
+package io.sloeber.core.api;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -148,4 +148,15 @@ public class Const {
 
     public static final String RELEASE = "Release";
 
+    public static final short PLOTTER_START_DATA = (short) 0xCDAB;// This is the
+    // 205 171 or
+    // -85 -51 flag
+    // that
+    // indicates
+    // plotter data
+    // is following
+    // least
+    // significant
+    // first
+    // 0xCDAB;
 }

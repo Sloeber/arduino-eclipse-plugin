@@ -1,6 +1,5 @@
 package io.sloeber.core;
 
-import static io.sloeber.core.common.Const.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -37,7 +36,7 @@ import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings({ "nls", "static-method" })
+@SuppressWarnings({ "nls", "static-method", "null" })
 public class RegressionTest {
     private static final boolean reinstall_boards_and_libraries = false;
     private final static String AUTOBUILD_CFG = ".AutoBuildProject";
@@ -516,6 +515,7 @@ public class RegressionTest {
      * 
      * @throws Exception
      */
+
     @Test
     public void openAndCloseUsesSavedSettings() throws Exception {
         CodeDescription codeDesc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);

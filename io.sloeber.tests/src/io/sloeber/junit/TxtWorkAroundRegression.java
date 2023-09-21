@@ -9,14 +9,14 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import io.sloeber.core.Shared;
 
 @SuppressWarnings({ "nls", "static-method" })
 @RunWith(Parameterized.class)
@@ -87,11 +87,14 @@ public class TxtWorkAroundRegression {
         String actual = boardsApplyWorkArounds(input);
         String cleanedExpected = clean(expected);
         String cleanedActual = clean(actual);
-        String difference = StringUtils.difference(cleanedExpected, cleanedActual);
+
         if (!cleanedExpected.equals(cleanedActual)) {
             System.err.println("ERROR for " + inputFile);
-            System.err.println(difference);
-            fail(difference.substring(0, 20));
+            String[] difference = Shared.difference(cleanedExpected, cleanedActual);
+            for (String curDiff : difference) {
+                System.err.println(curDiff);
+            }
+            fail(difference[0]);
         }
 
     }
@@ -119,11 +122,13 @@ public class TxtWorkAroundRegression {
         String expected = FileUtils.readFileToString(expectedFile, Charset.defaultCharset());
         String cleanedExpected = clean(expected);
 
-        String difference = StringUtils.difference(cleanedExpected, cleanedCurrentWorkAround);
         if (!cleanedExpected.equals(cleanedCurrentWorkAround)) {
             System.err.println("ERROR for " + inputFile);
-            System.err.println(difference);
-            fail(difference.substring(0, 20));
+            String[] difference = Shared.difference(cleanedExpected, cleanedCurrentWorkAround);
+            for (String curDiff : difference) {
+                System.err.println(curDiff);
+            }
+            fail(difference[0]);
         }
 
     }
@@ -147,11 +152,14 @@ public class TxtWorkAroundRegression {
         String actual = programmersApplyWorkArounds(input);
         String cleanedExpected = clean(expected);
         String cleanedActual = clean(actual);
-        String difference = StringUtils.difference(cleanedExpected, cleanedActual);
+
         if (!cleanedExpected.equals(cleanedActual)) {
             System.err.println("ERROR for " + inputFile);
-            System.err.println(difference);
-            fail(difference.substring(0, 20));
+            String[] difference = Shared.difference(cleanedExpected, cleanedActual);
+            for (String curDiff : difference) {
+                System.err.println(curDiff);
+            }
+            fail(difference[0]);
         }
 
     }

@@ -1,6 +1,6 @@
 package io.sloeber.core.toolchain;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +13,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
-import io.sloeber.core.common.Common;
+import io.sloeber.core.api.Common;
 
 public class SloeberProjectVariableSupplier implements IEnvironmentVariableProvider {
 

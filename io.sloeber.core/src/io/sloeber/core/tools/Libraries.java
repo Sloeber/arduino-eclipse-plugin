@@ -1,7 +1,7 @@
 package io.sloeber.core.tools;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -37,13 +37,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.internal.SloeberConfiguration;
