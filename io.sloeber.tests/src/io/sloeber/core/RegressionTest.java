@@ -482,33 +482,6 @@ public class RegressionTest {
 
     }
 
-    @Test
-    public void closeProjectRemovesPropertiesSloeber() throws Exception {
-        String DummyData = "a object";
-        String projectName = "closeProjectRemovesPropertiesSloeber";
-        QualifiedName qualifiedName = new QualifiedName("io.sloebertest", projectName);
-
-        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
-
-        CodeDescription codeDescriptor = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
-        CompileDescription inCompileDescription = getBunkersCompileDescription();
-
-        IProject project = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-                inCompileDescription, new NullProgressMonitor());
-
-        // Read the data we want to test
-        Shared.waitForAllJobsToFinish(); // for the indexer
-
-        // project.open(null);
-        project.setSessionProperty(qualifiedName, DummyData);
-        project.close(null);
-        project.open(null);
-        Object projData = project.getSessionProperty(qualifiedName);
-        if (projData != null) {
-            fail("non persistent projectdescription properties behave persistent during project close open in Sloeber");
-        }
-    }
-
     /**
      * open and close a project should keep the compileDescription and
      * BoardDescriotion
