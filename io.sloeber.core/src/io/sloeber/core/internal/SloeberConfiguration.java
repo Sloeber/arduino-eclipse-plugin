@@ -3,6 +3,7 @@ package io.sloeber.core.internal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
@@ -25,6 +26,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Common;
@@ -35,11 +37,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescription implements ISloeberConfiguration {
-
-    @Override
-    public IAutoBuildConfigurationDescription getAutoBuildDesc() {
-        return getAutoBuildDescription();
-    }
 
     //configuration data
     BoardDescription myBoardDescription;
@@ -67,6 +64,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
             AutoBuildConfigurationExtensionDescription source) {
         // the code below will throw an error in case source is not an instance of SloeberConfiguration
         // This may sound strange for you but this is exactly what I want JABA
+
         SloeberConfiguration src = (SloeberConfiguration) source;
         setAutoBuildDescription(owner);
         myBoardDescription = new BoardDescription(src.getBoardDescription());
@@ -79,6 +77,23 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         myBoardDescription = boardDesc;
         myOtherDesc = otherDesc;
         myCompileDescription = compileDescriptor;
+    }
+
+    public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, String lines, String lineStart,
+            String lineEnd) {
+        setAutoBuildDescription(autoCfgDescription);
+        Map<String, String> envVars = new HashMap<>();
+        int lineStartLength = lineStart.length();
+        for (String curLine : lines.split(Pattern.quote(lineEnd))) {
+            String cleanCurLine = curLine.substring(lineStartLength);
+            String[] elements = cleanCurLine.split(EQUAL, 2);
+            if (elements.length == 2) {
+                envVars.put(elements[0], elements[1]);
+            }
+        }
+        myBoardDescription = new BoardDescription(envVars);
+        myOtherDesc = new OtherDescription(envVars);
+        myCompileDescription = new CompileDescription(envVars);
     }
 
     @Override
@@ -98,13 +113,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public void copyData(AutoBuildConfigurationExtensionDescription from) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void deserialize(IAutoBuildConfigurationDescription autoCfgDescription, String curConfigsText,
-            String lineStart, String lineEnd) {
         // TODO Auto-generated method stub
 
     }
@@ -318,4 +326,13 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         return getAutoBuildDescription().getBuildFolder().getFile(project.getName() + ".hex"); //$NON-NLS-1$
     }
 
+    @Override
+    public String getBundelName() {
+        return Activator.getId();
+    }
+
+    @Override
+    public IAutoBuildConfigurationDescription getAutoBuildDesc() {
+        return getAutoBuildDescription();
+    }
 }

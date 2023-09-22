@@ -1,10 +1,15 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.api.Const.*;
+
+import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 
+import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
@@ -40,6 +45,23 @@ public class OtherDescription {
         allVars.put(KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
 
         return allVars;
+    }
+
+    /**
+     * recreate the config based on the configuration environment variables
+     * 
+     * @param envVars
+     */
+    public OtherDescription(Map<String, String> envVars) {
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            String key = curEnvVar.getKey();
+            String value = curEnvVar.getValue();
+            switch (key) {
+            case KEY_SLOEBER_IS_VERSION_CONTROLLED:
+                myIsVersionControlled = Boolean.parseBoolean(value);
+                break;
+            }
+        }
     }
 
     public Map<String, String> getEnvVarsVersion() {

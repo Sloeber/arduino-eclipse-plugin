@@ -1,12 +1,10 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import java.util.Map.Entry;
 
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
@@ -294,6 +292,64 @@ public class CompileDescription {
         ret.put(SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
 
         return ret;
+    }
+
+    /**
+     * Recreate the compile options based on the configuration environment variables
+     * given
+     * 
+     * @param envVars
+     */
+    public CompileDescription(Map<String, String> envVars) {
+        String warningLevel = WarningLevels.NONE.toString();
+        String customWarningLevel = EMPTY;
+        String sizeCommand = SizeCommands.RAW_RESULT.toString();
+        String customSizeCommand = EMPTY;
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            String key = curEnvVar.getKey();
+            String value = curEnvVar.getValue();
+            switch (key) {
+            case SLOEBER_ADDITIONAL_COMPILE_OPTIONS:
+                my_C_andCPP_CompileOptions = value;
+                break;
+            case SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS:
+                my_CPP_CompileOptions = value;
+                break;
+            case SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS:
+                my_C_CompileOptions = value;
+                break;
+            case SLOEBER_ASSEMBLY_COMPILE_OPTIONS:
+                my_Assembly_CompileOptions = value;
+                break;
+            case SLOEBER_ARCHIVE_COMPILE_OPTIONS:
+                my_Archive_CompileOptions = value;
+                break;
+            case SLOEBER_LINK_COMPILE_OPTIONS:
+                my_Link_CompileOptions = value;
+                break;
+            case SLOEBER_ALL_COMPILE_OPTIONS:
+                my_All_CompileOptions = value;
+                break;
+            case SLOEBER_WARNING_LEVEL:
+                warningLevel = value;
+                break;
+
+            case SLOEBER_WARNING_LEVEL_CUSTOM:
+                customWarningLevel = value;
+                break;
+            case SLOEBER_SIZE_TYPE:
+                sizeCommand = value;
+                break;
+            case SLOEBER_SIZE_CUSTOM:
+                customSizeCommand = value;
+                break;
+            }
+            myWarningLevel = WarningLevels.valueOf(warningLevel);
+            myWarningLevel.setCustomWarningLevel(customWarningLevel, true);
+
+            mySizeCommand = SizeCommands.valueOf(sizeCommand);
+            mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
+        }
     }
 
     public Map<String, String> getEnvVarsVersion() {

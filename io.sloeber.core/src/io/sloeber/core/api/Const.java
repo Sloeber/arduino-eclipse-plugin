@@ -70,7 +70,7 @@ public class Const {
     // General stuff
     public static final String PLUGIN_ID = "io.sloeber.core";
     public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
-    public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
+    public static final String SLOEBER_NATURE_ID = "io.sloeber.arduinonature";
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
     public static final String SLOEBER_HOME = "SLOEBER_HOME";
     public static final String RUNTIME_IDE_PATH = "runtime.ide.path";

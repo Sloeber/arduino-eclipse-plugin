@@ -14,10 +14,14 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.core.internal.registry.osgi.OSGIUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.spi.RegistryContributor;
+import org.eclipse.core.runtime.spi.RegistryStrategy;
+import org.osgi.framework.Bundle;
 
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -63,12 +67,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     private static final String KEY_AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
     private static final String KEY_INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
     private static final String KEY_CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
+    private static final String KEY_EXTENSION = "extension"; //$NON-NLS-1$
 
     private static final String KEY_PRE_BUILD_STEP = "Build.pre.step"; //$NON-NLS-1$
     private static final String KEY_PRE_BUILD_ANNOUNCEMENT = "Build.pre.announcement"; //$NON-NLS-1$
     private static final String KEY_POST_BUILD_STEP = "Build.post.step"; //$NON-NLS-1$
     private static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build.post.announcement"; //$NON-NLS-1$
     private static final String KEY_AUTOBUILD_EXTENSION_CLASS = "Extension class name"; //$NON-NLS-1$
+    private static final String KEY_AUTOBUILD_EXTENSION_BUNDEL = "Extension bundel name"; //$NON-NLS-1$
 
     //Start of fields that need to be copied/made persistent
     private IConfiguration myAutoBuildConfiguration;
@@ -121,7 +127,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     private String myPostBuildStepAnouncement = EMPTY_STRING;
     private Map<ITool, Map<IResource, String>> myCustomToolCommands = new HashMap<>();
     private Map<ITool, Map<IResource, String>> myCustomToolPattern = new HashMap<>();
-    private AutoBuildConfigurationExtensionDescription myAutoBuildConfigurationExtensionDescription = null;
+    private AutoBuildConfigurationExtensionDescription myAutoBuildCfgExtDes = null;
     //End of fields that need to be copied/made persistent
 
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
@@ -213,8 +219,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
                 ctor.setAccessible(true);
 
-                myAutoBuildConfigurationExtensionDescription = (AutoBuildConfigurationExtensionDescription) ctor
-                        .newInstance(this, base);
+                myAutoBuildCfgExtDes = (AutoBuildConfigurationExtensionDescription) ctor.newInstance(this, base);
             } catch (NoSuchMethodException e) {
                 System.err.println(
                         "ERROR: Classed derived from AutoBuildConfigurationExtensionDescription need to implement a constructor with parameters AutoBuildConfigurationDescription and AutoBuildConfigurationExtensionDescription"); //$NON-NLS-1$
@@ -262,6 +267,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         String projectTypeID = null;
         String confName = null;
         String autoCfgExtentionDesc = null;
+        String autoCfgExtentionBundel = null;
         myCdtConfigurationDescription = cfgDescription;
         myProject = cfgDescription.getProjectDescription().getProject();
         String[] lines = curConfigsText.split(lineEnd);
@@ -384,6 +390,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             case KEY_AUTOBUILD_EXTENSION_CLASS:
                 autoCfgExtentionDesc = value;
                 break;
+            case KEY_AUTOBUILD_EXTENSION_BUNDEL:
+                autoCfgExtentionBundel = value;
+                break;
+
             default:
                 boolean found = false;
 
@@ -398,7 +408,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                     }
                 }
 
-                if (!found) {
+                if (!found && !key.startsWith(KEY_EXTENSION)) {
                     System.err.println("Following autobuild configuration line is ignored " + curLine); //$NON-NLS-1$
                 }
             }
@@ -474,20 +484,23 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             }
         }
 
-        if (autoCfgExtentionDesc != null && (!autoCfgExtentionDesc.isBlank())) {
+        if (autoCfgExtentionDesc != null && autoCfgExtentionBundel != null && (!autoCfgExtentionDesc.isBlank())
+                && (!autoCfgExtentionBundel.isBlank())) {
             try {
-                @SuppressWarnings("rawtypes")
-                Class autoCfgExtentionDescClass = Class.forName(autoCfgExtentionDesc);
-                @SuppressWarnings({ "unchecked", "rawtypes" })
-                Constructor ctor = autoCfgExtentionDescClass.getDeclaredConstructor(
-                        AutoBuildConfigurationDescription.class, String.class, String.class, String.class);
+                Bundle contributingBundle = OSGIUtils.getDefault().getBundle(autoCfgExtentionBundel);
+                Class<?> autoCfgExtentionDescClass = contributingBundle.loadClass(autoCfgExtentionDesc);
+                Constructor<?> ctor = autoCfgExtentionDescClass.getDeclaredConstructor(
+                        IAutoBuildConfigurationDescription.class, String.class, String.class, String.class);
                 ctor.setAccessible(true);
 
-                myAutoBuildConfigurationExtensionDescription = (AutoBuildConfigurationExtensionDescription) ctor
-                        .newInstance(this, curConfigsText, lineStart, lineEnd);
-            } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+                myAutoBuildCfgExtDes = (AutoBuildConfigurationExtensionDescription) ctor.newInstance(this,
+                        curConfigsText, lineStart + KEY_EXTENSION + DOT, lineEnd);
+            } catch (NoSuchMethodException e) {
+                System.err.println(
+                        "Classes derived from AutoBuildConfigurationExtensionDescription need to implement constructor IAutoBuildConfigurationDescription, String, String, String"); //$NON-NLS-1$
+            } catch (SecurityException | ClassNotFoundException | InstantiationException
+
                     | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -957,10 +970,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             }
         }
 
-        if (myAutoBuildConfigurationExtensionDescription != null) {
-            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_CLASS + KEY_EQUALS
-                    + myAutoBuildConfigurationExtensionDescription.getClass().getName());
-            ret.append(myAutoBuildConfigurationExtensionDescription.serialize(linePrefix, lineEnd));
+        if (myAutoBuildCfgExtDes != null) {
+            Class<? extends AutoBuildConfigurationExtensionDescription> referencedClass = myAutoBuildCfgExtDes
+                    .getClass();
+
+            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_BUNDEL + KEY_EQUALS + myAutoBuildCfgExtDes.getBundelName()
+                    + lineEnd);
+            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_CLASS + KEY_EQUALS + referencedClass.getName() + lineEnd);
+            ret.append(myAutoBuildCfgExtDes.serialize(linePrefix + KEY_EXTENSION + DOT, lineEnd));
         }
 
         return ret;
@@ -1306,13 +1323,13 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public AutoBuildConfigurationExtensionDescription getAutoBuildConfigurationExtensionDescription() {
-        return myAutoBuildConfigurationExtensionDescription;
+        return myAutoBuildCfgExtDes;
     }
 
     @Override
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension) {
         newExtension.setAutoBuildDescription(this);
-        myAutoBuildConfigurationExtensionDescription = newExtension;
+        myAutoBuildCfgExtDes = newExtension;
 
     }
 

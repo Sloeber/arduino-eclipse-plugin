@@ -315,15 +315,14 @@ public class BoardDescription {
             //If you crash on the next line no platform have been installed
             ArduinoPlatformVersion platform = platforms.get(0);
             myUserSelectedBoardsTxtFile = platform.getBoardsFile();
-            mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
             myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
         } else {
-            mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
             myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
             myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
             myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
             myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
         }
+        mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
     }
 
     public BoardDescription(BoardDescription srcObject) {
@@ -694,20 +693,37 @@ public class BoardDescription {
         }
     }
 
-    private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
-        Map<String, String> ret = new HashMap<>();
-
-        KeyValueTree tree = mySloeberBoardTxtFile.getData();
-        KeyValueTree boardMenuSection = tree.getChild(myBoardID + DOT + MENU);
-        if (boardMenuSection != null) {
-            for (Entry<String, String> curoption : options.entrySet()) {
-                String key = curoption.getKey();
-                if (boardMenuSection.getChild(key).getKey() != null) {
-                    ret.put(key, curoption.getValue());
+    /**
+     * create a BoardDescription based on the environment variables given
+     * 
+     * @param envVars
+     */
+    public BoardDescription(Map<String, String> envVars) {
+        int menuKeyLength = KEY_SLOEBER_MENU_SELECTION.length() + DOT.length();
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            String key = curEnvVar.getKey();
+            String value = curEnvVar.getValue();
+            switch (key) {
+            case KEY_SLOEBER_PROGRAMMER:
+                myProgrammer = value;
+                break;
+            case KEY_SLOEBER_BOARD_ID:
+                myBoardID = value;
+                break;
+            case KEY_SLOEBER_BOARD_TXT:
+                myUserSelectedBoardsTxtFile = new File(value);
+                mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+                break;
+            case KEY_SLOEBER_UPLOAD_PORT:
+                myUploadPort = value;
+                break;
+            default:
+                if (key.startsWith(KEY_SLOEBER_MENU_SELECTION + DOT)) {
+                    String cleanKey = key.substring(menuKeyLength);
+                    myOptions.put(cleanKey, value);
                 }
             }
         }
-        return ret;
     }
 
     /**
@@ -731,6 +747,22 @@ public class BoardDescription {
             allVars.put(KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
         }
         return allVars;
+    }
+
+    private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
+        Map<String, String> ret = new HashMap<>();
+
+        KeyValueTree tree = mySloeberBoardTxtFile.getData();
+        KeyValueTree boardMenuSection = tree.getChild(myBoardID + DOT + MENU);
+        if (boardMenuSection != null) {
+            for (Entry<String, String> curoption : options.entrySet()) {
+                String key = curoption.getKey();
+                if (boardMenuSection.getChild(key).getKey() != null) {
+                    ret.put(key, curoption.getValue());
+                }
+            }
+        }
+        return ret;
     }
 
     /**

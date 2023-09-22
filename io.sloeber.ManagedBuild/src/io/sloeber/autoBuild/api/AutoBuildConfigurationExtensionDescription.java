@@ -3,6 +3,29 @@ package io.sloeber.autoBuild.api;
 /**
  * this abstract class is the basis to extend AutoBuild with your own project
  * data/methods
+ * 
+ * Note you need to create a constructor of type
+ * 
+ * public YourDerivedClass(IAutoBuildConfigurationDescription
+ * autoCfgDescription,
+ * String curConfigsText, String lineStart, String lineEnd)
+ * 
+ * Create a configuration based on persisted content.
+ * The persisted content can contain multiple configurations and as sutch a
+ * filtering is needed
+ * The lineStart and lineEnd are used to filter content only applicable to this
+ * configuration
+ * 
+ * @param cfgDescription
+ *            the CDT configuration this object will belong to
+ * @param curConfigsText
+ *            the persistent content
+ * @param lineStart
+ *            only consider lines that start with this string
+ * @param lineEnd
+ *            only consider lines that end with this string
+ * 
+ * 
  *
  */
 public abstract class AutoBuildConfigurationExtensionDescription {
@@ -30,26 +53,6 @@ public abstract class AutoBuildConfigurationExtensionDescription {
      *            the class to copy from
      */
     public abstract void copyData(AutoBuildConfigurationExtensionDescription from);
-
-    /**
-     * Read the persistent contend from curConfigsText (or another source if you
-     * want)
-     * curConfigsText can contain multiple configurations and as sutch a
-     * filtering is needed
-     * The lineStart and lineEnd are used to filter content only applicable to this
-     * configuration
-     * 
-     * @param cfgDescription
-     *            the CDT configuration this object will belong to
-     * @param curConfigsText
-     *            the persistent content
-     * @param lineStart
-     *            only consider lines that start with this string
-     * @param lineEnd
-     *            only consider lines that end with this string
-     */
-    public abstract void deserialize(IAutoBuildConfigurationDescription autoCfgDescription, String curConfigsText,
-            String lineStart, String lineEnd);
 
     /**
      * convert the object to a string that can be stored (or store it yourself
@@ -80,24 +83,12 @@ public abstract class AutoBuildConfigurationExtensionDescription {
     }
 
     /**
-     * Create a configuration based on persisted content.
-     * The persisted content can contain multiple configurations and as sutch a
-     * filtering is needed
-     * The lineStart and lineEnd are used to filter content only applicable to this
-     * configuration
+     * Get the OSGI bundel name.
+     * The OSGI bundel name is used to load your class when reading from disk
+     * therefore the bundel needs to be known
      * 
-     * @param cfgDescription
-     *            the CDT configuration this object will belong to
-     * @param curConfigsText
-     *            the persistent content
-     * @param lineStart
-     *            only consider lines that start with this string
-     * @param lineEnd
-     *            only consider lines that end with this string
+     * @return the bundel name your implementation of this class belongs to
      */
-    public AutoBuildConfigurationExtensionDescription(IAutoBuildConfigurationDescription autoCfgDescription,
-            String curConfigsText, String lineStart, String lineEnd) {
-        deserialize(autoCfgDescription, curConfigsText, lineStart, lineEnd);
-    }
+    public abstract String getBundelName();
 
 }

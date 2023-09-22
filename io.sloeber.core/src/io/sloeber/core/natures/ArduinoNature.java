@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import io.sloeber.core.api.Const;
 
 public class ArduinoNature implements IProjectNature {
-    public static final String NATURE_ID = Const.ARDUINO_NATURE_ID;
+    public static final String NATURE_ID = Const.SLOEBER_NATURE_ID;
     private static final String BUILDER_ID = "io.sloeber.core.inoToCpp"; //$NON-NLS-1$
 
     public static void addNature(IProject project, IProgressMonitor inMonitor) throws CoreException {
