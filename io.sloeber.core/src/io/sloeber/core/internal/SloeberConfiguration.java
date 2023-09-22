@@ -34,6 +34,7 @@ import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescription implements ISloeberConfiguration {
@@ -94,6 +95,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         myBoardDescription = new BoardDescription(envVars);
         myOtherDesc = new OtherDescription(envVars);
         myCompileDescription = new CompileDescription(envVars);
+        myIsDirty = true;
+        //configure(); Seems I can not dpo the config here
     }
 
     @Override
@@ -126,6 +129,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         for (Entry<String, String> curEnvVar : envVars.entrySet()) {
             ret.append(linePrefix + curEnvVar.getKey() + EQUAL + curEnvVar.getValue() + lineEnd);
         }
+        configureIfDirty();
         return ret;
     }
 
@@ -170,6 +174,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         return myEnvironmentVariables;
     }
 
+    private void configureIfDirty() {
+        if (myIsDirty && !myIsConfiguring) {
+            configure();
+        }
+    }
+
     private void configure() {
         if (getAutoBuildDescription() == null) {
             //We can not configure if the AutoBuildDescription is not known
@@ -180,6 +190,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         getEnvVars();
         myIsConfiguring = false;
         myIsDirty = false;
+        updateArduinoCodeLinks();
         return;
 
     }
@@ -230,9 +241,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
      */
     @Override
     public String getDecoratedText(String text) {
-        if (myIsDirty && !myIsConfiguring) {
-            configure();
-        }
         String boardName = myBoardDescription.getBoardName();
         String portName = myBoardDescription.getActualUploadPort();
         if (portName.isEmpty()) {
@@ -334,5 +342,28 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     @Override
     public IAutoBuildConfigurationDescription getAutoBuildDesc() {
         return getAutoBuildDescription();
+    }
+
+    /**
+     * This method adds or updates the Arduino code links in a subfolder named
+     * Arduino/[cfg name].
+     * 2 linked subfolders named core and variant link to the real Arduino code note
+     *
+     * 
+     */
+    private void updateArduinoCodeLinks() {
+        IPath corePath = myBoardDescription.getActualCoreCodePath();
+        IProject project = getProject();
+        IFolder arduinoVariantFolder = getArduinoVariantFolder();
+        if (corePath != null) {
+            Helpers.addCodeFolder(project, corePath, getArduinoCoreFolder(), true);
+            IPath variantPath = myBoardDescription.getActualVariantPath();
+            if ((variantPath == null) || (!variantPath.toFile().exists())) {
+                // remove the existing link
+                Helpers.removeCodeFolder(project, arduinoVariantFolder);
+            } else {
+                Helpers.addCodeFolder(project, variantPath, arduinoVariantFolder, false);
+            }
+        }
     }
 }

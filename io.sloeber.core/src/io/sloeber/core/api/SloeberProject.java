@@ -248,7 +248,7 @@ public class SloeberProject extends Common {
                     Map<String, List<IPath>> pathMods = Libraries.addLibrariesForConfiguration(sloeberConfiguration,
                             librariesToAdd);
                     // Add the arduino code folders
-                    Helpers.addArduinoCodeForConfig(sloeberConfiguration, boardDescriptor);
+                    //                    Helpers.addArduinoCodeForConfig(sloeberConfiguration, boardDescriptor);
 
                     //                    Libraries.adjustProjectDescription(curConfigDesc, pathMods);
                     //                    Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);

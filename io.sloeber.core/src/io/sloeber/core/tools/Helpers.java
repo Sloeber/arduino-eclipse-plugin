@@ -291,32 +291,6 @@ public class Helpers {
     }
 
     /**
-     * This method adds the Arduino code in a subfolder named Arduino. 2 linked
-     * subfolders named core and variant link to the real Arduino code note
-     *
-     * @param project
-     *            The project to add the arduino code to
-     * @param boardDescriptor
-     *            The board that is used
-     * 
-     */
-    public static void addArduinoCodeForConfig(SloeberConfiguration cfg, BoardDescription boardDescriptor) {
-        IPath corePath = boardDescriptor.getActualCoreCodePath();
-        IProject project = cfg.getProject();
-        IFolder arduinoVariantFolder = cfg.getArduinoVariantFolder();
-        if (corePath != null) {
-            addCodeFolder(project, corePath, cfg.getArduinoCoreFolder(), true);
-            IPath variantPath = boardDescriptor.getActualVariantPath();
-            if ((variantPath == null) || (!variantPath.toFile().exists())) {
-                // remove the existing link
-                Helpers.removeCodeFolder(project, arduinoVariantFolder);
-            } else {
-                addCodeFolder(project, variantPath, arduinoVariantFolder, false);
-            }
-        }
-    }
-
-    /**
      * Creates a new folder resource as a link or local
      *
      * @param Project

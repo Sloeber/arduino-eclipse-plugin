@@ -26,6 +26,9 @@ public interface ISloeberConfiguration {
     }
 
     public static ISloeberConfiguration getActiveConfig(ICProjectDescription projectDescription) {
+        if (projectDescription == null) {
+            return null;
+        }
         ICConfigurationDescription activeCfg = projectDescription.getActiveConfiguration();
         AutoBuildConfigurationDescription autoCfg = (AutoBuildConfigurationDescription) activeCfg
                 .getConfigurationData();
