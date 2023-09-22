@@ -12,10 +12,12 @@ import org.eclipse.cdt.make.core.IMakeTarget;
 import org.eclipse.cdt.make.core.IMakeTargetManager;
 import org.eclipse.cdt.make.core.MakeCorePlugin;
 import org.eclipse.cdt.make.internal.core.MakeTarget;
+import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -45,11 +47,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     CompileDescription myCompileDescription;
 
     //operational data
-    boolean myIsDirty = true;
+    boolean myMemoryIsDirty = true;
 
     //derived data
     private Map<String, String> myEnvironmentVariables = new HashMap<>();
-    private boolean myIsConfiguring;
+    private boolean myIsCleaningMemory = false;
+    private boolean myIsUpdatingProject = false;
 
     /**
      * copy constructor
@@ -95,7 +98,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         myBoardDescription = new BoardDescription(envVars);
         myOtherDesc = new OtherDescription(envVars);
         myCompileDescription = new CompileDescription(envVars);
-        myIsDirty = true;
+        myMemoryIsDirty = true;
         //configure(); Seems I can not dpo the config here
     }
 
@@ -167,30 +170,51 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public Map<String, String> getEnvironmentVariables() {
-        if (myIsDirty && !myIsConfiguring) {
-            configure();
-        }
+        configureIfDirty();
 
         return myEnvironmentVariables;
     }
 
     private void configureIfDirty() {
-        if (myIsDirty && !myIsConfiguring) {
-            configure();
+        if (myMemoryIsDirty && !myIsCleaningMemory) {
+            cleanMemory();
+        }
+        if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
+            if (projectNeedsUpdate()) {
+                updateArduinoCodeLinks();
+            }
         }
     }
 
-    private void configure() {
+    private boolean projectNeedsUpdate() {
+        IPath corePath = myBoardDescription.getActualCoreCodePath();
+        IFolder coreFolder = getArduinoCoreFolder();
+        if (!coreFolder.getLocation().equals(corePath)) {
+            return true;
+        }
+        IFolder arduinoVariantFolder = getArduinoVariantFolder();
+        IPath variantPath = myBoardDescription.getActualVariantPath();
+        if ((variantPath == null) && (variantPath.toFile().exists())) {
+            return true;
+        }
+        if (!arduinoVariantFolder.getLocation().equals(variantPath)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void cleanMemory() {
         if (getAutoBuildDescription() == null) {
             //We can not configure if the AutoBuildDescription is not known
             System.err.println("SloeberConfiguration can not be configured if the AutoBuildDescription is not known"); //$NON-NLS-1$
             return;
         }
-        myIsConfiguring = true;
+        myIsCleaningMemory = true;
         getEnvVars();
-        myIsConfiguring = false;
-        myIsDirty = false;
-        updateArduinoCodeLinks();
+        myIsCleaningMemory = false;
+        myMemoryIsDirty = false;
+
         return;
 
     }
@@ -310,7 +334,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public boolean canBeIndexed() {
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -321,7 +344,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     }
 
     private void setIsDirty() {
-        myIsDirty = true;
+        myMemoryIsDirty = true;
     }
 
     @Override
@@ -352,18 +375,26 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
      * 
      */
     private void updateArduinoCodeLinks() {
-        IPath corePath = myBoardDescription.getActualCoreCodePath();
-        IProject project = getProject();
-        IFolder arduinoVariantFolder = getArduinoVariantFolder();
-        if (corePath != null) {
-            Helpers.addCodeFolder(project, corePath, getArduinoCoreFolder(), true);
-            IPath variantPath = myBoardDescription.getActualVariantPath();
-            if ((variantPath == null) || (!variantPath.toFile().exists())) {
-                // remove the existing link
-                Helpers.removeCodeFolder(project, arduinoVariantFolder);
-            } else {
-                Helpers.addCodeFolder(project, variantPath, arduinoVariantFolder, false);
+        if (myIsUpdatingProject) {
+            return;
+        }
+        myIsUpdatingProject = true;
+        try {
+            IPath corePath = myBoardDescription.getActualCoreCodePath();
+            IProject project = getProject();
+            IFolder arduinoVariantFolder = getArduinoVariantFolder();
+            if (corePath != null) {
+                Helpers.addCodeFolder(corePath, getArduinoCoreFolder(), true);
+                IPath variantPath = myBoardDescription.getActualVariantPath();
+                if ((variantPath == null) || (!variantPath.toFile().exists())) {
+                    // remove the existing link
+                    Helpers.removeCodeFolder(arduinoVariantFolder);
+                } else {
+                    Helpers.addCodeFolder(variantPath, arduinoVariantFolder, false);
+                }
             }
+        } finally {
+            myIsUpdatingProject = false;
         }
     }
 }
