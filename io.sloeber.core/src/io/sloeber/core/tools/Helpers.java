@@ -175,13 +175,14 @@ public class Helpers {
      * @param source
      *            the fully qualified name of the folder to link to
      */
-    public static void LinkFolderToFolder(IProject project, IPath source, IFolder projectFolder) {
+    public static void LinkFolderToFolder(IPath source, IFolder projectFolder) {
+        IProject project = projectFolder.getProject();
 
         // create target parent folder and grandparents
         IPath ParentFolders = projectFolder.getProjectRelativePath().removeLastSegments(1);
         for (int curfolder = ParentFolders.segmentCount() - 1; curfolder >= 0; curfolder--) {
             try {
-                createNewFolder(project, project.getFolder(ParentFolders.removeLastSegments(curfolder)), null);
+                createNewFolder(project.getFolder(ParentFolders.removeLastSegments(curfolder)), null);
             } catch (@SuppressWarnings("unused") CoreException e) {// ignore this error as the parent
                 // folders may have been created yet
             }
@@ -189,7 +190,7 @@ public class Helpers {
 
         // create the actual link
         try {
-            createNewFolder(project, projectFolder, source);
+            createNewFolder(projectFolder, source);
         } catch (CoreException e) {
             log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     Messages.Helpers_Create_folder_failed.replace(FOLDER, projectFolder.toString()), e));
@@ -197,48 +198,16 @@ public class Helpers {
     }
 
     /**
-     * This method creates a link folder in the project and add the folder as a
-     * source path to the project.
+     * This method creates a link folder in the project
      * 
-     * It returns a list of paths that need to be added to the link paths
-     *
-     * @param project
-     * @param Path
-     * @throws CoreException
-     *
-     * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
      */
-    public static List<IPath> addCodeFolder(IProject project, IPath toLinkFolder, IFolder projectFolder,
-            boolean forceRoot) {
-        List<IPath> addToIncludePath = new ArrayList<>();
+    public static void addCodeFolder(IPath toLinkFolder, IFolder projectFolder, boolean forceRoot) {
 
-        LinkFolderToFolder(project, toLinkFolder, projectFolder);
+        LinkFolderToFolder(toLinkFolder, projectFolder);
 
-        // Now the folder has been created we need to make sure the special
-        // folders are added to the path
-
-        String possibleIncludeFolder = "utility"; //$NON-NLS-1$
-        File file = toLinkFolder.append(possibleIncludeFolder).toFile();
-        if (file.exists()) {
-            addToIncludePath.add(projectFolder.getFullPath().append(possibleIncludeFolder));
-        }
-
-        if (forceRoot) {
-            addToIncludePath.add(projectFolder.getFullPath());
-        } else {
-            // add src or root give priority to src
-            possibleIncludeFolder = ArduinoLibraryVersion.LIBRARY_SOURCE_FODER;
-            file = toLinkFolder.append(possibleIncludeFolder).toFile();
-            if (file.exists()) {
-                addToIncludePath.add(projectFolder.getFullPath().append(possibleIncludeFolder));
-            } else {
-                addToIncludePath.add(projectFolder.getFullPath());
-            }
-        }
-        return addToIncludePath;
     }
 
-    public static void removeCodeFolder(IProject project, IFolder deleteFolder) {
+    public static void removeCodeFolder(IFolder deleteFolder) {
         if (deleteFolder.exists()) {
             try {
                 deleteFolder.delete(true, null);
@@ -293,8 +262,6 @@ public class Helpers {
     /**
      * Creates a new folder resource as a link or local
      *
-     * @param Project
-     *            the project the folder is added to
      * @param newFolder
      *            the new folder to create (can contain subfolders)
      * @param linklocation
@@ -305,10 +272,10 @@ public class Helpers {
      * @return nothing
      * @throws CoreException
      */
-    public static void createNewFolder(IProject Project, IFolder newFolder, IPath linklocation) throws CoreException {
+    public static void createNewFolder(IFolder newFolder, IPath linklocation) throws CoreException {
         if (linklocation != null) {
-            URI relativeLinklocation = Project.getPathVariableManager().convertToRelative(URIUtil.toURI(linklocation),
-                    false, null);
+            URI relativeLinklocation = newFolder.getProject().getPathVariableManager()
+                    .convertToRelative(URIUtil.toURI(linklocation), false, null);
             newFolder.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
         } else {
             newFolder.create(0, true, null);
@@ -361,7 +328,7 @@ public class Helpers {
         }
         for (File curFile : sourceFiles) {
             if (curFile.isDirectory()) {
-                LinkFolderToFolder(project, source.append(curFile.getName()), target.getFolder(curFile.getName()));
+                LinkFolderToFolder(source.append(curFile.getName()), target.getFolder(curFile.getName()));
             } else {
                 try {
                     target.getFile(curFile.getName()).createLink(source.append(curFile.getName()),

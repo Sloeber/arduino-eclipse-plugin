@@ -246,14 +246,14 @@ public class Libraries {
      *            the libraries to add
      * @return return true if the projdesc needs to be set
      */
-    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, ISloeberConfiguration confdesc,
+    public static void addLibrariesToProject(IProject project, ISloeberConfiguration confdesc,
             Set<String> librariesToAdd) {
         Map<String, IPath> libraries = getAllInstalledLibraries(confdesc);
         libraries.keySet().retainAll(librariesToAdd);
         if (libraries.isEmpty()) {
-            return new HashMap<>();
+            return;
         }
-        return addLibrariesForConfiguration(confdesc, libraries);
+        addLibrariesForConfiguration(confdesc, libraries);
     }
 
     /**
@@ -267,34 +267,13 @@ public class Libraries {
      *            the list of libraries to add
      * @return true if the configuration description has changed
      */
-    public static Map<String, List<IPath>> addLibrariesForConfiguration(ISloeberConfiguration sloeberCfg,
-            Map<String, IPath> libraries) {
+    public static void addLibrariesForConfiguration(ISloeberConfiguration sloeberCfg, Map<String, IPath> libraries) {
 
-        List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
-        List<IPath> foldersToAddToIncludes = new LinkedList<>();
-        IProject project = sloeberCfg.getProject();
         IFolder librariesFolder = sloeberCfg.getArduinoLibraryFolder();
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
-            foldersToAddToIncludes.addAll(Helpers.addCodeFolder(project, CurItem.getValue(),
-                    librariesFolder.getFolder(CurItem.getKey()), false));
+            Helpers.addCodeFolder(CurItem.getValue(), librariesFolder.getFolder(CurItem.getKey()), false);
             // Check the libraries to see if there are "unwanted subfolders"
-            File subFolders[] = CurItem.getValue().toFile().listFiles();
-            for (File file : subFolders) {
-                if (file.isDirectory() && !"src".equals(file.getName()) //$NON-NLS-1$
-                        && !"utility".equals(file.getName()) //$NON-NLS-1$
-                        && !"examples".equalsIgnoreCase(file.getName())) { //$NON-NLS-1$
-                    IPath excludePath = new Path("/" + project.getName()) //$NON-NLS-1$
-                            .append(WORKSPACE_LIB_FOLDER).append(CurItem.getKey()).append(file.getName());
-                    foldersToRemoveFromBuildPath.add(excludePath);
-
-                }
-            }
         }
-        Map<String, List<IPath>> codePathChanges = new HashMap<>();
-        codePathChanges.put(INCLUDE, foldersToAddToIncludes);
-        codePathChanges.put(REMOVE, foldersToRemoveFromBuildPath);
-        return codePathChanges;
-
     }
 
     // public static void removeLibrariesFromProject(Set<String> libraries) {
@@ -319,24 +298,24 @@ public class Libraries {
     }
 
     public static void reAttachLibrariesToProject(IProject project) {
-        boolean descNeedsSet = false;
+        //        boolean descNeedsSet = false;
         Set<String> AllLibrariesOriginallyUsed = getAllLibrariesFromProject(project);
         ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
         ICProjectDescription projDesc = mngr.getProjectDescription(project, true);
         ICConfigurationDescription configurationDescriptions[] = projDesc.getConfigurations();
         for (ICConfigurationDescription curconfDesc : configurationDescriptions) {
             ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getConfig(curconfDesc);
-            Map<String, List<IPath>> foldersToChange = addLibrariesToProject(project, sloeberCfg,
-                    AllLibrariesOriginallyUsed);
-            descNeedsSet = descNeedsSet || adjustProjectDescription(curconfDesc, foldersToChange);
+            //Map<String, List<IPath>> foldersToChange = 
+            addLibrariesToProject(project, sloeberCfg, AllLibrariesOriginallyUsed);
+            //descNeedsSet = descNeedsSet || adjustProjectDescription(curconfDesc, foldersToChange);
         }
-        if (descNeedsSet) {
-            try {
-                mngr.setProjectDescription(project, projDesc, true, null);
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
-        }
+        //        if (descNeedsSet) {
+        //            try {
+        //                mngr.setProjectDescription(project, projDesc, true, null);
+        //            } catch (CoreException e) {
+        //                e.printStackTrace();
+        //            }
+        //        }
     }
 
     /**
@@ -447,19 +426,20 @@ public class Libraries {
                         Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
                                 + affectedProject.getName() + ": " //$NON-NLS-1$
                                 + installedLibs.keySet().toString()));
-                        Map<String, List<IPath>> foldersToChange = addLibrariesForConfiguration(
-                                ISloeberConfiguration.getActiveConfig(affectedProject), installedLibs);
+                        //Map<String, List<IPath>> foldersToChange =
+                        addLibrariesForConfiguration(ISloeberConfiguration.getActiveConfig(affectedProject),
+                                installedLibs);
 
-                        if (adjustProjectDescription(confDesc, foldersToChange)) {
-                            try {
-                                mngr.setProjectDescription(affectedProject, projectDescription, true, null);
-
-                            } catch (CoreException e) {
-                                // this can fail because the project may already
-                                // be
-                                // deleted
-                            }
-                        }
+                        //                        if (adjustProjectDescription(confDesc, foldersToChange)) {
+                        //                            try {
+                        //                                mngr.setProjectDescription(affectedProject, projectDescription, true, null);
+                        //
+                        //                            } catch (CoreException e) {
+                        //                                // this can fail because the project may already
+                        //                                // be
+                        //                                // deleted
+                        //                            }
+                        //                        }
 
                     }
                 }

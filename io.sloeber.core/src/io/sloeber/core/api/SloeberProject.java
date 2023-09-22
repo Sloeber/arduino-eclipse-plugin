@@ -245,8 +245,8 @@ public class SloeberProject extends Common {
                             compileDescriptor);
                     autoBuildConfig.setAutoBuildConfigurationExtensionDescription(sloeberConfiguration);
                     sloeberConfiguration.addLibrariesToProject(newProjectHandle, librariesToAdd);
-                    Map<String, List<IPath>> pathMods = Libraries.addLibrariesForConfiguration(sloeberConfiguration,
-                            librariesToAdd);
+                    //Map<String, List<IPath>> pathMods =
+                    Libraries.addLibrariesForConfiguration(sloeberConfiguration, librariesToAdd);
                     // Add the arduino code folders
                     //                    Helpers.addArduinoCodeForConfig(sloeberConfiguration, boardDescriptor);
 

@@ -96,19 +96,10 @@ public class Sketch {
      * @throws CoreException
      */
     public static void addCodeFolder(IProject project, Path path) throws CoreException {
-        boolean projDescNeedsSaving = false;
         CoreModel coreModel = CoreModel.getDefault();
-        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
 
-        List<IPath> includeFolders = Helpers.addCodeFolder(project, path, project.getFolder(path.lastSegment()), false);
-        for (ICConfigurationDescription curConfig : projectDescription.getConfigurations()) {
-            if (Helpers.addIncludeFolder(curConfig, includeFolders, true)) {
-                projDescNeedsSaving = true;
-            }
-        }
-        if (projDescNeedsSaving) {
-            coreModel.getProjectDescriptionManager().setProjectDescription(project, projectDescription, true, null);
-        }
+        Helpers.addCodeFolder(path, project.getFolder(path.lastSegment()), false);
+
     }
 
 }
