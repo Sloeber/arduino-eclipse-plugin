@@ -130,11 +130,14 @@ public class CompileProperties extends SloeberCpropertyTab {
 		this.myLinkCommand = makeOptionField(Messages.ui_append_link, Messages.ui_append_link_text);
 		this.myAllCommand = makeOptionField(Messages.ui_append_all, Messages.ui_append_all_text);
 
-		updateScreen();
+		updateScreen(false);
 	}
 
 	@Override
-	protected void updateScreen() {
+	protected void updateScreen(boolean updateData) {
+		if (updateData) {
+			myCompDesc = mySloeberCfg.getCompileDescription();
+		}
 		disableListeners = true;
 		myWarningLevel.setText(myCompDesc.getWarningLevel().toString());
 		myCustomWarningLevel.setEnabled(myCompDesc.getWarningLevel() == WarningLevels.CUSTOM);

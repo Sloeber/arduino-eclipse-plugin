@@ -15,9 +15,10 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 	protected ISloeberConfiguration mySloeberCfg = null;
 
 	/**
-	 * updte the screen based on the data stored in the properties
+	 * update the screen based on the data stored in the properties if refreshData
+	 * is true the data has changed and needs to be retrieved
 	 */
-	protected abstract void updateScreen();
+	protected abstract void updateScreen(boolean refreshData);
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -65,8 +66,8 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 			}
 			break;
 		case ICPropertyTab.UPDATE:
-//			Object description = getDescription(getConfdesc());
-			updateScreen();
+			mySloeberCfg = ISloeberConfiguration.getConfig(getConfdesc());
+			updateScreen(true);
 			break;
 		case ICPropertyTab.DISPOSE:
 			dispose();
@@ -91,8 +92,8 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
-		// updateScreen(getDescription(cfg.getConfiguration()));
-		updateScreen();
+		mySloeberCfg = ISloeberConfiguration.getConfig(getConfdesc());
+		updateScreen(true);
 	}
 
 	@Override

@@ -46,11 +46,14 @@ public class OtherProperties extends SloeberCpropertyTab {
 		theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
-		updateScreen();
+		updateScreen(false);
 	}
 
 	@Override
-	protected void updateScreen() {
+	protected void updateScreen(boolean updateData) {
+		if (updateData) {
+			myOtherDesc = mySloeberCfg.getOtherDescription();
+		}
 		myOtherProperties.setSelection(myOtherDesc.IsVersionControlled());
 	}
 

@@ -189,7 +189,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		});
 		createLine();
 
-		updateScreen();
+		updateScreen(false);
 
 		mycontrolBoardName.addListener(SWT.Modify, myBoardModifyListener);
 		myControlBoardsTxtFile.addListener(SWT.Modify, myBoardFileModifyListener);
@@ -263,7 +263,10 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	}
 
 	@Override
-	protected void updateScreen() {
+	protected void updateScreen(boolean updateData) {
+		if (updateData) {
+			myBoardDesc = mySloeberCfg.getBoardDescription();
+		}
 		disableListeners = true;
 
 		myControlBoardsTxtFile.setText(tidyUpLength(myBoardDesc.getReferencingBoardsFile().toString()));
