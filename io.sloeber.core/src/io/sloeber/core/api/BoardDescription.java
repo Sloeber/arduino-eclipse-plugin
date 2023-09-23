@@ -311,18 +311,29 @@ public class BoardDescription {
     public BoardDescription() {
         myUserSelectedBoardsTxtFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
         if (!myUserSelectedBoardsTxtFile.exists()) {
-            List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
-            //If you crash on the next line no platform have been installed
-            ArduinoPlatformVersion platform = platforms.get(0);
+
+            ArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+            if (platform == null) {
+                List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
+                //If you crash on the next line no platform have been installed
+                platform = platforms.get(0);
+            }
             myUserSelectedBoardsTxtFile = platform.getBoardsFile();
-            myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
+            mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+
+            if (mySloeberBoardTxtFile.getAllBoardIDs().contains(UNO)) {
+                myBoardID = UNO;
+            } else {
+                myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
+            }
         } else {
+            mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
             myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
             myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
             myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
             myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
         }
-        mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+
     }
 
     public BoardDescription(BoardDescription srcObject) {
@@ -631,7 +642,7 @@ public class BoardDescription {
      */
     public IPath getArduinoPlatformPath() {
         updateWhenDirty();
-        ArduinoPlatform platform = BoardsManager.getPlatform(VendorArduino, getArchitecture());
+        ArduinoPlatform platform = BoardsManager.getPlatform(VENDOR_ARDUINO, getArchitecture());
         if (platform == null) {
             return null;
         }
