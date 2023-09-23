@@ -131,7 +131,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     //End of fields that need to be copied/made persistent
 
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
-    private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion"); //$NON-NLS-1$
+    private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 
     private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
     private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
