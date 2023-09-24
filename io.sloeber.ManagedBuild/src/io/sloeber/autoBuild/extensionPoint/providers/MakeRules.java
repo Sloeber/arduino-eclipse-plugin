@@ -241,7 +241,8 @@ public class MakeRules implements Iterable<MakeRule> {
             if (InputFileIgnoreList.contains(resource.getName())) {
                 return false;
             }
-            boolean isExcluded = CDataUtil.isExcluded(resource.getProjectRelativePath(), mySrcEntries);
+            boolean isExcluded = mySrcEntries == null ? false
+                    : CDataUtil.isExcluded(resource.getProjectRelativePath(), mySrcEntries);
             if (isExcluded) {
                 return false;
             }
