@@ -322,9 +322,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             case DESCRIPTION:
                 myDescription = value;
                 break;
-            case ID:
-                myId = value;
-                break;
+            //            case ID:
+            //                myId = value;
+            //                break;
             case KEY_BUILDFOLDER:
                 myBuildFolderString = value;
                 break;
@@ -792,7 +792,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public boolean stopOnFirstBuildError() {
-        checkIfWeCanWrite();
         return myStopOnFirstBuildError;
     }
 
