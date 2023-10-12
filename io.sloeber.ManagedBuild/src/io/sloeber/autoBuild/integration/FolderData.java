@@ -4,21 +4,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultFolderData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultLanguageData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 
 import io.sloeber.schema.api.IInputType;
 
 public class FolderData extends CDefaultFolderData {
+    private static final String AUTO_BUILD_FOLDER_DATA = "AutoBuild.FolderData"; //$NON-NLS-1$
+
     private AutoBuildConfigurationDescription myAutoBuildConf;
 
     private Set<CDefaultLanguageData> myLanguageDatas = new HashSet<>();
@@ -33,7 +31,7 @@ public class FolderData extends CDefaultFolderData {
      * @param autoBuildConf
      */
     FolderData(IProject myProject, AutoBuildConfigurationDescription autoBuildConf) {
-        super(CDataUtil.genId(autoBuildConf.getId()), Path.ROOT, null, autoBuildConf, null, false);
+        super(CDataUtil.genId(AUTO_BUILD_FOLDER_DATA), Path.ROOT, null, autoBuildConf, null, false);
         myAutoBuildConf = autoBuildConf;
         resolve();
     }
