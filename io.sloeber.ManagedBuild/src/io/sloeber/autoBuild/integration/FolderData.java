@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultFolderData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDefaultLanguageData;
@@ -17,9 +18,12 @@ import io.sloeber.schema.api.IInputType;
 public class FolderData extends CDefaultFolderData {
     private static final String AUTO_BUILD_FOLDER_DATA = "AutoBuild.FolderData"; //$NON-NLS-1$
 
-    private AutoBuildConfigurationDescription myAutoBuildConf;
-
     private Set<CDefaultLanguageData> myLanguageDatas = new HashSet<>();
+
+    FolderData(AutoBuildConfigurationDescription parent, CFolderData base, boolean clone) {
+        super(clone ? base.getId() : CDataUtil.genId(AUTO_BUILD_FOLDER_DATA), Path.ROOT, null, parent, null, false);
+        resolve(parent);
+    }
 
     /**
      * Constructor for project
@@ -32,8 +36,7 @@ public class FolderData extends CDefaultFolderData {
      */
     FolderData(IProject myProject, AutoBuildConfigurationDescription autoBuildConf) {
         super(CDataUtil.genId(AUTO_BUILD_FOLDER_DATA), Path.ROOT, null, autoBuildConf, null, false);
-        myAutoBuildConf = autoBuildConf;
-        resolve();
+        resolve(autoBuildConf);
     }
 
     //    FolderData(IFolder folder, AutoBuildConfigurationDescription autoBuildConf) {
@@ -43,8 +46,8 @@ public class FolderData extends CDefaultFolderData {
     //
     //    }
 
-    private void resolve() {
-        Map<String, Set<IInputType>> languageIDs = myAutoBuildConf.getConfiguration().getLanguageIDs(myAutoBuildConf);
+    private void resolve(AutoBuildConfigurationDescription autoBuildConf) {
+        Map<String, Set<IInputType>> languageIDs = autoBuildConf.getConfiguration().getLanguageIDs(autoBuildConf);
         for (String languageID : languageIDs.keySet()) {
             Set<IContentType> contentType = new HashSet<>();
             Set<String> extensions = new HashSet<>();

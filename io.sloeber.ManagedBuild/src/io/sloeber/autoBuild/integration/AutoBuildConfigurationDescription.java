@@ -132,11 +132,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     private Set<IBuildRunner> myBuildRunners = createBuildRunners();
     private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
+    private boolean myIsWritable = false;
 
     private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
     private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
 
     public AutoBuildConfigurationDescription(Configuration config, IProject project) {
+        myId = config.getId();
+        myIsWritable = true;
         myCdtConfigurationDescription = null;
         myAutoBuildConfiguration = config;
         myProject = project;
@@ -156,70 +159,73 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     // Copy constructor
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription,
-            AutoBuildConfigurationDescription autoBuildConfigBase) {
-        super(cfgDescription, autoBuildConfigBase);
-        myId = autoBuildConfigBase.myId;
-        myAutoBuildConfiguration = autoBuildConfigBase.myAutoBuildConfiguration;
-        myProject = autoBuildConfigBase.myProject;
+            AutoBuildConfigurationDescription base, boolean clone) {
+
+        myIsWritable = !cfgDescription.isReadOnly();
+        if (clone) {
+            myId = base.getId();
+        }
+        myAutoBuildConfiguration = base.myAutoBuildConfiguration;
+        myProject = base.myProject;
         myCdtConfigurationDescription = cfgDescription;
-        myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
-        myBuildBuildData = new BuildBuildData(this);
-        isValid = autoBuildConfigBase.isValid;
+        myTargetPlatformData = new BuildTargetPlatformData(base.myTargetPlatformData, clone);
+        myBuildBuildData = new BuildBuildData(this, base.myBuildBuildData, clone);
+        isValid = base.isValid;
         myName = myCdtConfigurationDescription.getName();
-        myDescription = autoBuildConfigBase.myDescription;
+        myDescription = base.myDescription;
         myProperties.clear();
-        myProperties.putAll(autoBuildConfigBase.myProperties);
+        myProperties.putAll(base.myProperties);
         mySelectedOptions.clear();
-        options_copy(autoBuildConfigBase.mySelectedOptions, mySelectedOptions);
+        options_copy(base.mySelectedOptions, mySelectedOptions);
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
-        myGenerateMakeFilesAUtomatically = autoBuildConfigBase.myGenerateMakeFilesAUtomatically;
-        myStopOnFirstBuildError = autoBuildConfigBase.myStopOnFirstBuildError;
-        myIsParallelBuild = autoBuildConfigBase.myIsParallelBuild;
-        myIsCleanBuildEnabled = autoBuildConfigBase.myIsCleanBuildEnabled;
-        myIsIncrementalBuildEnabled = autoBuildConfigBase.myIsIncrementalBuildEnabled;
-        myCustomBuildArguments = autoBuildConfigBase.myCustomBuildArguments;
-        myUseDefaultBuildCommand = autoBuildConfigBase.myUseDefaultBuildCommand;
-        myUseStandardBuildArguments = autoBuildConfigBase.myUseStandardBuildArguments;
-        myCustomBuildCommand = autoBuildConfigBase.myCustomBuildCommand;
-        myParallelizationNum = autoBuildConfigBase.myParallelizationNum;
-        myBuildFolderString = autoBuildConfigBase.myBuildFolderString;
-        myBuildRunner = autoBuildConfigBase.myBuildRunner;
-        myIsAutoBuildEnabled = autoBuildConfigBase.myIsAutoBuildEnabled;
+        myGenerateMakeFilesAUtomatically = base.myGenerateMakeFilesAUtomatically;
+        myStopOnFirstBuildError = base.myStopOnFirstBuildError;
+        myIsParallelBuild = base.myIsParallelBuild;
+        myIsCleanBuildEnabled = base.myIsCleanBuildEnabled;
+        myIsIncrementalBuildEnabled = base.myIsIncrementalBuildEnabled;
+        myCustomBuildArguments = base.myCustomBuildArguments;
+        myUseDefaultBuildCommand = base.myUseDefaultBuildCommand;
+        myUseStandardBuildArguments = base.myUseStandardBuildArguments;
+        myCustomBuildCommand = base.myCustomBuildCommand;
+        myParallelizationNum = base.myParallelizationNum;
+        myBuildFolderString = base.myBuildFolderString;
+        myBuildRunner = base.myBuildRunner;
+        myIsAutoBuildEnabled = base.myIsAutoBuildEnabled;
 
-        myAutoMakeTarget = autoBuildConfigBase.myAutoMakeTarget;
-        myIncrementalMakeTarget = autoBuildConfigBase.myIncrementalMakeTarget;
-        myCleanMakeTarget = autoBuildConfigBase.myCleanMakeTarget;
+        myAutoMakeTarget = base.myAutoMakeTarget;
+        myIncrementalMakeTarget = base.myIncrementalMakeTarget;
+        myCleanMakeTarget = base.myCleanMakeTarget;
 
-        myPreBuildStep = autoBuildConfigBase.myPreBuildStep;
-        myPreBuildAnnouncement = autoBuildConfigBase.myPreBuildAnnouncement;
-        myPostBuildStep = autoBuildConfigBase.myPostBuildStep;
-        myPostBuildStepAnouncement = autoBuildConfigBase.myPostBuildStepAnouncement;
+        myPreBuildStep = base.myPreBuildStep;
+        myPreBuildAnnouncement = base.myPreBuildAnnouncement;
+        myPostBuildStep = base.myPostBuildStep;
+        myPostBuildStepAnouncement = base.myPostBuildStepAnouncement;
         myCustomToolCommands.clear();
-        for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : autoBuildConfigBase.myCustomToolCommands
-                .entrySet()) {
+        for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : base.myCustomToolCommands.entrySet()) {
             Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
             myCustomToolCommands.put(curCustomToolEntry.getKey(), newMap);
         }
         myCustomToolPattern.clear();
-        for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : autoBuildConfigBase.myCustomToolPattern
-                .entrySet()) {
+        for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : base.myCustomToolPattern.entrySet()) {
             Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
             myCustomToolPattern.put(curCustomToolEntry.getKey(), newMap);
         }
         options_updateDefault();
-        if (autoBuildConfigBase.getAutoBuildConfigurationExtensionDescription() != null) {
-            AutoBuildConfigurationExtensionDescription base = autoBuildConfigBase
+        clone(this, base, clone);
+        if (base.getAutoBuildConfigurationExtensionDescription() != null) {
+            AutoBuildConfigurationExtensionDescription baseExtensionDesc = base
                     .getAutoBuildConfigurationExtensionDescription();
 
             try {
                 //TOFIX JABA is this ever going to work?
                 @SuppressWarnings("rawtypes")
-                Constructor ctor = base.getClass().getDeclaredConstructor(AutoBuildConfigurationDescription.class,
-                        AutoBuildConfigurationExtensionDescription.class);
+                Constructor ctor = baseExtensionDesc.getClass().getDeclaredConstructor(
+                        AutoBuildConfigurationDescription.class, AutoBuildConfigurationExtensionDescription.class);
 
                 ctor.setAccessible(true);
 
-                myAutoBuildCfgExtDes = (AutoBuildConfigurationExtensionDescription) ctor.newInstance(this, base);
+                myAutoBuildCfgExtDes = (AutoBuildConfigurationExtensionDescription) ctor.newInstance(this,
+                        baseExtensionDesc);
             } catch (NoSuchMethodException e) {
                 System.err.println(
                         "ERROR: Classed derived from AutoBuildConfigurationExtensionDescription need to implement a constructor with parameters AutoBuildConfigurationDescription and AutoBuildConfigurationExtensionDescription"); //$NON-NLS-1$
@@ -262,6 +268,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
             String lineStart, String lineEnd) {
         super(cfgDescription, curConfigsText, lineStart, lineEnd);
+        myIsWritable = !cfgDescription.isReadOnly();
         String extensionPointID = null;
         String extensionID = null;
         String projectTypeID = null;
@@ -418,6 +425,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
         myBuildBuildData = new BuildBuildData(this);
         myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
+        options_updateDefault();
 
         //Now we have reconstructed the environment and read out the persisted content it is time to
         //reconstruct the more complicated fields
@@ -484,6 +492,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             }
         }
 
+        //load the auto Build configuration extension description
         if (autoCfgExtentionDesc != null && autoCfgExtentionBundel != null && (!autoCfgExtentionDesc.isBlank())
                 && (!autoCfgExtentionBundel.isBlank())) {
             try {
@@ -566,6 +575,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     }
 
     public void setCdtConfigurationDescription(ICConfigurationDescription cfgDescription) {
+        checkIfWeCanWrite();
         myCdtConfigurationDescription = cfgDescription;
         myBuildBuildData = new BuildBuildData(this);
         options_updateDefault();
@@ -1080,9 +1090,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     protected void checkIfWeCanWrite() {
-        if (myCdtConfigurationDescription.isReadOnly()) {
+        if (myCdtConfigurationDescription != null && myCdtConfigurationDescription.isReadOnly()) {
             myCdtConfigurationDescription.setDescription(null);
         }
+        if (!myIsWritable) {
+            //TOFIX need to throw exception one way or another
+            int a = 0;
+            a = a / a;
+        }
+
     }
 
     @Override
@@ -1092,6 +1108,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public void setPreBuildAnouncement(String anouncement) {
+        checkIfWeCanWrite();
         myPreBuildAnnouncement = anouncement;
 
     }
@@ -1103,6 +1120,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public void setPostbuildStep(String text) {
+        checkIfWeCanWrite();
         myPostBuildStep = text;
 
     }
@@ -1114,6 +1132,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public void setPostBuildAnouncement(String text) {
+        checkIfWeCanWrite();
         myPostBuildStepAnouncement = text;
 
     }
@@ -1237,6 +1256,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID) {
+        checkIfWeCanWrite();
         setOptionValueInternal(resource, tool, option.getId(), valueID);
         options_combine();
     }
@@ -1327,6 +1347,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     @Override
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension) {
+        checkIfWeCanWrite();
         newExtension.setAutoBuildDescription(this);
         myAutoBuildCfgExtDes = newExtension;
 
@@ -1348,5 +1369,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             return staticMakeBuildRunner;
         }
         return getBuildRunner();
+    }
+
+    public void setWritable(boolean write) {
+        myIsWritable = write;
+
     }
 }

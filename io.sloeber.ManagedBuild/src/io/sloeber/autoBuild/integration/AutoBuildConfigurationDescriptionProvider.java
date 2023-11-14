@@ -81,7 +81,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
             IProgressMonitor monitor) throws CoreException {
         AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) base;
         AutoBuildConfigurationDescription ret = new AutoBuildConfigurationDescription(cfgDescription,
-                autoBuildConfigBase);
+                autoBuildConfigBase, clone);
         return ret;
     }
 

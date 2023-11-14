@@ -10,7 +10,10 @@ import java.util.Arrays;
  * 3) I think CDT should provide a default which could be this
  */
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
@@ -21,7 +24,6 @@ import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -32,17 +34,17 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
     private Map<String, CResourceData> myResourceDatas = new HashMap<>();
     private ICSourceEntry mySourceEntries[] = null;
     private CFolderData myRootFolderData;
-    private String myRootFolderID = CDataUtil.genId("io.sloeber.autoBuild.configurationDescrtion.rootFolder"); //$NON-NLS-1$;
 
     /**
      * Copy constructor
      * 
      * @param cfgDescription
      */
-    public AutoBuildResourceData(ICConfigurationDescription cfgDescription,
-            AutoBuildResourceData autoBuildResourceBase) {
-        cloneSourceEntries(autoBuildResourceBase.mySourceEntries);
-        myRootFolderID = autoBuildResourceBase.myRootFolderID;
+    public void clone(AutoBuildConfigurationDescription parent, AutoBuildConfigurationDescription autoBuildResourceBase,
+            boolean clone) {
+        myRootFolderData = new FolderData(parent, autoBuildResourceBase.getRootFolderData(), clone);
+        cloneSourceEntries(autoBuildResourceBase.getSourceEntries());
+
     }
 
     private void cloneSourceEntries(ICSourceEntry entries[]) {
@@ -128,20 +130,27 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
             //CDataFactory factory = CDataFactory.getDefault();
             //myRootFolderData = factory.createFolderData(this, null, myRootFolderID, false, Path.ROOT);
             AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
-            FolderData rootFolderData = new FolderData(myProject, autoBuildConfDesc);
+            myRootFolderData = new FolderData(myProject, autoBuildConfDesc);
 
-            myRootFolderData = rootFolderData;
-            myResourceDatas.put(myRootFolderData.getId(), myRootFolderData);
         }
         return myRootFolderData;
     }
 
     @Override
     public CResourceData[] getResourceDatas() {
+        //        if (!myResourceDataContainsRootFolder) {
+        //            //myResourceDataContainsRootFolder = true;
+        //            AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
+        //            FolderData rootFolderData = new FolderData(myProject, autoBuildConfDesc);
+        //
+        //            myResourceDatas.clear();
+        //            myResourceDatas.put(rootFolderData.getId(), rootFolderData);
+        //        }
+        Set<CResourceData> ret = new HashSet<>();
+        ret.addAll(myResourceDatas.values());
+        ret.add(getRootFolderData());
 
-        getRootFolderData();//this needs to be called to be sure the rootfolder is added to the list
-
-        return myResourceDatas.values().toArray(new CResourceData[myResourceDatas.size()]);
+        return ret.toArray(new CResourceData[ret.size()]);
 
     }
 
