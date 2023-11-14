@@ -11,8 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractAutoBuildPropertyTab extends AbstractCPropertyTab {
 
-    //protected final static String ARGS_PREFIX = "io.sloeber.automake"; //$NON-NLS-1$
-    Map<String, IAutoBuildConfigurationDescription> myAutoConfDescMap = new HashMap<>();
+    //Map<String, IAutoBuildConfigurationDescription> myAutoConfDescMap = new HashMap<>();
     IAutoBuildConfigurationDescription myAutoConfDesc = null;
 
     @Override

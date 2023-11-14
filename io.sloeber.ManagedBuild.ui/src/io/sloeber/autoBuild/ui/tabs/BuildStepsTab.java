@@ -457,18 +457,21 @@ public class BuildStepsTab extends AbstractAutoBuildPropertyTab {
     }
 
     private void updateComboItems() {
+        if (myAutoConfDesc == null) {
+            return;
+        }
         Set<String> getPrebuildStepSet = new HashSet<>();
         Set<String> getPreannouncebuildStepSet = new HashSet<>();
         Set<String> getPostbuildStepSet = new HashSet<>();
         Set<String> getPostannouncebuildStepSet = new HashSet<>();
 
         if (page.isForProject()) {
-            for (IAutoBuildConfigurationDescription cf : myAutoConfDescMap.values()) {
-                getPrebuildStepSet.add(cf.getPrebuildStep());
-                getPreannouncebuildStepSet.add(cf.getPreBuildAnouncement());
-                getPostbuildStepSet.add(cf.getPostbuildStep());
-                getPostannouncebuildStepSet.add(cf.getPostBuildAnouncement());
-            }
+            //           for (IAutoBuildConfigurationDescription cf : myAutoConfDescMap.values()) {
+            getPrebuildStepSet.add(myAutoConfDesc.getPrebuildStep());
+            getPreannouncebuildStepSet.add(myAutoConfDesc.getPreBuildAnouncement());
+            getPostbuildStepSet.add(myAutoConfDesc.getPostbuildStep());
+            getPostannouncebuildStepSet.add(myAutoConfDesc.getPostBuildAnouncement());
+            //         }
         }
 
         if (getPrebuildStepSet.size() > 0) {
