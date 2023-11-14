@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
@@ -17,9 +18,9 @@ import io.sloeber.schema.api.ITool;
 
 public interface IAutoBuildConfigurationDescription {
 
-    public static IAutoBuildConfigurationDescription getActiveConfig(IProject project) {
+    public static IAutoBuildConfigurationDescription getActiveConfig(IProject project, boolean write) {
         CoreModel coreModel = CoreModel.getDefault();
-        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
+        ICProjectDescription projectDescription = coreModel.getProjectDescription(project, write);
         return getActiveConfig(projectDescription);
     }
 
@@ -30,8 +31,10 @@ public interface IAutoBuildConfigurationDescription {
     public static IAutoBuildConfigurationDescription getConfig(ICConfigurationDescription confDesc) {
         if (confDesc == null)
             return null;
-        return (IAutoBuildConfigurationDescription) confDesc.getConfigurationData();
-        //      TOFIX  
+        AutoBuildConfigurationDescription ret = (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
+        ret.setWritable(true);
+        return ret;
+        //      Note:  
         //      The code above always returns a readable configdesc
         //        eventhough the method below exists it is not defined in ICConfigurationDescription 
         //        and as sutch not usable

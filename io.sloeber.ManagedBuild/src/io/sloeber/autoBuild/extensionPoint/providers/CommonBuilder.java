@@ -239,7 +239,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             Map<String, String> args) {
         // get the configurations that need to be build
         Set<AutoBuildConfigurationDescription> cfgToBuild = new HashSet<>();
-        if (args != null) {
+        if ((args != null) && (args.size() > 0)) {
             ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(project, false);
             String configIDs = args.get(CONTENTS_CONFIGURATION_IDS);
             if (configIDs != null) {
@@ -291,8 +291,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         //if no configs found add active config
         if (cfgToBuild.size() == 0) {
-            cfgToBuild.add(
-                    (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription.getActiveConfig(project));
+            cfgToBuild.add((AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
+                    .getActiveConfig(project, false));
         }
         return cfgToBuild;
 
@@ -345,10 +345,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         if (!isCdtProjectCreated(curProject))
             return;
-        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(curProject, false);
-        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
         AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
-                .getConfig(cdtConfigurationDescription);
+                .getActiveConfig(curProject, false);
         IConsole console = CCorePlugin.getDefault().getConsole();
         console.start(curProject);
         autoData.getBuildRunner().invokeBuild(IncrementalProjectBuilder.CLEAN_BUILD, autoData, this, this, console,
