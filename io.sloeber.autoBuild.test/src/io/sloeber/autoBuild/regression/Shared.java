@@ -97,7 +97,8 @@ public class Shared {
             }
         }
 
-        doFail(project, "The build did not produce a file that is considered a targetfile");
+        doFail(project, "The build did not produce a file that is considered a targetfile in build folder "
+                + buildRootFolder.toString());
     }
 
     public static void waitForAllJobsToFinish() throws InterruptedException {
@@ -137,14 +138,31 @@ public class Shared {
         }
     }
 
-    public static void buildAndVerifyProjectUsingActivConfig(IProject project, String builderName,
-            Boolean shouldMakefileExists) throws Exception {
+    public static void buildAndVerifyProjectUsingActivConfig(IProject project, Boolean shouldMakefileExists)
+            throws Exception {
+        //buildAndVerifyProjectUsingActivConfigWorking(project, shouldMakefileExists);
+        buildAndVerifyProjectUsingActivConfigNotWorking(project, shouldMakefileExists);
+    }
+
+    private static void buildAndVerifyProjectUsingActivConfigWorking(IProject project, Boolean shouldMakefileExists)
+            throws Exception {
+        ICProjectDescription cProjectDescread = CCorePlugin.getDefault().getProjectDescription(project, false);
+        for (ICConfigurationDescription curConfig : cProjectDescread.getConfigurations()) {
+            ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(project, true);
+            cProjectDesc.setActiveConfiguration(cProjectDesc.getConfigurationByName(curConfig.getName()));
+            CCorePlugin.getDefault().setProjectDescription(project, cProjectDesc);
+            project.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+            verifyConfig(project, IAutoBuildConfigurationDescription.getConfig(curConfig), shouldMakefileExists);
+        }
+    }
+
+    private static void buildAndVerifyProjectUsingActivConfigNotWorking(IProject project, Boolean shouldMakefileExists)
+            throws Exception {
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(project, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(project, cProjectDesc);
-            project.build(IncrementalProjectBuilder.FULL_BUILD, AutoBuildProject.BUILDER_ID, null,
-                    new NullProgressMonitor());
+            project.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
             verifyConfig(project, IAutoBuildConfigurationDescription.getConfig(curConfig), shouldMakefileExists);
         }
     }
@@ -209,7 +227,7 @@ public class Shared {
             Boolean shouldMakefileExists) throws Exception {
         build(theTestProject, builderName, null);
 
-        verifyConfig(theTestProject, IAutoBuildConfigurationDescription.getActiveConfig(theTestProject),
+        verifyConfig(theTestProject, IAutoBuildConfigurationDescription.getActiveConfig(theTestProject, false),
                 shouldMakefileExists);
 
     }

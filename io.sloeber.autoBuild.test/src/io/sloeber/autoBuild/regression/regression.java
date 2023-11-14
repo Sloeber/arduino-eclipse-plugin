@@ -19,7 +19,7 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 
-@SuppressWarnings({ "static-method", "nls" })
+@SuppressWarnings({ "static-method", "nls", "boxing" })
 public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static int testCounter = 1;
@@ -58,7 +58,7 @@ public class regression {
                 new TemplateTestCodeProvider("exe"), false, null);
 
         //Build all the configurations and verify proper building
-        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null, null);
+        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
         //clean all configurations and verify clean has been done properly
         Shared.cleanProject(testProject);
 
@@ -69,7 +69,7 @@ public class regression {
         //open the project 
         testProject.open(new NullProgressMonitor());
         //Build all the configurations and verify proper building
-        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null, null);
+        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
     }
 
     /*
@@ -86,6 +86,7 @@ public class regression {
      * check for makefile existence
      * 
      */
+
     @Test
     public void setBuilder() throws Exception {
         beforeAll();// for one reason or another the before all is not called
@@ -120,8 +121,11 @@ public class regression {
 
         assertNotEquals("Builder changes have not been taken into account", makeFile.exists(), hasMakefile);
 
-        //clean all configurations and verify clean has been done properly
+        //clean activeConfig and verify clean has been done properly
         Shared.cleanConfiguration(activeConfig);
+        activeConfig.getBuildFolder().delete(true, new NullProgressMonitor());
+
+        assertFalse("Clean did not remove makefile", makeFile.exists());
 
         //close the project
         testProject.close(new NullProgressMonitor());
