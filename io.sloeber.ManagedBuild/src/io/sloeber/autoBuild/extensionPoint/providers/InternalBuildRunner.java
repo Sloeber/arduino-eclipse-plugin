@@ -148,6 +148,9 @@ public class InternalBuildRunner extends IBuildRunner {
                         }
                         lastSequenceID = false;
                         if (!curRule.needsExecuting(buildRoot)) {
+                            buildRunnerHelper.getOutputStream().write("No need to run ".getBytes());
+                            buildRunnerHelper.getOutputStream().write(curRule.getAnnouncement().getBytes());
+                            buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
                             continue;
                         }
 
