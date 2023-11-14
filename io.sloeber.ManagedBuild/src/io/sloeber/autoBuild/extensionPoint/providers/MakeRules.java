@@ -234,7 +234,8 @@ public class MakeRules implements Iterable<MakeRule> {
         @Override
         public boolean visit(IResourceProxy proxy) throws CoreException {
             IResource resource = proxy.requestResource();
-            if (myBuildfolder.getFullPath().isPrefixOf(resource.getFullPath())) {
+            if (resource.isDerived()) {
+                //if (myBuildfolder.getFullPath().isPrefixOf(resource.getFullPath())) {
                 //Ignore build folder content as that may cause loops
                 return false;
             }
