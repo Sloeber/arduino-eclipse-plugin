@@ -128,12 +128,11 @@ public class issues {
         //open the project 
         testProject.open(new NullProgressMonitor());
 
-        //If you remove the line below the test succeeds which is something I absolutely do not understand.
-        cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
-        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+        ICProjectDescription cProjectDescOpen = CCorePlugin.getDefault().getProjectDescription(testProject, true);
+        for (ICConfigurationDescription curConfig : cProjectDescOpen.getConfigurations()) {
             //Set the active configuration
-            cProjectDesc.setActiveConfiguration(curConfig);
-            coreModel.setProjectDescription(testProject, cProjectDesc);
+            cProjectDescOpen.setActiveConfiguration(curConfig);
+            coreModel.setProjectDescription(testProject, cProjectDescOpen);
 
             //get the active configuration from the project
             ICProjectDescription readProjectDescription = coreModel.getProjectDescription(testProject, false);

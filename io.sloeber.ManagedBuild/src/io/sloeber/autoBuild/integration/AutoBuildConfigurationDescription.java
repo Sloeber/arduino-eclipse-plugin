@@ -138,7 +138,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
 
     public AutoBuildConfigurationDescription(Configuration config, IProject project) {
-        myId = config.getId();
+        // myId = config.getId();
         myIsWritable = true;
         myCdtConfigurationDescription = null;
         myAutoBuildConfiguration = config;
@@ -268,6 +268,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
             String lineStart, String lineEnd) {
         super(cfgDescription, curConfigsText, lineStart, lineEnd);
+        myId = cfgDescription.getId();
         myIsWritable = !cfgDescription.isReadOnly();
         String extensionPointID = null;
         String extensionID = null;
