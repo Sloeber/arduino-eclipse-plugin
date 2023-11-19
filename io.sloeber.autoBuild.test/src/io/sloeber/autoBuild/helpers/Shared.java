@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.regression;
+package io.sloeber.autoBuild.helpers;
 
 import static org.junit.Assert.*;
 
@@ -10,7 +10,6 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -140,24 +139,6 @@ public class Shared {
 
     public static void buildAndVerifyProjectUsingActivConfig(IProject project, Boolean shouldMakefileExists)
             throws Exception {
-        //buildAndVerifyProjectUsingActivConfigWorking(project, shouldMakefileExists);
-        buildAndVerifyProjectUsingActivConfigNotWorking(project, shouldMakefileExists);
-    }
-
-    private static void buildAndVerifyProjectUsingActivConfigWorking(IProject project, Boolean shouldMakefileExists)
-            throws Exception {
-        ICProjectDescription cProjectDescread = CCorePlugin.getDefault().getProjectDescription(project, false);
-        for (ICConfigurationDescription curConfig : cProjectDescread.getConfigurations()) {
-            ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(project, true);
-            cProjectDesc.setActiveConfiguration(cProjectDesc.getConfigurationByName(curConfig.getName()));
-            CCorePlugin.getDefault().setProjectDescription(project, cProjectDesc);
-            project.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-            verifyConfig(project, IAutoBuildConfigurationDescription.getConfig(curConfig), shouldMakefileExists);
-        }
-    }
-
-    private static void buildAndVerifyProjectUsingActivConfigNotWorking(IProject project, Boolean shouldMakefileExists)
-            throws Exception {
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(project, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
@@ -166,6 +147,8 @@ public class Shared {
             verifyConfig(project, IAutoBuildConfigurationDescription.getConfig(curConfig), shouldMakefileExists);
         }
     }
+
+
 
     /**
      * clean all the configuration by looping over all the configurations and
@@ -204,7 +187,6 @@ public class Shared {
 
         int membersAfterClean = buildRoot.members().length;
         assertTrue("clean did not remove files", membersAfterClean < membersBeforeClean);
-        int a = 0;
     }
 
     /**

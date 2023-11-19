@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 
 @SuppressWarnings({ "static-method", "nls", "boxing" })
