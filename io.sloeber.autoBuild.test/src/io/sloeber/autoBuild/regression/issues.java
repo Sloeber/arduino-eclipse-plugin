@@ -1,8 +1,8 @@
 package io.sloeber.autoBuild.regression;
 
+import static io.sloeber.autoBuild.helpers.Defaults.*;
 import static org.junit.Assert.*;
 
-import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -23,9 +23,8 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({ "nls", "static-method" })
 public class issues {
-    static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
 
     @BeforeAll
     public static void beforeAll() {
@@ -99,9 +98,9 @@ public class issues {
         String projectName = "setDescription";
         CoreModel coreModel = CoreModel.getDefault();
 
-        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, "cdt.cross.gnu",
-                "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID,
-                new TemplateTestCodeProvider("exe"), false, null);
+        IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID,
+                defaultProjectTypeID, defaultExtensionID, defaultNatureID, new TemplateTestCodeProvider("exe"), false,
+                null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
