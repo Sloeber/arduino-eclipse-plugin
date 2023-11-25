@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -36,6 +37,7 @@ import org.osgi.framework.Bundle;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
@@ -75,15 +77,16 @@ public class Shared {
         ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
 
         IFolder buildFolder = project.getFolder(activeConfig.getName());
-        String projName=project.getName() ;
-        String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",projName+".exe","application.axf"};
-        for(String validOutput:validOutputss) {   
-            IFile validFile = buildFolder.getFile( validOutput);
+        String projName = project.getName();
+        String[] validOutputss = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
+                "application.axf" };
+        for (String validOutput : validOutputss) {
+            IFile validFile = buildFolder.getFile(validOutput);
             if (validFile.exists()) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -104,11 +107,11 @@ public class Shared {
     }
 
     public static IPath getTemplateFolder(String templateName) throws Exception {
-            Bundle bundle = Platform.getBundle("io.sloeber.tests");
-            Path path = new Path("src/templates/" + templateName);
-            URL fileURL = FileLocator.find(bundle, path, null);
-            URL resolvedFileURL = FileLocator.toFileURL(fileURL);
-            return new Path(resolvedFileURL.toURI().getPath());
+        Bundle bundle = Platform.getBundle("io.sloeber.tests");
+        Path path = new Path("src/templates/" + templateName);
+        URL fileURL = FileLocator.find(bundle, path, null);
+        URL resolvedFileURL = FileLocator.toFileURL(fileURL);
+        return new Path(resolvedFileURL.toURI().getPath());
     }
 
     public static IPath getprojectZip(String zipFileName) throws Exception {
@@ -174,8 +177,8 @@ public class Shared {
 
         try {
             compileOptions.setEnableParallelBuild(true);
-            theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor,
-                    codeDescriptor, compileOptions, monitor);
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor, codeDescriptor,
+                    compileOptions, monitor);
             waitForAllJobsToFinish(); // for the indexer
         } catch (Exception e) {
             e.printStackTrace();
@@ -231,7 +234,7 @@ public class Shared {
          * move the file
          *
          */
-        if (SystemUtils.IS_OS_LINUX) {
+        if (Common.isLinux) {
             java.nio.file.Path esptool2root = packageRoot.resolve("digistump").resolve("tools").resolve("esptool2")
                     .resolve("0.9.1");
             java.nio.file.Path esptool2wrong = esptool2root.resolve("0.9.1").resolve("esptool2");
@@ -248,7 +251,7 @@ public class Shared {
          * Elector heeft core Platino maar de directory noemt platino. In windows geen
          * probleem maar in case sensitive linux dus wel
          */
-        if (SystemUtils.IS_OS_LINUX) {
+        if (Common.isLinux) {
             java.nio.file.Path cores = packageRoot.resolve("Elektor").resolve("hardware").resolve("avr")
                     .resolve("1.0.0").resolve("cores");
             java.nio.file.Path coreWrong = cores.resolve("platino");
@@ -340,4 +343,33 @@ public class Shared {
     // }
     // end copy from
     // https://www.codejava.net/java-se/file-io/programmatically-extract-a-zip-file-using-java
+
+    //copied from https://stackoverflow.com/questions/18344721/extract-the-difference-between-two-strings-in-java
+    /**
+     * Returns an array of size 2. The entries contain a minimal set of characters
+     * that have to be removed from the corresponding input strings in order to
+     * make the strings equal.
+     */
+    public static String[] difference(String a, String b) {
+        return diffHelper(a, b, new HashMap<>());
+    }
+
+    @SuppressWarnings("boxing")
+    private static String[] diffHelper(String a, String b, Map<Long, String[]> lookup) {
+        return lookup.computeIfAbsent(((long) a.length()) << 32 | b.length(), k -> {
+            if (a.isEmpty() || b.isEmpty()) {
+                return new String[] { a, b };
+            } else if (a.charAt(0) == b.charAt(0)) {
+                return diffHelper(a.substring(1), b.substring(1), lookup);
+            } else {
+                String[] aa = diffHelper(a.substring(1), b, lookup);
+                String[] bb = diffHelper(a, b.substring(1), lookup);
+                if (aa[0].length() + aa[1].length() < bb[0].length() + bb[1].length()) {
+                    return new String[] { a.charAt(0) + aa[0], aa[1] };
+                }
+                return new String[] { bb[0], b.charAt(0) + bb[1] };
+            }
+        });
+    }
+    //end of copied from https://stackoverflow.com/questions/18344721/extract-the-difference-between-two-strings-in-java
 }

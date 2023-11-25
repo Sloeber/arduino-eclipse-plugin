@@ -3,10 +3,14 @@ package io.sloeber.core.common;
 import static io.sloeber.core.common.Const.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
@@ -18,7 +22,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
@@ -28,7 +31,7 @@ import io.sloeber.core.Activator;
 public class Common {
 
     public final static String sloeberHome = getSloeberHome();
-    public final static IPath sloeberHomePath = new Path(sloeberHome);
+    public final static IPath sloeberHomePath = new org.eclipse.core.runtime.Path(sloeberHome);
     public final static String sloeberHomePathToString = sloeberHomePath.toString();
 
     private static String getSloeberHome() {
@@ -239,7 +242,7 @@ public class Common {
     }
 
     public static String makePathVersionString(File file) {
-        return new Path(file.getPath()).toString().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
+        return file.getPath().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
     }
 
     /**
@@ -278,4 +281,21 @@ public class Common {
                 getBuildEnvironmentVariable(confDesc, envName.toUpperCase(), EMPTY, false), false);
     }
 
+    public static void deleteDirectory(org.eclipse.core.runtime.IPath directory) throws IOException {
+        deleteDirectory(Path.of(directory.toOSString()));
+    }
+
+    public static void deleteDirectory(Path directory) throws IOException {
+        Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    }
+
+    /**
+     * this is some code to work around issue
+     * https://github.com/eclipse-cdt/cdt/issues/539
+     * 
+     */
+    public static String getFileExtension(String fileName) {
+        int dotPosition = fileName.lastIndexOf('.');
+        return (dotPosition == -1 || dotPosition == fileName.length() - 1) ? "" : fileName.substring(dotPosition + 1); //$NON-NLS-1$
+    }
 }

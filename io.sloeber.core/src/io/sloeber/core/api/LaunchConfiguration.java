@@ -1,6 +1,5 @@
 package io.sloeber.core.api;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -82,7 +81,7 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
      * @return the project handle if a project was found
      */
     public static IProject findProject(String name) {
-        if (StringUtils.isNotBlank(name) && new Path(name).isValidPath(name)) {
+        if ((!name.isBlank()) && new Path(name).isValidPath(name)) {
             IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
             if (p.getLocation() != null)
                 return p;
