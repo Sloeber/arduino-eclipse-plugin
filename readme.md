@@ -82,8 +82,17 @@ After the build, find the Sloeber SDK product in the io.sloeber.product.sdk targ
 
     Note that Sloeber itself is NOT included in the Sloeber SDK. 
 
+## Install the maven PDE integration in your eclipse install.
+In the menu select help->install new software
+in the field work with enter: http://download.eclipse.org/releases/latest
+in the field below enter m2e
+select m2e - pde integration
+select next and finish the install
+
+
 
 ## Install the projects into the SDK via the EGit interface.
+
 
 > File → Import → Git → Projects from Git → Existing local repository
 
@@ -99,6 +108,11 @@ After the build, find the Sloeber SDK product in the io.sloeber.product.sdk targ
 After all it should look like this:
 
 ![alt text](images_plugin_dev_setup/Imported_projects.png "Projects imported")
+
+## set the target platform
+in the menu select windows->preferences
+select plugindevelopment->target platform
+select Sloeber as target platform
 
 ## Set the Warning Level
 
