@@ -1,6 +1,7 @@
 package io.sloeber.core.tools;
 
 import static java.nio.file.StandardCopyOption.*;
+import static io.sloeber.core.common.Common.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +22,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -311,7 +311,7 @@ public class PackageManager {
     @SuppressWarnings("nls")
     private static void link(File actualFile, File linkName) throws IOException, InterruptedException {
         String[] command = new String[] { "ln", actualFile.getAbsolutePath(), linkName.getAbsolutePath() };
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             command = new String[] { "cmd", "/c", "mklink", "/H", linkName.getAbsolutePath(),
                     actualFile.getAbsolutePath() };
         }

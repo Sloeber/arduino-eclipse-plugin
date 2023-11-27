@@ -3,8 +3,9 @@ package io.sloeber.core.common;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunction;
 import org.eclipse.cdt.core.index.IIndex;
@@ -35,7 +36,7 @@ public class IndexHelper {
 			String codeFileName = name.getFileLocation().getFileName();
 			String rawCodeFileContent;
 			try {
-				rawCodeFileContent = FileUtils.readFileToString(new File(codeFileName), Charset.defaultCharset());
+                rawCodeFileContent = Files.readString(Path.of(codeFileName), Charset.defaultCharset());
 			} catch (IOException e) {
 				return defaultValue;
 			}

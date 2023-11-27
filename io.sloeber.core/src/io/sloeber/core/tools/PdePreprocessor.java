@@ -22,6 +22,7 @@ package io.sloeber.core.tools;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -214,8 +214,9 @@ public class PdePreprocessor {
         String newFileContent = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + content + NEWLINE + "#endif" + NEWLINE;
         String currentFileContent = null;
         try {
-            currentFileContent = FileUtils.readFileToString(
-                    iProject.getFile(new Path(generatedFile)).getLocation().toFile(), Charset.defaultCharset());
+            currentFileContent = Files.readString(
+                    java.nio.file.Path.of(iProject.getFile(new Path(generatedFile)).getLocation().toOSString()),
+                    Charset.defaultCharset());
         } catch (IOException e) {
             // This happens when the generated file does not yet exist
         }

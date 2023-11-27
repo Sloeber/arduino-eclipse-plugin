@@ -3,7 +3,6 @@ package io.sloeber.ui.core.launchconfig;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -144,7 +143,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
      */
     private String checkErrors() {
 	// Project is specified
-	if (StringUtils.isBlank(this.project.getText())) {
+		if (this.project.getText().isBlank()) {
 	    return Messages.launch_config_mainTab_specify_project;
 	}
 

@@ -1,6 +1,7 @@
 package io.sloeber.core;
 
 import static org.junit.Assert.*;
+import static io.sloeber.core.common.Common.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,7 +10,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.junit.Assume;
 import org.junit.Test;
@@ -278,10 +278,10 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
         HashSet<String> boardsToIgnoreList = new HashSet<>(Arrays.asList(boardsToIgnoreOnAllOses));
 
-        if (SystemUtils.IS_OS_LINUX) {
+        if (isLinux) {
             boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnLinux));
         }
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnWindows));
         }
         List<BoardDescription> ignoreBoards = new ArrayList<>();
@@ -312,13 +312,13 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         HashSet<String> toAddList = new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));
         toAddList.addAll(Arrays.asList(BoardsManager.getJsonURLList()));
         toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonAllOSes));
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonWindows));
         }
-        if (SystemUtils.IS_OS_LINUX) {
+        if (isLinux) {
             toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnLinux));
         }
-        if (SystemUtils.IS_OS_MAC) {
+        if (isMac) {
             toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
         }
         BoardsManager.setPackageURLs(toAddList, true);

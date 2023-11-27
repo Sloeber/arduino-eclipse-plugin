@@ -9,9 +9,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -205,6 +205,7 @@ public class CodeDescription {
                     if (myMakeLinks) {
                         Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
                     } else {
+                        // Files.copy(curPath.toPath(), project.getLocation().toPath());
                         FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
                         FileModifiers.addPragmaOnce(curPath);
                     }
@@ -237,7 +238,7 @@ public class CodeDescription {
 
     private void saveLastUsedExamples() {
         if (myExamples != null) {
-            String toStore = StringUtils.join(myExamples, "\n"); //$NON-NLS-1$
+            String toStore = myExamples.stream().map(Object::toString).collect(Collectors.joining("\n")); //$NON-NLS-1$
             InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, toStore);
         } else {
             InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, new String());

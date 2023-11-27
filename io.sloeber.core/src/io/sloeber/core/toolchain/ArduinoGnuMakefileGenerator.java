@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +48,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -923,7 +924,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         awkContent += "\"}";
 
         try {
-            FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
+            Files.write(sizeAwkFile.toPath(), awkContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.CREATE);
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
