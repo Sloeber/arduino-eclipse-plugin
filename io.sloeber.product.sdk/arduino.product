@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
@@ -280,13 +280,12 @@ United States, other countries, or both.
    </configurations>
 
    <repositories>
-      <repository location="https://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
       <repository location="https://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
       <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="false" />
-      <repository location="https://download.eclipse.org/nebula/releases/2.7.2/" enabled="true" />
       <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" enabled="true" />
       <repository location="https://download.eclipse.org/releases/latest/" enabled="true" />
       <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
+      <repository location="https://download.eclipse.org/nebula/releases/latest/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
