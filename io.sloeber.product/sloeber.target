@@ -39,24 +39,19 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
-					<version>1.25.0</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>commons-io</groupId>
 					<artifactId>commons-io</artifactId>
 					<version>2.15.0</version>
 					<type>jar</type>
 				</dependency>
+				<dependency>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+					<version>1.25.0</version>
+					<type>jar</type>
+				</dependency>
 			</dependencies>
 		</location>
 	</locations>
-	<implicitDependencies>
-		<plugin id="org.eclipse.ui.ide"/>
-		<plugin id="org.eclipse.platform"/>
-		<plugin id="org.eclipse.cdt"/>
-	</implicitDependencies>
 	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 </target>
