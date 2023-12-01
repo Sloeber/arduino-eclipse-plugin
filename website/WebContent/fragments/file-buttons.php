@@ -1,35 +1,39 @@
 <?php
+/*include '/eclipse/globals.txt';
+$version = $STABLE_VERSION_MAJOR . "." . $STABLE_VERSION_MINOR;
+$fullVersion = $version . "." . $STABLE_VERSION_PATCH;
+$version = "4.4";
+$fullVersion = "4.4.1";*/
 
-function my_offset($curfile, $prefix) {
-	preg_match ( '/\d/', $curfile, $m, PREG_OFFSET_CAPTURE, strlen ( $prefix ) );
-	if (sizeof ( $m ))
-		return $m [0] [1];
-	return strlen ( $prefix );
+
+function listFiles($os,$version,$fullVersion){
+    $listFilesOutput= internalListFiles("V" . $version . '_' . $os);
+    $listFilesOutput= $listFilesOutput . internalListFiles("V" . $fullVersion . '_' . $os);
+    $listFilesOutput= $listFilesOutput . internalListFiles("sloeber-ide-V" . $fullVersion . '-' . $os);
+    return $listFilesOutput;
 }
-function my_bitness($curfile, $prefix) {
-	return substr ( $curfile, my_offset ( $curfile, $prefix ), 2 );
+function listVersionFiles($version){
+    $listFilesOutput= internalListFiles("V" . $version );
+    $listFilesOutput= $listFilesOutput . internalListFiles("sloeber-ide-V" . $version);
+    return $listFilesOutput;
 }
-function listFiles($prefix) {
+
+function internalListFiles($prefix) {
     include "files.php";
 	global $filter;
 	$filter = $prefix;
+	$lines=$lines." ".$prefix." ";
 	date_default_timezone_set ( 'UTC' );
 
 	$files = array_filter ( $files, "filter" );
 	sort ( $files );
-	$lines = array (
-			"32" => "",
-			"64" => ""
-	);
 	foreach ( $files as &$file ) {
-		$curfile = basename ( $file );
-		$bitness=my_bitness ( $curfile, $prefix );
-		$lines[$bitness]= '<div class="text-center col-md-4 col-md-offset-4">';
-		$lines[$bitness]= $lines[$bitness] . '  <a href="' . $file . '" class="btn btn-success btn-lg text-center">Download <b>' . $bitness . ' bits</b> Bundle <i class="glyphicon glyphicon-cloud-download"></i></a>';
-		$lines[$bitness]= $lines[$bitness] . '</div>';
+		$line= '<div class="text-center col-md-4 col-md-offset-4">';
+		$line= $line . '  <a href="' . $file . '" class="btn btn-success btn-lg text-center">Download <b>' .  basename ( $file ) . '</b><i class="glyphicon glyphicon-cloud-download"></i></a>';
+		$line= $line . '</div>';
+		$lines=$lines.$line;
 	}
-	echo $lines [ "64" ];
-	echo $lines [ "32" ];
+	return $lines ;
 }
 function filter($file) {
 	global $filter;
