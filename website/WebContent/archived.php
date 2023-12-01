@@ -1,5 +1,5 @@
 <?php
-require 'fragments/file-list.php';
+require 'fragments/file-buttons.php';
 $version = "3.0";
 
 if (isset ( $_GET ["ver"] ))
@@ -65,7 +65,7 @@ if (isset ( $_GET ["ver"] ))
 
       <a href="#top" scroll-to="top">Back to top</a>
       <h3>Pick your OS architecture in the following list</h3>
-      			<?php listFiles("V" . $version);
+      			<?php echo listVersionFiles($version);
 		?>
 
       <a href="#top" scroll-to="top">Back to top</a>
