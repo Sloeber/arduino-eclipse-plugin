@@ -121,14 +121,15 @@
 		<profile>
 			<id>SDK</id>
 			<modules>
+				<module>../io.sloeber.autoBuild</module>
+				<module>../io.sloeber.autoBuild.ui</module>
+				<module>../io.sloeber.autoBuild.test</module>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
 				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product.sdk</module>
-				<module>../io.sloeber.autoBuild</module>
 				<module>../io.sloeber.ui.nl1</module>
 				<module>../io.sloeber.ui</module>
-				<module>../io.sloeber.autoBuild.ui</module>
 				<module>../io.sloeber.tests</module>
 			</modules>
 		</profile>
@@ -139,6 +140,9 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
+				<module>../io.sloeber.autoBuild</module>
+				<module>../io.sloeber.autoBuild.ui</module>
+				<module>../io.sloeber.autoBuild.test</module>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
 				<module>../io.sloeber.core.nl1</module>
