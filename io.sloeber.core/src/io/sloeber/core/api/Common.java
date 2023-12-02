@@ -37,7 +37,7 @@ public class Common {
     private static String getSloeberHome() {
 
         try {
-            String sloeber_HomeValue = System.getenv(Const.SLOEBER_HOME);
+            String sloeber_HomeValue = System.getenv(SLOEBER_HOME);
             if (sloeber_HomeValue != null) {
                 if (!sloeber_HomeValue.isEmpty()) {
                     return sloeber_HomeValue;
@@ -51,7 +51,7 @@ public class Common {
         } catch (URISyntaxException e) {
             // this should not happen
             // but it seems a space in the path makes it happen
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     "Eclipse fails to provide its own installation folder :-(. \nThis is known to happen when you have a space ! # or other wierd characters in your eclipse installation path", //$NON-NLS-1$
                     e));
         }

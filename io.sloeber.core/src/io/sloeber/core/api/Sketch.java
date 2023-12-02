@@ -2,27 +2,16 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.make.core.IMakeTarget;
-import org.eclipse.cdt.make.core.IMakeTargetManager;
-import org.eclipse.cdt.make.core.MakeCorePlugin;
-import org.eclipse.cdt.make.internal.core.MakeTarget;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;

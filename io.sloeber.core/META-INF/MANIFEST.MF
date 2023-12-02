@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: io.sloeber.core;singleton:=true
-Bundle-Version: 4.4.1.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-Version: 4.4.2.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.core.Activator
@@ -11,18 +11,20 @@ Bundle-ClassPath: .,
  lib/jsch-0.1.55.jar,
  lib/jssc-2.9.4.jar,
  lib/jmdns-3.5.7.jar
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.debug.core,
- org.eclipse.ui;bundle-version="3.117.0",
- org.eclipse.ui.console,
- org.eclipse.core.variables,
+Require-Bundle: 
  org.eclipse.core.filesystem,
- org.eclipse.equinox.security,
- org.eclipse.cdt.core;bundle-version="7.0.0",
+ org.eclipse.cdt.core,
  com.google.gson,
+ org.eclipse.equinox.security,
+ org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.console,
+ org.eclipse.debug.core,
+ org.eclipse.core.variables,
+ org.apache.commons.commons-io,
+ org.apache.commons.compress,
  io.sloeber.autoBuild,
- org.eclipse.cdt.make.core,
- org.apache.commons.commons-compress
+ org.eclipse.cdt.make.core
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

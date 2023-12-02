@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
+import static io.sloeber.core.api.Common.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -191,7 +192,7 @@ public class SloeberProject extends Common {
             CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,
             IProgressMonitor monitor) {
 
-        String realProjectName = Common.makeNameCompileSafe(projectName);
+        String realProjectName = makeNameCompileSafe(projectName);
 
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot root = workspace.getRoot();

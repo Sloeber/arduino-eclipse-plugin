@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.sloeber.arduino-eclipse-plugin</groupId>
 	<artifactId>io.sloeber.parent</artifactId>
-	<version>4.4.1-SNAPSHOT</version>
+	<version>4.4.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -379,7 +379,7 @@
 		<repository>
 			<id>nebula</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/nebula/releases/2.7.2/</url>
+			<url>https://download.eclipse.org/nebula/releases/latest/</url>
 		</repository>
 
 		<repository>
@@ -388,11 +388,6 @@
 			<url>https://download.eclipse.org/justj/jres/17/updates/release/latest/</url>
 		</repository>
 
-		<repository>
-			<id>gnumcu</id>
-			<layout>p2</layout>
-			<url>http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/</url>
-		</repository>
 	</repositories>
 
 	<pluginRepositories>
