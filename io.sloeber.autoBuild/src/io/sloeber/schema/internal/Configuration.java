@@ -126,29 +126,29 @@ public class Configuration extends SchemaObject implements IConfiguration {
             }
         }
 
-        if (!modellanguageSettingsProviders[SUPER].isBlank()) {
+        if (modellanguageSettingsProviders[SUPER].isBlank()) {
+            modellanguageSettingsProviders[SUPER] = $TOOLCHAIN;
+        }
 
-            String[] defaultIds = modellanguageSettingsProviders[SUPER].split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER);
-            for (String defaultID : defaultIds) {
-                if (defaultID != null && !defaultID.isEmpty()) {
-                    if (defaultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
-                        defaultID = defaultID.substring(1);
-                        defaultLanguageSettingsProviderIds.remove(defaultID);
-                    } else if (!defaultLanguageSettingsProviderIds.contains(defaultID)) {
-                        if (defaultID.contains($TOOLCHAIN)) {
-                            if (myToolchain != null) {
-                                String toolchainProvidersIds = myToolchain.getDefaultLanguageSettingsProviderIds();
-                                if (toolchainProvidersIds != null) {
-                                    defaultLanguageSettingsProviderIds.addAll(Arrays
-                                            .asList(toolchainProvidersIds.split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER)));
-                                }
+        String[] defaultIds = modellanguageSettingsProviders[SUPER].split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER);
+        for (String defaultID : defaultIds) {
+            if (defaultID != null && !defaultID.isEmpty()) {
+                if (defaultID.startsWith(LANGUAGE_SETTINGS_PROVIDER_NEGATION_SIGN)) {
+                    defaultID = defaultID.substring(1);
+                    defaultLanguageSettingsProviderIds.remove(defaultID);
+                } else if (!defaultLanguageSettingsProviderIds.contains(defaultID)) {
+                    if (defaultID.contains($TOOLCHAIN)) {
+                        if (myToolchain != null) {
+                            String toolchainProvidersIds = myToolchain.getDefaultLanguageSettingsProviderIds();
+                            if (toolchainProvidersIds != null) {
+                                defaultLanguageSettingsProviderIds.addAll(Arrays
+                                        .asList(toolchainProvidersIds.split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER)));
                             }
-                        } else {
-                            defaultLanguageSettingsProviderIds.add(defaultID);
                         }
+                    } else {
+                        defaultLanguageSettingsProviderIds.add(defaultID);
                     }
                 }
-
             }
         }
         myBuildProperties = parseProperties(modelbuildProperties[SUPER]);

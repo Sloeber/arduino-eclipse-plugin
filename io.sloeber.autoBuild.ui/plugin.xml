@@ -25,7 +25,7 @@
  <extension
          point="org.eclipse.ui.propertyPages">
         <page
-            class="io.sloeber.autoBuild.integrations.Page_head_build"
+            class="io.sloeber.autoBuild.ui.pages.Page_head_build"
             id="io.sloeber.autoBuild.projectProperties.main"
             name="%page.c.build"
             >
@@ -37,7 +37,7 @@
          </enabledWhen>
         </page>    
         <page
-            class="io.sloeber.autoBuild.integrations.Page_Variables"
+            class="io.sloeber.autoBuild.ui.pages.Page_Variables"
             id="io.sloeber.autoBuild.projectProperties.macro"
             category="io.sloeber.autoBuild.projectProperties.main"
             name="%CDTVariablesProperty.name"
@@ -51,7 +51,7 @@
       </page>
         <page
               category="io.sloeber.autoBuild.projectProperties.main"
-              class="io.sloeber.autoBuild.integrations.Page_Environment"
+              class="io.sloeber.autoBuild.ui.pages.Page_Environment"
               id="io.sloeber.autoBuild.projectProperties.EnvironmentVars"
               name="%Environment">
            <enabledWhen>
@@ -66,9 +66,9 @@
         </page>
         <page
               category="io.sloeber.autoBuild.projectProperties.main"
-              class="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+              class="io.sloeber.autoBuild.ui.pages.Page_BuildSettings"
               id="io.sloeber.autoBuild.projectProperties.Page_BuildSettings"
-              name="%CDTBuildProperty.name">
+              name="%toolchain.settings">
            <enabledWhen>
               <adapt
                     type="org.eclipse.core.resources.IResource">
@@ -81,7 +81,7 @@
         </page>
         <page
               category="io.sloeber.autoBuild.projectProperties.main"
-              class="io.sloeber.autoBuild.integrations.Page_ProjectSettings"
+              class="io.sloeber.autoBuild.ui.pages.Page_ProjectSettings"
               id="io.sloeber.autoBuild.projectProperties.Page_ProjectSettings"
               name="%CDTProjectProperty.name">
            <enabledWhen>
@@ -94,27 +94,24 @@
               </adapt>
            </enabledWhen>
         </page>
-<!--
-            <page
-            class="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings"
-            id="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings"
-            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build_2"
-            name="%CDTBuildProperty.name"
+        
+        <page
+              category="org.eclipse.cdt.ui.newui.Page_head_general"
+            class="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
+            id="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
+            name="%PathSymbolsProperty.name"
             >
-         <enabledWhen>
-           <adapt type="org.eclipse.core.resources.IResource">
-	            <test property="org.eclipse.core.resources.projectNature"
-	                  value="io.sloeber.autoBuildNature"/>
-           </adapt>
-         </enabledWhen>
-         <keywordReference
-               id="org.eclipse.cdt.managedbuilder.ui.keyword.toolchain1">
-         </keywordReference>
-         <keywordReference
-               id="org.eclipse.cdt.managedbuilder.ui.keyword.toolchain2">
-         </keywordReference>
+           <enabledWhen>
+              <adapt
+                    type="org.eclipse.core.resources.IProject">
+                 <test
+                       property="org.eclipse.core.resources.projectNature"
+                       value="io.sloeber.autoBuildNature">
+                 </test>
+              </adapt>
+           </enabledWhen>
       </page>
- -->
+
  </extension>
  <extension
        point="org.eclipse.cdt.ui.cPropertyTab">
@@ -123,7 +120,7 @@
           helpId="cdt_u_prop_build"
           icon="icons/obj16/build_settings.gif"
           name="%Builder.settings"
-          parent="io.sloeber.autoBuild.integrations.Page_head_build"
+          parent="io.sloeber.autoBuild.ui.pages.Page_head_build"
           weight="040">
     </tab>
     <tab
@@ -131,28 +128,28 @@
           helpId="cdt_u_prop_build"
           icon="icons/obj16/target_obj.gif"
           name="%WBB.settings"
-          parent="io.sloeber.autoBuild.integrations.Page_head_build"
+          parent="io.sloeber.autoBuild.ui.pages.Page_head_build"
           weight="050">
     </tab>
     <tab
           class="io.sloeber.autoBuild.ui.tabs.CPropertyVarsTab"
           helpId="cdt_u_prop_build_variables"
           name="%CPropertyVarsTab.name"
-          parent="io.sloeber.autoBuild.integrations.Page_Variables">
+          parent="io.sloeber.autoBuild.ui.pages.Page_Variables">
     </tab>
     <tab
           class="org.eclipse.cdt.ui.newui.EnvironmentTab"
           helpId="cdt_u_prop_build_environment"
           icon="icons/obj16/environment.gif"
           name="%EnvironmentTab.name"
-          parent="io.sloeber.autoBuild.integrations.Page_Environment">
+          parent="io.sloeber.autoBuild.ui.pages.Page_Environment">
     </tab>
     <tab
           class="io.sloeber.autoBuild.ui.tabs.ToolSettingsTab"
           helpId="cdt_u_prop_build_setting_tool"
           icon="icons/elcl16/config-tool.gif"
           name="%Tool.settings"
-          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          parent="io.sloeber.autoBuild.ui.pages.Page_BuildSettings"
           weight="010">
     </tab>
     <tab
@@ -160,7 +157,7 @@
           helpId="cdt_u_prop_build_setting_steps"
           icon="icons/obj16/steps.gif"
           name="%Build.steps"
-          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          parent="io.sloeber.autoBuild.ui.pages.Page_BuildSettings"
           weight="020">
     </tab>
     <tab
@@ -168,7 +165,7 @@
           helpId="cdt_u_prop_build_setting_binparser"
           icon="icons/obj16/bin_obj.gif"
           name="%Binary.parsers"
-          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          parent="io.sloeber.autoBuild.ui.pages.Page_BuildSettings"
           weight="060">
     </tab>
     <tab
@@ -176,15 +173,68 @@
           helpId="cdt_u_prop_build_setting_errparser"
           icon="icons/obj16/error_obj.gif"
           name="%Error.parsers"
-          parent="io.sloeber.autoBuild.integrations.Page_BuildSettings"
+          parent="io.sloeber.autoBuild.ui.pages.Page_BuildSettings"
           weight="070">
     </tab>
     <tab
           class="io.sloeber.autoBuild.ui.tabs.ProjectSettingsTab"
           icon="icons/obj16/environment.gif"
           name="%ProjectSettingsTab.name"
-          parent="io.sloeber.autoBuild.integrations.Page_ProjectSettings">
+          parent="io.sloeber.autoBuild.ui.pages.Page_ProjectSettings">
     </tab>
+    <tab
+           class="org.eclipse.cdt.ui.newui.IncludeTab"
+           icon="icons/obj16/hfolder_obj.gif"
+           name="%Includes"
+           weight="010"
+           helpId="cdt_u_prop_pns_inc"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
+           tooltip="%Includes.tooltip"/>
+     <tab
+           class="org.eclipse.cdt.ui.newui.IncludeFileTab"
+           icon="icons/obj16/h_file_obj.gif"
+           name="%IncludeFiles"
+           weight="015"
+           helpId="cdt_u_prop_pns_inc"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
+           tooltip="%IncludeFiles.tooltip"/>
+     <tab
+           class="org.eclipse.cdt.ui.newui.SymbolTab"
+           icon="icons/obj16/define_obj.gif"
+           name="%Symbols"
+           weight="020"
+           helpId="cdt_u_prop_pns_sym"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
+           tooltip="%Symbols.tooltip"/>
+     <tab
+           class="org.eclipse.cdt.ui.newui.LibraryTab"
+           icon="icons/obj16/lib_obj.gif"
+           name="%Libraries"
+           weight="030"
+           helpId="cdt_u_prop_pns_lib"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
+           tooltip="%Libraries.tooltip"/>
+     <tab
+           class="org.eclipse.cdt.ui.newui.LibraryPathTab"
+           icon="icons/obj16/fldr_lib_obj.gif"
+           name="%Library.paths"
+           weight="040"
+           helpId="cdt_u_prop_pns_libpath"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"/>
+     <tab
+           class="org.eclipse.cdt.ui.newui.RefsTab"
+           icon="icons/obj16/search_ref_obj.gif"
+           name="%References"
+           weight="100"
+           helpId="cdt_u_prop_pns_ref"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"/>
+     <tab
+           class="org.eclipse.cdt.ui.newui.CLocationSourceTab"
+           icon="icons/obj16/sroot_obj.gif"
+           name="%Source.location"
+           weight="080"           
+           helpId="cdt_u_prop_pns_src"
+           parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"/>
  </extension>
  
 </plugin>

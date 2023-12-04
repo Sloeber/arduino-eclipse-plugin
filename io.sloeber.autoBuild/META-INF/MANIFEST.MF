@@ -21,7 +21,7 @@ Require-Bundle: org.eclipse.cdt.core;bundle-version="7.0.0",
  org.eclipse.tools.templates.core
 Automatic-Module-Name: io.sloeber.core
 Bundle-Activator: io.sloeber.autoBuild.core.Activator
-Export-Package: io.sloeber.autoBuild.Internal;x-friends:="io.sloeber.autoBuild.test",
+Export-Package: io.sloeber.autoBuild.Internal,
  io.sloeber.autoBuild.api,
  io.sloeber.autoBuild.extensionPoint,
  io.sloeber.autoBuild.extensionPoint.providers,

@@ -669,7 +669,7 @@ If specified; the command line generator overrules the commandLinePattern
                <documentation>
                   Semicolon-separated list of providers ID implementing ILanguageSettingProvider interface.
 This field could be amended with toolchain-level providers list by using ${Toolchain} keyword.  Provider ID can be prefixed with &quot;-&quot; which will cause id to be removed from the preceeding list including providers defined with ${Toolchain} keyword.
-If this field is not specified, &quot;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider&quot; (MBS Language Settings Provider) is used by default.
+The default value is ${Toolchain}
                </documentation>
             </annotation>
          </attribute>

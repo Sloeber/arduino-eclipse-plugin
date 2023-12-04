@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.integrations;
+package io.sloeber.autoBuild.ui.pages;
 
 import org.eclipse.cdt.ui.newui.AbstractPage;
 

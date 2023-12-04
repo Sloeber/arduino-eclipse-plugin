@@ -28,11 +28,11 @@
      <configuration
            cleanCommand="rm -f"
            id="io.sloeber.autoBuild.configuration.release"
-           languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector"
            name="%autoBuild.configuration.name">
         <toolChain
               archList="all"
               id="io.sloeber.autoBuild.toolChain.release"
+              languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
               name="%autoBuild.tooolChain.name"
               osList="all">
            <tool
@@ -240,7 +240,7 @@
             archList="all"
             id="cdt.managedbuild.toolchain.gnu.cross.base"
             isAbstract="false"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%cross.gnu.toolChain.name"
             osList="all"
             targetTool="cdt.managedbuild.tool.gnu.cross.c.linker;cdt.managedbuild.tool.gnu.cross.cpp.linker;cdt.managedbuild.tool.gnu.archiver">
@@ -2537,7 +2537,7 @@
       <toolChain
             archList="all"
             id="cdt.managedbuild.toolchain.gnu.base"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.gnu.all"
             osList="all">
          <targetPlatform
@@ -2733,7 +2733,7 @@
             archList="all"
             environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.cygwin.GnuCygwinConfigurationEnvironmentSupplier"
             id="cdt.managedbuild.toolchain.gnu.cygwin.base"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorCygwin"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.Cygwin"
             osList="win32"
             targetTool="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.base;cdt.managedbuild.tool.gnu.c.linker.cygwin.base;cdt.managedbuild.tool.gnu.archiver">
@@ -2832,7 +2832,7 @@
             archList="all"
             environmentSupplier="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwEnvironmentVariableSupplier"
             id="cdt.managedbuild.toolchain.gnu.mingw.base"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorMinGW"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.MinGW"
             osList="win32"
             targetTool="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base;cdt.managedbuild.tool.gnu.c.linker.mingw.base;cdt.managedbuild.tool.gnu.archiver">
@@ -2912,7 +2912,7 @@
       <toolChain
             archList="all"
             id="cdt.managedbuild.toolchain.gnu.macosx.base"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.Macosx"
             osList="macosx"
             targetTool="cdt.managedbuild.tool.macosx.c.linker.macosx.base;cdt.managedbuild.tool.macosx.cpp.linker.macosx.base;cdt.managedbuild.tool.gnu.archiver">
@@ -2980,7 +2980,7 @@
       <toolChain
             archList="all"
             id="cdt.managedbuild.toolchain.gnu.solaris.base"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.Solaris"
             osList="solaris"
             superClass="cdt.managedbuild.toolchain.gnu.base">
@@ -3009,7 +3009,7 @@
       <configuration
             cleanCommand="rm -rf"
             id="cdt.managedbuild.config.gnu.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            >
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -3362,8 +3362,7 @@
       <configuration
             artifactExtension="exe"
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.gnu.cygwin.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.gnu.cygwin.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -3760,8 +3759,7 @@
       <configuration
             artifactExtension="exe"
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.gnu.mingw.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.gnu.mingw.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -4133,8 +4131,7 @@
       </projectType>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.gnu.macosx.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.gnu.macosx.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -4546,8 +4543,7 @@
       </projectType>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.gnu.solaris.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.gnu.solaris.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -5900,7 +5896,7 @@
             archList="all"
             id="cdt.managedbuild.toolchain.llvm.clang.base"
             isAbstract="true"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.llvm.clang"
             osList="all"
             secondaryOutputs="cdt.managedbuild.tool.llvm.c.linker.output.exe.bc"
@@ -5988,7 +5984,7 @@
             id="cdt.managedbuild.toolchain.llvm.clang.win32.cygwin.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.cygwin.IsGnuCygwinToolChainSupported"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorCygwin"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.llvm.clang.win32.cygwin"
             osList="win32"
             superClass="cdt.managedbuild.toolchain.llvm.clang.base">
@@ -6007,7 +6003,7 @@
             id="cdt.managedbuild.toolchain.llvm.clang.win32.mingw.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorMinGW"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.llvm.clang.win32.mingw"
             osList="win32"
             superClass="cdt.managedbuild.toolchain.llvm.clang.base">
@@ -6024,7 +6020,7 @@
             archList="all"
             id="cdt.managedbuild.toolchain.llvm.gnu.base"
             isAbstract="true"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.llvm.gnu"
             osList="all"
             secondaryOutputs="cdt.managedbuild.tool.llvm.c.linker.output.exe.bc"
@@ -6113,7 +6109,7 @@
             id="cdt.managedbuild.toolchain.llvm.gnu.win32.cygwin.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.cygwin.IsGnuCygwinToolChainSupported"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorCygwin"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.llvm.gnu.win32.cygwin"
             osList="win32"
             superClass="cdt.managedbuild.toolchain.llvm.gnu.base">
@@ -6132,7 +6128,7 @@
             id="cdt.managedbuild.toolchain.llvm.gnu.win32.mingw.base"
             isAbstract="false"
             isToolChainSupported="org.eclipse.cdt.managedbuilder.gnu.mingw.MingwIsToolChainSupported"
-            languageSettingsProviders="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser;org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetectorMinGW"
+            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
             name="%ToolChainName.llvm.gnu.win32.mingw"
             osList="win32"
             superClass="cdt.managedbuild.toolchain.llvm.gnu.base">
@@ -6279,8 +6275,7 @@
       </toolChain>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.clang.linux.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.clang.linux.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -6568,8 +6563,7 @@
       </projectType>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.clang.macosx.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.clang.macosx.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -6855,8 +6849,7 @@
       </projectType>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.clang.win32.cygwin.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.clang.win32.cygwin.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -7144,8 +7137,7 @@
       </projectType>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.clang.win32.mingw.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.clang.win32.mingw.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -7433,8 +7425,7 @@
       </projectType>
       <configuration
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.gnu.linux.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.gnu.linux.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -8013,8 +8004,7 @@
       <configuration
             artifactExtension="exe"
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.gnu.win32.cygwin.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -8303,8 +8293,7 @@
       <configuration
             artifactExtension="exe"
             cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.llvm.gnu.win32.mingw.base"
-            languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;${Toolchain};-org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser">
+            id="cdt.managedbuild.config.llvm.gnu.win32.mingw.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
@@ -10632,6 +10621,15 @@
          </configuration>
       </projectType>
    </extension>
+      <extension
+            point="org.eclipse.cdt.core.LanguageSettingsProvider">
+         <provider
+               class="io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
+               id="io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
+               name="Auto build language seettings provider"
+               prefer-non-shared="false">
+         </provider>
+      </extension>
 </plugin>
 
 

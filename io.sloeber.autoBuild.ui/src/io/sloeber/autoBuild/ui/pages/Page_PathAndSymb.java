@@ -16,12 +16,19 @@ package io.sloeber.autoBuild.ui.pages;
 import org.eclipse.cdt.ui.newui.AbstractPage;
 
 /**
+ * The class have the same functionality as superclass.
+ * The only need to create it is distinguishing tabs.
+ *
+ */
+/**
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public class Page_Environment extends AbstractPage {
+public class Page_PathAndSymb extends AbstractPage {
+
 	@Override
 	protected boolean isSingle() {
-		return true;
+		return false;
 	}
+
 }
