@@ -31,9 +31,10 @@ import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IProjectType;
 
-@SuppressWarnings({ "boxing", "nls", "static-method" })
+@SuppressWarnings({ "boxing", "nls" })
 public class CreateBasicProjects {
     static int testCounter = 1;
+    private boolean buildTypeActiveBuild = false;
 
     @BeforeAll
     static void beforeAll() {
@@ -79,14 +80,35 @@ public class CreateBasicProjects {
         }
     }
 
+    private void doBuilds(String argsInternalBuilderKey, String projectName, String extensionPointID,
+            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,
+            Boolean shouldMakefileExists) throws Exception {
+        if (buildTypeActiveBuild) {
+            buildAllConfigsAsActive(argsInternalBuilderKey, projectName, extensionPointID, extensionID, projectTypeID,
+                    natureID, codeProvider, shouldMakefileExists);
+        }
+        if (!buildTypeActiveBuild) {
+            buildAllConfigs(argsInternalBuilderKey, "all_" + projectName, extensionPointID, extensionID, projectTypeID,
+                    natureID, codeProvider, shouldMakefileExists);
+        }
+
+    }
+
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testDefaultBuilder(String projectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider) throws Exception {
-        buildAllConfigsAsActive(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
-                null);
-        buildAllConfigs(null, "all_" + projectName, extensionPointID, extensionID, projectTypeID, natureID,
-                codeProvider, null);
+
+        doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider, null);
+
+        //        if(buildTypeActiveBuild) {
+        //        buildAllConfigsAsActive(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
+        //                null);
+        //        }
+        //        if(!buildTypeActiveBuild) {
+        //        buildAllConfigs(null, "all_" + projectName, extensionPointID, extensionID, projectTypeID, natureID,
+        //                codeProvider, null);
+        //        }
 
     }
 
@@ -95,21 +117,28 @@ public class CreateBasicProjects {
     void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider) throws Exception {
         String projectName = "Internal_build_" + inProjectName;
-        buildAllConfigsAsActive(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionPointID, extensionID,
-                projectTypeID, natureID, codeProvider, Boolean.FALSE);
-        buildAllConfigs(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, "all_" + projectName, extensionPointID, extensionID,
-                projectTypeID, natureID, codeProvider, Boolean.FALSE);
+
+        doBuilds(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionPointID, extensionID, projectTypeID,
+                natureID, codeProvider, Boolean.FALSE);
+
+        //        buildAllConfigsAsActive(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionPointID, extensionID,
+        //                projectTypeID, natureID, codeProvider, Boolean.FALSE);
+        //        buildAllConfigs(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, "all_" + projectName, extensionPointID, extensionID,
+        //                projectTypeID, natureID, codeProvider, Boolean.FALSE);
     }
 
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
-    void testExternalBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
+    void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider) throws Exception {
         String projectName = "make_build_" + inProjectName;
-        buildAllConfigsAsActive(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionPointID, extensionID,
-                projectTypeID, natureID, codeProvider, Boolean.TRUE);
-        buildAllConfigs(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, "all_" + projectName, extensionPointID, extensionID,
-                projectTypeID, natureID, codeProvider, Boolean.TRUE);
+        doBuilds(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionPointID, extensionID, projectTypeID,
+                natureID, codeProvider, Boolean.TRUE);
+
+        //        buildAllConfigsAsActive(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionPointID, extensionID,
+        //                projectTypeID, natureID, codeProvider, Boolean.TRUE);
+        //        buildAllConfigs(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, "all_" + projectName, extensionPointID, extensionID,
+        //                projectTypeID, natureID, codeProvider, Boolean.TRUE);
     }
 
     static Stream<Arguments> projectCreationInfoProvider() {
