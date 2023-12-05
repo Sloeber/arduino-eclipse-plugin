@@ -433,21 +433,27 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
         //reconstruct the selected options
         for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
-            String value = optionValueMap.get(curOptionIndex.getKey());
-            String resourceString = optionResourceMap.get(curOptionIndex.getKey());
-            String toolString = optionToolMap.get(curOptionIndex.getKey());
+            String key = curOptionIndex.getKey();
+            String id = curOptionIndex.getValue();
+            String value = optionValueMap.get(key);
+            String resourceString = optionResourceMap.get(key);
+            String toolString = optionToolMap.get(key);
             if (value == null || resourceString == null) {
                 //This Should not happen
                 continue;
             }
-            IResource resource = myProject.getFile(resourceString);
+            IResource resource = myProject;
+            if (!resourceString.isBlank()) {
+                resource = myProject.getFile(resourceString);
+            }
             ITool tool = null;
             if (toolString != null) {
-                myAutoBuildConfiguration.getToolChain().getTool(toolString);
+                tool = myAutoBuildConfiguration.getToolChain().getTool(toolString);
             }
-            setOptionValueInternal(resource, tool, curOptionIndex.getValue(), value);
+            setOptionValueInternal(resource, tool, id, value);
 
         }
+        options_combine();
 
         //reconstruct the custom tool commands
         for (Entry<String, String> curOptionIndex : customToolKeyMap.entrySet()) {
@@ -560,6 +566,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     /*
      * take myDefaultOptions and mySelected options and combine them in myCombinedOptions
+     * From now onwards the combined options are to be used as they take the default and the 
+     * user selected option into account in the desired way 
      */
     private void options_combine() {
         myCombinedOptions.clear();
