@@ -14,15 +14,11 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-import org.eclipse.core.internal.registry.osgi.OSGIUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.spi.RegistryContributor;
-import org.eclipse.core.runtime.spi.RegistryStrategy;
 import org.osgi.framework.Bundle;
-
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
@@ -38,6 +34,10 @@ import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.Tool;
+//The following lines give warning. See TOFIX below on why
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import io.sloeber.autoBuild.core.Activator;
 
 public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         implements IAutoBuildConfigurationDescription {
@@ -497,7 +497,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         if (autoCfgExtentionDesc != null && autoCfgExtentionBundel != null && (!autoCfgExtentionDesc.isBlank())
                 && (!autoCfgExtentionBundel.isBlank())) {
             try {
-                Bundle contributingBundle = OSGIUtils.getDefault().getBundle(autoCfgExtentionBundel);
+                Bundle contributingBundle = getBundle(autoCfgExtentionBundel);
                 Class<?> autoCfgExtentionDescClass = contributingBundle.loadClass(autoCfgExtentionDesc);
                 Constructor<?> ctor = autoCfgExtentionDescClass.getDeclaredConstructor(
                         IAutoBuildConfigurationDescription.class, String.class, String.class, String.class);
@@ -508,6 +508,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             } catch (NoSuchMethodException e) {
                 System.err.println(
                         "Classes derived from AutoBuildConfigurationExtensionDescription need to implement constructor IAutoBuildConfigurationDescription, String, String, String"); //$NON-NLS-1$
+                e.printStackTrace();
             } catch (SecurityException | ClassNotFoundException | InstantiationException
 
                     | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -515,6 +516,26 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             }
         }
 
+    }
+
+    private static Bundle getBundle(String symbolicName) {
+        return org.eclipse.core.internal.registry.osgi.OSGIUtils.getDefault().getBundle(symbolicName);
+        //TOFIX Below is an alternative but as I could not test at the time ...
+        //        BundleContext bundleContext = Activator.getBundleContext();
+        //        if (bundleContext == null) {
+        //            System.err.println("Failed to get the bundleContext");
+        //            System.err.println("Could not load the plugin this project is created with.");
+        //            return null;
+        //        }
+        //        Bundle result = null;
+        //        for (Bundle candidate : bundleContext.getBundles()) {
+        //            if (candidate.getSymbolicName().equals(symbolicName)) {
+        //                if (result == null || result.getVersion().compareTo(candidate.getVersion()) < 0) {
+        //                    result = candidate;
+        //                }
+        //            }
+        //        }
+        //        return result;
     }
 
     /**

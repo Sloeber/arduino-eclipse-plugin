@@ -6,11 +6,15 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
     public static final String PLUGIN_ID = "io.sloeber.autoBuild"; //$NON-NLS-1$
+    private static BundleContext myBundleContext = null;
 
+    public static BundleContext getBundleContext() {
+        return myBundleContext;
+    }
 
     @Override
     public void start(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
+        myBundleContext = context;
 
     }
 
