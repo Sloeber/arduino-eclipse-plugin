@@ -617,6 +617,7 @@ public class Tool extends SchemaObject implements ITool {
             String depFlag = myModelDependencyGenerationFlag[SUPER];
             depFlag = depFlag.replace(makeVariable(myModelDependencyOutputPattern[SUPER]),
                     depFile.getProjectRelativePath().toString());
+            depFlag = depFlag.replace("$@", outputName); //$NON-NLS-1$
             flags.add(depFlag);
         }
         String flagsStr = String.join(WHITESPACE, flags);
