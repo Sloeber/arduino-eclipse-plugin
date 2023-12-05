@@ -85,14 +85,23 @@
               id="io.sloeber.autoBuild.projectProperties.Page_ProjectSettings"
               name="%CDTProjectProperty.name">
            <enabledWhen>
-              <adapt
-                    type="org.eclipse.core.resources.IResource">
-                 <test
-                       property="org.eclipse.core.resources.projectNature"
-                       value="io.sloeber.autoBuildNature">
-                 </test>
-              </adapt>
+              <and>
+                 <adapt
+                       type="org.eclipse.core.resources.IResource">
+                    <test
+                          property="org.eclipse.core.resources.projectNature"
+                          value="io.sloeber.autoBuildNature">
+                    </test>
+                 </adapt>
+                 <adapt
+                       type="org.eclipse.core.resources.IResource">
+                    <instanceof
+                          value="org.eclipse.core.resources.IProject">
+                    </instanceof>
+                 </adapt>
+              </and>
            </enabledWhen>
+
         </page>
         
         <page
