@@ -2,8 +2,6 @@ package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 /**
  * A abstract class to satisfy the resource handling required from a CConfigurationData implementation
@@ -18,8 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.Map.Entry;
-
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
@@ -31,17 +27,9 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.osgi.framework.Bundle;
-
-import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
-import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.api.IBuildRunner;
-import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ITool;
 
 public abstract class AutoBuildResourceData extends CConfigurationData {
     protected static final String KEY_SOURCE_ENTRY = "SourceEntry"; //$NON-NLS-1$

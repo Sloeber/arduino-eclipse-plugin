@@ -51,7 +51,7 @@ public class Enablement {
             if (tool != null) {
                 evalContext.addVariable(CheckOptionExpression.KEY_TOOL, tool);
             }
-            evalContext.addVariable(CheckOptionExpression.KEY_EXPRESSION_ELEMENT_TYPE, enablementType);
+            evalContext.addVariable(CheckOptionExpression.KEY_EXPRESSION_ELEMENT_TYPE, Integer.valueOf(enablementType));
             for (Expression curExpression : relevantExpressions) {
                 EvaluationResult result = curExpression.evaluate(evalContext);
                 if (result == EvaluationResult.TRUE) {

@@ -22,12 +22,10 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -175,7 +173,7 @@ public interface ITool extends ISchemaObject {
      * all other macro references are resolved
      */
     public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoBuildConfData,
-            IResource mySelectedResource) throws BuildException;
+            IResource mySelectedResource);
 
     /**
      * Returns an array of the Environment Build Path variable descriptors

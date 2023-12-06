@@ -37,7 +37,6 @@ import org.eclipse.core.runtime.Platform;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
@@ -60,7 +59,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private String[] modelcleanCommand;
 
     private ToolChain myToolchain;
-    private List<FolderInfo> myFolderInfo = new ArrayList<>();
     private Map<String, String> myBuildProperties = new HashMap<>();
 
     // Parent and children
@@ -100,10 +98,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
             switch (configElement.getName()) {
             case IToolChain.TOOL_CHAIN_ELEMENT_NAME: {
                 myToolchain = new ToolChain(this, root, configElement);
-                break;
-            }
-            case IFolderInfo.FOLDER_INFO_ELEMENT_NAME: {
-                myFolderInfo.add(new FolderInfo(this, root, configElement));
                 break;
             }
             }

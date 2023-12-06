@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IBuilder;
 
 /**
  * Interface implemented by toolchain integrators to perform the actual build.
@@ -51,7 +50,8 @@ public abstract class IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public abstract boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData,             IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
+    public abstract boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData,
+            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
     public abstract String getName();

@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import io.sloeber.autoBuild.extensionPoint.providers.CommonBuilder;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
@@ -33,7 +34,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 //TOFIX this class should be removed as this is the managed build nature class and we use autobuild nature class
 public class ManagedCProjectNature implements IProjectNature {
-    public static final String BUILDER_ID = "io.sloeber.autoBuild.integration.CommonBuilder";
+    public static final String BUILDER_ID = CommonBuilder.BUILDER_ID;
     private IProject project;
 
     public static void addManagedBuilder(IProject project, IProgressMonitor monitor) throws CoreException {

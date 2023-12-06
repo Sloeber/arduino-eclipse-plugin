@@ -444,7 +444,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                     }
 
                     case IOption.BOOLEAN: {
-                        Boolean originalValue = Boolean.valueOf(optionValue);
+                        boolean originalValue = Boolean.valueOf(optionValue).booleanValue();
                         fieldEditor = new TriStateBooleanFieldEditor(optId, nameStr, tipStr, mySettingsPageContainer,
                                 contextId, originalValue);
                         // tipStr is handled in TriStateBooleanFieldEditor constructor
@@ -533,7 +533,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                             newValue = (String) event.getNewValue();
                         }
                         if (event.getNewValue() instanceof Boolean) {
-                            newValue = Boolean.toString((Boolean) event.getNewValue());
+                            newValue = Boolean.toString(((Boolean) event.getNewValue()).booleanValue());
                         }
                         if (event.getSource() instanceof BuildOptionComboFieldEditor) {
                             BuildOptionComboFieldEditor comboClass = (BuildOptionComboFieldEditor) event.getSource();
@@ -597,13 +597,8 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         //addField(commandLinePatternField);
         commandStringField.setStringValue(myAutoConfDesc.getToolCommand(tool, mySelectedResource));
         commandLinePatternField.setStringValue(myAutoConfDesc.getToolPattern(tool, mySelectedResource));
-        try {
-            allOptionFieldEditor
-                    .setStringValue(String.join(BLANK, tool.getToolCommandFlags(myAutoConfDesc, mySelectedResource)));
-        } catch (BuildException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        allOptionFieldEditor
+                .setStringValue(String.join(BLANK, tool.getToolCommandFlags(myAutoConfDesc, mySelectedResource)));
         commandStringField.setPropertyChangeListener(new IPropertyChangeListener() {
 
             @Override
@@ -776,191 +771,6 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         optionList.addFilter(filter);
     }
 
-    /**
-     * Copy the value of an option to another option for a given resource.
-     * 
-     * @param op1
-     *            - option to copy the value from
-     * @param op2
-     *            - option to copy the value to
-     * @param dst
-     *            - the holder/parent of the option
-     * @param res
-     *            - the resource configuration the option belongs to
-     *
-     * @since 5.1
-     */
-    //    protected void setOption(IOption op1, IOption op2, IHoldsOptions dst, IResourceInfo res) {
-    //        try {
-    //            if (((Option) op1).isDirty())
-    //                isIndexerAffected = true;
-    //            switch (op1.getValueType()) {
-    //            case IOption.BOOLEAN:
-    //                boolean boolVal = op1.getBooleanValue();
-    //                ManagedBuildManager.setOption(res, dst, op2, boolVal);
-    //                break;
-    //            case IOption.ENUMERATED:
-    //            case IOption.TREE:
-    //                String enumVal = op1.getStringValue();
-    //                String enumId = op1.getId(enumVal);
-    //                String out = (enumId != null && enumId.length() > 0) ? enumId : enumVal;
-    //                ManagedBuildManager.setOption(res, dst, op2, out);
-    //                break;
-    //            case IOption.STRING:
-    //                ManagedBuildManager.setOption(res, dst, op2, op1.getStringValue());
-    //                break;
-    //            case IOption.INCLUDE_PATH:
-    //            case IOption.PREPROCESSOR_SYMBOLS:
-    //            case IOption.INCLUDE_FILES:
-    //            case IOption.MACRO_FILES:
-    //            case IOption.UNDEF_INCLUDE_PATH:
-    //            case IOption.UNDEF_PREPROCESSOR_SYMBOLS:
-    //            case IOption.UNDEF_INCLUDE_FILES:
-    //            case IOption.UNDEF_LIBRARY_PATHS:
-    //            case IOption.UNDEF_LIBRARY_FILES:
-    //            case IOption.UNDEF_MACRO_FILES:
-    //                @SuppressWarnings("unchecked")
-    //                String[] data = ((List<String>) op1.getValue()).toArray(new String[0]);
-    //                ManagedBuildManager.setOption(res, dst, op2, data);
-    //                break;
-    //            case IOption.LIBRARIES:
-    //            case IOption.LIBRARY_PATHS:
-    //            case IOption.LIBRARY_FILES:
-    //            case IOption.STRING_LIST:
-    //            case IOption.OBJECTS:
-    //                @SuppressWarnings("unchecked")
-    //                String[] data2 = ((List<String>) op1.getValue()).toArray(new String[0]);
-    //                ManagedBuildManager.setOption(res, dst, op2, data2);
-    //                break;
-    //            default:
-    //                break;
-    //            }
-    //        } catch (BuildException e) {
-    //        } catch (ClassCastException e) {
-    //        }
-    //    }
-    //
-    //    protected boolean containsDefaults() {
-    //        IConfiguration parentCfg = fInfo.getParent().getParent();
-    //        ITool tools[] = fInfo.getParent().getTools();
-    //        for (ITool tool : tools) {
-    //            if (!tool.getCustomBuildStep()) {
-    //                ITool cfgTool = parentCfg.getToolChain().getTool(tool.getSuperClass().getId());
-    //                //  Check for a non-default command or command-line-pattern
-    //                if (cfgTool != null) {
-    //                    if (!(tool.getToolCommand().equals(cfgTool.getToolCommand())))
-    //                        return false;
-    //                    if (!(tool.getCommandLinePattern().equals(cfgTool.getCommandLinePattern())))
-    //                        return false;
-    //                }
-    //                //  Check for a non-default option
-    //                IOption options[] = tool.getOptions();
-    //                for (IOption option : options) {
-    //                    if (option.getParent() == tool) {
-    //                        IOption ext = option;
-    //                        do {
-    //                            if (ext.isExtensionElement())
-    //                                break;
-    //                        } while ((ext = ext.getSuperClass()) != null);
-    //
-    //                        if (ext != null) {
-    //                            if (cfgTool != null) {
-    //                                IOption defaultOpt = cfgTool.getOptionBySuperClassId(ext.getId());
-    //                                try {
-    //                                    if (defaultOpt != null && defaultOpt.getValueType() == option.getValueType()) {
-    //                                        Object value = option.getValue();
-    //                                        Object defaultVal = defaultOpt.getValue();
-    //
-    //                                        if (value.equals(defaultVal))
-    //                                            continue;
-    //                                        //TODO: check list also
-    //                                    }
-    //                                } catch (BuildException e) {
-    //                                }
-    //                            }
-    //                        }
-    //                        return false;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        return true;
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * Answers the list of settings pages for the selected configuration
-    //     */
-    //    private List<AbstractToolSettingUI> getPagesForConfig() {
-    //        if (getCfg() == null)
-    //            return null;
-    //        List<AbstractToolSettingUI> pages = configToPageListMap.get(getCfg().getId());
-    //        if (pages == null) {
-    //            pages = new ArrayList<>();
-    //            configToPageListMap.put(getCfg().getId(), pages);
-    //        }
-    //        return pages;
-    //    }
-    //
-    //    @Override
-    //    public IPreferenceStore getPreferenceStore() {
-    //        return settingsStore;
-    //    }
-    //
-    //    /**
-    //     * Sets the "dirty" state
-    //     * 
-    //     * @param b
-    //     *            - the new dirty state, {@code true} or {@code false}
-    //     */
-    //    public void setDirty(boolean b) {
-    //        List<AbstractToolSettingUI> pages = getPagesForConfig();
-    //        if (pages == null)
-    //            return;
-    //
-    //        for (AbstractToolSettingUI page : pages) {
-    //            if (page == null)
-    //                continue;
-    //            page.setDirty(b);
-    //        }
-    //    }
-    //
-    //    /**
-    //     * @return the "dirty" state
-    //     */
-    //    public boolean isDirty() {
-    //        // Check each settings page
-    //        List<AbstractToolSettingUI> pages = getPagesForConfig();
-    //        // Make sure we have something to work on
-    //        if (pages == null) {
-    //            // Nothing to do
-    //            return false;
-    //        }
-    //
-    //        for (AbstractToolSettingUI page : pages) {
-    //            if (page == null)
-    //                continue;
-    //            if (page.isDirty())
-    //                return true;
-    //        }
-    //        return false;
-    //    }
-    //
-    //    /**
-    //     * @return the build macro provider to be used for macro resolution
-    //     *         In case the "Build Macros" tab is available, returns the
-    //     *         BuildMacroProvider
-    //     *         supplied by that tab.
-    //     *         Unlike the default provider, that provider also contains
-    //     *         the user-modified macros that are not applied yet
-    //     *         If the "Build Macros" tab is not available, returns the default
-    //     *         BuildMacroProvider
-    //     *
-    //     * @noreference This method is not intended to be referenced by clients.
-    //     */
-    //    public BuildMacroProvider obtainMacroProvider() {
-    //        return (BuildMacroProvider) ManagedBuildManager.getBuildMacroProvider();
-    //    }
-
     @Override
     public void updateData(ICResourceDescription cfgd) {
         //        fInfo = getResCfg(cfgd);
@@ -972,57 +782,12 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
     @Override
     public void performApply(ICResourceDescription src, ICResourceDescription dst) {
-        //        IResourceInfo ri1 = getResCfg(src);
-        //        IResourceInfo ri2 = getResCfg(dst);
-        //        isIndexerAffected = false;
-        //        copyHoldsOptions(ri1.getParent().getToolChain(), ri2.getParent().getToolChain(), ri2);
-        //        ITool[] t1, t2;
-        //        if (ri1 instanceof IFolderInfo) {
-        //            t1 = ((IFolderInfo) ri1).getFilteredTools();
-        //            t2 = ((IFolderInfo) ri2).getFilteredTools();
-        //        } else if (ri1 instanceof IFileInfo) {
-        //            t1 = ((IFileInfo) ri1).getToolsToInvoke();
-        //            t2 = ((IFileInfo) ri2).getToolsToInvoke();
-        //        } else
-        //            return;
-        //
-        //        // get the corresponding pairs of tools for which we can copy settings
-        //        // and do the copy
-        //        for (Map.Entry<ITool, ITool> pair : getToolCorrespondence(t1, t2).entrySet()) {
-        //            copyHoldsOptions(pair.getKey(), pair.getValue(), ri2);
-        //        }
-        //        setDirty(false);
 
         updateData(getResDesc());
     }
 
     @Override
     protected void performOK() {
-        //        // We need to override performOK so we can determine if any option
-        //        // was chosen that affects the indexer and the user directly chooses
-        //        // to press OK instead of Apply.
-        //        isIndexerAffected = false;
-        //        if (!isDirty()) {
-        //            super.performOK();
-        //            return; // don't bother if already applied
-        //        }
-        //        ICResourceDescription res = getResDesc();
-        //        IResourceInfo info = getResCfg(res);
-        //        ITool[] t1;
-        //        if (info instanceof IFolderInfo) {
-        //            t1 = ((IFolderInfo) info).getFilteredTools();
-        //        } else if (info instanceof IFileInfo) {
-        //            t1 = ((IFileInfo) info).getToolsToInvoke();
-        //        } else
-        //            return;
-        //        for (ITool t : t1) {
-        //            IOption op1[] = t.getOptions();
-        //            for (IOption op : op1) {
-        //                if (((Option) op).isDirty()) {
-        //                    isIndexerAffected = true;
-        //                }
-        //            }
-        //        }
         super.performOK();
     }
 
@@ -1031,88 +796,9 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         return isIndexerAffected;
     }
 
-    /**
-     * Computes the correspondence of tools in the copy-from set (<tt>t1</tt>) and
-     * the
-     * copy-to set (<tt>t2</tt>) in an apply operation. The resulting pairs are in
-     * the order
-     * of the <tt>t2</tt> array. Note that tools that have no correspondence do not
-     * appear in
-     * the result, and that order is not significant. Also, in case of replication
-     * of tools
-     * in a chain (?) they are matched one-for one in the order in which they are
-     * found in
-     * each chain.
-     *
-     * @param t1
-     *            - first group of tools. May not be <code>null</code>
-     * @param t2
-     *            - second group of tools. May not be <code>null</code>
-     * @return the one-for-one correspondence of tools, in order of <tt>t2</tt>
-     */
-    //    private Map<ITool, ITool> getToolCorrespondence(ITool[] t1, ITool[] t2) {
-    //        Map<ITool, ITool> result = new java.util.LinkedHashMap<>();
-    //        Map<ITool, List<ITool>> realT1Tools = new java.util.LinkedHashMap<>();
-    //
-    //        for (ITool next : t1) {
-    //            ITool real = ManagedBuildManager.getRealTool(next);
-    //            List<ITool> list = realT1Tools.get(real);
-    //            if (list == null) {
-    //                // the immutable singleton list is efficient in storage
-    //                realT1Tools.put(real, Collections.singletonList(next));
-    //            } else {
-    //                if (list.size() == 1) {
-    //                    // make the list mutable
-    //                    list = new java.util.ArrayList<>(list);
-    //                    realT1Tools.put(real, list);
-    //                }
-    //                list.add(next);
-    //            }
-    //        }
-    //
-    //        for (ITool next : t2) {
-    //            ITool real = ManagedBuildManager.getRealTool(next);
-    //            List<ITool> correspondents = realT1Tools.get(real);
-    //            if (correspondents != null) {
-    //                result.put(correspondents.get(0), next);
-    //
-    //                // consume the correspondent
-    //                if (correspondents.size() == 1) {
-    //                    // remove the list; no more entries to consume
-    //                    realT1Tools.remove(real);
-    //                } else {
-    //                    // cost of removal in array-list is not a concern
-    //                    // considering that this is a UI Apply button and
-    //                    // replication of tools is a fringe case
-    //                    correspondents.remove(0);
-    //                }
-    //            }
-    //        }
-    //
-    //        return result;
-    //    }
-    //
-
     @Override
     public void updateButtons() {
     }
-    //
-    //    @Override
-    //    public void updateMessage() {
-    //    }
-    //
-    //    @Override
-    //    public void updateTitle() {
-    //    }
-    //
-    //    @Override
-    //    public boolean canBeVisible() {
-    //        IConfiguration cfg = getCfg();
-    //        if (cfg instanceof MultiConfiguration)
-    //            return ((MultiConfiguration) cfg).isManagedBuildOn();
-    //        else
-    //            return cfg.getBuilder().isManagedBuildOn();
-    //    }
 
     private Map<String, CustomFieldEditorDescriptor> customFieldEditorDescriptorIndex;
 
@@ -1211,35 +897,6 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
         @Override
         protected void doLoad() {
-
-            //            //            if (enable3 && holders != null && button != null) {
-            //            //                String id = getPreferenceName();
-            //            //                IOption op = holders[current].getOptionById(id);
-            //            //                if (op != null) {
-            //            //                    if (op.getSuperClass() != null)
-            //            //                        id = op.getSuperClass().getId();
-            //            //                    int[] vals = new int[2];
-            //            //                    for (int i = 0; i < holders.length; i++) {
-            //            //                        op = holders[i].getOptionBySuperClassId(id);
-            //            //                        try {
-            //            //                            if (op != null)
-            //            //                                vals[op.getBooleanValue() ? 1 : 0]++;
-            //            //                        } catch (BuildException e) {
-            //            //                        }
-            //            //                    }
-            //            //                    boolean value = false;
-            //            //                    boolean gray = false;
-            //            //                    if (vals[1] > 0) {
-            //            //                        value = true;
-            //            //                        if (vals[0] > 0)
-            //            //                            gray = true;
-            //            //                    }
-            //            //                    button.setGrayed(gray);
-            //            //                    button.setSelection(value);
-            //            //                    return;
-            //            //                }
-            //            //            }
-            //            super.doLoad(); // default case
         }
 
     }
@@ -1259,27 +916,6 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
         @Override
         protected String changePressed() {
-            //            ITreeRoot treeRoot;
-            //            try {
-            //                treeRoot = option.getTreeRoot();
-            //                TreeSelectionDialog dlg = new TreeSelectionDialog(getShell(), treeRoot, nameStr, contextId);
-            //                String name = getStringValue();
-            //                if (name != null) {
-            //                    String treeId = option.getId(name);
-            //                    if (treeId != null) {
-            //                        ITreeOption node = treeRoot.findNode(treeId);
-            //                        if (node != null) {
-            //                            dlg.setSelection(node);
-            //                        }
-            //                    }
-            //                }
-            //
-            //                if (dlg.open() == Window.OK) {
-            //                    ITreeOption selected = dlg.getSelection();
-            //                    return selected.getName();
-            //                }
-            //            } catch (BuildException e) {
-            //            }
             return null;
         }
     }

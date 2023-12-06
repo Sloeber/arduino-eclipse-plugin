@@ -15,8 +15,6 @@ package io.sloeber.schema.api;
 
 import java.util.List;
 
-import io.sloeber.autoBuild.api.BuildException;
-
 /**
  * Implements the functionality that is needed to hold options and option
  * categories. The functionality has been moved from ITool to here in CDT 3.0.
@@ -61,29 +59,5 @@ public interface IOptions {
      * @return List<IOption>
      */
     public List<IOption> getOptions();
-
-    /**
-     * 
-     * This method should be called in order to obtain the option whose value and
-     * attributes could be directly changed/adjusted
-     *
-     * @param option
-     *            -the option to be modified
-     * @param adjustExtension
-     *            - if false, modifications are to be made for the non-extension
-     *            element
-     *            (only for some particular configuration associated with some
-     *            eclipse project)
-     *            This is the most common use of this method.
-     *
-     *            True is allowed only while while handling the LOAD value handler
-     *            event.
-     *            In this case modifications are to be made for the extension
-     *            element.
-     *            This could be used for adjusting extension options
-     *            Note: changing this option will affect all non-extension
-     *            configurations using this option!
-     */
-    // IOption getOptionToSet(IOption option, boolean adjustExtension) throws BuildException;
 
 }

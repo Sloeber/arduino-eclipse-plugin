@@ -15,8 +15,6 @@ package io.sloeber.schema.api;
 
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
-
 /**
  * This class defines the os/architecture combination upon which the
  * outputs of a tool-chain can be deployed. The osList and archList

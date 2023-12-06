@@ -34,7 +34,6 @@ import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IFolderInfo;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
@@ -71,15 +70,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
      * This constructor is called to create a tool-chain defined by an extension
      * point in a plugin manifest file, or returned by a dynamic element provider
      *
-     * @param parentFldInfo
-     *            The {@link IFolderInfo} parent of this
-     *            tool-chain, or {@code null} if defined at the top
-     *            level
-     * @param element
-     *            The tool-chain definition from the manifest file
-     *            or a dynamic element provider
-     * @param managedBuildRevision
-     *            the fileVersion of Managed Build System
      */
     public ToolChain(Configuration parent, IExtensionPoint root, IConfigurationElement element) {
         this.myConfiguration = parent;

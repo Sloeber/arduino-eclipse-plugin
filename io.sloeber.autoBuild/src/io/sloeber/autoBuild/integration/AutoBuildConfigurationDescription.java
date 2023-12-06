@@ -901,6 +901,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myCustomBuildCommand = makeArgs;
     }
 
+    @Override
     public StringBuffer serialize(String linePrefix, String lineEnd) {
         int counterStart = 0;
         StringBuffer ret = super.serialize(linePrefix, lineEnd);

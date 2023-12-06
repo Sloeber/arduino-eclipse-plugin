@@ -44,6 +44,7 @@ public class CCProjectWizard extends CDTCommonProjectWizard {
             CProjectNature.addCNature(prj, subMonitor.split(1));
             CCProjectNature.addCCNature(prj, subMonitor.split(1));
         } catch (CoreException e) {
+            e.printStackTrace();
         }
         return prj;
     }

@@ -18,10 +18,8 @@ package io.sloeber.autoBuild.api;
  */
 public class BuildException extends Exception {
 
-	public static final int BUILD_FAILED = -1;
-
-	public BuildException(String msg) {
-		super(msg);
-	}
+    public BuildException(String msg) {
+        super(msg);
+    }
 
 }

@@ -18,14 +18,11 @@ import java.text.Collator;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.eclipse.cdt.core.cdtvariables.CdtVariable;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICMultiItemsHolder;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacro;
-//import org.eclipse.cdt.managedbuilder.internal.ui.Messages;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacro;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.jface.dialogs.Dialog;
@@ -51,8 +48,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import io.sloeber.autoBuild.Internal.BuildMacro;
-import io.sloeber.autoBuild.api.IBuildMacro;
 import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.schema.api.IOption;
 
@@ -182,7 +177,7 @@ public class NewVarDialog extends Dialog {
                 Messages.NewBuildMacroDialog_label_type_path_dir, Messages.NewBuildMacroDialog_label_type_path_dir_list,
                 Messages.NewBuildMacroDialog_label_type_path_any,
                 Messages.NewBuildMacroDialog_label_type_path_any_list });
-        setSelectedType(IBuildMacro.VALUE_TEXT);
+        setSelectedType(ICdtVariable.VALUE_TEXT);
 
         fTypeSelector.addListener(SWT.Selection, new Listener() {
             @Override
@@ -291,19 +286,19 @@ public class NewVarDialog extends Dialog {
     private int getBrowseType(int type) {
         int browseType = IOption.BROWSE_NONE;
         switch (type) {
-        case IBuildMacro.VALUE_PATH_FILE:
-        case IBuildMacro.VALUE_PATH_FILE_LIST:
+        case ICdtVariable.VALUE_PATH_FILE:
+        case ICdtVariable.VALUE_PATH_FILE_LIST:
             browseType = IOption.BROWSE_FILE;
             break;
-        case IBuildMacro.VALUE_PATH_DIR:
-        case IBuildMacro.VALUE_PATH_DIR_LIST:
+        case ICdtVariable.VALUE_PATH_DIR:
+        case ICdtVariable.VALUE_PATH_DIR_LIST:
             browseType = IOption.BROWSE_DIR;
             break;
-        case IBuildMacro.VALUE_PATH_ANY:
-        case IBuildMacro.VALUE_PATH_ANY_LIST:
+        case ICdtVariable.VALUE_PATH_ANY:
+        case ICdtVariable.VALUE_PATH_ANY_LIST:
             break;
-        case IBuildMacro.VALUE_TEXT:
-        case IBuildMacro.VALUE_TEXT_LIST:
+        case ICdtVariable.VALUE_TEXT:
+        case ICdtVariable.VALUE_TEXT_LIST:
         default:
         }
         return browseType;
@@ -330,7 +325,7 @@ public class NewVarDialog extends Dialog {
         if (v != null)
             loadVar(v);
         else
-            loadVar(name, IBuildMacro.VALUE_TEXT, EMPTY_STRING);
+            loadVar(name, ICdtVariable.VALUE_TEXT, EMPTY_STRING);
     }
 
     private void loadVar(String name, int type, String value[]) {
@@ -397,22 +392,22 @@ public class NewVarDialog extends Dialog {
     private int getSelectedType() {
         switch (fTypeSelector.getSelectionIndex()) {
         case 1:
-            return IBuildMacro.VALUE_TEXT_LIST;
+            return ICdtVariable.VALUE_TEXT_LIST;
         case 2:
-            return IBuildMacro.VALUE_PATH_FILE;
+            return ICdtVariable.VALUE_PATH_FILE;
         case 3:
-            return IBuildMacro.VALUE_PATH_FILE_LIST;
+            return ICdtVariable.VALUE_PATH_FILE_LIST;
         case 4:
-            return IBuildMacro.VALUE_PATH_DIR;
+            return ICdtVariable.VALUE_PATH_DIR;
         case 5:
-            return IBuildMacro.VALUE_PATH_DIR_LIST;
+            return ICdtVariable.VALUE_PATH_DIR_LIST;
         case 6:
-            return IBuildMacro.VALUE_PATH_ANY;
+            return ICdtVariable.VALUE_PATH_ANY;
         case 7:
-            return IBuildMacro.VALUE_PATH_ANY_LIST;
+            return ICdtVariable.VALUE_PATH_ANY_LIST;
         case 0:
         default:
-            return IBuildMacro.VALUE_TEXT;
+            return ICdtVariable.VALUE_TEXT;
         }
     }
 
@@ -421,28 +416,28 @@ public class NewVarDialog extends Dialog {
      */
     private void setSelectedType(int type) {
         switch (type) {
-        case IBuildMacro.VALUE_TEXT_LIST:
+        case ICdtVariable.VALUE_TEXT_LIST:
             fTypeSelector.select(1);
             break;
-        case IBuildMacro.VALUE_PATH_FILE:
+        case ICdtVariable.VALUE_PATH_FILE:
             fTypeSelector.select(2);
             break;
-        case IBuildMacro.VALUE_PATH_FILE_LIST:
+        case ICdtVariable.VALUE_PATH_FILE_LIST:
             fTypeSelector.select(3);
             break;
-        case IBuildMacro.VALUE_PATH_DIR:
+        case ICdtVariable.VALUE_PATH_DIR:
             fTypeSelector.select(4);
             break;
-        case IBuildMacro.VALUE_PATH_DIR_LIST:
+        case ICdtVariable.VALUE_PATH_DIR_LIST:
             fTypeSelector.select(5);
             break;
-        case IBuildMacro.VALUE_PATH_ANY:
+        case ICdtVariable.VALUE_PATH_ANY:
             fTypeSelector.select(6);
             break;
-        case IBuildMacro.VALUE_PATH_ANY_LIST:
+        case ICdtVariable.VALUE_PATH_ANY_LIST:
             fTypeSelector.select(7);
             break;
-        case IBuildMacro.VALUE_TEXT:
+        case ICdtVariable.VALUE_TEXT:
         default:
             fTypeSelector.select(0);
             break;
@@ -458,9 +453,9 @@ public class NewVarDialog extends Dialog {
         if (name != null || !EMPTY_STRING.equals(name)) {
             int type = getSelectedType();
             if (CdtVariableResolver.isStringListVariable(type))
-                fResultingMacro = new BuildMacro(name, type, getSelectedStringListValue());
+                fResultingMacro = new CdtVariable(name, type, getSelectedStringListValue());
             else
-                fResultingMacro = new BuildMacro(name, type, getSelectedStringValue());
+                fResultingMacro = new CdtVariable(name, type, getSelectedStringValue());
         }
 
         super.okPressed();

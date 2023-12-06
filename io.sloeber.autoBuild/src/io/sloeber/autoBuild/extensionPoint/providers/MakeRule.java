@@ -32,7 +32,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
@@ -229,11 +228,7 @@ public class MakeRule {
                 }
                 niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
                 //JABA I'm not sure it is necessary to loop through all the prerequisites to add all flags
-                try {
-                    flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile)));
-                } catch (BuildException e) {
-                    e.printStackTrace();
-                }
+                flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile)));
             }
         }
         //Get the flags from the CdtConfigurationDescription
@@ -292,78 +287,11 @@ public class MakeRule {
                 resolvedCommand = curRecipe;
             }
             if (!resolvedCommand.isBlank()) {
-                ret.addAll(Arrays.asList(resolvedCommand.split("\\r?\\n")));
+                ret.addAll(Arrays.asList(resolvedCommand.split(LINE_BREAK_REGEX)));
             }
         }
         return ret.toArray(new String[ret.size()]);
     }
-
-    //    private Set<String> getBuildFlags(AutoBuildConfigurationData autoBuildConfData, IFile sourceFile,
-    //            IFile outputFile) {
-    //        Set<String> flags = new LinkedHashSet<>();
-    //        // Get the tool command line options
-    //        try {
-    //
-    //            //IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
-    //            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, sourceFile, outputFile)));
-    //
-    //            myTool.getInputTypes();
-    //        } catch (BuildException e) {
-    //            e.printStackTrace();
-    //        }
-    //        return flags;
-    //    }
-
-    //    private String expandCommandLinePattern(AutoBuildConfigurationDescription autoBuildConfData, Set<String> flags,
-    //            String outputFlag, String outputName, Set<String> inputResources) {
-    //        String cmd = myTool.getDefaultommandLineCommand();
-    //        // try to resolve the build macros in the tool command
-    //        String resolvedCommand = resolve(cmd, EMPTY_STRING, WHITESPACE, autoBuildConfData);
-    //        if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
-    //            cmd = resolvedCommand;
-    //        return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
-    //                getToolCommandLinePattern(autoBuildConfData, myTool));
-    //    }
-
-    //    private static String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag,
-    //            String outputName, Set<String> inputResources, String commandLinePattern) {
-    //
-    //        String command = commandLinePattern;
-    //        if (commandLinePattern == null || commandLinePattern.length() <= 0) {
-    //            command = DEFAULT_PATTERN;
-    //        }
-    //
-    //        String quotedOutputName = outputName;
-    //        // if the output name isn't a variable then quote it
-    //        if (quotedOutputName.length() > 0 && quotedOutputName.indexOf("$(") != 0) { //$NON-NLS-1$
-    //            quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
-    //        }
-    //
-    //        String inputsStr = ""; //$NON-NLS-1$
-    //        if (inputResources != null) {
-    //            for (String inp : inputResources) {
-    //                if (inp != null && !inp.isEmpty()) {
-    //                    // if the input resource isn't a variable then quote it
-    //                    if (inp.indexOf("$(") != 0) { //$NON-NLS-1$
-    //                        inp = DOUBLE_QUOTE + inp + DOUBLE_QUOTE;
-    //                    }
-    //                    inputsStr = inputsStr + inp + WHITESPACE;
-    //                }
-    //            }
-    //            inputsStr = inputsStr.trim();
-    //        }
-    //
-    //        String flagsStr = String.join(WHITESPACE, flags);
-    //
-    //        command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
-    //        command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
-    //        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
-    //        // command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
-    //        command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
-    //        command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
-    //
-    //        return command;
-    //    }
 
     public void addPrerequisites(IInputType inputType, Set<IFile> files) {
         Set<IFile> entrypoint = myPrerequisites.get(inputType);
@@ -521,25 +449,3 @@ public class MakeRule {
     }
 
 }
-//    /**
-//     * Returns the dependency <code>IPath</code>s relative to the build directory
-//     *
-//     * @param depCalculator
-//     *            the dependency calculator
-//     * @return IPath[] that are relative to the build directory
-//     */
-//    private IPath[] calculateDependenciesForSource(ArduinoGnuMakefileGenerator caller,
-//            IManagedDependencyCalculator depCalculator) {
-//        IPath[] addlDeps = depCalculator.getDependencies();
-//        if (addlDeps != null) {
-//            for (int i = 0; i < addlDeps.length; i++) {
-//                if (!addlDeps[i].isAbsolute()) {
-//                    // Convert from project relative to build directory relative
-//                    IPath absolutePath = caller.getProject().getLocation().append(addlDeps[i]);
-//                    addlDeps[i] = ManagedBuildManager.calculateRelativePath(caller.getTopBuildDir().getLocation(),
-//                            absolutePath);
-//                }
-//            }
-//        }
-//        return addlDeps;
-//    }

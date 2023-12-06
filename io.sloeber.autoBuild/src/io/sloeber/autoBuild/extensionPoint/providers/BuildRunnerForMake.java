@@ -138,30 +138,31 @@ public class BuildRunnerForMake extends IBuildRunner {
 
             String[] envp = getEnvironment(confDesc, builder.appendEnvironment());
 
-            ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator,
-                    autoData.getErrorParserList());
+            try (ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator,
+                    autoData.getErrorParserList());) {
 
-            List<IConsoleParser> parsers = new ArrayList<>();
-            if (!isClean) {
-                AutoBuildManager.collectLanguageSettingsConsoleParsers(confDesc, epm, parsers);
-            }
-
-            buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand),
-                    args.toArray(new String[args.size()]), buildFolderURI, envp);
-            buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
-            buildRunnerHelper.removeOldMarkers(project, monitor);
-            buildRunnerHelper.greeting(kind, cfgName, configuration.getToolChain().getName(),
-                    configuration.isSupported());
-
-            epm.deferDeDuplication();
-            try {
-                if (buildRunnerHelper.build(monitor) != 0) {
-                    epm.addProblemMarker(new ProblemMarkerInfo(project, 1, "Build Failed", //$NON-NLS-1$
-                            IMarkerGenerator.SEVERITY_ERROR_BUILD, null));
-
+                List<IConsoleParser> parsers = new ArrayList<>();
+                if (!isClean) {
+                    AutoBuildManager.collectLanguageSettingsConsoleParsers(confDesc, epm, parsers);
                 }
-            } finally {
-                epm.deDuplicate();
+
+                buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand),
+                        args.toArray(new String[args.size()]), buildFolderURI, envp);
+                buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
+                buildRunnerHelper.removeOldMarkers(project, monitor);
+                buildRunnerHelper.greeting(kind, cfgName, configuration.getToolChain().getName(),
+                        configuration.isSupported());
+
+                epm.deferDeDuplication();
+                try {
+                    if (buildRunnerHelper.build(monitor) != 0) {
+                        epm.addProblemMarker(new ProblemMarkerInfo(project, 1, "Build Failed", //$NON-NLS-1$
+                                IMarkerGenerator.SEVERITY_ERROR_BUILD, null));
+
+                    }
+                } finally {
+                    epm.deDuplicate();
+                }
             }
             buildRunnerHelper.close();
             buildRunnerHelper.goodbye();
@@ -273,18 +274,6 @@ public class BuildRunnerForMake extends IBuildRunner {
     private static void checkCancel(IProgressMonitor monitor) {
         if (monitor != null && monitor.isCanceled())
             throw new OperationCanceledException();
-    }
-
-    private static boolean isCleanBuild(int kind) {
-        switch (kind) {
-        case IncrementalProjectBuilder.AUTO_BUILD:
-        case IncrementalProjectBuilder.INCREMENTAL_BUILD:
-            return false;
-        case IncrementalProjectBuilder.CLEAN_BUILD:
-        case IncrementalProjectBuilder.FULL_BUILD:
-            return true;
-        }
-        return true;
     }
 
     /*

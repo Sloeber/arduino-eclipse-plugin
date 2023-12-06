@@ -216,8 +216,8 @@ public class CDTMainWizardPage extends WizardNewProjectCreationPage implements I
                         if (f.getAttribute(EFS.ATTRIBUTE_READ_ONLY)) {
                             setErrorMessage(Messages.CMainWizardPage_DirReadOnlyError);
                             return false;
-                        } else
-                            setMessage(Messages.CMainWizardPage_7, IMessageProvider.WARNING);
+                        }
+                        setMessage(Messages.CMainWizardPage_7, IMessageProvider.WARNING);
                     } else {
                         setErrorMessage(Messages.CMainWizardPage_6);
                         return false;
@@ -478,6 +478,7 @@ public class CDTMainWizardPage extends WizardNewProjectCreationPage implements I
             if (h != null)
                 h.initialize(ed);
         } catch (CoreException e) {
+            e.printStackTrace();
             h = null;
         }
         if (h_selected != null)

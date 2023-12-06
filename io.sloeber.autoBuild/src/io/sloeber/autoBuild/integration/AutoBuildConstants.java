@@ -52,6 +52,7 @@ public class AutoBuildConstants {
     public static final String EQUAL = "=";
     public static final String BLANK = " ";
     public static final String ALL = "all";
+    public static final String LINE_BREAK_REGEX = "\\r?\\n";
 
     public static final String DEFAULT_BUILDSTEP_ANNOUNCEMENT = "Building";
 

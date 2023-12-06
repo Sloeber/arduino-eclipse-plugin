@@ -13,12 +13,14 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
+import org.eclipse.core.resources.IResource;
+
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IResourceInfo;
 import io.sloeber.schema.api.ITool;
 
 public interface ILanguageInfoCalculator {
-	String getLanguageName(IResourceInfo rcInfo, ITool tool, IInputType type);
+    String getLanguageName(IResource rcInfo, IAutoBuildConfigurationDescription confDesc, ITool tool, IInputType type);
 
-	String getLanguageId(IResourceInfo rcInfo, ITool tool, IInputType type);
+    String getLanguageId(IResource rcInfo, IAutoBuildConfigurationDescription confDesc, ITool tool, IInputType type);
 }

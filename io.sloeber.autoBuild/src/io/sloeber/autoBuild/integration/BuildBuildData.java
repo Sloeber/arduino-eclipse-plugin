@@ -14,8 +14,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
-
 import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.settings.model.COutputEntry;
 import org.eclipse.cdt.core.settings.model.ICOutputEntry;

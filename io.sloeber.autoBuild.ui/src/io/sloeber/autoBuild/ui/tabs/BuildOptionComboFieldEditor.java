@@ -18,8 +18,6 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.cdt.utils.ui.controls.ControlFactory;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.osgi.util.TextProcessor;

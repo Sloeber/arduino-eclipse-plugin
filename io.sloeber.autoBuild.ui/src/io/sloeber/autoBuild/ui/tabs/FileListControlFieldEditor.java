@@ -20,9 +20,7 @@ import java.util.StringTokenizer;
 
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.cdt.utils.ui.controls.IFileListChangeListener;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.preference.FieldEditor;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.layout.GridData;
@@ -228,35 +226,6 @@ public class FileListControlFieldEditor extends FieldEditor {
      */
     @Override
     protected void doLoad() {
-        //        if (list != null) {
-        //            IPreferenceStore store = getPreferenceStore();
-        //            if (store != null) {
-        //                String s = store.getString(getPreferenceName());
-        //                String[] array = parseString(s);
-        //                list.setList(array);
-        //                list.setSelection(0);
-        //                // Set the resource the editor works for
-        //                if (store instanceof ToolSettingsPrefStore) {
-        //                    IConfiguration config = ((ToolSettingsPrefStore) store).getSelectedConfig();
-        //                    if (config != null) {
-        //                        IResource project = config.getOwner();
-        //                        if (project != null) {
-        //                            /* Enable workspace support for list and set project */
-        //                            list.setWorkspaceSupport(true);
-        //                            if (store instanceof ToolSettingsPrefStore) {
-        //                                ToolSettingsPrefStore btsStore = ((ToolSettingsPrefStore) store);
-        //                                Object[] option = btsStore.getOption(getPreferenceName());
-        //                                if (option != null) {
-        //                                    list.setContext(btsStore.obtainMacroProvider().getMacroContextInfo(
-        //                                            IBuildMacroProvider.CONTEXT_OPTION,
-        //                                            new OptionContextData((IOption) option[1], (IHoldsOptions) option[0])));
-        //                                }
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
         list.selectionChanged();
     }
 

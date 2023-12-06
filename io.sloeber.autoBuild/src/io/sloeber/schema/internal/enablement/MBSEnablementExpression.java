@@ -99,7 +99,7 @@ public class MBSEnablementExpression extends CompositeExpression {
     public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
         EvaluationResult ret = evaluateAnd(context);
         if (myTypeString.equals(CMD_USAGE)) {
-            int type = (int) context.getVariable(CheckOptionExpression.KEY_EXPRESSION_ELEMENT_TYPE);
+            int type = ((Integer) context.getVariable(CheckOptionExpression.KEY_EXPRESSION_ELEMENT_TYPE)).intValue();
             if ((type | ENABLEMENT_GUI_VISIBLE) == ENABLEMENT_GUI_VISIBLE) {
                 ret = ret.not();
             }

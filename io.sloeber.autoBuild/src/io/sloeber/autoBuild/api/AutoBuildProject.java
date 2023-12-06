@@ -155,6 +155,7 @@ public class AutoBuildProject {
                     envStr.delete(0, ndx + 1);
                 }
             } catch (StringIndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
         }
         return ret;

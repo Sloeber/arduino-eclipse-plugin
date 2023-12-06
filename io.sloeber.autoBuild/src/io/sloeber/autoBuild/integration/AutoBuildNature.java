@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;

@@ -33,9 +33,9 @@ public interface IBuildMacroSupplier extends ICdtVariableSupplier {
      *            context type
      * @param contextData
      *            context data
-     * @return IBuildMacro
+     * @return ICdtVariable
      */
-    public IBuildMacro getMacro(String macroName, int contextType, Object contextData);
+    public ICdtVariable getMacro(String macroName, int contextType, Object contextData);
 
     /**
      *
@@ -43,9 +43,9 @@ public interface IBuildMacroSupplier extends ICdtVariableSupplier {
      *            context type
      * @param contextData
      *            context data
-     * @return IBuildMacro[]
+     * @return ICdtVariable[]
      */
-    public IBuildMacro[] getMacros(int contextType, Object contextData);
+    public ICdtVariable[] getMacros(int contextType, Object contextData);
 
     public ICdtVariable getVariable(String macroName, IMacroContextInfo context);
 

@@ -13,11 +13,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.autoBuild.api.IBuildMacro;
-import io.sloeber.autoBuild.api.IBuildMacroProvider;
-import io.sloeber.schema.api.IConfiguration;
+import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
 
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 
 /**
  *
@@ -52,11 +50,11 @@ public interface IConfigurationBuildMacroSupplier {
      *            and the provider in turn calls that supplier again. Also the
      *            supplier should not know anything
      *            about the build macros defined for the higher levels.
-     * @return the reference to the IBuildMacro interface representing
+     * @return the reference to the ICdtVariable interface representing
      *         the build macro of a given name or null if the macro of that name is
      *         not defined
      */
-    public IBuildMacro getMacro(String macroName, IConfiguration configuration, IBuildMacroProvider provider);
+    public ICdtVariable getMacro(String macroName, IAutoBuildConfigurationDescription configuration);
 
     /**
      *
@@ -81,7 +79,7 @@ public interface IConfigurationBuildMacroSupplier {
      *            and the provider in turn calls that supplier again. Also the
      *            supplier should not know anything
      *            about the build macros defined for the higher levels.
-     * @return the IBuildMacro[] array representing defined macros
+     * @return the ICdtVariable[] array representing defined macros
      */
-    public IBuildMacro[] getMacros(IConfiguration configuration, IBuildMacroProvider provider);
+    public ICdtVariable[] getMacros(IAutoBuildConfigurationDescription configuration);
 }

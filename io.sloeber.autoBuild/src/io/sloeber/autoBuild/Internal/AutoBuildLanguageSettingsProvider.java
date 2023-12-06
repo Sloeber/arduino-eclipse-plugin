@@ -97,8 +97,8 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
                                                     IStringVariableManager mngr = VariablesPlugin.getDefault()
                                                             .getStringVariableManager();
                                                     String projectRootedPath = mngr.generateVariableExpression(
-                                                            "workspace_loc", rc.getProject().getName()) + Path.SEPARATOR //$NON-NLS-1$
-                                                            + pathStr;
+                                                            "workspace_loc", rc.getProject().getName()) //$NON-NLS-1$
+                                                            + IPath.SEPARATOR + pathStr;
                                                     // clear "RESOLVED" flag
                                                     int flags = entry.getFlags() & ~(ICSettingEntry.RESOLVED
                                                             | ICSettingEntry.VALUE_WORKSPACE_PATH);

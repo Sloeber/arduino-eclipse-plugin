@@ -12,7 +12,7 @@
  * Intel Corporation - Initial API and implementation
  * IBM Corporation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.schema.internal;
 
 import java.util.Objects;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;

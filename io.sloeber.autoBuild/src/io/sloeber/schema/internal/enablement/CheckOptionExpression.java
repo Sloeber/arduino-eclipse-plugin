@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.SchemaObject;
 
@@ -29,10 +28,10 @@ public class CheckOptionExpression extends Expression {
     private String myOtherHolderID;
     private String myIsRegex;
     private String myExpectedValue;
-    private SchemaObject mySchemaObject;
+    //private SchemaObject mySchemaObject;
 
     public CheckOptionExpression(IConfigurationElement element, SchemaObject schemaObject) {
-        mySchemaObject = schemaObject;
+        // mySchemaObject = schemaObject;
         myOptionID = element.getAttribute(KEY_OPTION_ID);
         myHolderID = element.getAttribute(KEY_HOLDER_ID);
         myOtherHolderID = element.getAttribute(KEY_OTHER_HOLDER_ID);

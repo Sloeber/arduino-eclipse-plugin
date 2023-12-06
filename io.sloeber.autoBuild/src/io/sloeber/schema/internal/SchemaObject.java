@@ -189,7 +189,7 @@ public abstract class SchemaObject implements ISchemaObject {
      * @param attributeName
      * @return the loaded class or null if failed
      */
-    private Object legacyCreateExecutableExtention(IConfigurationElement element, String className,
+    private static Object legacyCreateExecutableExtention(IConfigurationElement element, String className,
             String attributeName) {
         Object ret = null;
         try {

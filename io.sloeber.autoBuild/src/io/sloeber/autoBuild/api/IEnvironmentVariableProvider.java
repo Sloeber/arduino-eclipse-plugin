@@ -54,7 +54,6 @@ public interface IEnvironmentVariableProvider {
      * @param level
      *            could be one of the following:
      *            1. IConfiguration to represent the configuration
-     *            2. IManagedProject to represent the managed project
      *            3. IWorkspace to represent the workspace
      *            4. null to represent the system environment passed to eclipse
      *

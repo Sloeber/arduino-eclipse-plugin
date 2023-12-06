@@ -7,12 +7,10 @@ import org.eclipse.core.resources.IFile;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.internal.OutputType;
 
 /**
  * This class is a port of

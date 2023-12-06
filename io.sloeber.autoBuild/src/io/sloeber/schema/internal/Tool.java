@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.core.Activator;
@@ -439,22 +438,6 @@ public class Tool extends SchemaObject implements ITool {
 
             String[] cmdContrib = curOption.getCommandLineContribution(resource, optionValue, autoBuildConfData);
             java.util.Collections.addAll(flags, cmdContrib);
-            //
-            // } catch (BuildException e) {
-            // // Bug 315187 one broken option shouldn't cascade to all other options
-            // //breaking the build...
-            // Status s = new Status(IStatus.ERROR, Activator.getId(),
-            // MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, curOption,
-            // curOption.getId()),
-            // e);
-            // Activator.log(new CoreException(s));
-            // } catch (CdtVariableException e) {
-            // Status s = new Status(IStatus.ERROR, Activator.getId(),
-            // MessageFormat.format(Tool_Problem_Discovering_Args_For_Option, curOption,
-            // curOption.getId()),
-            // e);
-            // Activator.log(new CoreException(s));
-            // }
         }
         for (int curFlag = flags.size() - 1; curFlag >= 0; curFlag--) {
             if (flags.get(curFlag).isBlank()) {
@@ -473,8 +456,7 @@ public class Tool extends SchemaObject implements ITool {
      * core.runtime.IPath, org.eclipse.core.runtime.IPath)
      */
     @Override
-    public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoConfData, IResource resource)
-            throws BuildException {
+    public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoConfData, IResource resource) {
         return getToolCommandFlagsInternal((AutoBuildConfigurationDescription) autoConfData, resource);
     }
 

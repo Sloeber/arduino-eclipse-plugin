@@ -1,10 +1,6 @@
 package io.sloeber.autoBuild.ui.tabs;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.swt.widgets.Shell;

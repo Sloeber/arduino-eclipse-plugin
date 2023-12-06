@@ -86,7 +86,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IProjectType sloeberProjType = AutoBuildManager.getProjectType(myExtensionPointID, myExtensionID,
                         myProjectTypeID, true);
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
-                Configuration cf = (Configuration) modelConfigs[0];
                 for (IConfiguration iConfig : modelConfigs) {
                     Configuration config = (Configuration) iConfig;
                     AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject);

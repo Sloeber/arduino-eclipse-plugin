@@ -193,7 +193,7 @@ public interface IOption extends ISchemaObject {
      *         {@link IOption#LIBRARY_PATHS},
      *         {@link IOption#LIBRARY_FILES}, {@link IOption#MACRO_FILES}
      */
-    int getBasicValueType() throws BuildException;
+    int getBasicValueType();
 
     /**
      * Flag to indicate whether the option is also used by scanner discovery.

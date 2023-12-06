@@ -14,8 +14,6 @@
 
 package io.sloeber.autoBuild.extensionPoint;
 
-import org.eclipse.cdt.utils.cdtvariables.IVariableSubstitutor;
-
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 

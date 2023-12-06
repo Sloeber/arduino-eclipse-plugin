@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
@@ -339,7 +338,7 @@ public class Option extends SchemaObject implements IOption {
     }
 
     @Override
-    public int getBasicValueType() throws BuildException {
+    public int getBasicValueType() {
         switch (getValueType()) {
         case IOption.BOOLEAN:
             return IOption.BOOLEAN;
