@@ -43,7 +43,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         implements IAutoBuildConfigurationDescription {
     private static final String KEY_MODEL = "Model"; //$NON-NLS-1$
     private static final String KEY_CONFIGURATION = "configuration"; //$NON-NLS-1$
-    private static final String KEY_EQUALS = "="; //$NON-NLS-1$
     private static final String KEY_PROJECT_TYPE = "projectType"; //$NON-NLS-1$
     private static final String KEY_EXTENSION_ID = "extensionID"; //$NON-NLS-1$
     private static final String KEY_EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$
@@ -308,7 +307,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             if (!curLine.startsWith(lineStart)) {
                 continue;
             }
-            String field[] = curLine.split(KEY_EQUALS, 2);
+            String field[] = curLine.split(EQUAL, 2);
             String key = field[0].substring(lineStart.length());
             String value = field[1];
             switch (key) {
@@ -416,7 +415,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                     }
                 }
 
-                if (!found && !key.startsWith(KEY_EXTENSION)) {
+                if (!found && !key.startsWith(KEY_EXTENSION) && !key.startsWith(KEY_SOURCE_ENTRY)) {
                     System.err.println("Following autobuild configuration line is ignored " + curLine); //$NON-NLS-1$
                 }
             }
@@ -904,26 +903,25 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     public StringBuffer serialize(String linePrefix, String lineEnd) {
         int counterStart = 0;
-        StringBuffer ret = new StringBuffer();
+        StringBuffer ret = super.serialize(linePrefix, lineEnd);
         IProjectType projectType = myAutoBuildConfiguration.getProjectType();
-        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID + KEY_EQUALS
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID + EQUAL
                 + projectType.getExtensionPointID() + lineEnd);
-        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_ID + KEY_EQUALS
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_ID + EQUAL
                 + projectType.getExtensionID() + lineEnd);
-        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + ID + KEY_EQUALS + projectType.getId()
-                + lineEnd);
-        ret.append(linePrefix + KEY_MODEL + DOT + KEY_CONFIGURATION + DOT + NAME + KEY_EQUALS
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + ID + EQUAL + projectType.getId() + lineEnd);
+        ret.append(linePrefix + KEY_MODEL + DOT + KEY_CONFIGURATION + DOT + NAME + EQUAL
                 + myAutoBuildConfiguration.getName() + lineEnd);
 
-        ret.append(linePrefix + NAME + KEY_EQUALS + myName + lineEnd);
-        ret.append(linePrefix + DESCRIPTION + KEY_EQUALS);
+        ret.append(linePrefix + NAME + EQUAL + myName + lineEnd);
+        ret.append(linePrefix + DESCRIPTION + EQUAL);
         ret.append(myDescription);
         ret.append(lineEnd);
 
-        //ret.append(linePrefix + ID + KEY_EQUALS + myId + lineEnd);
+        //ret.append(linePrefix + ID + EQUAL + myId + lineEnd);
 
         for (Entry<String, String> curProp : myProperties.entrySet()) {
-            ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + KEY_EQUALS + curProp.getValue() + lineEnd);
+            ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + EQUAL + curProp.getValue() + lineEnd);
         }
         int counter = counterStart;
         for (Entry<ITool, Map<IResource, Map<String, String>>> curOption1 : mySelectedOptions.entrySet()) {
@@ -936,44 +934,42 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 IResource resource = curOption.getKey();
                 String resourceID = resource.getProjectRelativePath().toString();
                 for (Entry<String, String> resourceOptions : curOption.getValue().entrySet()) {
-                    ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + KEY_EQUALS
+                    ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
                             + resourceOptions.getKey() + lineEnd);
-                    ret.append(linePrefix + OPTION + DOT + KEY_VALUE + DOT + String.valueOf(counter) + KEY_EQUALS
+                    ret.append(linePrefix + OPTION + DOT + KEY_VALUE + DOT + String.valueOf(counter) + EQUAL
                             + resourceOptions.getValue() + lineEnd);
-                    ret.append(linePrefix + OPTION + DOT + KEY_RESOURCE + DOT + String.valueOf(counter) + KEY_EQUALS
+                    ret.append(linePrefix + OPTION + DOT + KEY_RESOURCE + DOT + String.valueOf(counter) + EQUAL
                             + resourceID + lineEnd);
-                    ret.append(linePrefix + OPTION + DOT + KEY_TOOL + DOT + String.valueOf(counter) + KEY_EQUALS
-                            + toolID + lineEnd);
+                    ret.append(linePrefix + OPTION + DOT + KEY_TOOL + DOT + String.valueOf(counter) + EQUAL + toolID
+                            + lineEnd);
                     counter++;
                 }
             }
         }
 
-        ret.append(linePrefix + KEY_BUILDFOLDER + KEY_EQUALS + myBuildFolderString + lineEnd);
-        ret.append(linePrefix + KEY_USE_DEFAULT_BUILD_COMMAND + KEY_EQUALS + String.valueOf(myUseDefaultBuildCommand)
+        ret.append(linePrefix + KEY_BUILDFOLDER + EQUAL + myBuildFolderString + lineEnd);
+        ret.append(linePrefix + KEY_USE_DEFAULT_BUILD_COMMAND + EQUAL + String.valueOf(myUseDefaultBuildCommand)
                 + lineEnd);
-        ret.append(linePrefix + KEY_GENERATE_MAKE_FILES_AUTOMATICALLY + KEY_EQUALS
+        ret.append(linePrefix + KEY_GENERATE_MAKE_FILES_AUTOMATICALLY + EQUAL
                 + String.valueOf(myGenerateMakeFilesAUtomatically) + lineEnd);
-        ret.append(linePrefix + KEY_USE_STANDARD_BUILD_ARGUMENTS + KEY_EQUALS
-                + String.valueOf(myUseStandardBuildArguments) + lineEnd);
-        ret.append(
-                linePrefix + KEY_STOP_ON_FIRST_ERROR + KEY_EQUALS + String.valueOf(myStopOnFirstBuildError) + lineEnd);
-        ret.append(linePrefix + KEY_IS_PARRALLEL_BUILD + KEY_EQUALS + String.valueOf(myIsParallelBuild) + lineEnd);
-        ret.append(
-                linePrefix + KEY_IS_CLEAN_BUILD_ENABLED + KEY_EQUALS + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
-        ret.append(linePrefix + KEY_IS_INCREMENTAL_BUILD_ENABLED + KEY_EQUALS
-                + String.valueOf(myIsIncrementalBuildEnabled) + lineEnd);
-        ret.append(linePrefix + KEY_NUM_PARRALEL_BUILDS + KEY_EQUALS + String.valueOf(myParallelizationNum) + lineEnd);
-        ret.append(linePrefix + KEY_CUSTOM_BUILD_COMMAND + KEY_EQUALS + myCustomBuildCommand + lineEnd);
-        ret.append(linePrefix + KEY_BUILD_RUNNER_NAME + KEY_EQUALS + myBuildRunner.getName() + lineEnd);
-        ret.append(linePrefix + KEY_AUTO_MAKE_TARGET + KEY_EQUALS + myAutoMakeTarget + lineEnd);
-        ret.append(linePrefix + KEY_INCREMENTAL_MAKE_TARGET + KEY_EQUALS + myIncrementalMakeTarget + lineEnd);
-        ret.append(linePrefix + KEY_CLEAN_MAKE_TARGET + KEY_EQUALS + myCleanMakeTarget + lineEnd);
+        ret.append(linePrefix + KEY_USE_STANDARD_BUILD_ARGUMENTS + EQUAL + String.valueOf(myUseStandardBuildArguments)
+                + lineEnd);
+        ret.append(linePrefix + KEY_STOP_ON_FIRST_ERROR + EQUAL + String.valueOf(myStopOnFirstBuildError) + lineEnd);
+        ret.append(linePrefix + KEY_IS_PARRALLEL_BUILD + EQUAL + String.valueOf(myIsParallelBuild) + lineEnd);
+        ret.append(linePrefix + KEY_IS_CLEAN_BUILD_ENABLED + EQUAL + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
+        ret.append(linePrefix + KEY_IS_INCREMENTAL_BUILD_ENABLED + EQUAL + String.valueOf(myIsIncrementalBuildEnabled)
+                + lineEnd);
+        ret.append(linePrefix + KEY_NUM_PARRALEL_BUILDS + EQUAL + String.valueOf(myParallelizationNum) + lineEnd);
+        ret.append(linePrefix + KEY_CUSTOM_BUILD_COMMAND + EQUAL + myCustomBuildCommand + lineEnd);
+        ret.append(linePrefix + KEY_BUILD_RUNNER_NAME + EQUAL + myBuildRunner.getName() + lineEnd);
+        ret.append(linePrefix + KEY_AUTO_MAKE_TARGET + EQUAL + myAutoMakeTarget + lineEnd);
+        ret.append(linePrefix + KEY_INCREMENTAL_MAKE_TARGET + EQUAL + myIncrementalMakeTarget + lineEnd);
+        ret.append(linePrefix + KEY_CLEAN_MAKE_TARGET + EQUAL + myCleanMakeTarget + lineEnd);
 
-        ret.append(linePrefix + KEY_PRE_BUILD_STEP + KEY_EQUALS + myPreBuildStep + lineEnd);
-        ret.append(linePrefix + KEY_PRE_BUILD_ANNOUNCEMENT + KEY_EQUALS + myPreBuildAnnouncement + lineEnd);
-        ret.append(linePrefix + KEY_POST_BUILD_STEP + KEY_EQUALS + myPostBuildStep + lineEnd);
-        ret.append(linePrefix + KEY_POST_BUILD_ANNOUNCEMENT + KEY_EQUALS + myPostBuildStepAnouncement + lineEnd);
+        ret.append(linePrefix + KEY_PRE_BUILD_STEP + EQUAL + myPreBuildStep + lineEnd);
+        ret.append(linePrefix + KEY_PRE_BUILD_ANNOUNCEMENT + EQUAL + myPreBuildAnnouncement + lineEnd);
+        ret.append(linePrefix + KEY_POST_BUILD_STEP + EQUAL + myPostBuildStep + lineEnd);
+        ret.append(linePrefix + KEY_POST_BUILD_ANNOUNCEMENT + EQUAL + myPostBuildStepAnouncement + lineEnd);
 
         counter = counterStart;
         for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolCommands.entrySet()) {
@@ -982,12 +978,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
                 IResource res = curResourceCommand.getKey();
                 String resourceID = res.getProjectRelativePath().toString();
-                ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT + String.valueOf(counter) + KEY_EQUALS
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
                         + tool.getId() + lineEnd);
                 ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_VALUE + DOT + String.valueOf(counter)
-                        + KEY_EQUALS + curResourceCommand.getValue() + lineEnd);
+                        + EQUAL + curResourceCommand.getValue() + lineEnd);
                 ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_RESOURCE + DOT + String.valueOf(counter)
-                        + KEY_EQUALS + resourceID + lineEnd);
+                        + EQUAL + resourceID + lineEnd);
                 counter++;
             }
         }
@@ -999,12 +995,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
                 IResource res = curResourceCommand.getKey();
                 String resourceID = res.getProjectRelativePath().toString();
-                ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY + DOT + String.valueOf(counter) + KEY_EQUALS
+                ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
                         + tool.getId() + lineEnd);
                 ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_VALUE + DOT + String.valueOf(counter)
-                        + KEY_EQUALS + curResourceCommand.getValue() + lineEnd);
+                        + EQUAL + curResourceCommand.getValue() + lineEnd);
                 ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_RESOURCE + DOT + String.valueOf(counter)
-                        + KEY_EQUALS + resourceID + lineEnd);
+                        + EQUAL + resourceID + lineEnd);
                 counter++;
             }
         }
@@ -1013,9 +1009,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             Class<? extends AutoBuildConfigurationExtensionDescription> referencedClass = myAutoBuildCfgExtDes
                     .getClass();
 
-            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_BUNDEL + KEY_EQUALS + myAutoBuildCfgExtDes.getBundelName()
+            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_BUNDEL + EQUAL + myAutoBuildCfgExtDes.getBundelName()
                     + lineEnd);
-            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_CLASS + KEY_EQUALS + referencedClass.getName() + lineEnd);
+            ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_CLASS + EQUAL + referencedClass.getName() + lineEnd);
             ret.append(myAutoBuildCfgExtDes.serialize(linePrefix + KEY_EXTENSION + DOT, lineEnd));
         }
 

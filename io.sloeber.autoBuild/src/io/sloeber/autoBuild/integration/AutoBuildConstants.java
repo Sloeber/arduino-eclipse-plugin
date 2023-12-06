@@ -87,7 +87,7 @@ public class AutoBuildConstants {
     public static final String MODFILE_NAME = "subdir.mk";
     public static final String OBJECTS_MAKFILE = "objects.mk";
     public static final String OUT_MACRO = "$@";
-    public static final String ROOT = "..";
+    public static final String ROOT = "<root>";
     public static final String SEPARATOR = "/";
     public static final String SINGLE_QUOTE = "'";
     public static final String SRCSFILE_NAME = "sources.mk";

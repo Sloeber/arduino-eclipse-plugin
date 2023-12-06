@@ -1,5 +1,9 @@
 package io.sloeber.autoBuild.integration;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 /**
  * A abstract class to satisfy the resource handling required from a CConfigurationData implementation
@@ -13,6 +17,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -25,11 +31,20 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.core.settings.model.extension.CResourceData;
 import org.eclipse.cdt.core.settings.model.extension.impl.CDataFactory;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.osgi.framework.Bundle;
+
+import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IBuildRunner;
+import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.ITool;
 
 public abstract class AutoBuildResourceData extends CConfigurationData {
+    protected static final String KEY_SOURCE_ENTRY = "SourceEntry"; //$NON-NLS-1$
     protected IProject myProject;
     private Map<String, CResourceData> myResourceDatas = new HashMap<>();
     private ICSourceEntry mySourceEntries[] = null;
@@ -67,7 +82,50 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
      */
     public AutoBuildResourceData(ICConfigurationDescription cfgDescription, String curConfigsText, String lineStart,
             String lineEnd) {
-        //TODO
+        //TODO read  Map<String, CResourceData> myResourceDatas = new HashMap<>();
+        //TODO read ICSourceEntry mySourceEntries[] = null;
+        //TODO read CFolderData myRootFolderData;
+        Set<ICSourceEntry> sourceEntries = new HashSet<>();
+        String[] lines = curConfigsText.split(Pattern.quote(lineEnd));
+        for (String curLine : lines) {
+            if (!curLine.startsWith(lineStart)) {
+                continue;
+            }
+            String field[] = curLine.substring(lineStart.length()).split(Pattern.quote(EQUAL), 2);
+            if (field.length < 2) {
+                System.err.println("error processing " + curLine + NEWLINE); //$NON-NLS-1$
+                continue;
+            }
+            String keysField = field[0];
+            String valuesField = field[1];
+            String keys[] = keysField.split(Pattern.quote(DOT), 2);
+
+            String key = keys[0];
+            switch (key) {
+            case KEY_SOURCE_ENTRY:
+                String name = keys[1];
+                if (keys.length < 2) {
+                    System.err.println("error processing keys of " + curLine + NEWLINE); //$NON-NLS-1$
+                    continue;
+                }
+                String values[] = valuesField.split(Pattern.quote(COLON));
+                if (values.length < 2) {
+                    System.err.println("error processing values of " + curLine + NEWLINE); //$NON-NLS-1$
+                    continue;
+                }
+                int flags = Integer.valueOf(values[0]).intValue();
+                Set<IPath> exclusionPatterns = new HashSet<>();
+                for (int curEx = 1; curEx < values.length; curEx++) {
+                    exclusionPatterns.add(new Path(values[curEx]));
+                }
+                sourceEntries.add(
+                        new CSourceEntry(name, exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
+                break;
+            }
+        }
+        if (sourceEntries.size() > 0) {
+            mySourceEntries = sourceEntries.toArray(new ICSourceEntry[sourceEntries.size()]);
+        }
     }
 
     public AutoBuildResourceData() {
@@ -155,5 +213,26 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
     }
 
     abstract protected void checkIfWeCanWrite();
+
+    protected StringBuffer serialize(String linePrefix, String lineEnd) {
+        StringBuffer ret = new StringBuffer();
+        //TODO store  Map<String, CResourceData> myResourceDatas = new HashMap<>();
+        if (mySourceEntries != null) {
+            for (ICSourceEntry curSourceEntry : mySourceEntries) {
+                String key = curSourceEntry.getName();
+                if (key.isBlank()) {
+                    key = ROOT;
+                }
+                ret.append(linePrefix + KEY_SOURCE_ENTRY + DOT + key + EQUAL);
+                ret.append(Integer.toString(curSourceEntry.getFlags()));
+                for (IPath curExclusion : curSourceEntry.getExclusionPatterns()) {
+                    ret.append(COLON + curExclusion.toString());
+                }
+                ret.append(lineEnd);
+            }
+        }
+        //TODO store CFolderData myRootFolderData;
+        return ret;
+    }
 
 }
