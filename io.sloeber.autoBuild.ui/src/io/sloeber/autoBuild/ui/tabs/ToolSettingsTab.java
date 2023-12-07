@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
@@ -107,20 +106,11 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
     private Composite mySettingsPageContainer;
     private ScrolledComposite containerSC;
 
-    /*
-     * Bookeeping variables
-     */
-    //	private Map<String, List<AbstractToolSettingUI>> configToPageListMap;
-    //	private IPreferenceStore settingsStore;
-    //	private AbstractToolSettingUI currentSettingsPage;
     private ToolListContentProvider listprovider;
     private IResource mySelectedResource;
 
-    //	private IResourceInfo fInfo;
-
     private boolean displayFixedTip = CDTPrefUtil.getBool(CDTPrefUtil.KEY_TIPBOX);
     private int[] defaultWeights = new int[] { 4, 1 };
-    private int[] hideTipBoxWeights = new int[] { 1, 0 };
 
     private boolean isIndexerAffected;
     private static String COMMAND_LINE_PATTERN = "command Line Pattern"; //$NON-NLS-1$
@@ -503,7 +493,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                         // if (displayFixedTip==false), tooltip was already set in FileListControlFieldEditor constructor.
                         String tooltipHoverStr = displayFixedTip ? null : tipStr;
                         fieldEditor = new FileListControlFieldEditor(optId, nameStr, tooltipHoverStr, contextId,
-                                mySettingsPageContainer, curOption.getBrowseType());
+                                mySettingsPageContainer, optionValue, curOption.getBrowseType());
                         if (curOption.getBrowseFilterPath() != null) {
                             String filterPath = AutoBuildCommon.resolve(curOption.getBrowseFilterPath(),
                                     myAutoConfDesc);

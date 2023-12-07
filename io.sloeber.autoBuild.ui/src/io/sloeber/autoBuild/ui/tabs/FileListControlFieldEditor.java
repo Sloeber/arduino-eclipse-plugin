@@ -39,13 +39,10 @@ import org.eclipse.ui.PlatformUI;
 public class FileListControlFieldEditor extends FieldEditor {
 
     // file list control
-    private FileListControl list;
+    private FileListControl myListControl;
     private int browseType;
     private Composite topLayout;
     private static final String DEFAULT_SEPARATOR = ";"; //$NON-NLS-1$
-
-    //values
-    //	private String[] values = null;
 
     /**
      * Creates a file list control field editor.
@@ -60,10 +57,10 @@ public class FileListControlFieldEditor extends FieldEditor {
      *            the browseType of the file list control
      */
     public FileListControlFieldEditor(String name, String labelText, Composite parent, int type) {
-        super(name, labelText, parent);
+        super();
         browseType = type;
-        // Set the browse strategy for the list editor
-        list.setType(type);
+        init(name, labelText);
+        createControl(parent);
     }
 
     /**
@@ -82,13 +79,33 @@ public class FileListControlFieldEditor extends FieldEditor {
      *            the browseType of the file list control
      */
     public FileListControlFieldEditor(String name, String labelText, String tooltip, String contextId, Composite parent,
-            int type) {
+            String value, int type) {
         this(name, labelText, parent, type);
         // can't use setToolTip(tooltip) as label not created yet
         getLabelControl(parent).setToolTipText(tooltip);
         if (!contextId.isEmpty())
-            PlatformUI.getWorkbench().getHelpSystem().setHelp(list.getListControl(), contextId);
+            PlatformUI.getWorkbench().getHelpSystem().setHelp(myListControl.getListControl(), contextId);
+        myListControl.setList(parseString(value));
     }
+    /**
+     * Creates a file list control field editor.
+     * 
+     * @param name
+     *            the name of the preference this field editor works on
+     * @param labelText
+     *            the label text of the field editor
+     * @param parent
+     *            the parent of the field editor's control
+     * @param value
+     *            the field editor's value
+     * @param type
+     *            the browseType of the file list control
+     */
+    //    public FileListControlFieldEditor(String name, String labelText, Composite parent, String value, int type) {
+    //        this(name, labelText, parent, type);
+    //        browseType = type;
+    //        //        this.values = parseString(value);
+    //    }
 
     /**
      * Sets the field editor's tool tip text to the argument, which
@@ -129,26 +146,6 @@ public class FileListControlFieldEditor extends FieldEditor {
     }
 
     /**
-     * Creates a file list control field editor.
-     * 
-     * @param name
-     *            the name of the preference this field editor works on
-     * @param labelText
-     *            the label text of the field editor
-     * @param parent
-     *            the parent of the field editor's control
-     * @param value
-     *            the field editor's value
-     * @param type
-     *            the browseType of the file list control
-     */
-    public FileListControlFieldEditor(String name, String labelText, Composite parent, String value, int type) {
-        this(name, labelText, parent, type);
-        browseType = type;
-        //		this.values = parseString(value);
-    }
-
-    /**
      * Sets the filter-path for the underlying Browse dialog. Only applies when
      * browseType is 'file' or 'dir'.
      * 
@@ -157,7 +154,7 @@ public class FileListControlFieldEditor extends FieldEditor {
      * @since 7.0
      */
     public void setFilterPath(String filterPath) {
-        list.setFilterPath(filterPath);
+        myListControl.setFilterPath(filterPath);
     }
 
     /**
@@ -169,7 +166,7 @@ public class FileListControlFieldEditor extends FieldEditor {
      * @since 7.0
      */
     public void setFilterExtensions(String[] filterExtensions) {
-        list.setFilterExtensions(filterExtensions);
+        myListControl.setFilterExtensions(filterExtensions);
     }
 
     /**
@@ -188,8 +185,8 @@ public class FileListControlFieldEditor extends FieldEditor {
         gddata.horizontalSpan = 2;
         topLayout.setLayoutData(gddata);
         // file list control
-        list = new FileListControl(topLayout, getLabelText(), getType(), false);
-        list.addChangeListener(new IFileListChangeListener() {
+        myListControl = new FileListControl(topLayout, getLabelText(), browseType, false);
+        myListControl.addChangeListener(new IFileListChangeListener() {
 
             @Override
             public void fileListChanged(FileListControl fileList, String oldValue[], String newValue[]) {
@@ -206,19 +203,10 @@ public class FileListControlFieldEditor extends FieldEditor {
     }
 
     /**
-     * Returns the browseType of this field editor's file list control
-     * 
-     * @return
-     */
-    private int getType() {
-        return browseType;
-    }
-
-    /**
      * @return the file list control
      */
     protected List getListControl() {
-        return list.getListControl();
+        return myListControl.getListControl();
     }
 
     /* (non-Javadoc)
@@ -226,7 +214,7 @@ public class FileListControlFieldEditor extends FieldEditor {
      */
     @Override
     protected void doLoad() {
-        list.selectionChanged();
+        myListControl.selectionChanged();
     }
 
     /* (non-Javadoc)
@@ -234,12 +222,12 @@ public class FileListControlFieldEditor extends FieldEditor {
      */
     @Override
     protected void doLoadDefault() {
-        if (list != null) {
-            list.removeAll();
+        if (myListControl != null) {
+            myListControl.removeAll();
             String s = getPreferenceStore().getDefaultString(getPreferenceName());
             String[] array = parseString(s);
-            list.setList(array);
-            list.selectionChanged();
+            myListControl.setList(array);
+            myListControl.selectionChanged();
         }
     }
 
@@ -248,13 +236,13 @@ public class FileListControlFieldEditor extends FieldEditor {
      */
     @Override
     protected void doStore() {
-        String s = createList(list.getItems());
+        String s = createList(myListControl.getItems());
         if (s != null)
             getPreferenceStore().setValue(getPreferenceName(), s);
     }
 
     public String[] getStringListValue() {
-        return list.getItems();
+        return myListControl.getItems();
     }
 
     /**
@@ -319,12 +307,12 @@ public class FileListControlFieldEditor extends FieldEditor {
 
     @Override
     public Label getLabelControl(Composite parent) {
-        return list.getLabelControl();
+        return myListControl.getLabelControl();
     }
 
     @Override
     public void setEnabled(boolean enabled, Composite parent) {
-        list.setEnabled(enabled);
+        myListControl.setEnabled(enabled);
     }
 
 }
