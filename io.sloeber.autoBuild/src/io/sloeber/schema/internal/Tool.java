@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -95,11 +94,6 @@ public class Tool extends SchemaObject implements ITool {
      * ccnature no no false
      * 
      */
-    // @formatter:on
-
-    private List<IEnvVarBuildPath> myEnvVarBuildPathList;
-
-    // private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
     private String[] myModelIsAbstract;
     private String[] myModelOutputFlag;
@@ -338,21 +332,6 @@ public class Tool extends SchemaObject implements ITool {
     public List<InputType> getAllInputTypes() {
         return new LinkedList<>(myInputTypeMap.values());
 
-    }
-
-    //
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getEnvVarBuildPaths()
-     */
-    @Override
-    public IEnvVarBuildPath[] getEnvVarBuildPaths() {
-        // if (envVarBuildPathList != null) {
-        return myEnvVarBuildPathList.toArray(new IEnvVarBuildPath[myEnvVarBuildPathList.size()]);
-        // } else if (getSuperClass() != null)
-        // return getSuperClass().getEnvVarBuildPaths();
-        // return null;
     }
 
     public static String[] getContentTypeFileSpecs(IContentType type, IProject project) {

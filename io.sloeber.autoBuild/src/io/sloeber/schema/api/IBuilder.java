@@ -17,9 +17,6 @@ package io.sloeber.schema.api;
 import java.util.Set;
 
 import org.eclipse.cdt.core.ICommandLauncher;
-//import org.eclipse.cdt.managedbuilder.macros.IFileContextBuildMacroValues;
-//import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
-//import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.api.IBuildRunner;
