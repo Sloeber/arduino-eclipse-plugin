@@ -587,7 +587,6 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.gnu.c.linker.output"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -600,7 +599,6 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.c.linker.output.so"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.so">
             <enablement
                   type="ALL">
@@ -778,7 +776,6 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.output"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -791,7 +788,6 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.gnu.cpp.linker.output.so"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputExtension="so"
                outputName="lib_${ProjName}.so"
                outputPrefix="lib">
@@ -865,7 +861,6 @@
          <outputType
                buildVariable="ARCHIVES"
                id="cdt.managedbuild.tool.gnu.archiver.output"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.a">
          </outputType>
          <option
@@ -1103,7 +1098,6 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.macosx.c.linker.output"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -1116,7 +1110,6 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.macosx.c.linker.output.so"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.dylib">
             <enablement
                   type="ALL">
@@ -1270,7 +1263,6 @@
          <outputType
                buildVariable="EXECUTABLES"
                id="cdt.managedbuild.tool.macosx.cpp.linker.output"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="${ProjName}.exe">
             <enablement
                   type="ALL">
@@ -1283,7 +1275,6 @@
          <outputType
                buildVariable="LIBRARIES"
                id="cdt.managedbuild.tool.macosx.cpp.linker.output.so"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.dylib">
             <enablement
                   type="ALL">
@@ -5035,7 +5026,6 @@
          <outputType
                buildVariable="ARCHIVES"
                id="cdt.managedbuild.tool.llvm.archiver.output"
-               nameProvider="io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass"
                outputName="lib_${ProjName}.a">
          </outputType>
       </tool>

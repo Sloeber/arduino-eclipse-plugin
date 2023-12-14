@@ -22,10 +22,6 @@ import java.net.URL;
  */
 public interface IOptionCategory extends ISchemaObject {
 
-    // Schema element names
-    public static final String OWNER = "owner"; //$NON-NLS-1$
-    // public static final String ICON = "icon"; //$NON-NLS-1$
-
     //	 Resource Filter type
     public static final int FILTER_ALL = 0;
     public static final String ALL = "all"; //$NON-NLS-1$
@@ -47,5 +43,7 @@ public interface IOptionCategory extends ISchemaObject {
      * @since 3.0
      */
     public URL getIconPath();
+
+    public int getWeight();
 
 }

@@ -189,8 +189,4 @@ public interface IToolChain extends ISchemaObject {
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
 
-    public ArrayList<String> getPreToolRecipes(Tool tool);
-
-    public ArrayList<String> getPostToolRecipes(Tool tool);
-
 }

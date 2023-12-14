@@ -33,6 +33,7 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
-import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
+
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ISchemaObject;
@@ -87,6 +88,7 @@ public class Option extends SchemaObject implements IOption {
     private String[] modelApplicabilityCalculatorStr;
     private String[] modelFieldEditorId;
     private String[] modelFieldEditorExtraArgument;
+    private String[] modelAssignToCommandVarriable;
 
     private ISchemaObject myParent;
     private int browseType = BROWSE_NONE;
@@ -132,6 +134,7 @@ public class Option extends SchemaObject implements IOption {
         modelApplicabilityCalculatorStr = getAttributes(APPLICABILITY_CALCULATOR);
         modelFieldEditorId = getAttributes(FIELD_EDITOR_ID);
         modelFieldEditorExtraArgument = getAttributes(FIELD_EDITOR_EXTRA_ARGUMENT);
+        modelAssignToCommandVarriable = getAttributes(ASSIGN_TO_COMMAND_VARIABLE);
 
         valueType = ValueTypeStrToInt(modelValueTypeStr[SUPER]);
 
@@ -175,6 +178,10 @@ public class Option extends SchemaObject implements IOption {
         resourceFilter = resolveResourceFilter(modelResFilterStr[SUPER]);
 
         myBrowseFilterExtensions = modelBrowseFilterExtensionsStr[SUPER].split("\\s*,\\s*"); //$NON-NLS-1$
+
+        if (modelAssignToCommandVarriable[SUPER].isBlank()) {
+            modelAssignToCommandVarriable[SUPER] = FLAGS_PRM_NAME;
+        }
 
     }
 
@@ -385,13 +392,13 @@ public class Option extends SchemaObject implements IOption {
 
     public static class TreeRoot implements ITreeRoot {
         private boolean selectLeafOnly = true;
-        private String myName;
-        private String myID;
+        //        private String myName;
+        //        private String myID;
         private Map<String, TreeOption> myTreeOptions = new HashMap<>();
 
         TreeRoot(IConfigurationElement element) {
-            myName = element.getAttribute(NAME);
-            myID = element.getAttribute(ID);
+            //            myName = element.getAttribute(NAME);
+            //            myID = element.getAttribute(ID);
             String leaf = element.getAttribute(SELECT_LEAF_ONLY);
             if (leaf != null) {
                 selectLeafOnly = Boolean.parseBoolean(leaf);
@@ -631,6 +638,7 @@ public class Option extends SchemaObject implements IOption {
         ret.append(prepend + DEFAULT_VALUE + EQUAL + modelDefaultValueString[SUPER] + NEWLINE);
         ret.append(prepend + DEFAULTVALUE_GENERATOR + EQUAL + modelDefaultValueGeneratorStr[SUPER] + NEWLINE);
         ret.append(prepend + COMMAND + EQUAL + modelCommand[SUPER] + NEWLINE);
+        ret.append(prepend + ASSIGN_TO_COMMAND_VARIABLE + EQUAL + modelAssignToCommandVarriable[SUPER] + NEWLINE);
         ret.append(prepend + COMMAND_GENERATOR + EQUAL + modelCommandGeneratorStr[SUPER] + NEWLINE);
         ret.append(prepend + COMMAND_FALSE + EQUAL + modelCommandFalse[SUPER] + NEWLINE);
         ret.append(prepend + USE_BY_SCANNER_DISCOVERY + EQUAL + modelIsForSD[SUPER] + NEWLINE);
@@ -679,56 +687,64 @@ public class Option extends SchemaObject implements IOption {
     }
 
     @Override
-    public String[] getCommandLineContribution(IResource resource, String optionValue,
-            AutoBuildConfigurationDescription autoConfData) {
-        String[] retString = new String[1];
-        String[] retNothing = new String[0];
-        if (!isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoConfData)) {
-            return new String[0];
-        }
+    public Map<String, String> getCommandVars(String optionValue, IAutoBuildConfigurationDescription autoConfData) {
         if (commandGenerator != null) {
-            String command[] = commandGenerator.generateCommand(this, optionValue, autoConfData);
+            Map<String, String> command = commandGenerator.generateCommand(this, optionValue, autoConfData);
             if (command != null) {
                 return command;
             }
             // if commandGenerator returns null do the default command
         }
+        //String optionValues[] = optionValue.split(SEMICOLON);
+        String optionVarName = modelAssignToCommandVarriable[SUPER];
+        //no tests for validity is needed here as optionValue should be fine and
+        //modelAssignToCommandVarriables[SUPER] must be FLAGS if not provided
+        Map<String, String> ret = new HashMap<>();
         switch (valueType) {
-        case IOption.BOOLEAN:
-            if (Boolean.parseBoolean(optionValue)) {
-                retString[0] = modelCommand[SUPER];
-            } else {
-                retString[0] = modelCommandFalse[SUPER];
+        case IOption.BOOLEAN: {
+            String value = Boolean.parseBoolean(optionValue) ? modelCommand[SUPER] : modelCommandFalse[SUPER];
+            String values[] = value.split(SEMICOLON);
+            switch (values.length) {
+            case 1:
+                ret.put(optionVarName, value);
+                break;
+            default:
+                for (String curValue : values) {
+                    String parts[] = curValue.split(EQUAL, 2);
+                    ret.put(parts[0], parts[1]);
+                }
+                break;
             }
-            return retString;
+
+            return ret;
+        }
         case IOption.ENUMERATED: {
             EnumOptionValue selectedEnumValue = myEnumOptionValues.get(optionValue);
-            if (selectedEnumValue == null) {
-                // This should not happen
-                return retNothing;
+            if (selectedEnumValue != null) {
+                ret.put(optionVarName, selectedEnumValue.getCommandLIneDistribution());
             }
-            retString[0] = selectedEnumValue.getCommandLIneDistribution();
-            return retString;
+            return ret;
         }
         case IOption.TREE: {
             String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
-            List<String> ret = new LinkedList<>();
+            String retValue = new String();
             if (myTreeRoot != null) {
                 for (String curptionValue : values) {
                     ITreeOption treeNode = myTreeRoot.findNode(curptionValue);
                     if (treeNode != null) {
                         String command = treeNode.getCommand();
                         if (!command.isBlank()) {
-                            ret.add(command);
+                            retValue = retValue.trim() + WHITESPACE + command;
                         }
                     }
                 }
             }
-            return ret.toArray(new String[ret.size()]);
+            ret.put(optionVarName, retValue);
+            return ret;
         }
         case IOption.STRING:
-            retString[0] = evaluateCommand(modelCommand[SUPER], AutoBuildCommon.resolve(optionValue, autoConfData));
-            return retString;
+            ret.put(optionVarName, evaluateCommand(modelCommand[SUPER], resolve(optionValue, autoConfData)));
+            return ret;
         case IOption.STRING_LIST:
         case IOption.INCLUDE_FILES:
         case IOption.INCLUDE_PATH:
@@ -744,18 +760,19 @@ public class Option extends SchemaObject implements IOption {
         case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
             String listCmd = modelCommand[SUPER];
             String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
-            String[] resolvedList = AutoBuildCommon.resolveStringListValues(values, autoConfData, true);
-            List<String> ret = new LinkedList<>();
+            String[] resolvedList = resolveStringListValues(values, autoConfData, true);
+            String retValue = new String();
             for (String curResolved : resolvedList) {
                 if (!curResolved.isBlank() && !curResolved.contains(EMPTY_QUOTED_STRING))
-                    ret.add(evaluateCommand(listCmd, curResolved));
+                    retValue = retValue.trim() + WHITESPACE + evaluateCommand(listCmd, curResolved);
             }
-            return ret.toArray(new String[ret.size()]);
+            ret.put(optionVarName, retValue);
+            return ret;
         }
         default:
             break;
         }
-        return retNothing;
+        return ret;
     }
 
     /**
@@ -882,9 +899,9 @@ public class Option extends SchemaObject implements IOption {
             return true;
         }
         if (commandGenerator != null) {
-            String command[] = commandGenerator.generateCommand(this, optionValue, autoConfData);
+            Map<String, String> command = commandGenerator.generateCommand(this, optionValue, autoConfData);
             if (command != null) {
-                for (String curCommand : command) {
+                for (String curCommand : command.values()) {
                     if (!curCommand.isBlank()) {
                         return false;
                     }
@@ -923,7 +940,7 @@ public class Option extends SchemaObject implements IOption {
             return true;
         }
         case IOption.STRING:
-            return evaluateCommand(modelCommand[SUPER], AutoBuildCommon.resolve(optionValue, autoConfData)).isBlank();
+            return evaluateCommand(modelCommand[SUPER], resolve(optionValue, autoConfData)).isBlank();
         case IOption.STRING_LIST:
         case IOption.INCLUDE_FILES:
         case IOption.INCLUDE_PATH:
@@ -938,7 +955,7 @@ public class Option extends SchemaObject implements IOption {
         case IOption.PREPROCESSOR_SYMBOLS:
         case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
             String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
-            String[] resolvedList = AutoBuildCommon.resolveStringListValues(values, autoConfData, true);
+            String[] resolvedList = resolveStringListValues(values, autoConfData, true);
             for (String curResolved : resolvedList) {
                 if (!curResolved.isBlank() && !curResolved.contains(EMPTY_QUOTED_STRING))
                     return false;

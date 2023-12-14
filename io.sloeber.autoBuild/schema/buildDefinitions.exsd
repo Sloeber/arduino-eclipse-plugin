@@ -225,6 +225,7 @@ Additional special types exist to flag options of special relevance to the build
             <annotation>
                <documentation>
                   An optional value that specifies the actual command that will be passed to the tool on the command line.  The attribute value provides a &quot;pattern&quot; for specifying where the option &quot;value&quot; should be placed for options of type string and stringlist.  If no ${value} is specified in the command, the option value is appended to the end of the specified command.
+For booleans there is a special case. See the commandFalse description for more details
                </documentation>
             </annotation>
          </attribute>
@@ -241,7 +242,16 @@ Additional special types exist to flag options of special relevance to the build
          <attribute name="commandFalse" type="string">
             <annotation>
                <documentation>
-                  An optional value, used only with options of type Boolean, that specifies the actual command that will be passed to the tool on the command line when the value of the Boolean option is False.
+                  An optional value, used only with options of type Boolean when false, that specifies the actual command that will be passed to the variable specified in assignToCommandVariable.
+alternatively this can be a ; seperated list of var=value.
+
+The only multiple command variables I can currently think of is to allows for
+--start-group archives --end-group
+with a command line containing ${START_LIB_GROUP} ${INTERNAl_LIBS} ${LIBS) ${END_LIB_GROUP}
+In which case assignToCommandVarriables would be ignored
+
+and comand would be
+START_LIB_GROUP=--start-group;END_LIB_GROUP=--end-group
                </documentation>
             </annotation>
          </attribute>
@@ -295,6 +305,16 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
             <annotation>
                <documentation>
                   An optional extra text string that is passed into the field-editor.  Can be used to parameterize the field-editor instance.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="assignToCommandVarriable" type="string">
+            <annotation>
+               <documentation>
+                  The name of the variable that are part of the command string of the tool that holds this option.
+default is the FLAGS variable.
+You typicaly will not specify this field. 
+Not this can be overruled by command and false command in case of a boolean
                </documentation>
             </annotation>
          </attribute>
@@ -609,8 +629,6 @@ If specified; the command line generator overrules the commandLinePattern
             <element ref="toolChain" minOccurs="0" maxOccurs="1"/>
             <element ref="resourceConfiguration" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="enablement" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="folderInfo" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="fileInfo" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -824,7 +842,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
             <element ref="targetPlatform" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="builder" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="dynamicElementProvider" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="managedBuildRevision" minOccurs="0" maxOccurs="1"/>
             <element ref="buildDefinitionStartup" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
@@ -1226,6 +1243,15 @@ The path is relative to the plug-in directory which defines .buildDefinitions.
                <appinfo>
                   <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="weight" type="string">
+            <annotation>
+               <documentation>
+                  A weight specifying where in the command variable (typically FLAGS) these option categories will be put.
+The higher the weight the earlier in the command line options of this category will be placed.
+Default is 50
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
@@ -1681,31 +1707,6 @@ For example, builder representing GNU make would define parallelBuildCmd as &quo
       </complexType>
    </element>
 
-   <element name="managedBuildRevision">
-      <annotation>
-         <documentation>
-            &lt;p&gt;
-Version identifier for the Auto build extension point. It is a string representation, consisting of three (3) tokens separated by a decimal point. The 3 tokens are positive integer numbers. For example, the following are valid version identifiers:
- &lt;ul&gt;
-  &lt;li&gt;&lt;code&gt;0.0.0&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;1.0.1234&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;1.9&lt;/code&gt; (interpreted as &lt;code&gt;1.9.0&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;3&lt;/code&gt; (interpreted as &lt;code&gt;3.0.0&lt;/code&gt;)&lt;/li&gt;
- &lt;/ul&gt;
-&lt;/p&gt;
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="fileVersion" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The actual string containing the three version tokens.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
    <element name="envVarBuildPath">
       <annotation>
          <documentation>
@@ -2055,92 +2056,6 @@ The way the value is specified and treated depends on the value of the isRegex a
             <annotation>
                <documentation>
                   the property type id
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="folderInfo">
-      <annotation>
-         <documentation>
-            Represents per-folder settings.
-         </documentation>
-      </annotation>
-      <complexType>
-         <sequence>
-         </sequence>
-         <attribute name="resourcePath" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Project-relative resource path
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="exclude" type="boolean" use="default" value="false">
-            <annotation>
-               <documentation>
-                  Specifies whether the resource is excluded from building in the parent configuration.  The default is false.  The resourceConfiguration element retains its tool children, if any exist, even when excluded from the build.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="fileInfo">
-      <annotation>
-         <documentation>
-            Represents per-file settings.
-This element has the same meaning as resourceConfiguration.
-It is added for consistency with the folderInfo element.
-The only difference between this element and the resourceConfiguration is that resourceConfiguration specifies the resource full path, while the fileInfo specifies project-relative resource path in the same way as the folderInfo does.
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="resourcePath" type="string">
-            <annotation>
-               <documentation>
-                  Project-relative resource path
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="exclude" type="boolean">
-            <annotation>
-               <documentation>
-                  Specifies whether the resource is excluded from building in the parent configuration.  The default is false.  The resourceConfiguration element retains its tool children, if any exist, even when excluded from the build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="rcbsApplicability">
-            <annotation>
-               <documentation>
-                  Identifies how the user desires to apply a resource custom build step:
-     1.  Apply rcbs tool before any other tools defined for the resource.
-     2.  Apply rcbs tool after any other tools defined for the resource.
-     3.  Apply rcbs tool overriding any other tools defined for the resource.
-     4.  Disable (don&apos;t apply) the rcbs tool.
-               </documentation>
-            </annotation>
-            <simpleType>
-               <restriction base="string">
-                  <enumeration value="before">
-                  </enumeration>
-                  <enumeration value="after">
-                  </enumeration>
-                  <enumeration value="override">
-                  </enumeration>
-                  <enumeration value="disable">
-                  </enumeration>
-               </restriction>
-            </simpleType>
-         </attribute>
-         <attribute name="toolsToInvoke" type="string">
-            <annotation>
-               <documentation>
-                  Identifies which tools to invoke by a semicolon separated list of child tool ids.  Applies as follows:
-     1.  Defaults to all tools in the order found
-     2.  Use specified ordered list of children to invoke
-     3.  If empty string, treat as if no resource configuration existed, i.e., use project level tool.
                </documentation>
             </annotation>
          </attribute>

@@ -184,7 +184,7 @@ public class Tool extends SchemaObject implements ITool {
         }
 
         if (myModelAnnouncement[SUPER].isBlank()) {
-            myAnnouncement = Tool_default_announcement + BLANK + getName(); // + "(" + getId() + ")";
+            myAnnouncement = Tool_default_announcement + BLANK + getName();
         } else {
             myAnnouncement = myModelAnnouncement[SUPER];
         }
@@ -389,54 +389,40 @@ public class Tool extends SchemaObject implements ITool {
         return myInputTypeMap.get(id2);
     }
 
-    /**
-     * This method used internally by the Tool to obtain the command flags with the
-     * build macros resolved, but could be also used by other MBS components to
-     * adjust the tool flags resolution behavior by passing the method some custom
-     * macro substitutor
-     *
-     * @return the command flags with the build macros resolved
-     */
-    private String[] getToolCommandFlagsInternal(AutoBuildConfigurationDescription autoBuildConfData,
-            IResource resource) {
-        // List<IOption> opts = getOptions();
-        Map<String, String> selectedOptions = autoBuildConfData.getSelectedOptions(resource, this);
+    @Override
+    public Map<String, String> getToolCommandVars(IAutoBuildConfigurationDescription iAutoConfData,
+            Map<IOption, String> selectedOptions) {
+        AutoBuildConfigurationDescription autoConfData = (AutoBuildConfigurationDescription) iAutoConfData;
 
-        List<String> flags = new LinkedList<>();
+        Map<String, List<String>> allVars = new HashMap<>();
+        //TOFIX need to process these by option category sorted by weight descending 
 
-        for (IOption curOption : getOptions().getOptions()) {
-            String optionValue = selectedOptions.get(curOption.getId());
-            if (optionValue == null) {
-                // no value set for this option
-                // as options with a default are set during project creation time it is
-                // safe to ignore this option
-                // or this option has no default setting nor a user setting
-                // At least that is my thinking JABA
+        for (Entry<IOption, String> curSelectrturOption : selectedOptions.entrySet()) {
+            IOption curOption = curSelectrturOption.getKey();
+            String optionValue = curSelectrturOption.getValue();
+            if (curOption == null || optionValue == null) {
+                //this should not happen but just to be safe
                 continue;
             }
-
-            String[] cmdContrib = curOption.getCommandLineContribution(resource, optionValue, autoBuildConfData);
-            java.util.Collections.addAll(flags, cmdContrib);
-        }
-        for (int curFlag = flags.size() - 1; curFlag >= 0; curFlag--) {
-            if (flags.get(curFlag).isBlank()) {
-                flags.remove(curFlag);
+            Map<String, String> optionVars = curOption.getCommandVars(optionValue, iAutoConfData);
+            for (Entry<String, String> curVar : optionVars.entrySet()) {
+                String varName = curVar.getKey();
+                String varValue = curVar.getValue();
+                List<String> alreadyFoundArguments = allVars.get(varName);
+                if (alreadyFoundArguments == null) {
+                    alreadyFoundArguments = new LinkedList<>();
+                    allVars.put(varName, alreadyFoundArguments);
+                }
+                if (!alreadyFoundArguments.contains(varValue)) {
+                    alreadyFoundArguments.add(varValue);
+                }
             }
         }
-        return flags.toArray(new String[flags.size()]);
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.eclipse.cdt.managedbuilder.core.ITool#getToolCommandFlags(org.eclipse.
-     * core.runtime.IPath, org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoConfData, IResource resource) {
-        return getToolCommandFlagsInternal((AutoBuildConfigurationDescription) autoConfData, resource);
+        Map<String, String> ret = new HashMap<>();
+        for (Entry<String, List<String>> curVar : allVars.entrySet()) {
+            ret.put(curVar.getKey(), String.join(WHITESPACE, curVar.getValue()));
+        }
+        return ret;
     }
 
     public StringBuffer dump(int leadingChars) {
@@ -531,9 +517,9 @@ public class Tool extends SchemaObject implements ITool {
     }
 
     @Override
-    public String[] getRecipes(IAutoBuildConfigurationDescription autoBuildConfIn, Set<IFile> inputFiles,
-            Set<String> flags, String outputName, Map<String, Set<String>> nicePreReqNameList) {
-        AutoBuildConfigurationDescription autoBuildConf = (AutoBuildConfigurationDescription) autoBuildConfIn;
+    public String[] getRecipes(IAutoBuildConfigurationDescription autoBuildConfData, IFolder buildFolder,
+            Set<IFile> inputFiles, Map<String, String> toolCommandVars, IFile targetFile) {
+        AutoBuildConfigurationDescription autoBuildConf = (AutoBuildConfigurationDescription) autoBuildConfData;
         String cmd = myModelCommand[SUPER];
         String commandLinePattern = myModelCommandLinePattern[SUPER];
         if (inputFiles.size() == 1) {
@@ -551,55 +537,33 @@ public class Tool extends SchemaObject implements ITool {
 
         commandLinePattern = getVariableValue(commandLinePattern, commandLinePattern, false, autoBuildConf);
 
-        String quotedOutputName = outputName;
-        // if the output name isn't a variable then quote it
-        if (!quotedOutputName.isBlank() && !quotedOutputName.contains("$(")) { //$NON-NLS-1$
-            quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
-        }
-
-        Map<String, String> preReqFiles = new HashMap<>();
-        for (String curCmdVariable : nicePreReqNameList.keySet()) {
-            String inputsStr = EMPTY_STRING;
-            for (String inp : nicePreReqNameList.get(curCmdVariable)) {
-                if (inp != null && !inp.isEmpty()) {
-                    // if the input resource isn't a variable then quote it
-                    if (inp.indexOf("$(") != 0) { //$NON-NLS-1$
-                        inp = DOUBLE_QUOTE + inp + DOUBLE_QUOTE;
-                    }
-                    inputsStr = inputsStr + inp + WHITESPACE;
-                }
-            }
-            preReqFiles.put(curCmdVariable, inputsStr.trim());
-        }
-
+        String depFlag = myModelDependencyGenerationFlag[SUPER];
         if (!myModelDependencyGenerationFlag[SUPER].isBlank()) {
-            IProject project = autoBuildConf.getProject();
-            IFile depFile = getDependencyFile(project.getFile(outputName));
-            String depFlag = myModelDependencyGenerationFlag[SUPER];
+            IFile depFile = getDependencyFile(targetFile);
             depFlag = depFlag.replace(makeVariable(myModelDependencyOutputPattern[SUPER]),
-                    depFile.getProjectRelativePath().toString());
-            depFlag = depFlag.replace("$@", outputName); //$NON-NLS-1$
-            flags.add(depFlag);
+                    GetNiceFileName(buildFolder, depFile));
+            depFlag = depFlag.replace(OUT_MACRO, GetNiceFileName(buildFolder, targetFile));
+
+            String flagsValue = toolCommandVars.get(FLAGS_PRM_NAME);
+            flagsValue = flagsValue.trim() + WHITESPACE + depFlag;
+            toolCommandVars.put(FLAGS_PRM_NAME, flagsValue.trim());
         }
-        String flagsStr = String.join(WHITESPACE, flags);
 
-        String command = commandLinePattern.replace(makeVariable(CMD_LINE_PRM_NAME), cmd);
+        //add some more variables to the list
+        toolCommandVars.put(CMD_LINE_PRM_NAME, cmd.trim());
+        toolCommandVars.put(OUTPUT_FLAG_PRM_NAME, myModelOutputFlag[SUPER].trim());
 
-        command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
-        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), myModelOutputFlag[SUPER]);
-        command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
-        for (Entry<String, String> curCmdVariable : preReqFiles.entrySet()) {
-            command = command.replace(makeVariable(curCmdVariable.getKey()), curCmdVariable.getValue());
-
+        //resolve the variables
+        String command = commandLinePattern;
+        String flagsVar = toolCommandVars.get(FLAGS_PRM_NAME);
+        if (flagsVar == null || flagsVar.isBlank()) {
+            command = command.replace(WHITESPACE + makeVariable(FLAGS_PRM_NAME), EMPTY_STRING);
         }
-        IToolChain toolchain = autoBuildConf.getConfiguration().getToolChain();
-        ArrayList<String> toolRecipes = toolchain.getPreToolRecipes(this);
-        //make sure all environment variables are resolved
-        toolRecipes.addAll(Arrays.asList(command.split("\\r?\\n"))); //$NON-NLS-1$
+        for (Entry<String, String> curVar : toolCommandVars.entrySet()) {
+            command = command.replace(makeVariable(curVar.getKey()), curVar.getValue().trim());
+        }
 
-        toolRecipes.addAll(toolchain.getPostToolRecipes(this));
-
-        return toolRecipes.toArray(new String[toolRecipes.size()]);
+        return command.split(LINE_BREAK_REGEX);
     }
 
     @Override
@@ -678,6 +642,11 @@ public class Tool extends SchemaObject implements ITool {
         }
         ret.addAll(myOptions.getOptionsOfCategory(cat, resource, autoBuildConf));
         return ret;
+    }
+
+    @Override
+    public IOption getOption(String key) {
+        return myOptions.getOptionById(key);
     }
 
 }

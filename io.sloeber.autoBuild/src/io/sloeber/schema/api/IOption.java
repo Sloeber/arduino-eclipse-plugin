@@ -24,6 +24,8 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.util.Map;
+
 /**
  * Basic Tool / Tool-chain Option type.
  *
@@ -127,9 +129,6 @@ public interface IOption extends ISchemaObject {
      *         option associated with the option
      */
     public String getCommand();
-
-    public String[] getCommandLineContribution(IResource resource, String value,
-            AutoBuildConfigurationDescription autoConfData);
 
     /**
      * @return a <code>String</code> containing the tooltip
@@ -348,5 +347,7 @@ public interface IOption extends ISchemaObject {
     String getDefaultValue(IResource resource, ITool tool, IAutoBuildConfigurationDescription myAutoConfDesc);
 
     public String getEnumIDFromName(String enumOptionName);
+
+    public Map<String, String> getCommandVars(String optionValue, IAutoBuildConfigurationDescription autoConfData);
 
 }

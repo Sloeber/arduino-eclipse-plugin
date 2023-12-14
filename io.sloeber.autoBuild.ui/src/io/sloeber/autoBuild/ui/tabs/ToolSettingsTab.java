@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.AbstractPage;
@@ -587,8 +586,10 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         //addField(commandLinePatternField);
         commandStringField.setStringValue(myAutoConfDesc.getToolCommand(tool, mySelectedResource));
         commandLinePatternField.setStringValue(myAutoConfDesc.getToolPattern(tool, mySelectedResource));
-        allOptionFieldEditor
-                .setStringValue(String.join(BLANK, tool.getToolCommandFlags(myAutoConfDesc, mySelectedResource)));
+        Map<IOption, String> selectedOptions = myAutoConfDesc.getSelectedOptions(mySelectedResource, tool);
+        Map<String, String> vars = tool.getToolCommandVars(myAutoConfDesc, selectedOptions);
+        String flagsVar = vars.get(FLAGS_PRM_NAME);
+        allOptionFieldEditor.setStringValue(flagsVar);
         commandStringField.setPropertyChangeListener(new IPropertyChangeListener() {
 
             @Override

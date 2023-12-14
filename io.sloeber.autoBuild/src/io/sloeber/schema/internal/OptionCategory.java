@@ -25,11 +25,14 @@ import io.sloeber.schema.api.IOptionCategory;
 import io.sloeber.schema.api.ISchemaObject;
 
 public class OptionCategory extends SchemaObject implements IOptionCategory {
-    private IOptionCategory myOwner; // The logical Option Category parent
+    private IOptionCategory myOwner = null;
+    private boolean myIsOwnerKnown = false;
     private URL myIconPathURL;
+    private int myWeight = 50;
 
     private String[] myModelOwner;
     private String[] myModelIcon;
+    private String[] myModelWeight;
 
     /**
      * This constructor is called to create an option category defined by an
@@ -46,15 +49,13 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
 
         myModelOwner = getAttributes(OWNER);
         myModelIcon = getAttributes(ICON);
+        myModelWeight = getAttributes(WEIGHT);
 
-        //		myOptionEnablementExpressions.clear();
-        //		IConfigurationElement enablements[] = element.getChildren(OptionEnablementExpression.NAME);
-        //		for (IConfigurationElement curEnablement : enablements) {
-        //			myOptionEnablementExpressions.add(new OptionEnablementExpression(curEnablement));
-        //		}
-        //
-        //		booleanExpressionCalculator = new BooleanExpressionApplicabilityCalculator(myOptionEnablementExpressions);
+        resolveFields();
 
+    }
+
+    private void resolveFields() {
         if (!myModelIcon[SUPER].isBlank()) {
             try {
                 myIconPathURL = new URL(myModelIcon[SUPER]);
@@ -63,43 +64,33 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
                 myIconPathURL = null;
             }
         }
-        resolveFields();
-
-    }
-
-    private void resolveFields() {
-        //TOFIX JABA need to find out what this holder is all about
-        //		if (!modelOwner[SUPER].isBlank()) {
-        //			owner = holder.getOptionCategory(modelOwner[SUPER]);
-        //			if (owner == null) {
-        //				if (holder instanceof IOptionCategory) {
-        //					// Report error, only if the parent is a tool and thus also
-        //					// an option category.
-        //					ManagedBuildManager.outputResolveError("owner", //$NON-NLS-1$
-        //							modelOwner[SUPER], "optionCategory", //$NON-NLS-1$
-        //							getId());
-        //				} else if (false == holder.getId().equals(modelOwner[SUPER])) {
-        //					// Report error, if the holder ID does not match the owner's ID.
-        //					ManagedBuildManager.outputResolveError("owner", //$NON-NLS-1$
-        //							modelOwner[SUPER], "optionCategory", //$NON-NLS-1$
-        //							getId());
-        //				}
-        //			}
-        //		}
-        //		if (owner == null) {
-        //			owner = getNullOptionCategory();
-        //		}
+        if (!myModelWeight[SUPER].isBlank()) {
+            myWeight = Integer.valueOf(myModelWeight[SUPER]).intValue();
+        }
 
     }
 
     @Override
     public IOptionCategory getOwner() {
+        if (!myIsOwnerKnown) {
+            // TOFIX did some test to see it this is needed. If this code is still here ... how did the test go?
+            //the test was there because this method was only used in one single case ToolListContentProvider
+            //currently I do not know a easy way to get to the owner (based on a ID
+            //That is ... I'm sure I have this type of code somewhere
+            myOwner = null;
+            myIsOwnerKnown = true;
+        }
         return myOwner;
     }
 
     @Override
     public URL getIconPath() {
         return myIconPathURL;
+    }
+
+    @Override
+    public int getWeight() {
+        return myWeight;
     }
 
 }

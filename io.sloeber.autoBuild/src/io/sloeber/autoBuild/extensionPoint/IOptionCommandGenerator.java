@@ -14,7 +14,9 @@
 
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import java.util.Map;
+
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 
 /**
@@ -42,6 +44,6 @@ public interface IOptionCommandGenerator {
      * @return the generated build-option command. May return {@code null} to fall
      *         back to the default command generation logic.
      */
-    String[] generateCommand(IOption option, String value, AutoBuildConfigurationDescription autoConfData);
+    Map<String, String> generateCommand(IOption option, String value, IAutoBuildConfigurationDescription autoConfData);
 
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -179,7 +180,49 @@ public interface IAutoBuildConfigurationDescription {
 
     public void setPostBuildAnouncement(String text);
 
-    public Map<String, String> getSelectedOptions(IResource resource, ITool tool);
+    /**
+     * Get the options (for a file) selected by the user combined with the default
+     * options.
+     * 
+     * File specific values overrule folder specific values
+     * which overrule project specific values Only the parentfolder options are
+     * taken into account
+     * 
+     * @param resource
+     *            the resource you want the selected options for
+     * @param tool
+     *            The tool you want the options for
+     * 
+     * @return a Map of <IOption,optionValue>
+     */
+    public Map<IOption, String> getSelectedOptions(IResource resource, ITool tool);
+
+    public Map<String, String> getSelectedOptionNames(IResource resource, ITool tool);
+
+    /**
+     * Get the options (for a set of files) selected by the user combined with the
+     * default options.
+     * 
+     * File specific values overrule folder specific values
+     * which overrule project specific values Only the parentfolder options are
+     * taken into account
+     * 
+     * Note:
+     * There may be conflicting options.
+     * For example the list may contain 2 cpp files where one states it should
+     * compile without debug info
+     * and the other with debug info
+     * This method should log an error in the error log if this happens and take one
+     * of the 2 options
+     * 
+     * @param resources
+     *            the resources you want the selected options for
+     * @param tool
+     *            The tool you want the options for
+     * 
+     * @return a Map of <IOption,optionValue>
+     */
+    public Map<IOption, String> getSelectedOptions(Set<? extends IResource> resources, ITool tool);
 
     public String getProperty(String propertyName);
 

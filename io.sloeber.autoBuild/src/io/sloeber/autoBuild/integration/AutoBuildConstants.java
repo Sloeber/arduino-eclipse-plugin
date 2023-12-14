@@ -128,6 +128,7 @@ public class AutoBuildConstants {
     public static final String CMD_LINE_INCLUDE_FILE = "-I";
     public static final String CMD_LINE_INCLUDE_FOLDER = "-I";
     public static final String CMD_LINE_DEFINE = "-D";
+    //TOFIX FLAGS_PRM_NAME is a bad name FLAGS_VAR_NAME is a bit better
     public static final String FLAGS_PRM_NAME = "FLAGS";
     public static final String OUTPUT_FLAG_PRM_NAME = "OUTPUT_FLAG";
     public static final String OUTPUT_PREFIX_PRM_NAME = "OUTPUT_PREFIX";
@@ -223,4 +224,6 @@ public class AutoBuildConstants {
     public static final String IS_HIDDEN = "isHidden";
     public static final String DEPENDENCY_OUTPUT_PATTERN = "dependencyOutputPattern";
     public static final String DEPENDENCY_GENERATION_FLAG = "dependencyGenerationFlag";
+    public static final String WEIGHT = "weight";
+    public static final String OWNER = "owner";
 }

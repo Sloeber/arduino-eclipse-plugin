@@ -702,22 +702,41 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         return myProperties.put(key, value);
     }
 
-    /**
-     * Get the options selected by the user combined with the default options.
-     * 
-     * File specific values overrule folder specific values
-     * which overrule project specific values Only the parentfolder options are
-     * taken into account
-     * 
-     * @param resource
-     *            the resource you want the selected options for
-     * @param tool
-     *            The tool you want the options for
-     * 
-     * @return a Map of <optionID,Selectedvalue>
-     */
+    private Map<IOption, String> convertOptionIDToOption(Map<String, String> input, ITool tool) {
+        Map<IOption, String> ret = new HashMap<>();
+        for (Entry<String, String> cur : input.entrySet()) {
+            IOption curKey = tool.getOption(cur.getKey());
+            ret.put(curKey, cur.getValue());
+        }
+        return ret;
+    }
+
     @Override
-    public Map<String, String> getSelectedOptions(IResource resource, ITool tool) {
+    public Map<IOption, String> getSelectedOptions(Set<? extends IResource> file, ITool tool) {
+        Map<String, String> ret = new HashMap<>();
+        for (IResource curFile : file) {
+            Map<String, String> fileOptions = getSelectedOptionNames(curFile, tool);
+            for (Entry<String, String> curResourceOption : fileOptions.entrySet()) {
+                String curKey = curResourceOption.getKey();
+                String curValue = curResourceOption.getValue();
+                if (ret.containsKey(curKey)) {
+                    if (!ret.get(curKey).equals(curValue)) {
+                        //TOFIX log error
+                    }
+                }
+                ret.put(curKey, curValue);
+            }
+        }
+        return convertOptionIDToOption(ret, tool);
+    }
+
+    @Override
+    public Map<IOption, String> getSelectedOptions(IResource file, ITool tool) {
+        return convertOptionIDToOption(getSelectedOptionNames(file, tool), tool);
+    }
+
+    @Override
+    public Map<String, String> getSelectedOptionNames(IResource file, ITool tool) {
         Map<String, String> retProject = new HashMap<>();
         Map<String, String> retFolder = new HashMap<>();
         Map<String, String> retFile = new HashMap<>();
@@ -733,12 +752,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                     retProject.putAll(curResourceOptions.getValue());
                     continue;
                 }
-                if ((curResource instanceof IFolder) && (curResource.getProjectRelativePath()
-                        .equals(resource.getParent().getProjectRelativePath()))) {
+                if ((curResource instanceof IFolder)
+                        && (curResource.getProjectRelativePath().equals(file.getParent().getProjectRelativePath()))) {
                     retFolder.putAll(curResourceOptions.getValue());
                     continue;
                 }
-                if ((curResource instanceof IFile) && (curResource.equals(resource))) {
+                if ((curResource instanceof IFile) && (curResource.equals(file))) {
                     retFile.putAll(curResourceOptions.getValue());
                     continue;
                 }
@@ -1402,4 +1421,5 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         myIsWritable = write;
 
     }
+
 }

@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -162,17 +163,16 @@ public interface ITool extends ISchemaObject {
     public IManagedCommandLineGenerator getCommandLineGenerator();
 
     /**
-     * Returns an array of command line arguments that have been specified for
-     * the tool.
-     * The flags contain build macros resolved to the makefile format.
-     * That is if a user has chosen to expand all macros in the buildfile,
-     * the flags contain all macro references resolved, otherwise, if a user has
-     * chosen to keep the environment build macros unresolved, the flags contain
-     * the environment macro references converted to the buildfile variable format,
-     * all other macro references are resolved
+     * Given a list of options/option value combinations
+     * return the variables to expand the command line
+     * 
+     * @param autoBuildConfData
+     * @param selectedOptions
+     *            option with the selected value
+     * @return
      */
-    public String[] getToolCommandFlags(IAutoBuildConfigurationDescription autoBuildConfData,
-            IResource mySelectedResource);
+    public Map<String, String> getToolCommandVars(IAutoBuildConfigurationDescription autoBuildConfData,
+            Map<IOption, String> selectedOptions);
 
     CLanguageData getCLanguageData(IInputType type);
 
@@ -196,16 +196,17 @@ public interface ITool extends ISchemaObject {
      * the input file) that custom command will be used
      * 
      * @param autoBuildConfData
+     * @param buildFolder
      * @param inputFiles
      *            the files used as input for the recipes
-     * @param flags
-     * @param outputName
-     *            the target file name to be created
-     * @param nicePreReqNameList
+     * @param toolCommandVars
+     * @param targetFile
+     *            the target file name to be created (used to create dependency
+     *            section in command)
      * @return
      */
-    public String[] getRecipes(IAutoBuildConfigurationDescription autoBuildConfData, Set<IFile> inputFiles,
-            Set<String> flags, String outputName, Map<String, Set<String>> nicePreReqNameList);
+    public String[] getRecipes(IAutoBuildConfigurationDescription autoBuildConfData, IFolder buildFolder,
+            Set<IFile> inputFiles, Map<String, String> toolCommandVars, IFile targetFile);
 
     /**
      * Get the dependency file for this target
@@ -223,5 +224,7 @@ public interface ITool extends ISchemaObject {
             IAutoBuildConfigurationDescription autoBuildConf);
 
     boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData);
+
+    public IOption getOption(String key);
 
 }

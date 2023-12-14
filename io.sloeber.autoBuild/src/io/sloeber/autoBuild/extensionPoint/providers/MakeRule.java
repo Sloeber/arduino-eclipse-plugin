@@ -32,8 +32,10 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
+import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
@@ -206,34 +208,50 @@ public class MakeRule {
         return true;
     }
 
-    public String[] getRecipes(IFolder niceBuildFolder, AutoBuildConfigurationDescription autoBuildConfData) {
+    public String[] getRecipes(IFolder buildFolder, AutoBuildConfigurationDescription autoBuildConfData) {
         if (!validateRecipes()) {
             return new String[0];
         }
-        Set<IFile> targetFiles = getTargetFiles();
 
-        IFile targetFile = targetFiles.toArray(new IFile[targetFiles.size()])[0];
+        //get the input files
+        Set<IFile> inputFiles = getPrerequisiteFiles();
 
-        Set<String> flags = new LinkedHashSet<>();
-        Map<String, Set<String>> niceNameList = new HashMap<>();
-        Set<IFile> inputFiles = new HashSet<>();
+        //from all the options for this project; get the options for this tool/prerequisites
+        // not there is a filtering happening in this step and there may be duplicates
+        // here we will assume this is handled properly by AutoBuildConfigurationDescription 
+        Map<IOption, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFiles, myTool);
+
+        //with all the options applicable for this makerule generate variables to expand in the recipes
+        Map<String, String> toolCommandVars = myTool.getToolCommandVars(autoBuildConfData, selectedOptions);
+
+        //add the myPrerequisites to the variables
         for (Entry<IInputType, Set<IFile>> cur : myPrerequisites.entrySet()) {
-            String cmdVariable = cur.getKey().getAssignToCmdVarriable();
-            for (IFile curPrereqFile : cur.getValue()) {
-                inputFiles.add(curPrereqFile);
-                Set<String> niceNames = niceNameList.get(cmdVariable);
-                if (niceNames == null) {
-                    niceNames = new HashSet<>();
-                    niceNameList.put(cmdVariable, niceNames);
-                }
-                niceNames.add(GetNiceFileName(niceBuildFolder, curPrereqFile));
-                //JABA I'm not sure it is necessary to loop through all the prerequisites to add all flags
-                flags.addAll(Arrays.asList(myTool.getToolCommandFlags(autoBuildConfData, curPrereqFile)));
+            String var = cur.getKey().getAssignToCmdVarriable();
+            String curCommandVarValue = toolCommandVars.get(var);
+            if (curCommandVarValue == null) {
+                curCommandVarValue = new String();
+            } else {
+                curCommandVarValue = curCommandVarValue.trim() + WHITESPACE;
             }
+            for (IFile curPrereqFile : cur.getValue()) {
+                if (curPrereqFile != null) {
+                    String curFileName = GetNiceFileName(buildFolder, curPrereqFile);
+                    // if the input resource isn't a variable then quote it
+                    if (curFileName.indexOf("$(") != 0) { //$NON-NLS-1$
+                        curFileName = DOUBLE_QUOTE + curFileName + DOUBLE_QUOTE;
+                    }
+                    curCommandVarValue = curCommandVarValue + curFileName + WHITESPACE;
+                }
+            }
+            toolCommandVars.put(var, curCommandVarValue.trim());
         }
-        //Get the flags from the CdtConfigurationDescription
+
+        //add the provider items to the flags
         ICConfigurationDescription cfgDescription = autoBuildConfData.getCdtConfigurationDescription();
         IProject project = autoBuildConfData.getProject();
+        String includeFiles = new String();
+        String includePath = new String();
+        String providerMacros = new String();
         for (ILanguageSettingsProvider provider : ((ILanguageSettingsProvidersKeeper) cfgDescription)
                 .getLanguageSettingProviders()) {
             for (IInputType curInputType : myPrerequisites.keySet()) {
@@ -254,19 +272,20 @@ public class MakeRule {
                             case ICSettingEntry.INCLUDE_FILE: {
                                 IFile file = project.getWorkspace().getRoot()
                                         .getFile(IPath.forPosix(curEntry.getValue()));
-                                flags.add(DOUBLE_QUOTE + CMD_LINE_INCLUDE_FILE + file.getLocation().toString()
-                                        + DOUBLE_QUOTE);
+                                includeFiles = includeFiles + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_INCLUDE_FILE
+                                        + file.getLocation().toString() + DOUBLE_QUOTE;
                                 break;
                             }
                             case ICSettingEntry.INCLUDE_PATH: {
                                 IFolder folder = project.getWorkspace().getRoot()
                                         .getFolder(IPath.forPosix(curEntry.getValue()));
-                                flags.add(DOUBLE_QUOTE + CMD_LINE_INCLUDE_FOLDER + folder.getLocation().toString()
-                                        + DOUBLE_QUOTE);
+                                includePath = includePath + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_INCLUDE_FOLDER
+                                        + folder.getLocation().toString() + DOUBLE_QUOTE;
                                 break;
                             }
                             case ICSettingEntry.MACRO: {
-                                flags.add(DOUBLE_QUOTE + CMD_LINE_DEFINE + curEntry.getValue() + DOUBLE_QUOTE);
+                                providerMacros = providerMacros + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_DEFINE
+                                        + curEntry.getValue() + DOUBLE_QUOTE;
                                 break;
                             }
 
@@ -277,9 +296,35 @@ public class MakeRule {
                 }
             }
         }
+        String flags = toolCommandVars.get(FLAGS_PRM_NAME);
+        if (flags == null) {
+            flags = new String();
+        }
+        flags = flags.trim() + WHITESPACE + providerMacros;
+        flags = flags.trim() + WHITESPACE + includeFiles;
+        flags = flags.trim() + WHITESPACE + includePath;
+        toolCommandVars.put(FLAGS_PRM_NAME, flags.trim());
 
-        String buildRecipes[] = myTool.getRecipes(autoBuildConfData, inputFiles, flags,
-                GetNiceFileName(niceBuildFolder, targetFile), niceNameList);
+        //add the target files to the variables
+        String targetFiles = toolCommandVars.get(OUTPUT_PRM_NAME);
+        if (targetFiles == null) {
+            targetFiles = new String();
+        }
+        IFile targetFile = null;
+        for (IFile curTargetFile : getTargetFiles()) {
+            if (targetFile == null) {
+                targetFile = curTargetFile;
+            }
+            targetFiles = targetFiles.trim() + WHITESPACE + DOUBLE_QUOTE + GetNiceFileName(buildFolder, curTargetFile)
+                    + DOUBLE_QUOTE;
+        }
+        toolCommandVars.put(OUTPUT_PRM_NAME, targetFiles.trim());
+
+        //get the recipes
+        String buildRecipes[] = myTool.getRecipes(autoBuildConfData, buildFolder, inputFiles, toolCommandVars,
+                targetFile);
+
+        //expand the recipes
         ArrayList<String> ret = new ArrayList<>();
         for (String curRecipe : buildRecipes) {
             String resolvedCommand = resolveRecursive(curRecipe, EMPTY_STRING, WHITESPACE, autoBuildConfData);
@@ -287,6 +332,7 @@ public class MakeRule {
                 resolvedCommand = curRecipe;
             }
             if (!resolvedCommand.isBlank()) {
+                //We need to split again as the variable expansion may have introduced new newlines
                 ret.addAll(Arrays.asList(resolvedCommand.split(LINE_BREAK_REGEX)));
             }
         }
