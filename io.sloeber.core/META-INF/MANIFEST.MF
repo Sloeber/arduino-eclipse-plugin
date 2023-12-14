@@ -22,7 +22,7 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.debug.core,
  org.eclipse.core.variables,
  org.apache.commons.commons-io,
- org.apache.commons.compress
+ org.apache.commons.commons-compress
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,
