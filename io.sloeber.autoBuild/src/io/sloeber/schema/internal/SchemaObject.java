@@ -38,7 +38,6 @@ import io.sloeber.schema.api.ISchemaObject;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.enablement.Enablement;
 import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
-import io.sloeber.schema.internal.legacy.OutputNameProviderCompatibilityClass;
 
 public abstract class SchemaObject implements ISchemaObject {
 
@@ -200,21 +199,6 @@ public abstract class SchemaObject implements ISchemaObject {
         } catch (@SuppressWarnings("unused") CoreException e) {
             // Do not log this stacktrace as it causes
             // many stacktraces that are not really problems
-            // e.printStackTrace();
-        }
-        // The provided class does not conform with the current class
-        // try older types of classes
-        // Currently no known cases will actually work
-
-        try {
-            switch (className) {
-            case "org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider": //$NON-NLS-1$
-                return new OutputNameProviderCompatibilityClass();
-            }
-        } catch (@SuppressWarnings("unused") Exception e) {
-            // if this fails it is likely a class name is in the plugin.xml that is not a
-            // class name
-            // not dumping the stacktrace as the error is reported in calling method
             // e.printStackTrace();
         }
 
