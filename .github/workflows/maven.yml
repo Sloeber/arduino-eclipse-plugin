@@ -3,6 +3,9 @@
 
 name: Java CI with Maven
 
+uses: JActions/maven-version@v1.2.0
+            
+
 on:
   push:
     branches: [ master ]
