@@ -3,6 +3,9 @@
 
 name: Java CI with Maven
 
+
+            
+
 on:
   push:
     branches: [ master ]
@@ -15,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: show Maven
+      run: mvn -version
+    
     - uses: actions/checkout@v2
     - name: Set up JDK 17
       uses: actions/setup-java@v2
