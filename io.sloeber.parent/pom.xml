@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>2.7.5</tycho.version>
+		<tycho.version>4.0.4</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 		<!-- maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target -->
@@ -51,13 +51,17 @@
 				<version>${tycho.version}</version>
 				<configuration>
 					<dependency-resolution>
-						<profileProperties>
-							<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
+					 	<profileProperties>
+					 		<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime> 
 						</profileProperties>
-					</dependency-resolution>
+					</dependency-resolution> 
+					<target>
+						<file>../io.sloeber.product/sloeber.target</file>
+					</target>
+
 				</configuration>
 			</plugin>
-		
+
 			<!-- Enable tycho build extension -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -76,9 +80,9 @@
 <!--
 					<source>11</source>
 					<target>11</target> -->
-                   <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
+					<executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
- 				</configuration>
+				</configuration>
 			</plugin>
 
 			<!-- Enable version management -->
@@ -196,7 +200,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -213,7 +217,7 @@
 									<os>macosx</os>
 									<ws>cocoa</ws>
 									<arch>x86_64</arch>
-								</environment>									
+								</environment>
 								<environment>
 									<os>macosx</os>
 									<ws>cocoa</ws>
@@ -237,7 +241,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -262,7 +266,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -276,7 +280,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>mac64</id>
 			<build>
@@ -287,7 +291,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -302,7 +306,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>macm1</id>
 			<build>
@@ -313,7 +317,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<!-- Mac aarch64 -->
