@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
@@ -702,8 +704,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         return myProperties.put(key, value);
     }
 
-    private Map<IOption, String> convertOptionIDToOption(Map<String, String> input, ITool tool) {
-        Map<IOption, String> ret = new HashMap<>();
+    private TreeMap<IOption, String> convertOptionIDToOption(Map<String, String> input, ITool tool) {
+        TreeMap<IOption, String> ret = new TreeMap<>(new java.util.Comparator<>() {
+
+            @Override
+            public int compare(IOption o1, IOption o2) {
+                // TODO Auto-generated method stub
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
         for (Entry<String, String> cur : input.entrySet()) {
             IOption curKey = tool.getOption(cur.getKey());
             ret.put(curKey, cur.getValue());
@@ -712,7 +721,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     }
 
     @Override
-    public Map<IOption, String> getSelectedOptions(Set<? extends IResource> file, ITool tool) {
+    public TreeMap<IOption, String> getSelectedOptions(Set<? extends IResource> file, ITool tool) {
         Map<String, String> ret = new HashMap<>();
         for (IResource curFile : file) {
             Map<String, String> fileOptions = getSelectedOptionNames(curFile, tool);
@@ -763,7 +772,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 }
             }
         }
-        Map<String, String> ret = new HashMap<>();
+        Map<String, String> ret = new TreeMap<>();
         ret.putAll(retProject);
         ret.putAll(retFolder);
         ret.putAll(retFile);

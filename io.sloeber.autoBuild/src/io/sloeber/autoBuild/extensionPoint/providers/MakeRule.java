@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
@@ -32,7 +32,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
@@ -219,7 +218,7 @@ public class MakeRule {
         //from all the options for this project; get the options for this tool/prerequisites
         // not there is a filtering happening in this step and there may be duplicates
         // here we will assume this is handled properly by AutoBuildConfigurationDescription 
-        Map<IOption, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFiles, myTool);
+        TreeMap<IOption, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFiles, myTool);
 
         //with all the options applicable for this makerule generate variables to expand in the recipes
         Map<String, String> toolCommandVars = myTool.getToolCommandVars(autoBuildConfData, selectedOptions);
@@ -243,7 +242,9 @@ public class MakeRule {
                     curCommandVarValue = curCommandVarValue + curFileName + WHITESPACE;
                 }
             }
-            toolCommandVars.put(var, curCommandVarValue.trim());
+            if (!curCommandVarValue.isBlank()) {
+                toolCommandVars.put(var, curCommandVarValue.trim());
+            }
         }
 
         //add the provider items to the flags

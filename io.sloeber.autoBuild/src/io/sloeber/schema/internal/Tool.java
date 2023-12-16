@@ -408,6 +408,10 @@ public class Tool extends SchemaObject implements ITool {
             for (Entry<String, String> curVar : optionVars.entrySet()) {
                 String varName = curVar.getKey();
                 String varValue = curVar.getValue();
+                if (varValue.isBlank()) {
+                    //blank items will add unnecessary spaces
+                    continue;
+                }
                 List<String> alreadyFoundArguments = allVars.get(varName);
                 if (alreadyFoundArguments == null) {
                     alreadyFoundArguments = new LinkedList<>();
@@ -544,9 +548,11 @@ public class Tool extends SchemaObject implements ITool {
                     GetNiceFileName(buildFolder, depFile));
             depFlag = depFlag.replace(OUT_MACRO, GetNiceFileName(buildFolder, targetFile));
 
-            String flagsValue = toolCommandVars.get(FLAGS_PRM_NAME);
-            flagsValue = flagsValue.trim() + WHITESPACE + depFlag;
-            toolCommandVars.put(FLAGS_PRM_NAME, flagsValue.trim());
+            if (!depFlag.isBlank()) {
+                String flagsValue = toolCommandVars.get(FLAGS_PRM_NAME);
+                flagsValue = flagsValue.trim() + WHITESPACE + depFlag;
+                toolCommandVars.put(FLAGS_PRM_NAME, flagsValue.trim());
+            }
         }
 
         //add some more variables to the list

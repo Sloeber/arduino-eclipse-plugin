@@ -68,8 +68,10 @@ public class Option extends SchemaObject implements IOption {
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final OptionStringValue[] EMPTY_LV_ARRAY = new OptionStringValue[0];
     private static final String EMPTY_QUOTED_STRING = "\"\""; //$NON-NLS-1$
-    private static final String STRING_SEPERATOR = "\n\r";//$NON-NLS-1$
-    private static final String STRING_SEPARATOR_REGEX = Pattern.quote(STRING_SEPERATOR);
+    private static final String STRING_NEW_LINE_SEPERATOR = "\n\r";//$NON-NLS-1$
+    private static final String STRING_NEW_LINE_SEPARATOR_REGEX = Pattern.quote(STRING_NEW_LINE_SEPERATOR);
+    private static final String STRING_SEMICOLON_SEPERATOR = SEMICOLON;
+    private static final String STRING_SEMICOLON_SEPARATOR_REGEX = Pattern.quote(STRING_SEMICOLON_SEPERATOR);
 
     private String[] modelCategoryId;
     private String[] modelResFilterStr;
@@ -437,7 +439,7 @@ public class Option extends SchemaObject implements IOption {
             for (TreeOption curTreeOption : myTreeOptions.values()) {
                 curTreeOption.getDefaultValueStrings(defaultValues);
             }
-            return String.join(STRING_SEPERATOR, defaultValues);
+            return String.join(STRING_NEW_LINE_SEPERATOR, defaultValues);
         }
 
     }
@@ -726,7 +728,7 @@ public class Option extends SchemaObject implements IOption {
             return ret;
         }
         case IOption.TREE: {
-            String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
+            String[] values = optionValue.split(STRING_NEW_LINE_SEPARATOR_REGEX);
             String retValue = new String();
             if (myTreeRoot != null) {
                 for (String curptionValue : values) {
@@ -759,7 +761,10 @@ public class Option extends SchemaObject implements IOption {
         case IOption.PREPROCESSOR_SYMBOLS:
         case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
             String listCmd = modelCommand[SUPER];
-            String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
+            String[] values = optionValue.split(STRING_NEW_LINE_SEPARATOR_REGEX);
+            if (values.length == 1) {
+                values = optionValue.split(STRING_SEMICOLON_SEPARATOR_REGEX);
+            }
             String[] resolvedList = resolveStringListValues(values, autoConfData, true);
             String retValue = new String();
             for (String curResolved : resolvedList) {
@@ -925,7 +930,7 @@ public class Option extends SchemaObject implements IOption {
             return selectedEnumValue.getCommandLIneDistribution().isBlank();
         }
         case IOption.TREE: {
-            String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
+            String[] values = optionValue.split(STRING_NEW_LINE_SEPARATOR_REGEX);
             if (myTreeRoot != null) {
                 for (String curptionValue : values) {
                     ITreeOption treeNode = myTreeRoot.findNode(curptionValue);
@@ -954,7 +959,7 @@ public class Option extends SchemaObject implements IOption {
         case IOption.UNDEF_MACRO_FILES:
         case IOption.PREPROCESSOR_SYMBOLS:
         case IOption.UNDEF_PREPROCESSOR_SYMBOLS: {
-            String[] values = optionValue.split(STRING_SEPARATOR_REGEX);
+            String[] values = optionValue.split(STRING_NEW_LINE_SEPARATOR_REGEX);
             String[] resolvedList = resolveStringListValues(values, autoConfData, true);
             for (String curResolved : resolvedList) {
                 if (!curResolved.isBlank() && !curResolved.contains(EMPTY_QUOTED_STRING))
