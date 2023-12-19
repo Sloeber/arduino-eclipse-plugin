@@ -709,7 +709,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
             @Override
             public int compare(IOption o1, IOption o2) {
-                // TODO Auto-generated method stub
+                if (o1 == null || o2 == null) {
+                    return 0;
+                }
                 return o1.getId().compareTo(o2.getId());
             }
         });
@@ -717,6 +719,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             IOption curKey = tool.getOption(cur.getKey());
             ret.put(curKey, cur.getValue());
         }
+        //TOFIX log some options were not found
+        ret.remove(null);
         return ret;
     }
 

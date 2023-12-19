@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.internal.SchemaObject;
 
@@ -51,7 +52,11 @@ public class CheckOptionExpression extends Expression {
         AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) context.getDefaultVariable();
         IResource resource = (IResource) context.getVariable(KEY_RESOURCE);
         ITool tool = (ITool) context.getVariable(KEY_TOOL);
-        String selectedOption = autoData.getSelectedOptions(resource, tool).get(myOptionID);
+        IOption option = tool.getOption(myOptionID);
+        if (option == null) {
+            return EvaluationResult.FALSE;
+        }
+        String selectedOption = autoData.getSelectedOptions(resource, tool).get(option);
         boolean selectedBoolean = "true".equals(selectedOption); //$NON-NLS-1$
         boolean expectedBoolean = "true".equals(myExpectedValue); //$NON-NLS-1$
         if (selectedBoolean == expectedBoolean) {
