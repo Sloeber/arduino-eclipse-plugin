@@ -13,13 +13,11 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.schema.internal.Tool;
 
 /**
  * This interface represents a tool-integrator-defined, ordered set of tools

@@ -7,7 +7,6 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -392,10 +391,8 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public Map<String, String> getToolCommandVars(IAutoBuildConfigurationDescription iAutoConfData,
             Map<IOption, String> selectedOptions) {
-        AutoBuildConfigurationDescription autoConfData = (AutoBuildConfigurationDescription) iAutoConfData;
 
         Map<String, List<String>> allVars = new HashMap<>();
-        //TOFIX need to process these by option category sorted by weight descending 
 
         for (Entry<IOption, String> curSelectrturOption : selectedOptions.entrySet()) {
             IOption curOption = curSelectrturOption.getKey();
