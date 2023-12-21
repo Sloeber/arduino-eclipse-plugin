@@ -33,8 +33,8 @@ import org.eclipse.core.runtime.Platform;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
@@ -63,7 +63,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
     private IEnvironmentVariableProvider myEnvironmentVariableProvider = null;
     private IConfigurationBuildMacroSupplier myBuildMacroSupplier = null;
 
-    private Configuration myConfiguration;
+    private IProjectType myProjectType;
     private boolean myIsCompatibleWithLocalOS = false;
 
     /**
@@ -71,8 +71,8 @@ public class ToolChain extends SchemaObject implements IToolChain {
      * point in a plugin manifest file, or returned by a dynamic element provider
      *
      */
-    public ToolChain(Configuration parent, IExtensionPoint root, IConfigurationElement element) {
-        this.myConfiguration = parent;
+    public ToolChain(IProjectType parent, IExtensionPoint root, IConfigurationElement element) {
+        myProjectType = parent;
         loadNameAndID(root, element);
         modelIsAbstract = getAttributes(IS_ABSTRACT);
         modelOsList = getAttributes(OS_LIST);
@@ -91,8 +91,9 @@ public class ToolChain extends SchemaObject implements IToolChain {
         if (targetPlatforms.length == 1) {
             myTargetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
         } else {
-            System.err.println("Targetplatforms of toolchain " + parent.myID + DOT + parent.myName + BLANK + myID + DOT //$NON-NLS-1$
-                    + myName + " has wrong cardinality " + String.valueOf(targetPlatforms.length) + DOT); //$NON-NLS-1$
+            System.err.println(
+                    "Targetplatforms of toolchain " + parent.getId() + DOT + parent.getName() + BLANK + myID + DOT //$NON-NLS-1$
+                            + myName + " has wrong cardinality " + String.valueOf(targetPlatforms.length) + DOT); //$NON-NLS-1$
         }
 
         // Load the Builder child
@@ -100,7 +101,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
         if (builders.size() == 1) {
             myBuilder = new Builder(this, root, builders.get(0));
         } else {
-            System.err.println("builders of toolchain " + myName + " has wrong cardinality " //$NON-NLS-1$//$NON-NLS-2$
+            System.err.println("builders of toolchain " + myName + " has wrong cardinality expected 1 has " //$NON-NLS-1$//$NON-NLS-2$
                     + String.valueOf(builders.size()) + DOT);
         }
 
@@ -112,12 +113,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         if (myToolMap.size() == 0) {
             System.err.println("There are no tools in toolchain " + myName + DOT); //$NON-NLS-1$
         }
-
-        //        List<IConfigurationElement> optionElements = getAllChildren(IOptions.OPTION);
-        //        for (IConfigurationElement optionElement : optionElements) {
-        //            Option newOption = new Option(this, root, optionElement);
-        //            myOptionMap.put(newOption.getName(), newOption);
-        //        }
 
         resolveFields();
     }
@@ -162,8 +157,8 @@ public class ToolChain extends SchemaObject implements IToolChain {
     }
 
     @Override
-    public IConfiguration getParent() {
-        return myConfiguration;
+    public IProjectType getParent() {
+        return myProjectType;
     }
 
     @Override
@@ -288,10 +283,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         ret.append(prepend + END_OF_CHILDREN + ITool.TOOL_ELEMENT_NAME + NEWLINE);
 
         return ret;
-    }
-
-    public boolean isCompatibleWithLocalOS() {
-        return myIsCompatibleWithLocalOS;
     }
 
 }

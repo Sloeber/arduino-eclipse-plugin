@@ -2,6 +2,7 @@ package io.sloeber.autoBuild.api;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -192,11 +193,11 @@ public interface IAutoBuildConfigurationDescription {
      * @param tool
      *            The tool you want the options for
      * 
-     * @return a Map of <IOption,optionValue>
+     * @return a TreeMap of <IOption,optionValue> ordered on optionID
      */
-    public Map<IOption, String> getSelectedOptions(IResource resource, ITool tool);
+    public TreeMap<IOption, String> getSelectedOptions(IResource resource, ITool tool);
 
-    public Map<String, String> getSelectedOptionNames(IResource resource, ITool tool);
+    //    public Map<String, String> getSelectedOptionNames(IResource resource, ITool tool);
 
     /**
      * Get the options (for a set of files) selected by the user combined with the
@@ -250,6 +251,25 @@ public interface IAutoBuildConfigurationDescription {
 
     public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID);
 
+    /**
+     * return the value of the option for this option for this tool
+     * as provided by the user for this resource.
+     * In other words "nothing smart gets done"
+     * It only returns a value if the user has set a value for this
+     * option/tool/resource combinations using
+     * setOptionValue
+     * 
+     * The only use I can think of is to maintain user set option values
+     * 
+     * @param resource
+     *            only show option values explicitly set for this resource
+     * @param tool
+     *            only show option values explicitly set for this tool
+     * @param option
+     *            only show the option value explicitly set for this option
+     * @return the value set by the user or a empty string (should never return
+     *         null)
+     */
     public String getOptionValue(IResource resource, ITool tool, IOption option);
 
     public String getExtensionPointID();

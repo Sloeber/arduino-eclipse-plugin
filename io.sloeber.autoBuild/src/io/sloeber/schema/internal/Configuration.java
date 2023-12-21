@@ -58,7 +58,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private String[] modelbuildArtefactType;
     private String[] modelcleanCommand;
 
-    private ToolChain myToolchain;
     private Map<String, String> myBuildProperties = new HashMap<>();
 
     // Parent and children
@@ -92,22 +91,12 @@ public class Configuration extends SchemaObject implements IConfiguration {
         modelbuildProperties = getAttributes(BUILD_PROPERTIES);
         modelbuildArtefactType = getAttributes(BUILD_ARTEFACT_TYPE);
 
-        // Load the children
-        IConfigurationElement[] configElements = element.getChildren();
-        for (IConfigurationElement configElement : configElements) {
-            switch (configElement.getName()) {
-            case IToolChain.TOOL_CHAIN_ELEMENT_NAME: {
-                myToolchain = new ToolChain(this, root, configElement);
-                break;
-            }
-            }
-        }
         resolveFields();
     }
 
     private void resolveFields() {
         String errorParserIDs[] = modelerrorParsers[SUPER].split(SEMICOLON);
-        Set<String> builderErroParserIds = myToolchain.getErrorParserList();
+        Set<String> builderErroParserIds = getToolChain().getErrorParserList();
         myErrorParserIDs.addAll(Arrays.asList(errorParserIDs));
         myErrorParserIDs.addAll(builderErroParserIds);
         myErrorParserIDs.remove(EMPTY_STRING);
@@ -132,8 +121,8 @@ public class Configuration extends SchemaObject implements IConfiguration {
                     defaultLanguageSettingsProviderIds.remove(defaultID);
                 } else if (!defaultLanguageSettingsProviderIds.contains(defaultID)) {
                     if (defaultID.contains($TOOLCHAIN)) {
-                        if (myToolchain != null) {
-                            String toolchainProvidersIds = myToolchain.getDefaultLanguageSettingsProviderIds();
+                        if (getToolChain() != null) {
+                            String toolchainProvidersIds = getToolChain().getDefaultLanguageSettingsProviderIds();
                             if (toolchainProvidersIds != null) {
                                 defaultLanguageSettingsProviderIds.addAll(Arrays
                                         .asList(toolchainProvidersIds.split(LANGUAGE_SETTINGS_PROVIDER_DELIMITER)));
@@ -155,11 +144,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     @Override
     public IProjectType getProjectType() {
         return projectType;
-    }
-
-    @Override
-    public IToolChain getToolChain() {
-        return myToolchain;
     }
 
     /*
@@ -232,7 +216,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     @Override
     public IBuilder getBuilder() {
-        return myToolchain.getBuilder();
+        return getToolChain().getBuilder();
     }
 
     public boolean isPreference() {
@@ -260,33 +244,28 @@ public class Configuration extends SchemaObject implements IConfiguration {
         ret.append(prepend + BUILD_PROPERTIES + EQUAL + modelbuildProperties[SUPER] + NEWLINE);
         ret.append(prepend + BUILD_ARTEFACT_TYPE + EQUAL + modelbuildArtefactType[SUPER] + NEWLINE);
 
-        ret.append(prepend + BEGIN_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
-        ret.append(myToolchain.dump(leadingChars + 1));
-        ret.append(prepend + END_OF_CHILDREN + IToolChain.TOOL_CHAIN_ELEMENT_NAME + NEWLINE);
         return ret;
     }
 
-    @Override
-    public Map<IResource, Map<String, String>> getDefaultProjectOptions(
-            AutoBuildConfigurationDescription autoBuildConfigurationData) {
-        Map<String, String> retOptions = getDefaultOptions(autoBuildConfigurationData.getProject(),
-                autoBuildConfigurationData);
-        retOptions.putAll(
-                myToolchain.getDefaultOptions(autoBuildConfigurationData.getProject(), autoBuildConfigurationData));
-        Map<IResource, Map<String, String>> ret = new LinkedHashMap<>();
-        ret.put(autoBuildConfigurationData.getProject(), retOptions);
-        return ret;
-    }
-
-    public boolean isCompatibleWithLocalOS() {
-        return myToolchain.isCompatibleWithLocalOS();
-    }
+    //    @Override
+    //    public Map<IResource, Map<String, String>> getDefaultProjectOptions(
+    //            AutoBuildConfigurationDescription autoBuildConfigurationData) {
+    //        //Get the default options on the level of the project
+    //        Map<String, String> retOptions = getDefaultOptions(autoBuildConfigurationData.getProject(),
+    //                autoBuildConfigurationData);
+    //        //Get the default options on the level of the toolchain and tools
+    //        retOptions.putAll(((ToolChain) getToolChain()).getDefaultOptions(autoBuildConfigurationData.getProject(),
+    //                autoBuildConfigurationData));
+    //        Map<IResource, Map<String, String>> ret = new LinkedHashMap<>();
+    //        ret.put(autoBuildConfigurationData.getProject(), retOptions);
+    //        return ret;
+    //    }
 
     @Override
     public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData) {
         IProject project = autoBuildConfData.getProject();
         Map<String, Set<IInputType>> ret = new HashMap<>();
-        for (ITool curTool : myToolchain.getTools()) {
+        for (ITool curTool : getToolChain().getTools()) {
             for (IInputType curInputType : curTool.getInputTypes()) {
                 if (!curInputType.isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, project, autoBuildConfData)) {
                     continue;
@@ -306,6 +285,11 @@ public class Configuration extends SchemaObject implements IConfiguration {
             }
         }
         return ret;
+    }
+
+    @Override
+    public IToolChain getToolChain() {
+        return projectType.getToolChain();
     }
 
 }

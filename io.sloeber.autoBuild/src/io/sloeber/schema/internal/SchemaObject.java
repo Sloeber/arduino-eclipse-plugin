@@ -354,8 +354,8 @@ public abstract class SchemaObject implements ISchemaObject {
         return myEnablement.isEnabled(enablementType, resource, tool, autoBuildConfData);
     }
 
-    public Map<String, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData) {
-        Map<String, String> ret = new LinkedHashMap<>();
+    public Map<IOption, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData) {
+        Map<IOption, String> ret = new LinkedHashMap<>();
         if (isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoData)) {
             for (IOption curIOption : myOptions.getOptions()) {
                 Option curOption = (Option) curIOption;
@@ -363,7 +363,7 @@ public abstract class SchemaObject implements ISchemaObject {
                     String optionValue = curOption.getDefaultValue(resource, getTool(), autoData);
                     if (!optionValue.isBlank()) {
                         if (!curOption.isCommandLineContributionBlank(resource, optionValue, autoData)) {
-                            ret.put(curOption.getId(), optionValue);
+                            ret.put(curOption, optionValue);
                         }
                     }
                 }

@@ -13,9 +13,12 @@
  *******************************************************************************/
 package io.sloeber.schema.api;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
@@ -34,5 +37,8 @@ public interface ISchemaObject {
     boolean isEnabled(int enablementType, IResource resource, IAutoBuildConfigurationDescription autoBuildConfData);
 
     IOptions getOptions();
+
+    //Get the default options for this schema object taking into account the enablements 
+    public Map<IOption, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData);
 
 }

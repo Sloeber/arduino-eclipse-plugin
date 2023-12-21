@@ -112,14 +112,6 @@ public interface IConfiguration extends ISchemaObject {
     //    public String getErrorParserIds();
 
     /**
-     * Answers the ordered list of unique IDs of the error parsers associated
-     * with this configuration.
-     *
-     * @return String[]
-     */
-    public String[] getErrorParserList();
-
-    /**
      * Returns default language settings providers IDs specified for the
      * configuration.
      * 
@@ -137,65 +129,6 @@ public interface IConfiguration extends ISchemaObject {
      */
     public IProjectType getProjectType();
 
-    //    /**
-    //     * Returns the <code>ITool</code> in this configuration's tool-chain with
-    //     * the same id as the argument, or <code>null</code>.
-    //     *
-    //     * @param id
-    //     *            unique identifier to search for
-    //     * @return ITool
-    //     */
-    //    public ITool getTool(String id);
-
-    /**
-     * Returns the <code>IToolChain</code> child of this configuration.
-     *
-     * @return IToolChain
-     */
-    public IToolChain getToolChain();
-
-    //    /**
-    //     * Returns the command-line invocation command for the specified tool.
-    //     *
-    //     * @param tool
-    //     *            The tool that will have its command retrieved.
-    //     * @return String The command
-    //     */
-    //    public String getToolCommand(ITool tool);
-
-    //    /**
-    //     * Returns the tools that are used in this configuration's tool-chain.
-    //     *
-    //     * @return ITool[]
-    //     */
-    //    public List<ITool> getTools();
-
-    //    /**
-    //     * Returns the tool in this configuration specified with
-    //     * the toolChain#targetTool attribute that creates the build artifact
-    //     *
-    //     * NOTE: This method returns null in case the toolChain definition
-    //     * does not have the targetTool attribute or if the attribute does not
-    //     * refer to the appropriate tool.
-    //     * For the target tool calculation the IConfiguration#calculateTargetTool()
-    //     * method should be used
-    //     *
-    //     * @see IConfiguration#calculateTargetTool()
-    //     *
-    //     * @return ITool
-    //     */
-    //    public ITool getTargetTool();
-
-    //    /**
-    //     * Returns <code>true</code> if the extension matches one of the special
-    //     * file extensions the tools for the configuration consider to be a header file.
-    //     *
-    //     * @param ext
-    //     *            the file extension of the resource
-    //     * @return boolean
-    //     */
-    //    public boolean isHeaderFile(String ext);
-
     /**
      * Returns <code>true</code> if the configuration's tool-chain is supported on
      * the system
@@ -205,24 +138,25 @@ public interface IConfiguration extends ISchemaObject {
      */
     public boolean isSupported();
 
-    //    /**
-    //     * Calculates the configuration target tool.
-    //     *
-    //     * @return ITool or null if not found
-    //     *
-    //     * @since 3.1
-    //     */
-    //    public ITool calculateTargetTool();
+    public List<ICSourceEntry> getSourceEntries();
 
-    List<ICSourceEntry> getSourceEntries();
+    public Map<String, String> getDefaultBuildProperties();
 
     IBuilder getBuilder();
 
-    Map<String, String> getDefaultBuildProperties();
+    /**
+     * Answers the ordered list of unique IDs of the error parsers associated
+     * with this configuration.
+     *
+     * @return String[]
+     */
+    public String[] getErrorParserList();
 
-    public Map<IResource, Map<String, String>> getDefaultProjectOptions(
-            AutoBuildConfigurationDescription autoBuildConfigurationData);
+    //    Map<IResource, Map<String, String>> getDefaultProjectOptions(
+    //            AutoBuildConfigurationDescription autoBuildConfigurationData);
 
-    public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
+    Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
+
+    public IToolChain getToolChain();
 
 }

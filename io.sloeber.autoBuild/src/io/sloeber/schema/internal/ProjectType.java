@@ -25,6 +25,7 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.schema.api.IToolChain;
 
 public class ProjectType extends SchemaObject implements IProjectType {
 
@@ -47,6 +48,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
     private IProjectBuildMacroSupplier myBuildMacroSupplier = null;
     private String myExtensionPointID;
     private String myExtensionID;
+    private ToolChain myToolchain;
 
     /*
      * C O N S T R U C T O R S
@@ -74,6 +76,16 @@ public class ProjectType extends SchemaObject implements IProjectType {
         myConfigurationNameProvider = (IConfigurationNameProvider) createExecutableExtension(
                 CONFIGURATION_NAME_PROVIDER);
         myBuildMacroSupplier = (IProjectBuildMacroSupplier) createExecutableExtension(PROJECT_BUILD_MACRO_SUPPLIER);
+
+        // Load the toolchains first
+        IConfigurationElement[] toolChainElements = element.getChildren(IToolChain.TOOL_CHAIN_ELEMENT_NAME);
+        for (IConfigurationElement configElement : toolChainElements) {
+            myToolchain = new ToolChain(this, root, configElement);
+        }
+        if (toolChainElements.length != 1) {
+            System.err.println("ProjectType " + getName() + " should have exactly 1 toolchain but has " //$NON-NLS-1$//$NON-NLS-2$
+                    + toolChainElements.length);
+        }
 
         // Load the configuration children
         IConfigurationElement[] configs = element.getChildren(IConfiguration.CONFIGURATION_ELEMENT_NAME);
@@ -192,6 +204,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
             ret.append(curConfig.dump(leadingChars + 1));
             ret.append(NEWLINE);
         }
+        ret.append(myToolchain.dump(leadingChars + 1));
         ret.append(prepend + END_OF_CHILDREN + BLANK + IConfiguration.CONFIGURATION_ELEMENT_NAME + NEWLINE);
         return ret;
     }
@@ -212,17 +225,13 @@ public class ProjectType extends SchemaObject implements IProjectType {
     }
 
     @Override
-    public boolean isCompatibleWithLocalOS() {
-        for (Configuration curConfig : myConfigMap.values()) {
-            if (curConfig.isCompatibleWithLocalOS()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public String getBuildArtifactType() {
         return modelBuildArtifactType[SUPER];
     }
+
+    @Override
+    public IToolChain getToolChain() {
+        return myToolchain;
+    }
+
 }

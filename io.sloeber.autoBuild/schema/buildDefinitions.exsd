@@ -626,8 +626,6 @@ If specified; the command line generator overrules the commandLinePattern
       </annotation>
       <complexType>
          <sequence>
-            <element ref="toolChain" minOccurs="0" maxOccurs="1"/>
-            <element ref="resourceConfiguration" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="enablement" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="id" type="string" use="required">
@@ -734,6 +732,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
       <complexType>
          <sequence>
             <element ref="configuration" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="toolChain"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -895,66 +894,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
             <annotation>
                <documentation>
                   The id of the projectType that this project is an instance of.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="resourceConfiguration">
-      <annotation>
-         <documentation>
-            A place to store build attributes of individual resources that are different from the configuration as a whole.
-         </documentation>
-      </annotation>
-      <complexType>
-         <sequence>
-            <element ref="tool" minOccurs="1" maxOccurs="unbounded"/>
-         </sequence>
-         <attribute name="resourcePath" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The path of the project resource to which this element applies.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="exclude" type="boolean">
-            <annotation>
-               <documentation>
-                  Specifies whether the resource is excluded from building in the parent configuration.  The default is false.  The resourceConfiguration element retains its tool children, if any exist, even when excluded from the build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="rcbsApplicability">
-            <annotation>
-               <documentation>
-                  Identifies how the user desires to apply a resource custom build step:
-     1.  Apply rcbs tool before any other tools defined for the resource.
-     2.  Apply rcbs tool after any other tools defined for the resource.
-     3.  Apply rcbs tool overriding any other tools defined for the resource.
-     4.  Disable (don&apos;t apply) the rcbs tool.
-               </documentation>
-            </annotation>
-            <simpleType>
-               <restriction base="string">
-                  <enumeration value="before">
-                  </enumeration>
-                  <enumeration value="after">
-                  </enumeration>
-                  <enumeration value="override">
-                  </enumeration>
-                  <enumeration value="disable">
-                  </enumeration>
-               </restriction>
-            </simpleType>
-         </attribute>
-         <attribute name="toolsToInvoke" type="string">
-            <annotation>
-               <documentation>
-                  Identifies which tools to invoke by a semicolon separated list of child tool ids.  Applies as follows:
-     1.  Defaults to all tools in the order found
-     2.  Use specified ordered list of children to invoke
-     3.  If empty string, treat as if no resource configuration existed, i.e., use project level tool.
                </documentation>
             </annotation>
          </attribute>

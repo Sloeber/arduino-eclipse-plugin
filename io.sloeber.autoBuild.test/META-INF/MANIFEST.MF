@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.cdt.core;bundle-version="7.4.200",
  junit-jupiter-params,
  org.eclipse.cdt.core.native,
  io.sloeber.autoBuild,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.apache.log4j;bundle-version="1.2.24"
 Automatic-Module-Name: io.sloeber.autoBuild.test
 Bundle-RequiredExecutionEnvironment: JavaSE-17

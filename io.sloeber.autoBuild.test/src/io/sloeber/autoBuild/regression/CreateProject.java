@@ -56,7 +56,7 @@ class CreateProject {
                 for (IProjectType projectType : AutoBuildManager.getProjectTypes(extensionPointID, extensionID)) {
                     String projectID = projectType.getId();
 
-                    if (projectType.isCompatibleWithLocalOS() && !projectType.isAbstract()) {
+                    if (!projectType.isAbstract()) {
 
                         String buildArtifactType = projectType.getBuildArtifactType();
                         ICodeProvider codeProvider_cpp = null;

@@ -55,7 +55,7 @@ public interface IToolChain extends ISchemaObject {
      *
      * @return IConfiguration
      */
-    public IConfiguration getParent();
+    public IProjectType getParent();
 
     /**
      * Returns the target-platform child of this tool-chain

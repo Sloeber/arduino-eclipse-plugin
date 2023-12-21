@@ -6,10 +6,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -31,11 +34,14 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IOptions;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.Tool;
+import io.sloeber.schema.internal.ToolChain;
+
 //The following lines give warning. See TOFIX below on why
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -97,9 +103,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
      * When the tool is not null this option is only valid when we deal with this tool
      *  
      */
-    private Map<ITool, Map<IResource, Map<String, String>>> myDefaultOptions = new HashMap<>();
-    private Map<ITool, Map<IResource, Map<String, String>>> mySelectedOptions = new HashMap<>();
-    private Map<ITool, Map<IResource, Map<String, String>>> myCombinedOptions = new HashMap<>();
+    private Map<IResource, Map<IOption, String>> myDefaultOptions = new HashMap<>();
+    private Map<IResource, Map<IOption, String>> mySelectedOptions = new HashMap<>();
+    private Map<IResource, Map<IOption, String>> myCombinedOptions = new HashMap<>();
     private String[] myRequiredErrorParserList;
 
     private boolean myGenerateMakeFilesAUtomatically = true;
@@ -451,7 +457,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             if (toolString != null) {
                 tool = myAutoBuildConfiguration.getToolChain().getTool(toolString);
             }
-            setOptionValueInternal(resource, tool, id, value);
+            IOption option = null;
+            if (tool != null && id != null) {
+                option = tool.getOption(id);
+            }
+            if (tool == null || option == null) {
+                //TODO log a error in error log
+                System.err.println("failed to find the tool(" + toolString + ")/option(" + id + ")");
+            }
+            setOptionValueInternal(resource, tool, option, value);
 
         }
         options_combine();
@@ -550,18 +564,20 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
      */
     private void options_updateDefault() {
         myDefaultOptions.clear();
-        myDefaultOptions.put(null, myAutoBuildConfiguration.getDefaultProjectOptions(this));
+        Map<IOption, String> defaultOptions = myAutoBuildConfiguration.getDefaultOptions(myProject, this);
         IToolChain toolchain = myAutoBuildConfiguration.getToolChain();
+        defaultOptions.putAll(toolchain.getDefaultOptions(myProject, this));
 
         for (ITool curITool : toolchain.getTools()) {
             Tool curTool = (Tool) curITool;
             if (!curTool.isEnabled(myProject, this)) {
                 continue;
             }
-            Map<IResource, Map<String, String>> resourceOptions = new HashMap<>();
-            resourceOptions.put(myProject, curTool.getDefaultOptions(myProject, this));
-            myDefaultOptions.put(curTool, resourceOptions);
+            //            Map<IResource, Map<String, String>> resourceOptions = new HashMap<>();
+            defaultOptions.putAll(curTool.getDefaultOptions(myProject, this));
+
         }
+        myDefaultOptions.put(null, defaultOptions);
         options_combine();
     }
 
@@ -580,28 +596,18 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     /*
      * take options and make a copy
      */
-    private static void options_copy(Map<ITool, Map<IResource, Map<String, String>>> from,
-            Map<ITool, Map<IResource, Map<String, String>>> to) {
-        for (Entry<ITool, Map<IResource, Map<String, String>>> toolEntrySet : from.entrySet()) {
-            ITool curTool = toolEntrySet.getKey();
-            Map<IResource, Map<String, String>> curFromResourceOptions = toolEntrySet.getValue();
+    private static void options_copy(Map<IResource, Map<IOption, String>> from,
+            Map<IResource, Map<IOption, String>> to) {
+        for (Entry<IResource, Map<IOption, String>> fromResourceSet : from.entrySet()) {
+            IResource curResource = fromResourceSet.getKey();
+            Map<IOption, String> curFromOptions = fromResourceSet.getValue();
 
-            Map<IResource, Map<String, String>> curToResourceOptions = to.get(curTool);
-            if (curToResourceOptions == null) {
-                curToResourceOptions = new HashMap<>();
-                to.put(curTool, curToResourceOptions);
+            Map<IOption, String> curToOptions = to.get(curResource);
+            if (curToOptions == null) {
+                curToOptions = new HashMap<>();
+                to.put(curResource, curToOptions);
             }
-            for (Entry<IResource, Map<String, String>> fromResourceSet : curFromResourceOptions.entrySet()) {
-                IResource curResource = fromResourceSet.getKey();
-                Map<String, String> curFromOptions = fromResourceSet.getValue();
-
-                Map<String, String> curToOptions = curToResourceOptions.get(curResource);
-                if (curToOptions == null) {
-                    curToOptions = new HashMap<>();
-                    curToResourceOptions.put(curResource, curToOptions);
-                }
-                curToOptions.putAll(curFromOptions);
-            }
+            curToOptions.putAll(curFromOptions);
         }
     }
 
@@ -704,7 +710,18 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         return myProperties.put(key, value);
     }
 
-    private TreeMap<IOption, String> convertOptionIDToOption(Map<String, String> input, ITool tool) {
+    //    private static TreeMap<IOption, String> convertOptionIDToOption(Map<String, String> input, ITool tool) {
+    //        TreeMap<IOption, String> ret = getSortedOptionMap();
+    //        for (Entry<String, String> cur : input.entrySet()) {
+    //            IOption curKey = tool.getOption(cur.getKey());
+    //            ret.put(curKey, cur.getValue());
+    //        }
+    //        //TOFIX log some options were not found
+    //        ret.remove(null);
+    //        return ret;
+    //    }
+
+    private static TreeMap<IOption, String> getSortedOptionMap() {
         TreeMap<IOption, String> ret = new TreeMap<>(new java.util.Comparator<>() {
 
             @Override
@@ -715,22 +732,16 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 return o1.getId().compareTo(o2.getId());
             }
         });
-        for (Entry<String, String> cur : input.entrySet()) {
-            IOption curKey = tool.getOption(cur.getKey());
-            ret.put(curKey, cur.getValue());
-        }
-        //TOFIX log some options were not found
-        ret.remove(null);
         return ret;
     }
 
     @Override
     public TreeMap<IOption, String> getSelectedOptions(Set<? extends IResource> file, ITool tool) {
-        Map<String, String> ret = new HashMap<>();
+        TreeMap<IOption, String> ret = getSortedOptionMap();
         for (IResource curFile : file) {
-            Map<String, String> fileOptions = getSelectedOptionNames(curFile, tool);
-            for (Entry<String, String> curResourceOption : fileOptions.entrySet()) {
-                String curKey = curResourceOption.getKey();
+            Map<IOption, String> fileOptions = getSelectedOptions(curFile, tool);
+            for (Entry<IOption, String> curResourceOption : fileOptions.entrySet()) {
+                IOption curKey = curResourceOption.getKey();
                 String curValue = curResourceOption.getValue();
                 if (ret.containsKey(curKey)) {
                     if (!ret.get(curKey).equals(curValue)) {
@@ -740,46 +751,71 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 ret.put(curKey, curValue);
             }
         }
-        return convertOptionIDToOption(ret, tool);
+        return ret;
     }
 
-    @Override
-    public Map<IOption, String> getSelectedOptions(IResource file, ITool tool) {
-        return convertOptionIDToOption(getSelectedOptionNames(file, tool), tool);
-    }
+    //    @Override
+    //    public Map<IOption, String> getSelectedOptions(IResource file, ITool tool) {
+    //        return convertOptionIDToOption(getSelectedOptionNames(file, tool), tool);
+    //    }
 
+    /**
+     * provide all the options for the resource taking into account
+     * setting on the project level; folder level and file level.
+     * The result are the options that should be used to build commands
+     * for the file
+     * suppose the file src/folder1/folder2/sourceFile.cpp and the option A
+     * 
+     * src folder1 folder2 sourceFile.cpp value
+     * 1 2 3 4 4
+     * 1 2 3 3
+     * 1 2 2
+     * 1 1
+     *
+     */
     @Override
-    public Map<String, String> getSelectedOptionNames(IResource file, ITool tool) {
-        Map<String, String> retProject = new HashMap<>();
-        Map<String, String> retFolder = new HashMap<>();
-        Map<String, String> retFile = new HashMap<>();
-        for (Entry<ITool, Map<IResource, Map<String, String>>> curToolOptions : myCombinedOptions.entrySet()) {
-            ITool curTool = curToolOptions.getKey();
-            if (curTool != null && curTool != tool) {
+    public TreeMap<IOption, String> getSelectedOptions(IResource file, ITool tool) {
+
+        Map<IOption, String> retProject = new HashMap<>();
+        Map<Integer, Map<IOption, String>> retFolder = new HashMap<>();
+        Map<IOption, String> retFile = new HashMap<>();
+        for (Entry<IResource, Map<IOption, String>> curResourceOptions : myCombinedOptions.entrySet()) {
+            IResource curResource = curResourceOptions.getKey();
+            if (curResource == null || curResource instanceof IProject) {
+                // null means project level and as sutch is valid for all resources
+                retProject.putAll(curResourceOptions.getValue());
                 continue;
             }
-            for (Entry<IResource, Map<String, String>> curResourceOptions : curToolOptions.getValue().entrySet()) {
-                IResource curResource = curResourceOptions.getKey();
-                if (curResource instanceof IProject) {
-                    // null means project level and as sutch is valid for all resources
-                    retProject.putAll(curResourceOptions.getValue());
-                    continue;
+            if (curResource instanceof IFolder) {
+                if (curResource.getProjectRelativePath().isPrefixOf(file.getProjectRelativePath())) {
+
+                    retFolder.put(Integer.valueOf(curResource.getProjectRelativePath().segmentCount()),
+                            curResourceOptions.getValue());
+
                 }
-                if ((curResource instanceof IFolder)
-                        && (curResource.getProjectRelativePath().equals(file.getParent().getProjectRelativePath()))) {
-                    retFolder.putAll(curResourceOptions.getValue());
-                    continue;
-                }
-                if ((curResource instanceof IFile) && (curResource.equals(file))) {
-                    retFile.putAll(curResourceOptions.getValue());
-                    continue;
-                }
+                continue;
+            }
+            if ((curResource instanceof IFile) && (curResource.equals(file))) {
+                retFile.putAll(curResourceOptions.getValue());
+                continue;
             }
         }
-        Map<String, String> ret = new TreeMap<>();
+        TreeMap<IOption, String> ret = getSortedOptionMap();
         ret.putAll(retProject);
-        ret.putAll(retFolder);
+        TreeSet<Integer> segments = new TreeSet<>(retFolder.keySet());
+        for (Integer curSegment : segments) {
+            ret.putAll(retFolder.get(curSegment));
+        }
         ret.putAll(retFile);
+
+        //remove all options not known to the tool
+        List<IOption> toolOptions = tool.getOptions().getOptions();//TOFIX : this should be get Enabled Options
+        for (Iterator<IOption> iterator = ret.keySet().iterator(); iterator.hasNext();) {
+            IOption curOption = iterator.next();
+            if (!toolOptions.contains(curOption)) {
+                iterator.remove();
+            }
+        }
         return ret;
     }
 
@@ -957,26 +993,17 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
             ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + EQUAL + curProp.getValue() + lineEnd);
         }
         int counter = counterStart;
-        for (Entry<ITool, Map<IResource, Map<String, String>>> curOption1 : mySelectedOptions.entrySet()) {
-            ITool tool = curOption1.getKey();
-            String toolID = NULL;
-            if (tool != null) {
-                toolID = tool.getId();
-            }
-            for (Entry<IResource, Map<String, String>> curOption : curOption1.getValue().entrySet()) {
-                IResource resource = curOption.getKey();
-                String resourceID = resource.getProjectRelativePath().toString();
-                for (Entry<String, String> resourceOptions : curOption.getValue().entrySet()) {
-                    ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
-                            + resourceOptions.getKey() + lineEnd);
-                    ret.append(linePrefix + OPTION + DOT + KEY_VALUE + DOT + String.valueOf(counter) + EQUAL
-                            + resourceOptions.getValue() + lineEnd);
-                    ret.append(linePrefix + OPTION + DOT + KEY_RESOURCE + DOT + String.valueOf(counter) + EQUAL
-                            + resourceID + lineEnd);
-                    ret.append(linePrefix + OPTION + DOT + KEY_TOOL + DOT + String.valueOf(counter) + EQUAL + toolID
-                            + lineEnd);
-                    counter++;
-                }
+        for (Entry<IResource, Map<IOption, String>> curOption : mySelectedOptions.entrySet()) {
+            IResource resource = curOption.getKey();
+            String resourceID = resource.getProjectRelativePath().toString();
+            for (Entry<IOption, String> resourceOptions : curOption.getValue().entrySet()) {
+                ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
+                        + resourceOptions.getKey() + lineEnd);
+                ret.append(linePrefix + OPTION + DOT + KEY_VALUE + DOT + String.valueOf(counter) + EQUAL
+                        + resourceOptions.getValue() + lineEnd);
+                ret.append(linePrefix + OPTION + DOT + KEY_RESOURCE + DOT + String.valueOf(counter) + EQUAL + resourceID
+                        + lineEnd);
+                counter++;
             }
         }
 
@@ -1316,53 +1343,58 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     @Override
     public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID) {
         checkIfWeCanWrite();
-        setOptionValueInternal(resource, tool, option.getId(), valueID);
+        setOptionValueInternal(resource, tool, option, valueID);
         options_combine();
     }
 
-    private void setOptionValueInternal(IResource resource, ITool tool, String optionID, String valueIDin) {
-        String valueID = valueIDin;
-        Map<IResource, Map<String, String>> resourceOptions = mySelectedOptions.get(tool);
-        if (resourceOptions == null) {
-            if (valueID == null || valueID.isBlank()) {
-                //as it does not exist and we want to erase do nothing
-                return;
-            }
-            resourceOptions = new HashMap<>();
-            mySelectedOptions.put(tool, resourceOptions);
-        }
+    private void setOptionValueInternal(IResource resource, ITool tool, IOption option, String value) {
+        //        Map<IResource, Map<String, String>> resourceOptions = mySelectedOptions.get(tool);
+        //        if (resourceOptions == null) {
+        //            if (valueID == null || valueID.isBlank()) {
+        //                //as it does not exist and we want to erase do nothing
+        //                return;
+        //            }
+        //            resourceOptions = new HashMap<>();
+        //            mySelectedOptions.put(tool, resourceOptions);
+        //        }
 
-        Map<String, String> options = resourceOptions.get(resource);
+        Map<IOption, String> options = mySelectedOptions.get(resource);
         if (options == null) {
-            if (valueID == null || valueID.isBlank()) {
+            if (value == null || value.isBlank()) {
                 //as it does not exist and we want to erase do nothing
                 return;
             }
             options = new HashMap<>();
-            resourceOptions.put(resource, options);
+            mySelectedOptions.put(resource, options);
         }
-        if (valueID == null) {
-            options.remove(optionID);
+        if (value == null || value.isBlank()) {
+            options.remove(option);
         } else {
-            options.put(optionID, valueID);
+            options.put(option, value);
         }
 
     }
 
     @Override
     public String getOptionValue(IResource resource, ITool tool, IOption option) {
-        Map<IResource, Map<String, String>> toolOptions = myCombinedOptions.get(tool);
-
-        if (toolOptions == null) {
+        if (tool.getOption(option.getId()) == null) {
+            //the tool does not know this option
             return EMPTY_STRING;
         }
-        Map<String, String> resourceOptions = toolOptions.get(resource);
 
+        if (myCombinedOptions == null) {
+            //there are no options selected by the user
+            return EMPTY_STRING;
+        }
+
+        Map<IOption, String> resourceOptions = myCombinedOptions.get(resource);
         if (resourceOptions == null) {
+            //there are no options selected by the user for this resource
             return EMPTY_STRING;
         }
-        String ret = resourceOptions.get(option.getId());
+        String ret = resourceOptions.get(option);
         if (ret == null) {
+            //there are no options selected by the user for this resource/option
             return EMPTY_STRING;
         }
         return ret;

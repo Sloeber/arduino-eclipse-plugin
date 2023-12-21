@@ -14,10 +14,12 @@
 package io.sloeber.schema.api;
 
 import java.util.Map;
+import java.util.Set;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * This class represents project-types in the managed build system.
@@ -143,18 +145,17 @@ public interface IProjectType extends ISchemaObject {
      */
     public String getExtensionID();
 
-    Map<String, String> getDefaultBuildProperties();
-
-    /**
-     * Is this project type compatible with the OS eclipse is running on.
-     * In other words: can we create projects and compile them to targets on the
-     * machine we are running?
-     * 
-     * @return true if the projectType has at least 1 configuration that is
-     *         compatible with the local os.
-     */
-    public boolean isCompatibleWithLocalOS();
+    public Map<String, String> getDefaultBuildProperties();
 
     public String getBuildArtifactType();
+
+    /**
+     * Returns the <code>IToolChain</code> child of this project template.
+     *
+     * @return IToolChain
+     */
+    public IToolChain getToolChain();
+
+    //public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
 
 }

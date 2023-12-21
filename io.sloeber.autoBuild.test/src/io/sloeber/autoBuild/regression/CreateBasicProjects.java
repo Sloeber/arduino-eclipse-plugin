@@ -35,10 +35,10 @@ import io.sloeber.schema.api.IProjectType;
 public class CreateBasicProjects {
     static int testCounter = 1;
     //below are test limiting options buildTypeActiveBuild=null and  
-    private boolean buildTypeActiveBuild = false;
+    private boolean buildTypeActiveBuild = true;
     private boolean doTestDefaultBuilder = true;
-    private boolean doTestInternalBuilder = false;
-    private boolean doTestMakeBuilder = false;
+    private boolean doTestInternalBuilder = true;
+    private boolean doTestMakeBuilder = true;
 
     @BeforeAll
     static void beforeAll() {
@@ -143,7 +143,7 @@ public class CreateBasicProjects {
             String extensionID = testProjectEntry.getValue();
             String projectID = testProjectEntry.getKey();
             IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectID, true);
-            if (projectType == null || !projectType.isCompatibleWithLocalOS() || projectType.isAbstract()) {
+            if (projectType == null || projectType.isAbstract()) {
                 System.err.println("Skipping " + extensionID + " " + projectID);
                 continue;
             }
