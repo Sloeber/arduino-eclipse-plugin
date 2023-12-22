@@ -267,7 +267,6 @@
            dependencyOutputPattern="%.d"
            errorParsers="org.eclipse.cdt.core.GCCErrorParser"
            id="cdt.autobuild.tool.c.compiler"
-           isAbstract="true"
            name="%ToolName.compiler.c"
            natureFilter="both"
            outputFlag="-o">
@@ -808,7 +807,6 @@
            dependencyOutputPattern="%.d"
            errorParsers="org.eclipse.cdt.core.GCCErrorParser"
            id="cdt.autobuild.tool.cpp.compiler"
-           isAbstract="true"
            name="%ToolName.compiler.cpp"
            natureFilter="ccnature"
            outputFlag="-o">
@@ -1740,7 +1738,6 @@
      <tool
            command="ar"
            id="cdt.autobuild.tool.archiver"
-           isAbstract="true"
            name="%ToolName.archiver"
            natureFilter="both">
         <optionCategory
@@ -1809,22 +1806,18 @@
         isAbstract="false">
      <tool
            id="cdt.autobuild.tool.shared.lib.assembler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.assembler">
      </tool>
      <tool
            id="cdt.autobuild.tool.shared.lib.archiver"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.archiver">
      </tool>
      <tool
            id="cdt.autobuild.tool.shared.lib.c.compiler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.c.compiler">
      </tool>
      <tool
            id="cdt.autobuild.tool.shared.lib.cpp.compiler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.cpp.compiler">
      </tool>
      <builder
@@ -1837,22 +1830,18 @@
         isAbstract="false">
      <tool
            id="cdt.autobuild.tool.exe.assembler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.assembler">
      </tool>
      <tool
            id="cdt.autobuild.tool.exe.c.compiler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.c.compiler">
      </tool>
      <tool
            id="cdt.autobuild.tool.exe.cpp.compiler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.cpp.compiler">
      </tool>
      <tool
            id="cdt.autoBuild.tool.cpp.exe.linker"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.cpp.exe.linker">
         <outputType
               buildVariable="EXECUTABLES"
@@ -1862,7 +1851,6 @@
      </tool>
      <tool
            id="cdt.autoBuild.tool.c.exe.linker"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.c.exe.linker">
         <outputType
               id="cdt.autobuild.tool.exe.c.linker.output"
@@ -1879,27 +1867,22 @@
         isAbstract="false">
      <tool
            id="cdt.autobuild.tool.dynamic.lib.assembler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.assembler">
      </tool>
      <tool
            id="cdt.autobuild.tool.dynamic.lib.c.compiler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.c.compiler">
      </tool>
      <tool
            id="cdt.autobuild.tool.dynamic.lib.cpp.compiler"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.cpp.compiler">
      </tool>
      <tool
            id="cdt.autoBuild.tool.dynamic.lib.c.linker"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.c.dynamic.lib.linker">
      </tool>
      <tool
            id="cdt.autoBuild.tool.dynamic.lib.cpp.linker"
-           isAbstract="false"
            superClass="cdt.autobuild.tool.cpp.dynamic.lib.linker">
      </tool>
      <builder
@@ -1907,6 +1890,11 @@
            superClass="cdt.autobuild.base.builder">
      </builder>
   </toolChain>
+  <ToolProvider
+        id="io.sloeber.autoBuild.ToolProvider.Path"
+        name="Path Tool Provider"
+        toolProvider="io.sloeber.autoBuild.Internal.PathToolProvider">
+  </ToolProvider>
 
 	</extension>
 
@@ -2000,19 +1988,16 @@
          </option>
          <tool
                id="cdt.managedbuild.tool.gnu.cross.c.compiler"
-               isAbstract="false"
                name="%cross.gnu.tool.gcc.compiler"
                superClass="cdt.managedbuild.tool.gnu.c.compiler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.gnu.cross.cpp.compiler"
-               isAbstract="false"
                name="%cross.gnu.tool.gpp.compiler"
                superClass="cdt.managedbuild.tool.gnu.cpp.compiler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.gnu.cross.c.linker"
-               isAbstract="false"
                name="%cross.gnu.tool.gcc.linker"
                superClass="cdt.managedbuild.tool.gnu.c.linker">
             <enablement
@@ -2027,7 +2012,6 @@
          </tool>
          <tool
                id="cdt.managedbuild.tool.gnu.cross.cpp.linker"
-               isAbstract="false"
                name="%cross.gnu.tool.gpp.linker"
                superClass="cdt.managedbuild.tool.gnu.cpp.linker">
             <enablement
@@ -2042,7 +2026,6 @@
          </tool>
          <tool
                id="cdt.managedbuild.tool.gnu.cross.archiver"
-               isAbstract="false"
                name="%cross.gnu.tool.gcc.archiver"
                superClass="cdt.managedbuild.tool.gnu.archiver">
             <enablement
@@ -2055,7 +2038,6 @@
          </tool>
          <tool
                id="cdt.managedbuild.tool.gnu.cross.assembler"
-               isAbstract="false"
                name="%cross.gnu.tool.gcc.assembler"
                superClass="cdt.managedbuild.tool.gnu.assembler">
          </tool>
@@ -3864,7 +3846,6 @@
             command="llvm-ld"
             errorParsers="org.eclipse.cdt.core.GLDErrorParser"
             id="cdt.managedbuild.tool.llvm.c.linker"
-            isAbstract="true"
             name="%ToolName.linker.llvm.c"
             natureFilter="both"
             outputFlag="-o">
@@ -4110,7 +4091,6 @@
       <tool
             command="llvm-ar"
             id="cdt.managedbuild.tool.llvm.archiver"
-            isAbstract="true"
             name="%ToolName.archiver.llvm"
             natureFilter="both">
          <supportedProperties>
@@ -4179,7 +4159,6 @@
             command="llvm-as"
             errorParsers="org.eclipse.cdt.core.GASErrorParser"
             id="cdt.managedbuild.tool.llvm.assembler"
-            isAbstract="true"
             name="%ToolName.assembler.llvm"
             natureFilter="both"
             outputFlag="-o">
@@ -4223,7 +4202,6 @@
       <tool
             command="llc"
             id="cdt.managedbuild.tool.llvm.llc"
-            isAbstract="true"
             name="%ToolName.llc.llvm"
             natureFilter="both"
             outputFlag="-o">
@@ -4371,7 +4349,6 @@
       <tool
             command="lli"
             id="cdt.managedbuild.tool.llvm.lli"
-            isAbstract="true"
             name="%ToolName.lli.llvm"
             natureFilter="both">
          <supportedProperties>
@@ -4516,7 +4493,6 @@
       <tool
             errorParsers="org.eclipse.cdt.core.GCCErrorParser"
             id="cdt.managedbuild.tool.llvm.c_cpp.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.abstract"
             outputFlag="-o">
          <supportedProperties>
@@ -4879,7 +4855,6 @@
       </tool>
       <tool
             id="cdt.managedbuild.tool.llvm.c.abstract.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.c.abstract"
             natureFilter="both"
             superClass="cdt.managedbuild.tool.llvm.c_cpp.compiler">
@@ -4906,7 +4881,6 @@
       </tool>
       <tool
             id="cdt.managedbuild.tool.llvm.cpp.abstract.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.cpp.abstract"
             natureFilter="ccnature"
             superClass="cdt.managedbuild.tool.llvm.c_cpp.compiler">
@@ -4934,7 +4908,6 @@
       <tool
             command="clang"
             id="cdt.managedbuild.tool.llvm.c.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.c"
             natureFilter="both"
             superClass="cdt.managedbuild.tool.llvm.c.abstract.compiler">
@@ -4942,7 +4915,6 @@
       <tool
             command="clang++"
             id="cdt.managedbuild.tool.llvm.cpp.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.cpp"
             natureFilter="ccnature"
             superClass="cdt.managedbuild.tool.llvm.cpp.abstract.compiler">
@@ -4950,7 +4922,6 @@
       <tool
             command="llvm-gcc"
             id="cdt.managedbuild.tool.llvm.gcc.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.gcc"
             natureFilter="both"
             superClass="cdt.managedbuild.tool.llvm.c.abstract.compiler">
@@ -4958,7 +4929,6 @@
       <tool
             command="llvm-g++"
             id="cdt.managedbuild.tool.llvm.g++.compiler"
-            isAbstract="true"
             name="%ToolName.compiler.llvm.g++"
             natureFilter="ccnature"
             superClass="cdt.managedbuild.tool.llvm.cpp.abstract.compiler">
@@ -4966,7 +4936,6 @@
       <tool
             command="clang"
             id="cdt.managedbuild.tool.llvm.clang.c.linker"
-            isAbstract="true"
             name="%ToolName.linker.llvm.c"
             natureFilter="cnature"
             superClass="cdt.managedbuild.tool.llvm.c.linker">
@@ -4974,7 +4943,6 @@
       <tool
             command="clang++"
             id="cdt.managedbuild.tool.llvm.clang.cpp.linker"
-            isAbstract="true"
             name="%ToolName.linker.llvm.cpp"
             natureFilter="ccnature"
             superClass="cdt.managedbuild.tool.llvm.c.linker">
@@ -4982,7 +4950,6 @@
       <tool
             command="llvm-gcc"
             id="cdt.managedbuild.tool.llvm.gcc.linker"
-            isAbstract="true"
             name="%ToolName.linker.llvm.gcc"
             natureFilter="cnature"
             superClass="cdt.managedbuild.tool.llvm.c.linker">
@@ -4990,7 +4957,6 @@
       <tool
             command="llvm-g++"
             id="cdt.managedbuild.tool.llvm.g++.linker"
-            isAbstract="true"
             name="%ToolName.linker.llvm.g++"
             natureFilter="ccnature"
             superClass="cdt.managedbuild.tool.llvm.c.linker">
@@ -5010,13 +4976,11 @@
          </builder>
          <tool
                id="cdt.managedbuild.tool.llvm.assembler.base"
-               isAbstract="true"
                name="%ToolName.assembler.llvm"
                superClass="cdt.managedbuild.tool.llvm.assembler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.archiver.base"
-               isAbstract="true"
                name="%ToolName.archiver.llvm"
                superClass="cdt.managedbuild.tool.llvm.archiver">
             <enablement
@@ -5040,19 +5004,16 @@
             targetTool="cdt.managedbuild.tool.llvm.cpp.linker.base;cdt.managedbuild.tool.llvm.c.linker.base">
          <tool
                id="cdt.managedbuild.tool.llvm.c.compiler.base"
-               isAbstract="true"
                name="%ToolName.compiler.llvm.c"
                superClass="cdt.managedbuild.tool.llvm.c.compiler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.cpp.compiler.base"
-               isAbstract="true"
                name="%ToolName.compiler.llvm.cpp"
                superClass="cdt.managedbuild.tool.llvm.cpp.compiler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.c.linker.base"
-               isAbstract="true"
                name="%ToolName.linker.llvm.c"
                natureFilter="cnature"
                superClass="cdt.managedbuild.tool.llvm.clang.c.linker">
@@ -5068,7 +5029,6 @@
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.cpp.linker.base"
-               isAbstract="true"
                name="%ToolName.linker.llvm.cpp"
                natureFilter="ccnature"
                superClass="cdt.managedbuild.tool.llvm.clang.cpp.linker">
@@ -5164,19 +5124,16 @@
             targetTool="cdt.managedbuild.tool.llvm.gnu.cpp.linker.base;cdt.managedbuild.tool.llvm.gnu.c.linker.base">
          <tool
                id="cdt.managedbuild.tool.llvm.gnu.c.compiler.base"
-               isAbstract="true"
                name="%ToolName.compiler.llvm.gcc"
                superClass="cdt.managedbuild.tool.llvm.gcc.compiler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.gnu.cpp.compiler.base"
-               isAbstract="true"
                name="%ToolName.compiler.llvm.g++"
                superClass="cdt.managedbuild.tool.llvm.g++.compiler">
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.gnu.c.linker.base"
-               isAbstract="true"
                name="%ToolName.linker.llvm.gcc"
                natureFilter="cnature"
                superClass="cdt.managedbuild.tool.llvm.gcc.linker">
@@ -5192,7 +5149,6 @@
          </tool>
          <tool
                id="cdt.managedbuild.tool.llvm.gnu.cpp.linker.base"
-               isAbstract="true"
                name="%ToolName.linker.llvm.g++"
                natureFilter="ccnature"
                superClass="cdt.managedbuild.tool.llvm.g++.linker">
@@ -5287,7 +5243,6 @@
             targetTool="cdt.managedbuild.tool.llvm.llc.base">
          <tool
                id="cdt.managedbuild.tool.llvm.llc.base"
-               isAbstract="true"
                name="%ToolName.llc.llvm"
                natureFilter="both"
                superClass="cdt.managedbuild.tool.llvm.llc">
@@ -5353,7 +5308,6 @@
             targetTool="cdt.managedbuild.tool.llvm.lli.base">
          <tool
                id="cdt.managedbuild.tool.llvm.lli.base"
-               isAbstract="true"
                name="%ToolName.lli.llvm"
                natureFilter="both"
                superClass="cdt.managedbuild.tool.llvm.lli">
@@ -8913,9 +8867,6 @@
       <extension
             id="CDT.mvc.build"
             point="io.sloeber.autoBuild.buildDefinitions">
-      <managedBuildRevision
-            fileVersion="4.0.0">
-      </managedBuildRevision>
       <tool
             command="cl /c"
             errorParsers="org.eclipse.cdt.core.VCErrorParser"

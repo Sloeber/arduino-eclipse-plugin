@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.core.IGenerator;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.api.IToolProvider;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
@@ -40,9 +41,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
     private String myExtensionID = null;
     private String myProjectTypeID = null;
     private ICodeProvider myCodeProvider = null;
-    private String myNatureID;
+    private String myNatureID = null;
     private String myBuildRunnerName = null;
     private boolean myNeedsMoreWork = false;
+    private IToolProvider myToolProvider = null;
 
     public AutoBuildProjectGenerator() {
 
@@ -88,7 +90,8 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
                 for (IConfiguration iConfig : modelConfigs) {
                     Configuration config = (Configuration) iConfig;
-                    AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject);
+                    AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject,
+                            myToolProvider);
                     assert (data != null);
                     ICConfigurationDescription cdtCfgDes = des
                             .createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
@@ -164,6 +167,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
     public void setBuilderName(String builderName) {
         myBuildRunnerName = builderName;
+    }
+
+    public void setToopProvider(IToolProvider toolProvider) {
+        myToolProvider = toolProvider;
     }
 
 }

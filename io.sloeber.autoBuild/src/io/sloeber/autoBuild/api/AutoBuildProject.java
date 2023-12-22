@@ -22,10 +22,10 @@ public class AutoBuildProject {
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider, boolean needsMoreWork,
-            IProgressMonitor monitor) {
+            String projectTypeID, String natureID, ICodeProvider codeProvider, IToolProvider toolProvider,
+            boolean needsMoreWork, IProgressMonitor monitor) {
         return createProject(projectName, extensionPointID, extensionID, projectTypeID, null, natureID, codeProvider,
-                needsMoreWork, monitor);
+                toolProvider, needsMoreWork, monitor);
     }
 
     /**
@@ -56,13 +56,14 @@ public class AutoBuildProject {
      */
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
             String projectTypeID, String builderName, String natureID, ICodeProvider codeProvider,
-            boolean needsMoreWork, IProgressMonitor monitor) {
+            IToolProvider toolProvider, boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
             IProgressMonitor internalMonitor = monitor;
             if (internalMonitor == null) {
                 internalMonitor = new NullProgressMonitor();
             }
+            theGenerator.setToopProvider(toolProvider);
             theGenerator.setExtentionPointID(extensionPointID);
             theGenerator.setExtentionID(extensionID);
             theGenerator.setProjectTypeID(projectTypeID);

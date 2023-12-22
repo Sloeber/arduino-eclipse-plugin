@@ -25,6 +25,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.IToolProviderManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
@@ -39,6 +41,7 @@ public class CreateBasicProjects {
     private boolean doTestDefaultBuilder = true;
     private boolean doTestInternalBuilder = true;
     private boolean doTestMakeBuilder = true;
+    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
 
     @BeforeAll
     static void beforeAll() {
@@ -55,7 +58,7 @@ public class CreateBasicProjects {
             Boolean shouldMakefileExists) throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
-                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, false, null);
+                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, toolprovider, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
@@ -69,7 +72,7 @@ public class CreateBasicProjects {
             throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
-                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, false, null);
+                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, toolprovider, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         Set<String> configs = new HashSet<>();
 

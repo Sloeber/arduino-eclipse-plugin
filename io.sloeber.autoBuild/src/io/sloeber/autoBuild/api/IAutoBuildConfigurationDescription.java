@@ -314,5 +314,9 @@ public interface IAutoBuildConfigurationDescription {
      */
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension);
 
-    void setBuildRunner(String buildRunnerName);
+    public void setBuildRunner(String buildRunnerName);
+
+    public IToolProvider getToolProvider();
+
+    public void setToolProvider(IToolProvider toolProvider);
 }

@@ -20,11 +20,14 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.IToolProviderManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
+    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
 
     @BeforeAll
     public static void beforeAll() {
@@ -99,8 +102,8 @@ public class issues {
         CoreModel coreModel = CoreModel.getDefault();
 
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID,
-                defaultProjectTypeID, defaultExtensionID, defaultNatureID, new TemplateTestCodeProvider("exe"), false,
-                null);
+                defaultProjectTypeID, defaultExtensionID, defaultNatureID, new TemplateTestCodeProvider("exe"),
+                toolprovider, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {

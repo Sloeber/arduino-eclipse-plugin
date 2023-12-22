@@ -27,6 +27,7 @@ import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
+import io.sloeber.autoBuild.api.IToolProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
 import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
@@ -88,6 +89,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
     private ICConfigurationDescription myCdtConfigurationDescription;
     private BuildTargetPlatformData myTargetPlatformData;
+    private IToolProvider myToolProvider;
     private BuildBuildData myBuildBuildData;
     private boolean isValid = false;
     private String myName = EMPTY_STRING;
@@ -144,8 +146,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
     private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
     private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
 
-    public AutoBuildConfigurationDescription(Configuration config, IProject project) {
+    public AutoBuildConfigurationDescription(Configuration config, IProject project, IToolProvider toolProvider) {
         // myId = config.getId();
+        myToolProvider = toolProvider;
         myIsWritable = true;
         myCdtConfigurationDescription = null;
         myAutoBuildConfiguration = config;
@@ -172,6 +175,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
         if (clone) {
             myId = base.getId();
         }
+        myToolProvider = base.getToolProvider();
         myAutoBuildConfiguration = base.myAutoBuildConfiguration;
         myProject = base.myProject;
         myCdtConfigurationDescription = cfgDescription;
@@ -254,6 +258,16 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public IToolProvider getToolProvider() {
+        return myToolProvider;
+    }
+
+    @Override
+    public void setToolProvider(IToolProvider toolProvider) {
+        myToolProvider = toolProvider;
     }
 
     /**

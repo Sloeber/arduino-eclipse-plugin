@@ -361,13 +361,6 @@ Not this can be overruled by command and false command in case of a boolean
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="isAbstract" type="boolean" use="default" value="false">
-            <annotation>
-               <documentation>
-                  An optional field that flags a tool as abstract.  An abstract tool must be defined as a top level object in the model definition and cannot be selected by the user in the UI, but tools derived from this tool will inherit its attributes and children.  The default is false.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="outputFlag" type="string">
             <annotation>
                <documentation>
@@ -392,10 +385,33 @@ Not this can be overruled by command and false command in case of a boolean
                </restriction>
             </simpleType>
          </attribute>
+         <attribute name="tool type">
+            <annotation>
+               <documentation>
+                  The type of tool.
+When the type of tool is specified and a tool provider is specified;  the command will be provided by the tool provider
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="a->o">
+                  </enumeration>
+                  <enumeration value="c(pp)->o">
+                  </enumeration>
+                  <enumeration value="o->ar">
+                  </enumeration>
+                  <enumeration value="o->so/dll">
+                  </enumeration>
+                  <enumeration value="o->exe">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
          <attribute name="command" type="string">
             <annotation>
                <documentation>
                   The command that invokes the tool. For example, gcc for the Gnu C compiler, or g++ for the Gnu C++ compiler.  This attribute is stored in the environment variable COMMAND
+Can be overridden by a tool type/tool provider combination.
                </documentation>
             </annotation>
          </attribute>
@@ -490,7 +506,7 @@ If specified; the command line generator overrules the commandLinePattern
          </documentation>
       </annotation>
       <complexType>
-         <sequence>
+         <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="tool" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="targetPlatform" minOccurs="0" maxOccurs="1"/>
             <element ref="builder" minOccurs="0" maxOccurs="1"/>
@@ -840,8 +856,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
             <element ref="tool" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="targetPlatform" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="builder" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="dynamicElementProvider" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="buildDefinitionStartup" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="ToolProvider" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -865,36 +880,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                <appinfo>
                   <meta.attribute translatable="true"/>
                </appinfo>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="project">
-      <annotation>
-         <documentation>
-            The project element is an instance of a projectType element.  It appears in the .cdtbuild file, not in an extension definition.
-         </documentation>
-      </annotation>
-      <complexType>
-         <sequence>
-            <element ref="configuration" minOccurs="1" maxOccurs="unbounded"/>
-         </sequence>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The name of the project that the user sees displayed in the UI.  This is the name that the user entered in the New Project wizard.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="projectType" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The id of the projectType that this project is an instance of.
-               </documentation>
             </annotation>
          </attribute>
       </complexType>
@@ -1182,15 +1167,6 @@ The path is relative to the plug-in directory which defines .buildDefinitions.
                <appinfo>
                   <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability"/>
                </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="weight" type="string">
-            <annotation>
-               <documentation>
-                  A weight specifying where in the command variable (typically FLAGS) these option categories will be put.
-The higher the weight the earlier in the command line options of this category will be placed.
-Default is 50
-               </documentation>
             </annotation>
          </attribute>
       </complexType>
@@ -1589,63 +1565,6 @@ For example, builder representing GNU make would define parallelBuildCmd as &quo
       </complexType>
    </element>
 
-   <element name="dynamicElementProvider">
-      <annotation>
-         <documentation>
-            An optional element that allows a tool implementor to supply a class that creates one or more dynamic toolchain elements. For example, the class might create a new tool reference based on the contents of a special file, and a new target that uses that reference.
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="class" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The class that implements the &lt;code&gt;IManagedConfigElementProvider&lt;/code&gt; interface. The logic of determining the elements is left to the implementer, but they must be correctly formed or the build model will have trouble loading.
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IManagedConfigElementProvider"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  A meaningful name for the type of element being provided.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="buildDefinitionStartup">
-      <annotation>
-         <documentation>
-            An optional element that allows a tool implementor to supply a class that insures a plugin that modifies any build configruation attributes (e.g. the build config id) will get loaded before initial project information is created.
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="class" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The class that implements the &lt;code&gt;IManagedBuildDefinitionsStartup&lt;/code&gt; interface. This class may not actually do anything, but additional initialization can be done here is desired.
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IManagedBuildDefinitionsStartup"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  A meaningful name for the type of element being provided.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
    <element name="envVarBuildPath">
       <annotation>
          <documentation>
@@ -2012,6 +1931,60 @@ The way the value is specified and treated depends on the value of the isRegex a
             <annotation>
                <documentation>
                   The id of the nature
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="ToolProvider">
+      <annotation>
+         <documentation>
+            Describes a tool provider (like gnu or cygwin)
+A tool provider can provide one or more tooll.
+To provide for a tool the toolprovider needs to provide the command; the fqn location where the tool resides.
+A tool provider can also provide a list of environment variables
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A unique identifier for the tool proovider
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The name of the tool provider that is displayed to the user in the UI.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="isTest" type="boolean">
+            <annotation>
+               <documentation>
+                  An optional field that flags a tool provider as test-only. If true, this item will not appear in the UI.   The default value is false.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="toolProvider" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A implementation of IToolProvider that provides the commands and command locations
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.api.IToolProvider"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="Description" type="string">
+            <annotation>
+               <documentation>
+                  A description of the tool provider
                </documentation>
             </annotation>
          </attribute>

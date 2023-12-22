@@ -26,6 +26,8 @@ import org.osgi.framework.FrameworkUtil;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.IToolProviderManager;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 import io.sloeber.autoBuild.ui.internal.Messages;
@@ -43,6 +45,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
                     .toArray(new String[10])[0];
             String natureID = CCProjectNature.CC_NATURE_ID;
             ICodeProvider codeProvider = null;
+            IToolProvider toolProvider = IToolProviderManager.getDefault().getAnyToolProvider();
             getContainer().run(true, true, new WorkspaceModifyOperation() {
                 @Override
                 protected void execute(IProgressMonitor monitor)
@@ -50,7 +53,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
                     SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
                     AutoBuildProject.createProject(projectName, extensionPointID, extensionID, projectTypeID, natureID,
-                            codeProvider, false, sub);
+                            codeProvider, toolProvider, false, sub);
                     //                    generator.generate(model, sub);
                     //                    getWorkbench().getDisplay().asyncExec(new Runnable() {
                     //                        @Override

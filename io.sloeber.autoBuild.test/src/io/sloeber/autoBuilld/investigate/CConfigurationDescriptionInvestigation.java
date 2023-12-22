@@ -16,6 +16,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.IToolProviderManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 
@@ -37,8 +39,9 @@ public class CConfigurationDescriptionInvestigation {
     public void testConfigDescription() {
         beforeAll();
         String projectName = "testConfigDescription";
+        IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID, defaultExtensionID,
-                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), false, null);
+                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), toolprovider, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {
             assertFalse("conf is readOnly class instance", curConf instanceof CConfigurationDescriptionCache);

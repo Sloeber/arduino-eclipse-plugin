@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.IToolProviderManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
@@ -25,6 +27,7 @@ import org.eclipse.core.resources.IProject;
 
 @SuppressWarnings("nls")
 class CreateProject {
+    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
 
     @BeforeAll
     static void beforeAll() {
@@ -39,7 +42,7 @@ class CreateProject {
             String natureID, ICodeProvider codeProvider) throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
-                natureID, codeProvider, false, null);
+                natureID, codeProvider, toolprovider, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);

@@ -28,6 +28,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.IToolProviderManager;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
@@ -40,6 +42,7 @@ import io.sloeber.schema.api.ITool;
 public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static int testCounter = 1;
+    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
 
     @BeforeAll
     public static void beforeAll() {
@@ -72,7 +75,7 @@ public class regression {
 
         IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, "cdt.cross.gnu",
                 "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID,
-                new TemplateTestCodeProvider("exe"), false, null);
+                new TemplateTestCodeProvider("exe"), toolprovider, false, null);
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -111,7 +114,7 @@ public class regression {
 
         IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, "cdt.cross.gnu",
                 "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID,
-                new TemplateTestCodeProvider("exe"), false, null);
+                new TemplateTestCodeProvider("exe"), toolprovider, false, null);
 
         //Build the active configuration and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
@@ -169,7 +172,7 @@ public class regression {
         if (testProject == null || !testProject.exists()) {
             testProject = AutoBuildProject.createProject(projectName, extensionPointID, "io.sloeber.autoBuild.test",
                     "io.sloeber.autoBuild.projectType.test.options", CCProjectNature.CC_NATURE_ID,
-                    new TemplateTestCodeProvider("exe"), false, null);
+                    new TemplateTestCodeProvider("exe"), toolprovider, false, null);
         }
 
         //get the project and autobuild configurations
