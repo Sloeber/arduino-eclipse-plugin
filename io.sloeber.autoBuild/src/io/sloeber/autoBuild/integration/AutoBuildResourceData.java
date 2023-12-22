@@ -98,16 +98,18 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
                 }
                 String values[] = valuesField.split(Pattern.quote(COLON));
                 if (values.length < 2) {
-                    System.err.println("error processing values of " + curLine + NEWLINE); //$NON-NLS-1$
-                    continue;
+                    //no exclusion patterns
+                    int flags = Integer.valueOf(valuesField).intValue();
+                    sourceEntries.add(new CSourceEntry(name, null, flags));
+                } else {
+                    int flags = Integer.valueOf(values[0]).intValue();
+                    Set<IPath> exclusionPatterns = new HashSet<>();
+                    for (int curEx = 1; curEx < values.length; curEx++) {
+                        exclusionPatterns.add(new Path(values[curEx]));
+                    }
+                    sourceEntries.add(new CSourceEntry(name,
+                            exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
                 }
-                int flags = Integer.valueOf(values[0]).intValue();
-                Set<IPath> exclusionPatterns = new HashSet<>();
-                for (int curEx = 1; curEx < values.length; curEx++) {
-                    exclusionPatterns.add(new Path(values[curEx]));
-                }
-                sourceEntries.add(
-                        new CSourceEntry(name, exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
                 break;
             }
         }
