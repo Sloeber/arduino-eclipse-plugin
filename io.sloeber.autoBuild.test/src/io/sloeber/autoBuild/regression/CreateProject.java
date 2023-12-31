@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.IToolProviderManager;
+import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
@@ -27,7 +27,7 @@ import org.eclipse.core.resources.IProject;
 
 @SuppressWarnings("nls")
 class CreateProject {
-    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
+    static IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
 
     @BeforeAll
     static void beforeAll() {

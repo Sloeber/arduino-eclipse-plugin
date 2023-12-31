@@ -14,9 +14,9 @@ import static java.lang.System.getenv;
 import static java.util.regex.Pattern.quote;
 
 import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.IToolProviderManager;
-import io.sloeber.autoBuild.api.IToolProviderManager.ToolFlavour;
-import io.sloeber.autoBuild.api.IToolProviderManager.ToolType;
+import io.sloeber.autoBuild.api.ITargetToolManager;
+import io.sloeber.autoBuild.api.ITargetToolManager.ToolFlavour;
+import io.sloeber.autoBuild.api.ITargetToolManager.ToolType;
 
 public class PathToolProvider implements IToolProvider {
 
@@ -53,7 +53,7 @@ public class PathToolProvider implements IToolProvider {
     @Override
     public String getCommand(ToolType toolType) {
         if (holdsAllTools()) {
-            IToolProviderManager toolProviderManager = IToolProviderManager.getDefault();
+            ITargetToolManager toolProviderManager = ITargetToolManager.getDefault();
             return toolProviderManager.getDefaultCommand(getToolFlavour(), toolType);
         }
         return null;
@@ -73,7 +73,7 @@ public class PathToolProvider implements IToolProvider {
     @Override
     public boolean holdsAllTools() {
         if (myHoldAllTools == null) {
-            IToolProviderManager toolProviderManager = IToolProviderManager.getDefault();
+            ITargetToolManager toolProviderManager = ITargetToolManager.getDefault();
             Set<String> commands = new HashSet<>();
             //get all the commands removing duplicate
             for (ToolType curToolType : ToolType.values()) {

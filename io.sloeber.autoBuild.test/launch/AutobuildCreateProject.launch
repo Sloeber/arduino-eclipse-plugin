@@ -22,7 +22,6 @@
     </listAttribute>
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
         <mapEntry key="MAKE_HOME" value="E:\platform\arduinoPlugin\tools\make\"/>
-        <mapEntry key="PATH" value="E:\platform\arduinoPlugin\packages\Jantje\tools\MinGW\5.3.0\bin;E:\LLVM\bin"/>
     </mapAttribute>
     <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="true"/>

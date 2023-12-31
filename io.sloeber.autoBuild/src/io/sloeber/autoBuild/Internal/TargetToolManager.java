@@ -10,15 +10,15 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.IToolProviderManager;
+import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import static io.sloeber.autoBuild.api.IToolProviderManager.ToolFlavour.*;
-import static io.sloeber.autoBuild.api.IToolProviderManager.ToolType.*;
+import static io.sloeber.autoBuild.api.ITargetToolManager.ToolFlavour.*;
+import static io.sloeber.autoBuild.api.ITargetToolManager.ToolType.*;
 
 @SuppressWarnings("nls")
-public class ToolProviderManager implements IToolProviderManager {
-    private static ToolProviderManager theToolProviderManager = new ToolProviderManager();
+public class TargetToolManager implements ITargetToolManager {
+    private static TargetToolManager theToolProviderManager = new TargetToolManager();
     private static Map<String, IToolProvider> pathToolHoldingProvider = new HashMap<>();
     private static Map<String, IToolProvider> pathToolDeprivedProvider = new HashMap<>();
     private static Map<String, IToolProvider> toolHoldingProviders = new HashMap<>();
@@ -98,24 +98,24 @@ public class ToolProviderManager implements IToolProviderManager {
         return null;
     }
 
-    public static IToolProviderManager getDefault() {
+    public static ITargetToolManager getDefault() {
         return theToolProviderManager;
     }
 
     @Override
-    public IToolProvider getAnyToolProvider() {
+    public IToolProvider getAnyInstalledToolProvider() {
         for (IToolProvider cur : pathToolHoldingProvider.values()) {
             return cur;
         }
         for (IToolProvider cur : toolHoldingProviders.values()) {
             return cur;
         }
-        for (IToolProvider cur : toolDeprivedProviders.values()) {
-            return cur;
-        }
-        for (IToolProvider cur : pathToolDeprivedProvider.values()) {
-            return cur;
-        }
+        //        for (IToolProvider cur : toolDeprivedProviders.values()) {
+        //            return cur;
+        //        }
+        //        for (IToolProvider cur : pathToolDeprivedProvider.values()) {
+        //            return cur;
+        //        }
         return null;
     }
 
@@ -130,7 +130,7 @@ public class ToolProviderManager implements IToolProviderManager {
                 for (IExtension extension : extensionPoint.getExtensions()) {
                     for (IConfigurationElement curElement : extension.getConfigurationElements()) {
                         try {
-                            if ("toolProvider".equals(curElement.getName())) {
+                            if ("ToolProvider".equals(curElement.getName())) {
                                 IToolProvider toolprovider = (IToolProvider) curElement
                                         .createExecutableExtension("toolProvider");
                                 if (toolprovider.holdsAllTools()) {

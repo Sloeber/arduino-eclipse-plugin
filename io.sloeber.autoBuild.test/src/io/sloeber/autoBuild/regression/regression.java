@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.IToolProviderManager;
+import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
@@ -42,7 +42,7 @@ import io.sloeber.schema.api.ITool;
 public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static int testCounter = 1;
-    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
+    static IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
 
     @BeforeAll
     public static void beforeAll() {

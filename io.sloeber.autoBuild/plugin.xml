@@ -214,7 +214,8 @@
            id="cdt.autobuild.tool.assembler"
            name="%ToolName.assembler"
            natureFilter="both"
-           outputFlag="-o">
+           outputFlag="-o"
+           toolType="a-&gt;a.o">
         <optionCategory
               id="gnu.asm.category.general"
               name="%OptionCategory.General"
@@ -269,7 +270,8 @@
            id="cdt.autobuild.tool.c.compiler"
            name="%ToolName.compiler.c"
            natureFilter="both"
-           outputFlag="-o">
+           outputFlag="-o"
+           toolType="c-&gt;c.o">
         <optionCategory
               id="gnu.c.compiler.category.dialect"
               name="%OptionCategory.Dialect"
@@ -809,7 +811,8 @@
            id="cdt.autobuild.tool.cpp.compiler"
            name="%ToolName.compiler.cpp"
            natureFilter="ccnature"
-           outputFlag="-o">
+           outputFlag="-o"
+           toolType="cpp-&gt;cpp.o">
         <optionCategory
               id="gnu.cpp.compiler.category.dialect"
               name="%OptionCategory.Dialect"
@@ -1395,7 +1398,8 @@
            errorParsers="org.eclipse.cdt.core.GLDErrorParser"
            id="cdt.autobuild.tool.cpp.exe.linker"
            name="%ToolName.exe.linker.cpp"
-           outputFlag="-o">
+           outputFlag="-o"
+           toolType="cpp.o-&gt;exe">
         <optionCategory
               id="gnu.cpp.link.category.options"
               name="%OptionCategory.General"
@@ -1547,7 +1551,8 @@
            name="%ToolName.dynamic.lib.linker.cpp"
            natureFilter="ccnature"
            outputFlag="-o"
-           superClass="cdt.autobuild.tool.cpp.exe.linker">
+           superClass="cdt.autobuild.tool.cpp.exe.linker"
+           toolType="cpp.o-&gt;so/dll">
         <option
               category="gnu.c.link.category.shared"
               command="-shared"
@@ -1582,7 +1587,8 @@
            id="cdt.autobuild.tool.c.exe.linker"
            name="%ToolName.exe.linker.c"
            natureFilter="cnature"
-           outputFlag="-o">
+           outputFlag="-o"
+           toolType="c.o-&gt;exe">
         <optionCategory
               id="gnu.c.link.category.general"
               name="%OptionCategory.General"
@@ -1739,7 +1745,8 @@
            command="ar"
            id="cdt.autobuild.tool.archiver"
            name="%ToolName.archiver"
-           natureFilter="both">
+           natureFilter="both"
+           toolType="o-&gt;ar">
         <optionCategory
               id="gnu.lib.category.general"
               name="%OptionCategory.General"
@@ -1774,7 +1781,8 @@
      <tool
            id="cdt.autobuild.tool.c.dynamic.lib.linker"
            name="%ToolName.dynamic.lib.linker.c"
-           superClass="cdt.autobuild.tool.c.exe.linker">
+           superClass="cdt.autobuild.tool.c.exe.linker"
+           toolType="c.o-&gt;so/dll">
         <outputType
               id="cdt.autobuild.tool.dynamic.lib.c.linker.output.so"
               superClass="cdt.autobuild.tool.dynamic.lib.cpp.linker.output.so">
@@ -1891,9 +1899,10 @@
      </builder>
   </toolChain>
   <ToolProvider
-        id="io.sloeber.autoBuild.ToolProvider.Path"
-        name="Path Tool Provider"
-        toolProvider="io.sloeber.autoBuild.Internal.PathToolProvider">
+        Description="A tool provider for MinGW"
+        id="io.sloeber.autoBuild.ToolProvider.minGW"
+        name="%minGWToolProviderName"
+        toolProvider="io.sloeber.autoBuild.Internal.MinGWToolProvider">
   </ToolProvider>
 
 	</extension>

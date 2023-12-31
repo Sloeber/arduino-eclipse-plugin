@@ -3,8 +3,8 @@ package io.sloeber.autoBuild.api;
 import java.nio.file.Path;
 import java.util.Map;
 
-import io.sloeber.autoBuild.api.IToolProviderManager.ToolFlavour;
-import io.sloeber.autoBuild.api.IToolProviderManager.ToolType;
+import io.sloeber.autoBuild.api.ITargetToolManager.ToolFlavour;
+import io.sloeber.autoBuild.api.ITargetToolManager.ToolType;
 
 public interface IToolProvider {
 

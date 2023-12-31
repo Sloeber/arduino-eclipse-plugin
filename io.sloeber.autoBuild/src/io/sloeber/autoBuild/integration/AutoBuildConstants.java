@@ -124,6 +124,7 @@ public class AutoBuildConstants {
     public static final String DEFAULT_PATTERN = "${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}";
     public static final String DOUBLE_QUOTE = "\"";
 
+    public static final String CMD_LINE_TOOL_PATH = "TOOL_PATH";
     public static final String CMD_LINE_PRM_NAME = "COMMAND";
     public static final String CMD_LINE_INCLUDE_FILE = "-I";
     public static final String CMD_LINE_INCLUDE_FOLDER = "-I";
@@ -216,6 +217,7 @@ public class AutoBuildConstants {
     public static final String ASSIGN_TO_COMMAND_VARIABLE = "assignToCommandVarriable";
     public static final String OUTPUT_FLAG = "outputFlag";
     public static final String NATURE = "natureFilter";
+    public static final String TOOL_TYPE = "toolType";
     public static final String COMMAND_LINE_PATTERN = "commandLinePattern";
     public static final String COMMAND_LINE_GENERATOR = "commandLineGenerator";
     public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;

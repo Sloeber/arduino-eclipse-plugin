@@ -92,14 +92,6 @@ public interface ITool extends ISchemaObject {
     public IOutputType getOutputTypeById(String id);
 
     /**
-     * Returns whether this element is abstract. Returns <code>false</code>
-     * if the attribute was not specified.
-     * 
-     * @return boolean
-     */
-    public boolean isAbstract();
-
-    /**
      * Returns the semicolon separated list of unique IDs of the error parsers
      * associated
      * with the tool.

@@ -385,7 +385,7 @@ Not this can be overruled by command and false command in case of a boolean
                </restriction>
             </simpleType>
          </attribute>
-         <attribute name="tool type">
+         <attribute name="toolType">
             <annotation>
                <documentation>
                   The type of tool.
@@ -394,15 +394,21 @@ When the type of tool is specified and a tool provider is specified;  the comman
             </annotation>
             <simpleType>
                <restriction base="string">
-                  <enumeration value="a->o">
+                  <enumeration value="a->a.o">
                   </enumeration>
-                  <enumeration value="c(pp)->o">
+                  <enumeration value="cpp->cpp.o">
+                  </enumeration>
+                  <enumeration value="c->c.o">
+                  </enumeration>
+                  <enumeration value="c.o->so/dll">
+                  </enumeration>
+                  <enumeration value="cpp.o->so/dll">
                   </enumeration>
                   <enumeration value="o->ar">
                   </enumeration>
-                  <enumeration value="o->so/dll">
+                  <enumeration value="c.o->exe">
                   </enumeration>
-                  <enumeration value="o->exe">
+                  <enumeration value="cpp.o->exe">
                   </enumeration>
                </restriction>
             </simpleType>

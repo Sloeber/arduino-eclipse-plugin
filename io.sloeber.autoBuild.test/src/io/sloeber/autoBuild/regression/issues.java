@@ -21,13 +21,13 @@ import org.junit.jupiter.api.BeforeAll;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.IToolProviderManager;
+import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
-    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
+    static IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
 
     @BeforeAll
     public static void beforeAll() {

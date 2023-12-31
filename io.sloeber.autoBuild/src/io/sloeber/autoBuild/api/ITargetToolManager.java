@@ -1,17 +1,21 @@
 package io.sloeber.autoBuild.api;
 
-public interface IToolProviderManager {
+public interface ITargetToolManager {
 
     public enum ToolType {
         A_TO_O, CPP_TO_O, C_TO_O, O_TO_C_DYNAMIC_LIB, O_TO_CPP_DYNAMIC_LIB, O_TO_ARCHIVE, O_TO_C_EXE, O_TO_CPP_EXE;
 
         @SuppressWarnings("nls")
         public static ToolType getToolType(String toolTypeName) {
-            if (valueOf(toolTypeName) != null) {
-                return valueOf(toolTypeName);
+            try {
+                if (valueOf(toolTypeName) != null) {
+                    return valueOf(toolTypeName);
+                }
+            } catch (@SuppressWarnings("unused") Exception e) {
+                //nothing to log here
             }
             switch (toolTypeName) {
-            case "a->o":
+            case "a->a.o":
                 return A_TO_O;
             case "cpp->cpp.o":
                 return CPP_TO_O;
@@ -37,8 +41,8 @@ public interface IToolProviderManager {
 
     }
 
-    public static IToolProviderManager getDefault() {
-        return io.sloeber.autoBuild.Internal.ToolProviderManager.getDefault();
+    public static ITargetToolManager getDefault() {
+        return io.sloeber.autoBuild.Internal.TargetToolManager.getDefault();
     }
 
     public String getDefaultCommand(ToolFlavour toolFlavour, ToolType toolType);
@@ -52,5 +56,5 @@ public interface IToolProviderManager {
      * 
      * @return a tool
      */
-    public IToolProvider getAnyToolProvider();
+    public IToolProvider getAnyInstalledToolProvider();
 }

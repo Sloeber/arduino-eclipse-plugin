@@ -6,6 +6,7 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -31,6 +32,8 @@ import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IToolProvider;
+import io.sloeber.autoBuild.api.ITargetToolManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -94,9 +97,9 @@ public class Tool extends SchemaObject implements ITool {
      * 
      */
 
-    private String[] myModelIsAbstract;
     private String[] myModelOutputFlag;
     private String[] myModelNatureFilter;
+    private String[] myModelToolType;
     private String[] myModelCommand;
     private String[] myModelCommandLinePattern;
     private String[] myModelCommandLineGenerator;
@@ -111,7 +114,6 @@ public class Tool extends SchemaObject implements ITool {
 
     private boolean myIsHidden;
     private boolean myCustomBuildStep;
-    private boolean myIsAbstract;
     private boolean myIsSystem;
     private ToolChain myToolchain;
     private String myAnnouncement;
@@ -121,6 +123,7 @@ public class Tool extends SchemaObject implements ITool {
     private IManagedCommandLineGenerator myCommandLineGenerator;
 
     private URL myIconPathURL;
+    private ToolType myToolType;
 
     @Override
     public boolean isEnabled(IResource resource, IAutoBuildConfigurationDescription autoData) {
@@ -158,9 +161,9 @@ public class Tool extends SchemaObject implements ITool {
     public Tool(ToolChain parent, IExtensionPoint root, IConfigurationElement element) {
         this.myToolchain = parent;
         loadNameAndID(root, element);
-        myModelIsAbstract = getAttributes(IS_ABSTRACT);
         myModelOutputFlag = getAttributes(OUTPUT_FLAG);
         myModelNatureFilter = getAttributes(NATURE);
+        myModelToolType = getAttributes(TOOL_TYPE);
         myModelCommand = getAttributes(COMMAND);
         myModelCommandLinePattern = getAttributes(COMMAND_LINE_PATTERN);
         myModelCommandLineGenerator = getAttributes(COMMAND_LINE_GENERATOR);
@@ -173,10 +176,10 @@ public class Tool extends SchemaObject implements ITool {
         myModelDependencyOutputPattern = getAttributes(DEPENDENCY_OUTPUT_PATTERN);
         myModelDependencyGenerationFlag = getAttributes(DEPENDENCY_GENERATION_FLAG);
 
-        myIsAbstract = Boolean.parseBoolean(myModelIsAbstract[ORIGINAL]);
         myCustomBuildStep = Boolean.parseBoolean(myModelCustomBuildStep[SUPER]);
         myIsHidden = Boolean.parseBoolean(myModelIsHidden[ORIGINAL]);
         myIsSystem = Boolean.parseBoolean(myModelIsSystem[ORIGINAL]);
+        myToolType = ToolType.getToolType(myModelToolType[SUPER]);
 
         if (myModelCommandLinePattern[SUPER].isBlank()) {
             myModelCommandLinePattern[SUPER] = DEFAULT_PATTERN;
@@ -253,16 +256,6 @@ public class Tool extends SchemaObject implements ITool {
     @Override
     public String getName() {
         return myName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.cdt.core.build.managed.ITool#isAbstract()
-     */
-    @Override
-    public boolean isAbstract() {
-        return myIsAbstract;
     }
 
     @Override
@@ -432,7 +425,6 @@ public class Tool extends SchemaObject implements ITool {
         ret.append(prepend + TOOL_ELEMENT_NAME + NEWLINE);
         ret.append(prepend + NAME + EQUAL + myName + NEWLINE);
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);
-        ret.append(prepend + IS_ABSTRACT + EQUAL + myModelIsAbstract[ORIGINAL] + NEWLINE);
         ret.append(prepend + OUTPUT_FLAG + EQUAL + myModelOutputFlag[SUPER] + NEWLINE);
         ret.append(prepend + NATURE + EQUAL + myModelNatureFilter[SUPER] + NEWLINE);
         ret.append(prepend + COMMAND + EQUAL + myModelCommand[SUPER] + NEWLINE);
@@ -556,10 +548,40 @@ public class Tool extends SchemaObject implements ITool {
         toolCommandVars.put(CMD_LINE_PRM_NAME, cmd.trim());
         toolCommandVars.put(OUTPUT_FLAG_PRM_NAME, myModelOutputFlag[SUPER].trim());
 
+        //add the tool provider stuff
+        IToolProvider toolProvider = autoBuildConfData.getToolProvider();
+        if (toolProvider != null) {
+            String toolProviderCmd = toolProvider.getCommand(myToolType);
+            if (toolProviderCmd != null && !toolProviderCmd.isBlank()) {
+                //replace the command with the one provided by the toolProvider
+                toolCommandVars.put(CMD_LINE_PRM_NAME, toolProviderCmd.trim());
+            }
+            Path toolPath = toolProvider.getToolLocation(myToolType);
+            if (toolPath != null && !toolPath.toString().isBlank()) {
+                //store the path
+                toolCommandVars.put(CMD_LINE_TOOL_PATH, toolPath.toString().trim() + SLACH);
+            }
+            Map<String, String> toolVariables = toolProvider.getToolVariables();
+            if (toolVariables != null && toolVariables.size() > 0) {
+                //replace the command with the one provided by the toolProvider
+                for (Entry<String, String> curVar : toolVariables.entrySet()) {
+                    String curVars = toolCommandVars.get(curVar.getKey());
+                    if (curVars == null) {
+                        toolCommandVars.put(curVar.getKey(), curVar.getValue());
+                    } else {
+                        toolCommandVars.put(curVar.getKey(), curVars + WHITESPACE + curVar.getValue());
+                    }
+                }
+
+            }
+        }
+
         //resolve the variables
         String command = commandLinePattern;
         String flagsVar = toolCommandVars.get(FLAGS_PRM_NAME);
         if (flagsVar == null || flagsVar.isBlank()) {
+            //when FLAGS is empty you get 2 spaces which confuses other logic
+            //TOFIX This should be a more generic solution
             command = command.replace(WHITESPACE + makeVariable(FLAGS_PRM_NAME), EMPTY_STRING);
         }
         for (Entry<String, String> curVar : toolCommandVars.entrySet()) {

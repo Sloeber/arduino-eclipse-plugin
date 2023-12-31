@@ -26,7 +26,7 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.IToolProviderManager;
+import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
@@ -41,7 +41,7 @@ public class CreateBasicProjects {
     private boolean doTestDefaultBuilder = true;
     private boolean doTestInternalBuilder = true;
     private boolean doTestMakeBuilder = true;
-    static IToolProvider toolprovider = IToolProviderManager.getDefault().getAnyToolProvider();
+    static IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
 
     @BeforeAll
     static void beforeAll() {
