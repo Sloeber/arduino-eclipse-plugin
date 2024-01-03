@@ -534,7 +534,7 @@ public class AutoBuildCommon {
         for (char curchar : badChars) {
             ret = ret.replace(curchar, '_');
         }
-        return ret;
+        return ret.substring(0, 60);
     }
 
     /**
