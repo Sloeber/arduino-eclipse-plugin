@@ -16,10 +16,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import io.sloeber.autoBuild.api.AutoBuildProject;
-import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
+import io.sloeber.targetPlatform.api.ITargetTool;
+import io.sloeber.targetPlatform.api.ITargetToolManager;
+import io.sloeber.targetPlatform.api.ITargetToolProvider;
 
 @SuppressWarnings({ "restriction", "nls", "static-method" })
 public class CConfigurationDescriptionInvestigation {
@@ -39,9 +40,9 @@ public class CConfigurationDescriptionInvestigation {
     public void testConfigDescription() {
         beforeAll();
         String projectName = "testConfigDescription";
-        IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
+        ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID, defaultExtensionID,
-                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), toolprovider, false, null);
+                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), targetTool, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {
             assertFalse("conf is readOnly class instance", curConf instanceof CConfigurationDescriptionCache);

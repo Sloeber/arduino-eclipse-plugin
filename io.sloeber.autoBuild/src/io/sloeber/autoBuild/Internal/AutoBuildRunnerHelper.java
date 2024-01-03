@@ -71,8 +71,7 @@ public class AutoBuildRunnerHelper extends BuildRunnerHelper {
 
     @Override
     public void setLaunchParameters(ICommandLauncher launcher, IPath buildCommand, String[] args,
-            URI workingDirectoryURI, String[] envp) {
-        // TODO Auto-generated method stub
+            URI workingDirectoryURI,String[] envp) {
         super.setLaunchParameters(launcher, buildCommand, args, workingDirectoryURI, envp);
     }
 

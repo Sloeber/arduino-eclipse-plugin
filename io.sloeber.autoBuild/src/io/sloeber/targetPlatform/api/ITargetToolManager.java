@@ -1,4 +1,6 @@
-package io.sloeber.autoBuild.api;
+package io.sloeber.targetPlatform.api;
+
+import java.util.Set;
 
 public interface ITargetToolManager {
 
@@ -42,13 +44,23 @@ public interface ITargetToolManager {
     }
 
     public static ITargetToolManager getDefault() {
-        return io.sloeber.autoBuild.Internal.TargetToolManager.getDefault();
+        return io.sloeber.targetPlatform.internal.TargetToolManager.getDefault();
     }
 
     public String getDefaultCommand(ToolFlavour toolFlavour, ToolType toolType);
 
-    public IToolProvider getToolProvider(String toolProviderID);
+    public ITargetToolProvider getToolProvider(String toolProviderID);
+    public ITargetTool getTargetTool(String toolProviderID,String ID);
 
+    /**
+     * get all installed targetTools
+     * Doesn't matter which tool provider
+     * 
+     * 
+     * @return a tool
+     */
+    public Set<ITargetTool> getAllInstalledTargetTools();
+    
     /**
      * get a tool provider
      * Doesn't matter which tool provider
@@ -56,5 +68,5 @@ public interface ITargetToolManager {
      * 
      * @return a tool
      */
-    public IToolProvider getAnyInstalledToolProvider();
+    public ITargetTool getAnyInstalledTargetTool();
 }

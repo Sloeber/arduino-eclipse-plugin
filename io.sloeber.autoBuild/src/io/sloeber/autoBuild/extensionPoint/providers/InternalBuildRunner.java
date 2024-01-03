@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.cdt.core.CommandLauncher;
@@ -57,260 +59,270 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.targetPlatform.api.ITargetTool;
 
 public class InternalBuildRunner extends IBuildRunner {
-    static public final String RUNNER_NAME = Messages.InternalBuilderName;
-    private static final int PROGRESS_MONITOR_SCALE = 100;
-    private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
-    private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
-    private static final int TICKS_EXECUTE_COMMAND = 1 * PROGRESS_MONITOR_SCALE;
-    private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
+	static public final String RUNNER_NAME = Messages.InternalBuilderName;
+	private static final int PROGRESS_MONITOR_SCALE = 100;
+	private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
+	private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
+	private static final int TICKS_EXECUTE_COMMAND = 1 * PROGRESS_MONITOR_SCALE;
+	private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
 
-    private static void createFolder(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
-            throws CoreException {
-        if (!folder.exists()) {
-            IContainer parent = folder.getParent();
-            if (parent instanceof IFolder) {
-                createFolder((IFolder) parent, force, local, null);
-            }
-            folder.create(force, local, monitor);
-        }
-    }
+	private static void createFolder(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
+			throws CoreException {
+		if (!folder.exists()) {
+			IContainer parent = folder.getParent();
+			if (parent instanceof IFolder) {
+				createFolder((IFolder) parent, force, local, null);
+			}
+			folder.create(force, local, monitor);
+		}
+	}
 
-    @Override
-    public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
-            IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
+	@Override
+	public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+			IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
 
-        SubMonitor parentMon = SubMonitor.convert(monitor);
-        IBuilder builder = autoData.getConfiguration().getBuilder();
-        IProject project = autoData.getProject();
-        IConfiguration configuration = autoData.getConfiguration();
-        ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
-        IFolder buildRoot = autoData.getBuildFolder();
+		SubMonitor parentMon = SubMonitor.convert(monitor);
+		IBuilder builder = autoData.getConfiguration().getBuilder();
+		IProject project = autoData.getProject();
+		IConfiguration configuration = autoData.getConfiguration();
+		ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
+		IFolder buildRoot = autoData.getBuildFolder();
 
-        //Generate the make Rules
-        MakeRules myMakeRules = new MakeRules(autoData, buildRoot, new HashSet<>());
+		// Generate the make Rules
+		MakeRules myMakeRules = new MakeRules(autoData, buildRoot, new HashSet<>());
 
-        try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
-                ErrorParserManager epm = new ErrorParserManager(project, buildRoot.getLocationURI(), markerGenerator,
-                        builder.getErrorParserList().toArray(new String[0]));) {
+		try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
+				ErrorParserManager epm = new ErrorParserManager(project, buildRoot.getLocationURI(), markerGenerator,
+						builder.getErrorParserList().toArray(new String[0]));) {
 
-            monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
-                    + TICKS_REFRESH_PROJECT);
+			monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
+					+ TICKS_REFRESH_PROJECT);
 
-            // Prepare launch parameters for BuildRunnerHelper
-            String cfgName = cfgDescription.getName();
-            String toolchainName = configuration.getToolChain().getName();
-            boolean isConfigurationSupported = configuration.isSupported();
+			// Prepare launch parameters for BuildRunnerHelper
+			String cfgName = cfgDescription.getName();
+			String toolchainName = configuration.getToolChain().getName();
+			boolean isConfigurationSupported = configuration.isSupported();
 
-            List<IConsoleParser> parsers = new ArrayList<>();
-            AutoBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
+			List<IConsoleParser> parsers = new ArrayList<>();
+			AutoBuildManager.collectLanguageSettingsConsoleParsers(cfgDescription, epm, parsers);
 
-            buildRunnerHelper.prepareStreams(epm, parsers, console, parentMon.newChild(5));
-            buildRunnerHelper.greeting(kind, cfgName, toolchainName, isConfigurationSupported);
-            if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
-                for (IFile curFile : myMakeRules.getBuildFiles()) {
-                    curFile.delete(true, false, monitor);
-                }
-            } else {
+			buildRunnerHelper.prepareStreams(epm, parsers, console, parentMon.newChild(5));
+			buildRunnerHelper.greeting(kind, cfgName, toolchainName, isConfigurationSupported);
+			if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
+				for (IFile curFile : myMakeRules.getBuildFiles()) {
+					curFile.delete(true, false, monitor);
+				}
+			} else {
 
-                buildRunnerHelper.removeOldMarkers(project, parentMon.newChild(5));
+				buildRunnerHelper.removeOldMarkers(project, parentMon.newChild(5));
 
-                buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
+				buildRunnerHelper.printLine(ManagedMakeBuilder_message_internal_builder_header_note);
 
-                boolean isParallel = autoData.isParallelBuild();
-                int parrallelNum = autoData.getParallelizationNum();
-                epm.deferDeDuplication();
-                int sequenceID = -1;
-                boolean lastSequenceID = true;
-                boolean isError = false;
-                //Run preBuildStep if existing
-                String preBuildStep = autoData.getPrebuildStep();
-                preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-                if (!preBuildStep.isEmpty()) {
-                    String announcement = autoData.getPreBuildAnouncement();
-                    if (!announcement.isEmpty()) {
-                        announcement = announcement + NEWLINE;
-                        buildRunnerHelper.getOutputStream().write(announcement.getBytes());
-                    }
-                    if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
-                        if (autoData.stopOnFirstBuildError()) {
-                            return false;
-                        }
-                    }
-                }
-                do {
-                    sequenceID++;
-                    lastSequenceID = true;
-                    for (MakeRule curRule : myMakeRules) {
-                        if (curRule.getSequenceGroupID() != sequenceID) {
-                            continue;
-                        }
-                        lastSequenceID = false;
-                        if (!curRule.needsExecuting(buildRoot)) {
-                            buildRunnerHelper.getOutputStream().write("No need to run ".getBytes());
-                            buildRunnerHelper.getOutputStream().write(curRule.getAnnouncement().getBytes());
-                            buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
-                            continue;
-                        }
+				boolean isParallel = autoData.isParallelBuild();
+				int parrallelNum = autoData.getParallelizationNum();
+				epm.deferDeDuplication();
+				int sequenceID = -1;
+				boolean lastSequenceID = true;
+				boolean isError = false;
 
-                        //make sure the target folders exists
-                        Set<IFile> targetFiles = curRule.getTargetFiles();
-                        for (IFile curFile : targetFiles) {
-                            IContainer curPath = curFile.getParent();
-                            if (curPath instanceof IFolder) {
-                                createFolder((IFolder) curPath, true, true, null);
-                            }
-                            //GNU g++ does not delete the output file if compilation fails
-                            if (curFile.exists()) {
-                                curFile.delete(true, monitor);
-                            }
-                        }
-                        buildRunnerHelper.getOutputStream().write(curRule.getAnnouncement().getBytes());
-                        buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
-                        for (String curRecipe : curRule.getRecipes(buildRoot, autoData)) {
-                            try {
-                                if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
-                                    if (autoData.stopOnFirstBuildError()) {
-                                        isError = true;
-                                        break;
-                                    }
-                                }
+				// Run preBuildStep if existing
+				String preBuildStep = autoData.getPrebuildStep();
+				preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+				if (!preBuildStep.isEmpty()) {
+					String announcement = autoData.getPreBuildAnouncement();
+					if (!announcement.isEmpty()) {
+						announcement = announcement + NEWLINE;
+						buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+					}
+					if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+						if (autoData.stopOnFirstBuildError()) {
+							return false;
+						}
+					}
+				}
+				do {
+					sequenceID++;
+					lastSequenceID = true;
+					for (MakeRule curRule : myMakeRules) {
+						if (curRule.getSequenceGroupID() != sequenceID) {
+							continue;
+						}
+						lastSequenceID = false;
+						if (!curRule.needsExecuting(buildRoot)) {
+							buildRunnerHelper.getOutputStream().write("No need to run ".getBytes());
+							buildRunnerHelper.getOutputStream().write(curRule.getAnnouncement().getBytes());
+							buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
+							continue;
+						}
 
-                            } catch (@SuppressWarnings("unused") Exception e) {
-                                isError = autoData.stopOnFirstBuildError();
-                            }
-                            epm.deDuplicate();
+						// make sure the target folders exists
+						Set<IFile> targetFiles = curRule.getTargetFiles();
+						for (IFile curFile : targetFiles) {
+							IContainer curPath = curFile.getParent();
+							if (curPath instanceof IFolder) {
+								createFolder((IFolder) curPath, true, true, null);
+							}
+							// GNU g++ does not delete the output file if compilation fails
+							if (curFile.exists()) {
+								curFile.delete(true, monitor);
+							}
+						}
+						buildRunnerHelper.getOutputStream().write(curRule.getAnnouncement().getBytes());
+						buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
+						for (String curRecipe : curRule.getRecipes(buildRoot, autoData)) {
+							try {
+								if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
+									if (autoData.stopOnFirstBuildError()) {
+										isError = true;
+										break;
+									}
+								}
 
-                            // bsMngr.setProjectBuildState(project, pBS);
+							} catch (@SuppressWarnings("unused") Exception e) {
+								isError = autoData.stopOnFirstBuildError();
+							}
+							epm.deDuplicate();
 
-                        }
-                        if (isError) {
-                            break;
-                        }
-                    }
-                    if (kind == IncrementalProjectBuilder.AUTO_BUILD
-                            && autoData.getAutoMakeTarget().equals(TARGET_OBJECTS)) {
-                        lastSequenceID = true;
-                    }
-                } while (!(lastSequenceID || isError));
-                //Run postBuildStep if existing
-                String postBuildStep = autoData.getPostbuildStep();
-                postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-                if (!postBuildStep.isEmpty()) {
-                    String announcement = autoData.getPostBuildAnouncement();
-                    if (!announcement.isEmpty()) {
-                        announcement = announcement + NEWLINE;
-                        buildRunnerHelper.getOutputStream().write(announcement.getBytes());
-                    }
-                    if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
-                        return false;
-                    }
-                }
-            }
-            buildRunnerHelper.goodbye();
+							// bsMngr.setProjectBuildState(project, pBS);
 
-            // if (status != ICommandLauncher.ILLEGAL_COMMAND) {
-            buildRunnerHelper.refreshProject(cfgName, parentMon.newChild(5));
-            buildRunnerHelper.close();
-        } catch (Exception e) {
+						}
+						if (isError) {
+							break;
+						}
+					}
+					if (kind == IncrementalProjectBuilder.AUTO_BUILD
+							&& autoData.getAutoMakeTarget().equals(TARGET_OBJECTS)) {
+						lastSequenceID = true;
+					}
+				} while (!(lastSequenceID || isError));
+				// Run postBuildStep if existing
+				String postBuildStep = autoData.getPostbuildStep();
+				postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+				if (!postBuildStep.isEmpty()) {
+					String announcement = autoData.getPostBuildAnouncement();
+					if (!announcement.isEmpty()) {
+						announcement = announcement + NEWLINE;
+						buildRunnerHelper.getOutputStream().write(announcement.getBytes());
+					}
+					if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+						return false;
+					}
+				}
+			}
+			buildRunnerHelper.goodbye();
 
-            String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
-                    new String[] { project.getName(), configuration.getName() });
-            throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
-        }
-        monitor.done();
-        return false;
-    }
+			// if (status != ICommandLauncher.ILLEGAL_COMMAND) {
+			buildRunnerHelper.refreshProject(cfgName, parentMon.newChild(5));
+			buildRunnerHelper.close();
+		} catch (Exception e) {
 
-    private int launchCommand(String curRecipe, AutoBuildConfigurationDescription autoData, IProgressMonitor monitor,
-            AutoBuildRunnerHelper buildRunnerHelper) throws IOException {
-        CommandLauncher launcher = new CommandLauncher();
-        launcher.showCommand(true);
-        String[] args = CommandLineUtil.argumentsToArray(curRecipe);
-        IPath commandPath = new Path(args[0]);
-        String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
+			String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
+					new String[] { project.getName(), configuration.getName() });
+			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
+		}
+		monitor.done();
+		return false;
+	}
 
-        String[] envp = BuildRunnerForMake.getEnvironment(autoData.getCdtConfigurationDescription(),
-                autoData.getConfiguration().getBuilder().appendEnvironment());
-        Process fProcess = null;
-        try (OutputStream stdout = buildRunnerHelper.getOutputStream();
-                OutputStream stderr = buildRunnerHelper.getErrorStream();) {
-            try {
-                fProcess = launcher.execute(commandPath, onlyArgs, envp, autoData.getBuildFolder().getLocation(),
-                        monitor);
-            } catch (CoreException e1) {
-                // ignore and handle null case
-            }
-            if (fProcess == null) {
-                String error = "Failed to execute" + NEWLINE + curRecipe + NEWLINE; //$NON-NLS-1$
-                stdout.write(error.getBytes());
-                return -999;
-            }
+	private int launchCommand(String curRecipe, AutoBuildConfigurationDescription autoData, IProgressMonitor monitor,
+			AutoBuildRunnerHelper buildRunnerHelper) throws IOException {
+		CommandLauncher launcher = new CommandLauncher();
+		launcher.showCommand(true);
+		String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+		IPath commandPath = new Path(args[0]);
+		String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
 
-            if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
-                if (autoData.stopOnFirstBuildError()) {
-                    return -999;
-                }
-            }
-            String fErrMsg = launcher.getErrorMessage();
-            if (fErrMsg != null && !fErrMsg.isEmpty()) {
-                printMessage(fErrMsg, stderr);
-            }
-        }
-        return fProcess.exitValue();
-    }
+		String[] envp=null;
+		ITargetTool targetTool = autoData.getTargetTool();
+		if (targetTool != null) {
+			Set<String> targetToolEnv = new HashSet<>();
+			for (Entry<String, String> curEnv : targetTool.getEnvironmentVariables().entrySet()) {
+				targetToolEnv.add(curEnv.getKey() + EQUAL + curEnv.getValue());
+			}
+			envp = targetToolEnv.toArray(new String[targetToolEnv.size()]);
+		}
 
-    @Override
-    public String getName() {
-        return RUNNER_NAME;
-    }
+		Process fProcess = null;
+		try (OutputStream stdout = buildRunnerHelper.getOutputStream();
+				OutputStream stderr = buildRunnerHelper.getErrorStream();) {
+			try {
+				fProcess = launcher.execute(commandPath, onlyArgs, envp, autoData.getBuildFolder().getLocation(),
+						monitor);
+			} catch (CoreException e1) {
+				// ignore and handle null case
+			}
+			if (fProcess == null) {
+				String error = "Failed to execute" + NEWLINE + curRecipe + NEWLINE; //$NON-NLS-1$
+				stdout.write(error.getBytes());
+				return -999;
+			}
 
-    @Override
-    public boolean supportsParallelBuild() {
-        return true;
-    }
+			if (ICommandLauncher.OK != launcher.waitAndRead(stdout, stderr, monitor)) {
+				if (autoData.stopOnFirstBuildError()) {
+					return -999;
+				}
+			}
+			String fErrMsg = launcher.getErrorMessage();
+			if (fErrMsg != null && !fErrMsg.isEmpty()) {
+				printMessage(fErrMsg, stderr);
+			}
+		}
+		return fProcess.exitValue();
+	}
 
-    @Override
-    public boolean supportsStopOnError() {
-        return true;
-    }
+	@Override
+	public String getName() {
+		return RUNNER_NAME;
+	}
 
-    @Override
-    public boolean supportsCustomCommand() {
-        return false;
-    }
+	@Override
+	public boolean supportsParallelBuild() {
+		return true;
+	}
 
-    @Override
-    public boolean supportsMakeFiles() {
-        return false;
-    }
+	@Override
+	public boolean supportsStopOnError() {
+		return true;
+	}
 
-    @Override
-    public boolean supportsAutoBuild() {
-        return true;
-    }
+	@Override
+	public boolean supportsCustomCommand() {
+		return false;
+	}
 
-    @Override
-    public boolean supportsIncrementalBuild() {
-        return true;
-    }
+	@Override
+	public boolean supportsMakeFiles() {
+		return false;
+	}
 
-    @Override
-    public boolean supportsCleanBuild() {
-        return true;
-    }
+	@Override
+	public boolean supportsAutoBuild() {
+		return true;
+	}
 
-    private void printMessage(String msg, OutputStream os) {
-        if (os != null) {
-            try {
-                os.write((msg + NEWLINE).getBytes());
-                os.flush();
-            } catch (IOException e) {
-                // ignore;
-            }
-        }
+	@Override
+	public boolean supportsIncrementalBuild() {
+		return true;
+	}
 
-    }
+	@Override
+	public boolean supportsCleanBuild() {
+		return true;
+	}
+
+	private void printMessage(String msg, OutputStream os) {
+		if (os != null) {
+			try {
+				os.write((msg + NEWLINE).getBytes());
+				os.flush();
+			} catch (IOException e) {
+				// ignore;
+			}
+		}
+
+	}
 
 }

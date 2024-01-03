@@ -6,7 +6,6 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -27,13 +26,12 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.ITargetToolManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -48,6 +46,8 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
+import io.sloeber.targetPlatform.api.ITargetTool;
+import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
 
 /**
  * Represents a tool that can be invoked during a build. Note that this class
@@ -549,19 +549,19 @@ public class Tool extends SchemaObject implements ITool {
         toolCommandVars.put(OUTPUT_FLAG_PRM_NAME, myModelOutputFlag[SUPER].trim());
 
         //add the tool provider stuff
-        IToolProvider toolProvider = autoBuildConfData.getToolProvider();
-        if (toolProvider != null) {
-            String toolProviderCmd = toolProvider.getCommand(myToolType);
+        ITargetTool targetTool = autoBuildConfData.getTargetTool();
+        if (targetTool != null) {
+            String toolProviderCmd = targetTool.getCommand(myToolType);
             if (toolProviderCmd != null && !toolProviderCmd.isBlank()) {
                 //replace the command with the one provided by the toolProvider
                 toolCommandVars.put(CMD_LINE_PRM_NAME, toolProviderCmd.trim());
             }
-            Path toolPath = toolProvider.getToolLocation(myToolType);
+            IPath toolPath = targetTool.getToolLocation(myToolType);
             if (toolPath != null && !toolPath.toString().isBlank()) {
                 //store the path
                 toolCommandVars.put(CMD_LINE_TOOL_PATH, toolPath.toString().trim() + SLACH);
             }
-            Map<String, String> toolVariables = toolProvider.getToolVariables();
+            Map<String, String> toolVariables = targetTool.getToolVariables();
             if (toolVariables != null && toolVariables.size() > 0) {
                 //replace the command with the one provided by the toolProvider
                 for (Entry<String, String> curVar : toolVariables.entrySet()) {

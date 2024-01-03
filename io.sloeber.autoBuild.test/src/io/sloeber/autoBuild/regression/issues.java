@@ -20,14 +20,14 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
-import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
+import io.sloeber.targetPlatform.api.ITargetTool;
+import io.sloeber.targetPlatform.api.ITargetToolManager;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
-    static IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
+    static ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
 
     @BeforeAll
     public static void beforeAll() {
@@ -102,8 +102,8 @@ public class issues {
         CoreModel coreModel = CoreModel.getDefault();
 
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID,
-                defaultProjectTypeID, defaultExtensionID, defaultNatureID, new TemplateTestCodeProvider("exe"),
-                toolprovider, false, null);
+                 defaultExtensionID,defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"),
+                targetTool, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {

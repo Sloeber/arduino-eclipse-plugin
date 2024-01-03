@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.targetPlatform.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.nio.file.Path;
@@ -8,23 +8,27 @@ import java.util.Set;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.IPath;
+
+import io.sloeber.targetPlatform.api.ITargetTool;
+import io.sloeber.targetPlatform.api.ITargetToolManager;
+import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
+import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
+
 import static java.io.File.pathSeparator;
 import static java.nio.file.Files.isExecutable;
 import static java.lang.System.getenv;
 import static java.util.regex.Pattern.quote;
 
-import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.ITargetToolManager;
-import io.sloeber.autoBuild.api.ITargetToolManager.ToolFlavour;
-import io.sloeber.autoBuild.api.ITargetToolManager.ToolType;
-
-public class PathToolProvider implements IToolProvider {
+public class PathTargetTool implements ITargetTool {
 
     private ToolFlavour myToolFlavour = null;
     private Boolean myHoldAllTools = null;
+    private String myProviderID=null;
 
-    public PathToolProvider(ToolFlavour curToolFlavour) {
+    public PathTargetTool(ToolFlavour curToolFlavour,String providerID) {
         myToolFlavour = curToolFlavour;
+        myProviderID=providerID;
     }
 
     @Override
@@ -32,11 +36,12 @@ public class PathToolProvider implements IToolProvider {
         return myToolFlavour.name();
     }
 
-    //    @Override
-    //    public String setSelectionID(String ID) {
-    //        // TODO Auto-generated method stub
-    //        return null;
-    //    }
+
+	@Override
+	public String getProviderID() {
+		return myProviderID;
+	}
+
 
     @Override
     public Map<String, String> getEnvironmentVariables() {
@@ -60,7 +65,7 @@ public class PathToolProvider implements IToolProvider {
     }
 
     @Override
-    public Path getToolLocation(ToolType toolType) {
+    public IPath getToolLocation(ToolType toolType) {
         // As the tool is on the path null is fine
         return null;
     }
@@ -139,9 +144,5 @@ public class PathToolProvider implements IToolProvider {
         });
     }
 
-    @Override
-    public String getID() {
-        return getClass().getName() + SEMICOLON + myToolFlavour.name();
-    }
 
 }

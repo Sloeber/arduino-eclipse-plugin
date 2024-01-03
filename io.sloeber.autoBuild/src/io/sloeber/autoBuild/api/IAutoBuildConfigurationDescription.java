@@ -16,6 +16,8 @@ import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.targetPlatform.api.ITargetTool;
+import io.sloeber.targetPlatform.api.ITargetToolProvider;
 
 public interface IAutoBuildConfigurationDescription {
 
@@ -316,7 +318,7 @@ public interface IAutoBuildConfigurationDescription {
 
     public void setBuildRunner(String buildRunnerName);
 
-    public IToolProvider getToolProvider();
+    public ITargetTool getTargetTool();
 
-    public void setToolProvider(IToolProvider toolProvider);
+    public void setToolProvider(ITargetTool targetTool);
 }

@@ -9,15 +9,13 @@
 		name="%extension.name.0" >
 		
   <projectType
-        buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.compound"
-        id="io.sloeber.autoBuild.projectType.exe"
+        buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
+        id="io.sloeber.autoBuild.projectType.compound.exe"
         name="%autoBuild.projectType.name">
      <toolChain
-           archList="all"
            id="io.sloeber.autoBuild.toolChain.release"
            languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
-           name="%autoBuild.tooolChain.name"
-           osList="all">
+           name="%autoBuild.tooolChain.name">
         <tool
               id="io.sloeber.autoBuild.tool.gnu.cross.assembler"
               name="%autoBuild.tool.gcc.assembler"
@@ -185,6 +183,63 @@
            id="cdt.autobuild.config.compound.exe.debug"
            name="%ConfigName.Dbg">
      </configuration>
+  </projectType>
+  <projectType
+        buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
+        id="io.sloeber.autoBuild.projectType.exe"
+        name="exe">
+     <configuration
+           buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
+           id="cdt.managedbuild.config.gnu.cross.exe.debug"
+           name="Debug">
+     </configuration>
+     <configuration
+           buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
+           id="cdt.managedbuild.config.gnu.cross.exe.release"
+           name="Release">
+     </configuration>
+     <toolChain
+           id="io.sloeber.autoBuild.toolChain.exe"
+           superClass="io.sloeber.autoBuild.toolChain.base.exe">
+     </toolChain>
+  </projectType>
+  <projectType
+        buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
+        id="io.sloeber.autoBuild.projectType.static.lib"
+        name="static_lib">
+     <configuration
+           buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
+           id="cdt.managedbuild.config.gnu.cross.lib.debug"
+           name="Debug">
+     </configuration>
+     <configuration
+           buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
+           id="cdt.managedbuild.config.gnu.cross.lib.release"
+           name="Release">
+     </configuration>
+     <toolChain
+           id="io.sloeber.autoBuild.toolChain.static.lib"
+           superClass="io.sloeber.autoBuild.toolChain.base.static.lib">
+     </toolChain>
+  </projectType>
+  <projectType
+        buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
+        id="io.sloeber.autoBuild.projectType.dynamic_lib"
+        name="dynamic_lib">
+     <configuration
+           buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
+           id="cdt.managedbuild.config.gnu.cross.so.debug"
+           name="Debug">
+     </configuration>
+     <configuration
+           buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release"
+           id="cdt.managedbuild.config.gnu.cross.so.release"
+           name="Release">
+     </configuration>
+     <toolChain
+           id="io.sloeber.autoBuild.toolChain.dynamic.lib"
+           superClass="io.sloeber.autoBuild.toolChain.base.dynamic.lib">
+     </toolChain>
   </projectType>
   <toolChain
         id="io.sloeber.autoBuild.toolChain.base.all"
@@ -1899,21 +1954,20 @@
      </builder>
   </toolChain>
   <ToolProvider
-        Description="A tool provider for MinGW"
-        id="io.sloeber.autoBuild.ToolProvider.minGW"
-        name="%minGWToolProviderName"
-        toolProvider="io.sloeber.autoBuild.Internal.MinGWToolProvider">
+        Description="A tool provider for MinGW 32"
+        id="io.sloeber.autoBuild.ToolProvider.minGW32"
+        name="%minGW32ToolProviderName"
+        toolProvider="io.sloeber.targetPlatform.internal.MinGW32ToolProvider">
+  </ToolProvider>
+  <ToolProvider
+        Description="A tool provider for MinGW 64"
+        id="io.sloeber.autoBuild.ToolProvider.minGW64"
+        name="%minGW64ToolProviderName"
+        toolProvider="io.sloeber.targetPlatform.internal.MinGW64ToolProvider">
   </ToolProvider>
 
 	</extension>
 
- <extension
-       point="org.eclipse.cdt.make.core.MakeTargetBuilder">
-    <builder
-          builderID="io.sloeber.ManagedBuild.builder1"
-          id="io.sloeber.ManagedBuild.builder1">
-    </builder>
- </extension>
  <extension
        id="io.sloeber.autoBuildNature"
        name="auto Build Nature by Sloeber"
@@ -2863,31 +2917,6 @@
                superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
          </tool>
       </toolChain>
-      <configuration
-            cleanCommand="rm -rf"
-            id="cdt.managedbuild.config.gnu.base"
-            >
-         <enablement
-               attribute="artifactExtension"
-               extensionAdjustment="false"
-               type="CONTAINER_ATTRIBUTE"
-               value="so">
-            <checkBuildProperty
-                  property="org.eclipse.cdt.build.core.buildArtefactType"
-                  value="org.eclipse.cdt.build.core.buildArtefactType.sharedLib">
-            </checkBuildProperty>
-         </enablement>
-         <enablement
-               attribute="artifactExtension"
-               extensionAdjustment="false"
-               type="CONTAINER_ATTRIBUTE"
-               value="a">
-            <checkBuildProperty
-                  property="org.eclipse.cdt.build.core.buildArtefactType"
-                  value="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
-            </checkBuildProperty>
-         </enablement>
-      </configuration>
       <configuration
             artifactExtension="exe"
             cleanCommand="rm -rf"

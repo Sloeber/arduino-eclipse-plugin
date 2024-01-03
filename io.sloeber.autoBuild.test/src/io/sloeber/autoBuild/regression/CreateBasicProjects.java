@@ -25,13 +25,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
-import io.sloeber.autoBuild.api.IToolProvider;
-import io.sloeber.autoBuild.api.ITargetToolManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IProjectType;
+import io.sloeber.targetPlatform.api.ITargetTool;
+import io.sloeber.targetPlatform.api.ITargetToolManager;
+import io.sloeber.targetPlatform.api.ITargetToolProvider;
 
 @SuppressWarnings({ "boxing", "nls" })
 public class CreateBasicProjects {
@@ -39,9 +40,9 @@ public class CreateBasicProjects {
     //below are test limiting options buildTypeActiveBuild=null and  
     private boolean buildTypeActiveBuild = true;
     private boolean doTestDefaultBuilder = true;
-    private boolean doTestInternalBuilder = true;
-    private boolean doTestMakeBuilder = true;
-    static IToolProvider toolprovider = ITargetToolManager.getDefault().getAnyInstalledToolProvider();
+    private boolean doTestInternalBuilder = false;
+    private boolean doTestMakeBuilder = false;
+    static Set<ITargetTool> targetTools = ITargetToolManager.getDefault().getAllInstalledTargetTools();
 
     @BeforeAll
     static void beforeAll() {
@@ -54,11 +55,11 @@ public class CreateBasicProjects {
     }
 
     static void buildAllConfigsAsActive(String builderName, String projectName, String extensionPointID,
-            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,
+            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool,
             Boolean shouldMakefileExists) throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
-                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, toolprovider, false, null);
+                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
@@ -68,11 +69,11 @@ public class CreateBasicProjects {
     }
 
     static void buildAllConfigs(String builderName, String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider, Boolean shouldMakefileExists)
+            String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool, Boolean shouldMakefileExists)
             throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
-                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, toolprovider, false, null);
+                extensionPointID, extensionID, projectTypeID, natureID, codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         Set<String> configs = new HashSet<>();
 
@@ -88,15 +89,15 @@ public class CreateBasicProjects {
     }
 
     private void doBuilds(String argsInternalBuilderKey, String projectName, String extensionPointID,
-            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,
+            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool,
             Boolean shouldMakefileExists) throws Exception {
         if (buildTypeActiveBuild) {
             buildAllConfigsAsActive(argsInternalBuilderKey, projectName, extensionPointID, extensionID, projectTypeID,
-                    natureID, codeProvider, shouldMakefileExists);
+                    natureID, codeProvider,targetTool, shouldMakefileExists);
         }
         if (!buildTypeActiveBuild) {
             buildAllConfigs(argsInternalBuilderKey, "all_" + projectName, extensionPointID, extensionID, projectTypeID,
-                    natureID, codeProvider, shouldMakefileExists);
+                    natureID, codeProvider, targetTool,shouldMakefileExists);
         }
 
     }
@@ -104,42 +105,42 @@ public class CreateBasicProjects {
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testDefaultBuilder(String projectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
+            String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
         if (doTestDefaultBuilder) {
-            doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider, null);
+            doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,targetTool, null);
         }
     }
 
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
+            String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
         if (doTestInternalBuilder) {
             String projectName = "Internal_build_" + inProjectName;
 
             doBuilds(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionPointID, extensionID,
-                    projectTypeID, natureID, codeProvider, Boolean.FALSE);
+                    projectTypeID, natureID, codeProvider,targetTool, Boolean.FALSE);
         }
     }
 
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
+            String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
         if (doTestMakeBuilder) {
             String projectName = "make_build_" + inProjectName;
             doBuilds(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionPointID, extensionID, projectTypeID,
-                    natureID, codeProvider, Boolean.TRUE);
+                    natureID, codeProvider,targetTool, Boolean.TRUE);
         }
     }
 
     static Stream<Arguments> projectCreationInfoProvider() {
         String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
         Map<String, String> testProjectTypeIds = new HashMap<>();
+        testProjectTypeIds.put("io.sloeber.autoBuild.projectType.compound.exe", "io.sloeber.autoBuild");
         testProjectTypeIds.put("io.sloeber.autoBuild.projectType.exe", "io.sloeber.autoBuild");
-        testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.exe", "cdt.cross.gnu");
-        testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.so", "cdt.cross.gnu");
-        testProjectTypeIds.put("cdt.managedbuild.target.gnu.cross.lib", "cdt.cross.gnu");
+        testProjectTypeIds.put("io.sloeber.autoBuild.projectType.static.lib", "io.sloeber.autoBuild");
+        testProjectTypeIds.put("io.sloeber.autoBuild.projectType.dynamic_lib", "io.sloeber.autoBuild");
 
         List<Arguments> ret = new LinkedList<>();
         for (Entry<String, String> testProjectEntry : testProjectTypeIds.entrySet()) {
@@ -166,9 +167,11 @@ public class CreateBasicProjects {
             default:
                 codeProvider_cpp = new TemplateTestCodeProvider("exe");
             }
-            String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() + "_" + extensionID);
+            for(ITargetTool curTargetTool:targetTools) {
+            String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() + "_" +curTargetTool.getProviderID()+"->"+curTargetTool.getSelectionID()+"_"+ extensionID);
             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectType.getId(),
-                    CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
+                    CCProjectNature.CC_NATURE_ID, codeProvider_cpp,curTargetTool));
+            }
         }
         return ret.stream();
     }

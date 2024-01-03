@@ -24,8 +24,13 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ConsoleOutputStream;
 import org.eclipse.cdt.core.ErrorParserManager;
@@ -59,6 +64,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.targetPlatform.api.ITargetTool;
 
 public class BuildRunnerForMake extends IBuildRunner {
     static public final String RUNNER_NAME = Messages.ExternalBuilderName;
@@ -72,6 +78,8 @@ public class BuildRunnerForMake extends IBuildRunner {
         IConfiguration configuration = autoData.getConfiguration();
         ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
 
+
+        
         if (autoData.generateMakeFilesAUtomatically()) {
             if (!generateMakeFiles(kind, autoData, projectBuilder, console, monitor)) {
                 return false;
@@ -132,11 +140,8 @@ public class BuildRunnerForMake extends IBuildRunner {
 
             String cfgName = confDesc.getName();
             ICommandLauncher launcher = builder.getCommandLauncher();
-            // args.addAll(getMakeArguments(builder, autoData));
             IFolder buildFolder = autoData.getBuildFolder();
             URI buildFolderURI = buildFolder.getLocationURI();
-
-            String[] envp = getEnvironment(confDesc, builder.appendEnvironment());
 
             try (ErrorParserManager epm = new ErrorParserManager(project, buildFolderURI, markerGenerator,
                     autoData.getErrorParserList());) {
@@ -146,8 +151,11 @@ public class BuildRunnerForMake extends IBuildRunner {
                     AutoBuildManager.collectLanguageSettingsConsoleParsers(confDesc, epm, parsers);
                 }
 
+        		String[] envp=null;
+
+        		
                 buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand),
-                        args.toArray(new String[args.size()]), buildFolderURI, envp);
+                        args.toArray(new String[args.size()]), buildFolderURI,envp);
                 buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
                 buildRunnerHelper.removeOldMarkers(project, monitor);
                 buildRunnerHelper.greeting(kind, cfgName, configuration.getToolChain().getName(),
@@ -178,18 +186,18 @@ public class BuildRunnerForMake extends IBuildRunner {
         return isClean;
     }
 
-    public static String[] getEnvironment(ICConfigurationDescription cfgDes, boolean appendEnvironment) {
-        ArrayList<String> envMap = new ArrayList<>();
-        if (appendEnvironment) {
-            IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
-            IEnvironmentVariable[] vars = mngr.getVariables(cfgDes, true);
-            for (IEnvironmentVariable var : vars) {
-                envMap.add(var.getName() + EQUAL + var.getValue());
-            }
-        }
-
-        return envMap.toArray(new String[envMap.size()]);
-    }
+//    public static String[] getEnvironment(ICConfigurationDescription cfgDes, boolean appendEnvironment) {
+//        ArrayList<String> envMap = new ArrayList<>();
+//        if (appendEnvironment) {
+//            IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
+//            IEnvironmentVariable[] vars = mngr.getVariables(cfgDes, true);
+//            for (IEnvironmentVariable var : vars) {
+//                envMap.add(var.getName() + EQUAL + var.getValue());
+//            }
+//        }
+//
+//        return envMap.toArray(new String[envMap.size()]);
+//    }
 
     /**
      * 
@@ -217,11 +225,7 @@ public class BuildRunnerForMake extends IBuildRunner {
         monitor.subTask(MessageFormat.format(ManagedMakeBuilder_message_update_makefiles, project.getName()));
 
         MultiStatus result = null;
-        //        if (isCleanBuild(kind)) {
         result = generator.regenerateMakefiles(monitor);
-        //        } else {
-        //            result = generator.generateMakefiles(projectBuilder.getDelta(project), monitor);
-        //        }
 
         if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
             IStatus[] kids = result.getChildren();

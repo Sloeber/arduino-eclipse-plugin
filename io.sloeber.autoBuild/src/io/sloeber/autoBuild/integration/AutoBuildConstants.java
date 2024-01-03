@@ -142,6 +142,8 @@ public class AutoBuildConstants {
     // Schema element names
     public static final String ID = "id";
     public static final String NAME = "name";
+    public static final String TARGETTOOL = "targetTool";
+    
     public static final String SUPERCLASS = "superClass";
     public static final String IS_ABSTRACT = "isAbstract";
     public static final String IS_SYSTEM = "isSystem";
@@ -228,4 +230,5 @@ public class AutoBuildConstants {
     public static final String DEPENDENCY_GENERATION_FLAG = "dependencyGenerationFlag";
     public static final String WEIGHT = "weight";
     public static final String OWNER = "owner";
+    public static final String BIN_FOLDER = "bin";
 }

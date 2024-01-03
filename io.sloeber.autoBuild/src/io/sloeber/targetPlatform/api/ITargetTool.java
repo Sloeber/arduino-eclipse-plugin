@@ -1,15 +1,21 @@
-package io.sloeber.autoBuild.api;
+package io.sloeber.targetPlatform.api;
 
 import java.nio.file.Path;
 import java.util.Map;
 
-import io.sloeber.autoBuild.api.ITargetToolManager.ToolFlavour;
-import io.sloeber.autoBuild.api.ITargetToolManager.ToolType;
+import org.eclipse.core.runtime.IPath;
 
-public interface IToolProvider {
+import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
+import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
+
+/**
+ * This is a set of tools on the local disk to build a target
+ * 
+ */
+public interface ITargetTool {
 
     /**
-     * does this tool provider find tools on the local disk
+     * This tool provider find tools on the local disk
      * This method does not tell you how many locations of tools were found
      * It only tells you there is at least one location on disk that contains all
      * the tools
@@ -27,9 +33,9 @@ public interface IToolProvider {
     boolean holdsAllTools();
 
     /**
-     * Get the ID that identifies the selection made in the tool provider
-     * A tool provider may provide different versions of tools.
-     * This can be V1.0 and V2.3 but also completely different tool set (like in
+     * Get rovider may provide different versions of tools.
+     * This can bthe ID that identifies the selection made in the tool provider
+     * A tool pe V1.0 and V2.3 but also completely different tool set (like in
      * embedded world)
      * By providing the selectionID This selection can be made persistent.
      * 
@@ -38,20 +44,14 @@ public interface IToolProvider {
      */
     String getSelectionID();
 
-    /**
-     * see getSelectionID
-     * 
-     * @param ID
-     * @return
-     */
-    //String setSelectionID(String ID); this has to be in the constructor
 
     /**
      * Some tools may require variables to be added to the environment before
      * starting the tools
-     * These variables will overwrite existing variables with the same name
+     * For each of these variables the builder will run a set key=value command
+     * If the tool needs to be on the path you can have {path;myPath;%path%} on windows
      * 
-     * @return
+     * @return a set of variables or null
      */
     Map<String, String> getEnvironmentVariables();
 
@@ -92,16 +92,10 @@ public interface IToolProvider {
      *         null if the tool is on the path
      *         undefined when the tooltype is not supported.
      */
-    Path getToolLocation(ToolType toolType);
+    IPath getToolLocation(ToolType toolType);
 
     ToolFlavour getToolFlavour();
 
-    /**
-     * typical implementation
-     * this.getClass().getName()
-     * 
-     * @return
-     */
-    String getID();
+	String getProviderID();
 
 }
