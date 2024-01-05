@@ -224,7 +224,7 @@
   </projectType>
   <projectType
         buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-        id="io.sloeber.autoBuild.projectType.dynamic_lib"
+        id="io.sloeber.autoBuild.projectType.dynamic.lib"
         name="dynamic_lib">
      <configuration
            buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug"
@@ -1824,13 +1824,45 @@
         </outputType>
         <option
               category="gnu.lib.category.general"
-              defaultValue="-crs"
+              defaultValue="-r"
               id="aaa.archive.required.flags"
               name="Required flags"
               valueType="string">
            <enablement
                  type="CMD_USAGE">
            </enablement>
+        </option>
+        <option
+              category="gnu.lib.category.general"
+              defaultValue="-c"
+              id="io.sloeber.autoBuild.option.c"
+              name="%archiver_create_option"
+              resourceFilter="all"
+              valueType="boolean">
+        </option>
+        <option
+              category="gnu.lib.category.general"
+              command="-a"
+              id="io.sloeber.autoBuild.option.a"
+              name="%archiver_after_option"
+              resourceFilter="all"
+              valueType="boolean">
+        </option>
+        <option
+              category="gnu.lib.category.general"
+              command="-b"
+              id="io.sloeber.autoBuild.option.b"
+              name="%archiver_before_option"
+              resourceFilter="all"
+              valueType="boolean">
+        </option>
+        <option
+              category="gnu.lib.category.general"
+              command="-s"
+              id="io.sloeber.autoBuild.option.s"
+              name="%archiver_index_option"
+              resourceFilter="all"
+              valueType="boolean">
         </option>
      </tool>
      <tool
