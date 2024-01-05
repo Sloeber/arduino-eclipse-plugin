@@ -889,9 +889,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public String getBuildCommand(boolean includeArgs) {
 		IBuilder bldr = myAutoBuildConfiguration.getBuilder();
-		String command = new String();
+		String command =null;
 		if (myUseDefaultBuildCommand) {
+			command=myTargetTool.getBuildCommand();
+			if(command==null ||command.isBlank()) {
 			command = bldr.getCommand();
+			}
 		} else {
 			command = getCustomBuildCommand();
 		}
