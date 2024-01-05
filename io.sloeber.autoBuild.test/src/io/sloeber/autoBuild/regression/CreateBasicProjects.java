@@ -40,8 +40,8 @@ public class CreateBasicProjects {
     //below are test limiting options buildTypeActiveBuild=null and  
     private boolean buildTypeActiveBuild = true;
     private boolean doTestDefaultBuilder = true;
-    private boolean doTestInternalBuilder = false;
-    private boolean doTestMakeBuilder = false;
+    private boolean doTestInternalBuilder = true;
+    private boolean doTestMakeBuilder = true;
     static Set<ITargetTool> targetTools = ITargetToolManager.getDefault().getAllInstalledTargetTools();
 
     @BeforeAll
@@ -116,7 +116,7 @@ public class CreateBasicProjects {
     void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
         if (doTestInternalBuilder) {
-            String projectName = "Internal_build_" + inProjectName;
+            String projectName = "Internal_" + inProjectName;
 
             doBuilds(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionPointID, extensionID,
                     projectTypeID, natureID, codeProvider,targetTool, Boolean.FALSE);
@@ -128,7 +128,7 @@ public class CreateBasicProjects {
     void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
         if (doTestMakeBuilder) {
-            String projectName = "make_build_" + inProjectName;
+            String projectName = "make_" + inProjectName;
             doBuilds(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider,targetTool, Boolean.TRUE);
         }
@@ -140,7 +140,7 @@ public class CreateBasicProjects {
         testProjectTypeIds.put("io.sloeber.autoBuild.projectType.compound.exe", "io.sloeber.autoBuild");
         testProjectTypeIds.put("io.sloeber.autoBuild.projectType.exe", "io.sloeber.autoBuild");
         testProjectTypeIds.put("io.sloeber.autoBuild.projectType.static.lib", "io.sloeber.autoBuild");
-        testProjectTypeIds.put("io.sloeber.autoBuild.projectType.dynamic_lib", "io.sloeber.autoBuild");
+        testProjectTypeIds.put("io.sloeber.autoBuild.projectType.dynamic.lib", "io.sloeber.autoBuild");
 
         List<Arguments> ret = new LinkedList<>();
         for (Entry<String, String> testProjectEntry : testProjectTypeIds.entrySet()) {
@@ -151,24 +151,23 @@ public class CreateBasicProjects {
                 System.err.println("Skipping " + extensionID + " " + projectID);
                 continue;
             }
-            String buildArtifactType = projectType.getBuildArtifactType();
             ICodeProvider codeProvider_cpp = null;
-            switch (buildArtifactType) {
-            case "org.eclipse.cdt.build.core.buildArtefactType.exe":
+            switch (projectID) {
+            case "io.sloeber.autoBuild.projectType.exe":
                 codeProvider_cpp = new TemplateTestCodeProvider("exe");
                 break;
-            case "org.eclipse.cdt.build.core.buildArtefactType.staticLib":
-            case "org.eclipse.cdt.build.core.buildArtefactType.sharedLib":
+            case "io.sloeber.autoBuild.projectType.static.lib":
+            case "io.sloeber.autoBuild.projectType.dynamic.lib":
                 codeProvider_cpp = new TemplateTestCodeProvider("lib");
                 break;
-            case "org.eclipse.cdt.build.core.buildArtefactType.compound":
+            case "io.sloeber.autoBuild.projectType.compound.exe":
                 codeProvider_cpp = new TemplateTestCodeProvider("compound");
                 break;
             default:
                 codeProvider_cpp = new TemplateTestCodeProvider("exe");
             }
             for(ITargetTool curTargetTool:targetTools) {
-            String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() + "_" +curTargetTool.getProviderID()+"->"+curTargetTool.getSelectionID()+"_"+ extensionID);
+            String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() +"_"+ extensionID+ "_" +curTargetTool.getProviderID()+"_"+curTargetTool.getSelectionID());
             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectType.getId(),
                     CCProjectNature.CC_NATURE_ID, codeProvider_cpp,curTargetTool));
             }
