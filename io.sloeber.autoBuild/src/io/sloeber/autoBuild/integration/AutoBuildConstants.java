@@ -231,4 +231,5 @@ public class AutoBuildConstants {
     public static final String WEIGHT = "weight";
     public static final String OWNER = "owner";
     public static final String BIN_FOLDER = "bin";
+    public static final String ENV_VAR_PATH ="PATH";
 }
