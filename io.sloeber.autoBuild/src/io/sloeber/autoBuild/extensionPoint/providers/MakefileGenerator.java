@@ -7,8 +7,6 @@ import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IContainer;
@@ -30,7 +28,6 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.targetPlatform.api.ITargetTool;
 
 /**
  * This is the default makefile generator Feel free to extend to add the flavors
@@ -333,7 +330,6 @@ public class MakefileGenerator implements IMakefileGenerator {
 
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(addDefaultHeader());
-		buffer.append(topMakeGetTargetToolVariables());
 		buffer.append(topMakeGetIncludeSubDirs());
 		buffer.append(topMakeGetIncludeDependencies());
 		buffer.append(topMakeGetRMCommand(objMacroNames));
@@ -359,19 +355,6 @@ public class MakefileGenerator implements IMakefileGenerator {
 		save(buffer, fileHandle);
 	}
 
-	protected StringBuffer topMakeGetTargetToolVariables() {
-		StringBuffer buffer = new StringBuffer();
-		ITargetTool targetTool = myAutoBuildConfData.getTargetTool();
-		if (targetTool != null) {
-			Map<String, String> targetToolEnv = targetTool.getEnvironmentVariables();
-			for (Entry<String, String> curVar : targetToolEnv.entrySet()) {
-				// export PATH=C:\MinGW\bin;%PATH%
-				buffer.append("export ").append(curVar.getKey()).append(EQUAL).append(curVar.getValue()) //$NON-NLS-1$
-						.append(NEWLINE);
-			}
-		}
-		return buffer;
-	}
 
 	protected StringBuffer topMakeGetIncludeSubDirs() {
 		StringBuffer buffer = new StringBuffer();
