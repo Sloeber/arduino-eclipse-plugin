@@ -15,9 +15,11 @@ import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
 import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
 
 public class MinGWTargetTool implements ITargetTool {
+	final private static String MAKE_COMMAND ="mingw32-make.exe";
     private  IPath myMinGWBinPath = null;
     private String myId=null;
     private String myProviderID=null;
+    private String myBuildCommand=null;
     private static boolean myHoldsAllTools = true;//TOFIX should at least check
 
 
@@ -26,6 +28,9 @@ public class MinGWTargetTool implements ITargetTool {
     	 myMinGWBinPath = minGWBinPath;
     	 myId=id;
     	 myProviderID=providerID;
+    	 if(minGWBinPath.append(MAKE_COMMAND).toFile().exists()) {
+    		 myBuildCommand=minGWBinPath.append(MAKE_COMMAND).toOSString();
+    	 }
     }
 
     @Override
@@ -44,13 +49,15 @@ public class MinGWTargetTool implements ITargetTool {
 
     @Override
     public Map<String, String> getEnvironmentVariables() {
-        Map<String ,  String>ret=new HashMap<>();
-        if(isWindows) {
-        	ret.put("path",myMinGWBinPath.toString()+File.pathSeparator+"%path%");
-        }else {
-        	ret.put("path",myMinGWBinPath.toString()+File.pathSeparator+"$path");
-        }
-        return ret;
+    	return null;
+//        Map<String ,  String>ret=new HashMap<>();
+//        if(isWindows) {
+//        	//PATH must be capitals
+//        	ret.put(ENV_VAR_PATH,myMinGWBinPath.toString()+File.pathSeparator+"%PATH%");
+//        }else {
+//        	ret.put(ENV_VAR_PATH,myMinGWBinPath.toString()+File.pathSeparator+"$PATH");
+//        }
+//        return ret;
     }
 
     @Override
@@ -73,6 +80,16 @@ public class MinGWTargetTool implements ITargetTool {
     public ToolFlavour getToolFlavour() {
         return ToolFlavour.MINGW;
     }
+
+	@Override
+	public String getBuildCommand() {
+		return myBuildCommand;
+	}
+
+	@Override
+	public String getPathExtension() {
+		return myMinGWBinPath.toOSString();
+	}
 
 
 

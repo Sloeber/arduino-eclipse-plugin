@@ -1,6 +1,5 @@
 package io.sloeber.targetPlatform.api;
 
-import java.nio.file.Path;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
@@ -97,5 +96,9 @@ public interface ITargetTool {
     ToolFlavour getToolFlavour();
 
 	String getProviderID();
+
+	String getBuildCommand();
+
+	String getPathExtension();
 
 }

@@ -22,6 +22,7 @@ import static java.util.regex.Pattern.quote;
 
 public class PathTargetTool implements ITargetTool {
 
+	private String myBuildCommand=null;
     private ToolFlavour myToolFlavour = null;
     private Boolean myHoldAllTools = null;
     private String myProviderID=null;
@@ -128,7 +129,7 @@ public class PathTargetTool implements ITargetTool {
             return false;
         }
         String knownExtensions[] = { "", ".exe", ".bat", ".com", ".cmd" };
-        final var paths = getenv("PATH").split(quote(pathSeparator));
+        final var paths = getenv(ENV_VAR_PATH).split(quote(pathSeparator));
         return Stream.of(paths).map(Paths::get).anyMatch(path -> {
             final var p = path.resolve(exe);
             var found = false;
@@ -143,6 +144,16 @@ public class PathTargetTool implements ITargetTool {
             return found;
         });
     }
+
+	@Override
+	public String getBuildCommand() {
+		return myBuildCommand;
+	}
+
+	@Override
+	public String getPathExtension() {
+		return null;
+	}
 
 
 }

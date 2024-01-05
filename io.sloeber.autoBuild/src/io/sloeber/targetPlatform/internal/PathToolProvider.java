@@ -122,7 +122,7 @@ public class PathToolProvider implements ITargetToolProvider {
             return false;
         }
         String knownExtensions[] = { "", ".exe", ".bat", ".com", ".cmd" };
-        final var paths = getenv("PATH").split(quote(pathSeparator));
+        final var paths = getenv(ENV_VAR_PATH).split(quote(pathSeparator));
         return Stream.of(paths).map(Paths::get).anyMatch(path -> {
             final var p = path.resolve(exe);
             var found = false;
