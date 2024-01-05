@@ -16,7 +16,6 @@ package io.sloeber.autoBuild.api;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -50,10 +49,16 @@ public abstract class IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public abstract boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData,
-            IMarkerGenerator markerGenerator, IncrementalProjectBuilder projectBuilder, IConsole console,
+    public abstract boolean invokeBuild(int kind,String envp[], AutoBuildConfigurationDescription autoData,
+            IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
+    public abstract boolean invokeClean(int kind,String envp[], AutoBuildConfigurationDescription autoData,
+            IMarkerGenerator markerGenerator,  IConsole console,
+            IProgressMonitor monitor) throws CoreException;
+
+    
+    
     public abstract String getName();
 
     public abstract boolean supportsParallelBuild();

@@ -20,22 +20,27 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.utils.CommandLineUtil;
@@ -81,8 +86,17 @@ public class InternalBuildRunner extends IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeBuild(int kind, AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
-			IncrementalProjectBuilder projectBuilder, IConsole console, IProgressMonitor monitor) throws CoreException {
+	public boolean invokeClean(int kind, String[] envp, AutoBuildConfigurationDescription autoData,
+			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
+		IFolder buildRoot = autoData.getBuildFolder();
+		buildRoot.delete(true, monitor);
+		buildRoot.create(true, true, monitor);
+		return false;
+	}
+	
+	@Override
+	public boolean invokeBuild(int kind, String envp[],AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+			 IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		SubMonitor parentMon = SubMonitor.convert(monitor);
 		IBuilder builder = autoData.getConfiguration().getBuilder();
@@ -137,7 +151,7 @@ public class InternalBuildRunner extends IBuildRunner {
 						announcement = announcement + NEWLINE;
 						buildRunnerHelper.getOutputStream().write(announcement.getBytes());
 					}
-					if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+					if (launchCommand(preBuildStep,envp, autoData, monitor, buildRunnerHelper) != 0) {
 						if (autoData.stopOnFirstBuildError()) {
 							return false;
 						}
@@ -174,7 +188,7 @@ public class InternalBuildRunner extends IBuildRunner {
 						buildRunnerHelper.getOutputStream().write(NEWLINE.getBytes());
 						for (String curRecipe : curRule.getRecipes(buildRoot, autoData)) {
 							try {
-								if (launchCommand(curRecipe, autoData, monitor, buildRunnerHelper) != 0) {
+								if (launchCommand(curRecipe,envp, autoData, monitor, buildRunnerHelper) != 0) {
 									if (autoData.stopOnFirstBuildError()) {
 										isError = true;
 										break;
@@ -207,7 +221,7 @@ public class InternalBuildRunner extends IBuildRunner {
 						announcement = announcement + NEWLINE;
 						buildRunnerHelper.getOutputStream().write(announcement.getBytes());
 					}
-					if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+					if (launchCommand(postBuildStep,envp, autoData, monitor, buildRunnerHelper) != 0) {
 						return false;
 					}
 				}
@@ -227,7 +241,7 @@ public class InternalBuildRunner extends IBuildRunner {
 		return false;
 	}
 
-	private int launchCommand(String curRecipe, AutoBuildConfigurationDescription autoData, IProgressMonitor monitor,
+	private int launchCommand(String curRecipe, String envp[],AutoBuildConfigurationDescription autoData, IProgressMonitor monitor,
 			AutoBuildRunnerHelper buildRunnerHelper) throws IOException {
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(true);
@@ -235,15 +249,11 @@ public class InternalBuildRunner extends IBuildRunner {
 		IPath commandPath = new Path(args[0]);
 		String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
 
-		String[] envp=null;
-		ITargetTool targetTool = autoData.getTargetTool();
-		if (targetTool != null) {
-			Set<String> targetToolEnv = new HashSet<>();
-			for (Entry<String, String> curEnv : targetTool.getEnvironmentVariables().entrySet()) {
-				targetToolEnv.add(curEnv.getKey() + EQUAL + curEnv.getValue());
-			}
-			envp = targetToolEnv.toArray(new String[targetToolEnv.size()]);
-		}
+//        String[] envp = BuildRunnerForMake.getEnvironment(autoData.getCdtConfigurationDescription(),
+//                autoData.getConfiguration().getBuilder().appendEnvironment());
+//				
+
+
 
 		Process fProcess = null;
 		try (OutputStream stdout = buildRunnerHelper.getOutputStream();
@@ -324,5 +334,7 @@ public class InternalBuildRunner extends IBuildRunner {
 		}
 
 	}
+
+
 
 }
