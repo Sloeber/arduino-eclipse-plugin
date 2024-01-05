@@ -21,14 +21,19 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.Internal.BuilderFactory.*;
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.resources.ACBuilder;
@@ -50,12 +55,12 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.targetPlatform.api.ITargetTool;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 
     public final static String BUILDER_ID = "io.sloeber.autoBuild.integration.CommonBuilder"; //$NON-NLS-1$
 
-    //private static final String ERROR_HEADER = "automakefileBuilder error ["; //$NON-NLS-1$
     private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
     private static final String TRACE_FOOTER = "]: "; //$NON-NLS-1$
     private static final String TRACE_HEADER = "automakefileBuilder trace ["; //$NON-NLS-1$
@@ -103,7 +108,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         }
 
         try {
-            internalBuild(kind, args, monitor);
+            invokeBuild(project,kind, args, monitor);
         } finally {
             synchronized (projectsThatAreBuilding) {
                 projectsThatAreBuilding.remove(project);
@@ -123,8 +128,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * @param monitor
      * @throws CoreException
      */
-    private void internalBuild(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
-        IProject project = getProject();
+    private void invokeBuild(IProject project,int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
+        //IProject project = getProject();
 
         Set<AutoBuildConfigurationDescription> cfgsToBuild = getConfigsToBuild(project, kind, args);
 
@@ -172,13 +177,47 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         }
         
         for (AutoBuildConfigurationDescription curAutoConfig : cfgsToBuild) {
+        	String[] envp= getEnvironmentVariables(curAutoConfig);
         	IBuildRunner builder = curAutoConfig.getBuildRunner(BuildRunnerName);
-            buildProjectConfiguration(kind, builder, curAutoConfig, monitor);
+            buildProjectConfiguration(kind,envp, builder, curAutoConfig, monitor);
         }
 
     }
 
-    private static void buildProjectConfigs(IProject project, Set<ICConfigurationDescription> toBuildCfgs, int kind,
+    private String[] getEnvironmentVariables(AutoBuildConfigurationDescription autoConfig) {
+    	//Get the environment variables
+		IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
+		IEnvironmentVariable[] vars = mngr.getVariables(autoConfig.getCdtConfigurationDescription(), true);
+		Map<String, String> envMap = new HashMap<>();
+		for (IEnvironmentVariable var : vars) {
+			envMap.put(var.getName(), var.getValue());
+		}
+
+		ITargetTool targetTool = autoConfig.getTargetTool();
+		if (targetTool != null) {
+			if (targetTool.getEnvironmentVariables() != null) {
+				for (Entry<String, String> curEnv : targetTool.getEnvironmentVariables().entrySet()) {
+					envMap.put(curEnv.getKey(), curEnv.getValue());
+				}
+			}
+			if (targetTool.getPathExtension() != null) {
+				String systemPath = envMap.get(ENV_VAR_PATH);
+				if (systemPath == null) {
+					envMap.put(ENV_VAR_PATH, targetTool.getPathExtension());
+				} else {
+					envMap.put(ENV_VAR_PATH, targetTool.getPathExtension() + File.pathSeparator + systemPath);
+				}
+			}
+		}
+
+		Set<String> envSet = new HashSet<>();
+		for (Entry<String, String> curEnv : envMap.entrySet()) {
+			envSet.add(curEnv.getKey() + EQUAL + curEnv.getValue());
+		}
+		return envSet.toArray(new String[envSet.size()]);
+	}
+
+	private static void buildProjectConfigs(IProject project, Set<ICConfigurationDescription> toBuildCfgs, int kind,
             IProgressMonitor localmonitor) {
         Map<String, String> cfgIdArgs = createBuildArgs(toBuildCfgs);
         try {
@@ -286,6 +325,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     cfgToIgnore.add(curAutoConf);
                 }
                 break;
+			default:                
             case AUTO_BUILD:
                 if (!curAutoConf.isAutoBuildEnabled()) {
                     outputTrace(projectName, curAutoConf.getName() + ">>The config is setup to ignore auto builds ");
@@ -305,7 +345,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     }
 
-    private void buildProjectConfiguration(int kind, IBuildRunner builder,
+    private void buildProjectConfiguration(int kind, String envp[],IBuildRunner builder,
             AutoBuildConfigurationDescription autoData, IProgressMonitor monitor) throws CoreException {
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
@@ -320,7 +360,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             // Set the current project for markers creation
             setCurrentProject(project);
             AutoBuildCommon.createFolder(autoData.getBuildFolder());
-            if (builder.invokeBuild(kind, autoData, this, this, console, monitor)) {
+            if (builder.invokeBuild(kind,envp, autoData, this,  console, monitor)) {
                 forgetLastBuiltState();
             }
         } catch (CoreException e) {
@@ -343,15 +383,17 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         if (DEBUG_EVENTS)
             printEvent(IncrementalProjectBuilder.CLEAN_BUILD, args);
 
-        IProject curProject = getProject();
-
-        if (!isCdtProjectCreated(curProject))
-            return;
+        IProject project = getProject();
+        if (!isCdtProjectCreated(project)) {
+            System.err.println("The clean is cancelled as the project has not yet been created."); //$NON-NLS-1$
+            return ;
+        }
         AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
-                .getActiveConfig(curProject, false);
+                .getActiveConfig(project, false);
+        String[] envp= getEnvironmentVariables(autoData);
         IConsole console = CCorePlugin.getDefault().getConsole();
-        console.start(curProject);
-        autoData.getBuildRunner().invokeBuild(IncrementalProjectBuilder.CLEAN_BUILD, autoData, this, this, console,
+        console.start(project);
+        autoData.getBuildRunner().invokeClean(IncrementalProjectBuilder.CLEAN_BUILD, envp,autoData, this,  console,
                 monitor);
         //performExternalClean(autoData, false, monitor);
     }
