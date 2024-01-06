@@ -674,4 +674,12 @@ public class Tool extends SchemaObject implements ITool {
         return myOptions.getOptionById(key);
     }
 
+	@Override
+	public boolean isForLanguage(String languageId) {
+		if(myToolType==null) {
+			return false;
+		}
+		return myToolType.isForLanguage(languageId) ;
+	}
+
 }

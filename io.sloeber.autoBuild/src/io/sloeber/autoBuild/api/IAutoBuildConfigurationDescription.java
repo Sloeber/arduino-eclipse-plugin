@@ -321,4 +321,15 @@ public interface IAutoBuildConfigurationDescription {
     public ITargetTool getTargetTool();
 
     public void setToolProvider(ITargetTool targetTool);
+
+	/**
+	 * provide all the options for the resource taking into account setting on the
+	 * project level; folder level and file level. The result are the options that
+	 * should be used to build commands for the file suppose the file
+	 * src/folder1/folder2/sourceFile.cpp and the option A
+	 * 
+	 * src folder1 folder2 sourceFile.cpp value 1 2 3 4 4 1 2 3 3 1 2 2 1 1
+	 *
+	 */
+	TreeMap<IOption, String> getSelectedOptions(IResource file);
 }

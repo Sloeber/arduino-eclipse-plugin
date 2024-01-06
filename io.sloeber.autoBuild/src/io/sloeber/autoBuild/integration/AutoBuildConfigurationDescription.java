@@ -794,7 +794,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 *
 	 */
 	@Override
-	public TreeMap<IOption, String> getSelectedOptions(IResource file, ITool tool) {
+	public TreeMap<IOption, String> getSelectedOptions(IResource file) {
 
 		Map<IOption, String> retProject = new HashMap<>();
 		Map<Integer, Map<IOption, String>> retFolder = new HashMap<>();
@@ -827,6 +827,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			ret.putAll(retFolder.get(curSegment));
 		}
 		ret.putAll(retFile);
+		return ret;
+	}
+	
+	@Override
+	public TreeMap<IOption, String> getSelectedOptions(IResource file, ITool tool) {
+		TreeMap<IOption, String> ret =  getSelectedOptions( file);
 
 		// remove all options not known to the tool
 		List<IOption> toolOptions = tool.getOptions().getOptions();// TOFIX : this should be get Enabled Options

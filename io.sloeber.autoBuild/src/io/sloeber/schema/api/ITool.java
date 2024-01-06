@@ -219,4 +219,6 @@ public interface ITool extends ISchemaObject {
 
     public IOption getOption(String key);
 
+	public boolean isForLanguage(String languageId);
+
 }

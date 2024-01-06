@@ -172,26 +172,6 @@ public interface IOption extends ISchemaObject {
      */
     public String getFieldEditorExtraArgument();
 
-    /**
-     * @return the type of the option value, i.e. whether it is string, boolean,
-     *         string list or enumeration. As opposed to the getValueType() method,
-     *         the returned type does not specifies the "sense" of the value, e.g.
-     *         whether it represents the list of includes or not.
-     *
-     *         <br/>
-     *         Possible return values:
-     *         <li/>{@link IOption#BOOLEAN}
-     *         <li/>{@link IOption#STRING}
-     *         <li/>{@link IOption#ENUMERATED}
-     *         <li/>{@link IOption#TREE}
-     *         <li/>{@link IOption#STRING_LIST} - corresponds to
-     *         {@link IOption#INCLUDE_PATH}, {@link IOption#PREPROCESSOR_SYMBOLS},
-     *         {@link IOption#LIBRARIES},
-     *         {@link IOption#OBJECTS}, {@link IOption#INCLUDE_FILES},
-     *         {@link IOption#LIBRARY_PATHS},
-     *         {@link IOption#LIBRARY_FILES}, {@link IOption#MACRO_FILES}
-     */
-    int getBasicValueType();
 
     /**
      * Flag to indicate whether the option is also used by scanner discovery.
@@ -348,5 +328,7 @@ public interface IOption extends ISchemaObject {
     public String getEnumIDFromName(String enumOptionName);
 
     public Map<String, String> getCommandVars(String optionValue, IAutoBuildConfigurationDescription autoConfData);
+
+	public boolean isForLanguage(String languageId);
 
 }

@@ -93,13 +93,13 @@ public class Option extends SchemaObject implements IOption {
     private String[] modelAssignToCommandVarriable;
 
     private ISchemaObject myParent;
-    private int browseType = BROWSE_NONE;
+    private int myBrowseType = BROWSE_NONE;
     private List<OptionStringValue> myBuiltIns;
-    private IOptionCommandGenerator commandGenerator;
-    private boolean isForScannerDiscovery;
-    private IOptionDefaultValueGenerator defaultValueGenerator;
-    private int valueType;
-    private int resourceFilter;
+    private IOptionCommandGenerator myCommandGenerator;
+    private boolean myIsForScannerDiscovery;
+    private IOptionDefaultValueGenerator myDefaultValueGenerator;
+    private int myValueType;
+    private int myResourceFilter;
     private TreeRoot myTreeRoot;
     private Map<String, EnumOptionValue> myEnumOptionValues = new LinkedHashMap<>();
     private String[] myBrowseFilterExtensions;
@@ -138,9 +138,9 @@ public class Option extends SchemaObject implements IOption {
         modelFieldEditorExtraArgument = getAttributes(FIELD_EDITOR_EXTRA_ARGUMENT);
         modelAssignToCommandVarriable = getAttributes(ASSIGN_TO_COMMAND_VARIABLE);
 
-        valueType = ValueTypeStrToInt(modelValueTypeStr[SUPER]);
+        myValueType = ValueTypeStrToInt(modelValueTypeStr[SUPER]);
 
-        switch (valueType) {
+        switch (myValueType) {
         case ENUMERATED: {
             IConfigurationElement[] enumElements = element.getChildren(ENUM_VALUE);
             for (IConfigurationElement curEnumElement : enumElements) {
@@ -174,10 +174,10 @@ public class Option extends SchemaObject implements IOption {
     }
 
     private void resolveFields() {
-        isForScannerDiscovery = Boolean.parseBoolean(modelIsForSD[SUPER]);
+        myIsForScannerDiscovery = Boolean.parseBoolean(modelIsForSD[SUPER]);
 
-        browseType = resolveBrowseType(modelBrowseTypeStr[SUPER]);
-        resourceFilter = resolveResourceFilter(modelResFilterStr[SUPER]);
+        myBrowseType = resolveBrowseType(modelBrowseTypeStr[SUPER]);
+        myResourceFilter = resolveResourceFilter(modelResFilterStr[SUPER]);
 
         myBrowseFilterExtensions = modelBrowseFilterExtensionsStr[SUPER].split("\\s*,\\s*"); //$NON-NLS-1$
 
@@ -195,8 +195,10 @@ public class Option extends SchemaObject implements IOption {
             return FILTER_FILE;
         case PROJECT:
             return FILTER_PROJECT;
+		default:
+			return FILTER_NONE;
         }
-        return FILTER_NONE;
+        
     }
 
     private static int resolveBrowseType(String string) {
@@ -207,8 +209,9 @@ public class Option extends SchemaObject implements IOption {
             return BROWSE_FILE;
         case DIR:
             return BROWSE_DIR;
+		default:
+			 return BROWSE_NONE;
         }
-        return BROWSE_NONE;
     }
 
     private int ValueTypeStrToInt(String valueTypeStr) {
@@ -266,12 +269,12 @@ public class Option extends SchemaObject implements IOption {
 
     @Override
     public int getBrowseType() {
-        return browseType;
+        return myBrowseType;
     }
 
     @Override
     public int getResourceFilter() {
-        return resourceFilter;
+        return myResourceFilter;
     }
 
     @Override
@@ -288,7 +291,7 @@ public class Option extends SchemaObject implements IOption {
 
     @Override
     public boolean isForScannerDiscovery() {
-        return isForScannerDiscovery;
+        return myIsForScannerDiscovery;
     }
 
     @Override
@@ -307,7 +310,7 @@ public class Option extends SchemaObject implements IOption {
             return null;
         }
 
-        if (valueType != ENUMERATED) {
+        if (myValueType != ENUMERATED) {
             return null;
         }
         EnumOptionValue ret = myEnumOptionValues.get(enumID);
@@ -320,7 +323,7 @@ public class Option extends SchemaObject implements IOption {
 
     @Override
     public int getValueType() {
-        return valueType;
+        return myValueType;
     }
 
     private static List<String> listValueListToValueList(List<OptionStringValue> list) {
@@ -346,21 +349,6 @@ public class Option extends SchemaObject implements IOption {
         return modelFieldEditorExtraArgument[SUPER];
     }
 
-    @Override
-    public int getBasicValueType() {
-        switch (getValueType()) {
-        case IOption.BOOLEAN:
-            return IOption.BOOLEAN;
-        case IOption.STRING:
-            return IOption.STRING;
-        case IOption.ENUMERATED:
-            return IOption.ENUMERATED;
-        case IOption.TREE:
-            return IOption.TREE;
-        default:
-            return IOption.STRING_LIST;
-        }
-    }
 
     public static int getOppositeType(int type) {
         switch (type) {
@@ -388,8 +376,10 @@ public class Option extends SchemaObject implements IOption {
             return LIBRARY_FILES;
         case UNDEF_MACRO_FILES:
             return MACRO_FILES;
+		default:
+			return 0;
         }
-        return 0;
+        
     }
 
     public static class TreeRoot implements ITreeRoot {
@@ -655,8 +645,8 @@ public class Option extends SchemaObject implements IOption {
     @Override
     public String getDefaultValue(IResource resource, ITool tool, IAutoBuildConfigurationDescription autoData) {
         String ret = EMPTY_STRING;
-        if (defaultValueGenerator != null) {
-            return defaultValueGenerator.generateDefaultValue(this);
+        if (myDefaultValueGenerator != null) {
+            return myDefaultValueGenerator.generateDefaultValue(this);
         }
 
         if (!myEnablement.isBlank()) {
@@ -690,8 +680,8 @@ public class Option extends SchemaObject implements IOption {
 
     @Override
     public Map<String, String> getCommandVars(String optionValue, IAutoBuildConfigurationDescription autoConfData) {
-        if (commandGenerator != null) {
-            Map<String, String> command = commandGenerator.generateCommand(this, optionValue, autoConfData);
+        if (myCommandGenerator != null) {
+            Map<String, String> command = myCommandGenerator.generateCommand(this, optionValue, autoConfData);
             if (command != null) {
                 return command;
             }
@@ -702,7 +692,7 @@ public class Option extends SchemaObject implements IOption {
         //no tests for validity is needed here as optionValue should be fine and
         //modelAssignToCommandVarriables[SUPER] must be FLAGS if not provided
         Map<String, String> ret = new HashMap<>();
-        switch (valueType) {
+        switch (myValueType) {
         case IOption.BOOLEAN: {
             String value = Boolean.parseBoolean(optionValue) ? modelCommand[SUPER] : modelCommandFalse[SUPER];
             String values[] = value.split(SEMICOLON);
@@ -903,8 +893,8 @@ public class Option extends SchemaObject implements IOption {
         if (!isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoConfData)) {
             return true;
         }
-        if (commandGenerator != null) {
-            Map<String, String> command = commandGenerator.generateCommand(this, optionValue, autoConfData);
+        if (myCommandGenerator != null) {
+            Map<String, String> command = myCommandGenerator.generateCommand(this, optionValue, autoConfData);
             if (command != null) {
                 for (String curCommand : command.values()) {
                     if (!curCommand.isBlank()) {
@@ -915,7 +905,7 @@ public class Option extends SchemaObject implements IOption {
             }
             // if commandGenerator returns null do the default command
         }
-        switch (valueType) {
+        switch (myValueType) {
         case IOption.BOOLEAN:
             if (Boolean.parseBoolean(optionValue)) {
                 return modelCommand[SUPER].isBlank();
@@ -979,7 +969,7 @@ public class Option extends SchemaObject implements IOption {
             return null;
         }
 
-        if (valueType != ENUMERATED) {
+        if (myValueType != ENUMERATED) {
             return null;
         }
 
@@ -990,5 +980,16 @@ public class Option extends SchemaObject implements IOption {
         }
         return EMPTY_STRING;
     }
+
+	@Override
+	public boolean isForLanguage(String languageId) {
+		if(myParent instanceof ITool) {
+			ITool tool=(ITool)myParent;
+			return tool.isForLanguage(languageId);
+		}
+		//TOFIX options can have builders and toolchains as parent as well
+		//however JABA thinks maybe we should get rid of those
+		return false;
+	}
 
 }

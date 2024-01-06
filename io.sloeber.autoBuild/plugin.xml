@@ -11,10 +11,11 @@
   <projectType
         buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
         id="io.sloeber.autoBuild.projectType.compound.exe"
+        isTest="true"
         name="%autoBuild.projectType.name">
      <toolChain
            id="io.sloeber.autoBuild.toolChain.release"
-           languageSettingsProviders="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider;io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
+           languageSettingsProviders="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider"
            name="%autoBuild.tooolChain.name">
         <tool
               id="io.sloeber.autoBuild.tool.gnu.cross.assembler"
@@ -200,6 +201,7 @@
      </configuration>
      <toolChain
            id="io.sloeber.autoBuild.toolChain.exe"
+           languageSettingsProviders="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider"
            superClass="io.sloeber.autoBuild.toolChain.base.exe">
      </toolChain>
   </projectType>
@@ -219,6 +221,7 @@
      </configuration>
      <toolChain
            id="io.sloeber.autoBuild.toolChain.static.lib"
+           languageSettingsProviders="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider"
            superClass="io.sloeber.autoBuild.toolChain.base.static.lib">
      </toolChain>
   </projectType>
@@ -238,6 +241,7 @@
      </configuration>
      <toolChain
            id="io.sloeber.autoBuild.toolChain.dynamic.lib"
+           languageSettingsProviders="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider;org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider"
            superClass="io.sloeber.autoBuild.toolChain.base.dynamic.lib">
      </toolChain>
   </projectType>
@@ -9608,8 +9612,8 @@
             point="org.eclipse.cdt.core.LanguageSettingsProvider">
          <provider
                class="io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
-               id="io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
-               name="Auto build language seettings provider"
+               id="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider"
+               name="%autoBuildLanguageStingsProvider"
                prefer-non-shared="false">
          </provider>
       </extension>

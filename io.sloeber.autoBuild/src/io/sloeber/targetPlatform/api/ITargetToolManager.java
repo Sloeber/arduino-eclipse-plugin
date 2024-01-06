@@ -33,9 +33,39 @@ public interface ITargetToolManager {
                 return O_TO_C_EXE;
             case "cpp.o->exe":
                 return O_TO_CPP_EXE;
+			default:
+				break;
             }
             return null;
         }
+
+		public boolean isForLanguage(String languageId) {
+			if("org.eclipse.cdt.core.assembly".equals(languageId)) { //$NON-NLS-1$
+				switch(this) {
+				case A_TO_O:
+					return true;
+					default:
+						return false;
+				}
+			}
+			if("org.eclipse.cdt.core.gcc".equals(languageId)) { //$NON-NLS-1$
+				switch(this) {
+				case C_TO_O:case O_TO_C_DYNAMIC_LIB:case O_TO_C_EXE:
+					return true;
+					default:
+						return false;
+				}
+			}
+			if("org.eclipse.cdt.core.g++".equals(languageId)) { //$NON-NLS-1$
+				switch(this) {
+				case CPP_TO_O:case O_TO_CPP_DYNAMIC_LIB:case O_TO_CPP_EXE:case O_TO_ARCHIVE:
+					return true;
+					default:
+						return false;
+				}
+			}
+			return false;
+		}
     }
 
     public enum ToolFlavour {
