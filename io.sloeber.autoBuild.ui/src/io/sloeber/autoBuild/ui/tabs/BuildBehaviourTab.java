@@ -361,7 +361,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
 
         //On this page we can enable the fields based on buildrunner in this call
         //as this page does not allow changing the build runner
-        IBuildRunner runner = myAutoConfDesc.getBuildRunner();
+        IBuildRunner runner = myAutoConfDesc.getBuilder().getBuildRunner();
         myUseStandardBuildArgumentsButton.setEnabled(runner.supportsCustomCommand());
         myUseCustomBuildArgumentsButton.setEnabled(runner.supportsCustomCommand());
         myStopOnErrorButton.setEnabled(runner.supportsStopOnError());
@@ -379,7 +379,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
      */
     @Override
     protected void updateButtons() {
-        IBuildRunner runner = myAutoConfDesc.getBuildRunner();
+        IBuildRunner runner = myAutoConfDesc.getBuilder().getBuildRunner();
         boolean isMake = runner.supportsMakeFiles();
         if (myAutoConfDesc.useStandardBuildArguments()) {
             myStopOnErrorButton.setEnabled(runner.supportsStopOnError());
@@ -404,7 +404,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
     }
 
     private void updateParallelBlock() {
-        IBuildRunner buildRunner = myAutoConfDesc.getBuildRunner();
+        IBuildRunner buildRunner = myAutoConfDesc.getBuilder().getBuildRunner();
 
         boolean isParallelSupported = buildRunner.supportsParallelBuild();
         boolean isParallelOn = myAutoConfDesc.isParallelBuild();

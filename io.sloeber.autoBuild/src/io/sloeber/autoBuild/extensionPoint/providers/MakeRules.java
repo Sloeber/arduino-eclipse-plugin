@@ -25,6 +25,7 @@ import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
 
 public class MakeRules implements Iterable<MakeRule> {
     static private boolean VERBOSE = false;
@@ -267,13 +268,13 @@ public class MakeRules implements Iterable<MakeRule> {
         protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationDescription autoBuildConfData,
                 IFile inputFile) {
 
-            IConfiguration config = autoBuildConfData.getConfiguration();
+            IToolChain toolchain=autoBuildConfData.getProjectType().getToolChain();
             String ext = inputFile.getFileExtension();
             if (ext == null || ext.isBlank()) {
                 return false;
             }
             int numRulesAtStart = myMakeRules.size();
-            for (ITool tool : config.getToolChain().getTools()) {
+            for (ITool tool : toolchain.getTools()) {
                 addRules(tool.getMakeRules(autoBuildConfData, null, inputFile, 0, VERBOSE));
                 //                if (!tool.isEnabled(autoBuildConfData)) {
                 //                    continue;
@@ -328,13 +329,13 @@ public class MakeRules implements Iterable<MakeRule> {
     protected static MakeRules getMakeRulesFromGeneratedFiles(AutoBuildConfigurationDescription autoBuildConfData,
             Map<IOutputType, Set<IFile>> generatedFiles, int makeRuleSequenceID) {
         MakeRules newMakeRules = new MakeRules();
-        IConfiguration config = autoBuildConfData.getConfiguration();
+        IToolChain toolchain=autoBuildConfData.getProjectType().getToolChain();
 
         for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
             IOutputType outputTypeIn = entry.getKey();
             Set<IFile> files = entry.getValue();
             for (IFile file : files) {
-                for (ITool tool : config.getToolChain().getTools()) {
+                for (ITool tool : toolchain.getTools()) {
                     newMakeRules.addRules(
                             tool.getMakeRules(autoBuildConfData, outputTypeIn, file, makeRuleSequenceID, VERBOSE));
 

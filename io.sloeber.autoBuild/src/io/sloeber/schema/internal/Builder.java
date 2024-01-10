@@ -43,30 +43,18 @@ public class Builder extends SchemaObject implements IBuilder {
 
     private String[] modelcommand;
     private String[] modelarguments;
-    private String[] modelbuildfileGenerator;
     private String[] modelErrorParsers;
-    private String[] modelvariableFormat;
-    private String[] modelreservedMacroNames;
-    private String[] modelReservedMacroNameSupplier;
     private String[] modelautoBuildTarget;
     private String[] modelincrementalBuildTarget;
     private String[] modelcleanBuildTarget;
     private String[] modelignoreErrCmd;
     private String[] modelparallelBuildCmd;
-    private String[] modelisSystem;
-    private String[] modelcommandLauncher;
     private String[] modelbuildRunner;
 
     //  Parent and children
-    private IToolChain parent;
-    private String[] reservedMacroNames;
-    private ICommandLauncher fCommandLauncher;
-    private IReservedMacroNameSupplier reservedMacroNameSupplier;
     private IBuildRunner fBuildRunner = null;
-    private IMakefileGenerator myMakeFileGenerator;
     Set<String> myErrorParsers = new HashSet<>();
 
-    private Options myOptionMap = new Options();
 
     /**
      * This constructor is called to create a builder defined by an extension point
@@ -82,40 +70,20 @@ public class Builder extends SchemaObject implements IBuilder {
      * @param managedBuildRevision
      *            The fileVersion of Managed Buid System
      */
-    public Builder(IToolChain parent, IExtensionPoint root, IConfigurationElement element) {
-        this.parent = parent;
+    public Builder( IExtensionPoint root, IConfigurationElement element) {
         loadNameAndID(root, element);
 
         modelcommand = getAttributes(COMMAND);
         modelarguments = getAttributes(ARGUMENTS);
-        modelbuildfileGenerator = getAttributes(MAKEGEN_ID);
         modelErrorParsers = getAttributes(ERROR_PARSERS);
 
-        modelvariableFormat = getAttributes(VARIABLE_FORMAT);
-        modelreservedMacroNames = getAttributes(RESERVED_MACRO_NAMES);
-        modelReservedMacroNameSupplier = getAttributes(RESERVED_MACRO_NAME_SUPPLIER);
         modelautoBuildTarget = getAttributes(ATTRIBUTE_TARGET_AUTO);
         modelincrementalBuildTarget = getAttributes(ATTRIBUTE_TARGET_INCREMENTAL);
         modelcleanBuildTarget = getAttributes(ATTRIBUTE_TARGET_CLEAN);
         modelignoreErrCmd = getAttributes(ATTRIBUTE_IGNORE_ERR_CMD);
         modelparallelBuildCmd = getAttributes(ATTRIBUTE_PARALLEL_BUILD_CMD);
-        modelisSystem = getAttributes(IS_SYSTEM);
-        modelcommandLauncher = getAttributes(ATTRIBUTE_COMMAND_LAUNCHER);
         modelbuildRunner = getAttributes(ATTRIBUTE_BUILD_RUNNER);
 
-        IConfigurationElement[] optionElements = element.getChildren(IOptions.OPTION);
-        for (IConfigurationElement optionElement : optionElements) {
-            myOptionMap.add(new Option(this, root, optionElement));
-        }
-
-        myMakeFileGenerator = (IMakefileGenerator) createExecutableExtension(MAKEGEN_ID);
-        reservedMacroNameSupplier = (IReservedMacroNameSupplier) createExecutableExtension(
-                RESERVED_MACRO_NAME_SUPPLIER);
-
-        fCommandLauncher = (ICommandLauncher) createExecutableExtension(ATTRIBUTE_COMMAND_LAUNCHER);
-        if (fCommandLauncher == null) {
-            fCommandLauncher = CommandLauncherManager.getInstance().getCommandLauncher();
-        }
         fBuildRunner = (IBuildRunner) createExecutableExtension(ATTRIBUTE_BUILD_RUNNER);
         if (fBuildRunner == null) {
             fBuildRunner = new BuildRunnerForMake();
@@ -129,7 +97,6 @@ public class Builder extends SchemaObject implements IBuilder {
         if (myName.isBlank()) {
             myName = getId();
         }
-        reservedMacroNames = modelreservedMacroNames[SUPER].split(","); //$NON-NLS-1$
 
         if (modelcommand[SUPER].isBlank()) {
             modelcommand[SUPER] = "make"; //$NON-NLS-1$
@@ -144,16 +111,6 @@ public class Builder extends SchemaObject implements IBuilder {
         String parseArray[] = modelErrorParsers[SUPER].split(Pattern.quote(SEMICOLON));
         myErrorParsers.addAll(Arrays.asList(parseArray));
 
-    }
-
-    //  
-    /*
-     *  P A R E N T   A N D   C H I L D   H A N D L I N G
-     */
-
-    @Override
-    public IToolChain getParent() {
-        return parent;
     }
 
     @Override
@@ -194,22 +151,6 @@ public class Builder extends SchemaObject implements IBuilder {
 
     }
 
-    @Override
-    public IMakefileGenerator getBuildFileGenerator() {
-        return myMakeFileGenerator;
-    }
-
-    //TODO JABA get rid of this replace with "isMacroName"
-    @Override
-    public String[] getReservedMacroNames() {
-        return reservedMacroNames;
-    }
-
-    //TODO JABA get rid of this replace with "isMacroName"
-    @Override
-    public IReservedMacroNameSupplier getReservedMacroNameSupplier() {
-        return reservedMacroNameSupplier;
-    }
 
     @Override
     public String getAutoBuildTarget() {
@@ -246,21 +187,12 @@ public class Builder extends SchemaObject implements IBuilder {
         return !modelarguments[SUPER].isBlank();
     }
 
-    @Override
-    public ICommandLauncher getCommandLauncher() {
-        return fCommandLauncher;
-    }
 
     @Override
-    public IBuildRunner getBuildRunner() throws CoreException {
+    public IBuildRunner getBuildRunner()  {
         return fBuildRunner;
     }
 
-
-    @Override
-    public String getBuilderVariablePattern() {
-        return modelvariableFormat[SUPER];
-    }
 
 }
 

@@ -16,11 +16,11 @@ import io.sloeber.targetPlatform.api.ITargetTool;
 import io.sloeber.targetPlatform.api.ITargetToolProvider;
 
 public class AutoBuildProject {
-    public static final String BUILDER_ID = "io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
+	public static final String COMMON_BUILDER_ID="io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
+    public static final String MAKE_BUILDER_ID = "io.sloeber.autoBuild.make.builder"; //$NON-NLS-1$
+    public static final String INTERNAL_BUILDER_ID = "io.sloeber.autoBuild.internal.builder"; //$NON-NLS-1$
     public static final String ARGS_BUILDER_KEY = "The key to specify the value is a builder key"; //$NON-NLS-1$
     public static final String ARGS_TARGET_KEY = "The key to specify the value is the target to build"; //$NON-NLS-1$
-    public static final String ARGS_INTERNAL_BUILDER_KEY = InternalBuildRunner.RUNNER_NAME;
-    public static final String ARGS_MAKE_BUILDER_KEY = BuildRunnerForMake.RUNNER_NAME;
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,

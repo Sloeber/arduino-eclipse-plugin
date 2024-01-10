@@ -8,7 +8,9 @@
 		name="stuff for testing autoBuild" >
 		
   <projectType
+        builders="io.sloeber.autoBuild.internal.builder;cdt.autobuild.make.builder"
         id="io.sloeber.autoBuild.projectType.test.options"
+        isTest="true"
         name="autoBuild test options">
      <configuration
            id="io.sloeber.autoBuild.configuration.test"

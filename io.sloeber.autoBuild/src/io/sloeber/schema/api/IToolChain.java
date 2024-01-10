@@ -57,19 +57,6 @@ public interface IToolChain extends ISchemaObject {
      */
     public IProjectType getParent();
 
-    /**
-     * Returns the target-platform child of this tool-chain
-     *
-     * @return ITargetPlatform
-     */
-    public ITargetPlatform getTargetPlatform();
-
-    /**
-     * Returns the builder child of this tool-chain.
-     *
-     * @return IBuilder
-     */
-    public IBuilder getBuilder();
 
     /**
      * Returns an array of tool children of this tool-chain

@@ -200,30 +200,30 @@ public class Shared {
 		BuildAndVerifyActiveConfig(theTestProject, null, null);
 	}
 
-	public static void BuildAndVerifyActiveConfig(IProject theTestProject, String builderName,
+	public static void BuildAndVerifyActiveConfig(IProject theTestProject, String builderID,
 			Boolean shouldMakefileExists) throws Exception {
-		build(theTestProject, builderName, null);
+		build(theTestProject, builderID, null);
 
 		verifyConfig(theTestProject, IAutoBuildConfigurationDescription.getActiveConfig(theTestProject, false),
 				shouldMakefileExists);
 
 	}
 
-	public static void build(IProject theTestProject, String builderName, String configs) throws Exception {
+	public static void build(IProject theTestProject, String builderID, String configs) throws Exception {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 
 		waitForAllJobsToFinish();
-		if (builderName == null && configs == null) {
+		if (builderID == null && configs == null) {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		} else {
 			Map<String, String> args = new HashMap<>();
-			if (builderName != null) {
-				args.put(AutoBuildProject.ARGS_BUILDER_KEY, builderName);
+			if (builderID != null) {
+				args.put(AutoBuildProject.ARGS_BUILDER_KEY, builderID);
 			}
 			if (configs != null) {
 				args.put(AutoBuildProject.ARGS_CONFIGS_KEY, configs);
 			}
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, AutoBuildProject.BUILDER_ID, args, monitor);
+			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, AutoBuildProject.COMMON_BUILDER_ID, args, monitor);
 		}
 		waitForAllJobsToFinish();
 	}

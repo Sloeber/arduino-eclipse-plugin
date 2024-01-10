@@ -27,7 +27,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
  * @author Doug Schaefer
  * @since 8.0
  */
-public abstract class IBuildRunner {
+public interface IBuildRunner {
 
     /**
      * Perform the build.
@@ -49,30 +49,30 @@ public abstract class IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public abstract boolean invokeBuild(int kind,String envp[], AutoBuildConfigurationDescription autoData,
+    public  boolean invokeBuild(int kind,String envp[], AutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
-    public abstract boolean invokeClean(int kind,String envp[], AutoBuildConfigurationDescription autoData,
+    public  boolean invokeClean(int kind,String envp[], AutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
     
     
-    public abstract String getName();
+    public  String getName();
 
-    public abstract boolean supportsParallelBuild();
+    public  boolean supportsParallelBuild();
 
-    public abstract boolean supportsStopOnError();
+    public  boolean supportsStopOnError();
 
-    public abstract boolean supportsCustomCommand();
+    public  boolean supportsCustomCommand();
 
-    public abstract boolean supportsMakeFiles();
+    public  boolean supportsMakeFiles();
 
-    public abstract boolean supportsAutoBuild();
+    public  boolean supportsAutoBuild();
 
-    public abstract boolean supportsIncrementalBuild();
+    public  boolean supportsIncrementalBuild();
 
-    public abstract boolean supportsCleanBuild();
+    public  boolean supportsCleanBuild();
 
 }

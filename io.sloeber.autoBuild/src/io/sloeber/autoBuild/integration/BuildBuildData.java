@@ -36,15 +36,11 @@ public class BuildBuildData extends CBuildData {
 
     public BuildBuildData(AutoBuildConfigurationDescription autoBuildConf) {
         this(autoBuildConf, (BuildBuildData) null, false);
-        //        myAutoBuildConf = autoBuildConf;
-        //        fBuilder = myAutoBuildConf.getConfiguration().getBuilder();
-        //        myID = CDataUtil.genId(fBuilder.getId());
-        //        myBuildEnvironmentContributor = new BuildEnvironmentContributor(myAutoBuildConf);
     }
 
     public BuildBuildData(AutoBuildConfigurationDescription autoBuildConf, BuildBuildData source, boolean clone) {
         myAutoBuildConf = autoBuildConf;
-        fBuilder = myAutoBuildConf.getConfiguration().getBuilder();
+        fBuilder = myAutoBuildConf.getBuilder();
         if (clone && source != null) {
             myID = source.myID;
         } else {

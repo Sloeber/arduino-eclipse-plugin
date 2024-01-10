@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +28,9 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.Platform;
-
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IProjectType;
@@ -56,12 +51,11 @@ public class Configuration extends SchemaObject implements IConfiguration {
     private String[] modeldescription;
     private String[] modelbuildProperties;
     private String[] modelbuildArtefactType;
-    private String[] modelcleanCommand;
 
     private Map<String, String> myBuildProperties = new HashMap<>();
 
     // Parent and children
-    private ProjectType projectType;
+    private ProjectType myProjectType;
     private List<String> defaultLanguageSettingsProviderIds = new ArrayList<>();
 
     private boolean isPreferenceConfig;
@@ -78,13 +72,12 @@ public class Configuration extends SchemaObject implements IConfiguration {
      *            configuration information.
      */
     public Configuration(ProjectType projectType, IExtensionPoint root, IConfigurationElement element) {
-        this.projectType = projectType;
+        this.myProjectType = projectType;
 
         loadNameAndID(root, element);
 
         modelartifactName = getAttributes(ARTIFACT_NAME);
         modelartifactExtension = getAttributes(ARTIFACT_EXTENSION);
-        modelcleanCommand = getAttributes(CLEAN_COMMAND);
         modelerrorParsers = getAttributes(ERROR_PARSERS);
         modellanguageSettingsProviders = getAttributes(LANGUAGE_SETTINGS_PROVIDERS);
         modeldescription = getAttributes(DESCRIPTION);
@@ -100,14 +93,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
         myErrorParserIDs.addAll(Arrays.asList(errorParserIDs));
         myErrorParserIDs.addAll(builderErroParserIds);
         myErrorParserIDs.remove(EMPTY_STRING);
-
-        if (modelcleanCommand[SUPER].isBlank()) {
-            if (Platform.getOS().equals(Platform.OS_WIN32)) {
-                modelcleanCommand[SUPER] = "del"; //$NON-NLS-1$
-            } else {
-                modelcleanCommand[SUPER] = "rm"; //$NON-NLS-1$
-            }
-        }
 
         if (modellanguageSettingsProviders[SUPER].isBlank()) {
             modellanguageSettingsProviders[SUPER] = $TOOLCHAIN;
@@ -141,9 +126,13 @@ public class Configuration extends SchemaObject implements IConfiguration {
 
     }
 
-    @Override
+    private IToolChain getToolChain() {
+		return myProjectType.getToolChain();
+	}
+
+	@Override
     public IProjectType getProjectType() {
-        return projectType;
+        return myProjectType;
     }
 
     /*
@@ -173,11 +162,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
     @Override
     public String[] getErrorParserList() {
         return myErrorParserIDs.toArray(new String[myErrorParserIDs.size()]);
-    }
-
-    @Override
-    public String getCleanCommand() {
-        return modelcleanCommand[SUPER];
     }
 
     /**
@@ -214,10 +198,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
         //                return sourceEntries.clone();
     }
 
-    @Override
-    public IBuilder getBuilder() {
-        return getToolChain().getBuilder();
-    }
+
 
     public boolean isPreference() {
         return isPreferenceConfig;
@@ -236,7 +217,6 @@ public class Configuration extends SchemaObject implements IConfiguration {
         ret.append(prepend + ID + EQUAL + myID + NEWLINE);
         ret.append(prepend + ARTIFACT_NAME + EQUAL + modelartifactName[SUPER] + NEWLINE);
         ret.append(prepend + ARTIFACT_EXTENSION + EQUAL + modelartifactExtension[SUPER] + NEWLINE);
-        ret.append(prepend + CLEAN_COMMAND + EQUAL + modelcleanCommand[SUPER] + NEWLINE);
         ret.append(prepend + ERROR_PARSERS + EQUAL + modelerrorParsers[SUPER] + NEWLINE);
         ret.append(prepend + LANGUAGE_SETTINGS_PROVIDERS + EQUAL + modellanguageSettingsProviders[SUPER] + NEWLINE);
 
@@ -287,9 +267,5 @@ public class Configuration extends SchemaObject implements IConfiguration {
         return ret;
     }
 
-    @Override
-    public IToolChain getToolChain() {
-        return projectType.getToolChain();
-    }
 
 }

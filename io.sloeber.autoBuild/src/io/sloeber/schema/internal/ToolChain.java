@@ -32,10 +32,8 @@ import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ITargetPlatform;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
@@ -55,8 +53,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
     String[] modelIsSytem;
 
     private Map<String, Tool> myToolMap = new HashMap<>();
-    private TargetPlatform myTargetPlatform = null;
-    private Builder myBuilder;
     Set<String> myErrorParsersIDs = new HashSet<>();
     // Managed Build model attributes
     private List<String> myArchList = new ArrayList<>();
@@ -87,23 +83,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         modelBuildMacroSuplier = getAttributes(CONFIGURATION_MACRO_SUPPLIER);
         modelIsSytem = getAttributes(IS_SYSTEM);
 
-        IConfigurationElement[] targetPlatforms = element.getChildren(ITargetPlatform.TARGET_PLATFORM_ELEMENT_NAME);
-        if (targetPlatforms.length == 1) {
-            myTargetPlatform = new TargetPlatform(this, root, targetPlatforms[0]);
-        } else {
-            System.err.println(
-                    "Targetplatforms of toolchain " + parent.getId() + DOT + parent.getName() + BLANK + myID + DOT //$NON-NLS-1$
-                            + myName + " has wrong cardinality " + String.valueOf(targetPlatforms.length) + DOT); //$NON-NLS-1$
-        }
-
-        // Load the Builder child
-        List<IConfigurationElement> builders = getFirstChildren(IBuilder.BUILDER_ELEMENT_NAME);
-        if (builders.size() == 1) {
-            myBuilder = new Builder(this, root, builders.get(0));
-        } else {
-            System.err.println("builders of toolchain " + myName + " has wrong cardinality expected 1 has " //$NON-NLS-1$//$NON-NLS-2$
-                    + String.valueOf(builders.size()) + DOT);
-        }
 
         List<IConfigurationElement> toolChainElements = getFirstChildren(ITool.TOOL_ELEMENT_NAME);
         for (IConfigurationElement toolChainElement : toolChainElements) {
@@ -152,7 +131,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
             String toolErrorIDs[] = curTool.getErrorParserList();
             myErrorParsersIDs.addAll(Arrays.asList(toolErrorIDs));
         }
-        myErrorParsersIDs.addAll(myBuilder.getErrorParserList());
         myErrorParsersIDs.remove(EMPTY_STRING);
     }
 
@@ -161,15 +139,6 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return myProjectType;
     }
 
-    @Override
-    public ITargetPlatform getTargetPlatform() {
-        return myTargetPlatform;
-    }
-
-    @Override
-    public IBuilder getBuilder() {
-        return myBuilder;
-    }
 
     @Override
     public List<ITool> getTools() {

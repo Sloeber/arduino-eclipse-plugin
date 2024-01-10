@@ -28,6 +28,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
+import io.sloeber.schema.api.IToolChain;
 
 /**
  * This is the default makefile generator Feel free to extend to add the flavors
@@ -369,15 +370,12 @@ public class MakefileGenerator implements IMakefileGenerator {
 	}
 
 	protected StringBuffer topMakeGetRMCommand(Set<String> myDependencyMacros) {
-		IConfiguration config = myAutoBuildConfData.getConfiguration();
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE); //$NON-NLS-1$
 		buffer.append(NEWLINE);
 		// Get the clean command from the build model
 		buffer.append("RM := "); //$NON-NLS-1$
-		// support macros in the clean command
-		String cleanCommand = resolve(config.getCleanCommand(), EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
-		buffer.append(cleanCommand).append(NEWLINE);
+		buffer.append("rm -rf").append(NEWLINE);
 		buffer.append(NEWLINE);
 
 		if (!myDependencyMacros.isEmpty()) {
@@ -451,11 +449,11 @@ public class MakefileGenerator implements IMakefileGenerator {
 	}
 
 	protected StringBuffer topMakeGetTargets() {
-		IConfiguration config = myAutoBuildConfData.getConfiguration();
+		IToolChain toolChain=myAutoBuildConfData.getProjectType().getToolChain();
 		StringBuffer buffer = new StringBuffer();
 
 		buffer.append(MAINBUILD).append(COLON).append(WHITESPACE);
-		Set<ITool> targetTools = config.getToolChain().getTargetTools();
+		Set<ITool> targetTools = toolChain.getTargetTools();
 		if (targetTools.size() > 0) {
 			for (ITool curTargetTool : targetTools) {
 				Set<IFile> allTargets = myMakeRules.getTargetsForTool(curTargetTool);
@@ -475,7 +473,7 @@ public class MakefileGenerator implements IMakefileGenerator {
 		}
 
 		// Add the Secondary Outputs to the all target, if any
-		List<IOutputType> secondaryOutputs = config.getToolChain().getSecondaryOutputs();
+		List<IOutputType> secondaryOutputs = toolChain.getSecondaryOutputs();
 		if (secondaryOutputs.size() > 0) {
 			buffer.append(WHITESPACE).append(SECONDARY_OUTPUTS);
 		}

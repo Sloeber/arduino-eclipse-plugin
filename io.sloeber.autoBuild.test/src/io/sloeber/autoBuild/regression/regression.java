@@ -1,6 +1,7 @@
 package io.sloeber.autoBuild.regression;
 
 import static org.junit.Assert.*;
+import static io.sloeber.autoBuild.helpers.Defaults.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.targetPlatform.api.ITargetTool;
@@ -73,8 +75,8 @@ public class regression {
         beforeAll();// for one reason or another the beforeall is not called
         String projectName = "createCloseOpenProject";
 
-        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, "cdt.cross.gnu",
-                "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID,
+        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
+        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,
                 new TemplateTestCodeProvider("exe"), targetTool, false, null);
 
         //Build all the configurations and verify proper building
@@ -112,8 +114,8 @@ public class regression {
         beforeAll();// for one reason or another the before all is not called
         String projectName = "setBuilder";
 
-        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, "cdt.cross.gnu",
-                "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID,
+        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
+        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,
                 new TemplateTestCodeProvider("exe"), targetTool, false, null);
 
         //Build the active configuration and verify proper building
@@ -126,11 +128,13 @@ public class regression {
 
         IFile makeFile = activeConfig.getBuildFolder().getFile("makefile");
         boolean hasMakefile = makeFile.exists();
+        IBuilder builder=null; 
         if (hasMakefile) {
-            activeConfig.setBuildRunner(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY);
+        	builder=activeConfig.getBuilder(AutoBuildProject.INTERNAL_BUILDER_ID);
         } else {
-            activeConfig.setBuildRunner(AutoBuildProject.ARGS_MAKE_BUILDER_KEY);
+        	builder=activeConfig.getBuilder(AutoBuildProject.MAKE_BUILDER_ID);
         }
+        activeConfig.setBuilder(builder);
         //clean all configurations and verify clean has been done properly
         Shared.cleanConfiguration(activeConfig);
         //do the clean before the builderswitch otherwise the makefile in the buildroot will make the test fail
@@ -182,7 +186,7 @@ public class regression {
                 .getActiveConfig(projectDescription);
 
         //get the tool and option
-        ITool tool = autoConf.getAutoBuildConfiguration().getToolChain().getTools().get(0);
+        ITool tool = autoConf.getProjectType().getToolChain().getTools().get(0);
         IOption iOption = tool.getOption(optionID);
 
         //If the statics are null initialize them

@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.ui.internal.Messages;
+import io.sloeber.schema.api.IBuilder;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
@@ -63,8 +64,8 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         myBuilderTypeCombo.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-                IBuildRunner buildRunner = (IBuildRunner) myBuilderTypeCombo.getData(myBuilderTypeCombo.getText());
-                myAutoConfDesc.setBuildRunner(buildRunner);
+                IBuilder builder = (IBuilder) myBuilderTypeCombo.getData(myBuilderTypeCombo.getText());
+                myAutoConfDesc.setBuilder(builder);
                 updateButtons();
             }
         });
@@ -178,11 +179,11 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
         //as each autoConfDesc can contain a different set of builders
         //we need to replace all of them
         myBuilderTypeCombo.removeAll();
-        for (IBuildRunner buildRunner : myAutoConfDesc.getCompatibleBuildRunners()) {
-            myBuilderTypeCombo.add(buildRunner.getName());
-            myBuilderTypeCombo.setData(buildRunner.getName(), buildRunner);
+        for (IBuilder builder : myAutoConfDesc.getAvailableBuilders()) {
+            myBuilderTypeCombo.add(builder.getName());
+            myBuilderTypeCombo.setData(builder.getName(), builder);
         }
-        IBuildRunner buildRunner = myAutoConfDesc.getBuildRunner();
+        IBuilder buildRunner = myAutoConfDesc.getBuilder();
         myBuilderTypeCombo.setText(buildRunner.getName());
         myBuildCmdText.setText(myAutoConfDesc.getBuildCommand(true));
         myBuildFolderText.setText(myAutoConfDesc.getBuildFolderString());
@@ -202,7 +203,8 @@ public class BuilderSettingsTab extends AbstractAutoBuildPropertyTab {
     @Override
     protected void updateButtons() {
 
-        IBuildRunner buildRunner = myAutoConfDesc.getBuildRunner();
+        IBuilder builder = myAutoConfDesc.getBuilder();
+        IBuildRunner buildRunner=builder.getBuildRunner(); 
         myUseDefaultBuildCommandButton.setEnabled(buildRunner.supportsCustomCommand());
         boolean enableCustomBuildcmd = buildRunner.supportsCustomCommand() && !myAutoConfDesc.useDefaultBuildCommand();
         myBuildCmdText.setEnabled(enableCustomBuildcmd);

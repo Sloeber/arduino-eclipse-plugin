@@ -42,17 +42,12 @@ public interface IBuilder extends ISchemaObject {
 
     public static final String COMMAND = "command"; //$NON-NLS-1$
     public static final String ARGUMENTS = "arguments"; //$NON-NLS-1$
-    public static final String MAKEGEN_ID = "makefileGenerator"; //$NON-NLS-1$
     public static final String ERROR_PARSERS = IToolChain.ERROR_PARSERS;
-    public static final String VARIABLE_FORMAT = "variableFormat"; //$NON-NLS-1$
-    public static final String RESERVED_MACRO_NAMES = "reservedMacroNames"; //$NON-NLS-1$
-    public static final String RESERVED_MACRO_NAME_SUPPLIER = "reservedMacroNameSupplier"; //$NON-NLS-1$
     public static final String ATTRIBUTE_TARGET_AUTO = "autoBuildTarget"; //$NON-NLS-1$
     public static final String ATTRIBUTE_TARGET_INCREMENTAL = "incrementalBuildTarget"; //$NON-NLS-1$
     public static final String ATTRIBUTE_TARGET_CLEAN = "cleanBuildTarget"; //$NON-NLS-1$
     public static final String ATTRIBUTE_IGNORE_ERR_CMD = "ignoreErrCmd"; //$NON-NLS-1$
     public static final String ATTRIBUTE_PARALLEL_BUILD_CMD = "parallelBuildCmd"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_COMMAND_LAUNCHER = "commandLauncher"; //$NON-NLS-1$
     public static final String ATTRIBUTE_BUILD_RUNNER = "buildRunner"; //$NON-NLS-1$
 
     public final static String ARGS_PREFIX = Activator.getId();
@@ -72,12 +67,6 @@ public interface IBuilder extends ISchemaObject {
      */
     public String getArguments(boolean parallel, int numParallel, boolean stopOnError);
 
-    /**
-     * Returns the BuildfileGenerator used to generate buildfiles for this builder
-     *
-     * @return IManagedBuilderMakefileGenerator
-     */
-    IMakefileGenerator getBuildFileGenerator();
 
     /**
      * Returns the name of the build/make utility for the configuration.
@@ -104,27 +93,9 @@ public interface IBuilder extends ISchemaObject {
      */
     public Set<String> getErrorParserList();
 
-    /**
-     * Returns the tool-chain that is the parent of this builder.
-     *
-     * @return IToolChain
-     */
-    public IToolChain getParent();
 
-    /**
-     * Returns an array of Strings representing the patterns of the
-     * builder/buildfile-generator
-     * reserved variables
-     *
-     * @return String[]
-     */
-    public String[] getReservedMacroNames();
 
-    public IReservedMacroNameSupplier getReservedMacroNameSupplier();
-
-    public ICommandLauncher getCommandLauncher();
-
-    public IBuildRunner getBuildRunner() throws CoreException;
+    public IBuildRunner getBuildRunner() ;
 
     boolean supportsStopOnError();
 
@@ -139,7 +110,5 @@ public interface IBuilder extends ISchemaObject {
     String getAutoBuildTarget();
 
     boolean supportsBuild(boolean managed);
-
-    public String getBuilderVariablePattern();
 
 }

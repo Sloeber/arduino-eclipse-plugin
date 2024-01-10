@@ -30,7 +30,7 @@ public class BuildEnvironmentContributor implements IEnvironmentContributor {
         if (pType != null) {
             myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableProvider();
         }
-        myConfigurationEnvironmentVariableProvider = myAutoData.getConfiguration().getToolChain()
+        myConfigurationEnvironmentVariableProvider = pType.getToolChain()
                 .getEnvironmentVariableProvider();
     }
 

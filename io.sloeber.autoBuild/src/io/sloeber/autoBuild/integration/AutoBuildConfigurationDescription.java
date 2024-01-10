@@ -66,7 +66,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private static final String KEY_VALUE = "value"; //$NON-NLS-1$
 	private static final String KEY_RESOURCE = "resource";//$NON-NLS-1$
 	private static final String KEY_TOOL = "tool";//$NON-NLS-1$
-	private static final String KEY_BUILD_RUNNER_NAME = "buildRunnerName";//$NON-NLS-1$
+	private static final String KEY_BUILDER_ID = "builderID";//$NON-NLS-1$
 	private static final String KEY_AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
 	private static final String KEY_INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
 	private static final String KEY_CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
@@ -81,6 +81,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	// Start of fields that need to be copied/made persistent
 	private IConfiguration myAutoBuildConfiguration;
+	private IProjectType myProjectType;
 
 	private ICConfigurationDescription myCdtConfigurationDescription;
 	private BuildTargetPlatformData myTargetPlatformData;
@@ -112,10 +113,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	private boolean myIsParallelBuild = false;
 
-	private IBuildRunner myBuildRunner = staticInternalBuildRunner; // internal builder is default
-	private boolean myIsCleanBuildEnabled = myBuildRunner.supportsCleanBuild();
-	private boolean myIsIncrementalBuildEnabled = myBuildRunner.supportsIncrementalBuild();
-	private boolean myIsAutoBuildEnabled = myBuildRunner.supportsAutoBuild();
+	private IBuilder myBuilder = null;
+	private Map<String, IBuilder> myBuilders = new HashMap<>();
+	private boolean myIsCleanBuildEnabled = false;
+	private boolean myIsIncrementalBuildEnabled = false;
+	private boolean myIsAutoBuildEnabled = false;
 	private String myCustomBuildArguments = EMPTY_STRING;
 
 	private boolean myUseDefaultBuildCommand = true;
@@ -136,32 +138,30 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private AutoBuildConfigurationExtensionDescription myAutoBuildCfgExtDes = null;
 	// End of fields that need to be copied/made persistent
 
-	private Set<IBuildRunner> myBuildRunners = createBuildRunners();
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 	private boolean myIsWritable = false;
 
-	private static IBuildRunner staticMakeBuildRunner = new BuildRunnerForMake();
-	private static IBuildRunner staticInternalBuildRunner = new InternalBuildRunner();
-
 	public AutoBuildConfigurationDescription(Configuration config, IProject project, ITargetTool targetTool) {
-		// myId = config.getId();
 		myTargetTool = targetTool;
 		myIsWritable = true;
 		myCdtConfigurationDescription = null;
 		myAutoBuildConfiguration = config;
+		myProjectType = myAutoBuildConfiguration.getProjectType();
 		myProject = project;
-		myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
+		myTargetPlatformData = new BuildTargetPlatformData();
 		myName = myAutoBuildConfiguration.getName();
 		myDescription = myAutoBuildConfiguration.getDescription();
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
+		myBuilders = myProjectType.getBuilders();
+		myBuilder = myProjectType.getdefaultBuilder();
+		if(myBuilder==null) {
+			System.err.println("project "+project.getName()+" has no default builder");
+			myBuilder=AutoBuildManager.getDefaultBuilder();
+		}
+		myIsCleanBuildEnabled = myBuilder.getBuildRunner().supportsCleanBuild();
+		myIsIncrementalBuildEnabled = myBuilder.getBuildRunner().supportsIncrementalBuild();
+		myIsAutoBuildEnabled = myBuilder.getBuildRunner().supportsAutoBuild();
 
-	}
-
-	private static Set<IBuildRunner> createBuildRunners() {
-		Set<IBuildRunner> ret = new HashSet<>();
-		ret.add(staticMakeBuildRunner);
-		ret.add(staticInternalBuildRunner);
-		return ret;
 	}
 
 	// Copy constructor
@@ -176,6 +176,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myAutoBuildConfiguration = base.myAutoBuildConfiguration;
 		myProject = base.myProject;
 		myCdtConfigurationDescription = cfgDescription;
+		myBuilder = base.myBuilder;
+		myBuilders = base.myBuilders;
 		myTargetPlatformData = new BuildTargetPlatformData(base.myTargetPlatformData, clone);
 		myBuildBuildData = new BuildBuildData(this, base.myBuildBuildData, clone);
 		isValid = base.isValid;
@@ -197,7 +199,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myCustomBuildCommand = base.myCustomBuildCommand;
 		myParallelizationNum = base.myParallelizationNum;
 		myBuildFolderString = base.myBuildFolderString;
-		myBuildRunner = base.myBuildRunner;
+		
 		myIsAutoBuildEnabled = base.myIsAutoBuildEnabled;
 
 		myAutoMakeTarget = base.myAutoMakeTarget;
@@ -208,6 +210,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myPreBuildAnnouncement = base.myPreBuildAnnouncement;
 		myPostBuildStep = base.myPostBuildStep;
 		myPostBuildStepAnouncement = base.myPostBuildStepAnouncement;
+		myBuilders = base.myBuilders;
 		myCustomToolCommands.clear();
 		for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : base.myCustomToolCommands.entrySet()) {
 			Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
@@ -287,6 +290,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		String extensionID = null;
 		String projectTypeID = null;
 		String confName = null;
+		String builderID=null;
 		String autoCfgExtentionDesc = null;
 		String autoCfgExtentionBundel = null;
 		myCdtConfigurationDescription = cfgDescription;
@@ -343,9 +347,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			case DESCRIPTION:
 				myDescription = value;
 				break;
-			// case ID:
-			// myId = value;
-			// break;
 			case KEY_BUILDFOLDER:
 				myBuildFolderString = value;
 				break;
@@ -379,12 +380,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			case KEY_CUSTOM_BUILD_COMMAND:
 				myCustomBuildCommand = value;
 				break;
-			case KEY_BUILD_RUNNER_NAME:
-				for (IBuildRunner buildRunner : getCompatibleBuildRunners()) {
-					if (myBuildRunner == null || buildRunner.getName().equals(value)) {
-						myBuildRunner = buildRunner;
-					}
-				}
+			case KEY_BUILDER_ID:
+				builderID=value;
 				break;
 			case KEY_AUTO_MAKE_TARGET:
 				myAutoMakeTarget = value;
@@ -421,12 +418,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				if (key.startsWith(TARGETTOOL + DOT)) {
 					found = true;
 					String providerID = key.substring(TARGETTOOL.length() + DOT.length());
-						String selectionID = value;
-						myTargetTool = ITargetToolManager.getDefault().getTargetTool(providerID, selectionID);
-						found = true;
+					String selectionID = value;
+					myTargetTool = ITargetToolManager.getDefault().getTargetTool(providerID, selectionID);
+					found = true;
 					if (myTargetTool == null) {
 						// TODO add real error warning
-						System.err.println("unable to identify target Tool from :"+curLine);
+						System.err.println("unable to identify target Tool from :" + curLine);
 					}
 				}
 
@@ -448,9 +445,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				}
 			}
 		}
-		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
-		myAutoBuildConfiguration = projectType.getConfiguration(confName);
-		myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
+		myProjectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
+		myAutoBuildConfiguration = myProjectType.getConfiguration(confName);
+		for (IBuilder buildRunner : getAvailableBuilders()) {
+			if (myBuilder == null || buildRunner.getId().equals(builderID)) {
+				myBuilder = buildRunner;
+			}
+		}
+		myTargetPlatformData = new BuildTargetPlatformData();
 		myBuildBuildData = new BuildBuildData(this);
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
 		options_updateDefault();
@@ -476,7 +478,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			}
 			ITool tool = null;
 			if (toolString != null) {
-				tool = myAutoBuildConfiguration.getToolChain().getTool(toolString);
+				tool = myAutoBuildConfiguration.getProjectType().getToolChain().getTool(toolString);
 			}
 			IOption option = null;
 			if (tool != null && id != null) {
@@ -495,7 +497,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		for (Entry<String, String> curOptionIndex : customToolKeyMap.entrySet()) {
 			String cmd = customToolValueMap.get(curOptionIndex.getKey());
 			String resourceString = customToolResourceMap.get(curOptionIndex.getKey());
-			ITool tool = myAutoBuildConfiguration.getToolChain().getTool(curOptionIndex.getValue());
+			ITool tool = myAutoBuildConfiguration.getProjectType().getToolChain().getTool(curOptionIndex.getValue());
 			if (cmd == null || resourceString == null || tool == null) {
 				// This Should not happen
 			} else {
@@ -517,7 +519,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		for (Entry<String, String> curOptionIndex : customToolPatternKeyMap.entrySet()) {
 			String cmd = customToolPatternValueMap.get(curOptionIndex.getKey());
 			String resourceString = customToolPatternResourceMap.get(curOptionIndex.getKey());
-			ITool tool = myAutoBuildConfiguration.getToolChain().getTool(curOptionIndex.getValue());
+			ITool tool = myAutoBuildConfiguration.getProjectType().getToolChain().getTool(curOptionIndex.getValue());
 			if (cmd == null || resourceString == null || tool == null) {
 				// This Should not happen
 			} else {
@@ -588,7 +590,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private void options_updateDefault() {
 		myDefaultOptions.clear();
 		Map<IOption, String> defaultOptions = myAutoBuildConfiguration.getDefaultOptions(myProject, this);
-		IToolChain toolchain = myAutoBuildConfiguration.getToolChain();
+		IToolChain toolchain = myAutoBuildConfiguration.getProjectType().getToolChain();
 		defaultOptions.putAll(toolchain.getDefaultOptions(myProject, this));
 
 		for (ITool curITool : toolchain.getTools()) {
@@ -677,16 +679,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		return myName;
 	}
 
-	// protected void addRcData(CResourceData data) {
-	// IPath path = standardizePath(data.getPath());
-	// if (path.segmentCount() == 0) {
-	// if (data.getType() == ICSettingBase.SETTING_FOLDER)
-	// fRootFolderData = (CFolderData) data;
-	// else
-	// return;
-	// }
-	// fResourceDataMap.put(path, data);
-	// }
 
 	@Override
 	public String getDescription() {
@@ -734,17 +726,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		return myProperties.put(key, value);
 	}
 
-	// private static TreeMap<IOption, String> convertOptionIDToOption(Map<String,
-	// String> input, ITool tool) {
-	// TreeMap<IOption, String> ret = getSortedOptionMap();
-	// for (Entry<String, String> cur : input.entrySet()) {
-	// IOption curKey = tool.getOption(cur.getKey());
-	// ret.put(curKey, cur.getValue());
-	// }
-	// //TOFIX log some options were not found
-	// ret.remove(null);
-	// return ret;
-	// }
+
 
 	private static TreeMap<IOption, String> getSortedOptionMap() {
 		TreeMap<IOption, String> ret = new TreeMap<>(new java.util.Comparator<>() {
@@ -829,10 +811,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		ret.putAll(retFile);
 		return ret;
 	}
-	
+
 	@Override
 	public TreeMap<IOption, String> getSelectedOptions(IResource file, ITool tool) {
-		TreeMap<IOption, String> ret =  getSelectedOptions( file);
+		TreeMap<IOption, String> ret = getSelectedOptions(file);
 
 		// remove all options not known to the tool
 		List<IOption> toolOptions = tool.getOptions().getOptions();// TOFIX : this should be get Enabled Options
@@ -894,19 +876,18 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public String getBuildCommand(boolean includeArgs) {
-		IBuilder bldr = myAutoBuildConfiguration.getBuilder();
-		String command =null;
+		String command = null;
 		if (myUseDefaultBuildCommand) {
-			command=myTargetTool.getBuildCommand();
-			if(command==null ||command.isBlank()) {
-			command = bldr.getCommand();
+			command = myTargetTool.getBuildCommand();
+			if (command == null || command.isBlank()) {
+				command = myBuilder.getCommand();
 			}
 		} else {
 			command = getCustomBuildCommand();
 		}
 
 		if (includeArgs) {
-			String args = bldr.getArguments(myIsParallelBuild, myParallelizationNum, myStopOnFirstBuildError);
+			String args = myBuilder.getArguments(myIsParallelBuild, myParallelizationNum, myStopOnFirstBuildError);
 			if (args.isBlank()) {
 				return command;
 			}
@@ -1053,7 +1034,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				+ lineEnd);
 		ret.append(linePrefix + KEY_NUM_PARRALEL_BUILDS + EQUAL + String.valueOf(myParallelizationNum) + lineEnd);
 		ret.append(linePrefix + KEY_CUSTOM_BUILD_COMMAND + EQUAL + myCustomBuildCommand + lineEnd);
-		ret.append(linePrefix + KEY_BUILD_RUNNER_NAME + EQUAL + myBuildRunner.getName() + lineEnd);
+		ret.append(linePrefix + KEY_BUILDER_ID + EQUAL + myBuilder.getId() + lineEnd);
 		ret.append(linePrefix + KEY_AUTO_MAKE_TARGET + EQUAL + myAutoMakeTarget + lineEnd);
 		ret.append(linePrefix + KEY_INCREMENTAL_MAKE_TARGET + EQUAL + myIncrementalMakeTarget + lineEnd);
 		ret.append(linePrefix + KEY_CLEAN_MAKE_TARGET + EQUAL + myCleanMakeTarget + lineEnd);
@@ -1112,31 +1093,26 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	@Override
-	public IBuildRunner getBuildRunner() {
-		return myBuildRunner;
+	public IBuilder getBuilder() {
+		return myBuilder;
 	}
 
 	@Override
-	public Set<IBuildRunner> getCompatibleBuildRunners() {
-		return myBuildRunners;
-	}
-
-	@Override
-	public void setBuildRunner(IBuildRunner buildRunner) {
-		checkIfWeCanWrite();
-		myBuildRunner = buildRunner;
-		myIsCleanBuildEnabled = myIsCleanBuildEnabled && myBuildRunner.supportsCleanBuild();
-		myIsIncrementalBuildEnabled = myIsIncrementalBuildEnabled && myBuildRunner.supportsIncrementalBuild();
-		myIsAutoBuildEnabled = myIsAutoBuildEnabled && myBuildRunner.supportsAutoBuild();
-	}
-
-	@Override
-	public void setBuildRunner(String buildRunnerName) {
-		checkIfWeCanWrite();
-		if (buildRunnerName == null) {
-			return;
+	public Set<IBuilder> getAvailableBuilders() {
+		if(myBuilders.size()==0) {
+			myBuilders=myProjectType.getBuilders();
 		}
-		setBuildRunner(getBuildRunner(buildRunnerName));
+		return new HashSet<>(myBuilders.values());
+	}
+
+	@Override
+	public void setBuilder(IBuilder builder) {
+		checkIfWeCanWrite();
+		myBuilder = builder;
+		IBuildRunner buildRunner = myBuilder.getBuildRunner();
+		myIsCleanBuildEnabled = myIsCleanBuildEnabled && buildRunner.supportsCleanBuild();
+		myIsIncrementalBuildEnabled = myIsIncrementalBuildEnabled && buildRunner.supportsIncrementalBuild();
+		myIsAutoBuildEnabled = myIsAutoBuildEnabled && buildRunner.supportsAutoBuild();
 	}
 
 	@Override
@@ -1457,7 +1433,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public void setModelConfiguration(IConfiguration newConfiguration) {
 		checkIfWeCanWrite();
 		myAutoBuildConfiguration = newConfiguration;
-		myTargetPlatformData = new BuildTargetPlatformData(myAutoBuildConfiguration.getToolChain().getTargetPlatform());
+		myTargetPlatformData = new BuildTargetPlatformData();
 		// myName = myAutoBuildConfiguration.getName();
 		// myDescription = myAutoBuildConfiguration.getDescription();
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
@@ -1478,21 +1454,19 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	/**
-	 * Get the buildrunner with the specified name
+	 * Get the buildrunner with the specified id
 	 * 
-	 * @param buildRunnerName
-	 * @return the buildrunner with the name. If the buildrunner is not found
-	 *         returns the default buildrunner
+	 * @param buildRunnerID
+	 * @return the buildrunner with the id. If the buildrunner is not found returns
+	 *         the default buildrunner
 	 */
-
-	public IBuildRunner getBuildRunner(String buildRunnerName) {
-		if (AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY.equals(buildRunnerName)) {
-			return staticInternalBuildRunner;
+	@Override
+	public IBuilder getBuilder(String builderID) {
+		IBuilder ret = myBuilders.get(builderID);
+		if (ret != null) {
+			return ret;
 		}
-		if (AutoBuildProject.ARGS_MAKE_BUILDER_KEY.equals(buildRunnerName)) {
-			return staticMakeBuildRunner;
-		}
-		return getBuildRunner();
+		return getBuilder();
 	}
 
 	public void setWritable(boolean write) {

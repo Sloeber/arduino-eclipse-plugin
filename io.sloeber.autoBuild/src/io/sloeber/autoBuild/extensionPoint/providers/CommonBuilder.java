@@ -55,6 +55,7 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.schema.api.IBuilder;
 import io.sloeber.targetPlatform.api.ITargetTool;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
@@ -171,14 +172,14 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
         //now that all referenced projects and configs are build.
         //build the configs requested to build
-        String BuildRunnerName = null;
+        String BuildRunnerID = null;
         if (args != null) {
-            BuildRunnerName = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
+        	BuildRunnerID = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
         }
         
         for (AutoBuildConfigurationDescription curAutoConfig : cfgsToBuild) {
         	String[] envp= getEnvironmentVariables(curAutoConfig);
-        	IBuildRunner builder = curAutoConfig.getBuildRunner(BuildRunnerName);
+        	IBuilder builder = curAutoConfig.getBuilder(BuildRunnerID);
             buildProjectConfiguration(kind,envp, builder, curAutoConfig, monitor);
         }
 
@@ -345,7 +346,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     }
 
-    private void buildProjectConfiguration(int kind, String envp[],IBuildRunner builder,
+    private void buildProjectConfiguration(int kind, String envp[],IBuilder builder,
             AutoBuildConfigurationDescription autoData, IProgressMonitor monitor) throws CoreException {
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
@@ -360,7 +361,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             // Set the current project for markers creation
             setCurrentProject(project);
             AutoBuildCommon.createFolder(autoData.getBuildFolder());
-            if (builder.invokeBuild(kind,envp, autoData, this,  console, monitor)) {
+            if (builder.getBuildRunner().invokeBuild(kind,envp, autoData, this,  console, monitor)) {
                 forgetLastBuiltState();
             }
         } catch (CoreException e) {
@@ -393,60 +394,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         String[] envp= getEnvironmentVariables(autoData);
         IConsole console = CCorePlugin.getDefault().getConsole();
         console.start(project);
-        autoData.getBuildRunner().invokeClean(IncrementalProjectBuilder.CLEAN_BUILD, envp,autoData, this,  console,
+        autoData.getBuilder().getBuildRunner().invokeClean(IncrementalProjectBuilder.CLEAN_BUILD, envp,autoData, this,  console,
                 monitor);
         //performExternalClean(autoData, false, monitor);
     }
 
-//    private void performExternalClean(AutoBuildConfigurationDescription autoData, boolean separateJob,
-//            IProgressMonitor monitor) throws CoreException {
-//        IProject project = autoData.getProject();
-//        IResourceRuleFactory ruleFactory = ResourcesPlugin.getWorkspace().getRuleFactory();
-//        final ISchedulingRule rule = ruleFactory.modifyRule(project);
-//        IBuilder builder = autoData.getConfiguration().getBuilder();
-//        IConsole console = CCorePlugin.getDefault().getConsole();
-//        console.start(project);
-//
-//        if (separateJob) {
-//            Job backgroundJob = new Job("CDT Common Builder") { //$NON-NLS-1$
-//                /*
-//                 * (non-Javadoc)
-//                 * 
-//                 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.
-//                 * IProgressMonitor)
-//                 */
-//                @Override
-//                protected IStatus run(IProgressMonitor monitor2) {
-//                    try {
-//                        ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
-//
-//                            @Override
-//                            public void run(IProgressMonitor monitor3) throws CoreException {
-//                                // Set the current project for markers creation
-//
-//                                setCurrentProject(project);
-//                                builder.getBuildRunner().invokeBuild(CLEAN_BUILD, autoData, CommonBuilder.this,
-//                                        CommonBuilder.this, console, monitor3);
-//                            }
-//                        }, rule, IWorkspace.AVOID_UPDATE, monitor2);
-//                    } catch (CoreException e) {
-//                        return e.getStatus();
-//                    }
-//                    IStatus returnStatus = Status.OK_STATUS;
-//                    return returnStatus;
-//                }
-//
-//            };
-//
-//            backgroundJob.setRule(rule);
-//            backgroundJob.schedule();
-//        } else {
-//            // Set the current project for markers creation
-//            setCurrentProject(project);
-//            builder.getBuildRunner().invokeBuild(CLEAN_BUILD, autoData, this, this, console, monitor);
-//        }
-//
-//    }
 
     //
     /**

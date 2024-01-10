@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,7 +33,6 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.targetPlatform.api.ITargetTool;
 import io.sloeber.targetPlatform.api.ITargetToolManager;
-import io.sloeber.targetPlatform.api.ITargetToolProvider;
 
 @SuppressWarnings({ "boxing", "nls" })
 public class CreateBasicProjects {
@@ -52,9 +52,15 @@ public class CreateBasicProjects {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceDescription workspaceDesc = workspace.getDescription();
         workspaceDesc.setAutoBuilding(false);
+        try {
+			workspace.setDescription(workspaceDesc);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
-    static void buildAllConfigsAsActive(String builderName, String projectName, String extensionPointID,
+    static void buildAllConfigsAsActive(String builderID, String projectName, String extensionPointID,
             String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool,
             Boolean shouldMakefileExists) throws Exception {
 
@@ -64,7 +70,7 @@ public class CreateBasicProjects {
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
             CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            Shared.BuildAndVerifyActiveConfig(testProject, builderName, shouldMakefileExists);
+            Shared.BuildAndVerifyActiveConfig(testProject, builderID, shouldMakefileExists);
         }
     }
 
@@ -88,15 +94,15 @@ public class CreateBasicProjects {
         }
     }
 
-    private void doBuilds(String argsInternalBuilderKey, String projectName, String extensionPointID,
+    private void doBuilds(String builderID, String projectName, String extensionPointID,
             String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool,
             Boolean shouldMakefileExists) throws Exception {
         if (buildTypeActiveBuild) {
-            buildAllConfigsAsActive(argsInternalBuilderKey, projectName, extensionPointID, extensionID, projectTypeID,
+            buildAllConfigsAsActive(builderID, projectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider,targetTool, shouldMakefileExists);
         }
         if (!buildTypeActiveBuild) {
-            buildAllConfigs(argsInternalBuilderKey, "all_" + projectName, extensionPointID, extensionID, projectTypeID,
+            buildAllConfigs(builderID, "all_" + projectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider, targetTool,shouldMakefileExists);
         }
 
@@ -106,6 +112,7 @@ public class CreateBasicProjects {
     @MethodSource("projectCreationInfoProvider")
     void testDefaultBuilder(String projectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
+    	beforeAll();
         if (doTestDefaultBuilder) {
             doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,targetTool, null);
         }
@@ -115,10 +122,11 @@ public class CreateBasicProjects {
     @MethodSource("projectCreationInfoProvider")
     void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
-        if (doTestInternalBuilder) {
+    	beforeAll();
+    	if (doTestInternalBuilder) {
             String projectName = "Internal_" + inProjectName;
 
-            doBuilds(AutoBuildProject.ARGS_INTERNAL_BUILDER_KEY, projectName, extensionPointID, extensionID,
+            doBuilds(AutoBuildProject.INTERNAL_BUILDER_ID, projectName, extensionPointID, extensionID,
                     projectTypeID, natureID, codeProvider,targetTool, Boolean.FALSE);
         }
     }
@@ -127,9 +135,10 @@ public class CreateBasicProjects {
     @MethodSource("projectCreationInfoProvider")
     void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
-        if (doTestMakeBuilder) {
+    	beforeAll();
+    	if (doTestMakeBuilder) {
             String projectName = "make_" + inProjectName;
-            doBuilds(AutoBuildProject.ARGS_MAKE_BUILDER_KEY, projectName, extensionPointID, extensionID, projectTypeID,
+            doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider,targetTool, Boolean.TRUE);
         }
     }
@@ -147,7 +156,7 @@ public class CreateBasicProjects {
             String extensionID = testProjectEntry.getValue();
             String projectID = testProjectEntry.getKey();
             IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectID, true);
-            if (projectType == null || projectType.isAbstract()) {
+            if (projectType == null) {
                 System.err.println("Skipping " + extensionID + " " + projectID);
                 continue;
             }

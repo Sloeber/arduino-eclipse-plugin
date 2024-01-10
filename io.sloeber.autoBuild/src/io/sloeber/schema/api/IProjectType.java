@@ -60,6 +60,8 @@ public interface IProjectType extends ISchemaObject {
     public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
+    public static final String PROJECT_BUILDERS = "builders"; //$NON-NLS-1$
+    
 
     /**
      * Returns all of the configurations defined by this project-type.
@@ -78,13 +80,6 @@ public interface IProjectType extends ISchemaObject {
      */
     public IConfiguration getConfiguration(String id);
 
-    /**
-     * Returns whether this element is abstract. Returns <code>false</code>
-     * if the attribute was not specified.
-     * 
-     * @return boolean
-     */
-    public boolean isAbstract();
 
     /**
      * Returns <code>true</code> if the project-type is defined
@@ -94,7 +89,7 @@ public interface IProjectType extends ISchemaObject {
      *
      * @return boolean
      */
-    public boolean isTestProjectType();
+    public boolean isTest();
 
     /**
      * Returns <code>true</code> if at least one project-type contiguration is
@@ -155,6 +150,10 @@ public interface IProjectType extends ISchemaObject {
      * @return IToolChain
      */
     public IToolChain getToolChain();
+
+	public Map<String, IBuilder> getBuilders();
+
+	public IBuilder getdefaultBuilder();
 
     //public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
 

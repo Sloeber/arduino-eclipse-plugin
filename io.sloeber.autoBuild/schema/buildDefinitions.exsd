@@ -514,10 +514,6 @@ If specified; the command line generator overrules the commandLinePattern
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="tool" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="targetPlatform" minOccurs="0" maxOccurs="1"/>
-            <element ref="builder" minOccurs="0" maxOccurs="1"/>
-            <element ref="optionCategory" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="option" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="supportedProperties" minOccurs="0" maxOccurs="1"/>
          </sequence>
          <attribute name="id" type="string" use="required">
@@ -688,13 +684,6 @@ If specified; the command line generator overrules the commandLinePattern
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="cleanCommand" type="string">
-            <annotation>
-               <documentation>
-                  This attribute maintains the command that removes the intermediate and output files for a particular configuration. For example, on POSIX platforms like Linuc, Solaris, or Cygwin, the command would be &lt;code&gt;rm -rf&lt;/code&gt; whereas on Win32 platforms it would be &lt;code&gt;del /F /S /Q&lt;/code&gt;
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="errorParsers" type="string">
             <annotation>
                <documentation>
@@ -780,13 +769,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="isAbstract" type="boolean" use="default" value="false">
-            <annotation>
-               <documentation>
-                  An optional field that flags a project type as abstract.  If true, the project type will not appear in the UI.  The project type is used by other project types as their &quot;superclass&quot;.  The default value is false.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="isTest" type="boolean">
             <annotation>
                <documentation>
@@ -842,6 +824,13 @@ property type-value pairs are specified in the type_id=value_id format.
 Custom values can be contributed via the &quot;org.eclipse.cdt.managedbuilder.core.buildProperties&quot; extension point. See the description of that extension point for more detail. 
 
 Specifying this attribute is fully equivalent to specifying the &quot;org.eclipse.cdt.build.core.buildArtefactType&quot; via the buildProperties attribute. The buildArtefactType attribute, the &quot;buildArtefactType&quot; attribute value takes precedence over the artefact type specified via the &quot;buildProperties&quot; attribute
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="builders" type="string">
+            <annotation>
+               <documentation>
+                  Semi colon seperated list of builders that can build this project
                </documentation>
             </annotation>
          </attribute>
@@ -1351,9 +1340,6 @@ Default is true (leaf nodes only).
          </documentation>
       </annotation>
       <complexType>
-         <sequence>
-            <element ref="option" minOccurs="0" maxOccurs="unbounded"/>
-         </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
@@ -1392,54 +1378,11 @@ Default is true (leaf nodes only).
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="makefileGenerator" type="string">
-            <annotation>
-               <documentation>
-                  Allows you to supply a custom build file generator that conforms to the &lt;code&gt;io.sloeber.autoBuild.extensionPoint.IMakefileGenerator&lt;/code&gt; interface.
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IMakefileGenerator"/>
-               </appinfo>
-            </annotation>
-         </attribute>
          <attribute name="errorParsers" type="string">
             <annotation>
                <documentation>
                   Specifies the default list of error parsers used by the builder.  These error parsers are added to this list specified by the parent tool-chain.  It is an ordered, semi-colon separated list of parser IDs.  The order specifies the order in which the error parsers are invoked during a build.
                </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="variableFormat" type="string">
-            <annotation>
-               <documentation>
-                  The value of this attribute should be set to the expression representing the builder variable format. For example, to generate macros with the ${macro} format, the attribute would contain ${=}.  To generate macros with the @macro format, the attribute would contain @=.
-This information would be used wile buildfile generation to keep the environment build macros unresolved in the makefile.
-If the attribute is not specified or contains the empty string, this would mean that the builder can not treat environment variables as its own variables. In this case, the build macros that contain environment variables are resolved by MBS to their actual value.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="reservedMacroNames" type="string">
-            <annotation>
-               <documentation>
-                  Comma-separated list of reserved macro names. The macro name could contain either the exact name or the java regular expression. The latter could be used to supply the pattern of variable names that are generated by MBS in case the &quot;buildVariable&quot; attribute of the &quot;InputType&quot; element is not specified, etc. 
-If this attribute is specified and the reservedMacroNameSupplier is not specified, the following macro names will be treated as reserved:
-1. a macro name that is equal to one of the names specified in the reservedMacroNames value
-2. a macro name that matches one of the regexp patterns specified in the reservedMacroNames value
-3. a macro name that is equal to one of the build variable names specified InputType elements of the tools used in the tool-chain
-If this attribute is not specified, MBS will assume that there are no reserved macro names that could conflict with the build environment variable macros, except names specified in the &quot;buildVariable&quot; attribute of the &quot;InputType&quot; elements: these names will always be treated as reserved
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="reservedMacroNameSupplier" type="string">
-            <annotation>
-               <documentation>
-                  Should be set to the name of the class that implements the IReservedMacroNameSupplier interface. If this attribute is specified the reservedMacroNames attribute is ignored, and the following macro names will be treated as reserved:
-1. macro names that the IReservedMacroNamesSupplier specifies as reserved
-2. a macro name that is equal to one of the build variable names specified int the InputType elements of the tools used in the tool-chain
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier"/>
-               </appinfo>
             </annotation>
          </attribute>
          <attribute name="autoBuildTarget" type="string" use="default" value="all">
@@ -1479,30 +1422,13 @@ For example, builder representing GNU make would define parallelBuildCmd as &quo
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="isSystem" type="boolean">
-            <annotation>
-               <documentation>
-                  the system elements are used by the system for specific needs and are not displayed in UI
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="commandLauncher" type="string">
-            <annotation>
-               <documentation>
-                  A concrete Java class that implements org.eclipse.cdt.core.ICommandLauncher to launch the builder command.
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.cdt.core.ICommandLauncher"/>
-               </appinfo>
-            </annotation>
-         </attribute>
          <attribute name="buildRunner" type="string">
             <annotation>
                <documentation>
                   A runner for the build. Overrides or extends the built-in external and internal build runners.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="io.sloeber.autoBuild.extensionPoint.IBuildRunner:IBuildRunner"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.api.IBuildRunner"/>
                </appinfo>
             </annotation>
          </attribute>

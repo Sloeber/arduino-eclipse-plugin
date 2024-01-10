@@ -12,12 +12,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolProvider;
 
 public interface IAutoBuildConfigurationDescription {
 
@@ -115,11 +115,10 @@ public interface IAutoBuildConfigurationDescription {
      */
     public IFolder getBuildFolder();
 
-    public IBuildRunner getBuildRunner();
+    public IBuilder getBuilder();
 
-    public Set<IBuildRunner> getCompatibleBuildRunners();
 
-    public void setBuildRunner(IBuildRunner buildRunner);
+    public void setBuilder(IBuilder builder);
 
     /**
      * Is the eclipse autobuild functionality
@@ -316,8 +315,6 @@ public interface IAutoBuildConfigurationDescription {
      */
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension);
 
-    public void setBuildRunner(String buildRunnerName);
-
     public ITargetTool getTargetTool();
 
     public void setToolProvider(ITargetTool targetTool);
@@ -332,4 +329,15 @@ public interface IAutoBuildConfigurationDescription {
 	 *
 	 */
 	TreeMap<IOption, String> getSelectedOptions(IResource file);
+
+	public Set<IBuilder> getAvailableBuilders();
+
+	/**
+	 * Get the buildrunner with the specified id
+	 * 
+	 * @param buildRunnerID
+	 * @return the buildrunner with the id. If the buildrunner is not found
+	 *         returns the default buildrunner
+	 */
+	IBuilder getBuilder(String builderID);
 }

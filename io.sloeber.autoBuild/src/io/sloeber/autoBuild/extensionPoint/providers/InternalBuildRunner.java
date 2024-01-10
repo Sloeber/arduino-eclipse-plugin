@@ -20,27 +20,20 @@ import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.utils.CommandLineUtil;
@@ -64,10 +57,9 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.targetPlatform.api.ITargetTool;
 
-public class InternalBuildRunner extends IBuildRunner {
-	static public final String RUNNER_NAME = Messages.InternalBuilderName;
+public class InternalBuildRunner implements IBuildRunner {
+	static public final String ID = Messages.InternalBuilderName;
 	private static final int PROGRESS_MONITOR_SCALE = 100;
 	private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
 	private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
@@ -99,7 +91,7 @@ public class InternalBuildRunner extends IBuildRunner {
 			 IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		SubMonitor parentMon = SubMonitor.convert(monitor);
-		IBuilder builder = autoData.getConfiguration().getBuilder();
+		IBuilder builder = autoData.getBuilder();
 		IProject project = autoData.getProject();
 		IConfiguration configuration = autoData.getConfiguration();
 		ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();
@@ -117,7 +109,7 @@ public class InternalBuildRunner extends IBuildRunner {
 
 			// Prepare launch parameters for BuildRunnerHelper
 			String cfgName = cfgDescription.getName();
-			String toolchainName = configuration.getToolChain().getName();
+			String toolchainName = autoData.getProjectType().getToolChain().getName();
 			boolean isConfigurationSupported = configuration.isSupported();
 
 			List<IConsoleParser> parsers = new ArrayList<>();
@@ -285,7 +277,7 @@ public class InternalBuildRunner extends IBuildRunner {
 
 	@Override
 	public String getName() {
-		return RUNNER_NAME;
+		return ID;
 	}
 
 	@Override

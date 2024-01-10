@@ -44,7 +44,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	private String myProjectTypeID = null;
 	private ICodeProvider myCodeProvider = null;
 	private String myNatureID = null;
-	private String myBuildRunnerName = null;
+	private String myBuilderID = null;
 	private boolean myNeedsMoreWork = false;
 	private ITargetTool myTargetTool = null;
 
@@ -106,7 +106,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					ICConfigurationDescription cdtCfgDes = des
 							.createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
 					data.setCdtConfigurationDescription(cdtCfgDes);
-					data.setBuildRunner(myBuildRunnerName);
+					data.setBuilder(data.getBuilder(myBuilderID));
 
 					// Set the language Settings
 					String[] defaultIds = iConfig.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
@@ -176,7 +176,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	}
 
 	public void setBuilderName(String builderName) {
-		myBuildRunnerName = builderName;
+		myBuilderID = builderName;
 	}
 
 	public void setTargetTool(ITargetTool targetTool) {

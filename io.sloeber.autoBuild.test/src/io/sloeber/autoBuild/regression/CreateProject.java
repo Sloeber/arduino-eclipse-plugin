@@ -57,9 +57,11 @@ class CreateProject {
         for (String extensionPointID : AutoBuildManager.supportedExtensionPointIDs()) {
             for (String extensionID : AutoBuildManager.getSupportedExtensionIDs(extensionPointID)) {
                 for (IProjectType projectType : AutoBuildManager.getProjectTypes(extensionPointID, extensionID)) {
+                	if(projectType.isTest()) {
+                		continue;
+                	}
                     String projectID = projectType.getId();
 
-                    if (!projectType.isAbstract()) {
 
                         String buildArtifactType = projectType.getBuildArtifactType();
                         ICodeProvider codeProvider_cpp = null;
@@ -94,13 +96,6 @@ class CreateProject {
                             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
                                     CProjectNature.C_NATURE_ID, codeProvider_c));
                         }
-                        //                        if (testCounter > 4) {
-                        //                            return ret.stream();
-                        //                        }
-                    } else {
-                        System.err.print("Skipping projectType " + extensionPointID + " " + projectID);
-                        System.err.println(" projectType is incompitble with OS");
-                    }
                 }
             }
         }

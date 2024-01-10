@@ -74,7 +74,7 @@ public class ToolListContentProvider implements ITreeContentProvider {
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof AutoBuildConfigurationDescription) {
             AutoBuildConfigurationDescription autoDesc = (AutoBuildConfigurationDescription) inputElement;
-            List<ITool> tools = autoDesc.getConfiguration().getToolChain().getTools();
+            List<ITool> tools = autoDesc.getProjectType().getToolChain().getTools();
             //only keep the enabled tools
             List<ITool> enabledTools = new LinkedList<>();
             for (ITool curTool : tools) {

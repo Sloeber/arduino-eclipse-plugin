@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.eclipse.cdt.core.CommandLauncherManager;
 import org.eclipse.cdt.core.ConsoleOutputStream;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.ICommandLauncher;
@@ -57,8 +59,7 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
-public class BuildRunnerForMake extends IBuildRunner {
-	static public final String RUNNER_NAME = Messages.ExternalBuilderName;
+public class BuildRunnerForMake implements IBuildRunner {
 
 	@Override
 	public boolean invokeClean(int kind, String[] envp, AutoBuildConfigurationDescription autoData,
@@ -76,7 +77,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		IProject project = autoData.getProject();
-		IBuilder builder = autoData.getConfiguration().getBuilder();
+		IBuilder builder = autoData.getBuilder();
 		IConfiguration configuration = autoData.getConfiguration();
 		ICConfigurationDescription confDesc = autoData.getCdtConfigurationDescription();
 
@@ -140,7 +141,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 			monitor.beginTask(MakeBuilder_Invoking_Make_Builder + project.getName(), 4);
 
 			String cfgName = confDesc.getName();
-			ICommandLauncher launcher = builder.getCommandLauncher();
+			ICommandLauncher launcher = CommandLauncherManager.getInstance().getCommandLauncher();
 			IFolder buildFolder = autoData.getBuildFolder();
 			URI buildFolderURI = buildFolder.getLocationURI();
 
@@ -156,7 +157,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 						args.toArray(new String[args.size()]), buildFolderURI, envp);
 				buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
 				buildRunnerHelper.removeOldMarkers(project, monitor);
-				buildRunnerHelper.greeting(kind, cfgName, configuration.getToolChain().getName(),
+				buildRunnerHelper.greeting(kind, cfgName, configuration.getProjectType().getToolChain().getName(),
 						configuration.isSupported());
 
 				epm.deferDeDuplication();
@@ -198,12 +199,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 			IProgressMonitor monitor) throws CoreException {
 		boolean canContinueBuilding = true;
 		IProject project = autoData.getProject();
-		IBuilder builder = autoData.getConfiguration().getBuilder();
-		// performCleanning(kind, autoData, buildStatus, monitor);
-		IMakefileGenerator generator = builder.getBuildFileGenerator();
-		if (generator == null) {
-			generator = new MakefileGenerator();
-		}
+		IMakefileGenerator generator =  new MakefileGenerator();
 		generator.initialize(autoData);
 
 		checkCancel(monitor);
@@ -318,7 +314,7 @@ public class BuildRunnerForMake extends IBuildRunner {
 
 	@Override
 	public String getName() {
-		return RUNNER_NAME;
+		return ID;
 	}
 
 	@Override

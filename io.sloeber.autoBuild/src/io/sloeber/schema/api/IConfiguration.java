@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.core.resources.IResource;
-
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
@@ -80,36 +78,6 @@ public interface IConfiguration extends ISchemaObject {
      */
     public String getArtifactName();
 
-    //    /**
-    //     * Returns the build arguments from this configuration's builder
-    //     *
-    //     * @return String
-    //     */
-    //    public String getBuildArguments();
-
-    /**
-     * Returns the build command from this configuration's builder
-     *
-     * @return String
-     */
-    //    public String getBuildCommand();
-
-    /**
-     * Answers the OS-specific command to remove files created by the build
-     * of this configuration.
-     *
-     * @return String
-     */
-    public String getCleanCommand();
-
-    //    /**
-    //     * Answers the semicolon separated list of unique IDs of the error parsers
-    //     * associated
-    //     * with this configuration.
-    //     *
-    //     * @return String
-    //     */
-    //    public String getErrorParserIds();
 
     /**
      * Returns default language settings providers IDs specified for the
@@ -142,8 +110,6 @@ public interface IConfiguration extends ISchemaObject {
 
     public Map<String, String> getDefaultBuildProperties();
 
-    IBuilder getBuilder();
-
     /**
      * Answers the ordered list of unique IDs of the error parsers associated
      * with this configuration.
@@ -152,11 +118,6 @@ public interface IConfiguration extends ISchemaObject {
      */
     public String[] getErrorParserList();
 
-    //    Map<IResource, Map<String, String>> getDefaultProjectOptions(
-    //            AutoBuildConfigurationDescription autoBuildConfigurationData);
-
     Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
-
-    public IToolChain getToolChain();
 
 }
