@@ -66,17 +66,17 @@ class CreateProject {
                         String buildArtifactType = projectType.getBuildArtifactType();
                         ICodeProvider codeProvider_cpp = null;
                         ICodeProvider codeProvider_c = null;
-                        switch (buildArtifactType) {
-                        case "org.eclipse.cdt.build.core.buildArtefactType.exe":
+                        switch (projectID) {
+                        case "io.sloeber.autoBuild.projectType.exe":
                             codeProvider_cpp = new TemplateTestCodeProvider("exe");
                             codeProvider_c = new TemplateTestCodeProvider("c_exe");
                             break;
-                        case "org.eclipse.cdt.build.core.buildArtefactType.staticLib":
-                        case "org.eclipse.cdt.build.core.buildArtefactType.sharedLib":
+                        case "io.sloeber.autoBuild.projectType.static.lib":
+                        case "io.sloeber.autoBuild.projectType.dynamic.lib":
                             codeProvider_cpp = new TemplateTestCodeProvider("lib");
                             codeProvider_c = new TemplateTestCodeProvider("c_lib");
                             break;
-                        case "org.eclipse.cdt.build.core.buildArtefactType.compound":
+                        case "io.sloeber.autoBuild.projectType.compound.exe":
                             codeProvider_cpp = new TemplateTestCodeProvider("compound");
                             break;
                         default:

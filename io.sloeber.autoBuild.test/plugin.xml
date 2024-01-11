@@ -21,10 +21,6 @@
            id="io.sloeber.autoBuild.toolChain.test"
            name="testToolChain"
            osList="all">
-        <builder
-              id="io.sloeber.autoBuild.test.builder"
-              superClass="io.sloeber.autoBuild.builder">
-        </builder>
         <tool
               command="g++"
               id="cdt.managedbuild.tool.gnu.cpp.compiler.test"

@@ -121,7 +121,7 @@ public class AutoBuildConstants {
     // Enumerations
     public static final int PROJECT_RELATIVE = 1, PROJECT_SUBDIR_RELATIVE = 2, ABSOLUTE = 3;
 
-    public static final String DEFAULT_PATTERN = "${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}";
+    public static final String DEFAULT_PATTERN = "${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS} ${LIB_START} ${DYNLIBS} ${STATICLIBS} ${USER_LIBS} ${LIB_END}";
     public static final String DOUBLE_QUOTE = "\"";
 
     public static final String CMD_LINE_TOOL_PATH = "TOOL_PATH";

@@ -742,6 +742,7 @@ public class Option extends SchemaObject implements IOption {
         case IOption.INCLUDE_PATH:
         case IOption.LIBRARY_PATHS:
         case IOption.LIBRARY_FILES:
+        case IOption.LIBRARIES:
         case IOption.MACRO_FILES:
         case IOption.UNDEF_INCLUDE_FILES:
         case IOption.UNDEF_INCLUDE_PATH:

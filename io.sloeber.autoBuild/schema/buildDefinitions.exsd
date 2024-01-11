@@ -425,7 +425,7 @@ Can be overridden by a tool type/tool provider combination.
             <annotation>
                <documentation>
                   Specifies the command &quot;pattern&quot; that indicates how the parts of the command line are used to create the entire command line.  
-The pattern can consists replaceable variables like COMMAND, FLAGS, OUTPUT_FLAG, OUTPUT_PREFIX, OUTPUT and INPUTS.  The default command line pattern is ${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}
+The pattern can consists replaceable variables like COMMAND, FLAGS, OUTPUT_FLAG, OUTPUT_PREFIX, OUTPUT and INPUTS.  The default command line pattern is ${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS} ${LIB_START} ${DYNLIBS} ${STATICLIBS} ${USER_LIBS} ${LIB_END}
 If specified; the command line generator overrules the commandLinePattern
                </documentation>
             </annotation>

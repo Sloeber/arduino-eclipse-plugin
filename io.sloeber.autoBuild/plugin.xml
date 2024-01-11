@@ -74,7 +74,6 @@
            </outputType>
         </tool>
         <tool
-              commandLinePattern="${TOOL_PATH}${TOOL_PREFIX}${COMMAND}${TOOL_SUFFIX} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS} ${DYNLIBS} ${STATICLIBS}"
               id="io.sloeber.autoBuild.tool.gnu.cross.cpp.linker.exe"
               name="%autoBuild.tool.gpp.linker.exe"
               superClass="cdt.autobuild.tool.cpp.exe.linker">
@@ -1479,6 +1478,7 @@
               owner="cdt.managedbuild.tool.gnu.cpp.linker">
         </optionCategory>
         <option
+              assignToCommandVarriable="USER_LIBS"
               browseType="none"
               category="gnu.cpp.link.category.libs"
               command="-l"
@@ -1494,6 +1494,14 @@
               name="%Option.Posix.Libsearch"
               valueType="libPaths">
         </option>
+        <option
+              category="gnu.cpp.link.category.libs"
+              command="LIB_START=-Wl,--start-group;LIB_END=-Wl,--end-group"
+              defaultValue="false"
+              id="gnu.cpp.link.option.group"
+              name="%Option.Posix.Linker.GroupLibs"
+              valueType="boolean">
+         </option>
         <optionCategory
               id="gnu.cpp.link.category.other"
               name="%OptionCategory.Misc"
@@ -1676,6 +1684,7 @@
               owner="cdt.managedbuild.tool.gnu.c.linker">
         </optionCategory>
         <option
+              assignToCommandVarriable="USERLIBS"
               browseType="none"
               category="gnu.c.link.category.libs"
               command="-l"
