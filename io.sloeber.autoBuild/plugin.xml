@@ -1985,9 +1985,7 @@
         ignoreErrCmd="-k"
         incrementalBuildTarget="all"
         name="%autoBuild.builder.name"
-        parallelBuildCmd="-j*"
-        reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
-        variableFormat="${=}">
+        parallelBuildCmd="-j*">
   </builder>
   <builder
         autoBuildTarget="all"
