@@ -135,6 +135,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 	private boolean myIsWritable = false;
+	protected String myRootCodeFolder="src";
 
 	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools) {
 		myBuildTools = buildTools;
@@ -1467,6 +1468,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public void setWritable(boolean write) {
 		myIsWritable = write;
 
+	}
+
+	@Override
+	public String getRootCodeFolder() {
+		return myRootCodeFolder;
 	}
 
 }

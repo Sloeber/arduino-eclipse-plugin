@@ -46,6 +46,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
             String natureID = CCProjectNature.CC_NATURE_ID;
             ICodeProvider codeProvider = null;
             IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+            String codeRootFolder="src";
             getContainer().run(true, true, new WorkspaceModifyOperation() {
                 @Override
                 protected void execute(IProgressMonitor monitor)
@@ -53,7 +54,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
                     SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
                     AutoBuildProject.createProject(projectName, extensionPointID, extensionID, projectTypeID, natureID,
-                            codeProvider, targetTool, false, sub);
+                    		codeRootFolder,codeProvider, targetTool, false, sub);
                     //                    generator.generate(model, sub);
                     //                    getWorkbench().getDisplay().asyncExec(new Runnable() {
                     //                        @Override

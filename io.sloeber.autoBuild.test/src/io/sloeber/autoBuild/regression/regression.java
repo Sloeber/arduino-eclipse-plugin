@@ -43,6 +43,7 @@ import io.sloeber.schema.api.ITool;
 @SuppressWarnings({ "static-method", "nls", "boxing" })
 public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
+    static private String codeRootFolder="src";
     static int testCounter = 1;
     static IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
 
@@ -76,7 +77,7 @@ public class regression {
         String projectName = "createCloseOpenProject";
 
         IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
-        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,
+        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,codeRootFolder,
                 new TemplateTestCodeProvider("exe"), buildTools, false, null);
 
         //Build all the configurations and verify proper building
@@ -115,7 +116,7 @@ public class regression {
         String projectName = "setBuilder";
 
         IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
-        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,
+        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,codeRootFolder,
                 new TemplateTestCodeProvider("exe"), buildTools, false, null);
 
         //Build the active configuration and verify proper building
@@ -175,7 +176,7 @@ public class regression {
         IProject testProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
         if (testProject == null || !testProject.exists()) {
             testProject = AutoBuildProject.createProject(projectName, extensionPointID, "io.sloeber.autoBuild.test",
-                    "io.sloeber.autoBuild.projectType.test.options", CCProjectNature.CC_NATURE_ID,
+                    "io.sloeber.autoBuild.projectType.test.options", CCProjectNature.CC_NATURE_ID,codeRootFolder,
                     new TemplateTestCodeProvider("exe"), buildTools, false, null);
         }
 

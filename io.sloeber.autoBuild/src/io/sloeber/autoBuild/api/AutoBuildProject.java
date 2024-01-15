@@ -24,9 +24,9 @@ public class AutoBuildProject {
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools targetTool,
+            String projectTypeID, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools targetTool,
             boolean needsMoreWork, IProgressMonitor monitor) {
-        return createProject(projectName, extensionPointID, extensionID, projectTypeID, null, natureID, codeProvider,
+        return createProject(projectName, extensionPointID, extensionID, projectTypeID, null, natureID,codeRootFolder, codeProvider,
         		targetTool, needsMoreWork, monitor);
     }
 
@@ -57,7 +57,7 @@ public class AutoBuildProject {
      * @return the created project
      */
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String builderName, String natureID, ICodeProvider codeProvider,
+            String projectTypeID, String builderName, String natureID,String codeRootFolder, ICodeProvider codeProvider,
             IBuildTools targetTool, boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
@@ -65,6 +65,7 @@ public class AutoBuildProject {
             if (internalMonitor == null) {
                 internalMonitor = new NullProgressMonitor();
             }
+            theGenerator.setCodeRootFolder(codeRootFolder);
             theGenerator.setTargetTool(targetTool);
             theGenerator.setExtentionPointID(extensionPointID);
             theGenerator.setExtentionID(extensionID);

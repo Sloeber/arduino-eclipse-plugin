@@ -159,8 +159,18 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
     public ICSourceEntry[] getSourceEntries() {
         if (mySourceEntries == null) {
             mySourceEntries = new ICSourceEntry[1];
-            //mySourceEntries[0] = new CSourceEntry(myProject.getFolder("src").toString(), null, ICSettingEntry.RESOLVED);
-            mySourceEntries[0] = new CSourceEntry(Path.ROOT.toString(), null, ICSettingEntry.RESOLVED);
+            AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
+            String rootCodeFolder=autoBuildConfDesc.getRootCodeFolder();
+            
+            if(rootCodeFolder==null) {
+            	String buildRootFolder=autoBuildConfDesc.getBuildFolder().getProjectRelativePath().segment(0);
+            	IPath excludes[]=new IPath[1];
+                excludes[0]=myProject.getFolder(buildRootFolder).getProjectRelativePath();
+                mySourceEntries[0] = new CSourceEntry(Path.ROOT.toString(), excludes, ICSettingEntry.RESOLVED);
+            }else {
+            	//no need to exclude the bin folder
+            	mySourceEntries[0] = new CSourceEntry(rootCodeFolder, null, ICSettingEntry.RESOLVED);
+            }
         }
 
         return mySourceEntries.clone();

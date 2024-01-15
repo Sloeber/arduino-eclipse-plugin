@@ -27,6 +27,7 @@ import io.sloeber.buildTool.api.IBuildTools;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
+	private static String codeRootFolder="src";
     static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
 
     @BeforeAll
@@ -102,7 +103,7 @@ public class issues {
         CoreModel coreModel = CoreModel.getDefault();
 
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID,
-                 defaultExtensionID,defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"),
+                 defaultExtensionID,defaultProjectTypeID, defaultNatureID,codeRootFolder,new TemplateTestCodeProvider("exe"),
                 targetTool, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);

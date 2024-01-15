@@ -24,6 +24,7 @@ import io.sloeber.buildTool.api.IBuildTools;
 @SuppressWarnings({ "restriction", "nls", "static-method" })
 public class CConfigurationDescriptionInvestigation {
     static int testCounter = 1;
+    static private String codeRootFolder="src";
 
     @BeforeAll
     static void beforeAll() {
@@ -41,7 +42,7 @@ public class CConfigurationDescriptionInvestigation {
         String projectName = "testConfigDescription";
         IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID, defaultExtensionID,
-                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), buildTools, false, null);
+                defaultProjectTypeID, defaultNatureID,codeRootFolder, new TemplateTestCodeProvider("exe"), buildTools, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {
             assertFalse("conf is readOnly class instance", curConf instanceof CConfigurationDescriptionCache);

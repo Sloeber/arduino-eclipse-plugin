@@ -340,4 +340,18 @@ public interface IAutoBuildConfigurationDescription {
 	 *         returns the default buildrunner
 	 */
 	IBuilder getBuilder(String builderID);
+
+	/**
+	 * Get the code root folder as provided during project creation.
+	 * The code root folder is the folder where all the code is located.
+	 * If the code is in the root this method returns null.
+	 * Note that there is no setRootCodeFolder as the CDT UI and API 
+	 * provide methods to read/write/modify these settings
+	 * This method is only provided to allow autoBuild to provide CDT with 
+	 * correct information.
+	 * That is: should the build folder be excluded (if the code is in the root of the project)
+	 * 
+	 * @return
+	 */
+	String getRootCodeFolder();
 }

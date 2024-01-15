@@ -28,21 +28,21 @@ import org.eclipse.core.resources.IProject;
 @SuppressWarnings("nls")
 class CreateProject {
     static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
-
+    private static String codeRootFolder="src";
     @BeforeAll
     static void beforeAll() {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
     }
 
-    @SuppressWarnings("static-method")
+	@SuppressWarnings("static-method")
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID,
             String natureID, ICodeProvider codeProvider) throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
-                natureID, codeProvider, targetTool, false, null);
+                natureID, codeRootFolder,codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
@@ -63,7 +63,6 @@ class CreateProject {
                     String projectID = projectType.getId();
 
 
-                        String buildArtifactType = projectType.getBuildArtifactType();
                         ICodeProvider codeProvider_cpp = null;
                         ICodeProvider codeProvider_c = null;
                         switch (projectID) {
