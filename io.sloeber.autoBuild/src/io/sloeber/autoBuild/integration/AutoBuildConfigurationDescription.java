@@ -13,8 +13,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
-
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
@@ -29,9 +27,8 @@ import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
-import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
-import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
-import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
@@ -40,8 +37,6 @@ import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.Configuration;
 import io.sloeber.schema.internal.Tool;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
 
 public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		implements IAutoBuildConfigurationDescription {
@@ -85,7 +80,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	private ICConfigurationDescription myCdtConfigurationDescription;
 	private BuildTargetPlatformData myTargetPlatformData;
-	private ITargetTool myTargetTool;
+	private IBuildTools myBuildTools;
 	private BuildBuildData myBuildBuildData;
 	private boolean isValid = false;
 	private String myName = EMPTY_STRING;
@@ -124,7 +119,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private boolean myUseStandardBuildArguments = true;
 	private String myCustomBuildCommand = EMPTY_STRING;
 	private int myParallelizationNum = PARRALLEL_BUILD_OPTIMAL_JOBS;
-	private String myBuildFolderString = CONFIG_NAME_VARIABLE;
+	private String myBuildFolderString = BIN_FOLDER+SLACH+CONFIG_NAME_VARIABLE;
 
 	private String myAutoMakeTarget = DEFAULT_AUTO_MAKE_TARGET;
 	private String myIncrementalMakeTarget = DEFAULT_INCREMENTAL_MAKE_TARGET;
@@ -141,8 +136,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 	private boolean myIsWritable = false;
 
-	public AutoBuildConfigurationDescription(Configuration config, IProject project, ITargetTool targetTool) {
-		myTargetTool = targetTool;
+	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools) {
+		myBuildTools = buildTools;
 		myIsWritable = true;
 		myCdtConfigurationDescription = null;
 		myAutoBuildConfiguration = config;
@@ -172,7 +167,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (clone) {
 			myId = base.getId();
 		}
-		myTargetTool = base.getTargetTool();
+		myBuildTools = base.getBuildTools();
 		myAutoBuildConfiguration = base.myAutoBuildConfiguration;
 		myProject = base.myProject;
 		myCdtConfigurationDescription = cfgDescription;
@@ -261,13 +256,13 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	@Override
-	public ITargetTool getTargetTool() {
-		return myTargetTool;
+	public IBuildTools getBuildTools() {
+		return myBuildTools;
 	}
 
 	@Override
-	public void setToolProvider(ITargetTool targetTool) {
-		myTargetTool = targetTool;
+	public void setBuildTools(IBuildTools buildTools) {
+		myBuildTools = buildTools;
 	}
 
 	/**
@@ -415,15 +410,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			default:
 				boolean found = false;
 
-				if (key.startsWith(TARGETTOOL + DOT)) {
+				if (key.startsWith(KEY_BUILDTOOLS + DOT)) {
 					found = true;
-					String providerID = key.substring(TARGETTOOL.length() + DOT.length());
+					String providerID = key.substring(KEY_BUILDTOOLS.length() + DOT.length());
 					String selectionID = value;
-					myTargetTool = ITargetToolManager.getDefault().getTargetTool(providerID, selectionID);
+					myBuildTools = IBuildToolManager.getDefault().getBuildTools(providerID, selectionID);
 					found = true;
-					if (myTargetTool == null) {
+					if (myBuildTools == null) {
 						// TODO add real error warning
-						System.err.println("unable to identify target Tool from :" + curLine);
+						System.err.println("unable to identify build Tools from :" + curLine);
 					}
 				}
 
@@ -878,7 +873,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public String getBuildCommand(boolean includeArgs) {
 		String command = null;
 		if (myUseDefaultBuildCommand) {
-			command = myTargetTool.getBuildCommand();
+			command = myBuildTools.getBuildCommand();
 			if (command == null || command.isBlank()) {
 				command = myBuilder.getCommand();
 			}
@@ -997,7 +992,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		ret.append(myDescription);
 		ret.append(lineEnd);
 
-		ret.append(linePrefix + TARGETTOOL + DOT + myTargetTool.getProviderID() + EQUAL + myTargetTool.getSelectionID()
+		ret.append(linePrefix + KEY_BUILDTOOLS + DOT + myBuildTools.getProviderID() + EQUAL + myBuildTools.getSelectionID()
 				+ lineEnd);
 
 		// ret.append(linePrefix + ID + EQUAL + myId + lineEnd);

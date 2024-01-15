@@ -30,10 +30,10 @@ import org.eclipse.tools.templates.core.IGenerator;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.internal.Configuration;
-import io.sloeber.targetPlatform.api.ITargetTool;
 
 public class AutoBuildProjectGenerator implements IGenerator {
 	private URI myProjectURI = null;
@@ -46,7 +46,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	private String myNatureID = null;
 	private String myBuilderID = null;
 	private boolean myNeedsMoreWork = false;
-	private ITargetTool myTargetTool = null;
+	private IBuildTools myTargetTool = null;
 
 	public AutoBuildProjectGenerator() {
 
@@ -179,7 +179,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 		myBuilderID = builderName;
 	}
 
-	public void setTargetTool(ITargetTool targetTool) {
+	public void setTargetTool(IBuildTools targetTool) {
 		myTargetTool = targetTool;
 	}
 

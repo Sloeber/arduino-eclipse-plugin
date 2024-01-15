@@ -55,8 +55,8 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.targetPlatform.api.ITargetTool;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 
@@ -194,7 +194,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 			envMap.put(var.getName(), var.getValue());
 		}
 
-		ITargetTool targetTool = autoConfig.getTargetTool();
+		IBuildTools targetTool = autoConfig.getBuildTools();
 		if (targetTool != null) {
 			if (targetTool.getEnvironmentVariables() != null) {
 				for (Entry<String, String> curEnv : targetTool.getEnvironmentVariables().entrySet()) {

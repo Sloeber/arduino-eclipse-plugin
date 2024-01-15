@@ -34,17 +34,17 @@ import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
 
 @SuppressWarnings({ "static-method", "nls", "boxing" })
 public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static int testCounter = 1;
-    static ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
+    static IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
 
     @BeforeAll
     public static void beforeAll() {
@@ -77,7 +77,7 @@ public class regression {
 
         IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
         		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,
-                new TemplateTestCodeProvider("exe"), targetTool, false, null);
+                new TemplateTestCodeProvider("exe"), buildTools, false, null);
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -116,7 +116,7 @@ public class regression {
 
         IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
         		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,
-                new TemplateTestCodeProvider("exe"), targetTool, false, null);
+                new TemplateTestCodeProvider("exe"), buildTools, false, null);
 
         //Build the active configuration and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
@@ -176,7 +176,7 @@ public class regression {
         if (testProject == null || !testProject.exists()) {
             testProject = AutoBuildProject.createProject(projectName, extensionPointID, "io.sloeber.autoBuild.test",
                     "io.sloeber.autoBuild.projectType.test.options", CCProjectNature.CC_NATURE_ID,
-                    new TemplateTestCodeProvider("exe"), targetTool, false, null);
+                    new TemplateTestCodeProvider("exe"), buildTools, false, null);
         }
 
         //get the project and autobuild configurations

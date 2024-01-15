@@ -18,9 +18,8 @@ import org.junit.jupiter.api.BeforeAll;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
-import io.sloeber.targetPlatform.api.ITargetToolProvider;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildTools;
 
 @SuppressWarnings({ "restriction", "nls", "static-method" })
 public class CConfigurationDescriptionInvestigation {
@@ -40,9 +39,9 @@ public class CConfigurationDescriptionInvestigation {
     public void testConfigDescription() {
         beforeAll();
         String projectName = "testConfigDescription";
-        ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
+        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID, defaultExtensionID,
-                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), targetTool, false, null);
+                defaultProjectTypeID, defaultNatureID, new TemplateTestCodeProvider("exe"), buildTools, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {
             assertFalse("conf is readOnly class instance", curConf instanceof CConfigurationDescriptionCache);

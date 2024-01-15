@@ -29,8 +29,8 @@ import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildTools;
 
 public class NewAutoBuildProjectWizard extends TemplateWizard {
     private WizardNewProjectCreationPage mainPage;
@@ -45,7 +45,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
                     .toArray(new String[10])[0];
             String natureID = CCProjectNature.CC_NATURE_ID;
             ICodeProvider codeProvider = null;
-            ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
+            IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
             getContainer().run(true, true, new WorkspaceModifyOperation() {
                 @Override
                 protected void execute(IProgressMonitor monitor)

@@ -22,12 +22,12 @@ import org.junit.jupiter.api.BeforeAll;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildTools;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
-    static ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
+    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
 
     @BeforeAll
     public static void beforeAll() {

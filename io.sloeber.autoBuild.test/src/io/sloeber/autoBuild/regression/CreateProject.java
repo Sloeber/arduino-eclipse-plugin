@@ -14,9 +14,9 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -27,7 +27,7 @@ import org.eclipse.core.resources.IProject;
 
 @SuppressWarnings("nls")
 class CreateProject {
-    static ITargetTool targetTool = ITargetToolManager.getDefault().getAnyInstalledTargetTool();
+    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
 
     @BeforeAll
     static void beforeAll() {

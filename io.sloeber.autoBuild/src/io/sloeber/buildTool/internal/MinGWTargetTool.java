@@ -1,4 +1,4 @@
-package io.sloeber.targetPlatform.internal;
+package io.sloeber.buildTool.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
@@ -9,12 +9,12 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
-public class MinGWTargetTool implements ITargetTool {
+public class MinGWTargetTool implements IBuildTools {
 	final private static String MAKE_COMMAND ="mingw32-make.exe";
     private  IPath myMinGWBinPath = null;
     private String myId=null;
@@ -68,11 +68,11 @@ public class MinGWTargetTool implements ITargetTool {
 
     @Override
     public String getCommand(ToolType toolType) {
-        return ITargetToolManager.getDefault().getDefaultCommand(getToolFlavour(), toolType);
+        return IBuildToolManager.getDefault().getDefaultCommand(getToolFlavour(), toolType);
     }
 
     @Override
-    public IPath getToolLocation(ToolType toolType) {
+    public IPath getToolLocation() {
         return myMinGWBinPath;
     }
 

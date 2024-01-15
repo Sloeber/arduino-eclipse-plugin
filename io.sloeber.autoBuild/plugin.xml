@@ -1967,13 +1967,13 @@
         Description="A tool provider for MinGW 32"
         id="io.sloeber.autoBuild.ToolProvider.minGW32"
         name="%minGW32ToolProviderName"
-        toolProvider="io.sloeber.targetPlatform.internal.MinGW32ToolProvider">
+        toolProvider="io.sloeber.buildTool.internal.MinGW32ToolProvider">
   </ToolProvider>
   <ToolProvider
         Description="A tool provider for MinGW 64"
         id="io.sloeber.autoBuild.ToolProvider.minGW64"
         name="%minGW64ToolProviderName"
-        toolProvider="io.sloeber.targetPlatform.internal.MinGW64ToolProvider">
+        toolProvider="io.sloeber.buildTool.internal.MinGW64ToolProvider">
   </ToolProvider>
   <builder
         autoBuildTarget="all"

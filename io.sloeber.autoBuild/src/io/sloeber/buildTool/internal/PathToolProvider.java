@@ -1,4 +1,4 @@
-package io.sloeber.targetPlatform.internal;
+package io.sloeber.buildTool.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.nio.file.Path;
@@ -9,27 +9,28 @@ import java.util.Set;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
-import io.sloeber.targetPlatform.api.ITargetToolProvider;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildToolProvider;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
 import static java.io.File.pathSeparator;
 import static java.nio.file.Files.isExecutable;
 import static java.lang.System.getenv;
 import static java.util.regex.Pattern.quote;
 
-public class PathToolProvider implements ITargetToolProvider {
+public class PathToolProvider implements IBuildToolProvider {
 
     private static ToolFlavour myToolFlavour = null;
     private static Boolean myHoldAllTools = false;
-    private static Map<String,ITargetTool> myTargetTools=new HashMap<>();
+    private static Map<String,IBuildTools> myTargetTools=new HashMap<>();
     private static String myID="PathToolProvider";
+    private static String NAME="Tool on the path";
 
     static {
     	for (ToolFlavour curToolFlavour : ToolFlavour.values()) {
-            ITargetTool curPathTargetTool = new PathTargetTool(curToolFlavour,myID);
+            IBuildTools curPathTargetTool = new PathBuildTool(curToolFlavour,myID);
             if (curPathTargetTool.holdsAllTools()) {
             	myTargetTools.put(curPathTargetTool.getSelectionID(), curPathTargetTool);
             	myToolFlavour=curPathTargetTool.getToolFlavour();
@@ -52,13 +53,13 @@ public class PathToolProvider implements ITargetToolProvider {
 	}
 
 	@Override
-	public ITargetTool getTargetTool(String targetToolID) {
+	public IBuildTools getTargetTool(String targetToolID) {
 		return myTargetTools.get(targetToolID);
 	}
 
 	@Override
-	public ITargetTool getAnyInstalledTargetTool() {
-		for(ITargetTool curTargetTool:myTargetTools.values()) {
+	public IBuildTools getAnyInstalledTargetTool() {
+		for(IBuildTools curTargetTool:myTargetTools.values()) {
 			return curTargetTool;
 		}
 		return null;
@@ -72,7 +73,7 @@ public class PathToolProvider implements ITargetToolProvider {
     @Override
     public boolean holdsAllTools() {
         if (myHoldAllTools == null) {
-            ITargetToolManager toolProviderManager = ITargetToolManager.getDefault();
+            IBuildToolManager toolProviderManager = IBuildToolManager.getDefault();
             Set<String> commands = new HashSet<>();
             //get all the commands removing duplicate
             for (ToolType curToolType : ToolType.values()) {
@@ -139,9 +140,14 @@ public class PathToolProvider implements ITargetToolProvider {
     }
 
 	@Override
-	public Set<ITargetTool> getAllInstalledTargetTools() {
+	public Set<IBuildTools> getAllInstalledBuildTools() {
 			return new HashSet<>( myTargetTools.values());
 		}
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
 
 

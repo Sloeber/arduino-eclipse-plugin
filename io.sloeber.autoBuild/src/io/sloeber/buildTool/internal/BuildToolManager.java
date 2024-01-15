@@ -1,7 +1,7 @@
-package io.sloeber.targetPlatform.internal;
+package io.sloeber.buildTool.internal;
 
-import static io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour.*;
-import static io.sloeber.targetPlatform.api.ITargetToolManager.ToolType.*;
+import static io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour.*;
+import static io.sloeber.buildTool.api.IBuildToolManager.ToolType.*;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -16,17 +16,17 @@ import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
-import io.sloeber.targetPlatform.api.ITargetToolProvider;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildToolProvider;
 
 @SuppressWarnings("nls")
-public class TargetToolManager implements ITargetToolManager {
-	private static TargetToolManager theToolProviderManager = new TargetToolManager();
-	private static Map<String, ITargetToolProvider> pathToolHoldingProvider = new HashMap<>();
-	private static Map<String, ITargetToolProvider> pathToolDeprivedProvider = new HashMap<>();
-	private static Map<String, ITargetToolProvider> toolHoldingProviders = new HashMap<>();
-	private static Map<String, ITargetToolProvider> toolDeprivedProviders = new HashMap<>();
+public class BuildToolManager implements IBuildToolManager {
+	private static BuildToolManager theToolProviderManager = new BuildToolManager();
+	private static Map<String, IBuildToolProvider> pathToolHoldingProvider = new HashMap<>();
+	private static Map<String, IBuildToolProvider> pathToolDeprivedProvider = new HashMap<>();
+	private static Map<String, IBuildToolProvider> toolHoldingProviders = new HashMap<>();
+	private static Map<String, IBuildToolProvider> toolDeprivedProviders = new HashMap<>();
 	private static EnumMap<ToolFlavour, EnumMap<ToolType, String>> defaultCommands = new EnumMap<>(ToolFlavour.class);
 	static {
 		// Fill the map with the default tool commands as they will be used to
@@ -69,7 +69,7 @@ public class TargetToolManager implements ITargetToolManager {
 	}
 
 	@Override
-	public ITargetToolProvider getToolProvider(String toolProviderID) {
+	public IBuildToolProvider getToolProvider(String toolProviderID) {
 		if (pathToolHoldingProvider.get(toolProviderID) != null) {
 			return pathToolHoldingProvider.get(toolProviderID);
 		}
@@ -84,26 +84,65 @@ public class TargetToolManager implements ITargetToolManager {
 		}
 		return null;
 	}
+	
+	@Override
+	public IBuildToolProvider GetToolProviderByName(String toolProviderName) {
+		for (IBuildToolProvider curValue:pathToolHoldingProvider.values()) {
+			if( toolProviderName.equals(curValue.getName())) {
+				return curValue;
+			}
+		}
+		for (IBuildToolProvider curValue:toolHoldingProviders.values()) {
+			if( toolProviderName.equals(curValue.getName())) {
+				return curValue;
+			}
+		}
+		for (IBuildToolProvider curValue:toolDeprivedProviders.values()) {
+			if( toolProviderName.equals(curValue.getName())) {
+				return curValue;
+			}
+		}
+		for (IBuildToolProvider curValue:pathToolDeprivedProvider.values()) {
+			if( toolProviderName.equals(curValue.getName())) {
+				return curValue;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public Set<IBuildToolProvider> GetToolProviders(boolean onlyHoldsTools) {
+		Set<IBuildToolProvider>ret=new HashSet<>();
+		ret.addAll(pathToolHoldingProvider.values());
+		ret.addAll(toolHoldingProviders.values());
+		if(onlyHoldsTools) {
+			return ret;
+		}
+		ret.addAll(toolDeprivedProviders.values());
+		ret.addAll(pathToolDeprivedProvider.values());
+		
+		return ret;
+	}
 
 	@Override
-	public ITargetTool getTargetTool(String toolProviderID, String ID) {
-		ITargetToolProvider toolProvider = getToolProvider(toolProviderID);
+	public IBuildTools getBuildTools(String toolProviderID, String ID) {
+		IBuildToolProvider toolProvider = getToolProvider(toolProviderID);
 		if (toolProvider == null) {
 			return null;
 		}
 		return toolProvider.getTargetTool(ID);
 	}
 
-	public static ITargetToolManager getDefault() {
+	public static IBuildToolManager getDefault() {
 		return theToolProviderManager;
 	}
 
 	@Override
-	public ITargetTool getAnyInstalledTargetTool() {
-		for (ITargetToolProvider cur : pathToolHoldingProvider.values()) {
+	public IBuildTools getAnyInstalledTargetTool() {
+		for (IBuildToolProvider cur : pathToolHoldingProvider.values()) {
 			return cur.getAnyInstalledTargetTool();
 		}
-		for (ITargetToolProvider cur : toolHoldingProviders.values()) {
+		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
 			return cur.getAnyInstalledTargetTool();
 		}
 		return null;
@@ -121,7 +160,7 @@ public class TargetToolManager implements ITargetToolManager {
 					for (IConfigurationElement curElement : extension.getConfigurationElements()) {
 						try {
 							if ("ToolProvider".equals(curElement.getName())) {
-								ITargetToolProvider toolprovider = (ITargetToolProvider) curElement
+								IBuildToolProvider toolprovider = (IBuildToolProvider) curElement
 										.createExecutableExtension("toolProvider");
 								if (toolprovider.holdsAllTools()) {
 									toolHoldingProviders.put(toolprovider.getID(), toolprovider);
@@ -142,15 +181,19 @@ public class TargetToolManager implements ITargetToolManager {
 	}
 
 	@Override
-	public Set<ITargetTool> getAllInstalledTargetTools() {
-		 Set<ITargetTool> ret=new HashSet<>();
-		for (ITargetToolProvider cur : pathToolHoldingProvider.values()) {
-			ret.addAll( cur.getAllInstalledTargetTools());
+	public Set<IBuildTools> getAllInstalledTargetTools() {
+		 Set<IBuildTools> ret=new HashSet<>();
+		for (IBuildToolProvider cur : pathToolHoldingProvider.values()) {
+			ret.addAll( cur.getAllInstalledBuildTools());
 		}
-		for (ITargetToolProvider cur : toolHoldingProviders.values()) {
-			ret.addAll( cur.getAllInstalledTargetTools());
+		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
+			ret.addAll( cur.getAllInstalledBuildTools());
 		}
 		return ret;
 	}
+
+
+
+
 
 }

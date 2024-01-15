@@ -39,6 +39,8 @@ import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;
@@ -46,8 +48,6 @@ import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 import io.sloeber.schema.internal.enablement.MBSEnablementExpression;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
 
 /**
  * Represents a tool that can be invoked during a build. Note that this class
@@ -549,14 +549,14 @@ public class Tool extends SchemaObject implements ITool {
         toolCommandVars.put(OUTPUT_FLAG_PRM_NAME, myModelOutputFlag[SUPER].trim());
 
         //add the tool provider stuff
-        ITargetTool targetTool = autoBuildConfData.getTargetTool();
+        IBuildTools targetTool = autoBuildConfData.getBuildTools();
         if (targetTool != null) {
             String toolProviderCmd = targetTool.getCommand(myToolType);
             if (toolProviderCmd != null && !toolProviderCmd.isBlank()) {
                 //replace the command with the one provided by the toolProvider
                 toolCommandVars.put(CMD_LINE_PRM_NAME, toolProviderCmd.trim());
             }
-            IPath toolPath = targetTool.getToolLocation(myToolType);
+            IPath toolPath = targetTool.getToolLocation();
             if (toolPath != null && !toolPath.toString().isBlank()) {
                 //store the path
                 toolCommandVars.put(CMD_LINE_TOOL_PATH, toolPath.toString().trim() + SLACH);

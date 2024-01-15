@@ -189,7 +189,14 @@
           class="io.sloeber.autoBuild.ui.tabs.ProjectSettingsTab"
           icon="icons/obj16/environment.gif"
           name="%ProjectSettingsTab.name"
-          parent="io.sloeber.autoBuild.ui.pages.Page_ProjectSettings">
+          parent="io.sloeber.autoBuild.ui.pages.Page_ProjectSettings"
+          tooltip="%Project.settings.tooltip">
+    </tab>
+    <tab
+          class="io.sloeber.autoBuild.ui.tabs.BuildToolManagerTab"
+          name="%Tool.Manager.Tab"
+          parent="io.sloeber.autoBuild.ui.pages.Page_ProjectSettings"
+          tooltip="%Tool.Manager.tooltip">
     </tab>
     <tab
            class="org.eclipse.cdt.ui.newui.IncludeTab"

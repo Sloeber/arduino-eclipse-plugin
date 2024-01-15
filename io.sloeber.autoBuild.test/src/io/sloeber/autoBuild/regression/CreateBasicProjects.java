@@ -30,9 +30,9 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IProjectType;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
 
 @SuppressWarnings({ "boxing", "nls" })
 public class CreateBasicProjects {
@@ -42,7 +42,7 @@ public class CreateBasicProjects {
     private boolean doTestDefaultBuilder = true;
     private boolean doTestInternalBuilder = true;
     private boolean doTestMakeBuilder = true;
-    static Set<ITargetTool> targetTools = ITargetToolManager.getDefault().getAllInstalledTargetTools();
+    static Set<IBuildTools> buildTools = IBuildToolManager.getDefault().getAllInstalledTargetTools();
 
     @BeforeAll
     static void beforeAll() {
@@ -61,7 +61,7 @@ public class CreateBasicProjects {
     }
 
     static void buildAllConfigsAsActive(String builderID, String projectName, String extensionPointID,
-            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool,
+            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,IBuildTools targetTool,
             Boolean shouldMakefileExists) throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
@@ -75,7 +75,7 @@ public class CreateBasicProjects {
     }
 
     static void buildAllConfigs(String builderName, String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool, Boolean shouldMakefileExists)
+            String projectTypeID, String natureID, ICodeProvider codeProvider,IBuildTools targetTool, Boolean shouldMakefileExists)
             throws Exception {
 
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
@@ -95,7 +95,7 @@ public class CreateBasicProjects {
     }
 
     private void doBuilds(String builderID, String projectName, String extensionPointID,
-            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,ITargetTool targetTool,
+            String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,IBuildTools targetTool,
             Boolean shouldMakefileExists) throws Exception {
         if (buildTypeActiveBuild) {
             buildAllConfigsAsActive(builderID, projectName, extensionPointID, extensionID, projectTypeID,
@@ -111,7 +111,7 @@ public class CreateBasicProjects {
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testDefaultBuilder(String projectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
+            String natureID, ICodeProvider codeProvider,IBuildTools targetTool) throws Exception {
     	beforeAll();
         if (doTestDefaultBuilder) {
             doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,targetTool, null);
@@ -121,7 +121,7 @@ public class CreateBasicProjects {
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
+            String natureID, ICodeProvider codeProvider,IBuildTools targetTool) throws Exception {
     	beforeAll();
     	if (doTestInternalBuilder) {
             String projectName = "Internal_" + inProjectName;
@@ -134,7 +134,7 @@ public class CreateBasicProjects {
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
     void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider,ITargetTool targetTool) throws Exception {
+            String natureID, ICodeProvider codeProvider,IBuildTools targetTool) throws Exception {
     	beforeAll();
     	if (doTestMakeBuilder) {
             String projectName = "make_" + inProjectName;
@@ -175,7 +175,7 @@ public class CreateBasicProjects {
             default:
                 codeProvider_cpp = new TemplateTestCodeProvider("exe");
             }
-            for(ITargetTool curTargetTool:targetTools) {
+            for(IBuildTools curTargetTool:buildTools) {
             String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() +"_"+ extensionID+ "_" +curTargetTool.getProviderID()+"_"+curTargetTool.getSelectionID());
             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectType.getId(),
                     CCProjectNature.CC_NATURE_ID, codeProvider_cpp,curTargetTool));

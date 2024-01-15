@@ -1,17 +1,17 @@
-package io.sloeber.targetPlatform.api;
+package io.sloeber.buildTool.api;
 
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
 /**
  * This is a set of tools on the local disk to build a target
  * 
  */
-public interface ITargetTool {
+public interface IBuildTools {
 
     /**
      * This tool provider find tools on the local disk
@@ -81,17 +81,13 @@ public interface ITargetTool {
     String getCommand(ToolType toolType);
 
     /**
-     * The location on disk where the provided tool of tooltype can be found and
+     * The location on disk where the provided tools can be found and
      * executed.
-     * If tooltype is not supported the return value is undefined.
      * 
-     * @param toolType
-     *            the tooltype for which the location is requested
-     * @return a valid location of the tooltype when the tooltype is supported.
+     * @return a valid location of the tools
      *         null if the tool is on the path
-     *         undefined when the tooltype is not supported.
      */
-    IPath getToolLocation(ToolType toolType);
+    IPath getToolLocation();
 
     ToolFlavour getToolFlavour();
 

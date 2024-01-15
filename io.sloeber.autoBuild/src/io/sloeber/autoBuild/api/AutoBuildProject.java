@@ -12,8 +12,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
 import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolProvider;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolProvider;
 
 public class AutoBuildProject {
 	public static final String COMMON_BUILDER_ID="io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
@@ -24,7 +24,7 @@ public class AutoBuildProject {
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, ICodeProvider codeProvider, ITargetTool targetTool,
+            String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools targetTool,
             boolean needsMoreWork, IProgressMonitor monitor) {
         return createProject(projectName, extensionPointID, extensionID, projectTypeID, null, natureID, codeProvider,
         		targetTool, needsMoreWork, monitor);
@@ -58,7 +58,7 @@ public class AutoBuildProject {
      */
     public static IProject createProject(String projectName, String extensionPointID, String extensionID,
             String projectTypeID, String builderName, String natureID, ICodeProvider codeProvider,
-            ITargetTool targetTool, boolean needsMoreWork, IProgressMonitor monitor) {
+            IBuildTools targetTool, boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
             IProgressMonitor internalMonitor = monitor;

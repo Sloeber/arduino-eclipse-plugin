@@ -1,4 +1,4 @@
-package io.sloeber.targetPlatform.internal;
+package io.sloeber.buildTool.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.nio.file.Path;
@@ -10,24 +10,24 @@ import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.targetPlatform.api.ITargetTool;
-import io.sloeber.targetPlatform.api.ITargetToolManager;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolType;
+import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
 import static java.io.File.pathSeparator;
 import static java.nio.file.Files.isExecutable;
 import static java.lang.System.getenv;
 import static java.util.regex.Pattern.quote;
 
-public class PathTargetTool implements ITargetTool {
+public class PathBuildTool implements IBuildTools {
 
 	private String myBuildCommand=null;
     private ToolFlavour myToolFlavour = null;
     private Boolean myHoldAllTools = null;
     private String myProviderID=null;
 
-    public PathTargetTool(ToolFlavour curToolFlavour,String providerID) {
+    public PathBuildTool(ToolFlavour curToolFlavour,String providerID) {
         myToolFlavour = curToolFlavour;
         myProviderID=providerID;
     }
@@ -59,14 +59,14 @@ public class PathTargetTool implements ITargetTool {
     @Override
     public String getCommand(ToolType toolType) {
         if (holdsAllTools()) {
-            ITargetToolManager toolProviderManager = ITargetToolManager.getDefault();
+            IBuildToolManager toolProviderManager = IBuildToolManager.getDefault();
             return toolProviderManager.getDefaultCommand(getToolFlavour(), toolType);
         }
         return null;
     }
 
     @Override
-    public IPath getToolLocation(ToolType toolType) {
+    public IPath getToolLocation() {
         // As the tool is on the path null is fine
         return null;
     }
@@ -79,7 +79,7 @@ public class PathTargetTool implements ITargetTool {
     @Override
     public boolean holdsAllTools() {
         if (myHoldAllTools == null) {
-            ITargetToolManager toolProviderManager = ITargetToolManager.getDefault();
+            IBuildToolManager toolProviderManager = IBuildToolManager.getDefault();
             Set<String> commands = new HashSet<>();
             //get all the commands removing duplicate
             for (ToolType curToolType : ToolType.values()) {

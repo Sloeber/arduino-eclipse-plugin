@@ -1,10 +1,10 @@
-package io.sloeber.targetPlatform.api;
+package io.sloeber.buildTool.api;
 
 import java.util.Set;
 
-import io.sloeber.targetPlatform.api.ITargetToolManager.ToolFlavour;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 
-public interface ITargetToolProvider {
+public interface IBuildToolProvider {
 
     /**
      * did this target tool provider find fully functional targetTool on the local disk
@@ -31,7 +31,7 @@ public interface ITargetToolProvider {
      * @param targetToolID
      * @return
      */
-    ITargetTool getTargetTool(String targetToolID);
+    IBuildTools getTargetTool(String targetToolID);
 
     ToolFlavour getToolFlavour();
 
@@ -42,14 +42,16 @@ public interface ITargetToolProvider {
      * @return
      */
     String getID();
+    
+    String getName();
 
     /**
      * Just give a targetTool that holdsallTools
      * if none exists return null
      * @return
      */
-	ITargetTool getAnyInstalledTargetTool();
+	IBuildTools getAnyInstalledTargetTool();
 	
-	Set<ITargetTool> getAllInstalledTargetTools();
+	Set<IBuildTools> getAllInstalledBuildTools();
 
 }

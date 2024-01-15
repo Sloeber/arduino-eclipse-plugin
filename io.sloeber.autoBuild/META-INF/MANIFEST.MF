@@ -26,8 +26,8 @@ Export-Package: io.sloeber.autoBuild.Internal,
  io.sloeber.autoBuild.extensionPoint,
  io.sloeber.autoBuild.extensionPoint.providers,
  io.sloeber.autoBuild.integration,
- io.sloeber.schema.api,
- io.sloeber.targetPlatform.api
+ io.sloeber.buildTool.api,
+ io.sloeber.schema.api
 Import-Package: org.apache.commons.io,
  org.eclipse.cdt.build.core.scannerconfig,
  org.eclipse.cdt.build.internal.core.scannerconfig2,

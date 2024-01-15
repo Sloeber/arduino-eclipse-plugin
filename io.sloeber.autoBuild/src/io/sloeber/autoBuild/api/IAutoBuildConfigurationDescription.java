@@ -12,12 +12,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.targetPlatform.api.ITargetTool;
 
 public interface IAutoBuildConfigurationDescription {
 
@@ -315,9 +315,9 @@ public interface IAutoBuildConfigurationDescription {
      */
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension);
 
-    public ITargetTool getTargetTool();
+    public IBuildTools getBuildTools();
 
-    public void setToolProvider(ITargetTool targetTool);
+    public void setBuildTools(IBuildTools buildTools);
 
 	/**
 	 * provide all the options for the resource taking into account setting on the
