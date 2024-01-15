@@ -87,6 +87,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 				IBuildTools buildTools=getSelecteddBuildTool();
 				if(buildTools!=null &&myAutoConfDesc!=null) {
 					myAutoConfDesc.setBuildTools(buildTools);
+					setLabelText(buildTools);
 				}
 			}
 		});
