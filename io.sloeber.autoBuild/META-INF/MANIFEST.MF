@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.cdt.core;bundle-version="7.0.0",
  org.eclipse.ui.workbench,
  org.eclipse.jface,
  org.eclipse.cdt.make.core,
- org.eclipse.tools.templates.core
+ org.eclipse.tools.templates.core,
+ org.eclipse.cdt.build.gcc.core
 Automatic-Module-Name: io.sloeber.core
 Bundle-Activator: io.sloeber.autoBuild.core.Activator
 Export-Package: io.sloeber.autoBuild.Internal,

@@ -1909,7 +1909,7 @@ A tool provider can also provide a list of environment variables
                   A implementation of IToolProvider that provides the commands and command locations
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":import io.sloeber.targetPlatform.api.ITargetToolProvider;"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.buildTool.api.IBuildToolProvider"/>
                </appinfo>
             </annotation>
          </attribute>

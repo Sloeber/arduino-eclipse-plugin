@@ -121,9 +121,22 @@ public interface IBuildToolManager {
      * Get all the build tool providers known to the 
      * Build tool Manager 
      * 
+     * @param onlyHoldsTools if true only return the providers that have actually 
+     * 						installed tools
+     * 						if false return all known tool providers
+     * 
      * @return a set of IBuildToolProvider
      */
 	public Set<IBuildToolProvider> GetToolProviders(boolean onlyHoldsTools);
+	
+	/**
+	 * refresh the toolchains known.
+	 * The manager caches the toolchains. 
+	 * When this method is called the cache needs to be refreshed.
+	 * 
+	 */
+	public void refreshToolchains();
+	
 
 	public IBuildToolProvider GetToolProviderByName(String toolProviderName);
 }

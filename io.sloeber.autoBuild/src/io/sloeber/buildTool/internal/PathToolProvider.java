@@ -10,11 +10,8 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildToolProvider;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
-
 import static java.io.File.pathSeparator;
 import static java.nio.file.Files.isExecutable;
 import static java.lang.System.getenv;
@@ -22,18 +19,20 @@ import static java.util.regex.Pattern.quote;
 
 public class PathToolProvider implements IBuildToolProvider {
 
-    private static ToolFlavour myToolFlavour = null;
-    private static Boolean myHoldAllTools = false;
+    private static boolean myHoldAllTools = false;
     private static Map<String,IBuildTools> myTargetTools=new HashMap<>();
     private static String myID="PathToolProvider";
     private static String NAME="Tool on the path";
 
     static {
+    	findTools();
+    }
+    private static void findTools() {
+    	myTargetTools.clear();
     	for (ToolFlavour curToolFlavour : ToolFlavour.values()) {
             IBuildTools curPathTargetTool = new PathBuildTool(curToolFlavour,myID);
             if (curPathTargetTool.holdsAllTools()) {
             	myTargetTools.put(curPathTargetTool.getSelectionID(), curPathTargetTool);
-            	myToolFlavour=curPathTargetTool.getToolFlavour();
             	myHoldAllTools=true;
             	break;
             } 
@@ -47,10 +46,6 @@ public class PathToolProvider implements IBuildToolProvider {
         return myID ;
     }
 
-	@Override
-	public Set<String> getTargetToolIDs() {
-		return myTargetTools.keySet();
-	}
 
 	@Override
 	public IBuildTools getTargetTool(String targetToolID) {
@@ -65,47 +60,10 @@ public class PathToolProvider implements IBuildToolProvider {
 		return null;
 	}
 
-    @Override
-    public ToolFlavour getToolFlavour() {
-        return myToolFlavour;
-    }
 
     @Override
     public boolean holdsAllTools() {
-        if (myHoldAllTools == null) {
-            IBuildToolManager toolProviderManager = IBuildToolManager.getDefault();
-            Set<String> commands = new HashSet<>();
-            //get all the commands removing duplicate
-            for (ToolType curToolType : ToolType.values()) {
-                switch (curToolType) {
-                case A_TO_O:
-                case CPP_TO_O:
-                case C_TO_O:
-                case O_TO_ARCHIVE:
-                case O_TO_CPP_DYNAMIC_LIB:
-                case O_TO_CPP_EXE:
-                case O_TO_C_DYNAMIC_LIB:
-                case O_TO_C_EXE:
-                    commands.add(toolProviderManager.getDefaultCommand(getToolFlavour(), curToolType));
-                    break;
-                default:
-                }
-            }
-            if (commands.remove(EMPTY_STRING)) {
-                System.err.println(getClass().getName() + " found tool with empty command."); //$NON-NLS-1$
-            }
-            if (commands.remove(null)) {
-                System.err.println(getClass().getName() + " found tool with null command."); //$NON-NLS-1$
-            }
-            for (String curCommand : commands) {
-                if (!canExecute(curCommand)) {
-                    myHoldAllTools = Boolean.FALSE;
-                    return myHoldAllTools.booleanValue();
-                }
-            }
-            myHoldAllTools = Boolean.TRUE;
-        }
-        return myHoldAllTools.booleanValue();
+        return myHoldAllTools;
     }
 
     /**
@@ -147,6 +105,11 @@ public class PathToolProvider implements IBuildToolProvider {
 	@Override
 	public String getName() {
 		return NAME;
+	}
+	@Override
+	public void refreshToolchains() {
+		findTools();
+		
 	}
 
 

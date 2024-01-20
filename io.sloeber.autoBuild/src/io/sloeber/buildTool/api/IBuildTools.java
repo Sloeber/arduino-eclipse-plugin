@@ -93,6 +93,12 @@ public interface IBuildTools {
 
 	String getProviderID();
 
+	/**
+	 * Get the command to build the project.
+	 * This is probably make.exe
+	 * 
+	 * @return null or the command that can build this project
+	 */
 	String getBuildCommand();
 
 	String getPathExtension();

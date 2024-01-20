@@ -23,8 +23,6 @@ import io.sloeber.buildTool.api.IBuildToolProvider;
 @SuppressWarnings("nls")
 public class BuildToolManager implements IBuildToolManager {
 	private static BuildToolManager theToolProviderManager = new BuildToolManager();
-	private static Map<String, IBuildToolProvider> pathToolHoldingProvider = new HashMap<>();
-	private static Map<String, IBuildToolProvider> pathToolDeprivedProvider = new HashMap<>();
 	private static Map<String, IBuildToolProvider> toolHoldingProviders = new HashMap<>();
 	private static Map<String, IBuildToolProvider> toolDeprivedProviders = new HashMap<>();
 	private static EnumMap<ToolFlavour, EnumMap<ToolType, String>> defaultCommands = new EnumMap<>(ToolFlavour.class);
@@ -54,7 +52,7 @@ public class BuildToolManager implements IBuildToolManager {
 		defaultCommands.put(LLVM, gnuCommmands);
 
 		// Get the plugin.xml provided tool providers
-		loadToolProviders();
+		loadToolProviders(false);
 
 	}
 
@@ -70,28 +68,17 @@ public class BuildToolManager implements IBuildToolManager {
 
 	@Override
 	public IBuildToolProvider getToolProvider(String toolProviderID) {
-		if (pathToolHoldingProvider.get(toolProviderID) != null) {
-			return pathToolHoldingProvider.get(toolProviderID);
-		}
 		if (toolHoldingProviders.get(toolProviderID) != null) {
 			return toolHoldingProviders.get(toolProviderID);
 		}
 		if (toolDeprivedProviders.get(toolProviderID) != null) {
 			return toolDeprivedProviders.get(toolProviderID);
 		}
-		if (pathToolDeprivedProvider.get(toolProviderID) != null) {
-			return pathToolDeprivedProvider.get(toolProviderID);
-		}
 		return null;
 	}
 	
 	@Override
 	public IBuildToolProvider GetToolProviderByName(String toolProviderName) {
-		for (IBuildToolProvider curValue:pathToolHoldingProvider.values()) {
-			if( toolProviderName.equals(curValue.getName())) {
-				return curValue;
-			}
-		}
 		for (IBuildToolProvider curValue:toolHoldingProviders.values()) {
 			if( toolProviderName.equals(curValue.getName())) {
 				return curValue;
@@ -102,24 +89,17 @@ public class BuildToolManager implements IBuildToolManager {
 				return curValue;
 			}
 		}
-		for (IBuildToolProvider curValue:pathToolDeprivedProvider.values()) {
-			if( toolProviderName.equals(curValue.getName())) {
-				return curValue;
-			}
-		}
 		return null;
 	}
 	
 	@Override
 	public Set<IBuildToolProvider> GetToolProviders(boolean onlyHoldsTools) {
 		Set<IBuildToolProvider>ret=new HashSet<>();
-		ret.addAll(pathToolHoldingProvider.values());
 		ret.addAll(toolHoldingProviders.values());
 		if(onlyHoldsTools) {
 			return ret;
 		}
 		ret.addAll(toolDeprivedProviders.values());
-		ret.addAll(pathToolDeprivedProvider.values());
 		
 		return ret;
 	}
@@ -139,17 +119,16 @@ public class BuildToolManager implements IBuildToolManager {
 
 	@Override
 	public IBuildTools getAnyInstalledTargetTool() {
-		for (IBuildToolProvider cur : pathToolHoldingProvider.values()) {
-			return cur.getAnyInstalledTargetTool();
-		}
 		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
 			return cur.getAnyInstalledTargetTool();
 		}
 		return null;
 	}
 
-	private static void loadToolProviders() {
+	private static void loadToolProviders(boolean refresh) {
 		try {
+			toolHoldingProviders.clear();
+			toolDeprivedProviders.clear();
 			for (String extensionPointID : AutoBuildManager.supportedExtensionPointIDs()) {
 				// Get the extensions that use the current CDT managed build model
 				IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(extensionPointID);
@@ -162,6 +141,9 @@ public class BuildToolManager implements IBuildToolManager {
 							if ("ToolProvider".equals(curElement.getName())) {
 								IBuildToolProvider toolprovider = (IBuildToolProvider) curElement
 										.createExecutableExtension("toolProvider");
+								if(refresh) {
+									toolprovider.refreshToolchains();
+								}
 								if (toolprovider.holdsAllTools()) {
 									toolHoldingProviders.put(toolprovider.getID(), toolprovider);
 								} else {
@@ -183,13 +165,15 @@ public class BuildToolManager implements IBuildToolManager {
 	@Override
 	public Set<IBuildTools> getAllInstalledTargetTools() {
 		 Set<IBuildTools> ret=new HashSet<>();
-		for (IBuildToolProvider cur : pathToolHoldingProvider.values()) {
-			ret.addAll( cur.getAllInstalledBuildTools());
-		}
 		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
 			ret.addAll( cur.getAllInstalledBuildTools());
 		}
 		return ret;
+	}
+
+	@Override
+	public void refreshToolchains() {
+		loadToolProviders(true);
 	}
 
 

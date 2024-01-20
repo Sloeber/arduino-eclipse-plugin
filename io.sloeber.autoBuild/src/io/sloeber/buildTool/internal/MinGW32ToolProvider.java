@@ -10,8 +10,6 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.IBuildToolProvider;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
-
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 public class MinGW32ToolProvider implements IBuildToolProvider {
@@ -22,6 +20,15 @@ public class MinGW32ToolProvider implements IBuildToolProvider {
     private static boolean myHoldsAllTools = false;
 	private static Map<String,IBuildTools> myTargetTools=new HashMap<>();
     static {
+    	findTools();
+    }
+
+    public MinGW32ToolProvider() {
+        //nothing to be done here
+    }
+
+    private static void findTools() {
+    	myTargetTools.clear();
         myMinGWHome = org.eclipse.cdt.internal.core.MinGW.getMinGWHome();
         if (myMinGWHome != null) {
            
@@ -30,13 +37,10 @@ public class MinGW32ToolProvider implements IBuildToolProvider {
             myTargetTools.put(MINGW_ID, targetTool);
             myHoldsAllTools = targetTool.holdsAllTools();
         }
-    }
+		
+	}
 
-    public MinGW32ToolProvider() {
-        //nothing to be done here
-    }
-
-    @Override
+	@Override
     public boolean holdsAllTools() {
         return myHoldsAllTools;
     }
@@ -48,19 +52,10 @@ public class MinGW32ToolProvider implements IBuildToolProvider {
     }
 
 	@Override
-	public Set<String> getTargetToolIDs() {
-		 return myTargetTools.keySet();
-	}
-
-	@Override
 	public IBuildTools getTargetTool(String targetToolID) {
 		return myTargetTools.get(targetToolID);
 	}
 
-	@Override
-	public ToolFlavour getToolFlavour() {
-		return ToolFlavour.MINGW;
-	}
 
 	@Override
 	public IBuildTools getAnyInstalledTargetTool() {
@@ -78,6 +73,11 @@ public class MinGW32ToolProvider implements IBuildToolProvider {
 	@Override
 	public String getName() {
 		return MINGW_Name;
+	}
+
+	@Override
+	public void refreshToolchains() {
+		findTools();
 	}
 	
 	

@@ -2,8 +2,6 @@ package io.sloeber.buildTool.api;
 
 import java.util.Set;
 
-import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
-
 public interface IBuildToolProvider {
 
     /**
@@ -20,20 +18,11 @@ public interface IBuildToolProvider {
     boolean holdsAllTools();
     
     /**
-     * Get the TargetToolsID's this targetTool provider can provide
-     * 
-     * @return
-     */
-    Set<String> getTargetToolIDs();
-    
-    /**
      * Get the targetToo for the given ID
      * @param targetToolID
      * @return
      */
     IBuildTools getTargetTool(String targetToolID);
-
-    ToolFlavour getToolFlavour();
 
     /**
      * typical implementation
@@ -53,5 +42,7 @@ public interface IBuildToolProvider {
 	IBuildTools getAnyInstalledTargetTool();
 	
 	Set<IBuildTools> getAllInstalledBuildTools();
+	
+	public void refreshToolchains();
 
 }

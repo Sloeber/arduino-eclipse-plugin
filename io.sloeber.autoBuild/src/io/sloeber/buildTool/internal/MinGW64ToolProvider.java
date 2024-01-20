@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.IBuildToolProvider;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 
 public class MinGW64ToolProvider implements IBuildToolProvider {
 	final private static String MINGW_ID = "Mingw64"; //$NON-NLS-1$
@@ -22,7 +21,16 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 	private static Map<String, IBuildTools> myTargetTools = new HashMap<>();
 	private static String[] mingw64Locations = { "C:\\MinGW64", "C:\\Program Files\\mingw-w64" }; //$NON-NLS-1$ //$NON-NLS-2$
 	static {
+		findTools();
+	}
+
+	public MinGW64ToolProvider() {
+		// nothing to be done here
+	}
+
+	private static void findTools() {
 		if (isWindows) {
+			myTargetTools.clear();
 			for (String curMinGWLocation : mingw64Locations) {
 				Path curMinGWPath = new Path(curMinGWLocation);
 				File curMinGWFile = curMinGWPath.toFile();
@@ -42,10 +50,7 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 				}
 			}
 		}
-	}
-
-	public MinGW64ToolProvider() {
-		// nothing to be done here
+		
 	}
 
 	@Override
@@ -58,19 +63,10 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 		return MINGW_ID;
 	}
 
-	@Override
-	public Set<String> getTargetToolIDs() {
-		return myTargetTools.keySet();
-	}
 
 	@Override
 	public IBuildTools getTargetTool(String targetToolID) {
 		return myTargetTools.get(targetToolID);
-	}
-
-	@Override
-	public ToolFlavour getToolFlavour() {
-		return ToolFlavour.MINGW;
 	}
 
 	@Override
@@ -89,6 +85,12 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 	@Override
 	public String getName() {
 		return MINGW_NAME;
+	}
+
+	@Override
+	public void refreshToolchains() {
+		findTools();
+		
 	}
 
 }
