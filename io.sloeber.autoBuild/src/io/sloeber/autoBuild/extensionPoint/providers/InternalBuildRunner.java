@@ -102,7 +102,7 @@ public class InternalBuildRunner implements IBuildRunner {
 
 		try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
 				ErrorParserManager epm = new ErrorParserManager(project, buildRoot.getLocationURI(), markerGenerator,
-						builder.getErrorParserList().toArray(new String[0]));) {
+						autoData.getErrorParserList());) {
 
 			monitor.beginTask("", TICKS_STREAM_PROGRESS_MONITOR + TICKS_DELETE_MARKERS + TICKS_EXECUTE_COMMAND //$NON-NLS-1$
 					+ TICKS_REFRESH_PROJECT);
