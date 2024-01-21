@@ -82,14 +82,14 @@ class CreateProject {
                             codeProvider_cpp = new TemplateTestCodeProvider("exe");
                         }
                         String projectName = AutoBuildCommon
-                                .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_"
+                                .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_CPP_"
                                         + projectType.getName() + "_" + extensionID);
                         testCounter++;
                         ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
                                 CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
                         if (codeProvider_c != null) {
                             projectName = AutoBuildCommon
-                                    .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_"
+                                    .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_C_"
                                             + projectType.getName() + "_" + extensionID);
                             testCounter++;
                             ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
