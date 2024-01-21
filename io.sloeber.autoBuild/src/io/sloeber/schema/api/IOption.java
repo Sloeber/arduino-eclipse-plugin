@@ -19,7 +19,6 @@
 package io.sloeber.schema.api;
 
 import org.eclipse.core.resources.IResource;
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
@@ -192,7 +191,7 @@ public interface IOption extends ISchemaObject {
      *             if this option is not of type {@link #TREE}
      * @since 8.1
      */
-    public ITreeRoot getTreeRoot() throws BuildException;
+    public ITreeRoot getTreeRoot() throws Exception;
 
     /**
      * Represents the root of the tree of values in options of

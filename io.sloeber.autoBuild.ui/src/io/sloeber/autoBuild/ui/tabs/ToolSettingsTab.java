@@ -74,7 +74,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.ICustomBuildOptionEditor;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.integrations.ToolListLabelProvider;
@@ -407,7 +406,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                         }
 
                         default: {
-                            throw new BuildException(null);
+                            throw new Exception();
                         }
                         }
 
@@ -509,7 +508,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                     }
 
                     default:
-                        throw new BuildException(null);
+                        throw new Exception();
                     }
                 }
 
@@ -536,7 +535,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                 //    fieldsMap.put(optId,fieldEditor);
                 //    fieldEditorsToParentMap.put(fieldEditor,mySettingsPageContainer);
 
-            } catch (BuildException e) {
+            } catch (Exception e) {
                 //ignore
             }
         }

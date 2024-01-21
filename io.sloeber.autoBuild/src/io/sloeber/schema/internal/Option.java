@@ -51,7 +51,6 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
@@ -608,9 +607,9 @@ public class Option extends SchemaObject implements IOption {
     }
 
     @Override
-    public ITreeRoot getTreeRoot() throws BuildException {
+    public ITreeRoot getTreeRoot() throws Exception {
         if (getValueType() != TREE) {
-            throw new BuildException(Option_error_bad_value_type);
+            throw new Exception(Option_error_bad_value_type);
         }
         return myTreeRoot;
     }
