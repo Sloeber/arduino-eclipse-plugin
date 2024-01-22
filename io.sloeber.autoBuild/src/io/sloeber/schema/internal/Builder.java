@@ -22,20 +22,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.eclipse.cdt.core.CommandLauncherManager;
-import org.eclipse.cdt.core.ICommandLauncher;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
 import io.sloeber.autoBuild.api.IBuildRunner;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
-import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
 import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IOptions;
-import io.sloeber.schema.api.IToolChain;
 
 public class Builder extends SchemaObject implements IBuilder {
     private static final String DEFAULT_TARGET_CLEAN = "clean"; //$NON-NLS-1$
@@ -49,7 +42,7 @@ public class Builder extends SchemaObject implements IBuilder {
     private String[] modelcleanBuildTarget;
     private String[] modelignoreErrCmd;
     private String[] modelparallelBuildCmd;
-    private String[] modelbuildRunner;
+   // private String[] modelbuildRunner;
 
     //  Parent and children
     private IBuildRunner fBuildRunner = null;
@@ -82,7 +75,6 @@ public class Builder extends SchemaObject implements IBuilder {
         modelcleanBuildTarget = getAttributes(ATTRIBUTE_TARGET_CLEAN);
         modelignoreErrCmd = getAttributes(ATTRIBUTE_IGNORE_ERR_CMD);
         modelparallelBuildCmd = getAttributes(ATTRIBUTE_PARALLEL_BUILD_CMD);
-        modelbuildRunner = getAttributes(ATTRIBUTE_BUILD_RUNNER);
 
         fBuildRunner = (IBuildRunner) createExecutableExtension(ATTRIBUTE_BUILD_RUNNER);
         if (fBuildRunner == null) {

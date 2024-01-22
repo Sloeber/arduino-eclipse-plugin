@@ -43,16 +43,12 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IIncrementalProjectBuilder2;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.buildTool.api.IBuildTools;
@@ -409,34 +405,34 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             throw new OperationCanceledException();
     }
 
-    /**
-     * Only lock the workspace is this is a ManagedBuild, or this project references
-     * others.
-     */
-    @Override
-    public ISchedulingRule getRule(int trigger, Map args) {
-        IResource WR_rule = ResourcesPlugin.getWorkspace().getRoot();
-        if (needAllConfigBuild() || !isCdtProjectCreated(getProject()))
-            return WR_rule;
-
-        IProject buildProject = getProject();
-        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(buildProject,
-                false);
-        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
-        // Get the builders to run
-        // IBuilder builders[] = createBuilders(buildProject,
-        // cdtConfigurationDescription, args);
-        // Be pessimistic if we referenced other configs
-        if (CoreModelUtil.getReferencedConfigurationDescriptions(cdtConfigurationDescription, false).length > 0)
-            return WR_rule;
-        // // If any builder isManaged => pessimistic
-        // for (IBuilder builder : builders) {
-        // if (builder.isManagedBuildOn())
-        // return WR_rule;
-        // }
-
-        // Success!
-        return null;
-    }
+//    /**
+//     * Only lock the workspace is this is a ManagedBuild, or this project references
+//     * others.
+//     */
+//    @Override
+//    public ISchedulingRule getRule(int trigger, Map args) {
+//        IResource WR_rule = ResourcesPlugin.getWorkspace().getRoot();
+//        if (needAllConfigBuild() || !isCdtProjectCreated(getProject()))
+//            return WR_rule;
+//
+//        IProject buildProject = getProject();
+//        ICProjectDescription cdtProjectDescription = CCorePlugin.getDefault().getProjectDescription(buildProject,
+//                false);
+//        ICConfigurationDescription cdtConfigurationDescription = cdtProjectDescription.getActiveConfiguration();
+//        // Get the builders to run
+//        // IBuilder builders[] = createBuilders(buildProject,
+//        // cdtConfigurationDescription, args);
+//        // Be pessimistic if we referenced other configs
+//        if (CoreModelUtil.getReferencedConfigurationDescriptions(cdtConfigurationDescription, false).length > 0)
+//            return WR_rule;
+//        // // If any builder isManaged => pessimistic
+//        // for (IBuilder builder : builders) {
+//        // if (builder.isManagedBuildOn())
+//        // return WR_rule;
+//        // }
+//
+//        // Success!
+//        return null;
+//    }
 
 }

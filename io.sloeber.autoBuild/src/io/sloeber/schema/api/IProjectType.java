@@ -14,12 +14,9 @@
 package io.sloeber.schema.api;
 
 import java.util.Map;
-import java.util.Set;
-
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 
 /**
  * This class represents project-types in the managed build system.

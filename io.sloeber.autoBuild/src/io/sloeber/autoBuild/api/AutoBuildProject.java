@@ -9,11 +9,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
-import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.buildTool.api.IBuildToolProvider;
 
 public class AutoBuildProject {
 	public static final String COMMON_BUILDER_ID="io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$

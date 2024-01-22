@@ -31,7 +31,6 @@ import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.ITool;
 
 /**
  * Implementation of language settings provider for autoBuild.

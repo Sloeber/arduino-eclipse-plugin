@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;

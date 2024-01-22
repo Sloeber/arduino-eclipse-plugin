@@ -16,13 +16,8 @@ package io.sloeber.schema.api;
 
 import java.util.Set;
 
-import org.eclipse.cdt.core.ICommandLauncher;
-import org.eclipse.core.runtime.CoreException;
-
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
-import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 
 /**
  * This class represents the utility that drives the build process
