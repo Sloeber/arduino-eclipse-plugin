@@ -43,6 +43,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IIncrementalProjectBuilder2;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -126,8 +127,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
      * @throws CoreException
      */
     private void invokeBuild(IProject project,int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
-        //IProject project = getProject();
-
+    	project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
         Set<AutoBuildConfigurationDescription> cfgsToBuild = getConfigsToBuild(project, kind, args);
 
         //For the configurations to build: get the cdt referenced configurations
