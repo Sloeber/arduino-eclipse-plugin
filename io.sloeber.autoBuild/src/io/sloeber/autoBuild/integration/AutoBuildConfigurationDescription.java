@@ -29,6 +29,7 @@ import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.IBuildToolManager;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
@@ -1473,6 +1474,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public String getRootCodeFolder() {
 		return myRootCodeFolder;
+	}
+
+	@Override
+	public ToolFlavour getBuildToolsFlavour() {
+		// TODO Auto-generated method stub
+		return myBuildTools.getToolFlavour();
 	}
 
 }

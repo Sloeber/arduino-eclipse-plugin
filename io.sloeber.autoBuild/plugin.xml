@@ -296,6 +296,9 @@
               id="cdt.autobuild.tool.assembler.output"
               outputExtension="o">
         </outputType>
+        <enablement
+              type="ALL">
+        </enablement>
      </tool>
      <tool
            command="gcc"
@@ -1352,6 +1355,16 @@
               id="gnu.cpp.compiler.option.warnings.weffcpp"
               name="%Option.Posix.Warn.weffcpp"
               valueType="boolean">
+           <enablement
+                 type="ALL">
+              <or>
+                 <checkToolFlavour
+                       ToolFlavour="MINGW">
+                 </checkToolFlavour>
+                 <checkToolFlavour
+                       ToolFlavour="LLVM">
+                 </checkToolFlavour></or>
+           </enablement>
         </option>
         <option
               category="gnu.cpp.compiler.category.warnings"

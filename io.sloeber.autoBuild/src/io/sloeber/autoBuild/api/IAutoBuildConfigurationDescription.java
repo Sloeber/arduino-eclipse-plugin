@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
@@ -354,4 +355,6 @@ public interface IAutoBuildConfigurationDescription {
 	 * @return
 	 */
 	String getRootCodeFolder();
+
+	ToolFlavour getBuildToolsFlavour();
 }

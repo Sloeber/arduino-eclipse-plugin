@@ -431,12 +431,16 @@ public class MakeRule {
         long oldestPreReqTimeStamp = Long.MIN_VALUE;
         for (Set<IFile> curPrereqSet : myPrerequisites.values()) {
             for (IFile curPrereq : curPrereqSet) {
+                if (!curPrereq.exists()) {
+                    return true;
+                }
                 oldestPreReqTimeStamp = Math.max(oldestPreReqTimeStamp, curPrereq.getLocalTimeStamp());
             }
         }
         if (oldestPreReqTimeStamp > jongestTargetTimeStamp) {
             return true;
         }
+        
         //get the newest dependency timeStamp
         long oldestDependencyTimeStamp = Long.MIN_VALUE;
         for (IFile curdepFile : dependencyFiles) {

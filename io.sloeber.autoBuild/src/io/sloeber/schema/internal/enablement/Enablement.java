@@ -115,6 +115,8 @@ public class Enablement {
                 switch (name) {
                 case "checkBuildProperty": //$NON-NLS-1$
                     return new BuildPropertyExpression(configElement);
+                case "checkToolFlavour": //$NON-NLS-1$
+                    return new ToolFlavourExpression(configElement);
                 case "checkOption": //$NON-NLS-1$
                     return new CheckOptionExpression(configElement, schemaObject);
                 case ExpressionTagNames.ENABLEMENT: {
@@ -122,60 +124,6 @@ public class Enablement {
                     processChildren(converter, configElement, result);
                     return result;
                 }
-                // case ExpressionTagNames.TEST:
-                // return new TestExpression(element);
-                // case ExpressionTagNames.OR:
-                // {
-                // OrExpression result= new OrExpression();
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.AND:
-                // {
-                // AndExpression result= new AndExpression();
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.NOT:
-                // return new NotExpression(converter.perform(element.getChildren()[0]));
-                // case ExpressionTagNames.WITH:
-                // {
-                // WithExpression result= new WithExpression(element);
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.ADAPT:
-                // {
-                // AdaptExpression result= new AdaptExpression(element);
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.ITERATE:
-                // {
-                // IterateExpression result= new IterateExpression(element);
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.COUNT:
-                // return new CountExpression(element);
-                // case ExpressionTagNames.SYSTEM_TEST:
-                // return new SystemTestExpression(element);
-                // case ExpressionTagNames.RESOLVE:
-                // {
-                // ResolveExpression result= new ResolveExpression(element);
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.ENABLEMENT:
-                // {
-                // EnablementExpression result= new EnablementExpression(element);
-                // processChildren(converter, element, result);
-                // return result;
-                // }
-                // case ExpressionTagNames.EQUALS:
-                // return new EqualsExpression(element);
-                // case ExpressionTagNames.REFERENCE:
-                // return new ReferenceExpression(element);
                 default:
                     break;
                 }

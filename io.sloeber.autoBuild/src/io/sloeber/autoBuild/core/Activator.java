@@ -1,14 +1,17 @@
 package io.sloeber.autoBuild.core;
 
-import org.eclipse.cdt.core.build.IToolChainManager;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.osgi.framework.BundleActivator;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class Activator implements BundleActivator {
+
+public class Activator extends Plugin {
     public static final String PLUGIN_ID = "io.sloeber.autoBuild"; //$NON-NLS-1$
     private static BundleContext myBundleContext = null;
+	private static Activator instance;
 
     public static BundleContext getBundleContext() {
         return myBundleContext;
@@ -17,6 +20,7 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         myBundleContext = context;
+        instance = this;
 
     }
 
@@ -31,8 +35,14 @@ public class Activator implements BundleActivator {
     }
 
     public static void log(Status status) {
-        //TOFIX     status.
 
+		if (status.getSeverity() == IStatus.ERROR) {
+			int style = StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK;
+			StatusManager stMan = StatusManager.getManager();
+			stMan.handle(status, style);
+		} else {
+			instance.getLog().log(status);
+		}
     }
 
     public static void log(Exception e) {
@@ -40,10 +50,6 @@ public class Activator implements BundleActivator {
 
     }
 
-    public static void error(String message) {
-        // TODO Auto-generated method stub
-
-    }
 
 	/**
 	 * Return the given OSGi service.
