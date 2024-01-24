@@ -14,8 +14,13 @@ on:
 
 jobs:
   build:
-
+    strategy:
+      matrix:
+        maven-version: [ 3.9 ]
+        
     runs-on: ubuntu-latest
+    container:
+      image: maven:${{ matrix.maven-version }}
 
     steps:
     - name: show Maven
