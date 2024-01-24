@@ -259,6 +259,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public IBuildTools getBuildTools() {
+		if (myBuildTools == null) {
+			// TODO add real error warning
+			System.err.println("myBuildTools should never be null" );
+			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+		}
 		return myBuildTools;
 	}
 
@@ -416,11 +421,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					found = true;
 					String providerID = key.substring(KEY_BUILDTOOLS.length() + DOT.length());
 					String selectionID = value;
-					myBuildTools = IBuildToolManager.getDefault().getBuildTools(providerID, selectionID);
-					found = true;
+					IBuildToolManager buildToolManager =IBuildToolManager.getDefault();
+					myBuildTools = buildToolManager.getBuildTools(providerID, selectionID);
 					if (myBuildTools == null) {
 						// TODO add real error warning
 						System.err.println("unable to identify build Tools from :" + curLine);
+						myBuildTools=buildToolManager.getAnyInstalledTargetTool();
 					}
 				}
 
@@ -875,7 +881,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public String getBuildCommand(boolean includeArgs) {
 		String command = null;
 		if (myUseDefaultBuildCommand) {
-			command = myBuildTools.getBuildCommand();
+			command = getBuildTools().getBuildCommand();
 			if (command == null || command.isBlank()) {
 				command = myBuilder.getCommand();
 			}
@@ -994,7 +1000,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		ret.append(myDescription);
 		ret.append(lineEnd);
 
-		ret.append(linePrefix + KEY_BUILDTOOLS + DOT + myBuildTools.getProviderID() + EQUAL + myBuildTools.getSelectionID()
+		ret.append(linePrefix + KEY_BUILDTOOLS + DOT + getBuildTools().getProviderID() + EQUAL + getBuildTools().getSelectionID()
 				+ lineEnd);
 
 		// ret.append(linePrefix + ID + EQUAL + myId + lineEnd);
@@ -1478,8 +1484,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public ToolFlavour getBuildToolsFlavour() {
-		// TODO Auto-generated method stub
-		return myBuildTools.getToolFlavour();
+		return getBuildTools().getToolFlavour();
 	}
 
 }
