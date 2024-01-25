@@ -27,6 +27,9 @@ jobs:
       run: mvn -version
     
     - uses: actions/checkout@v2
+    - name: Set up make
+      run: sudo apt-get install build-essential
+      
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
