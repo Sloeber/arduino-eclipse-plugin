@@ -24,7 +24,7 @@ public abstract class MCUBoard {
 
     protected abstract void setAttributes();
 
-    public static List<MCUBoard> getAllBoards(String provider, MCUBoard creator) {
+    public static List<MCUBoard> getAllBoards(String provider, MCUBoard board) {
         List<MCUBoard> ret = new LinkedList<>();
         ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
         for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
@@ -33,7 +33,7 @@ public abstract class MCUBoard {
                 List<BoardDescription> boardDescriptions = BoardDescription
                         .makeBoardDescriptors(curPlatformVersion.getBoardsFile());
                 for (BoardDescription curBoardDesc : boardDescriptions) {
-                    MCUBoard curBoard = creator.createMCUBoard(curBoardDesc);
+                    MCUBoard curBoard = board.createMCUBoard(curBoardDesc);
                     curBoard.myAttributes.boardID = curBoardDesc.getBoardID();
                     ret.add(curBoard);
                 }

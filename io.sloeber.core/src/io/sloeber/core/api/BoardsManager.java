@@ -73,6 +73,7 @@ public class BoardsManager {
             + "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
             + "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
             + "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
+            + "https://www.pjrc.com/teensy/package_teensy_index.json\n" //$NON-NLS-1$
             + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 
     protected static List<ArduinoPlatformPackageIndex> packageIndices;

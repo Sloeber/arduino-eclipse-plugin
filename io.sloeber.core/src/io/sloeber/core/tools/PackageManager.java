@@ -68,7 +68,7 @@ public class PackageManager {
                 pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
                 myCopy(dl, archivePath.toFile(), true);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
                     e);
         }

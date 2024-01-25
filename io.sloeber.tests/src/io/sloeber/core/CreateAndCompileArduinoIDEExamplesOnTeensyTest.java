@@ -101,12 +101,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
     }
 
     public static void installAdditionalBoards() {
-        if (MySystem.getTeensyPlatform().isEmpty()) {
-            System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
-        } else {
-            BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-        }
-
+    	Teensy.installLatest();
     }
 
     @Test

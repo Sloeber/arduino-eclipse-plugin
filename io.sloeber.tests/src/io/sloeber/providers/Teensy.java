@@ -1,15 +1,11 @@
 package io.sloeber.providers;
 
-import static io.sloeber.core.common.Const.*;
-import static org.junit.Assert.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import io.sloeber.core.BoardAttributes;
 import io.sloeber.core.Example;
-import io.sloeber.core.MySystem;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 
@@ -23,7 +19,10 @@ public class Teensy extends MCUBoard {
     public final static String Teensy3_5_ID = "teensy35";
     public final static String Teensy3_6_ID = "teensy36";
     public final static String Teensy_LC_ID = "teensyLC";
-    public final static String TEENSY_ARCHITECTURE_ID = "teensy";
+    public final static String TEENSY_PLATFORM_ID = "avr";
+    public final static String TEENSY_PROVIDER= "teensy";
+	private static final String jsonFileName = "package_teensy_index.json";
+	public static final String packageURL = "https://www.pjrc.com/teensy/package_teensy_index.json";
 
     public static MCUBoard Teensy_LC() {
         return new Teensy(Teensy_LC_ID);
@@ -72,12 +71,8 @@ public class Teensy extends MCUBoard {
         default:
             break;
         }
+        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, TEENSY_PROVIDER, TEENSY_PLATFORM_ID,boardName,options);
 
-        myBoardDescriptor = BoardsManager.getBoardDescription(LOCAL, MySystem.getTeensyBoard_txt(), "ignored",
-                boardName, options);
-        if (myBoardDescriptor == null) {
-            fail(boardName + " Board not found");
-        }
         setUploadPort("none");
         setAttributes();
     }
@@ -117,9 +112,6 @@ public class Teensy extends MCUBoard {
         return ret;
     }
 
-    public static List<MCUBoard> getAllBoards() {
-        return getAllBoards(MySystem.getTeensyPlatform(), teensy2());
-    }
 
     @Override
     public MCUBoard createMCUBoard(BoardDescription boardDescriptor) {
@@ -146,4 +138,13 @@ public class Teensy extends MCUBoard {
         myAttributes.wire1 = true;
         myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
     }
+
+	public static void installLatest() {
+	        BoardsManager.installLatestPlatform(jsonFileName, TEENSY_PROVIDER, TEENSY_PLATFORM_ID);
+	}
+
+	public static List<MCUBoard> getAllBoards() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
