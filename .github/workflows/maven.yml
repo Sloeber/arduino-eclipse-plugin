@@ -25,7 +25,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
-    - name: Build with Maven
+    - name: Build Sloeber with Maven
       run: mvn --no-transfer-progress verify -Pall,sloeber_release,NOSDK -Dtest=NightlyJenkins -DfailIfNoTests=false 
       
     - name: Archive production artifacts
@@ -53,3 +53,6 @@ jobs:
       with:
         name: macosx_arm
         path: io.sloeber.product/target/products/sloeber-ide-sloeber_release-macosx.cocoa.aarch64.zip
+   - name: Build Sloeber SDK with Maven
+      run: mvn clean verify -PSDK,win64,latest -DskipTests=true 
+      
