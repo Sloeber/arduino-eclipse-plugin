@@ -3,6 +3,7 @@ package io.sloeber.core.tools;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +34,15 @@ public class FileModifiers {
      */
     public static void appendString(File input, String addString) throws IOException {
         Path pathFile = Path.of(input.toString());
-        String fileString = Files.readString(pathFile, Charset.defaultCharset()) + addString;
+        try {
+        String fileString = Files.readString(pathFile,StandardCharsets.UTF_8) + addString;
         Files.write(pathFile, fileString.getBytes(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        }catch(IOException e) {
+            String fileString = Files.readString(pathFile,Charset.forName("Cp1252")) + addString;
+            Files.write(pathFile, fileString.getBytes(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        	
+        }
+        
     }
 
     /**

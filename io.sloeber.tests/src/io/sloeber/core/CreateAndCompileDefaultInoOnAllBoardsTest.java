@@ -31,7 +31,6 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static final boolean removeAllinstallationInfoAtStartup = false;
     private static final boolean skipPlatformInstallation = false;
     private static final boolean apply_known_work_Arounds = true;
-    private static final boolean testPrivateHardware = true;
     private static final boolean closeFailedProjects = false;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
@@ -322,10 +321,6 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
         }
         BoardsManager.setPackageURLs(toAddList, true);
-
-        if (testPrivateHardware) {
-            BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-        }
 
         if (!skipPlatformInstallation) {
             BoardsManager.installAllLatestPlatforms();

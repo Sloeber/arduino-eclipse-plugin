@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.debug.core,
  org.eclipse.core.variables,
  org.apache.commons.commons-io,
- org.apache.commons.commons-compress
+ org.apache.commons.commons-compress,
+ com.github.luben.zstd-jni;bundle-version="1.5.5"
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

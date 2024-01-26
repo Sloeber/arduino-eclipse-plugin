@@ -106,11 +106,6 @@ public class CreateAndCompileLibraryExamplesTest {
             LibraryManager.installAllLatestLibraries();
             // LibraryManager.onlyKeepLatestPlatforms();
         }
-        if (MySystem.getTeensyPlatform().isEmpty()) {
-            System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
-        } else {
-            BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-        }
         BoardsManager.installAllLatestPlatforms();
 
     }
