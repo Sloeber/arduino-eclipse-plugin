@@ -75,7 +75,7 @@ public class RegressionTest {
      * @throws CoreException
      */
     @Test
-    public void issue555() {
+    public void issue555() throws CoreException {
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
         BoardDescription teensyBoardid = Teensy.Teensy3_1().getBoardDescriptor();
 
