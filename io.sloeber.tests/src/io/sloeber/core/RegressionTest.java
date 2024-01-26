@@ -64,10 +64,8 @@ public class RegressionTest {
         ESP8266.installLatest();
         ESP32.installLatest();
         Arduino.installLatestAVRBoards();
+        Teensy.installLatest();
 
-        if (!MySystem.getTeensyPlatform().isEmpty()) {
-            BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-        }
     }
 
     /**
@@ -77,14 +75,7 @@ public class RegressionTest {
      * @throws CoreException
      */
     @Test
-    public void issue555() throws CoreException {
-        if (MySystem.getTeensyPlatform().isEmpty()) {
-            // skip test due to no teensy install folder provided
-            // do not fail as this will always fail on travis
-            System.out.println("skipping the test because teensy is not installed.");
-            return;
-        }
-        System.out.println("Teensy is installed at " + MySystem.getTeensyPlatform());
+    public void issue555() {
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
         BoardDescription teensyBoardid = Teensy.Teensy3_1().getBoardDescriptor();
 

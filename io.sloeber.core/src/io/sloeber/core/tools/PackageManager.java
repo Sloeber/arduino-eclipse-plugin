@@ -22,6 +22,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -68,7 +69,7 @@ public class PackageManager {
                 pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
                 myCopy(dl, archivePath.toFile(), true);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
                     e);
         }
@@ -80,27 +81,34 @@ public class PackageManager {
         // Create an ArchiveInputStream with the correct archiving algorithm
         String faileToExtractMessage = Messages.Manager_Failed_to_extract.replace(FILE, pArchiveFullFileName);
         if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
-            try (ArchiveInputStream inStream = new TarArchiveInputStream(
+            try (TarArchiveInputStream inStream = new TarArchiveInputStream(
                     new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
                 return extract(inStream, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else if (pArchiveFileName.endsWith("zip")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
+            try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
                 return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else if (pArchiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new TarArchiveInputStream(
+            try (TarArchiveInputStream in = new TarArchiveInputStream(
                     new GzipCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
                 return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
+        } else if (pArchiveFileName.endsWith("tar.zst")) { //$NON-NLS-1$
+            try (TarArchiveInputStream in = new TarArchiveInputStream(
+                    new ZstdCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
+                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
+            } catch (IOException | InterruptedException e) {
+                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
+            }
         } else if (pArchiveFileName.endsWith("tar")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
+            try (TarArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
                 return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
@@ -110,7 +118,7 @@ public class PackageManager {
         }
     }
 
-    private static IStatus extract(ArchiveInputStream in, File destFolder, int stripPath, boolean overwrite,
+    private static IStatus extract(ArchiveInputStream<?> in, File destFolder, int stripPath, boolean overwrite,
             IProgressMonitor pMonitor) throws IOException, InterruptedException {
 
         // Folders timestamps must be set at the end of archive extraction

@@ -15,7 +15,6 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings("nls")
 public class MySystem {
     private static final String jantjesWindowsMachine = "1248215851";
-    //the one below is based on one mac address Fysiek adres (MAC):	C0-3F-D5-66-04-58 
     private static final String jantjesLinuxMachine = "88937904";
     private static final String currentMachine = getMachine();
 
@@ -30,20 +29,7 @@ public class MySystem {
         return new String();
     }
 
-    public static String getTeensyPlatform() {
-        switch (currentMachine) {
-        case jantjesWindowsMachine:
-            return "E:\\arduino\\arduino-1.8.12 - teensy\\hardware\\teensy";
-        case jantjesLinuxMachine:
-            return "/home/jan/teensyduino/arduino-1.8.12/hardware/teensy";
-        default:
-            return new String();
-        }
-    }
 
-    public static String getTeensyBoard_txt() {
-        return getTeensyPlatform() + "/avr/boards.txt";
-    }
 
     public static MCUBoard[] getUploadBoards() {
         switch (currentMachine) {

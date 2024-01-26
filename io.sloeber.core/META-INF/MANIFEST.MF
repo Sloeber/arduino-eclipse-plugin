@@ -23,8 +23,10 @@ Require-Bundle:
  org.eclipse.core.variables,
  org.apache.commons.commons-io,
  org.apache.commons.commons-compress,
+ com.github.luben.zstd-jni;bundle-version="1.5.5",
  io.sloeber.autoBuild,
  org.eclipse.cdt.make.core
+
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

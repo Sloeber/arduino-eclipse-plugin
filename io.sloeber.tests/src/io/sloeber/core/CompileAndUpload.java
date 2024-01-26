@@ -41,6 +41,7 @@ import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP32;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
+import io.sloeber.providers.Teensy;
 import io.sloeber.ui.monitor.SerialConnection;
 
 @SuppressWarnings({ "nls", "unused" })
@@ -130,9 +131,7 @@ public class CompileAndUpload {
         Arduino.installLatestSamDBoards();
         Arduino.installLatestIntellCurieBoards();
         Arduino.installLatestSamBoards();
-
-        BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-
+        Teensy.installLatest();
     }
 
     @Test
