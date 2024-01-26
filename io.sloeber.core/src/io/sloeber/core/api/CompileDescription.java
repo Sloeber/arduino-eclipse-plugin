@@ -1,12 +1,10 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import java.util.Map.Entry;
 
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
@@ -279,25 +277,83 @@ public class CompileDescription {
      * 
      * @return the minimum list of environment variables to recreate the project
      */
-    public Map<String, String> getEnvVarsConfig(String prefix) {
+    public Map<String, String> getEnvVarsConfig() {
         Map<String, String> ret = new HashMap<>();
-        ret.put(prefix + SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
-        ret.put(prefix + SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
-        ret.put(prefix + SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
-        ret.put(prefix + SLOEBER_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
-        ret.put(prefix + SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
-        ret.put(prefix + SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
-        ret.put(prefix + SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-        ret.put(prefix + SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
-        ret.put(prefix + SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
-        ret.put(prefix + SLOEBER_SIZE_TYPE, mySizeCommand.toString());
-        ret.put(prefix + SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
+        ret.put(SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
+        ret.put(SLOEBER_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
+        ret.put(SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
+        ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
+        ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
+        ret.put(SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
+        ret.put(SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
+        ret.put(SLOEBER_SIZE_TYPE, mySizeCommand.toString());
+        ret.put(SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
 
         return ret;
     }
 
-    public Map<String, String> getEnvVarsVersion(String prefix) {
-        return getEnvVarsConfig(prefix);
+    /**
+     * Recreate the compile options based on the configuration environment variables
+     * given
+     * 
+     * @param envVars
+     */
+    public CompileDescription(Map<String, String> envVars) {
+        String warningLevel = WarningLevels.NONE.toString();
+        String customWarningLevel = EMPTY;
+        String sizeCommand = SizeCommands.RAW_RESULT.toString();
+        String customSizeCommand = EMPTY;
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            String key = curEnvVar.getKey();
+            String value = curEnvVar.getValue();
+            switch (key) {
+            case SLOEBER_ADDITIONAL_COMPILE_OPTIONS:
+                my_C_andCPP_CompileOptions = value;
+                break;
+            case SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS:
+                my_CPP_CompileOptions = value;
+                break;
+            case SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS:
+                my_C_CompileOptions = value;
+                break;
+            case SLOEBER_ASSEMBLY_COMPILE_OPTIONS:
+                my_Assembly_CompileOptions = value;
+                break;
+            case SLOEBER_ARCHIVE_COMPILE_OPTIONS:
+                my_Archive_CompileOptions = value;
+                break;
+            case SLOEBER_LINK_COMPILE_OPTIONS:
+                my_Link_CompileOptions = value;
+                break;
+            case SLOEBER_ALL_COMPILE_OPTIONS:
+                my_All_CompileOptions = value;
+                break;
+            case SLOEBER_WARNING_LEVEL:
+                warningLevel = value;
+                break;
+
+            case SLOEBER_WARNING_LEVEL_CUSTOM:
+                customWarningLevel = value;
+                break;
+            case SLOEBER_SIZE_TYPE:
+                sizeCommand = value;
+                break;
+            case SLOEBER_SIZE_CUSTOM:
+                customSizeCommand = value;
+                break;
+            }
+            myWarningLevel = WarningLevels.valueOf(warningLevel);
+            myWarningLevel.setCustomWarningLevel(customWarningLevel, true);
+
+            mySizeCommand = SizeCommands.valueOf(sizeCommand);
+            mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
+        }
+    }
+
+    public Map<String, String> getEnvVarsVersion() {
+        return getEnvVarsConfig();
     }
 
     public CompileDescription(TxtFile configFile, String prefix) {
@@ -375,21 +431,4 @@ public class CompileDescription {
                 && (my_All_CompileOptions.equals(other.my_All_CompileOptions));
     }
 
-    @SuppressWarnings("nls")
-    public static CompileDescription getFromCDT(ICConfigurationDescription confDesc) {
-        CompileDescription ret = new CompileDescription();
-        ret.my_C_andCPP_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.compile");
-        ret.my_CPP_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.cpp.compile");
-        ret.my_C_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.c.compile");
-        ret.my_Assembly_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.assembly");
-        ret.my_Archive_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.archive");
-        ret.my_Link_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.link");
-        ret.my_All_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.all");
-        ret.myWarningLevel = WarningLevels.NONE;
-        if (TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.warning_level"))) {
-            ret.myWarningLevel = WarningLevels.ALL;
-        }
-        ret.mySizeCommand = SizeCommands.RAW_RESULT;
-        return ret;
-    }
 }

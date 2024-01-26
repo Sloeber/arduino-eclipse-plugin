@@ -9,7 +9,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.Path;
 import org.junit.Test;

@@ -1,6 +1,7 @@
 package io.sloeber.ui.monitor.internal;
 
 import static io.sloeber.ui.Activator.*;
+import io.sloeber.core.api.Const;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,7 +13,8 @@ import org.eclipse.swt.widgets.Display;
 import io.sloeber.core.api.MessageConsumer;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.monitor.views.MyPlotter;
-@SuppressWarnings({"unused"})
+
+@SuppressWarnings({ "unused" })
 public class PlotterListener implements MessageConsumer {
 
 	MyPlotter myPlotter;
@@ -64,8 +66,8 @@ public class PlotterListener implements MessageConsumer {
 	}
 
 	/**
-	 * addValuesToPlotter This method makes the plotter to draw these values
-	 * when a redraw is triggered
+	 * addValuesToPlotter This method makes the plotter to draw these values when a
+	 * redraw is triggered
 	 */
 	public void addValuesToPlotter() {
 		if (this.myPlotter.isDisposed())
@@ -99,7 +101,7 @@ public class PlotterListener implements MessageConsumer {
 			// Scan for plotter data
 			for (int curByte = this.myReceivedSerialData.position(); curByte < this.myReceivedSerialData.limit()
 					- 4; curByte++) {
-				if (this.myReceivedSerialData.getShort(curByte) == PLOTTER_START_DATA) {
+				if (this.myReceivedSerialData.getShort(curByte) == Const.PLOTTER_START_DATA) {
 					// we have a hit.
 					this.myReceivedSerialData.position(curByte + 2);
 					found = true;
@@ -109,8 +111,8 @@ public class PlotterListener implements MessageConsumer {
 			if (found) {
 				int bytestoRead = this.myReceivedSerialData.getShort();
 				if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-					log(new Status(IStatus.WARNING, PLUGIN_ID, Messages.serial_listener_error
-							.replace(Messages.NUMBER, Integer.toString(bytestoRead / 2))));
+					log(new Status(IStatus.WARNING, PLUGIN_ID, Messages.serial_listener_error.replace(Messages.NUMBER,
+							Integer.toString(bytestoRead / 2))));
 				} else {
 					if (bytestoRead < this.myReceivedSerialData.remaining()) {
 						// all data is available

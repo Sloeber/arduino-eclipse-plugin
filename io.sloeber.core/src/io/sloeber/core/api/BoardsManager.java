@@ -1,8 +1,9 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 import static io.sloeber.core.common.ConfigurationPreferences.*;
-import static io.sloeber.core.common.Const.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +26,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -47,9 +47,7 @@ import io.sloeber.core.api.Json.ArduinoPlatformTool;
 import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.InstallProgress;
 import io.sloeber.core.tools.MyMultiStatus;
@@ -222,12 +220,11 @@ public class BoardsManager {
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    @SuppressWarnings("nls")
     private static IStatus install(ArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
         boolean forceDownload = false;
-        String name = platformVersion.getName();
-        String architecture = platformVersion.getArchitecture();
-        String version = platformVersion.getVersion().toString();
+        //        String name = platformVersion.getName();
+        //        String architecture = platformVersion.getArchitecture();
+        //        String version = platformVersion.getVersion().toString();
         // Check if we're installed already
         if (platformVersion.isInstalled()) {
             System.out.println("reusing platform " + platformVersion.toString()); //$NON-NLS-1$
@@ -386,9 +383,9 @@ public class BoardsManager {
             return Status.OK_STATUS;
         }
 
-        File installFolder = curPlatform.getInstallPath().toFile();
+        IPath installFolder = curPlatform.getInstallPath();
         try {
-            FileUtils.deleteDirectory(installFolder);
+            deleteDirectory(installFolder);
         } catch (IOException e) {
             return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toString(), //$NON-NLS-1$
                     e);
@@ -601,7 +598,7 @@ public class BoardsManager {
             return;
         }
         try {
-            FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathPackages().toFile());
+            deleteDirectory(ConfigurationPreferences.getInstallationPathPackages());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -621,9 +618,9 @@ public class BoardsManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.AVR);
-        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAMD);
-        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAM);
+        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.AVR);
+        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.SAMD);
+        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.SAM);
 
         if (latestSamdPlatform != null) {
             myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamdPlatform));

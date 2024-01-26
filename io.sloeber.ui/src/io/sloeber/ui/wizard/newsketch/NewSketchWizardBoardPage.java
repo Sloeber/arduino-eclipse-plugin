@@ -20,39 +20,38 @@ import io.sloeber.ui.project.properties.BoardSelectionPage;
  */
 public class NewSketchWizardBoardPage extends WizardPage {
 
-    final Shell shell = new Shell();
+	final Shell shell = new Shell();
 
-    protected BoardSelectionPage mPageLayout = new BoardSelectionPage();
+	protected BoardSelectionPage mPageLayout = new BoardSelectionPage();
 
-
-    private Listener completeListener = new Listener() {
-	@Override
-	public void handleEvent(Event e) {
+	private Listener completeListener = new Listener() {
+		@Override
+		public void handleEvent(Event e) {
 			setPageComplete(e.doit);
+		}
+	};
+
+	public NewSketchWizardBoardPage(String pageName) {
+		super(pageName);
+		setPageComplete(false);
 	}
-    };
 
-    public NewSketchWizardBoardPage(String pageName) {
-	super(pageName);
-	setPageComplete(false);
-    }
+	public NewSketchWizardBoardPage(String pageName, String title, ImageDescriptor titleImage) {
+		super(pageName, title, titleImage);
+		setPageComplete(false);
+	}
 
-    public NewSketchWizardBoardPage(String pageName, String title, ImageDescriptor titleImage) {
-	super(pageName, title, titleImage);
-	setPageComplete(false);
-    }
+	@Override
+	public void createControl(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NULL);
+		this.mPageLayout.addListener(completeListener);
+		this.mPageLayout.draw(composite);
+		setControl(composite);
 
-    @Override
-    public void createControl(Composite parent) {
-	Composite composite = new Composite(parent, SWT.NULL);
-	this.mPageLayout.addListener(completeListener);
-	this.mPageLayout.draw(composite);
-	setControl(composite);
+	}
 
-    }
-
-    public BoardDescription getBoardDescriptor() {
-		return this.mPageLayout.getBoardFromScreen();
-    }
+	public BoardDescription getBoardDescriptor() {
+		return this.mPageLayout.getBoardDescription();
+	}
 
 }

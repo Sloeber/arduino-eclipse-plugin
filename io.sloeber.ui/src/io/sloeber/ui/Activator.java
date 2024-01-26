@@ -28,8 +28,6 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator instance;
 	private static BundleContext myContext;
 
-
-
 	private static void runGUIRegistration() {
 		UIJob installJob = new UIJob("Gui Registration") { //$NON-NLS-1$
 
@@ -57,8 +55,7 @@ public class Activator extends AbstractUIPlugin {
 	/**
 	 * Logs the status information
 	 *
-	 * @param status
-	 *            the status information to log
+	 * @param status the status information to log
 	 */
 	public static void log(IStatus status) {
 		int style;
@@ -78,19 +75,6 @@ public class Activator extends AbstractUIPlugin {
 		MyPreferences.setCleanSerialMonitorAfterUpload(MyPreferences.getCleanSerialMonitorAfterUpload());
 	}
 
-
-	public static final short PLOTTER_START_DATA = (short) 0xCDAB;// This is the
-	// 205 171 or
-	// -85 -51 flag
-	// that
-	// indicates
-	// plotter data
-	// is following
-	// least
-	// significant
-	// first
-	// 0xCDAB;
-
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -100,5 +84,4 @@ public class Activator extends AbstractUIPlugin {
 		runGUIRegistration();
 	}
 
-	
 }

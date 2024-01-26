@@ -1,55 +1,22 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-
-import io.sloeber.core.Messages;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 
 public class Sketch {
-
-    public static IStatus isUploadableProject(IProject project) {
-        try {
-            if (project == null || !project.hasNature(ARDUINO_NATURE_ID)) {
-                return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null);
-            }
-        } catch (CoreException e) {
-            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e);
-        }
-        return Status.OK_STATUS;
-    }
-
-    /**
-     * Synchronous upload of the sketch returning the status.
-     *
-     * @param project
-     * @return the status of the upload. Status.OK means upload is OK
-     */
-    public static IStatus syncUpload(IProject project) {
-
-        IStatus ret = isUploadableProject(project);
-        if (!ret.isOK()) {
-            return ret;
-        }
-        SloeberProject sProject = SloeberProject.getSloeberProject(project);
-        return sProject.upload();
-    }
 
     /**
      * given a project look in the source code for the line of code that sets the
@@ -98,13 +65,7 @@ public class Sketch {
 
     }
 
-    public static boolean addLibrariesToProject(IProject project, ICConfigurationDescription confDesc,
-            Set<String> libraries) {
-        Map<String, List<IPath>> foldersToChange = Libraries.addLibrariesToProject(project, confDesc, libraries);
-        return Libraries.adjustProjectDescription(confDesc, foldersToChange);
-    }
-
-    public static Map<String, IPath> getAllAvailableLibraries(ICConfigurationDescription confDesc) {
+    public static Map<String, IPath> getAllAvailableLibraries(ISloeberConfiguration confDesc) {
         return Libraries.getAllInstalledLibraries(confDesc);
     }
 
@@ -124,19 +85,10 @@ public class Sketch {
      * @throws CoreException
      */
     public static void addCodeFolder(IProject project, Path path) throws CoreException {
-        boolean projDescNeedsSaving = false;
         CoreModel coreModel = CoreModel.getDefault();
-        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
 
-        List<IPath> includeFolders = Helpers.addCodeFolder(project, path, path.lastSegment(), false);
-        for (ICConfigurationDescription curConfig : projectDescription.getConfigurations()) {
-            if (Helpers.addIncludeFolder(curConfig, includeFolders, true)) {
-                projDescNeedsSaving = true;
-            }
-        }
-        if (projDescNeedsSaving) {
-            coreModel.getProjectDescriptionManager().setProjectDescription(project, projectDescription, true, null);
-        }
+        Helpers.addCodeFolder(path, project.getFolder(path.lastSegment()), false);
+
     }
 
 }

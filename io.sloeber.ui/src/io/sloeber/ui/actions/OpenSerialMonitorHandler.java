@@ -10,8 +10,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
 
@@ -43,12 +43,11 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 				for (IProject curproject : SelectedProjects) {
 					int baud = Sketch.getCodeBaudRate(curproject);
 					if (baud > 0) {
-						SloeberProject sProject = SloeberProject.getSloeberProject(curproject);
-						if (sProject != null) {
-							ICConfigurationDescription activeConf = CoreModel.getDefault()
-									.getProjectDescription(curproject).getActiveConfiguration();
-							BoardDescription boardDescription = sProject.getBoardDescription(activeConf.getName(),
-									false);
+						ICConfigurationDescription activeConf = CoreModel.getDefault().getProjectDescription(curproject)
+								.getActiveConfiguration();
+						ISloeberConfiguration sloeberConf = ISloeberConfiguration.getConfig(activeConf);
+						if (sloeberConf != null) {
+							BoardDescription boardDescription = sloeberConf.getBoardDescription();
 							String comPort = boardDescription.getUploadPort();
 							if (!comPort.isEmpty()) {
 								io.sloeber.ui.monitor.SerialConnection.add(comPort, baud);

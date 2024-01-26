@@ -23,7 +23,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.SloeberProject;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
@@ -68,12 +68,12 @@ class UploadJobHandler extends Job {
 			}
 		}
 		if (canUpload) {
-			SloeberProject sProject = SloeberProject.getSloeberProject(UploadJobHandler.this.myBuildProject);
-			if (sProject != null) {
+			ISloeberConfiguration sloeberConfiguration = ISloeberConfiguration.getActiveConfig(myBuildProject);
+			if (sloeberConfiguration != null) {
 				if (myIsProgram) {
-					retStatus = sProject.upLoadUsingProgrammer();
+					retStatus = sloeberConfiguration.upLoadUsingProgrammer();
 				} else {
-					retStatus = sProject.upload();
+					retStatus = sloeberConfiguration.upload();
 				}
 			}
 			if (retStatus.isOK()) {

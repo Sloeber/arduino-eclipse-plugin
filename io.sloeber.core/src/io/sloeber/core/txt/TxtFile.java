@@ -1,7 +1,7 @@
 package io.sloeber.core.txt;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,8 +17,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 
 /**
  * TxtFile is a class that hides the Arduino *.txt file processing <br/>
