@@ -60,7 +60,6 @@ public class RegressionTest {
         if (reinstall_boards_and_libraries) {
             BoardsManager.removeAllInstalledPlatforms();
         }
-        ;
         // make sure the needed boards are available
         ESP8266.installLatest();
         ESP32.installLatest();
