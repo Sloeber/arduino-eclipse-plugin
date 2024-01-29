@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="false">
+<product name="Sloeber" uid="io.sloeber.product" id="org.eclipse.sdk.ide" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="false">
 
    <aboutInfo>
       <image path="/io.sloeber.product.sdk/icons/eclipse_lg.png"/>
@@ -36,10 +36,10 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.product.sdk/icons/logo_16.png" i32="/io.sloeber.product.sdk/icons/logo_32.png" i48="/io.sloeber.product.sdk/icons/logo_48.png" i256="/io.sloeber.product.sdk/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.product.sdk/icons/logo_16.png" i32="/io.sloeber.product.sdk/icons/logo_32.png" i48="/io.sloeber.product.sdk/icons/logo_48.png" i64="/io.sloeber.product.sdk/icons/logo_64.png" i128="/io.sloeber.product.sdk/icons/logo_128.png" i256="/io.sloeber.product.sdk/icons/logo_256.png"/>
 
    <splash
-      location="io.sloeber.product"
+      location="io.sloeber.product.sdk"
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
@@ -266,6 +266,12 @@ United States, other countries, or both.
       <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.rcp.feature.source" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
+      <feature id="org.eclipse.userstorage" installMode="root"/>
+      <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
+      <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
+      <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature.source" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
    </features>
 
    <configurations>
