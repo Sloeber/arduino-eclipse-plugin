@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="Sloeber"
+            application="org.eclipse.ui.ide.workbench">
+         <property
+               name="windowImages"
+               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png,icons/logo_256.png">
+         </property>
+         <property
+               name="aboutText"
+               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: https://eclipse.baeyens.it/&#x0A;Source: https://github.com/sloeber/arduino-eclipse-plugin&#x0A;&#x0A;&#x0A;Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia&#x0A;&#x0A;https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/eclipse_lg.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="C8D5EA">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="97,370,100,4">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="400,370,441,20">
+         </property>
+         <property
+               name="appName"
+               value="Sloeber">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+
+</plugin>
