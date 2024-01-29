@@ -708,15 +708,80 @@
        </menu>
     </menuContribution>
  </extension>
-  <extension
-       point="org.eclipse.ui.perspectiveExtensions">
-    <perspectiveExtension
-          targetID="io.sloeber.product.perspective">
-       <newWizardShortcut
-             id="io.sloeber.eclipse.NewArduinoSketchWizard">
-       </newWizardShortcut>
-    </perspectiveExtension>
- </extension>
+         <extension
+              point="org.eclipse.ui.perspectives">
+           <perspective
+			class="io.sloeber.ui.core.PerspectiveFactory"
+			icon="icons/logo_16.png"
+			id="io.sloeber.product.perspective"
+			name="Sloeber">
+           </perspective>
+        </extension>
+           <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            editorOnboardingText="Sloeber"
+            targetID="io.sloeber.product.perspective">
+         <view
+               id="org.eclipse.ui.navigator.ProjectExplorer"
+               minimized="false"
+               ratio="0.25"
+               relationship="left"
+               relative="org.eclipse.ui.editorss">
+         </view>
+         <view
+               id="org.eclipse.ui.views.PropertySheet"
+               minimized="false"
+               ratio="0.75"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss">
+         </view>
+         <view
+               id="org.eclipse.ui.views.ProblemView"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.PropertySheet">
+         </view>
+         <view
+               id="io.sloeber.ui.monitor.views.SerialMonitor"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.eclipse.ui.console.ConsoleView"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.eclipse.ui.views.ContentOutline"
+               minimized="false"
+               ratio="0.75"
+               relationship="right"
+               relative="org.eclipse.ui.editorss">
+         </view>
+         <view
+               id="io.sloeber.ui.monitor.views.PlotterView"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+           <extension
+                 id="io.sloeber.application"
+                 name="sloeber application"
+                 point="org.eclipse.core.runtime.applications">
+              <application
+                    cardinality="singleton-global"
+                    thread="main"
+                    visible="true">
+                 <run
+                       class="io.sloeber.ui.core.Application">
+                 </run>
+              </application>
+           </extension>
    <extension
          id="io.sloeber.ui.project.properties.Sloeber"
          name="Sloeber"
@@ -798,6 +863,8 @@
            <commonWizard
                  type="new"
                  wizardId="io.sloeber.eclipse.NewArduinoSketchWizard">
+              <enablement></enablement>
            </commonWizard>
         </extension>
+
 </plugin>

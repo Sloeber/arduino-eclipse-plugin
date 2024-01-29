@@ -44,66 +44,6 @@
    </extension>
 
    <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="io.sloeber.product.Perspective"
-            icon="icons/logo_16.png"
-            id="io.sloeber.product.perspective"
-            name="Sloeber">
-      </perspective>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="io.sloeber.product.perspective">
-         <view
-               id="org.eclipse.ui.navigator.ProjectExplorer"
-               minimized="false"
-               ratio="0.25"
-               relationship="left"
-               relative="org.eclipse.ui.editorss">
-         </view>
-         <view
-               id="org.eclipse.ui.views.PropertySheet"
-               minimized="false"
-               ratio="0.75"
-               relationship="bottom"
-               relative="org.eclipse.ui.editorss">
-         </view>
-         <view
-               id="org.eclipse.ui.views.ProblemView"
-               minimized="false"
-               relationship="stack"
-               relative="org.eclipse.ui.views.PropertySheet">
-         </view>
-         <view
-               id="io.sloeber.ui.monitor.views.SerialMonitor"
-               minimized="false"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView">
-         </view>
-         <view
-               id="org.eclipse.ui.console.ConsoleView"
-               minimized="false"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView">
-         </view>
-         <view
-               id="org.eclipse.ui.views.ContentOutline"
-               minimized="false"
-               ratio="0.75"
-               relationship="right"
-               relative="org.eclipse.ui.editorss">
-         </view>
-         <view
-               id="io.sloeber.ui.monitor.views.PlotterView"
-               minimized="false"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView">
-         </view>
-      </perspectiveExtension>
-   </extension>
-   <extension
          id="io.sloeber.product.intro"
          point="org.eclipse.ui.intro">
       <intro
