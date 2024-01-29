@@ -29,27 +29,27 @@ jobs:
       run: mvn --no-transfer-progress verify -Pall,sloeber_release,NOSDK -Dtest=NightlyJenkins -DfailIfNoTests=false 
       
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v4.3
+      uses: actions/upload-artifact@v4
       with:
         name: Repository
         path: io.sloeber.updatesite/target/repository
     - name: Archive Windows 64 bit
-      uses: actions/upload-artifact@v4.3
+      uses: actions/upload-artifact@v4
       with:
         name: windows
         path: io.sloeber.product/target/products/sloeber-ide-sloeber_release-win32.win32.x86_64.zip
     - name: Archive Linux 64 bit
-      uses: actions/upload-artifact@v4.3
+      uses: actions/upload-artifact@v4
       with:
         name: linux
         path: io.sloeber.product/target/products/sloeber-ide-sloeber_release-linux.gtk.x86_64.tar.gz
     - name: Archive Mac 64 bit
-      uses: actions/upload-artifact@v4.3
+      uses: actions/upload-artifact@v4
       with:
         name: macosx
         path: io.sloeber.product/target/products/sloeber-ide-sloeber_release-macosx.cocoa.x86_64.zip
     - name: Archive Mac ARM 64 bit
-      uses: actions/upload-artifact@v4.3
+      uses: actions/upload-artifact@v4
       with:
         name: macosx_arm
         path: io.sloeber.product/target/products/sloeber-ide-sloeber_release-macosx.cocoa.aarch64.zip
