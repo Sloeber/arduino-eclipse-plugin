@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber SDK" uid="sdk.product" id="io.sloeber.product.sdk.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="Sloeber SDK" uid="io.sloeber.product.sdk" id="io.sloeber.product.sdk.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
       <image path="/io.sloeber.product.sdk/icons/eclipse_lg.png"/>
