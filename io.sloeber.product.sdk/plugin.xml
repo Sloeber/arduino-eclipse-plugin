@@ -3,7 +3,7 @@
 <plugin>
 
    <extension
-         id="io.sloeber.product.sdk.product"
+         id="product"
          point="org.eclipse.core.runtime.products">
       <product
             name="Sloeber sdk"
