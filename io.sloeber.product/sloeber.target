@@ -4,36 +4,40 @@
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/latest"/>
-			<unit id="org.eclipse.cdt.autotools.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.gnu.multicorevisualizer.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.launch.remote.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.managedbuilder.llvm.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.msw.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.linuxtools.cdt.libhover.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.tcf.te.tcf.launch.cdt.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.eclipse.gef.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.ecf.core.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.wildwebdeveloper.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.equinox.core.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.equinox.p2.rcp.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.equinox.p2.user.ui.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.equinox.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.epp.mpc.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.useractions.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.cdt.autotools.feature.group" version="11.4.0.202309151124"/>
+			<unit id="org.eclipse.cdt.feature.group" version="11.4.0.202311271618"/>
+			<unit id="org.eclipse.cdt.gnu.multicorevisualizer.feature.group" version="11.4.0.202309151124"/>
+			<unit id="org.eclipse.cdt.launch.remote.feature.group" version="11.4.0.202309142347"/>
+			<unit id="org.eclipse.cdt.managedbuilder.llvm.feature.group" version="11.4.0.202309142347"/>
+			<unit id="org.eclipse.cdt.msw.feature.group" version="11.4.0.202309142347"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group" version="11.4.0.202311271618"/>
+			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="11.4.0.202309151124"/>
+			<unit id="org.eclipse.linuxtools.cdt.libhover.feature.feature.group" version="8.13.0.202311272311"/>
+			<unit id="org.eclipse.tcf.te.tcf.launch.cdt.feature.feature.group" version="1.7.0.202007121733"/>
+			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="11.4.0.202309151124"/>
+			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="11.4.0.202309151124"/>
+			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="11.4.0.202309151124"/>
+			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="4.1.0.202306071420"/>
+			<unit id="org.eclipse.swtbot.eclipse.gef.feature.group" version="4.1.0.202306071420"/>
+			<unit id="org.eclipse.swtbot.feature.group" version="4.1.0.202306071420"/>
+			<unit id="org.eclipse.sdk.feature.group" version="4.30.0.v20231201-0512"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.15.200.v20231201-0110"/>
+			<unit id="org.eclipse.ecf.core.feature.group" version="3.14.40.v20231021-2050"/>
+			<unit id="org.eclipse.wildwebdeveloper.feature.feature.group" version="1.3.3.202311211923"/>
+			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.14.40.v20231114-1017"/>
+			<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.1000.v20231114-0937"/>
+			<unit id="org.eclipse.epp.mpc.feature.group" version="1.10.2.v20231116-1812"/>
+			<unit id="org.eclipse.rse.feature.group" version="4.5.500.202305261020"/>
+			<unit id="org.eclipse.rse.useractions.feature.group" version="4.5.500.202305261020"/>
+			<unit id="org.eclipse.m2e.feature.feature.group" version="2.4.200.20231119-0901"/>
+			<unit id="org.eclipse.m2e.pde.feature.feature.group" version="2.3.0.20231119-0901"/>
+			<unit id="org.eclipse.m2e.sdk.feature.feature.group" version="2.5.0.20231119-0901"/>
+			<unit id="org.eclipse.m2e.feature.source.feature.group" version="2.4.200.20231119-0901"/>
+			<unit id="org.eclipse.m2e.lemminx.feature.feature.group" version="2.0.6.20231113-2319"/>
+			<unit id="org.eclipse.m2e.lemminx.feature.source.feature.group" version="2.0.6.20231113-2319"/>
+			<unit id="org.eclipse.m2e.logback.feature.feature.group" version="2.2.1.20231113-2319"/>
+			<unit id="org.eclipse.m2e.logback.feature.source.feature.group" version="2.2.1.20231113-2319"/>
+			<unit id="org.eclipse.m2e.pde.feature.source.feature.group" version="2.3.0.20231119-0901"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
@@ -59,7 +63,6 @@
 			<unit id="org.eclipse.jgit.ssh.apache.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.jgit.ssh.jsch.feature.group" version="0.0.0"/>
 		</location>
-
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="DirectFromMaven" missingManifest="error" type="Maven">
 			<dependencies>
 				<dependency>

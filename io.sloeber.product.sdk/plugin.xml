@@ -3,10 +3,10 @@
 <plugin>
 
    <extension
-         id="product"
+         id="io.sloeber.product.sdk.product"
          point="org.eclipse.core.runtime.products">
       <product
-            name="Sloeber"
+            name="Sloeber sdk"
             application="org.eclipse.ui.ide.workbench">
          <property
                name="windowImages"
@@ -14,7 +14,7 @@
          </property>
          <property
                name="aboutText"
-               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: https://eclipse.baeyens.it/&#x0A;Source: https://github.com/sloeber/arduino-eclipse-plugin&#x0A;&#x0A;&#x0A;Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia&#x0A;&#x0A;https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors">
+               value="To help devellop Sloeber">
          </property>
          <property
                name="aboutImage"
@@ -34,13 +34,42 @@
          </property>
          <property
                name="appName"
-               value="Sloeber">
+               value="Sloeber SDK">
          </property>
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini">
          </property>
       </product>
+   </extension>
+
+   <extension
+         id="io.sloeber.product.intro"
+         point="org.eclipse.ui.intro">
+      <intro
+            class="org.eclipse.ui.intro.config.CustomizableIntroPart"
+            id="io.sloeber.product.intro">
+      </intro>
+      <introProductBinding
+            introId="io.sloeber.product.sdk.intro"
+            productId="io.sloeber.product.sdk.product">
+      </introProductBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro.config">
+      <config
+            content="introSDKContent.xml"
+            id="io.sloeber.product.introConfigId"
+            introId="io.sloeber.product.sdk.intro">
+         <presentation
+               home-page-id="root">
+            <implementation
+                  kind="html"
+                  os="win32,linux,macosx"
+                  style="content/shared.css">
+            </implementation>
+         </presentation>
+      </config>
    </extension>
 
 </plugin>

@@ -40,7 +40,7 @@
 					<products>
 						<product>
 							<!-- id is verbatim to todo.product "uid" -->
-							<id>io.sloeber.product</id>
+							<id>io.sloeber.product.sdk</id>
 							<!-- Customise the packaged product's archive name (Instead of "io.sloeber.product")
 							    Suffix is still <os>.<ws>.<arch>.<archiveExtension> (e.g. linux.gtk.x86_64.tar.gz)
 							 -->
