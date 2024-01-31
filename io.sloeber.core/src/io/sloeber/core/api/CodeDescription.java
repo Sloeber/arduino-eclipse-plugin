@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -200,22 +199,13 @@ public class CodeDescription {
 
             break;
         case sample:
-            try {
                 for (IPath curPath : myExamples) {
-                    if (myMakeLinks) {
-                        Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
-                    } else {
-                        FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
-                        FileModifiers.addPragmaOnce(curPath);
-                    }
+
                     String libName = getLibraryName(curPath);
                     if (libName != null) {
                         libraries.put(libName, Libraries.getLibraryCodeFolder(curPath));
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             break;
         }
         return libraries;

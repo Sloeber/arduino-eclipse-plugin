@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunction;
 import org.eclipse.cdt.core.index.IIndex;
@@ -31,40 +30,7 @@ public class IndexHelper {
 	 * @return the string or defaultValue if no string is found
 	 */
 	private static String findParameterInFunction(IIndexName[] names, String function, String defaultValue) {
-		for (IIndexName name : names) {
-			String codeFileName = name.getFileLocation().getFileName();
-			String rawCodeFileContent;
-			try {
-				rawCodeFileContent = FileUtils.readFileToString(new File(codeFileName), Charset.defaultCharset());
-			} catch (IOException e) {
-				return defaultValue;
-			}
-			String codeFileContent = rawCodeFileContent.replaceAll("//.*|/\\*((.|\\n)(?!=*/))+\\*/", ""); //$NON-NLS-1$ //$NON-NLS-2$
-			int functionStart = codeFileContent.indexOf(function);
-			if (functionStart != -1) {
-				int parameterStartQuote = codeFileContent.indexOf("(", functionStart); //$NON-NLS-1$
-				if (parameterStartQuote != -1) {
-					char[] functionParams = codeFileContent.substring(parameterStartQuote, parameterStartQuote + 30)
-							.toCharArray();
-					int curbrackets = 1;
-					int curchar = 1;
-					while ((curbrackets != 0) && (curchar < functionParams.length)) {
-						if (functionParams[curchar] == ')') {
-							curbrackets--;
-						} else {
-							if (functionParams[curchar] == '(') {
-								curbrackets++;
-							}
-						}
-						curchar++;
-					}
-					if (curbrackets == 0) {
-						return codeFileContent.substring(parameterStartQuote + 1, parameterStartQuote + curchar - 1);
-					}
-
-				}
-			}
-		}
+	
 		return defaultValue;
 
 	}

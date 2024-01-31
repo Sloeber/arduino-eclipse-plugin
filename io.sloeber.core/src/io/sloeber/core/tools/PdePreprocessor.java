@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -185,24 +184,6 @@ public class PdePreprocessor {
      * @throws CoreException
      */
 	private static void writeTheGeneratedFile(IProject iProject, String content) throws CoreException {
-
-		// Make sure the file is not processed by Arduino IDE
-		String newFileContent = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + content + NEWLINE + "#endif" + NEWLINE;
-		String currentFileContent = null;
-		try {
-			currentFileContent = FileUtils
-					.readFileToString(iProject.getFile(new Path(generatedFile)).getLocation().toFile(), Charset.defaultCharset());
-		} catch (IOException e) {
-			// This happens when the generated file does not yet exist
-		}
-
-		if (!newFileContent.equals(currentFileContent)) {
-			IFile file = Helpers.addFileToProject(iProject, new Path(generatedFile),
-					new ByteArrayInputStream(newFileContent.getBytes()), null, true);
-			if (file != null) {
-				file.setDerived(true, null);
-			}
-		}
 
 	}
 

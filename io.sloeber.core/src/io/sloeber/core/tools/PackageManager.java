@@ -13,14 +13,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -76,218 +68,11 @@ public class PackageManager {
 
     private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath, boolean pForceDownload,
             String pArchiveFullFileName, IProgressMonitor pMonitor) {
-        // Create an ArchiveInputStream with the correct archiving algorithm
-        String faileToExtractMessage = Messages.Manager_Failed_to_extract.replace(FILE, pArchiveFullFileName);
-        if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
-            try (ArchiveInputStream inStream = new TarArchiveInputStream(
-                    new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(inStream, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else if (pArchiveFileName.endsWith("zip")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else if (pArchiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new TarArchiveInputStream(
-                    new GzipCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else if (pArchiveFileName.endsWith("tar")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else {
+     
             return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Format_not_supported);
-        }
     }
 
-    private static IStatus extract(ArchiveInputStream in, File destFolder, int stripPath, boolean overwrite,
-            IProgressMonitor pMonitor) throws IOException, InterruptedException {
-
-        // Folders timestamps must be set at the end of archive extraction
-        // (because creating a file in a folder alters the folder's timestamp)
-        Map<File, Long> foldersTimestamps = new HashMap<>();
-
-        String pathPrefix = new String();
-
-        Map<File, File> hardLinks = new HashMap<>();
-        Map<File, Integer> hardLinksMode = new HashMap<>();
-        Map<File, String> symLinks = new HashMap<>();
-        Map<File, Long> symLinksModifiedTimes = new HashMap<>();
-
-        // Cycle through all the archive entries
-        while (true) {
-            ArchiveEntry entry = in.getNextEntry();
-            if (entry == null) {
-                break;
-            }
-
-            // Extract entry info
-            long size = entry.getSize();
-            String name = entry.getName();
-            boolean isDirectory = entry.isDirectory();
-            boolean isLink = false;
-            boolean isSymLink = false;
-            String linkName = null;
-            Integer mode = null;
-            Long modifiedTime = Long.valueOf(entry.getLastModifiedDate().getTime());
-
-            pMonitor.subTask("Processing " + name); //$NON-NLS-1$
-
-            {
-                // Skip MacOSX metadata
-                // http://superuser.com/questions/61185/why-do-i-get-files-like-foo-in-my-tarball-on-os-x
-                int slash = name.lastIndexOf('/');
-                if (slash == -1) {
-                    if (name.startsWith("._")) { //$NON-NLS-1$
-                        continue;
-                    }
-                } else {
-                    if (name.substring(slash + 1).startsWith("._")) { //$NON-NLS-1$
-                        continue;
-                    }
-                }
-            }
-
-            // Skip git metadata
-            // http://www.unix.com/unix-for-dummies-questions-and-answers/124958-file-pax_global_header-means-what.html
-            if (name.contains("pax_global_header")) { //$NON-NLS-1$
-                continue;
-            }
-
-            if (entry instanceof TarArchiveEntry) {
-                TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
-                mode = Integer.valueOf(tarEntry.getMode());
-                isLink = tarEntry.isLink();
-                isSymLink = tarEntry.isSymbolicLink();
-                linkName = tarEntry.getLinkName();
-            }
-
-            // On the first archive entry, if requested, detect the common path
-            // prefix to be stripped from filenames
-            int localstripPath = stripPath;
-            if (localstripPath > 0 && pathPrefix.isEmpty()) {
-                int slash = 0;
-                while (localstripPath > 0) {
-                    slash = name.indexOf("/", slash); //$NON-NLS-1$
-                    if (slash == -1) {
-                        throw new IOException(Messages.Manager_archiver_eror_single_root_folder_required);
-                    }
-                    slash++;
-                    localstripPath--;
-                }
-                pathPrefix = name.substring(0, slash);
-            }
-
-            // Strip the common path prefix when requested
-            if (!name.startsWith(pathPrefix)) {
-                throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name)
-                        .replace(FOLDER, pathPrefix));
-
-            }
-            name = name.substring(pathPrefix.length());
-            if (name.isEmpty()) {
-                continue;
-            }
-            File outputFile = new File(destFolder, name);
-
-            File outputLinkedFile = null;
-            if (isLink && linkName != null) {
-                if (!linkName.startsWith(pathPrefix)) {
-                    throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name)
-                            .replace(FOLDER, pathPrefix));
-                }
-                linkName = linkName.substring(pathPrefix.length());
-                outputLinkedFile = new File(destFolder, linkName);
-            }
-            if (isSymLink) {
-                // Symbolic links are referenced with relative paths
-                outputLinkedFile = new File(linkName);
-                if (outputLinkedFile.isAbsolute()) {
-                    System.err.println(Messages.Manager_archive_error_symbolic_link_to_absolute_path
-                            .replace(FILE, outputFile.toString()).replace(FOLDER, outputLinkedFile.toString()));
-                    System.err.println();
-                }
-            }
-
-            // Safety check
-            if (isDirectory) {
-                if (outputFile.isFile() && !overwrite) {
-                    throw new IOException(
-                            Messages.Manager_Cant_create_folder_exists.replace(FILE, outputFile.getPath()));
-                }
-            } else {
-                // - isLink
-                // - isSymLink
-                // - anything else
-                if (outputFile.exists() && !overwrite) {
-                    throw new IOException(Messages.Manager_Cant_extract_file_exist.replace(FILE, outputFile.getPath()));
-                }
-            }
-
-            // Extract the entry
-            if (isDirectory) {
-                if (!outputFile.exists() && !outputFile.mkdirs()) {
-                    throw new IOException(Messages.Manager_Cant_create_folder.replace(FILE, outputFile.getPath()));
-                }
-                foldersTimestamps.put(outputFile, modifiedTime);
-            } else if (isLink) {
-                hardLinks.put(outputFile, outputLinkedFile);
-                hardLinksMode.put(outputFile, mode);
-            } else if (isSymLink) {
-                symLinks.put(outputFile, linkName);
-                symLinksModifiedTimes.put(outputFile, modifiedTime);
-            } else {
-                // Create the containing folder if not exists
-                if (!outputFile.getParentFile().isDirectory()) {
-                    outputFile.getParentFile().mkdirs();
-                }
-                copyStreamToFile(in, size, outputFile);
-                outputFile.setLastModified(modifiedTime.longValue());
-            }
-
-            // Set file/folder permission
-            if (mode != null && !isSymLink && outputFile.exists()) {
-                chmod(outputFile, mode.intValue());
-            }
-        }
-
-        for (Map.Entry<File, File> entry : hardLinks.entrySet()) {
-            if (entry.getKey().exists() && overwrite) {
-                entry.getKey().delete();
-            }
-            link(entry.getValue(), entry.getKey());
-            Integer mode = hardLinksMode.get(entry.getKey());
-            if (mode != null) {
-                chmod(entry.getKey(), mode.intValue());
-            }
-        }
-
-        for (Map.Entry<File, String> entry : symLinks.entrySet()) {
-            if (entry.getKey().exists() && overwrite) {
-                entry.getKey().delete();
-            }
-
-            symlink(entry.getValue(), entry.getKey());
-            entry.getKey().setLastModified(symLinksModifiedTimes.get(entry.getKey()).longValue());
-        }
-
-        // Set folders timestamps
-        for (Map.Entry<File, Long> entry : foldersTimestamps.entrySet()) {
-            entry.getKey().setLastModified(entry.getValue().longValue());
-        }
-
-        return Status.OK_STATUS;
-
-    }
+ 
 
     private static void symlink(String from, File to) throws IOException, InterruptedException {
         if (Common.isWindows) {
@@ -381,10 +166,6 @@ public class PackageManager {
     @SuppressWarnings("nls")
     private static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
             throws IOException {
-        if ("file".equals(url.getProtocol())) {
-            FileUtils.copyFile(new File(url.getFile()), localFile);
-            return;
-        }
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(30000);

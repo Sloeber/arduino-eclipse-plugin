@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -405,16 +404,7 @@ public class Activator extends Plugin {
         if (SystemUtils.IS_OS_WINDOWS) {
             // Install make if needed
             IPath localMakePath = ConfigurationPreferences.getMakePath();
-            if (localMakePath.append(MAKE_EXE).toFile().exists()) {
-                if (!localMakePath.append(SH_EXE).toFile().exists()) {
-                    try {
-                        FileUtils.deleteDirectory(new File(localMakePath.toString()));
-                    } catch (IOException e) {
-                        // should not happen
-                        e.printStackTrace();
-                    }
-                }
-            }
+
             if (!localMakePath.append(MAKE_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 Common.log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));

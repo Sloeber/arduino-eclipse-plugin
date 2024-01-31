@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -30,8 +29,6 @@ public class FileModifiers {
 	 * @throws IOException
 	 */
 	public static void appendString(File input, String addString) throws IOException {
-		String fileString = FileUtils.readFileToString(input, Charset.defaultCharset())  +addString;
-		FileUtils.write(input, fileString, Charset.defaultCharset());
 	}
 
 	/**
@@ -95,19 +92,6 @@ public class FileModifiers {
 	}
 
 	public static void replaceInFile(File file, boolean regex, String find, String replace) {
-		try {
-			String textFromFile = FileUtils.readFileToString(file, Charset.defaultCharset());
-
-			if (regex) {
-				textFromFile = textFromFile.replaceAll(find, replace);
-			} else {
-				textFromFile = textFromFile.replace(find, replace);
-			}
-			FileUtils.write(file, textFromFile, Charset.defaultCharset());
-		} catch (IOException e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),
-					"Failed to replace "+find+" with "+replace+" in file "+file.toString(), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
 	}
 
 }

@@ -46,7 +46,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -920,12 +919,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         awkContent += "\\n";
         awkContent += "\"}";
 
-        try {
-            FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         // END JABA SLOEBER create the size.awk file
         checkCancel();
         // Now finish up by adding all the object files

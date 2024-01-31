@@ -13,7 +13,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -112,19 +111,6 @@ public class WorkAround extends Const {
             return boardsSloeberTXT;
         }
 
-        // generate the workaround file
-        try {
-            String boardsTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
-
-            boardsTXT = boardsApplyWorkArounds(boardsTXT);
-
-            boardsTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + boardsTXT;
-            FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
-        } catch (IOException e) {
-            Common.log(new Status(IStatus.WARNING, Activator.getId(),
-                    "Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
-            return requestedFileToWorkAround;
-        }
 
         return boardsSloeberTXT;
     }
@@ -196,20 +182,7 @@ public class WorkAround extends Const {
             return platformSloeberTXT;
         }
 
-        // generate the workaround file
-        try {
 
-            String platformTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
-
-            platformTXT = platformApplyWorkArounds(platformTXT, requestedFileToWorkAround);
-
-            platformTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + platformTXT;
-            FileUtils.write(platformSloeberTXT, platformTXT, Charset.defaultCharset());
-        } catch (IOException e) {
-            Common.log(new Status(IStatus.WARNING, Activator.getId(),
-                    "Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
-            return requestedFileToWorkAround;
-        }
 
         return platformSloeberTXT;
     }
@@ -526,19 +499,7 @@ public class WorkAround extends Const {
             return actualProgrammersTXT;
         }
 
-        // generate the workaround file
-        try {
 
-            String programmersTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
-            programmersTXT = programmersApplyWorkArounds(programmersTXT);
-
-            programmersTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + programmersTXT;
-            FileUtils.write(actualProgrammersTXT, programmersTXT, Charset.defaultCharset());
-        } catch (IOException e) {
-            Common.log(new Status(IStatus.WARNING, Activator.getId(),
-                    "Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
-            return requestedFileToWorkAround;
-        }
         return actualProgrammersTXT;
 
     }

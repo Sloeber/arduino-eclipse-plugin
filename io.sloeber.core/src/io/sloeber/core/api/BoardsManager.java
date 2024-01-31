@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -376,12 +375,6 @@ public class BoardsManager {
         }
 
         File installFolder = curPlatform.getInstallPath().toFile();
-        try {
-            FileUtils.deleteDirectory(installFolder);
-        } catch (IOException e) {
-            return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toString(), //$NON-NLS-1$
-                    e);
-        }
 
         return Status.OK_STATUS;
     }
@@ -588,11 +581,6 @@ public class BoardsManager {
         if (!isReady()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
-        }
-        try {
-            FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathPackages().toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
