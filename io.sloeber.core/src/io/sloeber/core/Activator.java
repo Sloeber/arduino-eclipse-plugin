@@ -1,5 +1,6 @@
 package io.sloeber.core;
 
+import static io.sloeber.core.common.Common.*;
 import static io.sloeber.core.common.Const.*;
 import static org.eclipse.core.resources.IResource.*;
 
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -401,7 +401,7 @@ public class Activator extends Plugin {
         String AWK_URL = "https://github.com/Sloeber/arduino-eclipse-plugin/files/7102568/awk_GNU_64_bit_V4_2_1.zip";
 
         // On Windows install make and awk
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             // Install make if needed
             IPath localMakePath = ConfigurationPreferences.getMakePath();
 

@@ -1,6 +1,7 @@
 package io.sloeber.core.tools;
 
 import static java.nio.file.StandardCopyOption.*;
+import static io.sloeber.core.common.Common.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.SystemUtils;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -59,7 +61,7 @@ public class PackageManager {
                 pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
                 myCopy(dl, archivePath.toFile(), true);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
                     e);
         }
@@ -68,11 +70,11 @@ public class PackageManager {
 
     private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath, boolean pForceDownload,
             String pArchiveFullFileName, IProgressMonitor pMonitor) {
-     
+
             return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Format_not_supported);
     }
 
- 
+
 
     private static void symlink(String from, File to) throws IOException, InterruptedException {
         if (Common.isWindows) {
@@ -96,7 +98,7 @@ public class PackageManager {
     @SuppressWarnings("nls")
     private static void link(File actualFile, File linkName) throws IOException, InterruptedException {
         String[] command = new String[] { "ln", actualFile.getAbsolutePath(), linkName.getAbsolutePath() };
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             command = new String[] { "cmd", "/c", "mklink", "/H", linkName.getAbsolutePath(),
                     actualFile.getAbsolutePath() };
         }

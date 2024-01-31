@@ -2,7 +2,7 @@
 <feature
       id="io.sloeber.feature"
       label="%featureName"
-      version="4.4.1.qualifier"
+      version="4.4.2.qualifier"
       provider-name="%provider">
 
    <description url="http://eclipse.baeyens.it">
@@ -65,11 +65,5 @@ If you do not agree with this policy, please do not install this software.
          version="0.0.0"
          fragment="true"
          unpack="false"/>
-
-   <plugin
-         id="io.sloeber.application"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
 </feature>

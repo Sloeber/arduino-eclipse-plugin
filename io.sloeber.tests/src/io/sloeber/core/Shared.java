@@ -10,14 +10,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -34,6 +37,7 @@ import org.osgi.framework.Bundle;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
@@ -72,16 +76,17 @@ public class Shared {
         ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
         ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
 
-        IPath resultPath = project.getLocation().append(activeConfig.getName());
-        String projName=project.getName() ;
-        String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",projName+".exe","application.axf"};
-        for(String validOutput:validOutputss) {   
-            File validFile = resultPath.append( validOutput).toFile();
+        IFolder buildFolder = project.getFolder(activeConfig.getName());
+        String projName = project.getName();
+        String[] validOutputss = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
+                "application.axf" };
+        for (String validOutput : validOutputss) {
+            IFile validFile = buildFolder.getFile(validOutput);
             if (validFile.exists()) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -102,11 +107,11 @@ public class Shared {
     }
 
     public static IPath getTemplateFolder(String templateName) throws Exception {
-            Bundle bundle = Platform.getBundle("io.sloeber.tests");
-            Path path = new Path("src/templates/" + templateName);
-            URL fileURL = FileLocator.find(bundle, path, null);
-            URL resolvedFileURL = FileLocator.toFileURL(fileURL);
-            return new Path(resolvedFileURL.toURI().getPath());
+        Bundle bundle = Platform.getBundle("io.sloeber.tests");
+        Path path = new Path("src/templates/" + templateName);
+        URL fileURL = FileLocator.find(bundle, path, null);
+        URL resolvedFileURL = FileLocator.toFileURL(fileURL);
+        return new Path(resolvedFileURL.toURI().getPath());
     }
 
     public static IPath getprojectZip(String zipFileName) throws Exception {
@@ -172,8 +177,8 @@ public class Shared {
 
         try {
             compileOptions.setEnableParallelBuild(true);
-            theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor,
-                    codeDescriptor, compileOptions, monitor);
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor, codeDescriptor,
+                    compileOptions, monitor);
             waitForAllJobsToFinish(); // for the indexer
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,7 +234,7 @@ public class Shared {
          * move the file
          *
          */
-        if (SystemUtils.IS_OS_LINUX) {
+        if (Common.isLinux) {
             java.nio.file.Path esptool2root = packageRoot.resolve("digistump").resolve("tools").resolve("esptool2")
                     .resolve("0.9.1");
             java.nio.file.Path esptool2wrong = esptool2root.resolve("0.9.1").resolve("esptool2");
@@ -246,7 +251,7 @@ public class Shared {
          * Elector heeft core Platino maar de directory noemt platino. In windows geen
          * probleem maar in case sensitive linux dus wel
          */
-        if (SystemUtils.IS_OS_LINUX) {
+        if (Common.isLinux) {
             java.nio.file.Path cores = packageRoot.resolve("Elektor").resolve("hardware").resolve("avr")
                     .resolve("1.0.0").resolve("cores");
             java.nio.file.Path coreWrong = cores.resolve("platino");
@@ -338,4 +343,30 @@ public class Shared {
     // }
     // end copy from
     // https://www.codejava.net/java-se/file-io/programmatically-extract-a-zip-file-using-java
+
+    //copied from https://stackoverflow.com/questions/18344721/extract-the-difference-between-two-strings-in-java
+    /**
+     * Returns an array of size 2. The entries contain a minimal set of characters
+     * that have to be removed from the corresponding input strings in order to
+     * make the strings equal.
+     */
+    public static String[] difference(String a, String b) {
+        int startDiff = 1;
+        while (a.substring(0, startDiff).equals(b.substring(0, startDiff))) {
+            startDiff++;
+        }
+        int endDiff = startDiff + 20;
+        if (startDiff > 10) {
+            int nl = a.substring(0, startDiff).lastIndexOf('\n');
+            if (nl != -1) {
+                startDiff = nl;
+            } else {
+                startDiff = startDiff - 5;
+            }
+        } else {
+            startDiff = 0;
+        }
+        return new String[] { a.substring(startDiff, endDiff), b.substring(startDiff, endDiff) };
+    }
+
 }

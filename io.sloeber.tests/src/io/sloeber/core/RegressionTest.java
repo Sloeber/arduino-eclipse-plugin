@@ -65,10 +65,8 @@ public class RegressionTest {
         ESP8266.installLatest();
         ESP32.installLatest();
         Arduino.installLatestAVRBoards();
+        Teensy.installLatest();
 
-        if (!MySystem.getTeensyPlatform().isEmpty()) {
-            BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-        }
     }
 
     /**
@@ -77,13 +75,6 @@ public class RegressionTest {
      */
     @Test
     public void issue555() {
-        if (MySystem.getTeensyPlatform().isEmpty()) {
-            // skip test due to no teensy install folder provided
-            // do not fail as this will always fail on travis
-            System.out.println("skipping the test because teensy is not installed.");
-            return;
-        }
-        System.out.println("Teensy is installed at " + MySystem.getTeensyPlatform());
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
         BoardDescription teensyBoardid = Teensy.Teensy3_1().getBoardDescriptor();
 
@@ -369,6 +360,46 @@ public class RegressionTest {
             fail("Failed to compile the project after config rename");
         }
     }
+
+    //    /**
+    //     * Does Sloeber still compile after a project rename
+    //     * 
+    //     * @throws Exception
+    //     */
+    //    @Test
+    //    public void rename_Project() throws Exception {
+    //        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+    //
+    //        IProject theTestProject = null;
+    //        String projectName = "rename_project";
+    //        String projectNameRenamed = "renamed_project";
+    //
+    //        CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
+    //
+    //        NullProgressMonitor monitor = new NullProgressMonitor();
+    //        theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+    //                new CompileDescription(), new NullProgressMonitor());
+    //
+    //        Shared.waitForAllJobsToFinish(); // for the indexer
+    //        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    //        if (Shared.hasBuildErrors(theTestProject)) {
+    //            fail("Failed to compile the project before project rename");
+    //        }
+    //        theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+    //
+    //        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+    //        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(theTestProject);
+    //
+    //        IProjectDescription descr = theTestProject.getDescription();
+    //        descr.ren(projectNameRenamed);
+    //        theTestProject.setDescription(descr, null);
+    //
+    //        Shared.waitForAllJobsToFinish(); // for the indexer
+    //        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    //        if (Shared.hasBuildErrors(theTestProject)) {
+    //            fail("Failed to compile the project after project rename");
+    //        }
+    //    }
 
     /**
      * open and close a project should keep the compileDescription and

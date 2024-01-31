@@ -3,6 +3,8 @@ package io.sloeber.core.common;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunction;
@@ -30,7 +32,6 @@ public class IndexHelper {
 	 * @return the string or defaultValue if no string is found
 	 */
 	private static String findParameterInFunction(IIndexName[] names, String function, String defaultValue) {
-	
 		return defaultValue;
 
 	}

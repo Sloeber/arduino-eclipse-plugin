@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber ui language pack
 Bundle-SymbolicName: io.sloeber.ui.nl1;singleton:=true
-Bundle-Version: 4.4.1.qualifier
+Bundle-Version: 4.4.2.qualifier
 Fragment-Host: io.sloeber.ui;bundle-version="4.2.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: baeyens.it

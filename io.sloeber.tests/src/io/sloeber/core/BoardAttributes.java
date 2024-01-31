@@ -1,5 +1,8 @@
 package io.sloeber.core;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class BoardAttributes {
     public boolean serial = false;
     public boolean serial1 = false;
@@ -27,18 +30,12 @@ public class BoardAttributes {
      * Only a very rare selection of boards supports input_pulldown as pin mode
      */
     public boolean inputPullDown = false;
-    public boolean teensy = false;// Teensy specific hardware or software
     /*
      * No board is out of the box compatible with code that needs a change
      */
     public boolean worksOutOfTheBox = true;
-    /*
-     * Composite video output from M0 microcontrollers: Circuit Playground Express
-     * (not 'classic'), Feather M0, Arduino Zero
-     */
-    public boolean mo_mcu = false;
-    public boolean esp8266_mcu = false;
-    public String boardName = null;
+    public String boardID = null;
+    public final Set<String> myArchitectures = new HashSet<>(); //Bit wierd to have multiple architectures I know
 
     public boolean compatibleWithExampleRequirements(BoardAttributes example) {
         boolean ret = worksOutOfTheBox;
@@ -52,22 +49,36 @@ public class BoardAttributes {
         ret = ret && matches(example.midi, midi);
         ret = ret && matches(example.mouse, mouse);
         ret = ret && matches(example.wire1, wire1);
-        ret = ret && matches(example.teensy, teensy);
+        //        ret = ret && matches(example.teensy, teensy);
         ret = ret && matches(example.inputPullDown, inputPullDown);
-        ret = ret && matches(example.mo_mcu, mo_mcu);
-        ret = ret && matches(example.esp8266_mcu, esp8266_mcu);
+        //        ret = ret && matches(example.mo_mcu, mo_mcu);
+        //        ret = ret && matches(example.esp8266_mcu, esp8266_mcu);
         ret = ret && matches(example.buildInLed, buildInLed);
         ret = ret && matches(example.tone, tone);
         ret = ret && matches(example.directMode, directMode);
 
+        ret = ret && matches(example.myArchitectures, myArchitectures);
+
         ret = ret && example.myNumAD <= myNumAD;
 
-        if (example.boardName != null) {
-            ret = ret && example.boardName.equals(boardName);
+        if (example.boardID != null) {
+            ret = ret && example.boardID.equals(boardID);
         }
 
         return ret;
 
+    }
+
+    private static boolean matches(Set<String> example_Archs, Set<String> board_archs) {
+        if (example_Archs.size() == 0) {
+            //no requirements for example
+            return true;
+        }
+        Set<String> result = new HashSet<>(example_Archs);
+
+        result.retainAll(board_archs);
+
+        return result.size() > 0;
     }
 
     private static boolean matches(boolean needs, boolean has) {
@@ -82,6 +93,8 @@ public class BoardAttributes {
      */
     public BoardAttributes or(BoardAttributes or) {
         BoardAttributes ret = new BoardAttributes();
+        ret.myArchitectures.addAll(myArchitectures);
+        ret.myArchitectures.addAll(or.myArchitectures);
         // fields that need a binary and
         ret.worksOutOfTheBox = worksOutOfTheBox && or.worksOutOfTheBox;
         ret.buildInLed = buildInLed && or.buildInLed;
@@ -99,19 +112,19 @@ public class BoardAttributes {
         ret.mouse = mouse || or.mouse;
         ret.wire1 = wire1 || or.wire1;
         ret.inputPullDown = inputPullDown || or.inputPullDown;
-        ret.teensy = teensy || or.teensy;
-        ret.mo_mcu = mo_mcu || or.mo_mcu;
-        ret.esp8266_mcu = esp8266_mcu || or.esp8266_mcu;
+        //        ret.teensy = teensy || or.teensy;
+        //        ret.mo_mcu = mo_mcu || or.mo_mcu;
+        //        ret.esp8266_mcu = esp8266_mcu || or.esp8266_mcu;
 
         // other special fields
-        if (boardName == null) {
-            ret.boardName = or.boardName;
+        if (boardID == null) {
+            ret.boardID = or.boardID;
         } else {
-            if (or.boardName == null) {
-                ret.boardName = boardName;
+            if (or.boardID == null) {
+                ret.boardID = boardID;
             } else {
-                if (or.boardName.equals(boardName)) {
-                    ret.boardName = boardName;
+                if (or.boardID.equals(boardID)) {
+                    ret.boardID = boardID;
                 } else {
                     ret.worksOutOfTheBox = false;
                 }

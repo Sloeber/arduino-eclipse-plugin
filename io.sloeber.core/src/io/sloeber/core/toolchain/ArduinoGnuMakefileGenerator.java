@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,8 +49,10 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
@@ -905,7 +909,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         IFile sizeAwkFile1 = root.getFile(topBuildDir.append("size.awk"));
         File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
         String regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex", EMPTY);
-         String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
+        String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.data", EMPTY);
         awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.eeprom", EMPTY);
@@ -1291,8 +1295,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(ALL_TARGET))
                     .append(NEWLINE);
             buffer.append(defaultTarget).append(NEWLINE);
-            buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(PREBUILD)
-                    .append(NEWLINE);
+            // the ||: is from here https://stackoverflow.com/questions/11871921/suppress-and-ignore-output-for-makefile
+            buffer.append(TAB).append(DASH).append(prebuildStep).append(" ||:").append(NEWLINE);
             buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
                     .append(NEWLINE);
             buffer.append(NEWLINE);
@@ -1388,14 +1392,14 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         buffer.append(addTargetsRules(targetTool, outputVarsAdditionsList, managedProjectOutputs,
                 (postbuildStep.length() > 0)));
         // Add the prebuild step target, if specified
-        if (prebuildStep.length() > 0) {
-            buffer.append(PREBUILD).append(COLON).append(NEWLINE);
-            if (preannouncebuildStep.length() > 0) {
-                buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(preannouncebuildStep));
-            }
-            buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
-            buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
-        }
+        //        if (prebuildStep.length() > 0) {
+        //            buffer.append(PREBUILD).append(COLON).append(NEWLINE);
+        //            if (preannouncebuildStep.length() > 0) {
+        //                buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(preannouncebuildStep));
+        //            }
+        //            buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
+        //            buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+        //        }
         // Add the postbuild step, if specified
         if (postbuildStep.length() > 0) {
             buffer.append(POSTBUILD).append(COLON).append(NEWLINE);
@@ -1621,7 +1625,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             String[] cmdInputs = inputs.toArray(new String[inputs.size()]);
             IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
             IManagedCommandLineInfo cmdLInfo = gen.generateCommandLineInfo(tool, command, flags, outflag, outputPrefix,
-                    primaryOutputs, cmdInputs, tool.getCommandLinePattern());
+                    primaryOutputs, cmdInputs, getToolCommandLinePattern(tool));
             // The command to build
             String buildCmd = null;
             if (cmdLInfo == null) {
@@ -1639,6 +1643,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             // resolve any remaining macros in the command after it has been
             // generated
             try {
+                //TOFIX JABA heavy hack to get the combiner to work properly
+                //if the command contains ${ARCHIVES}
+                //remove the ${AR}
+                //replace ${ARCHIVES} with ${AR}
+                String ARCHIVES = " ${ARCHIVES} ";
+                String AR = " $(AR) ";
+                if (buildCmd.contains(ARCHIVES)) {
+                    buildCmd = buildCmd.replace(AR, " ");
+                    buildCmd = buildCmd.replace(ARCHIVES, AR);
+                }
+                //end JABA heavy hack
                 String resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
                         buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
                         new FileContextData(null, null, null, tool));
@@ -2205,7 +2220,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         }
         IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
         return gen.generateCommandLineInfo(tool, cmd, flags, outputFlag, outputPrefix, outputName, inputResources,
-                tool.getCommandLinePattern());
+                getToolCommandLinePattern(tool));
     }
 
     /**
@@ -2570,7 +2585,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 // Call the command line generator
                 IManagedCommandLineGenerator cmdLGen = tool.getCommandLineGenerator();
                 cmdLInfo = cmdLGen.generateCommandLineInfo(tool, cmd, flags, outflag, outputPrefix,
-                        OUT_MACRO + otherPrimaryOutputs, inputStrings, tool.getCommandLinePattern());
+                        OUT_MACRO + otherPrimaryOutputs, inputStrings, getToolCommandLinePattern(tool));
             } else {
                 outflag = tool.getOutputFlag();
                 outputPrefix = tool.getOutputPrefix();
@@ -4517,5 +4532,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             }
         }
         return h;
+    }
+
+    private String getToolCommandLinePattern(ITool tool) {
+        String orgPattern = tool.getCommandLinePattern();
+        if (orgPattern.contains("$")) {
+            //if the pattern contains a space no use to try to expand it
+            return orgPattern;
+        }
+        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
+        return Common.getBuildEnvironmentVariable(confDesc, orgPattern, orgPattern, false);
+
     }
 }

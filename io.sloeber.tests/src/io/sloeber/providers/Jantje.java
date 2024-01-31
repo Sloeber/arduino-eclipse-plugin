@@ -19,7 +19,7 @@ public class Jantje extends MCUBoard {
     private static final String localDebugArchitectureName = "pc";
     private static final String jsonFileName = "package_jantje_index.json";
     // the below json url is need as esp8266 is a referenced platform
-    public static final String additionalJsonURL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
+    public static final String additionalJsonURL = "https://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
     @Override
     public boolean isExampleSupported(Example example) {
@@ -38,8 +38,8 @@ public class Jantje extends MCUBoard {
         return super.isExampleSupported(example);
     }
 
-    public static List<MCUBoard> getAllBoards() {
-        return getAllBoards(provider, Arduino.uno());
+    public static  List<MCUBoard> getAllBoards() {
+        return getAllBoards(provider, uno());
     }
 
     @Override
@@ -48,9 +48,13 @@ public class Jantje extends MCUBoard {
 
     }
 
-    public Jantje(BoardDescription boardDescriptor) {
-        myBoardDescriptor = boardDescriptor;
+    public Jantje(BoardDescription boardDesc) {
+        myBoardDescriptor = boardDesc;
         setAttributes();
+    }
+    
+    public static MCUBoard uno() {
+        return new Jantje( Arduino.unoID);
     }
 
     public Jantje(String boardName) {
@@ -73,6 +77,7 @@ public class Jantje extends MCUBoard {
         String boardID = myBoardDescriptor.getBoardID();
         Arduino.sharedsetAttributes(boardID, myAttributes);
         setUploadPort("none");
+        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
 
     }
 

@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -200,7 +200,6 @@ public class CodeDescription {
             break;
         case sample:
                 for (IPath curPath : myExamples) {
-
                     String libName = getLibraryName(curPath);
                     if (libName != null) {
                         libraries.put(libName, Libraries.getLibraryCodeFolder(curPath));
@@ -227,7 +226,7 @@ public class CodeDescription {
 
     private void saveLastUsedExamples() {
         if (myExamples != null) {
-            String toStore = StringUtils.join(myExamples, "\n"); //$NON-NLS-1$
+            String toStore = myExamples.stream().map(Object::toString).collect(Collectors.joining("\n")); //$NON-NLS-1$
             InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, toStore);
         } else {
             InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, new String());

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.product.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
-      <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
+      <image path="/io.sloeber.product/icons/eclipse_lg.png"/>
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
@@ -37,10 +37,10 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.application/icons/logo_16.png" i32="/io.sloeber.application/icons/logo_32.png" i48="/io.sloeber.application/icons/logo_48.png" i64="/io.sloeber.application/icons/logo_64.png" i128="/io.sloeber.application/icons/logo_128.png" i256="/io.sloeber.application/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.product/icons/logo_16.png" i32="/io.sloeber.product/icons/logo_32.png" i48="/io.sloeber.product/icons/logo_48.png" i64="/io.sloeber.product/icons/logo_64.png" i128="/io.sloeber.product/icons/logo_128.png" i256="/io.sloeber.product/icons/logo_256.png"/>
 
    <splash
-      location="io.sloeber.application"
+      location="io.sloeber.product"
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
@@ -53,7 +53,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </win>
    </launcher>
 
-   <intro introId="io.sloeber.application.intro"/>
+   <intro introId="io.sloeber.product.intro"/>
 
    <vm>
    </vm>
@@ -264,11 +264,11 @@ United States, other countries, or both.
    <repositories>
       <repository location="https://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
       <repository location="https://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
-      <repository location="https://download.eclipse.org/releases/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
+      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="false" />
       <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/nebula/snapshot" enabled="true" />
+      <repository location="https://download.eclipse.org/releases/latest/" enabled="true" />
+      <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
+      <repository location="https://download.eclipse.org/nebula/releases/latest/" enabled="true" />
    </repositories>
 
    <preferencesInfo>

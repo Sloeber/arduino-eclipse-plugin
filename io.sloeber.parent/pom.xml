@@ -5,11 +5,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.sloeber.arduino-eclipse-plugin</groupId>
 	<artifactId>io.sloeber.parent</artifactId>
-	<version>4.4.1-SNAPSHOT</version>
+	<version>4.4.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
+
 		<tycho.version>3.0.5</tycho.version>
+
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 		<!-- maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target -->
@@ -51,13 +53,17 @@
 				<version>${tycho.version}</version>
 				<configuration>
 					<dependency-resolution>
-						<profileProperties>
-							<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
+					 	<profileProperties>
+					 		<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime> 
 						</profileProperties>
-					</dependency-resolution>
+					</dependency-resolution> 
+					<target>
+						<file>../io.sloeber.product/sloeber.target</file>
+					</target>
+
 				</configuration>
 			</plugin>
-		
+
 			<!-- Enable tycho build extension -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -76,9 +82,8 @@
 <!--
 					<source>11</source>
 					<target>11</target> -->
-                   <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
- 				</configuration>
+				</configuration>
 			</plugin>
 
 			<!-- Enable version management -->
@@ -131,7 +136,6 @@
 			</activation>
 			<modules>
 				<module>../io.sloeber.feature</module>
-				<module>../io.sloeber.application</module>
 				<module>../io.sloeber.core</module>
 				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product</module>
@@ -184,7 +188,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -201,6 +205,11 @@
 									<os>macosx</os>
 									<ws>cocoa</ws>
 									<arch>x86_64</arch>
+								</environment>
+								<environment>
+									<os>macosx</os>
+									<ws>cocoa</ws>
+									<arch>aarch64</arch>
 								</environment>
 							</environments>
 						</configuration>
@@ -220,7 +229,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -245,7 +254,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -270,7 +279,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -278,6 +287,32 @@
 									<os>macosx</os>
 									<ws>cocoa</ws>
 									<arch>x86_64</arch>
+								</environment>
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>macm1</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
+								<!-- Mac aarch64 -->
+								<environment>
+									<os>macosx</os>
+									<ws>cocoa</ws>
+									<arch>aarch64</arch>
 								</environment>
 							</environments>
 						</configuration>
@@ -340,7 +375,7 @@
 		<repository>
 			<id>nebula</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/nebula/releases/latest/</url>
+			<url>https://download.eclipse.org/nebula/releases/latest/</url>
 		</repository>
 
 		<repository>
@@ -349,11 +384,6 @@
 			<url>https://download.eclipse.org/justj/jres/17/updates/release/latest/</url>
 		</repository>
 
-		<repository>
-			<id>gnumcu</id>
-			<layout>p2</layout>
-			<url>http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/</url>
-		</repository>
 	</repositories>
 
 	<pluginRepositories>

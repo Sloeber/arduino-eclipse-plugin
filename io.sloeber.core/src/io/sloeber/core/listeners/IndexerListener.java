@@ -12,12 +12,12 @@ import org.eclipse.cdt.core.index.IIndexChangeListener;
 import org.eclipse.cdt.core.index.IIndexerStateEvent;
 import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.Sketch;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
@@ -33,19 +33,13 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
             // Do not update libraries if project is in creation
             return;
         }
-        try {
-            if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
-                if (!newChangedProjects.contains(project)) {
-                    Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-                            "Index of project changed :" + project.getName())); //$NON-NLS-1$
-                    newChangedProjects.add(project);
-                }
+        if (Sketch.isSketch(project)) {
+            if (!newChangedProjects.contains(project)) {
+                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                        "Index of project changed :" + project.getName())); //$NON-NLS-1$
+                newChangedProjects.add(project);
             }
-        } catch (CoreException e) {
-            // ignore
-            e.printStackTrace();
         }
-
     }
 
     @Override

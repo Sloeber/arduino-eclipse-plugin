@@ -35,9 +35,6 @@ public class RegressionTestFailingOnTravis {
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
-		if (!MySystem.getTeensyPlatform().isEmpty()) {
-			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-		}
 	}
 
 	/**

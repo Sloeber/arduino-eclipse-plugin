@@ -198,7 +198,7 @@
     <wizard
           category="io.sloeber.eclipse.newWizards"
           class="io.sloeber.ui.wizard.newsketch.NewSketchWizard"
-          finalPerspective="io.sloeber.application.perspective"
+          finalPerspective="io.sloeber.product.perspective"
           icon="icons/new.png"
           id="io.sloeber.eclipse.NewArduinoSketchWizard"
           name="%wizard.new.sketch.name"
@@ -214,11 +214,11 @@
           canFinishEarly="true"
           category="io.sloeber.eclipse.newWizards"
           class="io.sloeber.ui.wizard.ConvertToSloeber"
-          finalPerspective="io.sloeber.application.perspective"
+          finalPerspective="io.sloeber.product.perspective"
           icon="icons/convertToSloeber.png"
           id="io.sloeber.convert.wizard"
           name="Convert to Sloeber project"
-          project="false">
+          project="true">
        <selection
              class="org.eclipse.core.resources.IProject">
        </selection>
@@ -436,7 +436,7 @@
     <with variable="activeWorkbenchWindow.activePerspective">
        <or>
           <equals
-                value="io.sloeber.application.perspective">
+                value="io.sloeber.product.perspective">
           </equals>
           <equals
                 value="org.eclipse.cdt.ui.CPerspective">
@@ -711,7 +711,7 @@
   <extension
        point="org.eclipse.ui.perspectiveExtensions">
     <perspectiveExtension
-          targetID="io.sloeber.application.perspective">
+          targetID="io.sloeber.product.perspective">
        <newWizardShortcut
              id="io.sloeber.eclipse.NewArduinoSketchWizard">
        </newWizardShortcut>
@@ -723,7 +723,7 @@
          point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
            class="io.sloeber.ui.project.properties.BoardSelectionPage"
-           icon="platform:/plugin/io.sloeber.application/icons/logo_16.png"
+           icon="platform:/plugin/io.sloeber.product/icons/logo_16.png"
            name="%tab.board.selection.name"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="010">

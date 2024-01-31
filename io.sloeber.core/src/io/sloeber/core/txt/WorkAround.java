@@ -1,10 +1,14 @@
 package io.sloeber.core.txt;
 
+import static io.sloeber.core.common.Common.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -44,7 +49,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 04 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.01.test 01 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -110,7 +115,6 @@ public class WorkAround extends Const {
             // if boardsSloeberTXT still exists it is up to date
             return boardsSloeberTXT;
         }
-
 
         return boardsSloeberTXT;
     }
@@ -182,8 +186,6 @@ public class WorkAround extends Const {
             return platformSloeberTXT;
         }
 
-
-
         return platformSloeberTXT;
     }
 
@@ -244,6 +246,14 @@ public class WorkAround extends Const {
 
         // for ESP32 remove the build options fix for arduino ide #1390
         platformTXT = platformTXT.replace(" \"@{build.opt.path}\" ", " ");
+        platformTXT = platformTXT.replace(" \"@{build.opt.path}\"", "");
+        platformTXT = platformTXT.replace("\"@{build.opt.path}\" ", "");
+        platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
+        // for esp8266
+        platformTXT = platformTXT.replace(" \"@{build.opt.fqfn}\" ", " ");
+        platformTXT = platformTXT.replace("\"@{build.opt.fqfn}\" ", "");
+        platformTXT = platformTXT.replace(" \"@{build.opt.fqfn}\"", "");
+        platformTXT = platformTXT.replace("\"@{build.opt.fqfn}\"", "");
 
         return platformTXT;
     }
@@ -291,13 +301,72 @@ public class WorkAround extends Const {
         String platformTXT = inPlatformTxt;
         String searchPlatformTXT = "\n" + inPlatformTxt;
 
-        // the fix below seems no longer needed but is still on august 2021
-        // Arduino treats core differently so we need to change the location of directly
-        // referenced files this manifests only in the combine recipe
-        String inCombineRecipe = findLineStartingWith(platformTXT, "recipe.c.combine.pattern");
-        if (null != inCombineRecipe) {
-            String outCombineRecipe = inCombineRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys");
-            platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
+        String origRecipe = findLineStartingWith(platformTXT, RECIPE_C_to_O);
+        if (null != origRecipe) {
+            String changed = origRecipe + " ";
+            changed = changed.replace(" \"{source_file}\" ", " {INPUTS} ");
+            changed = changed.replace(" \"{object_file}\" ", " {OUTPUT} ");
+            changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
+            changed = changed + "{sloeber.extra.compile} {sloeber.extra.c.compile} {sloeber.extra.all}";
+            String codan = changed.replace(RECIPE_C_to_O, CODAN_C_to_O);
+            codan = codan.replace(" -o ", " ");
+            codan = codan.replace(" {FLAGS} ", " ");
+            codan = codan.replace(" {OUTPUT} ", " ");
+
+            platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
+        }
+
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_CPP_to_O);
+        if (null != origRecipe) {
+            String changed = origRecipe + " ";
+            changed = changed.replace(" \"{source_file}\" ", " {INPUTS} ");
+            changed = changed.replace(" \"{object_file}\" ", " {OUTPUT}  ");
+            changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
+            changed = changed + "{sloeber.extra.compile} {sloeber.extra.cpp.compile} {sloeber.extra.all}";
+            String codan = changed.replace(RECIPE_CPP_to_O, CODAN_CPP_to_O);
+            codan = codan.replace(" -o ", " ");
+            codan = codan.replace(" {FLAGS} ", " ");
+            codan = codan.replace(" {OUTPUT} ", " ");
+
+            platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
+        }
+
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_S_to_O);
+        if (null != origRecipe) {
+            String changed = origRecipe + " ";
+            changed = changed.replace(" \"{source_file}\" ", " {INPUTS} ");
+            changed = changed.replace(" \"{object_file}\" ", " {OUTPUT} ");
+            changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
+            changed = changed + "{sloeber.extra.assembly} {sloeber.extra.all}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
+        }
+
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_AR);
+        if (null != origRecipe) {
+            //archives should get a different key but for now I didn't get that to work
+            String changed = origRecipe + " ";
+            changed = changed.replace(" \"{archive_file_path}\" ", " {OUTPUT} ");
+            changed = changed.replace(" {archive_file_path} ", " {OUTPUT} ");
+            changed = changed.replace(" \"{object_file}\" ", " {INPUTS} ");
+            changed = changed.replace(" {object_file} ", " {INPUTS} ");
+            changed = changed + "{sloeber.extra_archive} {sloeber.extra_all}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
+        }
+
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_C_COMBINE);
+        if (null != origRecipe) {
+            // the fix below seems no longer needed but is still on august 2021
+            // Arduino treats core differently so we need to change the location of directly
+            // referenced files this manifests only in the combine recipe
+            String changed = origRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys") + " ";
+
+            changed = changed.replace(" \"{build.path}/{archive_file}\" ", " {ARCHIVES} ");
+            changed = changed.replace(" \"{archive_file_path}\" ", " {ARCHIVES} ");
+            changed = changed.replace(" {object_files} ", " {FLAGS} {INPUTS} ");
+            String[] splits = changed.split("=", 2);
+            changed = splits[0] + "={sloeber.pre.link}" + splits[1]
+                    + "{sloeber.extra_all} {sloeber.extra.link}{sloeber.post.link}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
         }
 
         // replace tools.x.y* {path}
@@ -384,7 +453,7 @@ public class WorkAround extends Const {
     private static String findLineStartingWith(String text, String startOfLine) {
         int lineStartIndex = text.indexOf("\n" + startOfLine) + 1;
         if (lineStartIndex > 0) {
-            int lineEndIndex = text.indexOf("\n", lineStartIndex) - 1;
+            int lineEndIndex = text.indexOf("\n", lineStartIndex);
             if (lineEndIndex > 0) {
                 return text.substring(lineStartIndex, lineEndIndex);
             }
@@ -418,15 +487,15 @@ public class WorkAround extends Const {
 
         String thisOSKey = null;
         // do not use platform as I run this in plain junit tests
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (isWindows) {
             thisOSKey = WINDOWSKEY;
             Otherosses.add(LINUXKEY);
             Otherosses.add(MACKEY);
-        } else if (SystemUtils.IS_OS_LINUX) {
+        } else if (isLinux) {
             thisOSKey = LINUXKEY;
             Otherosses.add(WINDOWSKEY);
             Otherosses.add(MACKEY);
-        } else if (SystemUtils.IS_OS_MAC_OSX) {
+        } else if (isMac) {
             thisOSKey = MACKEY;
             Otherosses.add(WINDOWSKEY);
             Otherosses.add(LINUXKEY);
@@ -524,11 +593,11 @@ public class WorkAround extends Const {
             // delete if outdated
             String firstLine = null;
             try (BufferedReader Buff = new BufferedReader(new FileReader(actualProgrammersTXT));) {
-                firstLine = Buff.readLine();
+                firstLine = Buff.readLine().trim();
             } catch (Exception e) {
                 // ignore and delete the file
             }
-            if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine.trim())) {
+            if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine)) {
                 actualProgrammersTXT.delete();
             }
         }

@@ -21,7 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.Const;
+import static io.sloeber.core.common.Const.*;
 
 public class ArduinoPlatformVersion extends ArduinoInstallable implements Comparable<ArduinoPlatformVersion> {
 
@@ -86,11 +86,11 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
     }
 
     public File getBoardsFile() {
-        return getInstallPath().append(Const.BOARDS_FILE_NAME).toFile();
+        return getInstallPath().append(BOARDS_FILE_NAME).toFile();
     }
 
     public File getPlatformFile() {
-        return getInstallPath().append(Const.PLATFORM_FILE_NAME).toFile();
+        return getInstallPath().append(PLATFORM_FILE_NAME).toFile();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
     public List<IPath> getIncludePath() {
         IPath installPath = getInstallPath();
         return Arrays.asList(installPath.append("cores/{build.core}"), //$NON-NLS-1$
-                installPath.append(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
+                installPath.append(VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
     }
 
     @Override
@@ -156,6 +156,11 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
     @Override
     public int compareTo(ArduinoPlatformVersion o) {
         return name.compareTo(o.getName());
+    }
+
+    @Override
+    public String toString() {
+        return name + SPACE + architecture + '(' + version + ')';
     }
 
 }

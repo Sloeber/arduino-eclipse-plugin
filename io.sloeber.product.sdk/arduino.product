@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="false">
 
    <aboutInfo>
-      <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
+      <image path="/io.sloeber.product.sdk/icons/eclipse_lg.png"/>
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
@@ -36,10 +36,10 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.application/icons/logo_16.png" i32="/io.sloeber.application/icons/logo_32.png" i48="/io.sloeber.application/icons/logo_48.png" i256="/io.sloeber.application/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.product.sdk/icons/logo_16.png" i32="/io.sloeber.product.sdk/icons/logo_32.png" i48="/io.sloeber.product.sdk/icons/logo_48.png" i256="/io.sloeber.product.sdk/icons/logo_256.png"/>
 
    <splash
-      location="io.sloeber.application"
+      location="io.sloeber.product"
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
@@ -207,7 +207,6 @@ United States, other countries, or both.
    </plugins>
 
    <features>
-      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
@@ -224,7 +223,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature" installMode="root"/>
-      <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
       <feature id="org.eclipse.epp.mpc" installMode="root"/>
@@ -240,18 +238,13 @@ United States, other countries, or both.
       <feature id="org.eclipse.jgit" installMode="root"/>
       <feature id="org.eclipse.justj.openjdk.hotspot.jre.full" installMode="root"/>
       <feature id="org.eclipse.mylyn_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.bugzilla_feature" installMode="root"/>
       <feature id="org.eclipse.mylyn.commons.identity" installMode="root"/>
       <feature id="org.eclipse.mylyn.commons.notifications" installMode="root"/>
       <feature id="org.eclipse.mylyn.commons.repositories" installMode="root"/>
       <feature id="org.eclipse.mylyn.commons" installMode="root"/>
       <feature id="org.eclipse.mylyn.context_feature" installMode="root"/>
       <feature id="org.eclipse.mylyn.discovery" installMode="root"/>
-      <feature id="org.eclipse.mylyn.ide_feature" installMode="root"/>
       <feature id="org.eclipse.mylyn.monitor" installMode="root"/>
-      <feature id="org.eclipse.mylyn.tasks.ide" installMode="root"/>
-      <feature id="org.eclipse.mylyn.team_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.wikitext_feature" installMode="root"/>
       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
       <feature id="org.eclipse.pde.source" installMode="root"/>
       <feature id="org.eclipse.pde" installMode="root"/>
@@ -266,6 +259,13 @@ United States, other countries, or both.
       <feature id="org.eclipse.rse.ssh" installMode="root"/>
       <feature id="org.eclipse.rse.telnet" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.core.feature.source" installMode="root"/>
+      <feature id="org.eclipse.help.source" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.user.ui.source" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature.source" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature.source" installMode="root"/>
+      <feature id="org.eclipse.egit" installMode="root"/>
    </features>
 
    <configurations>
@@ -280,14 +280,11 @@ United States, other countries, or both.
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
-      <repository location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="true" />
-      <repository location="http://https://download.eclipse.org/justj/jres/15/updates/release/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
+      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" name="" enabled="false" />
+      <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/releases/latest/" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/eclipse/updates/latest" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/nebula/releases/latest/" name="" enabled="true" />
    </repositories>
 
    <preferencesInfo>

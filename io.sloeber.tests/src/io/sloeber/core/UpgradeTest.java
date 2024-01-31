@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
 
 /**
@@ -43,7 +44,9 @@ public class UpgradeTest {
 
     @Test
     public void upgradeSingleConfigProjectFromVersion4_3_3() throws Exception {
-
+        /*
+         * A arduino uno project is upgraded that need the extra compile option extraCPP
+         */
         String projectName = "upgradeSingleConfigProject";
         String inputZipFile = Shared.getprojectZip("upgradeSingleConfigProject4_3_3.zip").toOSString();
         // /io.sloeber.tests/src/projects/upgradeSingleConfigProject4_3_3.zip
@@ -55,8 +58,15 @@ public class UpgradeTest {
         theTestProject.open(null);
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+        if (!Shared.hasBuildErrors(theTestProject)) {
+            fail("The project has been automagically upgraded:" + projectName);
+        }
+        //try to convert the project
+        SloeberProject.convertToArduinoProject(theTestProject, null);
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
         if (Shared.hasBuildErrors(theTestProject)) {
-            fail("Failed to compile the project:" + projectName);
+            fail("Failed to compile the upgraded project:" + projectName);
         }
     }
 

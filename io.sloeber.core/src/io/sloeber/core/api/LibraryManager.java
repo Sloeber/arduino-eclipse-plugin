@@ -185,7 +185,7 @@ public class LibraryManager {
                         if (installedLibVersion != null) {
                             unInstall(installedLibVersion, null);
                         }
-                        install(latestLibVersion, null);
+                        install(latestLibVersion, new NullProgressMonitor());
                     }
                 }
             }
