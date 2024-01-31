@@ -53,6 +53,4 @@ jobs:
       with:
         name: macosx_arm
         path: io.sloeber.product/target/products/sloeber-ide-sloeber_release-macosx.cocoa.aarch64.zip
-    - name: Build Sloeber SDK with Maven
-      run: mvn clean verify -PSDK,win64,latest -DskipTests=true 
 
