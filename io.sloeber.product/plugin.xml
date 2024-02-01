@@ -2,7 +2,8 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="product"
+         id="io.sloeber.product.sloeber"
+         name="sloeber2"
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
@@ -42,8 +43,7 @@
          </property>
       </product>
    </extension>
-
-   <extension
+      <extension
          id="io.sloeber.product.intro"
          point="org.eclipse.ui.intro">
       <intro
@@ -52,7 +52,7 @@
       </intro>
       <introProductBinding
             introId="io.sloeber.product.intro"
-            productId="io.sloeber.product.product">
+            productId="io.sloeber.product.sloeber">
       </introProductBinding>
    </extension>
    <extension
@@ -71,5 +71,5 @@
          </presentation>
       </config>
    </extension>
-
+  
 </plugin>

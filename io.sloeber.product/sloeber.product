@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.product.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.product.sloeber" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
       <image path="/io.sloeber.product/icons/eclipse_lg.png"/>
@@ -207,7 +207,6 @@ United States, other countries, or both.
    </plugins>
 
    <features>
-      <feature id="io.sloeber.feature" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
@@ -246,7 +245,13 @@ United States, other countries, or both.
       <feature id="org.eclipse.rse.ssh" installMode="root"/>
       <feature id="org.eclipse.rse.telnet" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
-      <feature id="org.eclipse.embedcdt.debug.gdbjtag.openocd" installMode="root"/>
+      <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature.source" installMode="root"/>
+      <feature id="org.eclipse.userstorage" installMode="root"/>
+      <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature" installMode="root"/>
+      <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
    </features>
 
    <configurations>
