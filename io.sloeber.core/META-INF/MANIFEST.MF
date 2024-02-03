@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.apache.commons.commons-io,
  org.apache.commons.commons-compress,
  com.github.luben.zstd-jni;bundle-version="1.5.5",
- slf4j.api;bundle-version="2.0.9"
+ slf4j.api;bundle-version="2.0.9",
+ org.eclipse.ui.intro
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

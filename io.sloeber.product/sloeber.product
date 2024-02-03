@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.product.sloeber" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.core.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
-      <image path="/io.sloeber.product/icons/eclipse_lg.png"/>
+      <image path="/io.sloeber.core/icons/eclipse_lg.png"/>
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
@@ -36,10 +36,10 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.product/icons/logo_16.png" i32="/io.sloeber.product/icons/logo_32.png" i48="/io.sloeber.product/icons/logo_48.png" i64="/io.sloeber.product/icons/logo_64.png" i128="/io.sloeber.product/icons/logo_128.png" i256="/io.sloeber.product/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.product/icons/logo_16.png" i32="/io.sloeber.core/icons/logo_32.png" i48="/io.sloeber.core/icons/logo_48.png" i64="/io.sloeber.core/icons/logo_64.png" i128="/io.sloeber.core/icons/logo_128.png" i256="/io.sloeber.core/icons/logo_256.png"/>
 
    <splash
-      location="io.sloeber.product"
+      location="io.sloeber.ui"
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
@@ -47,7 +47,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       <linux icon="launch/icon.xpm"/>
       <macosx icon="launch/icon.icns"/>
       <win useIco="true">
-         <ico path="launch/icons.ico"/>
+         <ico path="/io.sloeber.core/launch/icons.ico"/>
          <bmp/>
       </win>
    </launcher>
@@ -207,6 +207,7 @@ United States, other countries, or both.
    </plugins>
 
    <features>
+      <feature id="io.sloeber.feature" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
