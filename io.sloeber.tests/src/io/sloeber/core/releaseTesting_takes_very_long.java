@@ -19,7 +19,7 @@ import io.sloeber.core.api.Preferences;
         //CreateAndCompileArduinoIDEExamplesOnTeensyTest.class, no longer needed as teensy is now imported with the boardsmanager
         CreateAndCompileDefaultInoOnAllBoardsTest.class,
         CreateAndCompileExamplesTest.class,
-        CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest.class,
+        //CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest.class, I should deprecate this
         CreateAndCompileLibraryExamplesTest.class,
         })
 public class releaseTesting_takes_very_long {
