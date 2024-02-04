@@ -788,7 +788,7 @@
          point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
            class="io.sloeber.ui.project.properties.BoardSelectionPage"
-           icon="platform:/plugin/io.sloeber.product/icons/logo_16.png"
+           icon="icons/logo_16.png"
            name="%tab.board.selection.name"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="010">
