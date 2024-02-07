@@ -8,7 +8,7 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,8 +20,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.Const;
 
 public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
 

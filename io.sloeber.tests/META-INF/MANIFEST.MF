@@ -11,8 +11,7 @@ Require-Bundle: io.sloeber.core,
  org.eclipse.core.resources,
  org.junit,
  io.sloeber.ui,
- org.eclipse.swt,
- org.eclipse.cdt.managedbuilder.core
+ org.eclipse.swt
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor,
@@ -29,3 +28,4 @@ Export-Package: io.sloeber.core;x-internal:=true,
  templates.fastBlink;x-internal:=true,
  templates.issue1047_Board_Names_Can_Be_used_as_Strings;x-internal:=true,
  templates.issue687;x-internal:=true
+Import-Package: org.apache.commons.io

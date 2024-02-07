@@ -17,9 +17,9 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.Libraries;
 

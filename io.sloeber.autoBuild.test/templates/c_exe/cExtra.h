@@ -1,0 +1,3 @@
+void cExtraMethod();
+
+#pragma once

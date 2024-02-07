@@ -1,6 +1,6 @@
 package io.sloeber.core.common;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 
@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Defaults;
 
 /**

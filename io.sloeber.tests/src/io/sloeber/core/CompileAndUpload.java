@@ -31,6 +31,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
@@ -43,9 +44,10 @@ import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 import io.sloeber.ui.monitor.SerialConnection;
 
-@SuppressWarnings({"nls","unused"})
+@SuppressWarnings({ "nls", "unused" })
 @RunWith(Parameterized.class)
 public class CompileAndUpload {
+
 	private static final boolean reinstall_boards_and_libraries = false;
 	private MCUBoard myBoard;
 	private String myName;
@@ -124,6 +126,7 @@ public class CompileAndUpload {
                 ESP8266.packageURL };
 		BoardsManager.addPackageURLs(
 				new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+
         if (reinstall_boards_and_libraries) {
             BoardsManager.removeAllInstalledPlatforms();
         }
@@ -135,21 +138,19 @@ public class CompileAndUpload {
         Arduino.installLatestIntellCurieBoards();
         Arduino.installLatestSamBoards();
         Teensy.installLatest();
+    }
 
-	}
-
-	@Test
+    @Test
     public void testExamples() throws Exception {
-		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
+        IPath templateFolder = Shared.getTemplateFolder("fastBlink");
         CompileDescription compileOptions = new CompileDescription();
-		DateTimeFormatter df =  DateTimeFormatter
-				.ofPattern("YYYY/MM/dd-HH-mm-ss");
-		String SerialDumpContent = myName+'-'+ df.format(LocalDateTime.now());
-		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval
-				+ " -DSERIAlDUMP=" + SerialDumpContent);
-		CodeDescription codeDescriptor=CodeDescription.createCustomTemplate(templateFolder);
-		Map<String, String> replacers=new TreeMap<>();
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("YYYY/MM/dd-HH-mm-ss");
+        String SerialDumpContent = myName + '-' + df.format(LocalDateTime.now());
+        compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval + " -DSERIAlDUMP=" + SerialDumpContent);
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+        Map<String, String> replacers = new TreeMap<>();
         replacers.put("{SerialMonitorSerial}", myBoard.mySerialPort);
+
 		codeDescriptor.setReplacers(replacers);
 		Build_Verify_upload(codeDescriptor,	compileOptions, SerialDumpContent);
 
@@ -217,31 +218,32 @@ public class CompileAndUpload {
 			public void run() {
 				SerialConnection.show();
 				SerialConnection.clearMonitor();
-                SerialConnection.add(comPort, 9600);
-			}
-		});
 
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		serialOutputMismatch=true;
-		display.syncExec(new Runnable() {
-			@Override
-			public void run() {
-				SerialConnection.remove(comPort);
-				List<String> lines = SerialConnection.getContent();
-				serialOutputMismatch=(! lines.contains(serialDumpContent));
-				if(serialOutputMismatch) {
-					System.err.println("recieved from: "+comPort);
-					System.err.println(lines);
-					System.err.println("End of serial input");
-				}
-				}	
-		});
-		if(serialOutputMismatch) {
-			fail("Serial output does not match epectation "+serialDumpContent);
-		}
-	}
+                SerialConnection.add(comPort, 9600);
+            }
+        });
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        serialOutputMismatch = true;
+        display.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                SerialConnection.remove(comPort);
+                List<String> lines = SerialConnection.getContent();
+                serialOutputMismatch = (!lines.contains(serialDumpContent));
+                if (serialOutputMismatch) {
+                    System.err.println("recieved from: " + comPort);
+                    System.err.println(lines);
+                    System.err.println("End of serial input");
+                }
+            }
+        });
+        if (serialOutputMismatch) {
+            fail("Serial output does not match epectation " + serialDumpContent);
+        }
+    }
 }

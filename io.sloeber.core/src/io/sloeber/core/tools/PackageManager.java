@@ -1,7 +1,8 @@
 package io.sloeber.core.tools;
 
+import static io.sloeber.core.api.Common.*;
 import static java.nio.file.StandardCopyOption.*;
-import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.api.Common.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,8 +31,8 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Json.ArduinoInstallable;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 
 public class PackageManager {

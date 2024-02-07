@@ -1,7 +1,7 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.core.runtime.IPath;
 

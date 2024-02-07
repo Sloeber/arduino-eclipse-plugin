@@ -1,7 +1,7 @@
 package io.sloeber.core;
 
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 import static org.eclipse.core.resources.IResource.*;
 
 import java.io.File;
@@ -41,7 +41,7 @@ import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.common.Common;
+import io.sloeber.core.api.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;

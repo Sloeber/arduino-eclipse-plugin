@@ -5,6 +5,9 @@ import static io.sloeber.ui.Activator.*;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
@@ -348,8 +350,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 										.getProjectDescription(selectedProject).getActiveConfiguration();
 								String activeConfigName = activeCfg.getName();
 								IPath buildFolder = selectedProject.findMember(activeConfigName).getLocation();
-								File dumpFile = buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
-								FileUtils.writeStringToFile(dumpFile, selectedText, Charset.defaultCharset());
+								Path dumpFile = Path.of(buildFolder.append("serialdump.txt").toString()); //$NON-NLS-1$
+								Files.write(dumpFile, selectedText.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+										StandardOpenOption.CREATE);
 							} catch (Exception e1) {
 								// ignore
 								e1.printStackTrace();

@@ -1,6 +1,6 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 package io.sloeber.core.txt;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.util.ArrayList;

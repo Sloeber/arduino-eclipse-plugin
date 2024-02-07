@@ -1,7 +1,7 @@
 package io.sloeber.core.tools;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -37,14 +37,16 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.IInstallLibraryHandler;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.internal.SloeberConfiguration;
 
 public class Libraries {
     public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
@@ -60,6 +62,7 @@ public class Libraries {
      *         method returns a key value pair of key equals foldername and value
      *         equals full path.
      */
+    @SuppressWarnings("nls")
     private static Map<String, IPath> findAllSubFolders(IPath ipath) {
         String[] children = ipath.toFile().list();
         Map<String, IPath> ret = new HashMap<>();
@@ -81,10 +84,9 @@ public class Libraries {
                 // Get filename of file or directory
                 IPath LibPath = ipath.append(curFolder);
                 File LibPathFile = LibPath.toFile();
-                if (LibPathFile.isFile() && (!LibPathFile.getName().startsWith(".")) //$NON-NLS-1$
-                        && ("cpp".equalsIgnoreCase(LibPath.getFileExtension()) //$NON-NLS-1$
-                                || "h".equalsIgnoreCase( //$NON-NLS-1$
-                                        LibPath.getFileExtension()))) {
+                if (LibPathFile.isFile() && (!LibPathFile.getName().startsWith(DOT))
+                        && ("cpp".equalsIgnoreCase(LibPath.getFileExtension())
+                                || "h".equalsIgnoreCase(LibPath.getFileExtension()))) {
                     ret.put(ipath.lastSegment(), ipath);
                     return ret;
                 }
@@ -111,11 +113,9 @@ public class Libraries {
      *            the project to find all hardware libraries for
      * @return all the library folder names. May contain empty values.
      */
-    private static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confDesc) {
+    private static Map<String, IPath> findAllHarwareLibraries(ISloeberConfiguration sloeberCfg) {
         Map<String, IPath> ret = new HashMap<>();
-        IProject project = confDesc.getProjectDescription().getProject();
-        SloeberProject sProject = SloeberProject.getSloeberProject(project);
-        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc.getName(), false);
+        BoardDescription boardDescriptor = sloeberCfg.getBoardDescription();
         // first add the referenced
         IPath libPath = boardDescriptor.getReferencedCoreLibraryPath();
         if (libPath != null) {
@@ -227,7 +227,7 @@ public class Libraries {
         return Helpers.removeInvalidIncludeFolders(confdesc);
     }
 
-    public static Map<String, IPath> getAllInstalledLibraries(ICConfigurationDescription confdesc) {
+    public static Map<String, IPath> getAllInstalledLibraries(ISloeberConfiguration confdesc) {
         TreeMap<String, IPath> libraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         // lib folder name
         libraries.putAll(findAllArduinoManagerLibraries());
@@ -246,14 +246,14 @@ public class Libraries {
      *            the libraries to add
      * @return return true if the projdesc needs to be set
      */
-    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
+    public static void addLibrariesToProject(IProject project, ISloeberConfiguration confdesc,
             Set<String> librariesToAdd) {
         Map<String, IPath> libraries = getAllInstalledLibraries(confdesc);
         libraries.keySet().retainAll(librariesToAdd);
         if (libraries.isEmpty()) {
-            return new HashMap<>();
+            return;
         }
-        return addLibrariesToProject(project, libraries);
+        addLibrariesForConfiguration(confdesc, libraries);
     }
 
     /**
@@ -267,31 +267,13 @@ public class Libraries {
      *            the list of libraries to add
      * @return true if the configuration description has changed
      */
-    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, Map<String, IPath> libraries) {
+    public static void addLibrariesForConfiguration(ISloeberConfiguration sloeberCfg, Map<String, IPath> libraries) {
 
-        List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
-        List<IPath> foldersToAddToIncludes = new LinkedList<>();
+        IFolder librariesFolder = sloeberCfg.getArduinoLibraryFolder();
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
-            foldersToAddToIncludes.addAll(
-                    Helpers.addCodeFolder(project, CurItem.getValue(), WORKSPACE_LIB_FOLDER + CurItem.getKey(), false));
+            Helpers.addCodeFolder(CurItem.getValue(), librariesFolder.getFolder(CurItem.getKey()), false);
             // Check the libraries to see if there are "unwanted subfolders"
-            File subFolders[] = CurItem.getValue().toFile().listFiles();
-            for (File file : subFolders) {
-                if (file.isDirectory() && !"src".equals(file.getName()) //$NON-NLS-1$
-                        && !"utility".equals(file.getName()) //$NON-NLS-1$
-                        && !"examples".equalsIgnoreCase(file.getName())) { //$NON-NLS-1$
-                    IPath excludePath = new Path("/" + project.getName()) //$NON-NLS-1$
-                            .append(WORKSPACE_LIB_FOLDER).append(CurItem.getKey()).append(file.getName());
-                    foldersToRemoveFromBuildPath.add(excludePath);
-
-                }
-            }
         }
-        Map<String, List<IPath>> codePathChanges = new HashMap<>();
-        codePathChanges.put(INCLUDE, foldersToAddToIncludes);
-        codePathChanges.put(REMOVE, foldersToRemoveFromBuildPath);
-        return codePathChanges;
-
     }
 
     // public static void removeLibrariesFromProject(Set<String> libraries) {
@@ -316,23 +298,24 @@ public class Libraries {
     }
 
     public static void reAttachLibrariesToProject(IProject project) {
-        boolean descNeedsSet = false;
+        //        boolean descNeedsSet = false;
         Set<String> AllLibrariesOriginallyUsed = getAllLibrariesFromProject(project);
         ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
         ICProjectDescription projDesc = mngr.getProjectDescription(project, true);
         ICConfigurationDescription configurationDescriptions[] = projDesc.getConfigurations();
         for (ICConfigurationDescription curconfDesc : configurationDescriptions) {
-            Map<String, List<IPath>> foldersToChange = addLibrariesToProject(project, curconfDesc,
-                    AllLibrariesOriginallyUsed);
-            descNeedsSet = descNeedsSet || adjustProjectDescription(curconfDesc, foldersToChange);
+            ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getConfig(curconfDesc);
+            //Map<String, List<IPath>> foldersToChange = 
+            addLibrariesToProject(project, sloeberCfg, AllLibrariesOriginallyUsed);
+            //descNeedsSet = descNeedsSet || adjustProjectDescription(curconfDesc, foldersToChange);
         }
-        if (descNeedsSet) {
-            try {
-                mngr.setProjectDescription(project, projDesc, true, null);
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
-        }
+        //        if (descNeedsSet) {
+        //            try {
+        //                mngr.setProjectDescription(project, projDesc, true, null);
+        //            } catch (CoreException e) {
+        //                e.printStackTrace();
+        //            }
+        //        }
     }
 
     /**
@@ -394,6 +377,7 @@ public class Libraries {
             ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
             if (projectDescription != null) {
                 ICConfigurationDescription confDesc = projectDescription.getActiveConfiguration();
+                ISloeberConfiguration SloeberCfg = ISloeberConfiguration.getActiveConfig(affectedProject);
                 if (confDesc != null) {
 
                     Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
@@ -416,7 +400,7 @@ public class Libraries {
                     if (installHandler.autoInstall()) {
                         // Check if there are libraries that are not found in
                         // the installed libraries
-                        Map<String, IPath> installedLibs = getAllInstalledLibraries(confDesc);
+                        Map<String, IPath> installedLibs = getAllInstalledLibraries(SloeberCfg);
                         Set<String> uninstalledIncludedHeaders = new TreeSet<>(UnresolvedIncludedHeaders);
                         uninstalledIncludedHeaders.removeAll(installedLibs.keySet());
                         if (!uninstalledIncludedHeaders.isEmpty()) {
@@ -435,26 +419,27 @@ public class Libraries {
                         }
                     }
 
-                    Map<String, IPath> installedLibs = getAllInstalledLibraries(confDesc);
+                    Map<String, IPath> installedLibs = getAllInstalledLibraries(SloeberCfg);
                     installedLibs.keySet().retainAll(UnresolvedIncludedHeaders);
                     if (!installedLibs.isEmpty()) {
                         // there are possible libraries to add
                         Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
                                 + affectedProject.getName() + ": " //$NON-NLS-1$
                                 + installedLibs.keySet().toString()));
-                        Map<String, List<IPath>> foldersToChange = addLibrariesToProject(affectedProject,
+                        //Map<String, List<IPath>> foldersToChange =
+                        addLibrariesForConfiguration(ISloeberConfiguration.getActiveConfig(affectedProject),
                                 installedLibs);
 
-                        if (adjustProjectDescription(confDesc, foldersToChange)) {
-                            try {
-                                mngr.setProjectDescription(affectedProject, projectDescription, true, null);
-
-                            } catch (CoreException e) {
-                                // this can fail because the project may already
-                                // be
-                                // deleted
-                            }
-                        }
+                        //                        if (adjustProjectDescription(confDesc, foldersToChange)) {
+                        //                            try {
+                        //                                mngr.setProjectDescription(affectedProject, projectDescription, true, null);
+                        //
+                        //                            } catch (CoreException e) {
+                        //                                // this can fail because the project may already
+                        //                                // be
+                        //                                // deleted
+                        //                            }
+                        //                        }
 
                     }
                 }

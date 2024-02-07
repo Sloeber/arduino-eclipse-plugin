@@ -1,6 +1,6 @@
 package io.sloeber.core.eclipseIntegrations;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;

@@ -1,6 +1,6 @@
 package io.sloeber.core.listeners;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
 
@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.SloeberProject;
-import io.sloeber.core.common.Common;
 
 public class resourceChangeListener implements IResourceChangeListener {
 
@@ -40,7 +40,8 @@ public class resourceChangeListener implements IResourceChangeListener {
                     // stop the indexer
                     //IndexerController.doNotIndex(iProject);
 
-                    SloeberProject curSloeberProject = SloeberProject.getSloeberProject(iProject);
+                    /*JABA is this needed?
+                     * SloeberProject curSloeberProject = SloeberProject.getSloeberProject(iProject);
                     if (curSloeberProject == null) {
                         // this should not happen as we have a sloeber.cfg file
                     } else {
@@ -48,7 +49,7 @@ public class resourceChangeListener implements IResourceChangeListener {
                         if (curSloeberProject.isInMemory()) {
                             curSloeberProject.sloeberCfgChanged();
                         }
-                    }
+                    }*/
 
                     // log to process later
                     //changedSloeberCfgFiles.add(iProject);
@@ -71,6 +72,7 @@ public class resourceChangeListener implements IResourceChangeListener {
                     public void run(IProgressMonitor monitor) throws CoreException {
                         for (IProject curProject : changedSloeberCfgFiles) {
                             if (curProject.isOpen()) {
+                                /* JABA is this needed?
                                 SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject);
                                 if (curSloeberProject == null) {
                                     // this is not a sloeber project;
@@ -80,7 +82,7 @@ public class resourceChangeListener implements IResourceChangeListener {
                                     if (curSloeberProject.isInMemory()) {
                                         curSloeberProject.sloeberCfgChanged();
                                     }
-                                }
+                                }*/
                             }
                             IndexerController.index(curProject);
                         }

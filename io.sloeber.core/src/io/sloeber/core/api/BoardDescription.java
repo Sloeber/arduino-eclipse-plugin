@@ -1,8 +1,8 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,9 +25,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import io.sloeber.core.api.Json.ArduinoPlatform;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.KeyValueTree;
@@ -44,7 +42,7 @@ public class BoardDescription {
     private static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
+    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + ARDUINO_VARIANTS_FOLDER_NAME + DOT + PATH;
     private static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
     private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
@@ -313,12 +311,21 @@ public class BoardDescription {
     public BoardDescription() {
         myUserSelectedBoardsTxtFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
         if (!myUserSelectedBoardsTxtFile.exists()) {
-            List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
-            //If you crash on the next line no platform have been installed
-            ArduinoPlatformVersion platform = platforms.get(0);
+
+            ArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+            if (platform == null) {
+                List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
+                //If you crash on the next line no platform have been installed
+                platform = platforms.get(0);
+            }
             myUserSelectedBoardsTxtFile = platform.getBoardsFile();
             mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
-            myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
+
+            if (mySloeberBoardTxtFile.getAllBoardIDs().contains(UNO)) {
+                myBoardID = UNO;
+            } else {
+                myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
+            }
         } else {
             mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
             myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
@@ -326,6 +333,7 @@ public class BoardDescription {
             myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
             myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
         }
+
     }
 
     public BoardDescription(BoardDescription srcObject) {
@@ -534,10 +542,10 @@ public class BoardDescription {
             return null;
         }
         if (myReferencedPlatformVariant == null) {
-            return new Path(myUserSelectedBoardsTxtFile.getParent().toString()).append(VARIANTS_FOLDER_NAME)
+            return new Path(myUserSelectedBoardsTxtFile.getParent().toString()).append(ARDUINO_VARIANTS_FOLDER_NAME)
                     .append(boardVariant);
         }
-        return myReferencedPlatformVariant.getInstallPath().append(VARIANTS_FOLDER_NAME).append(boardVariant);
+        return myReferencedPlatformVariant.getInstallPath().append(ARDUINO_VARIANTS_FOLDER_NAME).append(boardVariant);
     }
 
     private String getBoardVariant() {
@@ -601,12 +609,12 @@ public class BoardDescription {
         if (myReferencedPlatformCore == null) {
             return null;
         }
-        return this.myReferencedPlatformCore.getInstallPath().append(LIBRARY_PATH_SUFFIX);
+        return this.myReferencedPlatformCore.getInstallPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
     }
 
     public IPath getReferencingLibraryPath() {
         updateWhenDirty();
-        return this.getreferencingPlatformPath().append(LIBRARY_PATH_SUFFIX);
+        return this.getreferencingPlatformPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
     }
 
     public String getUploadPatternKey() {
@@ -634,7 +642,7 @@ public class BoardDescription {
      */
     public IPath getArduinoPlatformPath() {
         updateWhenDirty();
-        ArduinoPlatform platform = BoardsManager.getPlatform(VendorArduino, getArchitecture());
+        ArduinoPlatform platform = BoardsManager.getPlatform(VENDOR_ARDUINO, getArchitecture());
         if (platform == null) {
             return null;
         }
@@ -696,6 +704,62 @@ public class BoardDescription {
         }
     }
 
+    /**
+     * create a BoardDescription based on the environment variables given
+     * 
+     * @param envVars
+     */
+    public BoardDescription(Map<String, String> envVars) {
+        int menuKeyLength = KEY_SLOEBER_MENU_SELECTION.length() + DOT.length();
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            String key = curEnvVar.getKey();
+            String value = curEnvVar.getValue();
+            switch (key) {
+            case KEY_SLOEBER_PROGRAMMER:
+                myProgrammer = value;
+                break;
+            case KEY_SLOEBER_BOARD_ID:
+                myBoardID = value;
+                break;
+            case KEY_SLOEBER_BOARD_TXT:
+                myUserSelectedBoardsTxtFile = new File(value);
+                mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+                break;
+            case KEY_SLOEBER_UPLOAD_PORT:
+                myUploadPort = value;
+                break;
+            default:
+                if (key.startsWith(KEY_SLOEBER_MENU_SELECTION + DOT)) {
+                    String cleanKey = key.substring(menuKeyLength);
+                    myOptions.put(cleanKey, value);
+                }
+            }
+        }
+    }
+
+    /**
+     * get the environment variables that need to be stored in the configuration
+     * files configuration files are files needed to setup the sloeber environment
+     * for instance when openiung a project or after import of a project in the
+     * workspace
+     * 
+     * @return the minimum list of environment variables to recreate the project
+     */
+    public Map<String, String> getEnvVarsConfig() {
+        Map<String, String> allVars = new TreeMap<>();
+        String board_txt = makePathVersionString(getReferencingBoardsFile());
+
+        allVars.put(KEY_SLOEBER_PROGRAMMER, myProgrammer);
+        allVars.put(KEY_SLOEBER_BOARD_ID, myBoardID);
+        allVars.put(KEY_SLOEBER_BOARD_TXT, board_txt);
+        allVars.put(KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
+
+        for (Entry<String, String> curOption : myOptions.entrySet()) {
+            allVars.put(KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+        }
+        return allVars;
+    }
+
     private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
         Map<String, String> ret = new HashMap<>();
 
@@ -710,29 +774,6 @@ public class BoardDescription {
             }
         }
         return ret;
-    }
-
-    /**
-     * get the environment variables that need to be stored in the configuration
-     * files configuration files are files needed to setup the sloeber environment
-     * for instance when openiung a project or after import of a project in the
-     * workspace
-     * 
-     * @return the minimum list of environment variables to recreate the project
-     */
-    public Map<String, String> getEnvVarsConfig(String prefix) {
-        Map<String, String> allVars = new TreeMap<>();
-        String board_txt = makePathVersionString(getReferencingBoardsFile());
-
-        allVars.put(prefix + KEY_SLOEBER_PROGRAMMER, myProgrammer);
-        allVars.put(prefix + KEY_SLOEBER_BOARD_ID, myBoardID);
-        allVars.put(prefix + KEY_SLOEBER_BOARD_TXT, board_txt);
-        allVars.put(prefix + KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
-
-        for (Entry<String, String> curOption : myOptions.entrySet()) {
-            allVars.put(prefix + KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
-        }
-        return allVars;
     }
 
     /**
@@ -877,7 +918,7 @@ public class BoardDescription {
             //there is no need to specify tool path as they do not use them
             return ret;
         }
-        ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.ARDUINO,
+        ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
                 referencingPlatform.getArchitecture());
         if (latestArduinoPlatform != null) {
             ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
@@ -930,23 +971,19 @@ public class BoardDescription {
     /**
      * Following post processing is done
      *
-     * CDT uses different keys to identify the input and output files then the
-     * arduino recipes. Therefore I split the arduino recipes into parts (based on
-     * the arduino keys) and connect them again in the plugin.xml using the CDT
-     * keys. This code assumes that the command is in following order ${first part}
-     * ${files} ${second part} [${archive_file} ${third part}] with [optional]
      *
-     * Secondly The handling of the upload variables is done differently in arduino
-     * than here. This is taken care of here. for example the output of this input
+     * The handling of the upload variables is done differently in arduino
+     * than in Sloeber. This is taken care of here. for example the output of this
+     * input
      * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose}
      * is changed as if it were the output of this input
      * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
      * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
      *
-     * thirdly if a programmer is selected different from default some extra actions
+     * if a programmer is selected different from default some extra actions
      * are done here so no special code is needed to handle programmers
      *
-     * Fourthly The build path for the core is {BUILD.PATH}/core/core in sloeber
+     * The build path for the core is {build.path}/core/core in sloeber
      * where it is {build.path}/core/ in arduino world and used to be {build.path}/
      * This only gives problems in the link command as sometimes there are hardcoded
      * links to some sys files so ${build.path}/core/sys* ${build.path}/sys* is
@@ -1018,35 +1055,6 @@ public class BoardDescription {
             extraVars.put(varName, envVarString);
         }
         return extraVars;
-    }
-
-    /**
-     * method to get the configuration info from the old way Sloeber stored data
-     * 
-     * @param confDesc
-     * @return
-     */
-    @SuppressWarnings("nls")
-    public static BoardDescription getFromCDT(ICConfigurationDescription confDesc) {
-        BoardDescription ret = new BoardDescription();
-        ret.myUploadPort = getOldWayEnvVar(confDesc, "JANTJE.com_port");
-        ret.myProgrammer = getOldWayEnvVar(confDesc, "JANTJE.upload");
-        ret.myBoardID = getOldWayEnvVar(confDesc, "JANTJE.board_ID");
-        String optinconcat = getOldWayEnvVar(confDesc, "JANTJE.menu");
-        ret.myOptions = KeyValue.makeMap(optinconcat);
-
-        String referencingBoardsFile = getOldWayEnvVar(confDesc, "JANTJE.boards_file");
-        int packagesIndex = referencingBoardsFile.indexOf("\\arduinoPlugin\\packages\\");
-        if (packagesIndex == -1) {
-            packagesIndex = referencingBoardsFile.indexOf("/arduinoPlugin/packages/");
-        }
-        if (packagesIndex != -1) {
-            referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
-        }
-        ret.myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
-        ret.mySloeberBoardTxtFile = new BoardTxtFile(ret.myUserSelectedBoardsTxtFile);
-
-        return ret;
     }
 
     public boolean isValid() {

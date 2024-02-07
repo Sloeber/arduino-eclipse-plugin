@@ -1,7 +1,7 @@
 package io.sloeber.core;
 
 import static org.junit.Assert.*;
-import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.api.Common.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
+
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 

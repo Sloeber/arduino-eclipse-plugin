@@ -61,7 +61,8 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 
         if (this.project != null) {
             // Delegate launching the project
-            Sketch.syncUpload(this.project);
+            ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(project);
+            sloeberConf.upload();
         }
     }
 

@@ -1,6 +1,6 @@
 package io.sloeber.core.common;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 
@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Defaults;
 
 /**
@@ -73,7 +74,7 @@ public class ConfigurationPreferences {
     }
 
     public static IPath getInstallationPathLibraries() {
-        return getInstallationPath().append(LIBRARY_PATH_SUFFIX);
+        return getInstallationPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
     }
 
     public static IPath getInstallationPathExamples() {
