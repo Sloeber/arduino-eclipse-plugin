@@ -144,7 +144,6 @@ public class Teensy extends MCUBoard {
 	}
 
 	public static List<MCUBoard> getAllBoards() {
-		// TODO Auto-generated method stub
-		return null;
+		return getAllBoards(TEENSY_PROVIDER, Teensy3_0());
 	}
 }
