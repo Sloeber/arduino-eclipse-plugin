@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="Sloeber sdk"
+            application="org.eclipse.ui.ide.workbench">
+         <property
+               name="windowImages"
+               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png,icons/logo_256.png">
+         </property>
+         <property
+               name="aboutText"
+               value="To help devellop Sloeber">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/eclipse_lg.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="C8D5EA">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="97,370,100,4">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="400,370,441,20">
+         </property>
+         <property
+               name="appName"
+               value="Sloeber SDK">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+
+   <extension
+         id="io.sloeber.product.intro"
+         point="org.eclipse.ui.intro">
+      <intro
+            class="org.eclipse.ui.intro.config.CustomizableIntroPart"
+            id="io.sloeber.product.intro">
+      </intro>
+      <introProductBinding
+            introId="io.sloeber.product.sdk.intro"
+            productId="io.sloeber.product.sdk.product">
+      </introProductBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro.config">
+      <config
+            content="introSDKContent.xml"
+            id="io.sloeber.product.introConfigId"
+            introId="io.sloeber.product.sdk.intro">
+         <presentation
+               home-page-id="root">
+            <implementation
+                  kind="html"
+                  os="win32,linux,macosx"
+                  style="content/shared.css">
+            </implementation>
+         </presentation>
+      </config>
+   </extension>
+
+</plugin>

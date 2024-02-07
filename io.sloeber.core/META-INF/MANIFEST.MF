@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: io.sloeber.core;singleton:=true
-Bundle-Version: 4.4.2.qualifier
+Bundle-Version: 4.4.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
@@ -23,7 +23,9 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.core.variables,
  org.apache.commons.commons-io,
  org.apache.commons.commons-compress,
- com.github.luben.zstd-jni;bundle-version="1.5.5"
+ com.github.luben.zstd-jni;bundle-version="1.5.5",
+ slf4j.api;bundle-version="2.0.9",
+ org.eclipse.ui.intro
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

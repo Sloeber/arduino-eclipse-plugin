@@ -47,7 +47,6 @@ import io.sloeber.ui.monitor.SerialConnection;
 @RunWith(Parameterized.class)
 public class CompileAndUpload {
 	private static final boolean reinstall_boards_and_libraries = false;
-	private static int mCounter = 0;
 	private MCUBoard myBoard;
 	private String myName;
 	private static String interval = "1500";// change between 1500 and 100
@@ -161,7 +160,7 @@ public class CompileAndUpload {
 
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_%s",  Integer.valueOf(mCounter++),
+		String projectName = String.format("%05d_%s",  Integer.valueOf(Shared.buildCounter++),
 				this.myName);
 		try {
             theTestProject = SloeberProject.createArduinoProject(projectName, null,

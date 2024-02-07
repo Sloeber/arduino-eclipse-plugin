@@ -4,7 +4,7 @@
 	<parent>
         <groupId>io.sloeber.arduino-eclipse-plugin</groupId>
 		<artifactId>io.sloeber.parent</artifactId>
-		<version>4.4.2-SNAPSHOT</version>
+		<version>4.4.3-SNAPSHOT</version>
     <relativePath>../io.sloeber.parent</relativePath>
 	</parent>
   
@@ -40,7 +40,7 @@
 					<products>
 						<product>
 							<!-- id is verbatim to todo.product "uid" -->
-							<id>io.sloeber.product</id>
+							<id>io.sloeber.product.sdk</id>
 							<!-- Customise the packaged product's archive name (Instead of "io.sloeber.product")
 							    Suffix is still <os>.<ws>.<arch>.<archiveExtension> (e.g. linux.gtk.x86_64.tar.gz)
 							 -->

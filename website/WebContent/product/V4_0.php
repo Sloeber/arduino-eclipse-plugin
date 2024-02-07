@@ -15,6 +15,9 @@
 	<div class="boxed">
 
 </div>
+		<h1>Check the perspective</h1>
+		<p>In the top right of your workspace there is a icon that when hovered over states "open perspective".</p>
+		<p>Click that and select Sloeber (or C/C++ when Sloeber is not there) and select open.</p>
 
 		<h1>What to do to get started quickly</h1>
 		<h2>Wait for the configuration to finish.</h2>
