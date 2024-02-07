@@ -22,7 +22,7 @@ function internalListFiles($prefix) {
     include "files.php";
 	global $filter;
 	$filter = $prefix;
-	$lines=$lines." ".$prefix." ";
+	//$lines=$lines." ".$prefix." ";
 	date_default_timezone_set ( 'UTC' );
 
 	$files = array_filter ( $files, "filter" );
