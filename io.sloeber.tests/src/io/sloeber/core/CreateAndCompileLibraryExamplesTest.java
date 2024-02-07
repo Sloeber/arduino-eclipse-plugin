@@ -36,7 +36,6 @@ public class CreateAndCompileLibraryExamplesTest {
     private static final int maxFails = 100;
     private static final int mySkipAtStart = 0;
 
-    private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private Example myExample;
     private MCUBoard myBoard;
@@ -113,7 +112,7 @@ public class CreateAndCompileLibraryExamplesTest {
     @Test
     public void testExamples() {
 
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
         if (!myBoard.isExampleSupported(myExample)) {
             fail("Trying to run a test on unsoprted board");

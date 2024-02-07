@@ -38,7 +38,6 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     private CodeDescription myCodeDescriptor;
     private MCUBoard myBoard;
     private String myProjectName;
-    private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
@@ -93,7 +92,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     @Test
     public void testExample() {
 
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         if (!Shared.BuildAndVerify(myProjectName, myBoard.getBoardDescriptor(), myCodeDescriptor,

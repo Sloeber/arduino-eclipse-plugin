@@ -35,7 +35,6 @@ public class CreateAndCompileExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
 	private CodeDescription myCodeDescriptor;
 	private BoardDescription myBoardDescriptor;
-    private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 200;
     private static int mySkipAtStart = 0;
@@ -124,10 +123,10 @@ public class CreateAndCompileExamplesTest {
         // There are only a number of issues you can handle
         // best is to focus on the first ones and then rerun starting with the
         // failures
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
        
-        myBuildCounter++;
+        Shared.buildCounter++;
         if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileDescription())) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );

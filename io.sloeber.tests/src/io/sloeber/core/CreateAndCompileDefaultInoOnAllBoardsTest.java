@@ -32,7 +32,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static final boolean skipPlatformInstallation = false;
     private static final boolean apply_known_work_Arounds = true;
     private static final boolean closeFailedProjects = false;
-    private static int myBuildCounter = 0;
+
     private static int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipTestsAtStart = 0;
@@ -346,13 +346,13 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     @Test
     public void testBoard() throws Exception {
-        myBuildCounter++;
-        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
+        Shared.buildCounter++;
+        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", Shared.buildCounter >= mySkipTestsAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
         if (!Shared.BuildAndVerify(this.mBoard, CodeDescription.createCustomTemplate(templateFolder), null,
-                myBuildCounter)) {
+        		Shared.buildCounter)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
         }
