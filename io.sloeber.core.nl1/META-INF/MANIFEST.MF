@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber core language pack
 Bundle-SymbolicName: io.sloeber.core.nl1;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Bundle-Version: 4.4.2.qualifier
+Bundle-Version: 4.4.3.qualifier
 Fragment-Host: io.sloeber.core
 Bundle-Vendor: Sloeber.io
 Automatic-Module-Name: io.sloeber.core.nl1

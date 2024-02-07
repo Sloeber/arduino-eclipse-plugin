@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.4.2.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="false">
+<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.core.product" application="org.eclipse.ui.ide.workbench" version="4.4.3.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
-      <image path="/io.sloeber.product.sdk/icons/eclipse_lg.png"/>
+      <image path="/io.sloeber.core/icons/eclipse_lg.png"/>
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
@@ -22,37 +22,37 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
    </configIni>
 
    <launcherArgs>
-      <programArgs>-perspective io.sloeber.application.perspective
+      <programArgs>-perspective io.sloeber.product.perspective
 --launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.8
--Dorg.eclipse.update.reconcile=false
--Xms40m
--Xmx512m
+      <vmArgs>-Dorg.eclipse.update.reconcile=false
+-Dlog4j.configuration=log4j/log4j.xml
+-Xms256m
+-Xmx1024m
 --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.product.sdk/icons/logo_16.png" i32="/io.sloeber.product.sdk/icons/logo_32.png" i48="/io.sloeber.product.sdk/icons/logo_48.png" i256="/io.sloeber.product.sdk/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.product/icons/logo_16.png" i32="/io.sloeber.core/icons/logo_32.png" i48="/io.sloeber.core/icons/logo_48.png" i64="/io.sloeber.core/icons/logo_64.png" i128="/io.sloeber.core/icons/logo_128.png" i256="/io.sloeber.core/icons/logo_256.png"/>
 
    <splash
-      location="io.sloeber.product"
+      location="io.sloeber.ui"
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
-   <launcher name="sloeber-sdk">
+   <launcher name="sloeber-ide">
       <linux icon="launch/icon.xpm"/>
       <macosx icon="launch/icon.icns"/>
       <win useIco="true">
-         <ico path="launch/icons.ico"/>
+         <ico path="/io.sloeber.core/launch/icons.ico"/>
          <bmp/>
       </win>
    </launcher>
 
-   <intro introId="io.sloeber.application.intro"/>
+   <intro introId="io.sloeber.product.intro"/>
 
    <vm>
    </vm>
@@ -207,6 +207,7 @@ United States, other countries, or both.
    </plugins>
 
    <features>
+      <feature id="io.sloeber.feature" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
@@ -216,13 +217,13 @@ United States, other countries, or both.
       <feature id="org.eclipse.cdt.platform" installMode="root"/>
       <feature id="org.eclipse.cdt.testsrunner.feature" installMode="root"/>
       <feature id="org.eclipse.cdt" installMode="root"/>
-      <feature id="org.eclipse.e4.rcp.source" installMode="root"/>
       <feature id="org.eclipse.e4.rcp" installMode="root"/>
       <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.core.ssl.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature" installMode="root"/>
+      <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
       <feature id="org.eclipse.epp.mpc" installMode="root"/>
@@ -233,24 +234,10 @@ United States, other countries, or both.
       <feature id="org.eclipse.equinox.p2.rcp.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.user.ui" installMode="root"/>
       <feature id="org.eclipse.help" installMode="root"/>
-      <feature id="org.eclipse.jdt.source" installMode="root"/>
-      <feature id="org.eclipse.jdt" installMode="root"/>
       <feature id="org.eclipse.jgit" installMode="root"/>
       <feature id="org.eclipse.justj.openjdk.hotspot.jre.full" installMode="root"/>
-      <feature id="org.eclipse.mylyn_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.identity" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.notifications" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.repositories" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons" installMode="root"/>
-      <feature id="org.eclipse.mylyn.context_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.discovery" installMode="root"/>
-      <feature id="org.eclipse.mylyn.monitor" installMode="root"/>
       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
-      <feature id="org.eclipse.pde.source" installMode="root"/>
-      <feature id="org.eclipse.pde" installMode="root"/>
-      <feature id="org.eclipse.platform.source" installMode="root"/>
       <feature id="org.eclipse.platform" installMode="root"/>
-      <feature id="org.eclipse.rcp.source" installMode="root"/>
       <feature id="org.eclipse.rcp" installMode="root"/>
       <feature id="org.eclipse.rse.core" installMode="root"/>
       <feature id="org.eclipse.rse.dstore" installMode="root"/>
@@ -259,13 +246,13 @@ United States, other countries, or both.
       <feature id="org.eclipse.rse.ssh" installMode="root"/>
       <feature id="org.eclipse.rse.telnet" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.core.feature.source" installMode="root"/>
-      <feature id="org.eclipse.help.source" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.user.ui.source" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature.source" installMode="root"/>
+      <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature.source" installMode="root"/>
+      <feature id="org.eclipse.userstorage" installMode="root"/>
+      <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature.source" installMode="root"/>
-      <feature id="org.eclipse.egit" installMode="root"/>
+      <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
    </features>
 
    <configurations>
@@ -275,11 +262,12 @@ United States, other countries, or both.
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
       <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
+      <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
    </configurations>
 
    <repositories>
+      <repository location="https://eclipse.baeyens.it/update/V4/stable/" name="" enabled="true" />
       <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" name="" enabled="false" />
       <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" name="" enabled="true" />
       <repository location="https://download.eclipse.org/releases/latest/" name="" enabled="true" />

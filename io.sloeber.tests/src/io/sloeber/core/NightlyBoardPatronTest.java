@@ -27,7 +27,6 @@ import io.sloeber.providers.MCUBoard;
 @RunWith(Parameterized.class)
 public class NightlyBoardPatronTest {
 
-    private static int myBuildCounter = 0;
     private Example myExample;
     private MCUBoard myBoardID;
     private static int mySkipAtStart = 0;
@@ -80,8 +79,8 @@ public class NightlyBoardPatronTest {
 
     @Test
     public void testExamples() {
-    	myBuildCounter++ ;
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter >= mySkipAtStart);
+    	Shared.buildCounter++ ;
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         ArrayList<IPath> paths = new ArrayList<>();
@@ -92,7 +91,7 @@ public class NightlyBoardPatronTest {
         Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
         BoardDescription boardDescriptor = myBoardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        if(!Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions,myBuildCounter)) {
+        if(!Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions,Shared.buildCounter)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }

@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.sloeber.arduino-eclipse-plugin</groupId>
 	<artifactId>io.sloeber.parent</artifactId>
-	<version>4.4.2-SNAPSHOT</version>
+	<version>4.4.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -123,16 +123,7 @@
 		<profile>
 			<id>SDK</id>
 			<modules>
-				<module>../io.sloeber.autoBuild</module>
-				<module>../io.sloeber.autoBuild.ui</module>
-				<module>../io.sloeber.autoBuild.test</module>
-				<module>../io.sloeber.feature</module>
-				<module>../io.sloeber.core</module>
-				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product.sdk</module>
-				<module>../io.sloeber.ui.nl1</module>
-				<module>../io.sloeber.ui</module>
-				<module>../io.sloeber.tests</module>
 			</modules>
 		</profile>
 

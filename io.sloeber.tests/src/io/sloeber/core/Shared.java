@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -46,6 +44,7 @@ import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 public class Shared {
+    public static int buildCounter = 0;
     private static boolean deleteProjects = true;
 
     public static void setDeleteProjects(boolean deleteProjects) {

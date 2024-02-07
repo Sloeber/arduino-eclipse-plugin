@@ -33,7 +33,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static final boolean skipPlatformInstallation = false;
     private static final boolean apply_known_work_Arounds = true;
     private static final boolean closeFailedProjects = false;
-    private static int myBuildCounter = 0;
+
     private static int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipTestsAtStart = 0;
@@ -59,6 +59,16 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "https://redbearlab.github.io/arduino/package_redbear_index.json",
             "https://redbearlab.github.io/arduino/package_redbearlab_index.json",
             "http://drazzy.com/package_drazzy.com_index.json",
+            "http://download.labs.mediatek.com/package_mtk_linkit_smart_7688_index.json",
+            "http://download.labs.mediatek.com/package_mtk_linkit_7697_index.json",
+            "http://download.labs.mediatek.com/package_mtk_linkit_index.json",
+            "http://panstamp.org/arduino/package_panstamp_index.json",
+            "https://raw.githubusercontent.com/Seeed-Studio/Seeeduino-Boards/master/package_seeeduino_index.json",
+            "http://rig.reka.com.my/package_rig_index.json",
+            "http://adelino.cc/package_adelino_index.json",
+            "https://raw.githubusercontent.com/ioteamit/smarteverything-core/master/package_arrow_index.json",
+            "http://digistump.com/package_digistump_index.json",
+
             // confirmed 2020 03 09 version 25 12 17
             "https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
 
@@ -337,13 +347,13 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     @Test
     public void testBoard() throws Exception {
-        myBuildCounter++;
-        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
+        Shared.buildCounter++;
+        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", Shared.buildCounter >= mySkipTestsAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
         if (!Shared.BuildAndVerify(this.mBoard, CodeDescription.createCustomTemplate(templateFolder), null,
-                myBuildCounter)) {
+        		Shared.buildCounter)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
         }

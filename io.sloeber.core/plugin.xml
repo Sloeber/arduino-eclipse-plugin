@@ -417,7 +417,77 @@ priority="high"/>
             supportsArgument="true">
       </variable>
    </extension>
- 
+
+<extension
+         id="product"
+         name="Sloeber"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            description="Arduino layer for CDT"
+            name="Sloeber">
+         <property
+               name="windowImages"
+               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png,icons/logo_256.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="C8D5EA">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="97,370,100,4">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="400,370,441,20">
+         </property>
+         <property
+               name="appName"
+               value="Sloeber">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/eclipse_lg.png">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
+               name="aboutText"
+               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: https://eclipse.baeyens.it/&#x0A;Source: https://github.com/sloeber/arduino-eclipse-plugin&#x0A;&#x0A;&#x0A;Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia&#x0A;&#x0A;https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors">
+         </property>
+      </product>
+   </extension>
+      <extension
+         id="io.sloeber.product.intro"
+         point="org.eclipse.ui.intro">
+      <intro
+            class="org.eclipse.ui.intro.config.CustomizableIntroPart"
+            id="io.sloeber.product.intro">
+      </intro>
+      <introProductBinding
+            introId="io.sloeber.product.intro"
+            productId="io.sloeber.product.sloeber">
+      </introProductBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro.config">
+      <config
+            content="introContent.xml"
+            id="io.sloeber.product.introConfigId"
+            introId="io.sloeber.product.intro">
+         <presentation
+               home-page-id="root">
+            <implementation
+                  kind="html"
+                  os="win32,linux,macosx"
+                  style="content/shared.css">
+            </implementation>
+         </presentation>
+      </config>
+   </extension> 
 </plugin>
 
 
