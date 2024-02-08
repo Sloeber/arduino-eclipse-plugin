@@ -19,13 +19,15 @@ Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Sloeber.io
 Export-Package: io.sloeber.ui;x-internal:=true,
  io.sloeber.ui.actions;x-internal:=true,
+ io.sloeber.ui.core;uses:="org.eclipse.ui",
  io.sloeber.ui.core.launchconfig;x-internal:=true,
  io.sloeber.ui.helpers;x-internal:=true,
  io.sloeber.ui.listeners;x-internal:=true,
- io.sloeber.ui.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
+ io.sloeber.ui.monitor;uses:="org.eclipse.swt.widgets",
  io.sloeber.ui.monitor.internal;x-internal:=true,
  io.sloeber.ui.monitor.views;x-internal:=true,
  io.sloeber.ui.preferences;x-internal:=true,
  io.sloeber.ui.project.properties;x-internal:=true,
+ io.sloeber.ui.wizard;uses:="org.eclipse.ui,org.eclipse.jface.wizard,org.eclipse.jface.viewers",
  io.sloeber.ui.wizard.newsketch;x-internal:=true
 Automatic-Module-Name: io.sloeber.ui
