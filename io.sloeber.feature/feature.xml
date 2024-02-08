@@ -39,31 +39,22 @@ If you do not agree with this policy, please do not install this software.
 
    <plugin
          id="io.sloeber.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="io.sloeber.ui.nl1"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+         version="0.0.0"/>
 
    <plugin
          id="io.sloeber.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="io.sloeber.core.nl1"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="com.github.luben.zstd-jni"
+         version="0.0.0"/>
 
 </feature>
