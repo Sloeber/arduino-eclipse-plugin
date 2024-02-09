@@ -4,7 +4,6 @@ import static io.sloeber.autoBuild.ui.internal.Messages.*;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
@@ -33,17 +32,18 @@ import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 
 public class NewProjectWizard extends TemplateWizard {
-    private WizardNewProjectCreationPage mainPage;
+    private WizardNewProjectCreationPage myMainPage;
+    private NewProjectNaturePage myNaturePage;
 
     @Override
     public boolean performFinish() {
         try {
-            String projectName = mainPage.getProjectName();
+            String projectName = myMainPage.getProjectName();
             String extensionPointID = AutoBuildManager.supportedExtensionPointIDs()[0];
             String extensionID = AutoBuildManager.getSupportedExtensionIDs(extensionPointID)[0];
             String projectTypeID = AutoBuildManager.getProjectIDs(extensionPointID, extensionID).keySet()
                     .toArray(new String[10])[0];
-            String natureID = CCProjectNature.CC_NATURE_ID;
+            String natureID = myNaturePage.getNatureID();
             ICodeProvider codeProvider = null;
             IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
             String codeRootFolder="src";
@@ -85,7 +85,7 @@ public class NewProjectWizard extends TemplateWizard {
 
     @Override
     public void addPages() {
-        mainPage = new WizardNewProjectCreationPage("basicNewProjectPage") { //$NON-NLS-1$
+        myMainPage = new WizardNewProjectCreationPage("basicNewProjectPage") { //$NON-NLS-1$
             @Override
             public void createControl(Composite parent) {
                 super.createControl(parent);
@@ -94,17 +94,21 @@ public class NewProjectWizard extends TemplateWizard {
                 Dialog.applyDialogFont(getControl());
             }
         };
-        mainPage.setTitle(NewAutoMakeProjectWizard_PageTitle);
-        mainPage.setDescription(NewAutoMakeProjectWizard_Description);
-        this.addPage(mainPage);
+        myMainPage.setTitle(NewAutoMakeProjectWizard_PageTitle);
+        myMainPage.setDescription(NewAutoMakeProjectWizard_Description);
+        myNaturePage=new NewProjectNaturePage("Select Nature Page");
+        
+        addPage(myMainPage);
+        addPage(myNaturePage);
+        
     }
 
     @Override
     protected IGenerator getGenerator() {
         AutoBuildProjectGenerator generator = new AutoBuildProjectGenerator();
-        generator.setProjectName(mainPage.getProjectName());
-        if (!mainPage.useDefaults()) {
-            generator.setLocationURI(mainPage.getLocationURI());
+        generator.setProjectName(myMainPage.getProjectName());
+        if (!myMainPage.useDefaults()) {
+            generator.setLocationURI(myMainPage.getLocationURI());
         }
         return generator;
     }
