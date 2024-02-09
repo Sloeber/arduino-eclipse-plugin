@@ -32,7 +32,7 @@ import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 
-public class NewAutoBuildProjectWizard extends TemplateWizard {
+public class NewProjectWizard extends TemplateWizard {
     private WizardNewProjectCreationPage mainPage;
 
     @Override
@@ -75,8 +75,6 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
             return false;
         }
         return true;
-        // TODO Auto-generated method stub
-        //return super.performFinish();
     }
 
     @Override

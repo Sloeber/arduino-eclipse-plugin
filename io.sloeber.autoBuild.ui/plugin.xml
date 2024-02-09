@@ -10,7 +10,7 @@
       <template
             id="io.sloeber.ManagedBuild.ui.newProject.template"
             label="autoBuild : create new project"
-            wizard="io.sloeber.autoBuild.integrations.NewAutoBuildProjectWizard">
+            wizard="io.sloeber.autoBuild.integrations.NewProjectWizard">
          <description>
             AutoBuild: Create a C/C++ project for -libraries and/or executables- based on an automatically generated makefile (similar to managed build)
          </description>
