@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber auto build user interface
 Bundle-SymbolicName: io.sloeber.autoBuild.ui;singleton:=true
-Bundle-Version: 4.4.2.qualifier
+Bundle-Version: 4.4.3.qualifier
 Require-Bundle: org.eclipse.tools.templates.ui,
  org.eclipse.osgi,
  org.eclipse.cdt.core;bundle-version="7.4.200",
