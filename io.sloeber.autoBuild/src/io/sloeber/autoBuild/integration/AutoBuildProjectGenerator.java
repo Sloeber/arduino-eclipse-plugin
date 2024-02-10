@@ -39,9 +39,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	private URI myProjectURI = null;
 	private String myProjectName = null;
 	private IProject myProject = null;
-	private String myExtensionPointID = null;
-	private String myExtensionID = null;
-	private String myProjectTypeID = null;
+	private IProjectType myProjectType = null;
 	private ICodeProvider myCodeProvider = null;
 	private String myNatureID = null;
 	private String myBuilderID = null;
@@ -88,13 +86,13 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 				ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
 
-				IProjectType sloeberProjType = AutoBuildManager.getProjectType(myExtensionPointID, myExtensionID,
-						myProjectTypeID, true);
+				IProjectType sloeberProjType = AutoBuildManager.getProjectType(myProjectType.getExtensionPointID(), myProjectType.getExtensionID(),
+						myProjectType.getId(), true);
 				if (sloeberProjType == null) {
 					// project type not found can not continue
 					IStatus status = new Status(IStatus.ERROR, Activator.getId(),
-							"Did not find the projectType with " + myProjectTypeID + " for extension ID " //$NON-NLS-1$ //$NON-NLS-2$
-									+ myExtensionID + " in extensionpointID " + myExtensionPointID); //$NON-NLS-1$
+							"Did not find the projectType with " + myProjectType.getId() + " for extension ID " //$NON-NLS-1$ //$NON-NLS-2$
+									+ myProjectType.getExtensionID() + " in extensionpointID " + myProjectType.getExtensionPointID()); //$NON-NLS-1$
 					CoreException exception = new CoreException(status);
 					throw (exception);
 				}
@@ -153,17 +151,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
 		return myProject;
 	}
 
-	public void setExtentionPointID(String extensionPointID) {
-		myExtensionPointID = extensionPointID;
-	}
-
-	public void setExtentionID(String extensionID) {
-		myExtensionID = extensionID;
-	}
-
-	public void setProjectTypeID(String projectTypeID) {
-		myProjectTypeID = projectTypeID;
-	}
 
 	public void setCodeProvider(ICodeProvider codeProvider) {
 		myCodeProvider = codeProvider;
@@ -187,6 +174,11 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
 	public void setCodeRootFolder(String codeRootFolder) {
 		myCodeRootFolder=codeRootFolder;
+		
+	}
+
+	public void setProjectType(IProjectType projectType) {
+		myProjectType=projectType;
 		
 	}
 

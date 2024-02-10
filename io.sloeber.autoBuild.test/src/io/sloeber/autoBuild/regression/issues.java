@@ -102,8 +102,7 @@ public class issues {
         String projectName = "setDescription";
         CoreModel coreModel = CoreModel.getDefault();
 
-        IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID,
-                 defaultExtensionID,defaultProjectTypeID, defaultNatureID,codeRootFolder,new TemplateTestCodeProvider("exe"),
+        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder,new TemplateTestCodeProvider("exe"),
                 targetTool, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);

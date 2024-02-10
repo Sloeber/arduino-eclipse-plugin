@@ -25,10 +25,8 @@ import org.osgi.framework.FrameworkUtil;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
-import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IProjectType;
 
@@ -53,7 +51,7 @@ public class NewProjectWizard extends TemplateWizard {
                         throws CoreException, InvocationTargetException, InterruptedException {
                     SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
-                    AutoBuildProject.createProject(projectName, projectType.getExtensionPointID(), projectType.getExtensionID(), projectType.getId(), natureID,
+                    AutoBuildProject.createProject(projectName, projectType, natureID,
                     		codeRootFolder,codeProvider, buildTools, false, sub);
                     //                    generator.generate(model, sub);
                     //                    getWorkbench().getDisplay().asyncExec(new Runnable() {

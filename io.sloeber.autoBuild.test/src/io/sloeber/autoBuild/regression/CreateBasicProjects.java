@@ -65,8 +65,9 @@ public class CreateBasicProjects {
             String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,IBuildTools targetTool,
             Boolean shouldMakefileExists) throws Exception {
 
+    	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, extensionID, projectTypeID, true);
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
-                extensionPointID, extensionID, projectTypeID, natureID,codeRootFolder, codeProvider, targetTool, false, null);
+        		projectType, natureID,codeRootFolder, codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
             cProjectDesc.setActiveConfiguration(curConfig);
@@ -79,8 +80,9 @@ public class CreateBasicProjects {
             String projectTypeID, String natureID, ICodeProvider codeProvider,IBuildTools targetTool, Boolean shouldMakefileExists)
             throws Exception {
 
+    	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, extensionID, projectTypeID, true);
         IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
-                extensionPointID, extensionID, projectTypeID, natureID, codeRootFolder,codeProvider, targetTool, false, null);
+               projectType, natureID, codeRootFolder,codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         Set<String> configs = new HashSet<>();
 

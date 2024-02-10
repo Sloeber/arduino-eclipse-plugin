@@ -34,10 +34,12 @@ import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IOption;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 
 @SuppressWarnings({ "static-method", "nls", "boxing" })
@@ -76,8 +78,8 @@ public class regression {
         beforeAll();// for one reason or another the beforeall is not called
         String projectName = "createCloseOpenProject";
 
-        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
-        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,codeRootFolder,
+        IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
+        IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
                 new TemplateTestCodeProvider("exe"), buildTools, false, null);
 
         //Build all the configurations and verify proper building
@@ -115,8 +117,8 @@ public class regression {
         beforeAll();// for one reason or another the before all is not called
         String projectName = "setBuilder";
 
-        IProject testProject = AutoBuildProject.createProject(projectName, extensionPointID, defaultExtensionID,
-        		defaultProjectTypeID, CCProjectNature.CC_NATURE_ID,codeRootFolder,
+        IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
+        IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
                 new TemplateTestCodeProvider("exe"), buildTools, false, null);
 
         //Build the active configuration and verify proper building
@@ -175,8 +177,9 @@ public class regression {
         String projectName = "testOptionsProject";
         IProject testProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
         if (testProject == null || !testProject.exists()) {
-            testProject = AutoBuildProject.createProject(projectName, extensionPointID, "io.sloeber.autoBuild.test",
-                    "io.sloeber.autoBuild.projectType.test.options", CCProjectNature.CC_NATURE_ID,codeRootFolder,
+        	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, "io.sloeber.autoBuild.test",  "io.sloeber.autoBuild.projectType.test.options", true);
+            testProject = AutoBuildProject.createProject(projectName, projectType, 
+                    CCProjectNature.CC_NATURE_ID,codeRootFolder,
                     new TemplateTestCodeProvider("exe"), buildTools, false, null);
         }
 

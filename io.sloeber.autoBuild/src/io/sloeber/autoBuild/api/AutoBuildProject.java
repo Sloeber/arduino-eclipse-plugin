@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
 
 public class AutoBuildProject {
 	public static final String COMMON_BUILDER_ID="io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
@@ -20,10 +21,9 @@ public class AutoBuildProject {
     public static final String ARGS_TARGET_KEY = "The key to specify the value is the target to build"; //$NON-NLS-1$
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
-    public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools targetTool,
+    public static IProject createProject(String projectName, IProjectType projectType, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools targetTool,
             boolean needsMoreWork, IProgressMonitor monitor) {
-        return createProject(projectName, extensionPointID, extensionID, projectTypeID, null, natureID,codeRootFolder, codeProvider,
+        return createProject(projectName, projectType, null, natureID,codeRootFolder, codeProvider,
         		targetTool, needsMoreWork, monitor);
     }
 
@@ -53,8 +53,7 @@ public class AutoBuildProject {
      * 
      * @return the created project
      */
-    public static IProject createProject(String projectName, String extensionPointID, String extensionID,
-            String projectTypeID, String builderName, String natureID,String codeRootFolder, ICodeProvider codeProvider,
+    public static IProject createProject(String projectName, IProjectType projectType, String builderName, String natureID,String codeRootFolder, ICodeProvider codeProvider,
             IBuildTools targetTool, boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
@@ -64,9 +63,7 @@ public class AutoBuildProject {
             }
             theGenerator.setCodeRootFolder(codeRootFolder);
             theGenerator.setTargetTool(targetTool);
-            theGenerator.setExtentionPointID(extensionPointID);
-            theGenerator.setExtentionID(extensionID);
-            theGenerator.setProjectTypeID(projectTypeID);
+            theGenerator.setProjectType(projectType);
             theGenerator.setProjectName(projectName);
             theGenerator.setCodeProvider(codeProvider);
             theGenerator.setBuilderName(builderName);

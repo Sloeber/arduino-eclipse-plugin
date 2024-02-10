@@ -38,10 +38,11 @@ class CreateProject {
 	@SuppressWarnings("static-method")
     @ParameterizedTest
     @MethodSource("projectCreationInfoProvider")
-    void testExample(String myProjectName, String extensionID, String extensionImpID, String projectTypeID,
+    void testExample(String myProjectName, String extensionPointID, String extensionID, String projectTypeID,
             String natureID, ICodeProvider codeProvider) throws Exception {
 
-        IProject testProject = AutoBuildProject.createProject(myProjectName, extensionID, extensionImpID, projectTypeID,
+    	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, extensionID, projectTypeID, true);
+        IProject testProject = AutoBuildProject.createProject(myProjectName,  projectType,
                 natureID, codeRootFolder,codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
