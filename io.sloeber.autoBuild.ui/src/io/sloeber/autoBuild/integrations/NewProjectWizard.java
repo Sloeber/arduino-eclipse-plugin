@@ -30,22 +30,22 @@ import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
 import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
 
 public class NewProjectWizard extends TemplateWizard {
     private WizardNewProjectCreationPage myMainPage;
     private NewProjectNaturePage myNaturePage;
+    private NewProjectBuildToolsPage myBuildToolsPage;
+    private NewProjectProjectTypePage myProjectTypePage;
 
     @Override
     public boolean performFinish() {
         try {
             String projectName = myMainPage.getProjectName();
-            String extensionPointID = AutoBuildManager.supportedExtensionPointIDs()[0];
-            String extensionID = AutoBuildManager.getSupportedExtensionIDs(extensionPointID)[0];
-            String projectTypeID = AutoBuildManager.getProjectIDs(extensionPointID, extensionID).keySet()
-                    .toArray(new String[10])[0];
+            IProjectType projectType = myProjectTypePage.getProjectType();
             String natureID = myNaturePage.getNatureID();
             ICodeProvider codeProvider = null;
-            IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+            IBuildTools buildTools= myBuildToolsPage.getBuildTools();
             String codeRootFolder="src";
             getContainer().run(true, true, new WorkspaceModifyOperation() {
                 @Override
@@ -53,8 +53,8 @@ public class NewProjectWizard extends TemplateWizard {
                         throws CoreException, InvocationTargetException, InterruptedException {
                     SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
-                    AutoBuildProject.createProject(projectName, extensionPointID, extensionID, projectTypeID, natureID,
-                    		codeRootFolder,codeProvider, targetTool, false, sub);
+                    AutoBuildProject.createProject(projectName, projectType.getExtensionPointID(), projectType.getExtensionID(), projectType.getId(), natureID,
+                    		codeRootFolder,codeProvider, buildTools, false, sub);
                     //                    generator.generate(model, sub);
                     //                    getWorkbench().getDisplay().asyncExec(new Runnable() {
                     //                        @Override
@@ -97,9 +97,13 @@ public class NewProjectWizard extends TemplateWizard {
         myMainPage.setTitle(NewAutoMakeProjectWizard_PageTitle);
         myMainPage.setDescription(NewAutoMakeProjectWizard_Description);
         myNaturePage=new NewProjectNaturePage("Select Nature Page");
+        myBuildToolsPage=new NewProjectBuildToolsPage ("Build tools Page");
+        myProjectTypePage=new NewProjectProjectTypePage("Select project type page");
         
         addPage(myMainPage);
         addPage(myNaturePage);
+        addPage(myBuildToolsPage);
+        addPage(myProjectTypePage);
         
     }
 

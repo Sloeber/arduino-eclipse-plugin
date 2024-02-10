@@ -40,7 +40,7 @@ public class CConfigurationDescriptionInvestigation {
     public void testConfigDescription() {
         beforeAll();
         String projectName = "testConfigDescription";
-        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
         IProject testProject = AutoBuildProject.createProject(projectName, defaultExtensionPointID, defaultExtensionID,
                 defaultProjectTypeID, defaultNatureID,codeRootFolder, new TemplateTestCodeProvider("exe"), buildTools, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);

@@ -115,7 +115,7 @@ public interface IBuildToolManager {
      * 
      * @return a build tools
      */
-    public IBuildTools getAnyInstalledTargetTool();
+    public IBuildTools getAnyInstalledBuildTools();
 
     /**
      * Get all the build tool providers known to the 

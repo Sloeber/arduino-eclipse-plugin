@@ -45,7 +45,7 @@ public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static private String codeRootFolder="src";
     static int testCounter = 1;
-    static IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+    static IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
 
     @BeforeAll
     public static void beforeAll() {

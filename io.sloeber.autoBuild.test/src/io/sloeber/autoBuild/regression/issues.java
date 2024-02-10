@@ -28,7 +28,7 @@ import io.sloeber.buildTool.api.IBuildTools;
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
 	private static String codeRootFolder="src";
-    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
 
     @BeforeAll
     public static void beforeAll() {

@@ -27,7 +27,7 @@ import org.eclipse.core.resources.IProject;
 
 @SuppressWarnings("nls")
 class CreateProject {
-    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
     private static String codeRootFolder="src";
     @BeforeAll
     static void beforeAll() {

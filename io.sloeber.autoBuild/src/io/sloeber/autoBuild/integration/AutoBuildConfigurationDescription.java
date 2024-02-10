@@ -261,8 +261,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public IBuildTools getBuildTools() {
 		if (myBuildTools == null) {
 			// TODO add real error warning
-			System.err.println("myBuildTools should never be null" );
-			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledTargetTool();
+			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null" );
+			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools();
 		}
 		return myBuildTools;
 	}
@@ -426,7 +426,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					if (myBuildTools == null) {
 						// TODO add real error warning
 						System.err.println("unable to identify build Tools from :" + curLine);
-						myBuildTools=buildToolManager.getAnyInstalledTargetTool();
+						myBuildTools=buildToolManager.getAnyInstalledBuildTools();
 					}
 				}
 

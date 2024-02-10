@@ -118,7 +118,7 @@ public class BuildToolManager implements IBuildToolManager {
 	}
 
 	@Override
-	public IBuildTools getAnyInstalledTargetTool() {
+	public IBuildTools getAnyInstalledBuildTools() {
 		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
 			return cur.getAnyInstalledTargetTool();
 		}
