@@ -16,6 +16,8 @@ public class NewProjectNaturePage extends WizardPage{
 
 	protected NewProjectNaturePage(String pageName) {
 		super(pageName);
+		setTitle("Only C or C and CPP files?");
+		setDescription("Select wether you want to only have C files in your project or a mix of C and cpp files");
 	}
 
 	@Override
@@ -24,22 +26,7 @@ public class NewProjectNaturePage extends WizardPage{
 		Group natureGroup = new Group(parent, SWT.NONE);
 		natureGroup.setLayout(new RowLayout(SWT.VERTICAL));
 
-		Button cNatureButton = new Button(natureGroup, SWT.RADIO);
-		cNatureButton.setText("My project must only handle C files");
-		cNatureButton.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				myNatureId=CProjectNature.C_NATURE_ID;
-				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+
 
 		Button cppNatureButton = new Button(natureGroup, SWT.RADIO);
 		cppNatureButton.setText("My project may contain both C and C++ files");
@@ -49,6 +36,22 @@ public class NewProjectNaturePage extends WizardPage{
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				myNatureId=CCProjectNature.CC_NATURE_ID;
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		Button cNatureButton = new Button(natureGroup, SWT.RADIO);
+		cNatureButton.setText("My project must only handle C files");
+		cNatureButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				myNatureId=CProjectNature.C_NATURE_ID;
 				
 			}
 			

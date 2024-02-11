@@ -51,9 +51,6 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		gridlayout.marginHeight = 5;
 		comp.setLayout(gridlayout);
 
-//		Label label = new Label(usercomp, labelSyle);
-//		label.setText("Tool flavour filter");
-//		myToolFlavourCombo = new Combo(usercomp, comboStyle);
 		Label label = new Label(comp, labelSyle);
 		label.setText("Reread from disk");
 		myRefreshButton=new Button(comp, buttonStyle);
@@ -129,10 +126,12 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 				
 			}
 		});
+		myIsUpdating = false;
 		if(myParentListener!=null) {
+			myToolProviderCombo.select(0);
 			myParentListener.completeEvent(getSelecteddBuildTool()!=null);
 		}
-		myIsUpdating = false;
+
 	}
 	@Override
 	public void createControls(Composite par) {

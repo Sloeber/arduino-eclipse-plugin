@@ -1,7 +1,5 @@
 package io.sloeber.autoBuild.integrations;
 
-import javax.management.NotificationListener;
-
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -19,6 +17,9 @@ public class NewProjectBuildToolsPage extends  WizardPage {
 	protected NewProjectBuildToolsPage(String pageName) {
 		super(pageName);
 		myBuildToolsManagerTab =new BuildToolManagerTab();
+		setTitle("Select the tools that will be used to build your project.");
+		setDescription("CDT needs tools (like a compiler) to build your projects. If no tools are found install a tool stack and press: refresh the toolchains ");
+		setPageComplete(false);
 	}
 
 	@Override

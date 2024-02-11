@@ -35,6 +35,7 @@ public class NewProjectWizard extends TemplateWizard {
     private NewProjectNaturePage myNaturePage;
     private NewProjectBuildToolsPage myBuildToolsPage;
     private NewProjectProjectTypePage myProjectTypePage;
+    private NewProjectSourceCodePage mySourceCodePage;
 
     @Override
     public boolean performFinish() {
@@ -44,7 +45,7 @@ public class NewProjectWizard extends TemplateWizard {
             String natureID = myNaturePage.getNatureID();
             ICodeProvider codeProvider = null;
             IBuildTools buildTools= myBuildToolsPage.getBuildTools();
-            String codeRootFolder="src";
+            String codeRootFolder=mySourceCodePage.getSourceCodeLocation();
             getContainer().run(true, true, new WorkspaceModifyOperation() {
                 @Override
                 protected void execute(IProgressMonitor monitor)
@@ -97,11 +98,13 @@ public class NewProjectWizard extends TemplateWizard {
         myNaturePage=new NewProjectNaturePage("Select Nature Page");
         myBuildToolsPage=new NewProjectBuildToolsPage ("Build tools Page");
         myProjectTypePage=new NewProjectProjectTypePage("Select project type page");
+         mySourceCodePage =new NewProjectSourceCodePage("soyrce code page");
         
         addPage(myMainPage);
         addPage(myNaturePage);
         addPage(myBuildToolsPage);
         addPage(myProjectTypePage);
+        addPage(mySourceCodePage);
         
     }
 

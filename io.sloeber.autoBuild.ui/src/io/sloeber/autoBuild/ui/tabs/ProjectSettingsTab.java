@@ -103,6 +103,9 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 				setValues();
 			}
 		});
+		if(myParentListener!=null) {
+			setValues();
+		}
 		isUpdating=false;
 	}
 
@@ -134,7 +137,7 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 
 	}
 
-	protected void setValues() {
+	private void setValues() {
 		boolean orgIsUpdating = isUpdating;
 		isUpdating = true;
 		internalSetValues();
@@ -179,9 +182,16 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 			if (!myAutoBuildConfiguration.isBlank()) {
 				IConfiguration configuration = (IConfiguration) myProjectsCombo.getData(myAutoBuildConfiguration);
 				if (myAutoConfDesc != null) {
+					// we are in project properties update the project
 					myAutoConfDesc.setModelConfiguration(configuration);
 				}
 			}
+			
+			if(myParentListener!=null) {
+				//we are in project creation. Tell the parent we have a project selected
+				myParentListener.completeEvent(!myAutoBuildConfiguration.isBlank());
+			}
+
 		}
 	}
 

@@ -16,6 +16,9 @@ public class NewProjectProjectTypePage extends WizardPage {
 	protected NewProjectProjectTypePage(String pageName) {
 		super(pageName);
 		myProjectSettingsTab=new ProjectSettingsTab();
+		setTitle("select the type of project you want");
+		setDescription("The type of project decides on what the target of the project is and how it will be build.");
+		setPageComplete(false);
 	}
 
 	@Override

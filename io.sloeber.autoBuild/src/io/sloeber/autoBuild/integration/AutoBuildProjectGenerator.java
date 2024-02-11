@@ -73,7 +73,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				}
 				AutoBuildNature.addNature(myProject, monitor);
 
-				IFolder srcFolder = myProject.getFolder("src"); //$NON-NLS-1$
+				IFolder srcFolder = myProject.getFolder(myCodeRootFolder);
 				if (!srcFolder.exists()) {
 					srcFolder.create(true, true, monitor);
 				}
