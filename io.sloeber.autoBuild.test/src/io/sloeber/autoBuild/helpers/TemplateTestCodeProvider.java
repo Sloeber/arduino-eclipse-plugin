@@ -12,16 +12,17 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
 
 public class TemplateTestCodeProvider implements ICodeProvider {
     private String myTemplateFolder = null;
+    private Bundle myBundle=null;
 
-    public TemplateTestCodeProvider(String templateFolder) {
+    public TemplateTestCodeProvider(Bundle bundle,String templateFolder) {
         myTemplateFolder = templateFolder;
+        myBundle=bundle;
     }
 
     @Override
@@ -65,9 +66,8 @@ public class TemplateTestCodeProvider implements ICodeProvider {
     }
 
     private IPath getTemplateFolder() throws Exception {
-        Bundle bundle = Platform.getBundle("io.sloeber.autoBuild.test"); //$NON-NLS-1$
         Path path = new Path("templates/" + myTemplateFolder); //$NON-NLS-1$
-        URL fileURL = FileLocator.find(bundle, path, null);
+        URL fileURL = FileLocator.find(myBundle, path, null);
         URL resolvedFileURL = FileLocator.toFileURL(fileURL);
         return new Path(resolvedFileURL.toURI().getPath());
     }

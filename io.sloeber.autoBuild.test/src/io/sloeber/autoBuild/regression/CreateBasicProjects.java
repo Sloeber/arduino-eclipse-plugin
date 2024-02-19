@@ -1,5 +1,6 @@
 package io.sloeber.autoBuild.regression;
 
+ import static io.sloeber.autoBuild.helpers.Defaults.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,7 +35,7 @@ import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IProjectType;
 
-@SuppressWarnings({ "boxing", "nls" })
+@SuppressWarnings({ "nls" })
 public class CreateBasicProjects {
     static int testCounter = 1;
     //below are test limiting options buildTypeActiveBuild=null and  
@@ -66,7 +67,7 @@ public class CreateBasicProjects {
             Boolean shouldMakefileExists) throws Exception {
 
     	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, extensionID, projectTypeID, true);
-        IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
+        IProject testProject = AutoBuildProject.createProject(String.format("%03d", Integer.valueOf( testCounter++)) + "_" + projectName,
         		projectType, natureID,codeRootFolder, codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
@@ -81,7 +82,7 @@ public class CreateBasicProjects {
             throws Exception {
 
     	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, extensionID, projectTypeID, true);
-        IProject testProject = AutoBuildProject.createProject(String.format("%03d", testCounter++) + "_" + projectName,
+        IProject testProject = AutoBuildProject.createProject(String.format("%03d",  Integer.valueOf(testCounter++)) + "_" + projectName,
                projectType, natureID, codeRootFolder,codeProvider, targetTool, false, null);
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         Set<String> configs = new HashSet<>();
@@ -166,17 +167,17 @@ public class CreateBasicProjects {
             ICodeProvider codeProvider_cpp = null;
             switch (projectID) {
             case "io.sloeber.autoBuild.projectType.exe":
-                codeProvider_cpp = new TemplateTestCodeProvider("exe");
+                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
                 break;
             case "io.sloeber.autoBuild.projectType.static.lib":
             case "io.sloeber.autoBuild.projectType.dynamic.lib":
-                codeProvider_cpp = new TemplateTestCodeProvider("lib");
+                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"lib");
                 break;
             case "io.sloeber.autoBuild.projectType.compound.exe":
-                codeProvider_cpp = new TemplateTestCodeProvider("compound");
+                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"compound");
                 break;
             default:
-                codeProvider_cpp = new TemplateTestCodeProvider("exe");
+                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
             }
             for(IBuildTools curTargetTool:buildTools) {
             String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() +"_"+ extensionID+ "_" +curTargetTool.getProviderID()+"_"+curTargetTool.getSelectionID());

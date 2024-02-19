@@ -41,7 +41,7 @@ public class CConfigurationDescriptionInvestigation {
         beforeAll();
         String projectName = "testConfigDescription";
         IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
-        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder, new TemplateTestCodeProvider("exe"), buildTools, false, null);
+        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder, new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {
             assertFalse("conf is readOnly class instance", curConf instanceof CConfigurationDescriptionCache);

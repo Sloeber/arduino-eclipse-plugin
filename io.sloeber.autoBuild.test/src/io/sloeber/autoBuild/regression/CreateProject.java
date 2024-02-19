@@ -1,5 +1,6 @@
 package io.sloeber.autoBuild.regression;
 
+import static io.sloeber.autoBuild.helpers.Defaults.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -68,19 +69,19 @@ class CreateProject {
                         ICodeProvider codeProvider_c = null;
                         switch (projectID) {
                         case "io.sloeber.autoBuild.projectType.exe":
-                            codeProvider_cpp = new TemplateTestCodeProvider("exe");
-                            codeProvider_c = new TemplateTestCodeProvider("c_exe");
+                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
+                            codeProvider_c = new TemplateTestCodeProvider(thisBundle,"c_exe");
                             break;
                         case "io.sloeber.autoBuild.projectType.static.lib":
                         case "io.sloeber.autoBuild.projectType.dynamic.lib":
-                            codeProvider_cpp = new TemplateTestCodeProvider("lib");
-                            codeProvider_c = new TemplateTestCodeProvider("c_lib");
+                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"lib");
+                            codeProvider_c = new TemplateTestCodeProvider(thisBundle,"c_lib");
                             break;
                         case "io.sloeber.autoBuild.projectType.compound.exe":
-                            codeProvider_cpp = new TemplateTestCodeProvider("compound");
+                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"compound");
                             break;
                         default:
-                            codeProvider_cpp = new TemplateTestCodeProvider("exe");
+                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
                         }
                         String projectName = AutoBuildCommon
                                 .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_CPP_"

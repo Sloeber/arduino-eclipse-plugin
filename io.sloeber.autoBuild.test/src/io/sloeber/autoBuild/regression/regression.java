@@ -80,7 +80,7 @@ public class regression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                new TemplateTestCodeProvider("exe"), buildTools, false, null);
+                new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null); 
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -119,7 +119,7 @@ public class regression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                new TemplateTestCodeProvider("exe"), buildTools, false, null);
+                new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null);
 
         //Build the active configuration and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
@@ -180,7 +180,7 @@ public class regression {
         	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, "io.sloeber.autoBuild.test",  "io.sloeber.autoBuild.projectType.test.options", true);
             testProject = AutoBuildProject.createProject(projectName, projectType, 
                     CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                    new TemplateTestCodeProvider("exe"), buildTools, false, null);
+                    new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null);
         }
 
         //get the project and autobuild configurations
