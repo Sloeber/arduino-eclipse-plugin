@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="io.sloeber.autoBuild" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="io.sloeber.autoBuild" id="templateCodeProvider" name="template code provider"/>
+      </appinfo>
+      <documentation>
+         A simple way to make template code available at project creation
+Point to a location in you java project that contains c/c++ code and let autoBuild create projects based on that code.
+Do not forget to include the folder containing the C/C++ code to the binary build in the manifest file.
+      </documentation>
+   </annotation>
+
+   <element name="TemplateCodeProvider">
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A name that will be shown to the user.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="CodeLocation" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Location in the plugin where the code can be found.
+Typically something like templates/myTemplate
+Do not forget to add this folder to the binary build in your Manifest file
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="SupportedArtifactTypes" type="string">
+            <annotation>
+               <documentation>
+                  A semi colon seperated list of build artifact types this code ca	n be used for
+Blank means all build artifact types are supported
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  A description that describes the code.
+For instance &quot;hello world example in C++&quot;
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A all plugin wide unique ID to identify this codde provider.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         Release 3.0
+      </documentation>
+   </annotation>
+
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2001, 2013 IBM Corporation and others.&lt;br&gt;
+
+   This program and the accompanying materials are made available under
+   the terms of the Eclipse Public License 2.0 which accompanies this
+   distribution, and is available at &lt;a
+   href=&quot;https://www.eclipse.org/legal/epl-2.0&quot;&gt;https://www.eclipse.org/legal/epl-v20.html&lt;/a&gt;/
+   SPDX-License-Identifier: EPL-2.0
+      </documentation>
+   </annotation>
+
+</schema>

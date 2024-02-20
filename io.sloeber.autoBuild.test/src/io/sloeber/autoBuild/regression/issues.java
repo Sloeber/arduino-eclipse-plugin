@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 
+import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.helpers.Shared;
-import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 
@@ -102,7 +102,7 @@ public class issues {
         String projectName = "setDescription";
         CoreModel coreModel = CoreModel.getDefault();
 
-        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder,new TemplateTestCodeProvider(thisBundle,"exe"),
+        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder,cpp_exeCodeProvider,
                 targetTool, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);

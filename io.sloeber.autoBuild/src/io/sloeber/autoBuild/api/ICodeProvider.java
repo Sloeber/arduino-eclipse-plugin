@@ -17,4 +17,12 @@ public interface ICodeProvider {
      */
     boolean createFiles(IFolder srcFolder, IProgressMonitor monitor);
 
+	boolean supportsBuildArticactType(String buildArtifactType);
+
+	String getName();
+	
+	String getDescription();
+
+	String getID();
+
 }

@@ -9,11 +9,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
-import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
@@ -69,19 +70,19 @@ class CreateProject {
                         ICodeProvider codeProvider_c = null;
                         switch (projectID) {
                         case "io.sloeber.autoBuild.projectType.exe":
-                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
-                            codeProvider_c = new TemplateTestCodeProvider(thisBundle,"c_exe");
+                            codeProvider_cpp = cpp_exeCodeProvider;
+                            codeProvider_c = c_exeCodeProvider;
                             break;
                         case "io.sloeber.autoBuild.projectType.static.lib":
                         case "io.sloeber.autoBuild.projectType.dynamic.lib":
-                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"lib");
-                            codeProvider_c = new TemplateTestCodeProvider(thisBundle,"c_lib");
+                            codeProvider_cpp =cpp_LibProvider;
+                            codeProvider_c = c_LibProvider;
                             break;
                         case "io.sloeber.autoBuild.projectType.compound.exe":
-                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"compound");
+                            codeProvider_cpp = compoundProvider;
                             break;
                         default:
-                            codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
+                            codeProvider_cpp = cpp_exeCodeProvider;
                         }
                         String projectName = AutoBuildCommon
                                 .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_CPP_"

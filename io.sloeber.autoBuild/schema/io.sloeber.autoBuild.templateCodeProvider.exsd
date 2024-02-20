@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="io.sloeber.autoBuild" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="io.sloeber.autoBuild" id="io.sloeber.autoBuild.templateCodeProvider" name="Template code provider"/>
+      </appinfo>
+      <documentation>
+         [Enter description of this extension point.]
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="templateCode" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="templateCode">
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="SupportedArtifactTypes" type="string">
+            <annotation>
+               <documentation>
+                  A semicolomn of build artifact types that are supported by this templa	te.
+FI org.eclipse.cdt.build.core.buildArtefactType.exe
+Leave blank to support all build artifact types
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="CodeLocation" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Location in this java project where the actual c/c++ code remains.
+Do not forget to add this location to the binary build in the manifest file
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A as unique possible ID that can be used to reference code templates by test scripts
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="isTest" type="boolean" use="required">
+            <annotation>
+               <documentation>
+                  Is this for tests Only?
+If true this option will not be shown in the gui
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Description of the code provided
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="cCodeOnly" type="boolean" use="required">
+            <annotation>
+               <documentation>
+                  True if this code only contains C code
+False if this code contains at least one CPP file
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

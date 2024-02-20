@@ -27,12 +27,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
-import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildToolManager;
@@ -80,7 +80,7 @@ public class regression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null); 
+        		cpp_exeCodeProvider, buildTools, false, null); 
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -119,7 +119,7 @@ public class regression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null);
+        		cpp_exeCodeProvider, buildTools, false, null);
 
         //Build the active configuration and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
@@ -180,7 +180,7 @@ public class regression {
         	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, "io.sloeber.autoBuild.test",  "io.sloeber.autoBuild.projectType.test.options", true);
             testProject = AutoBuildProject.createProject(projectName, projectType, 
                     CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                    new TemplateTestCodeProvider(thisBundle,"exe"), buildTools, false, null);
+                    cpp_exeCodeProvider, buildTools, false, null);
         }
 
         //get the project and autobuild configurations

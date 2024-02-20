@@ -2,6 +2,7 @@
 <?eclipse version="3.6"?>
 <plugin>
    <extension-point id="io.sloeber.autoBuild.buildDefinitions" name="sloeber autoBuild" schema="schema/buildDefinitions.exsd"/>
+   <extension-point id="io.sloeber.autoBuild.templateCodeProvider" name="Template code provider" schema="schema/io.sloeber.autoBuild.templateCodeProvider.exsd"/>
  
  
 	<extension id="io.sloeber.autoBuild"
@@ -2065,6 +2066,7 @@
                prefer-non-shared="false">
          </provider>
       </extension>
+      
 </plugin>
 
 

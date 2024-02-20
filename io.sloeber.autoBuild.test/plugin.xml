@@ -543,7 +543,52 @@
   </projectType>
 
 	</extension>
-
+<extension
+            point="io.sloeber.autoBuild.templateCodeProvider">
+         <templateCode
+               CodeLocation="templates/compound"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
+               cCodeOnly="false"
+               description="A project that builds libraries and executable in one go. Needs the compound project to work properly."
+               id="io.sloeber.autoBuild.templateCode.compound"
+               isTest="false"
+               name="compound project">
+         </templateCode>
+         <templateCode
+               CodeLocation="templates/c_exe"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
+               cCodeOnly="true"
+               description="A test project for exe target only containing c code"
+               id="io.sloeber.autoBuild.templateCode.c.exe"
+               isTest="false"
+               name="c only exe project">
+         </templateCode>
+         <templateCode
+               CodeLocation="templates/c_lib"
+               cCodeOnly="true"
+               description="C only lib code for testing"
+               id="io.sloeber.autoBuild.templateCode.c.lib"
+               isTest="false"
+               name="C only library code">
+         </templateCode>
+         <templateCode
+               CodeLocation="templates/exe"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
+               cCodeOnly="false"
+               description="A test project for exe target only containing cpp code"
+               id="io.sloeber.autoBuild.templateCode.cpp.exe"
+               isTest="false"
+               name="cpp exe project">
+         </templateCode>
+         <templateCode
+               CodeLocation="templates/lib"
+               cCodeOnly="false"
+               description="Cpp lib code for testing"
+               id="io.sloeber.autoBuild.templateCode.cpp.lib"
+               isTest="false"
+               name="Cpp library code">
+         </templateCode>
+      </extension>
  
 </plugin>
 

@@ -24,12 +24,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
-import io.sloeber.autoBuild.helpers.TemplateTestCodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
@@ -167,17 +167,17 @@ public class CreateBasicProjects {
             ICodeProvider codeProvider_cpp = null;
             switch (projectID) {
             case "io.sloeber.autoBuild.projectType.exe":
-                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
+                codeProvider_cpp = cpp_exeCodeProvider;
                 break;
             case "io.sloeber.autoBuild.projectType.static.lib":
             case "io.sloeber.autoBuild.projectType.dynamic.lib":
-                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"lib");
+                codeProvider_cpp = cpp_LibProvider;
                 break;
             case "io.sloeber.autoBuild.projectType.compound.exe":
-                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"compound");
+                codeProvider_cpp = compoundProvider;
                 break;
             default:
-                codeProvider_cpp = new TemplateTestCodeProvider(thisBundle,"exe");
+                codeProvider_cpp = cpp_exeCodeProvider;
             }
             for(IBuildTools curTargetTool:buildTools) {
             String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() +"_"+ extensionID+ "_" +curTargetTool.getProviderID()+"_"+curTargetTool.getSelectionID());
