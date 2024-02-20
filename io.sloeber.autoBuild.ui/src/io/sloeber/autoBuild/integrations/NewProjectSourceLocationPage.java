@@ -12,13 +12,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 
-public class NewProjectSourceCodePage extends WizardPage {
+public class NewProjectSourceLocationPage extends WizardPage {
 	Button RootFolderButton ;
 	Button srcFolderButton;
 	Button customFolderButton;
 	Text customFolderText;
 
-	protected NewProjectSourceCodePage(String pageName) {
+	protected NewProjectSourceLocationPage(String pageName) {
 		super(pageName);
 		setTitle("select the location of the source code in the project.");
 		setDescription("You can seperate the source code from the rest of the project content by putting it in a source folder.");

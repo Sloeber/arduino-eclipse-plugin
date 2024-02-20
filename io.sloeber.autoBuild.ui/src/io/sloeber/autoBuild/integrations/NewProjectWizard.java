@@ -35,7 +35,7 @@ public class NewProjectWizard extends TemplateWizard {
     private NewProjectNaturePage myNaturePage;
     private NewProjectBuildToolsPage myBuildToolsPage;
     private NewProjectProjectTypePage myProjectTypePage;
-    private NewProjectSourceCodePage mySourceCodePage;
+    private NewProjectSourceLocationPage mySourceCodePage;
 
     @Override
     public boolean performFinish() {
@@ -98,7 +98,7 @@ public class NewProjectWizard extends TemplateWizard {
         myNaturePage=new NewProjectNaturePage("Select Nature Page");
         myBuildToolsPage=new NewProjectBuildToolsPage ("Build tools Page");
         myProjectTypePage=new NewProjectProjectTypePage("Select project type page");
-         mySourceCodePage =new NewProjectSourceCodePage("soyrce code page");
+         mySourceCodePage =new NewProjectSourceLocationPage("soyrce code page");
         
         addPage(myMainPage);
         addPage(myNaturePage);
