@@ -59,7 +59,7 @@
          <attribute name="SupportedArtifactTypes" type="string">
             <annotation>
                <documentation>
-                  A semicolomn of build artifact types that are supported by this templa	te.
+                  A semicolomn of build artifact types that are supported by this templa te.
 FI org.eclipse.cdt.build.core.buildArtefactType.exe
 Leave blank to support all build artifact types
                </documentation>
@@ -95,11 +95,11 @@ If true this option will not be shown in the gui
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="cCodeOnly" type="boolean" use="required">
+         <attribute name="ContainsCppCode" type="boolean" use="required">
             <annotation>
                <documentation>
-                  True if this code only contains C code
-False if this code contains at least one CPP file
+                  True if this code contains at least one CPP file.
+False if this code only contains  C file.
                </documentation>
             </annotation>
          </attribute>
