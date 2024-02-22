@@ -39,9 +39,12 @@ public class AutoBuildNewProjectCodeManager {
 	}
 
 	public HashMap<String, ICodeProvider> getCodeProviders(String buildArtifactType) {
+		if(buildArtifactType==null) {
+			return getCodeProviders();
+		}
 		HashMap<String, ICodeProvider> ret = new HashMap<>();
 		for (ICodeProvider curProvider : myCodeProviders.values()) {
-			if (curProvider.supportsBuildArticactType(buildArtifactType)) {
+			if (curProvider.supports(buildArtifactType)) {
 				ret.put(curProvider.getName(), curProvider);
 			}
 		}
@@ -75,5 +78,15 @@ public class AutoBuildNewProjectCodeManager {
 				}
 			}
 		}
+	}
+
+	public HashMap<String, ICodeProvider> getCodeProviders(String buildArtifactType, String natureID) {
+		HashMap<String, ICodeProvider> ret = new HashMap<>();
+		for (ICodeProvider curProvider : myCodeProviders.values()) {
+			if (curProvider.supports(buildArtifactType,natureID)) {
+				ret.put(curProvider.getName(), curProvider);
+			}
+		}
+		return ret;
 	}
 }

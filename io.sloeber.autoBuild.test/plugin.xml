@@ -548,24 +548,25 @@
          <templateCode
                CodeLocation="templates/compound"
                SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
-               cCodeOnly="false"
-               description="A project that builds libraries and executable in one go. Needs the compound project to work properly."
+               ContainsCppCode="true"
+               description="Code for a project that builds libraries and executable in one go. Needs the compound project to work properly."
                id="io.sloeber.autoBuild.templateCode.compound"
-               isTest="false"
+               isTest="true"
                name="compound project">
          </templateCode>
          <templateCode
                CodeLocation="templates/c_exe"
                SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
-               cCodeOnly="true"
+               ContainsCppCode="false"
                description="A test project for exe target only containing c code"
                id="io.sloeber.autoBuild.templateCode.c.exe"
-               isTest="false"
-               name="c only exe project">
+               isTest="true"
+               name="C only exe project">
          </templateCode>
          <templateCode
                CodeLocation="templates/c_lib"
-               cCodeOnly="true"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.staticLib;org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
+               ContainsCppCode="false"
                description="C only lib code for testing"
                id="io.sloeber.autoBuild.templateCode.c.lib"
                isTest="false"
@@ -574,15 +575,16 @@
          <templateCode
                CodeLocation="templates/exe"
                SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
-               cCodeOnly="false"
+               ContainsCppCode="true"
                description="A test project for exe target only containing cpp code"
                id="io.sloeber.autoBuild.templateCode.cpp.exe"
-               isTest="false"
+               isTest="true"
                name="cpp exe project">
          </templateCode>
          <templateCode
                CodeLocation="templates/lib"
-               cCodeOnly="false"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.staticLib;org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
+               ContainsCppCode="true"
                description="Cpp lib code for testing"
                id="io.sloeber.autoBuild.templateCode.cpp.lib"
                isTest="false"

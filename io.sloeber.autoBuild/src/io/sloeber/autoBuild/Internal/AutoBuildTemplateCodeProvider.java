@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.FileLocator;
@@ -26,6 +27,7 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	private String myID = null;
 	private String myName = null;
 	private String myDescription = null;
+	private boolean myContainsCppcode = false;
 	private Set<String> myBuildArtifactTypes = new HashSet<>();
 	private IPath myTemplateFolder;
 
@@ -35,6 +37,7 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 		myID = element.getAttribute(ID);
 		myName = element.getAttribute(NAME);
 		myDescription = element.getAttribute(DESCRIPTION);
+		myContainsCppcode = Boolean.valueOf(element.getAttribute("ContainsCppCode")).booleanValue();
 		String buildArtifacts = element.getAttribute("SupportedArtifactTypes");
 		if (buildArtifacts != null) {
 			myBuildArtifactTypes.addAll(Arrays.asList(buildArtifacts.split(";")));
@@ -89,8 +92,22 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	}
 
 	@Override
-	public boolean supportsBuildArticactType(String buildArtifactType) {
+	public boolean supports(String buildArtifactType) {
+		if (myBuildArtifactTypes.size() == 0) {
+			return true;
+		}
 		return myBuildArtifactTypes.contains(buildArtifactType);
+	}
+
+	@Override
+	public boolean supports(String buildArtifactType, String natureID) {
+		if (!supports(buildArtifactType)) {
+			return false;
+		}
+		if (myContainsCppcode) {
+			return !CProjectNature.C_NATURE_ID.equals(natureID);
+		}
+		return true;
 	}
 
 	@Override
@@ -107,4 +124,10 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	public String getDescription() {
 		return myDescription;
 	}
+
+	@Override
+	public boolean getContainsCppCode() {
+		return myContainsCppcode;
+	}
+
 }

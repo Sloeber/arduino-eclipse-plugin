@@ -2,7 +2,7 @@
 <?eclipse version="3.6"?>
 <plugin>
    <extension-point id="io.sloeber.autoBuild.buildDefinitions" name="sloeber autoBuild" schema="schema/buildDefinitions.exsd"/>
-   <extension-point id="io.sloeber.autoBuild.templateCodeProvider" name="Template code provider" schema="schema/io.sloeber.autoBuild.templateCodeProvider.exsd"/>
+   <extension-point id="io.sloeber.autoBuild.templateCodeProvider" name="Template code provider" schema="schema/templateCodeProvider.exsd"/>
  
  
 	<extension id="io.sloeber.autoBuild"
@@ -2065,6 +2065,18 @@
                name="%autoBuildLanguageStingsProvider"
                prefer-non-shared="false">
          </provider>
+      </extension>
+      <extension
+            point="io.sloeber.autoBuild.templateCodeProvider">
+         <templateCode
+               CodeLocation="template/cpp_hello_World"
+               ContainsCppCode="true"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
+               description="Code for a simple hello world program in cpp."
+               id="io.sloeber.autoBuild.cpp.hello.world"
+               isTest="false"
+               name="cpp hello world code">
+         </templateCode>
       </extension>
       
 </plugin>

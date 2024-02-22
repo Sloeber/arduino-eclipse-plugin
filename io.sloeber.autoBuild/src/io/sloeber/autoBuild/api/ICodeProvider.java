@@ -17,7 +17,23 @@ public interface ICodeProvider {
      */
     boolean createFiles(IFolder srcFolder, IProgressMonitor monitor);
 
-	boolean supportsBuildArticactType(String buildArtifactType);
+    /**
+     * Check whether this codeProvider provides code compatible with the buildArtifactType
+     * 
+     * @param buildArtifactType a string that represents a buildArtifactType; should not be null
+     * 
+     * @return true if this buildArtifactType can be build based from this code
+     */
+	boolean supports(String buildArtifactType);
+
+	/**
+	 * Check whether this codeProvider provides code compatible with the buildArtifactType and nature
+	 * 
+	 * @param buildArtifactType a string that represents a buildArtifactType; should not be null
+	 * @param natureID a string that represents a natureID; should not be null
+	 * @return
+	 */
+	boolean supports(String buildArtifactType, String natureID);
 
 	String getName();
 	
@@ -25,4 +41,5 @@ public interface ICodeProvider {
 
 	String getID();
 
+	boolean getContainsCppCode();
 }

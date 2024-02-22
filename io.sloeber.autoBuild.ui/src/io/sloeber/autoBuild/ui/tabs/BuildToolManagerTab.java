@@ -23,7 +23,6 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 	private boolean myIsUpdating = true;
 	private Combo myToolProviderCombo;
 	private Combo myBuildToolCombo;
-//	private Combo myToolFlavourCombo;
 	private String myToolProviderName;
 	private Label myLabel;
 	private Button myRefreshButton;
@@ -72,7 +71,6 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 
 		myToolProviderCombo.setLayoutData(controlGridData);
 		myBuildToolCombo.setLayoutData(controlGridData);
-//		myToolFlavourCombo.setLayoutData(controlGridData);
 
 		for (IBuildToolProvider buildToolProvider : buildToolManager.GetToolProviders(true)) {
 			myToolProviderCombo.add(buildToolProvider.getName());
@@ -129,6 +127,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		myIsUpdating = false;
 		if(myParentListener!=null) {
 			myToolProviderCombo.select(0);
+			updateBuildToolsCombo();
 			myParentListener.completeEvent(getSelecteddBuildTool()!=null);
 		}
 
