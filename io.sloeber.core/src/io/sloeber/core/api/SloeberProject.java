@@ -32,12 +32,16 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.core.Activator;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.natures.ArduinoNature;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
+import io.sloeber.schema.api.IProjectType;
 
 public class SloeberProject extends Common {
     public static String LATEST_EXTENSION_POINT_ID = "io.sloeber.autoBuild.buildDefinitions"; //$NON-NLS-1$
@@ -216,11 +220,13 @@ public class SloeberProject extends Common {
                 //                        "io.sloeber.autoBuild.buildDefinitions", "cdt.cross.gnu",
                 //                        "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID, null, internalMonitor);
 
-                newProjectHandle = AutoBuildProject.createProject(realProjectName, LATEST_EXTENSION_POINT_ID,
-                        LATEST_EXTENSION_ID, PROJECT_ID, CCProjectNature.CC_NATURE_ID, null, false, internalMonitor);
+               IBuildTools buildTools=null;
+                IProjectType projectType= AutoBuildManager.getProjectType( LATEST_EXTENSION_POINT_ID, LATEST_EXTENSION_ID, PROJECT_ID, true);
+                newProjectHandle = AutoBuildProject.createProject(realProjectName, projectType,
+                         CCProjectNature.CC_NATURE_ID,"src",codeDesc,buildTools, false, internalMonitor);
 
                 // Add the sketch code
-                Map<String, IPath> librariesToAdd = codeDesc.createFiles(newProjectHandle, internalMonitor);
+                Map<String, IPath> librariesToAdd = codeDesc.getNeededLibraries(newProjectHandle, internalMonitor);
 
                 ArduinoNature.addNature(newProjectHandle, internalMonitor);
 
@@ -265,6 +271,7 @@ public class SloeberProject extends Common {
                 SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                 newProjectHandle.open(refreshMonitor);
                 newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
+                prjCDesc.setCdtProjectCreated();
                 cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true,
                         SubMonitor.convert(internalMonitor, 1));
 

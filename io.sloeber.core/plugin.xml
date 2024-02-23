@@ -90,35 +90,12 @@
 #    AVR-GCC Compiler                                                                  # 
 ####################################################################################### 
 -->
-		<builder
-        autoBuildTarget="all"
-        buildRunner="io.sloeber.core.toolchain.SloeberBuildRunner"
-        cleanBuildTarget="clean"
-        command="${sloeber.make_location}make"
-        errorParsers="org.eclipse.cdt.core.MakeErrorParser"
-        id="io.sloeber.gnu.builder"
-        ignoreErrCmd="-k"
-        incrementalBuildTarget="all"
-        name="%toolchain.builder.name"
-        parallelBuildCmd="-j*"
-        reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
-        variableFormat="${=}">
-  </builder>
   <projectType
         environmentSupplier="io.sloeber.core.toolchain.SloeberProjectVariableSupplier"
         id="io.sloeber.core.sketch"
         name="%projectType.name"
         >
-     
-     <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
-     <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
-     <!-- TODO: Consider renaming as base. -->
-     <configuration
-           cleanCommand="rm -f"
-           id="io.sloeber.core.configuration.release"
-           languageSettingsProviders="io.sloeber.languageSettingsProvider"
-           name="%configuration.name">
-        <toolChain
+     <toolChain
               archList="all"
               environmentSupplier="io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier"
               id="io.sloeber.core.toolChain.release"
@@ -127,22 +104,6 @@
               name="%toolChain.name"
               osList="all"
               targetTool="io.sloeber.tool.size">
-           <targetPlatform
-                 archList="all"
-                 binaryParser="org.eclipse.cdt.core.ELF"
-                 id="io.sloeber.targetplatform"
-                 name="%targetPlatform.name"
-                 osList="all">
-           </targetPlatform>
-           <builder
-                 id="io.sloeber.sketch.builder"
-                 name="%toolchain.gnu.builder.name"
-                 superClass="io.sloeber.gnu.builder">
-           </builder>
-           <optionCategory
-                 id="io.sloeber.core.optionCategory.includePaths"
-                 name="%optionCategory.include.name">
-           </optionCategory>
            <tool
                  announcement="%tool.Arduino.CPP.announcement"
                  command="${recipe.cpp.o.pattern}"
@@ -314,7 +275,6 @@
                  command="${sloeber.objcopy}"
                  commandLinePattern="sloeber.objcopy"
                  id="io.sloeber.tool.objcopy.eep"
-                 isAbstract="false"
                  name="%tool.objcopy.name"
                  natureFilter="both">
               <inputType
@@ -335,7 +295,6 @@
                  command="${sloeber.size.switch} "
                  commandLinePattern="${sloeber.size.switch} "
                  id="io.sloeber.tool.size"
-                 isAbstract="false"
                  name="%tool.printsize.name">
               <inputType
                     id="io.sloeber.tool.size.input"
@@ -350,6 +309,11 @@
               </outputType>
            </tool>
         </toolChain>
+     <configuration
+           id="io.sloeber.core.configuration.release"
+           languageSettingsProviders="io.sloeber.languageSettingsProvider"
+           name="%configuration.name">
+        
      </configuration>
   </projectType>
 
@@ -419,7 +383,7 @@ priority="high"/>
    </extension>
 
 <extension
-         id="product"
+         id="io.sloeber.product"
          name="Sloeber"
          point="org.eclipse.core.runtime.products">
       <product
