@@ -221,19 +221,16 @@ public class Helpers {
      * This method adds the content of a content stream to a file If the file
      * already exist the file remains untouched
      *
-     * @param container
-     *            used as a reference to the file
-     * @param path
-     *            The path to the file relative from the container
+     * @param file
+     *            The file to create
      * @param contentStream
      *            The stream to put in the file
      * @param monitor
      *            A monitor to show progress
      * @throws CoreException
      */
-    public static IFile addFileToProject(IContainer container, Path path, InputStream contentStream,
+    public static IFile addFileToProject(IFile file, InputStream contentStream,
             IProgressMonitor monitor, boolean overwrite) throws CoreException {
-        IFile file = container.getFile(path);
         file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
         if (overwrite && file.exists()) {
             file.delete(true, null);

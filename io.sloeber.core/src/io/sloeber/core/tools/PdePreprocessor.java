@@ -222,7 +222,7 @@ public class PdePreprocessor {
         }
 
         if (!newFileContent.equals(currentFileContent)) {
-            IFile file = Helpers.addFileToProject(iProject, new Path(generatedFile),
+            IFile file = Helpers.addFileToProject(iProject.getFile(generatedFile),
                     new ByteArrayInputStream(newFileContent.getBytes()), null, true);
             if (file != null) {
                 file.setDerived(true, null);
