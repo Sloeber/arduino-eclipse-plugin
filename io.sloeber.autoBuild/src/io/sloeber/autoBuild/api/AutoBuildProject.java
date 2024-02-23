@@ -21,10 +21,10 @@ public class AutoBuildProject {
     public static final String ARGS_TARGET_KEY = "The key to specify the value is the target to build"; //$NON-NLS-1$
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
-    public static IProject createProject(String projectName, IProjectType projectType, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools targetTool,
+    public static IProject createProject(String projectName, IProjectType projectType, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools buildTools,
             boolean needsMoreWork, IProgressMonitor monitor) {
         return createProject(projectName, projectType, null, natureID,codeRootFolder, codeProvider,
-        		targetTool, needsMoreWork, monitor);
+        		buildTools, needsMoreWork, monitor);
     }
 
     /**
@@ -54,7 +54,7 @@ public class AutoBuildProject {
      * @return the created project
      */
     public static IProject createProject(String projectName, IProjectType projectType, String builderName, String natureID,String codeRootFolder, ICodeProvider codeProvider,
-            IBuildTools targetTool, boolean needsMoreWork, IProgressMonitor monitor) {
+            IBuildTools buildTools, boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
             IProgressMonitor internalMonitor = monitor;
@@ -62,7 +62,7 @@ public class AutoBuildProject {
                 internalMonitor = new NullProgressMonitor();
             }
             theGenerator.setCodeRootFolder(codeRootFolder);
-            theGenerator.setTargetTool(targetTool);
+            theGenerator.setTargetTool(buildTools);
             theGenerator.setProjectType(projectType);
             theGenerator.setProjectName(projectName);
             theGenerator.setCodeProvider(codeProvider);
