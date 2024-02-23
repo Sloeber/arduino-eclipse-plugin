@@ -271,7 +271,7 @@ public class Libraries {
 
         IFolder librariesFolder = sloeberCfg.getArduinoLibraryFolder();
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
-            Helpers.addCodeFolder(CurItem.getValue(), librariesFolder.getFolder(CurItem.getKey()), false);
+            Helpers.LinkFolderToFolder(CurItem.getValue(), librariesFolder.getFolder(CurItem.getKey()));
             // Check the libraries to see if there are "unwanted subfolders"
         }
     }

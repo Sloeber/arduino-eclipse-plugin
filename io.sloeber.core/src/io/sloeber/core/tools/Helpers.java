@@ -6,7 +6,6 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -19,7 +18,6 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.core.filesystem.URIUtil;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -29,7 +27,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -37,11 +34,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.internal.SloeberConfiguration;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -197,15 +190,6 @@ public class Helpers {
         }
     }
 
-    /**
-     * This method creates a link folder in the project
-     * 
-     */
-    public static void addCodeFolder(IPath toLinkFolder, IFolder projectFolder, boolean forceRoot) {
-
-        LinkFolderToFolder(toLinkFolder, projectFolder);
-
-    }
 
     public static void removeCodeFolder(IFolder deleteFolder) {
         if (deleteFolder.exists()) {
@@ -312,7 +296,7 @@ public class Helpers {
      * @param target
      *            the location where the links are to be created
      */
-    public static void linkDirectory(IProject project, IPath source, IFolder target) {
+    public static void linkDirectory(IPath source, IFolder target) {
 
         File[] sourceFiles = source.toFile().listFiles();
         if (sourceFiles == null) {

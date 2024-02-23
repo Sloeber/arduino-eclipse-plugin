@@ -85,9 +85,7 @@ public class Sketch {
      * @throws CoreException
      */
     public static void addCodeFolder(IProject project, Path path) throws CoreException {
-        CoreModel coreModel = CoreModel.getDefault();
-
-        Helpers.addCodeFolder(path, project.getFolder(path.lastSegment()), false);
+         Helpers.LinkFolderToFolder(path, project.getFolder(path.lastSegment()));
 
     }
 

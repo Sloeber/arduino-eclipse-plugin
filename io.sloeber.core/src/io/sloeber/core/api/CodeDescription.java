@@ -321,7 +321,7 @@ public class CodeDescription implements ICodeProvider {
 					for (IPath curPath : myExamples) {
 						if (myMakeLinks) {
 							IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(project.getLocation());
-							Helpers.linkDirectory(project, curPath, folder);
+							Helpers.linkDirectory( curPath, folder);
 						} else {
 							Files.copy(curPath.toPath(), project.getLocation().toPath());
 							FileModifiers.addPragmaOnce(curPath);

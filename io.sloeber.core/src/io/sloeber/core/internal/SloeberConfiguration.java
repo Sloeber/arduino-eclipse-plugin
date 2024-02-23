@@ -383,13 +383,13 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
             IProject project = getProject();
             IFolder arduinoVariantFolder = getArduinoVariantFolder();
             if (corePath != null) {
-                Helpers.addCodeFolder(corePath, getArduinoCoreFolder(), true);
+                Helpers.LinkFolderToFolder(corePath, getArduinoCoreFolder());
                 IPath variantPath = myBoardDescription.getActualVariantPath();
                 if ((variantPath == null) || (!variantPath.toFile().exists())) {
                     // remove the existing link
                     Helpers.removeCodeFolder(arduinoVariantFolder);
                 } else {
-                    Helpers.addCodeFolder(variantPath, arduinoVariantFolder, false);
+                    Helpers.LinkFolderToFolder(variantPath, arduinoVariantFolder);
                 }
             }
         } finally {
