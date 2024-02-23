@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
@@ -198,29 +197,21 @@ public class BuildRunnerForMake implements IBuildRunner {
 			IProgressMonitor monitor) throws CoreException {
 		boolean canContinueBuilding = true;
 		IProject project = autoData.getProject();
-		IMakefileGenerator generator =  new MakefileGenerator();
+		MakefileGenerator generator =  new MakefileGenerator();
 		generator.initialize(autoData);
 
 		checkCancel(monitor);
 		monitor.subTask(MessageFormat.format(ManagedMakeBuilder_message_update_makefiles, project.getName()));
 
 		MultiStatus result = null;
-		result = generator.regenerateMakefiles(monitor);
+		result = generator.localgenerateMakefiles(monitor);
 
 		if (result.getCode() == IStatus.WARNING || result.getCode() == IStatus.INFO) {
 			IStatus[] kids = result.getChildren();
 			for (int index = 0; index < kids.length; ++index) {
 				// One possibility is that there is nothing to build
 				IStatus status = kids[index];
-				// if(messages == null){
-				// messages = new MultiStatus(
-				// Activator.getId(),
-				// IStatus.INFO,
-				// "",
-				// null);
-				//
-				// }
-				if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
+				if (status.getCode() == MakefileGenerator.NO_SOURCE_FOLDERS) {
 					// performBuild = false;
 					emitMessage(console, createNoSourceMessage(kind, status, autoData));
 					canContinueBuilding = false;
@@ -247,8 +238,6 @@ public class BuildRunnerForMake implements IBuildRunner {
 
 		checkCancel(monitor);
 
-		// if(result.getSeverity() != IStatus.OK)
-		// throw new CoreException(result);
 		return canContinueBuilding;
 	}
 
