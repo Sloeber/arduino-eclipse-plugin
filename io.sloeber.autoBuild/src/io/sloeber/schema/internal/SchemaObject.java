@@ -354,7 +354,8 @@ public abstract class SchemaObject implements ISchemaObject {
         return myEnablement.isEnabled(enablementType, resource, tool, autoBuildConfData);
     }
 
-    public Map<IOption, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData) {
+    @Override
+	public Map<IOption, String> getDefaultOptions(IResource resource, AutoBuildConfigurationDescription autoData) {
         Map<IOption, String> ret = new LinkedHashMap<>();
         if (isEnabled(MBSEnablementExpression.ENABLEMENT_TYPE_CMD, resource, autoData)) {
             for (IOption curIOption : myOptions.getOptions()) {

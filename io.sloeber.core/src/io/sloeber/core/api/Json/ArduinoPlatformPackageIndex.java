@@ -53,7 +53,8 @@ public class ArduinoPlatformPackageIndex extends Node
      * 
      * @return A ID that you can uses to identify this package
      */
-    public String getID() {
+    @Override
+	public String getID() {
         return myJsonFile.getPath();
     }
 
