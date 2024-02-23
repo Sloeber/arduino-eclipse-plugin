@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,7 +22,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOutputType;
@@ -36,8 +34,43 @@ import io.sloeber.schema.api.IToolChain;
  *
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public class MakefileGenerator implements IMakefileGenerator {
+public class MakefileGenerator  {
 	static private boolean VERBOSE = false;
+    public final static String AT = "@"; //$NON-NLS-1$
+    public final static  String COLON = ":"; //$NON-NLS-1$
+    public final static  int COLS_PER_LINE = 80;
+    public final static  String COMMENT_SYMBOL = "#"; //$NON-NLS-1$
+    public final static  String DOLLAR_SYMBOL = "$"; //$NON-NLS-1$
+    public final static  String DEP_EXT = "d"; //$NON-NLS-1$
+    public final static  String DEPFILE_NAME = "subdir.dep"; //$NON-NLS-1$
+    public final static  String DOT = "."; //$NON-NLS-1$
+    public final static  String DASH = "-"; //$NON-NLS-1$
+    public final static  String ECHO = "echo"; //$NON-NLS-1$
+    public final static  String IN_MACRO = "$<"; //$NON-NLS-1$
+    public final static  String LINEBREAK = "\\\n"; //$NON-NLS-1$
+    public final static  String LOGICAL_AND = "&&"; //$NON-NLS-1$
+    public final static  String MAKEFILE_DEFS = "makefile.defs"; //$NON-NLS-1$
+    public final static  String MAKEFILE_INIT = "makefile.init"; //$NON-NLS-1$
+    public final static  String MAKEFILE_NAME = "makefile"; //$NON-NLS-1$
+    public final static  String MAKEFILE_TARGETS = "makefile.targets"; //$NON-NLS-1$
+    public final static  String MAKE = "$(MAKE)"; //$NON-NLS-1$
+    public final static  String NO_PRINT_DIR = "--no-print-directory"; //$NON-NLS-1$
+
+    public final static  String MODFILE_NAME = "subdir.mk"; //$NON-NLS-1$
+    public final static  String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
+    public final static  String OBJECTS_MAKFILE = "objects.mk"; //$NON-NLS-1$
+    public final static  String OUT_MACRO = "$@"; //$NON-NLS-1$
+    public final static  String ROOT = ".."; //$NON-NLS-1$
+    public final static  String SEPARATOR = "/"; //$NON-NLS-1$
+    public final static  String SINGLE_QUOTE = "'"; //$NON-NLS-1$
+    public final static  String SRCSFILE_NAME = "sources.mk"; //$NON-NLS-1$
+    public final static  String TAB = "\t"; //$NON-NLS-1$
+    public final static  String WHITESPACE = " "; //$NON-NLS-1$
+    public final static  String WILDCARD = "%"; //$NON-NLS-1$
+
+    // Generation error codes
+    public static final int SPACES_IN_PATH = 0;
+    public static final int NO_SOURCE_FOLDERS = 1;
 
 	// Local variables needed by generator
 	IConfiguration myConfig;
@@ -56,7 +89,6 @@ public class MakefileGenerator implements IMakefileGenerator {
 		super();
 	}
 
-	@Override
 	public void initialize(AutoBuildConfigurationDescription autoData) {
 		myProject = autoData.getProject();
 		myAutoBuildConfData = autoData;
@@ -85,15 +117,6 @@ public class MakefileGenerator implements IMakefileGenerator {
 
 	}
 
-	@Override
-	public MultiStatus generateMakefiles(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
-		return localgenerateMakefiles(monitor);
-	}
-
-	@Override
-	public MultiStatus regenerateMakefiles(IProgressMonitor monitor) throws CoreException {
-		return localgenerateMakefiles(monitor);
-	}
 
 	/****************************************************************************************
 	 * Make rule generation code
@@ -369,13 +392,13 @@ public class MakefileGenerator implements IMakefileGenerator {
 		return buffer;
 	}
 
-	protected StringBuffer topMakeGetRMCommand(Set<String> myDependencyMacros) {
+	protected static StringBuffer topMakeGetRMCommand(Set<String> myDependencyMacros) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE); //$NON-NLS-1$
 		buffer.append(NEWLINE);
 		// Get the clean command from the build model
 		buffer.append("RM := "); //$NON-NLS-1$
-		buffer.append("rm -rf").append(NEWLINE);
+		buffer.append("rm -rf").append(NEWLINE); //$NON-NLS-1$
 		buffer.append(NEWLINE);
 
 		if (!myDependencyMacros.isEmpty()) {
@@ -635,9 +658,6 @@ public class MakefileGenerator implements IMakefileGenerator {
 	}
 
 	public StringBuffer getRecipesInMakeFileStyle(MakeRule makeRule) {
-		// if (!validateRecipes()) {
-		// return new StringBuffer();
-		// }
 
 		ITool tool = makeRule.getTool();
 		StringBuffer buffer = new StringBuffer();
@@ -671,6 +691,7 @@ public class MakefileGenerator implements IMakefileGenerator {
 		// } else {
 		for (String resolvedCommand : makeRule.getRecipes(myBuildRoot, myAutoBuildConfData)) {
 			buffer.append(TAB).append(resolvedCommand);
+			buffer.append(NEWLINE);
 		}
 		// }
 		// // end JABA add sketch.prebuild and postbuild if needed
