@@ -135,7 +135,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         return ret;
     }
 
-    public void addLibrariesToProject(IProject newProjectHandle, Map<String, IPath> librariesToAdd) {
+    public void addLibrariesToProject(IProject projectHandle, Map<String, IPath> librariesToAdd) {
         // TODO Auto-generated method stub
 
     }
@@ -193,7 +193,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         }
         IFolder arduinoVariantFolder = getArduinoVariantFolder();
         IPath variantPath = myBoardDescription.getActualVariantPath();
-        if ((variantPath == null) && (variantPath.toFile().exists())) {
+        if ((variantPath == null) || (variantPath.toFile().exists())) {
             return true;
         }
         if (!arduinoVariantFolder.getLocation().equals(variantPath)) {

@@ -196,7 +196,8 @@ public class CompileAndUpload {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + projectName + " exception");
 		}
-		IStatus uploadStatus = Sketch.syncUpload(theTestProject);
+		ISloeberConfiguration sloeberConfiguration = ISloeberConfiguration.getActiveConfig(theTestProject);
+		IStatus uploadStatus = sloeberConfiguration.upload();
 		if (!uploadStatus.isOK()) {
 			fail("Failed to upload:" + projectName);
 		}
