@@ -26,6 +26,7 @@ import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.IToolChain;
 
@@ -255,6 +256,12 @@ public class ProjectType extends SchemaObject implements IProjectType {
 	@Override
 	public IBuilder getdefaultBuilder() {
 		return myDefaultBuilder;
+	}
+
+
+	@Override
+	public IOption getOption(String optionID) {
+		return getToolChain().getOption( optionID);
 	}
 
 }

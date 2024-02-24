@@ -152,6 +152,6 @@ public interface IProjectType extends ISchemaObject {
 
 	public IBuilder getdefaultBuilder();
 
-    //public Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
+	public IOption getOption(String optionID);
 
 }

@@ -174,4 +174,7 @@ public interface IToolChain extends ISchemaObject {
      */
     public IConfigurationBuildMacroSupplier getBuildMacroSupplier();
 
+
+	public IOption getOption(String optionID);
+
 }

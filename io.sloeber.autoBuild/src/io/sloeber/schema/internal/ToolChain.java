@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Platform;
 
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
+import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
@@ -253,5 +254,16 @@ public class ToolChain extends SchemaObject implements IToolChain {
 
         return ret;
     }
+
+	@Override
+	public IOption getOption(String optionID) {
+		for(Tool curTool:myToolMap.values()) {
+			IOption option = curTool.getOption(optionID);
+			if (option!=null){
+				return option;
+			}
+		}
+		return null;
+	}
 
 }
