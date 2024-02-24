@@ -433,7 +433,7 @@ priority="high"/>
       </intro>
       <introProductBinding
             introId="io.sloeber.product.intro"
-            productId="io.sloeber.product.sloeber">
+            productId="io.sloeber.product">
       </introProductBinding>
    </extension>
    <extension
