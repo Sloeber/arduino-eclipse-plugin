@@ -44,7 +44,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	private String myNatureID = null;
 	private String myBuilderID = null;
 	private boolean myNeedsMoreWork = false;
-	private IBuildTools myTargetTool = null;
+	private IBuildTools myBuldTools = null;
 	private String myCodeRootFolder=null;
 
 	public AutoBuildProjectGenerator() {
@@ -100,8 +100,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				for (IConfiguration iConfig : modelConfigs) {
 					Configuration config = (Configuration) iConfig;
 					AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject,
-							myTargetTool);
-					data.myRootCodeFolder=myCodeRootFolder;
+							myBuldTools,myCodeRootFolder);
 					assert (data != null);
 					ICConfigurationDescription cdtCfgDes = des
 							.createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
@@ -169,7 +168,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	}
 
 	public void setTargetTool(IBuildTools targetTool) {
-		myTargetTool = targetTool;
+		myBuldTools = targetTool;
 	}
 
 	public void setCodeRootFolder(String codeRootFolder) {
