@@ -111,6 +111,8 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
                             exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
                 }
                 break;
+			default:
+				break;
             }
         }
         if (sourceEntries.size() > 0) {
@@ -155,26 +157,10 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
         return fileData;
     }
 
-    @Override
-    public ICSourceEntry[] getSourceEntries() {
-        if (mySourceEntries == null) {
-            mySourceEntries = new ICSourceEntry[1];
-            AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
-            String rootCodeFolder=autoBuildConfDesc.getRootCodeFolder();
-            
-            if(rootCodeFolder==null) {
-            	String buildRootFolder=autoBuildConfDesc.getBuildFolder().getProjectRelativePath().segment(0);
-            	IPath excludes[]=new IPath[1];
-                excludes[0]=myProject.getFolder(buildRootFolder).getProjectRelativePath();
-                mySourceEntries[0] = new CSourceEntry(Path.ROOT.toString(), excludes, ICSettingEntry.RESOLVED);
-            }else {
-            	//no need to exclude the bin folder
-            	mySourceEntries[0] = new CSourceEntry(rootCodeFolder, null, ICSettingEntry.RESOLVED);
-            }
-        }
-
-        return mySourceEntries.clone();
-    }
+	@Override
+	public ICSourceEntry[] getSourceEntries() {
+		return mySourceEntries.clone();
+	}
 
     @Override
     public void setSourceEntries(ICSourceEntry[] entries) {
@@ -235,4 +221,17 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
         return ret;
     }
 
+	protected void initializeResourceData(String rootCodeFolder, String BuildFolderString) {
+		mySourceEntries = new ICSourceEntry[1];
+		if (rootCodeFolder == null) {
+			// exclude the bin folder
+			String buildRootFolder = new Path(BuildFolderString).segment(0);
+			IPath excludes[] = new IPath[1];
+			excludes[0] = myProject.getFolder(buildRootFolder).getProjectRelativePath();
+			mySourceEntries[0] = new CSourceEntry(Path.ROOT.toString(), excludes, ICSettingEntry.RESOLVED);
+		} else {
+			// no need to exclude the bin folder
+			mySourceEntries[0] = new CSourceEntry(rootCodeFolder, null, ICSettingEntry.RESOLVED);
+		}
+	}
 }

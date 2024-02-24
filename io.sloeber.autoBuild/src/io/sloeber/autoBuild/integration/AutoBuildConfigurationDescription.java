@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -61,7 +62,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private static final String KEY = "key"; //$NON-NLS-1$
 	private static final String KEY_VALUE = "value"; //$NON-NLS-1$
 	private static final String KEY_RESOURCE = "resource";//$NON-NLS-1$
-	private static final String KEY_TOOL = "tool";//$NON-NLS-1$
 	private static final String KEY_BUILDER_ID = "builderID";//$NON-NLS-1$
 	private static final String KEY_AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
 	private static final String KEY_INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
@@ -136,9 +136,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 	private boolean myIsWritable = false;
-	protected String myRootCodeFolder="src";
 
-	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools) {
+	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,String rootCodeFolder) {
+		initializeResourceData(rootCodeFolder,myBuildFolderString);
 		myBuildTools = buildTools;
 		myIsWritable = true;
 		myCdtConfigurationDescription = null;
@@ -152,13 +152,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myBuilders = myProjectType.getBuilders();
 		myBuilder = myProjectType.getdefaultBuilder();
 		if(myBuilder==null) {
-			System.err.println("project "+project.getName()+" has no default builder");
+			System.err.println("project "+project.getName()+" has no default builder"); //$NON-NLS-1$ //$NON-NLS-2$
 			myBuilder=AutoBuildManager.getDefaultBuilder();
 		}
 		myIsCleanBuildEnabled = myBuilder.getBuildRunner().supportsCleanBuild();
 		myIsIncrementalBuildEnabled = myBuilder.getBuildRunner().supportsIncrementalBuild();
 		myIsAutoBuildEnabled = myBuilder.getBuildRunner().supportsAutoBuild();
 
+
+		
 	}
 
 	// Copy constructor
@@ -182,8 +184,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myDescription = base.myDescription;
 		myProperties.clear();
 		myProperties.putAll(base.myProperties);
-		mySelectedOptions.clear();
 		options_copy(base.mySelectedOptions, mySelectedOptions);
+		options_copy(base.myDefaultOptions, myDefaultOptions);
+		options_copy(base.myCombinedOptions, myCombinedOptions);
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
 		myGenerateMakeFilesAUtomatically = base.myGenerateMakeFilesAUtomatically;
 		myStopOnFirstBuildError = base.myStopOnFirstBuildError;
@@ -218,7 +221,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
 			myCustomToolPattern.put(curCustomToolEntry.getKey(), newMap);
 		}
-		options_updateDefault();
 		clone(this, base, clone);
 		if (base.getAutoBuildConfigurationExtensionDescription() != null) {
 			AutoBuildConfigurationExtensionDescription baseExtensionDesc = base
@@ -261,7 +263,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public IBuildTools getBuildTools() {
 		if (myBuildTools == null) {
 			// TODO add real error warning
-			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null" );
+			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null" ); //$NON-NLS-1$
 			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools();
 		}
 		return myBuildTools;
@@ -301,7 +303,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		Map<String, String> optionKeyMap = new HashMap<>();
 		Map<String, String> optionValueMap = new HashMap<>();
 		Map<String, String> optionResourceMap = new HashMap<>();
-		Map<String, String> optionToolMap = new HashMap<>();
 		Map<String, String> customToolKeyMap = new HashMap<>();
 		Map<String, String> customToolResourceMap = new HashMap<>();
 		Map<String, String> customToolValueMap = new HashMap<>();
@@ -315,7 +316,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		complexStructures.put(OPTION + DOT + KEY + DOT, optionKeyMap);
 		complexStructures.put(OPTION + DOT + KEY_VALUE + DOT, optionValueMap);
 		complexStructures.put(OPTION + DOT + KEY_RESOURCE + DOT, optionResourceMap);
-		complexStructures.put(OPTION + DOT + KEY_TOOL + DOT, optionToolMap);
 		complexStructures.put(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT, customToolKeyMap);
 		complexStructures.put(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_VALUE + DOT, customToolValueMap);
 		complexStructures.put(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_RESOURCE + DOT, customToolResourceMap);
@@ -425,7 +425,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					myBuildTools = buildToolManager.getBuildTools(providerID, selectionID);
 					if (myBuildTools == null) {
 						// TODO add real error warning
-						System.err.println("unable to identify build Tools from :" + curLine);
+						System.err.println("unable to identify build Tools from :" + curLine); //$NON-NLS-1$
 						myBuildTools=buildToolManager.getAnyInstalledBuildTools();
 					}
 				}
@@ -467,10 +467,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		// reconstruct the selected options
 		for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
 			String key = curOptionIndex.getKey();
-			String id = curOptionIndex.getValue();
+			String optionID = curOptionIndex.getValue();
 			String value = optionValueMap.get(key);
 			String resourceString = optionResourceMap.get(key);
-			String toolString = optionToolMap.get(key);
 			if (value == null || resourceString == null) {
 				// This Should not happen
 				continue;
@@ -479,19 +478,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			if (!resourceString.isBlank()) {
 				resource = myProject.getFile(resourceString);
 			}
-			ITool tool = null;
-			if (toolString != null) {
-				tool = myAutoBuildConfiguration.getProjectType().getToolChain().getTool(toolString);
-			}
-			IOption option = null;
-			if (tool != null && id != null) {
-				option = tool.getOption(id);
-			}
-			if (tool == null || option == null) {
+			IOption option =myProjectType.getOption(optionID);
+
+			if (resource==null || value == null || option == null) {
 				// TODO log a error in error log
-				System.err.println("failed to find the tool(" + toolString + ")/option(" + id + ")");
+				System.err.println("failed to map option(" + optionID + ")/value(" + value + ")/resource("+resource+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			}else {
+			setOptionValueInternal(resource,  option, value);
 			}
-			setOptionValueInternal(resource, tool, option, value);
 
 		}
 		options_combine();
@@ -565,8 +559,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	}
 
+
 	private static Bundle getBundle(String symbolicName) {
-		return org.eclipse.core.internal.registry.osgi.OSGIUtils.getDefault().getBundle(symbolicName);
+		return Platform.getBundle(symbolicName);
+		//return org.eclipse.core.internal.registry.osgi.OSGIUtils.getDefault().getBundle(symbolicName);
 		// TOFIX Below is an alternative but as I could not test at the time ...
 		// BundleContext bundleContext = Activator.getBundleContext();
 		// if (bundleContext == null) {
@@ -1354,11 +1350,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID) {
 		checkIfWeCanWrite();
-		setOptionValueInternal(resource, tool, option, valueID);
+		setOptionValueInternal(resource,  option, valueID);
 		options_combine();
 	}
 
-	private void setOptionValueInternal(IResource resource, ITool tool, IOption option, String value) {
+	private void setOptionValueInternal(IResource resource, IOption option, String value) {
 		// Map<IResource, Map<String, String>> resourceOptions =
 		// mySelectedOptions.get(tool);
 		// if (resourceOptions == null) {
@@ -1477,10 +1473,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	}
 
-	@Override
-	public String getRootCodeFolder() {
-		return myRootCodeFolder;
-	}
 
 	@Override
 	public ToolFlavour getBuildToolsFlavour() {
