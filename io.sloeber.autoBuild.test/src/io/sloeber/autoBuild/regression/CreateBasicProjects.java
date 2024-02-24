@@ -142,6 +142,11 @@ public class CreateBasicProjects {
     	beforeAll();
     	if (doTestMakeBuilder) {
             String projectName = "make_" + inProjectName;
+            if(projectName.length()>40) {
+            	//somethimes the build fails due to to long filenames
+            	//as the project name is part of the targetName
+            	projectName=projectName.substring(0, 40);
+            }
             doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider,targetTool, Boolean.TRUE);
         }
