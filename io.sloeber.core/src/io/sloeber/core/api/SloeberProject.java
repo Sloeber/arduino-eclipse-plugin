@@ -13,8 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
@@ -32,6 +35,7 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
@@ -239,14 +243,26 @@ public class SloeberProject extends Common {
                 ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle, true);
 
                 for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
-                    CConfigurationData buildSettings = curConfig.getConfigurationData();
-                    if (!(buildSettings instanceof AutoBuildConfigurationDescription)) {
+                	ICSourceEntry[] orgSourceEntries= curConfig.getSourceEntries();
+                	ICSourceEntry[] newSourceEntries= new ICSourceEntry[orgSourceEntries.length+1];
+                	int index=0;
+                	for(;index<orgSourceEntries.length;index++) {
+                		newSourceEntries[index]=orgSourceEntries[index];
+                	}
+                	IPath excludes[] = new IPath[1];
+        			excludes[0] = IPath.fromOSString("**/*.ino");
+        			IPath arduinoRoot=IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(curConfig.getName());
+                	newSourceEntries[index]=new CSourceEntry(arduinoRoot, excludes, ICSettingEntry.RESOLVED);
+                	curConfig.setSourceEntries(newSourceEntries);
+                	IAutoBuildConfigurationDescription iAutoBuildConfig=IAutoBuildConfigurationDescription.getConfig(curConfig);
+                    if (!(iAutoBuildConfig instanceof AutoBuildConfigurationDescription)) {
                         //this should not happen as we just created a autoBuild project
                         Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
                                 "\"Auto build created a project that does not seem to be a autobuild project :-s : " //$NON-NLS-1$
                                         + realProjectName));
+                        continue;
                     }
-                    AutoBuildConfigurationDescription autoBuildConfig = (AutoBuildConfigurationDescription) buildSettings;
+                    AutoBuildConfigurationDescription autoBuildConfig = (AutoBuildConfigurationDescription) iAutoBuildConfig;
 
                     SloeberConfiguration sloeberConfiguration = new SloeberConfiguration(boardDescriptor, otherDesc,
                             compileDescriptor);
@@ -262,7 +278,8 @@ public class SloeberProject extends Common {
                     //TOFIX pretty sure the line below can be deleted because of the setAllEnvironmentVars below.
                     //                        arduinoProjDesc.myEnvironmentVariables.put(curConfigKey,
                     //                                arduinoProjDesc.getEnvVars(curConfigKey));
-
+                    
+                    
                 }
 
                 //                arduinoProjDesc.createSloeberConfigFiles();
@@ -387,28 +404,28 @@ public class SloeberProject extends Common {
     //
     //    }
 
-    /**
-     * create the cdt configurations from the list
-     * 
-     * @param configs
-     * @param prjCDesc
-     * @return true if at least one config was created (basically only false if
-     *         configs is empty oe error conditions)
-     */
-    private static boolean createNeededCDTConfigs(List<String> configs, ICProjectDescription prjCDesc) {
-        boolean ret = false;
-        for (String curConfName : configs) {
-            try {
-                String id = CDataUtil.genId(null);
-                prjCDesc.createConfiguration(id, curConfName, prjCDesc.getActiveConfiguration());
-                ret = true;
-            } catch (Exception e) {
-                // ignore as we will try again later
-                e.printStackTrace();
-            }
-        }
-        return ret;
-    }
+//    /**
+//     * create the cdt configurations from the list
+//     * 
+//     * @param configs
+//     * @param prjCDesc
+//     * @return true if at least one config was created (basically only false if
+//     *         configs is empty oe error conditions)
+//     */
+//    private static boolean createNeededCDTConfigs(List<String> configs, ICProjectDescription prjCDesc) {
+//        boolean ret = false;
+//        for (String curConfName : configs) {
+//            try {
+//                String id = CDataUtil.genId(null);
+//                prjCDesc.createConfiguration(id, curConfName, prjCDesc.getActiveConfiguration());
+//                ret = true;
+//            } catch (Exception e) {
+//                // ignore as we will try again later
+//                e.printStackTrace();
+//            }
+//        }
+//        return ret;
+//    }
 
     /**
      * This methods creates/updates 2 files in the workspace. Together these files
