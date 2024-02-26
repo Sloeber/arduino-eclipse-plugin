@@ -1,14 +1,11 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
-import static io.sloeber.core.api.Common.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.eclipse.cdt.core.CCProjectNature;
@@ -18,8 +15,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -36,19 +31,19 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.integration.AutoBuildConstants;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.core.Activator;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.natures.ArduinoNature;
-import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.schema.api.IProjectType;
 
 public class SloeberProject extends Common {
-    public static String LATEST_EXTENSION_POINT_ID = "io.sloeber.autoBuild.buildDefinitions"; //$NON-NLS-1$
+    protected static final String CONFIG_NAME_VARIABLE = AutoBuildConstants.CONFIG_NAME_VARIABLE;
+	public static String LATEST_EXTENSION_POINT_ID = "io.sloeber.autoBuild.buildDefinitions"; //$NON-NLS-1$
     public static String LATEST_EXTENSION_ID = "io.sloeber.builddef"; //$NON-NLS-1$
     public static String PROJECT_ID = "io.sloeber.core.sketch"; //$NON-NLS-1$
     private static QualifiedName sloeberQualifiedName = new QualifiedName(NODE_ARDUINO, "SloeberProject"); //$NON-NLS-1$
@@ -251,8 +246,8 @@ public class SloeberProject extends Common {
                 	}
                 	IPath excludes[] = new IPath[1];
         			excludes[0] = IPath.fromOSString("**/*.ino");
-        			IPath arduinoRoot=IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(curConfig.getName());
-                	newSourceEntries[index]=new CSourceEntry(arduinoRoot, excludes, ICSettingEntry.RESOLVED);
+        			IPath arduinoRoot=IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(CONFIG_NAME_VARIABLE);
+                	newSourceEntries[index]=new CSourceEntry(arduinoRoot, excludes, ICSettingEntry.NONE);
                 	curConfig.setSourceEntries(newSourceEntries);
                 	IAutoBuildConfigurationDescription iAutoBuildConfig=IAutoBuildConfigurationDescription.getConfig(curConfig);
                     if (!(iAutoBuildConfig instanceof AutoBuildConfigurationDescription)) {

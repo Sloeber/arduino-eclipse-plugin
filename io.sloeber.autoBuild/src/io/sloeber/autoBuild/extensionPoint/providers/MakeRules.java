@@ -1,5 +1,8 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.CONFIG_NAME_VARIABLE;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
@@ -213,7 +218,7 @@ public class MakeRules implements Iterable<MakeRule> {
         subDirVisitor.myAutoBuildConfData = autoBuildConfData;
         subDirVisitor.myConfig = autoBuildConfData.getConfiguration();
         subDirVisitor.myContainersToBuild = containersToBuild;
-        subDirVisitor.mySrcEntries = autoBuildConfData.getSourceEntries();
+        subDirVisitor.mySrcEntries = getResolvedSourceEntries(autoBuildConfData);
         autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
 
         // Now we have the makeRules for the source files generate the MakeRules for the
@@ -221,6 +226,32 @@ public class MakeRules implements Iterable<MakeRule> {
         generateHigherLevelMakeRules(autoBuildConfData, buildfolder);
     }
 
+	/**
+	 * Get the source entries and 
+	 * resolve the ${ConfigName} in the name
+	 * The filters are not changed
+	 * 
+	 * @param autoBuildConfData
+	 * @return
+	 */
+	private static ICSourceEntry[] getResolvedSourceEntries(AutoBuildConfigurationDescription autoBuildConfData) {
+		String configName = autoBuildConfData.getName();
+		List<ICSourceEntry> ret = new ArrayList<>();
+		for (ICSourceEntry curSourceEntry : autoBuildConfData.getSourceEntries()) {
+			String key = curSourceEntry.getName();
+			if ((curSourceEntry.getFlags() & ICSettingEntry.RESOLVED) != ICSettingEntry.RESOLVED) {
+				// The code only support configname
+				key = key.replace(CONFIG_NAME_VARIABLE, configName);
+			}
+
+			curSourceEntry = new CSourceEntry(key, curSourceEntry.getExclusionPatterns().clone(),
+					curSourceEntry.getFlags()| ICSettingEntry.RESOLVED);
+			ret.add(curSourceEntry);
+		}
+		return ret.toArray(new CSourceEntry[ret.size()]);
+	}
+    
+    
     /**
      * This class is used to recursively walk the project and create make rules for
      * all appropriate files found
