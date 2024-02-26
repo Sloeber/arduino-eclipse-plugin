@@ -91,7 +91,7 @@ public interface IAutoBuildConfigurationDescription {
      * Set a buildfolder to be the same as a string.
      * The reason this is not set as a iFolder is that the string can be a variable
      * that need to be resolved
-     * For instance the default build folder is ${ProjDir}/${ConfigName}
+     * For instance the default build folder is ${ProjDir}/bin/${ConfigName}
      * Though this m�ay be settable in a IFolder the GUI works with a text field so
      * I opted to
      * make the interface work with text fields
