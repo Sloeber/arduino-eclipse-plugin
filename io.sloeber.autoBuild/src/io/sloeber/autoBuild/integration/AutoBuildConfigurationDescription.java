@@ -173,7 +173,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		}
 		myBuildTools = base.getBuildTools();
 		myAutoBuildConfiguration = base.myAutoBuildConfiguration;
-		myProject = base.myProject;
+		myProject = cfgDescription.getProjectDescription().getProject();
 		myCdtConfigurationDescription = cfgDescription;
 		myBuilder = base.myBuilder;
 		myBuilders = base.myBuilders;

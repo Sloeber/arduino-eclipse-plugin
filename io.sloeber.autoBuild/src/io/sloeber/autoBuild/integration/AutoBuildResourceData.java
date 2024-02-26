@@ -2,6 +2,7 @@ package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 /**
  * A abstract class to satisfy the resource handling required from a CConfigurationData implementation
@@ -13,6 +14,7 @@ import java.util.Arrays;
  */
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -46,6 +48,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
     public void clone(AutoBuildConfigurationDescription parent, AutoBuildConfigurationDescription autoBuildResourceBase,
             boolean clone) {
         myRootFolderData = new FolderData(parent, autoBuildResourceBase.getRootFolderData(), clone);
+        myProject=autoBuildResourceBase.getProject();
         cloneSourceEntries(autoBuildResourceBase.getSourceEntries());
 
     }
