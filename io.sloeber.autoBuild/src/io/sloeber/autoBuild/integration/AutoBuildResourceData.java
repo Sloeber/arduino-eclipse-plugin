@@ -2,7 +2,6 @@ package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 /**
  * A abstract class to satisfy the resource handling required from a CConfigurationData implementation
@@ -14,7 +13,6 @@ import java.util.Arrays;
  */
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -35,7 +33,7 @@ import org.eclipse.core.runtime.Path;
 
 public abstract class AutoBuildResourceData extends CConfigurationData {
     protected static final String KEY_SOURCE_ENTRY = "SourceEntry"; //$NON-NLS-1$
-    protected IProject myProject;
+    //protected IProject myProject;
     private Map<String, CResourceData> myResourceDatas = new HashMap<>();
     private ICSourceEntry mySourceEntries[] = null;
     private CFolderData myRootFolderData;
@@ -48,7 +46,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
     public void clone(AutoBuildConfigurationDescription parent, AutoBuildConfigurationDescription autoBuildResourceBase,
             boolean clone) {
         myRootFolderData = new FolderData(parent, autoBuildResourceBase.getRootFolderData(), clone);
-        myProject=autoBuildResourceBase.getProject();
+        //myProject=autoBuildResourceBase.getProject();
         cloneSourceEntries(autoBuildResourceBase.getSourceEntries());
 
     }
@@ -177,8 +175,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
             //CDataFactory factory = CDataFactory.getDefault();
             //myRootFolderData = factory.createFolderData(this, null, myRootFolderID, false, Path.ROOT);
             AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
-            myRootFolderData = new FolderData(myProject, autoBuildConfDesc);
-
+            myRootFolderData = new FolderData(autoBuildConfDesc.getProject(), autoBuildConfDesc);
         }
         return myRootFolderData;
     }
@@ -228,9 +225,10 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 		mySourceEntries = new ICSourceEntry[1];
 		if (rootCodeFolder == null) {
 			// exclude the bin folder
+			IProject project =((AutoBuildConfigurationDescription)this).getProject();
 			String buildRootFolder = new Path(BuildFolderString).segment(0);
 			IPath excludes[] = new IPath[1];
-			excludes[0] = myProject.getFolder(buildRootFolder).getProjectRelativePath();
+			excludes[0] = project.getFolder(buildRootFolder).getProjectRelativePath();
 			mySourceEntries[0] = new CSourceEntry(Path.ROOT.toString(), excludes, ICSettingEntry.RESOLVED);
 		} else {
 			// no need to exclude the bin folder

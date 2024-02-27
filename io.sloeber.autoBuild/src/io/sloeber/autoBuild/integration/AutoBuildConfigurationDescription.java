@@ -144,7 +144,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myCdtConfigurationDescription = null;
 		myAutoBuildConfiguration = config;
 		myProjectType = myAutoBuildConfiguration.getProjectType();
-		myProject = project;
 		myTargetPlatformData = new BuildTargetPlatformData();
 		myName = myAutoBuildConfiguration.getName();
 		myDescription = myAutoBuildConfiguration.getDescription();
@@ -173,7 +172,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		}
 		myBuildTools = base.getBuildTools();
 		myAutoBuildConfiguration = base.myAutoBuildConfiguration;
-		myProject = cfgDescription.getProjectDescription().getProject();
 		myCdtConfigurationDescription = cfgDescription;
 		myBuilder = base.myBuilder;
 		myBuilders = base.myBuilders;
@@ -298,7 +296,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		String autoCfgExtentionDesc = null;
 		String autoCfgExtentionBundel = null;
 		myCdtConfigurationDescription = cfgDescription;
-		myProject = cfgDescription.getProjectDescription().getProject();
 		String[] lines = curConfigsText.split(lineEnd);
 		Map<String, String> optionKeyMap = new HashMap<>();
 		Map<String, String> optionValueMap = new HashMap<>();
@@ -464,6 +461,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		// it is time to
 		// reconstruct the more complicated fields
 
+		IProject project =getProject(); 
 		// reconstruct the selected options
 		for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
 			String key = curOptionIndex.getKey();
@@ -474,13 +472,13 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				// This Should not happen
 				continue;
 			}
-			IResource resource = myProject;
+			IResource resource = project;
 			if (!resourceString.isBlank()) {
-				resource = myProject.getFile(resourceString);
+				resource = project.getFile(resourceString);
 			}
 			IOption option =myProjectType.getOption(optionID);
 
-			if (resource==null || value == null || option == null) {
+			if (resource==null || option == null) {
 				// TODO log a error in error log
 				System.err.println("failed to map option(" + optionID + ")/value(" + value + ")/resource("+resource+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}else {
@@ -498,9 +496,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			if (cmd == null || resourceString == null || tool == null) {
 				// This Should not happen
 			} else {
-				IResource resource = myProject;
+				IResource resource = project;
 				if (!resourceString.isBlank()) {
-					resource = myProject.getFile(resourceString);
+					resource = project.getFile(resourceString);
 				}
 
 				Map<IResource, String> resourceCmds = myCustomToolCommands.get(tool);
@@ -520,9 +518,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			if (cmd == null || resourceString == null || tool == null) {
 				// This Should not happen
 			} else {
-				IResource resource = myProject;
+				IResource resource = project;
 				if (!resourceString.isBlank()) {
-					resource = myProject.getFile(resourceString);
+					resource = project.getFile(resourceString);
 				}
 
 				Map<IResource, String> resourceCmds = myCustomToolPattern.get(tool);
@@ -588,17 +586,18 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 */
 	private void options_updateDefault() {
 		myDefaultOptions.clear();
-		Map<IOption, String> defaultOptions = myAutoBuildConfiguration.getDefaultOptions(myProject, this);
+		IProject project=getProject();
+		Map<IOption, String> defaultOptions = myAutoBuildConfiguration.getDefaultOptions(project, this);
 		IToolChain toolchain = myAutoBuildConfiguration.getProjectType().getToolChain();
-		defaultOptions.putAll(toolchain.getDefaultOptions(myProject, this));
+		defaultOptions.putAll(toolchain.getDefaultOptions(project, this));
 
 		for (ITool curITool : toolchain.getTools()) {
 			Tool curTool = (Tool) curITool;
-			if (!curTool.isEnabled(myProject, this)) {
+			if (!curTool.isEnabled(project, this)) {
 				continue;
 			}
 			// Map<IResource, Map<String, String>> resourceOptions = new HashMap<>();
-			defaultOptions.putAll(curTool.getDefaultOptions(myProject, this));
+			defaultOptions.putAll(curTool.getDefaultOptions(project, this));
 
 		}
 		myDefaultOptions.put(null, defaultOptions);
@@ -651,7 +650,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	public IProject getProject() {
-		return myProject;
+		return myCdtConfigurationDescription.getProjectDescription().getProject();
 	}
 
 	public IConfiguration getConfiguration() {
@@ -870,7 +869,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (resolved.isBlank()) {
 			resolved = myCdtConfigurationDescription.getName();
 		}
-		return myProject.getFolder(resolved);
+		return getProject().getFolder(resolved);
 	}
 
 	@Override
