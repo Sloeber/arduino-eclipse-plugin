@@ -1,12 +1,19 @@
 package io.sloeber.autoBuild.api;
 
+import static io.sloeber.autoBuild.integration.AutoBuildConstants.CONFIG_NAME_VARIABLE;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -29,12 +36,18 @@ public interface IAutoBuildConfigurationDescription {
     }
 
     public static IAutoBuildConfigurationDescription getActiveConfig(ICProjectDescription projectDescription) {
+    	if(projectDescription==null) {
+    		return null;
+    	}
         return getConfig(projectDescription.getActiveConfiguration());
     }
 
     public static IAutoBuildConfigurationDescription getConfig(ICConfigurationDescription confDesc) {
         if (confDesc == null)
             return null;
+        if(!(confDesc.getConfigurationData() instanceof AutoBuildConfigurationDescription)) {
+        	return null;
+        }
         AutoBuildConfigurationDescription ret = (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
         ret.setWritable(true);
         return ret;
@@ -46,6 +59,32 @@ public interface IAutoBuildConfigurationDescription {
         //        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData(writable);
 
     }
+    
+	/**
+	 * Get the source entries and 
+	 * resolve the ${ConfigName} in the name
+	 * The filters are not changed
+	 * 
+	 * @param autoBuildConfData
+	 * @return
+	 */
+	public static ICSourceEntry[] getResolvedSourceEntries(IAutoBuildConfigurationDescription cfgDesc) {
+		AutoBuildConfigurationDescription autoBuildConfData=(AutoBuildConfigurationDescription) cfgDesc;
+		String configName = autoBuildConfData.getName();
+		List<ICSourceEntry> ret = new ArrayList<>();
+		for (ICSourceEntry curSourceEntry : autoBuildConfData.getSourceEntries()) {
+			String key = curSourceEntry.getName();
+			if ((curSourceEntry.getFlags() & ICSettingEntry.RESOLVED) != ICSettingEntry.RESOLVED) {
+				// The code only support configname
+				key = key.replace(CONFIG_NAME_VARIABLE, configName);
+			}
+
+			curSourceEntry = new CSourceEntry(key, curSourceEntry.getExclusionPatterns().clone(),
+					curSourceEntry.getFlags()| ICSettingEntry.RESOLVED);
+			ret.add(curSourceEntry);
+		}
+		return ret.toArray(new CSourceEntry[ret.size()]);
+	}
 
     public boolean useDefaultBuildCommand();
 

@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IInputType;
@@ -218,7 +219,7 @@ public class MakeRules implements Iterable<MakeRule> {
         subDirVisitor.myAutoBuildConfData = autoBuildConfData;
         subDirVisitor.myConfig = autoBuildConfData.getConfiguration();
         subDirVisitor.myContainersToBuild = containersToBuild;
-        subDirVisitor.mySrcEntries = getResolvedSourceEntries(autoBuildConfData);
+        subDirVisitor.mySrcEntries = IAutoBuildConfigurationDescription.getResolvedSourceEntries(autoBuildConfData);
         autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
 
         // Now we have the makeRules for the source files generate the MakeRules for the
@@ -226,30 +227,7 @@ public class MakeRules implements Iterable<MakeRule> {
         generateHigherLevelMakeRules(autoBuildConfData, buildfolder);
     }
 
-	/**
-	 * Get the source entries and 
-	 * resolve the ${ConfigName} in the name
-	 * The filters are not changed
-	 * 
-	 * @param autoBuildConfData
-	 * @return
-	 */
-	private static ICSourceEntry[] getResolvedSourceEntries(AutoBuildConfigurationDescription autoBuildConfData) {
-		String configName = autoBuildConfData.getName();
-		List<ICSourceEntry> ret = new ArrayList<>();
-		for (ICSourceEntry curSourceEntry : autoBuildConfData.getSourceEntries()) {
-			String key = curSourceEntry.getName();
-			if ((curSourceEntry.getFlags() & ICSettingEntry.RESOLVED) != ICSettingEntry.RESOLVED) {
-				// The code only support configname
-				key = key.replace(CONFIG_NAME_VARIABLE, configName);
-			}
 
-			curSourceEntry = new CSourceEntry(key, curSourceEntry.getExclusionPatterns().clone(),
-					curSourceEntry.getFlags()| ICSettingEntry.RESOLVED);
-			ret.add(curSourceEntry);
-		}
-		return ret.toArray(new CSourceEntry[ret.size()]);
-	}
     
     
     /**
