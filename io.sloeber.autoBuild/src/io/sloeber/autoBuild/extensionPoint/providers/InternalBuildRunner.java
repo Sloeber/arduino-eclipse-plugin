@@ -50,12 +50,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 
 public class InternalBuildRunner implements IBuildRunner {
@@ -78,7 +78,7 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeClean(int kind, String[] envp, AutoBuildConfigurationDescription autoData,
+	public boolean invokeClean(int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
 		buildRoot.delete(true, monitor);
@@ -87,11 +87,11 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 	
 	@Override
-	public boolean invokeBuild(int kind, String envp[],AutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+	public boolean invokeBuild(int kind, String envp[],IAutoBuildConfigurationDescription inAutoData, IMarkerGenerator markerGenerator,
 			 IConsole console, IProgressMonitor monitor) throws CoreException {
 
+		AutoBuildConfigurationDescription autoData=(AutoBuildConfigurationDescription) inAutoData;
 		SubMonitor parentMon = SubMonitor.convert(monitor);
-		IBuilder builder = autoData.getBuilder();
 		IProject project = autoData.getProject();
 		IConfiguration configuration = autoData.getConfiguration();
 		ICConfigurationDescription cfgDescription = autoData.getCdtConfigurationDescription();

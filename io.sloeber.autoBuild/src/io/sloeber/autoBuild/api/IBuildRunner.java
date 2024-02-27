@@ -19,8 +19,6 @@ import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-
 /**
  * Interface implemented by toolchain integrators to perform the actual build.
  *
@@ -49,11 +47,11 @@ public interface IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public  boolean invokeBuild(int kind,String envp[], AutoBuildConfigurationDescription autoData,
+    public  boolean invokeBuild(int kind,String envp[], IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
-    public  boolean invokeClean(int kind,String envp[], AutoBuildConfigurationDescription autoData,
+    public  boolean invokeClean(int kind,String envp[], IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 

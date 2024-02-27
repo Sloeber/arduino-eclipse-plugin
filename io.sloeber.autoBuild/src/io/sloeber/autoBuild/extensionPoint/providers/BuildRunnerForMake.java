@@ -50,6 +50,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -60,7 +61,7 @@ import io.sloeber.schema.api.IConfiguration;
 public class BuildRunnerForMake implements IBuildRunner {
 
 	@Override
-	public boolean invokeClean(int kind, String[] envp, AutoBuildConfigurationDescription autoData,
+	public boolean invokeClean(int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
 		buildRoot.delete(true, monitor);
@@ -71,9 +72,10 @@ public class BuildRunnerForMake implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeBuild(int kind, String envp[], AutoBuildConfigurationDescription autoData,
+	public boolean invokeBuild(int kind, String envp[], IAutoBuildConfigurationDescription inAutoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 
+		AutoBuildConfigurationDescription autoData=(AutoBuildConfigurationDescription) inAutoData;
 		IProject project = autoData.getProject();
 		IBuilder builder = autoData.getBuilder();
 		IConfiguration configuration = autoData.getConfiguration();

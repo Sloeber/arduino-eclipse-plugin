@@ -232,4 +232,14 @@ public class AutoBuildConstants {
     public static final String OWNER = "owner";
     public static final String BIN_FOLDER = "bin";
     public static final String ENV_VAR_PATH ="PATH";
+    public static final String IS_TEST = "isTest"; 
+    public static final String PROJECTTYPE_ELEMENT_NAME = "projectType"; 
+    public static final String PROJECT_ENVIRONMENT_SUPPLIER = "environmentSupplier"; 
+    public static final String PROJECT_BUILD_MACRO_SUPPLIER = "buildMacroSupplier"; 
+    public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; 
+    public static final String BUILD_PROPERTIES = "buildProperties"; 
+    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; 
+    public static final String PROJECT_BUILDERS = "builders";
+    public static final String BUILDER_EXTENSION = "builderExtension";
+    
 }

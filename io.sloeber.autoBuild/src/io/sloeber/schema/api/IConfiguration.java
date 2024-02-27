@@ -51,7 +51,6 @@ public interface IConfiguration extends ISchemaObject {
     public static final String LANGUAGE_SETTINGS_PROVIDERS = "languageSettingsProviders"; //$NON-NLS-1$
     public static final String DESCRIPTION = "description"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
-    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
 
     /**
      * Returns the description of the configuration.

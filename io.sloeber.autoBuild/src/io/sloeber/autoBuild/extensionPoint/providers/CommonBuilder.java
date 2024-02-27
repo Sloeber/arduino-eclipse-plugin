@@ -48,6 +48,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+
+import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
@@ -357,7 +359,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             // Set the current project for markers creation
             setCurrentProject(project);
             AutoBuildCommon.createFolder(autoData.getBuildFolder());
-            if (builder.getBuildRunner().invokeBuild(kind,envp, autoData, this,  console, monitor)) {
+            AutoBuildBuilderExtension builderExt=autoData.getProjectType().getBuilderExtension();
+            if(builderExt.invokeBuild(builder,kind,envp, autoData, this,  console, monitor)) {
                 forgetLastBuiltState();
             }
         } catch (CoreException e) {
@@ -385,14 +388,22 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             System.err.println("The clean is cancelled as the project has not yet been created."); //$NON-NLS-1$
             return ;
         }
-        AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
-                .getActiveConfig(project, false);
-        String[] envp= getEnvironmentVariables(autoData);
-        IConsole console = CCorePlugin.getDefault().getConsole();
-        console.start(project);
-        autoData.getBuilder().getBuildRunner().invokeClean(IncrementalProjectBuilder.CLEAN_BUILD, envp,autoData, this,  console,
-                monitor);
-        //performExternalClean(autoData, false, monitor);
+        
+        Set<AutoBuildConfigurationDescription> cfgsToBuild = getConfigsToBuild(project, IncrementalProjectBuilder.CLEAN_BUILD, args);
+        String BuildRunnerID = null;
+        if (args != null) {
+        	BuildRunnerID = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
+        }
+        
+        for (AutoBuildConfigurationDescription curAutoConfig : cfgsToBuild) {
+        	String[] envp= getEnvironmentVariables(curAutoConfig);
+        	IBuilder builder = curAutoConfig.getBuilder(BuildRunnerID);
+            IConsole console = CCorePlugin.getDefault().getConsole();
+            console.start(project);
+            AutoBuildBuilderExtension builderExt=curAutoConfig.getProjectType().getBuilderExtension();
+            builderExt.invokeClean(builder,IncrementalProjectBuilder.CLEAN_BUILD, envp,curAutoConfig, this,  console,
+                    monitor);
+        }
     }
 
 

@@ -20,10 +20,12 @@ import java.util.Map;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
+import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
@@ -41,6 +43,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 	private String[] modelBuildProperties;
 	private String[] modelBuildArtifactType;
 	private String[] modelBuilders;
+	//private String[] modelBuilderExtension; not needed
 
 	private Map<String, Configuration> myConfigMap = new HashMap<>();
 	private Map<String, String> myProperties = new HashMap<>();
@@ -54,6 +57,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 	private ToolChain myToolchain;
 	private Map<String, IBuilder> myBuilders = new HashMap<>();
 	private IBuilder myDefaultBuilder;
+	private AutoBuildBuilderExtension myBuilderExtension;
 
 	/*
 	 * C O N S T R U C T O R S
@@ -76,6 +80,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		modelBuildMacroSupplier = getAttributes(PROJECT_BUILD_MACRO_SUPPLIER);
 		modelBuilders = getAttributes(PROJECT_BUILDERS);
 		
+		
 		myIsTest=Boolean.valueOf(modelIsTest[SUPER]).booleanValue();
 
 		myEnvironmentVariableProvider = (IEnvironmentVariableProvider) createExecutableExtension(
@@ -84,6 +89,11 @@ public class ProjectType extends SchemaObject implements IProjectType {
 				CONFIGURATION_NAME_PROVIDER);
 		myBuildMacroSupplier = (IProjectBuildMacroSupplier) createExecutableExtension(PROJECT_BUILD_MACRO_SUPPLIER);
 
+		myBuilderExtension = (AutoBuildBuilderExtension) createExecutableExtension(BUILDER_EXTENSION);
+		if(myBuilderExtension==null) {
+			myBuilderExtension=new AutoBuildBuilderExtension();
+		}
+		
 		// Load the toolchains first
 		IConfigurationElement[] toolChainElements = element.getChildren(IToolChain.TOOL_CHAIN_ELEMENT_NAME);
 		for (IConfigurationElement configElement : toolChainElements) {
@@ -109,6 +119,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		if(modelBuilders[SUPER].isBlank()) {
 			System.err.println("ProjectType "+myName+" does not contain builders "); //$NON-NLS-1$ //$NON-NLS-2$
 			myBuilders=AutoBuildManager.getBuilders();
+			//TOFIX filter builders that say they are incompatible
 			myDefaultBuilder=AutoBuildManager.getDefaultBuilder();
 		}else {
 		for (String curBuilderID : modelBuilders[SUPER].split(SEMICOLON)) {
@@ -262,6 +273,19 @@ public class ProjectType extends SchemaObject implements IProjectType {
 	@Override
 	public IOption getOption(String optionID) {
 		return getToolChain().getOption( optionID);
+	}
+
+
+	@Override
+	public Map<String, IBuildTools> getSupportedBuildTools() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public AutoBuildBuilderExtension getBuilderExtension() {
+		return myBuilderExtension;
 	}
 
 }

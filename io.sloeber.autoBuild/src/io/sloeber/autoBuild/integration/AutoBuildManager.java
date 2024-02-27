@@ -150,7 +150,7 @@ public class AutoBuildManager extends AbstractCExtension {
 					IConfigurationElement[] elements = extension.getConfigurationElements();
 					for (IConfigurationElement curElement : elements) {
 						try {
-							if (IProjectType.PROJECTTYPE_ELEMENT_NAME.equals(curElement.getName())) {
+							if (PROJECTTYPE_ELEMENT_NAME.equals(curElement.getName())) {
 								if (projectTypeID.equals(curElement.getAttribute(ID))) {
 									ProjectType newProjectType = new ProjectType(extensionPointID, extensionID,
 											extensionPoint, curElement);
@@ -184,7 +184,7 @@ public class AutoBuildManager extends AbstractCExtension {
 	}
 
 	public static void outputIconError(String iconLocation) {
-		String[] msgs = new String[1];
+		Object[] msgs = new String[1];
 		msgs[0] = iconLocation;
 		AutoBuildManager.outputManifestError(MessageFormat.format(ManagedBuildManager_error_manifest_icon, msgs));
 	}
@@ -238,7 +238,7 @@ public class AutoBuildManager extends AbstractCExtension {
 			return ret;
 		}
 		for (IConfigurationElement element : elements) {
-			if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
+			if (element.getName().equals(PROJECTTYPE_ELEMENT_NAME)) {
 				ret.put(element.getAttribute(ID), element.getAttribute(NAME));
 			}
 
@@ -261,7 +261,7 @@ public class AutoBuildManager extends AbstractCExtension {
 			return ret;
 		}
 		for (IConfigurationElement element : elements) {
-			if (element.getName().equals(IProjectType.PROJECTTYPE_ELEMENT_NAME)) {
+			if (element.getName().equals(PROJECTTYPE_ELEMENT_NAME)) {
 				IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID,
 						element.getAttribute(ID), true);
 				if (projectType == null) {
