@@ -4,7 +4,6 @@ import static io.sloeber.core.api.Const.*;
 
 import java.util.Map;
 
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -20,19 +19,22 @@ import io.sloeber.core.Activator;
 
 public interface ISloeberConfiguration {
     public static ISloeberConfiguration getActiveConfig(IProject project) {
-        CoreModel coreModel = CoreModel.getDefault();
-        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
-        return getActiveConfig(projectDescription);
+    	IAutoBuildConfigurationDescription autoBuild =IAutoBuildConfigurationDescription.getActiveConfig(project, false);
+    	if(autoBuild==null) {
+    		return null;
+    	}
+    	if(autoBuild.getAutoBuildConfigurationExtensionDescription() instanceof ISloeberConfiguration) {
+    		return (ISloeberConfiguration)autoBuild.getAutoBuildConfigurationExtensionDescription();
+    	}
+        return null;
     }
 
     public static ISloeberConfiguration getActiveConfig(ICProjectDescription projectDescription) {
-        if (projectDescription == null) {
-            return null;
-        }
-        ICConfigurationDescription activeCfg = projectDescription.getActiveConfiguration();
-        AutoBuildConfigurationDescription autoCfg = (AutoBuildConfigurationDescription) activeCfg
-                .getConfigurationData();
-        return (ISloeberConfiguration) autoCfg.getAutoBuildConfigurationExtensionDescription();
+    	IAutoBuildConfigurationDescription autoBuild =IAutoBuildConfigurationDescription.getActiveConfig(projectDescription);
+    	if(autoBuild.getAutoBuildConfigurationExtensionDescription() instanceof ISloeberConfiguration) {
+    		return (ISloeberConfiguration)autoBuild.getAutoBuildConfigurationExtensionDescription();
+    	}
+        return null;
     }
 
     public static ISloeberConfiguration getConfig(ICConfigurationDescription config) {
