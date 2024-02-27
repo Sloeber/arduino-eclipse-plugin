@@ -213,19 +213,31 @@ public class Helpers {
      *            A monitor to show progress
      * @throws CoreException
      */
-    public static IFile addFileToProject(IFile file, InputStream contentStream,
-            IProgressMonitor monitor, boolean overwrite) throws CoreException {
-        file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-        if (overwrite && file.exists()) {
-            file.delete(true, null);
-            file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-        }
+	public static IFile addFileToProject(IFile file, InputStream contentStream, IProgressMonitor monitor,
+			boolean overwrite) throws CoreException {
+		file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		if (overwrite && file.exists()) {
+			file.delete(true, null);
+			// TODO is this needed? I don't think so
+			file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		}
 
-        if (!file.exists() && (contentStream != null)) {
-            file.create(contentStream, true, monitor);
-        }
-        return file;
-    }
+		if (!file.exists() && (contentStream != null)) {
+			IPath filePath = file.getProjectRelativePath();
+			IFolder curFolder = file.getProject().getFolder(filePath.segment(0));
+			int curSegment = 1;
+			do {
+
+				if (!curFolder.exists()) {
+					curFolder.create(true, false, monitor);
+				}
+				curFolder = curFolder.getFolder(filePath.segment(curSegment));
+				curSegment++;
+			} while (curSegment < filePath.segmentCount() );
+			file.create(contentStream, true, monitor);
+		}
+		return file;
+	}
 
     public static MessageConsole findConsole(String name) {
         ConsolePlugin plugin = ConsolePlugin.getDefault();
