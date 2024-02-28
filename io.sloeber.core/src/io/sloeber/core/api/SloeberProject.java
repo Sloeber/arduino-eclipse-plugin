@@ -37,7 +37,7 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.core.Activator;
 import io.sloeber.core.internal.SloeberConfiguration;
-import io.sloeber.core.natures.ArduinoNature;
+import io.sloeber.core.natures.SloeberNature;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.schema.api.IProjectType;
 
@@ -227,7 +227,7 @@ public class SloeberProject extends Common {
                 // Add the sketch code
                 Map<String, IPath> librariesToAdd = codeDesc.getNeededLibraries(newProjectHandle, internalMonitor);
 
-                ArduinoNature.addNature(newProjectHandle, internalMonitor);
+                SloeberNature.addNature(newProjectHandle, internalMonitor);
 
                 // create a sloeber project
                 //SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
