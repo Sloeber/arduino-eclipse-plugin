@@ -120,7 +120,6 @@ public class Messages extends NLS {
     public static String InternalBuilder_nothing_todo;
     public static String CfgScannerConfigUtil_ErrorNotSupported;
     public static String GeneratedMakefileBuilder_cleanSelectedFiles;
-    public static String BuilderFactory_1;
     public static String FolderInfo_4;
     public static String GnuLinkOutputNameProvider_0;
     public static String CommonBuilder_1;

@@ -20,7 +20,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.Internal.BuilderFactory.*;
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.io.File;
@@ -64,6 +63,13 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
     private static final String TRACE_FOOTER = "]: "; //$NON-NLS-1$
     private static final String TRACE_HEADER = "automakefileBuilder trace ["; //$NON-NLS-1$
+    private static final String PREFIX = "org.eclipse.cdt.make.core"; //$NON-NLS-1$
+    static private  final String CONTENTS = PREFIX + ".contents"; //$NON-NLS-1$
+    static private  final String CONTENTS_CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
+
+    //	static final String IDS = PREFIX + ".ids"; //$NON-NLS-1$
+    public static final String CONFIGURATION_IDS = PREFIX + ".configurationIds"; //$NON-NLS-1$
+
     public static boolean VERBOSE = false;
 
     static private final Set<IProject> projectsThatAreBuilding = new HashSet<>();

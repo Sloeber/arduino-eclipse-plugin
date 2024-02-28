@@ -21,10 +21,7 @@ import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import io.sloeber.autoBuild.Internal.BuilderFactory;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.IBuilder;
 
 public class BuildBuildData extends CBuildData {
@@ -106,12 +103,14 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public ICommand getBuildSpecCommand() {
-        try {
-            return BuilderFactory.createCommandFromBuilder(myAutoBuildConf.getProject(), fBuilder);
-        } catch (CoreException cx) {
-            Activator.log(cx);
-            return null;
-        }
+    	//TOFIX is this called at all?
+    	return null;
+//        try {
+//        	return BuilderFactory.createCommandFromBuilder(myAutoBuildConf.getProject(), fBuilder);
+//        } catch (CoreException cx) {
+//            Activator.log(cx);
+//            return null;
+//        }
     }
 
 }
