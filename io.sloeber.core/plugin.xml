@@ -35,7 +35,7 @@
  		id="io.sloeber.arduinonature" 
  		name="arduinoNature" >
        <runtime>
-           <run class="io.sloeber.core.natures.ArduinoNature" />
+           <run class="io.sloeber.core.natures.SloeberNature" />
        </runtime>
        <requires-nature id="org.eclipse.cdt.core.cnature"/>
        <requires-nature
@@ -91,10 +91,11 @@
 ####################################################################################### 
 -->
   <projectType
+        builderExtension="io.sloeber.core.builder.SloeberBuilderExtension"
         environmentSupplier="io.sloeber.core.toolchain.SloeberProjectVariableSupplier"
         id="io.sloeber.core.sketch"
         name="%projectType.name"
-        >
+        supportedToolProviders="io.sloeber.core.arduino.ToolProvider">
      <toolChain
               archList="all"
               environmentSupplier="io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier"
@@ -316,6 +317,14 @@
         
      </configuration>
   </projectType>
+  <ToolProvider
+        Description="to be used with sloeber only"
+        id="io.sloeber.core.arduino.ToolProvider"
+        isTest="false"
+        name="Sloeber tool provider"
+        supportsProjectTypes="io.sloeber.core.sketch"
+        toolProvider="io.sloeber.core.builder.SloeberBuildToolsProvider">
+  </ToolProvider>
 
 	</extension>
 
@@ -356,20 +365,6 @@
 base-type="org.eclipse.cdt.core.cSource"
 file-extensions="ino,pde"
 priority="high"/>
- </extension>
- <extension
-       id="io.sloeber.core.inoToCpp"
-       name="%builder.ino.to.cpp"
-       point="org.eclipse.core.resources.builders">
-    <builder
-          callOnEmptyDelta="true"
-          hasNature="false"
-          isConfigurable="false"
-          supportsConfigurations="true">
-       <run
-             class="io.sloeber.core.builder.inoToCpp">
-       </run>
-    </builder>
  </extension>
  
     <extension

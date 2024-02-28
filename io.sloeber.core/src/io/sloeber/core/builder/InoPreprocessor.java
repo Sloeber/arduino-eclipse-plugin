@@ -70,11 +70,12 @@ public class InoPreprocessor {
 	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 	private static final String NEWLINE = "\n";
 
-	public static void processProject(boolean canSkip, IProject iProject,
+	public static void generateSloeberInoCPPFile(boolean canSkip, 
 			IAutoBuildConfigurationDescription autoBuildConfDesc, IProgressMonitor monitor) throws CoreException {
 
 		// loop through all the files in the project to see we need to generate a file
 		// This way we can avoid hitting the indexer when we use .cpp files
+		IProject iProject =autoBuildConfDesc.getProject();
 		List<IFile> inoResources = new ArrayList<>();
 		ICProjectDescription proDesc = CoreModel.getDefault().getProjectDescription(iProject, false);
 		// ICSourceEntry[] srcEntries =
@@ -151,7 +152,7 @@ public class InoPreprocessor {
 				IFile curFile = (IFile)curResource;
 				ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(curFile);
 				if (tu == null) {
-					methodDeclarations = extendBodyWithFileNotFund(methodDeclarations, curResource);
+					methodDeclarations = methodDeclarations +fileNotFoundContent( curResource);
 				} else {
 					// if the name of the ino/pde file matches the project put
 					// the file in front
@@ -159,13 +160,13 @@ public class InoPreprocessor {
 					if (curResource.getName().equals(projectNameDot + curResource.getFileExtension())) {
 						//This is the ino file with the same name as the project
 						//so put it first and generate the generate file name
-						includeInoPart = getIncludedInoPartForFile(buildFolder, curFile)+includeInoPart;
+						includeInoPart = getIncludedInoPartForFile( curFile)+includeInoPart;
 						methodDeclarations = getdMethodDeclarationsForFile( index, tu)+methodDeclarations;
-						header = extendHeaderForFile( index, tu)+header;
+						header = getExternCMethodDeclarations( index, tu)+header;
 					}else {
-						includeInoPart =includeInoPart+ getIncludedInoPartForFile(buildFolder, curFile);
+						includeInoPart =includeInoPart+ getIncludedInoPartForFile( curFile);
 						methodDeclarations =methodDeclarations+ getdMethodDeclarationsForFile( index, tu);
-						header = header+extendHeaderForFile( index, tu);
+						header = header+getExternCMethodDeclarations( index, tu);
 					}
 				}
 			}
@@ -184,11 +185,22 @@ public class InoPreprocessor {
 	 * @throws CoreException
 	 */
 	public static void deleteSloeberInoCPPFile(IAutoBuildConfigurationDescription autoBuildCfDes, IProgressMonitor monitor) throws CoreException {
-		IFolder buildFolder=autoBuildCfDes.getBuildFolder();
-		IFile sloeberInoCpp=buildFolder.getFile(generatedFileName);
+		IFile sloeberInoCpp=getSloeberInoCPPFile(autoBuildCfDes);
 		if (sloeberInoCpp.exists()) {
 			sloeberInoCpp.delete(true, monitor);
 		}
+	}
+	
+	/**
+	 * Delete the sloeber.ino.cpp file if there is one
+	 * 
+	 * @param monitor 
+	 * @param autoBuildCfDes 
+	 * @throws CoreException
+	 */
+	public static IFile getSloeberInoCPPFile(IAutoBuildConfigurationDescription autoBuildCfDes) throws CoreException {
+		IFolder buildFolder=autoBuildCfDes.getBuildFolder();
+		return buildFolder.getFile(generatedFileName);
 	}
 
 	/**
@@ -216,10 +228,38 @@ public class InoPreprocessor {
 					new ByteArrayInputStream(newFileContent.getBytes()), null, true);
 			generatedFile.setDerived(true,monitor);
 		}
+	}
+	
+	private static String getdMethodDeclarationsForFile( IIndex index, ITranslationUnit tu)
+			throws CoreException {
+		// add declarations made in ino files.
+		String localBody = new String();
+		IASTTranslationUnit asttu = tu.getAST(index,
+				ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
+		IASTNode astNodes[] = asttu.getChildren();
+		for (IASTNode astNode : astNodes) {
+			if (astNode instanceof CPPASTFunctionDefinition) {
+				String addString = astNode.getRawSignature();
+				addString = addString.replace("\r\n", NEWLINE);
+				addString = addString.replace("\r", NEWLINE);
+				addString = addString.replaceAll("//[^\n]+\n", " ");
+				addString = addString.replace("\n", " ");
+				addString = addString.replaceAll("\\{.*\\}", "");
+				if (addString.contains("=") || addString.contains("::")) {
+					// ignore when there are assignments in the
+					// declaration
+					// or when it is a class function
+				} else {
+					localBody += addString + ';' + NEWLINE;
+				}
+
+			}
+		}
+		return localBody;
 
 	}
 
-	private static String extendHeaderForFile( IIndex index, ITranslationUnit tu) throws CoreException {
+	private static String getExternCMethodDeclarations( IIndex index, ITranslationUnit tu) throws CoreException {
 		String localHeader = new String();
 		// Locate All lines that are extern "C"
 		HashMap<Integer, Integer> externCLines = new HashMap<>();
@@ -302,8 +342,8 @@ public class InoPreprocessor {
 
 	// the indexer is not properly configured so drop a
 	// error in the file
-	private static String extendBodyWithFileNotFund(String body, IResource curResource) {
-		String localBody = body + NEWLINE;
+	private static String fileNotFoundContent( IResource curResource) {
+		String localBody =  NEWLINE;
 		localBody += "#error the file: " + curResource.getName()
 				+ " is not found in the indexer though it exists on the file system." + NEWLINE;
 		localBody += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file."
@@ -313,53 +353,15 @@ public class InoPreprocessor {
 		return localBody;
 	}
 
-	private static String getdMethodDeclarationsForFile( IIndex index, ITranslationUnit tu)
-			throws CoreException {
-		// add declarations made in ino files.
-		String localBody = new String();
-		IASTTranslationUnit asttu = tu.getAST(index,
-				ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
-		IASTNode astNodes[] = asttu.getChildren();
-		for (IASTNode astNode : astNodes) {
-			if (astNode instanceof CPPASTFunctionDefinition) {
-				String addString = astNode.getRawSignature();
-				addString = addString.replace("\r\n", NEWLINE);
-				addString = addString.replace("\r", NEWLINE);
-				addString = addString.replaceAll("//[^\n]+\n", " ");
-				addString = addString.replace("\n", " ");
-				addString = addString.replaceAll("\\{.*\\}", "");
-				if (addString.contains("=") || addString.contains("::")) {
-					// ignore when there are assignments in the
-					// declaration
-					// or when it is a class function
-				} else {
-					localBody += addString + ';' + NEWLINE;
-				}
 
-			}
-		}
-		return localBody;
 
-	}
-
-	private static String getIncludedInoPartForFile( IFolder buildFolder, IFile includeFile) {
+	private static String getIncludedInoPartForFile( IFile includeFile) {
 		if (includeFile.isLinked()) {
 			return "#include \"" + includeFile.getLocation() + "\"" + NEWLINE;
 		} 
-		return "#include \"" + GetNiceFileName(buildFolder, includeFile)+"\"";
+		return "#include \"" + includeFile.getLocation().toOSString()+"\"";
 	}
 
-	private static void deleteTheGeneratedFile(IProject iProject) throws CoreException {
-		IResource inofile = iProject.findMember(generatedFileName);
-		if (inofile != null) {
-			inofile.delete(true, null);
-		}
-	}
-	
-    static public String GetNiceFileName(IFolder buildFolder, IFile refFile) {
-        IPath refFilePath=refFile.getFullPath();
-        IPath buildPath=buildFolder.getFullPath();
-         return refFile.getLocation().toOSString();
-    }
+
 	
 }

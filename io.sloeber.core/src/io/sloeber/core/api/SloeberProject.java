@@ -29,11 +29,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+
+import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConstants;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.core.Activator;
 import io.sloeber.core.internal.SloeberConfiguration;
@@ -46,6 +49,7 @@ public class SloeberProject extends Common {
 	public static String LATEST_EXTENSION_POINT_ID = "io.sloeber.autoBuild.buildDefinitions"; //$NON-NLS-1$
     public static String LATEST_EXTENSION_ID = "io.sloeber.builddef"; //$NON-NLS-1$
     public static String PROJECT_ID = "io.sloeber.core.sketch"; //$NON-NLS-1$
+    private static String SLOEBER_BUILD_TOOL_PROVIDER_ID = "io.sloeber.core.arduino.ToolProvider"; //$NON-NLS-1$
     private static QualifiedName sloeberQualifiedName = new QualifiedName(NODE_ARDUINO, "SloeberProject"); //$NON-NLS-1$
     //    private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     //    private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
@@ -219,7 +223,7 @@ public class SloeberProject extends Common {
                 //                        "io.sloeber.autoBuild.buildDefinitions", "cdt.cross.gnu",
                 //                        "cdt.managedbuild.target.gnu.cross.exe", CCProjectNature.CC_NATURE_ID, null, internalMonitor);
 
-               IBuildTools buildTools=null;
+               IBuildTools buildTools=IBuildToolManager.getDefault().getBuildTools(SLOEBER_BUILD_TOOL_PROVIDER_ID, realProjectName);
                 IProjectType projectType= AutoBuildManager.getProjectType( LATEST_EXTENSION_POINT_ID, LATEST_EXTENSION_ID, PROJECT_ID, true);
                 newProjectHandle = AutoBuildProject.createProject(realProjectName, projectType,
                          CCProjectNature.CC_NATURE_ID,"src",codeDesc,buildTools, false, internalMonitor);

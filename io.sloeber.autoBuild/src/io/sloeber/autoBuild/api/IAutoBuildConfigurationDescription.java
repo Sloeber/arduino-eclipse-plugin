@@ -382,4 +382,6 @@ public interface IAutoBuildConfigurationDescription {
 	IBuilder getBuilder(String builderID);
 
 	ToolFlavour getBuildToolsFlavour();
+
+	public IProject getProject();
 }
