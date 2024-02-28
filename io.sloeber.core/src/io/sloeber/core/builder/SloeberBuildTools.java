@@ -8,16 +8,16 @@ import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 import io.sloeber.buildTool.api.IBuildTools;
 
-public class SloeberBuilTools implements IBuildTools {
+public class SloeberBuildTools implements IBuildTools {
 
 	@Override
 	public boolean holdsAllTools() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public String getSelectionID() {
-		return "SloeberBuilTools.id";
+		return "SloeberBuildTools.id";
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class SloeberBuilTools implements IBuildTools {
 
 	@Override
 	public String getCommand(ToolType toolType) {
-		return "SloeberBuilTools: no command";
+		return "SloeberBuildTools: no command";
 	}
 
 	@Override

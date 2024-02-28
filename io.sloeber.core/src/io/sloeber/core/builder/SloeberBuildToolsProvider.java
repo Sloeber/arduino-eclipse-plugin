@@ -11,7 +11,7 @@ public class SloeberBuildToolsProvider implements IBuildToolProvider {
 private static Set<IBuildTools> myAllBuildTools=new HashSet<>();
 private static IBuildTools myBuildTools;
 {
-	myBuildTools=new SloeberBuilTools();
+	myBuildTools=new SloeberBuildTools();
 	myAllBuildTools.add(myBuildTools);
 }
 	public SloeberBuildToolsProvider() {
