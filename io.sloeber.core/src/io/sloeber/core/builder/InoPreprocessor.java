@@ -1,4 +1,4 @@
-package io.sloeber.core.tools;
+package io.sloeber.core.builder;
 
 /** this package makes the .ino.cpp file.
  * the .ino.cpp file includes all include directives and definitions in all the ino and pde files
@@ -62,9 +62,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.core.tools.Helpers;
 
 @SuppressWarnings({ "nls", "restriction", "unused" })
-public class PdePreprocessor {
+public class InoPreprocessor {
 	private static String generatedFileName = "sloeber.ino.cpp";
 	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 	private static final String NEWLINE = "\n";
