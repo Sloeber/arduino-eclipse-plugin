@@ -138,8 +138,9 @@ public class InoPreprocessor {
 			String header = "//This is a automatic generated file" + NEWLINE;
 			header += "//Please do not modify this file" + NEWLINE;
 			header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE;
-			header += "//This file has been generated on ";
-			header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+			//adding the generation timestamp forces a rebuild of sloeber.ino.cpp each and every time
+//			header += "//This file has been generated on ";
+//			header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 			header += NEWLINE;
 			header += NEWLINE;
 			header += "#include \"Arduino.h\"" + NEWLINE;
