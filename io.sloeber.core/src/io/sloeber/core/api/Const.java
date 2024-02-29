@@ -103,7 +103,7 @@ public class Const {
     public static final String ENV_KEY_BUILD_PATH = BUILD + DOT + PATH;
     public static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH;
     public static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
-    public static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location";
+    public static final String SLOEBER_MAKE_LOCATION = "MAKE_HOME";
     public static final String SLOEBER_AWK_LOCATION = ENV_KEY_SLOEBER_START + "awk.path";
     public static final String CONFIG = "Config";
     public static final String CONFIG_DOT = CONFIG + DOT;
