@@ -51,6 +51,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
@@ -98,7 +99,7 @@ public class InternalBuildRunner implements IBuildRunner {
 		IFolder buildRoot = autoData.getBuildFolder();
 
 		// Generate the make Rules
-		MakeRules myMakeRules = new MakeRules(autoData, buildRoot, new HashSet<>());
+		AutoBuildMakeRules myMakeRules = new AutoBuildMakeRules(autoData);
 
 		try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(project);
 				ErrorParserManager epm = new ErrorParserManager(project, buildRoot.getLocationURI(), markerGenerator,
@@ -152,7 +153,7 @@ public class InternalBuildRunner implements IBuildRunner {
 				do {
 					sequenceID++;
 					lastSequenceID = true;
-					for (MakeRule curRule : myMakeRules) {
+					for (IAutoBuildMakeRule curRule : myMakeRules) {
 						if (curRule.getSequenceGroupID() != sequenceID) {
 							continue;
 						}

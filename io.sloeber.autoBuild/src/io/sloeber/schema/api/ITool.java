@@ -25,7 +25,7 @@ import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -172,7 +172,7 @@ public interface ITool extends ISchemaObject {
 
     boolean isHidden();
 
-    public MakeRules getMakeRules(IAutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
+    public AutoBuildMakeRules getMakeRules(IAutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE);
 
     /**

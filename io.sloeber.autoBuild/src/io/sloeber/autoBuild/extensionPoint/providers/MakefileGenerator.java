@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IConfiguration;
@@ -77,7 +79,7 @@ public class MakefileGenerator  {
 	IProject myProject;
 	ICConfigurationDescription myCConfigurationDescription;
 	IFolder myBuildRoot;
-	MakeRules myMakeRules = null;
+	AutoBuildMakeRules myMakeRules = null;
 	Set<IContainer> myContainersToBuild = null;
 	AutoBuildConfigurationDescription myAutoBuildConfData;
 
@@ -133,10 +135,8 @@ public class MakefileGenerator  {
 		}
 		beforeRuleGeneration();
 		MultiStatus status;
-		// This object remains alive between builds; therefore we need to reset the
-		// field values
-		myContainersToBuild = new HashSet<>();
-		myMakeRules = new MakeRules(myAutoBuildConfData, myBuildRoot, myContainersToBuild);
+		myMakeRules = new AutoBuildMakeRules(myAutoBuildConfData);
+		myContainersToBuild =myMakeRules.getFoldersThatContainSourceFiles();
 
 		if (myMakeRules.size() == 0) {
 			// Throw an error if no source file make rules have been created
@@ -177,7 +177,7 @@ public class MakefileGenerator  {
 		for (IContainer curContainer : myContainersToBuild) {
 			// generate the file content
 			StringBuffer makeBuf = addDefaultHeader();
-			MakeRules applicableMakeRules = myMakeRules.getRulesForContainer(curContainer);
+			AutoBuildMakeRules applicableMakeRules = myMakeRules.getRulesForContainer(curContainer);
 			makeBuf.append(generateMacroSection(myBuildRoot, applicableMakeRules));
 			makeBuf.append(generateRules(applicableMakeRules));
 
@@ -187,26 +187,26 @@ public class MakefileGenerator  {
 		}
 	}
 
-	protected StringBuffer generateRules(MakeRules makeRules) {
+	protected StringBuffer generateRules(IAutoBuildMakeRules makeRules) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(NEWLINE);
 		buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
-		for (MakeRule makeRule : makeRules) {
+		for (IAutoBuildMakeRule makeRule : makeRules) {
 			buffer.append(getRecipesInMakeFileStyle(makeRule));
 		}
 
 		return buffer;
 	}
 
-	protected static StringBuffer generateMacroSection(IFolder buildRoot, MakeRules makeRules) {
+	protected static StringBuffer generateMacroSection(IFolder buildRoot, AutoBuildMakeRules makeRules) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(NEWLINE);
 		buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_module_variables)
 				.append(NEWLINE);
 		HashSet<String> macroNames = new HashSet<>();
-		for (MakeRule makeRule : makeRules) {
-			macroNames.addAll(makeRule.getAllMacros());
+		for (IAutoBuildMakeRule makeRule : makeRules) {
+			macroNames.addAll(((AutoBuildMakeRule)makeRule).getAllMacros());
 		}
 		macroNames.remove(EMPTY_STRING);
 		for (String macroName : macroNames) {
@@ -589,7 +589,7 @@ public class MakefileGenerator  {
 		buffer.append(NEWLINE);
 		buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_rule).append(NEWLINE);
 
-		for (MakeRule makeRule : myMakeRules.getMakeRules()) {
+		for (IAutoBuildMakeRule makeRule : myMakeRules.getMakeRules()) {
 			if (makeRule.getSequenceGroupID() != 0) {
 				buffer.append(getRecipesInMakeFileStyle(makeRule));
 			}
@@ -641,7 +641,7 @@ public class MakefileGenerator  {
 		return ret;
 	}
 
-	private static String enumTargets(MakeRule makeRule, IFolder buildFolder) {
+	private static String enumTargets(IAutoBuildMakeRule makeRule, IFolder buildFolder) {
 		String ret = new String();
 		for (IFile curFile : makeRule.getTargetFiles()) {
 			ret = ret + getMakeSafeNiceFileName(buildFolder, curFile) + WHITESPACE;
@@ -649,7 +649,7 @@ public class MakefileGenerator  {
 		return ret;
 	}
 
-	private static String enumPrerequisites(MakeRule makeRule, IFolder buildFolder) {
+	private static String enumPrerequisites(IAutoBuildMakeRule makeRule, IFolder buildFolder) {
 		String ret = new String();
 		for (IFile curFile : makeRule.getPrerequisiteFiles()) {
 			ret = ret + getMakeSafeNiceFileName(buildFolder, curFile) + WHITESPACE;
@@ -657,7 +657,7 @@ public class MakefileGenerator  {
 		return ret;
 	}
 
-	public StringBuffer getRecipesInMakeFileStyle(MakeRule makeRule) {
+	public StringBuffer getRecipesInMakeFileStyle(IAutoBuildMakeRule makeRule) {
 
 		ITool tool = makeRule.getTool();
 		StringBuffer buffer = new StringBuffer();

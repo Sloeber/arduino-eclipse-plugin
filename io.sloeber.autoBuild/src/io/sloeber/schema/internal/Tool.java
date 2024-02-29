@@ -35,8 +35,8 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRule;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildTools;
@@ -458,9 +458,9 @@ public class Tool extends SchemaObject implements ITool {
     static private final String ACCEPTED_BY = " accepted by: "; //$NON-NLS-1$
 
     @Override
-    public MakeRules getMakeRules(IAutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
+    public AutoBuildMakeRules getMakeRules(IAutoBuildConfigurationDescription autoBuildConfData, IOutputType outputTypeIn,
             IFile inputFile, int makeRuleSequenceID, boolean VERBOSE) {
-        MakeRules ret = new MakeRules();
+        AutoBuildMakeRules ret = new AutoBuildMakeRules();
         if (!isEnabled(inputFile, autoBuildConfData)) {
             if (VERBOSE) {
                 System.out.println(myName + DISABLED);
@@ -495,7 +495,7 @@ public class Tool extends SchemaObject implements ITool {
                         System.out.println(inputFile + BLANK + myName + ACCEPTED_BY + inputType.getName() + ACCEPTED_BY
                                 + outputType.getName());
                     }
-                    MakeRule newMakeRule = new MakeRule(this, inputType, inputFile, outputType, outputFile,
+                    AutoBuildMakeRule newMakeRule = new AutoBuildMakeRule(this, inputType, inputFile, outputType, outputFile,
                             makeRuleSequenceID);
 
                     ret.addRule(newMakeRule);

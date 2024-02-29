@@ -32,13 +32,14 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 
-public class MakeRule {
+public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 
     private Map<IOutputType, Set<IFile>> myTargets = new LinkedHashMap<>(); //Macro file target map
     private Map<IInputType, Set<IFile>> myPrerequisites = new LinkedHashMap<>();//Macro file prerequisites map
@@ -46,11 +47,12 @@ public class MakeRule {
     private ITool myTool = null;
     private int mySequenceGroupID = 0;
 
-    public ITool getTool() {
+    @Override
+	public ITool getTool() {
         return myTool;
     }
 
-    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile,
+    public AutoBuildMakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile,
             int sequenceID) {
         addPrerequisite(inputType, inputFile);
         addTarget(outputType, outFile);
@@ -58,7 +60,7 @@ public class MakeRule {
         mySequenceGroupID = sequenceID;
     }
 
-    public MakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile,
+    public AutoBuildMakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile,
             int sequenceID) {
         addPrerequisites(inputType, inputFiles);
         addTarget(outputType, outFile);
@@ -81,7 +83,8 @@ public class MakeRule {
         }
     }
 
-    public Set<IFile> getPrerequisiteFiles() {
+    @Override
+	public Set<IFile> getPrerequisiteFiles() {
         HashSet<IFile> ret = new HashSet<>();
         for (Set<IFile> cur : myPrerequisites.values()) {
             ret.addAll(cur);
@@ -89,11 +92,13 @@ public class MakeRule {
         return ret;
     }
 
-    public Map<IInputType, Set<IFile>> getPrerequisites() {
+    @Override
+	public Map<IInputType, Set<IFile>> getPrerequisites() {
         return myPrerequisites;
     }
 
-    public Set<IFile> getTargetFiles() {
+    @Override
+	public Set<IFile> getTargetFiles() {
         Set<IFile> ret = new HashSet<>();
         for (Set<IFile> cur : myTargets.values()) {
             ret.addAll(cur);
@@ -101,7 +106,8 @@ public class MakeRule {
         return ret;
     }
 
-    public Set<IFile> getDependencyFiles() {
+    @Override
+	public Set<IFile> getDependencyFiles() {
         getDependencies();
         Set<IFile> ret = new HashSet<>();
         for (Set<IFile> cur : myDependencies.values()) {
@@ -110,7 +116,8 @@ public class MakeRule {
         return ret;
     }
 
-    public Map<IOutputType, Set<IFile>> getTargets() {
+    @Override
+	public Map<IOutputType, Set<IFile>> getTargets() {
         return myTargets;
     }
 
@@ -207,7 +214,8 @@ public class MakeRule {
         return true;
     }
 
-    public String[] getRecipes(IFolder buildFolder, AutoBuildConfigurationDescription autoBuildConfData) {
+    @Override
+	public String[] getRecipes(IFolder buildFolder, AutoBuildConfigurationDescription autoBuildConfData) {
         if (!validateRecipes()) {
             return new String[0];
         }
@@ -289,6 +297,8 @@ public class MakeRule {
                                         + curEntry.getValue() + DOUBLE_QUOTE;
                                 break;
                             }
+							default:
+								break;
 
                             }
                         }
@@ -359,7 +369,8 @@ public class MakeRule {
      *         otherwise false
      */
 
-    public boolean isSimpleRule() {
+    @Override
+	public boolean isSimpleRule() {
         //TOFIX 2 times the same test with an or???
         if ((myTargets.size() != 1) || (myTargets.size() != 1)) {
             return false;
@@ -380,11 +391,13 @@ public class MakeRule {
 
     }
 
+    @Override
     public boolean isTool(ITool targetTool) {
         return myTool.getName().equals(targetTool.getName());
     }
 
-    public int getSequenceGroupID() {
+    @Override
+	public int getSequenceGroupID() {
         return mySequenceGroupID;
     }
 
@@ -392,6 +405,7 @@ public class MakeRule {
         this.mySequenceGroupID = mySequenceGroupID;
     }
 
+    @Override
     public boolean isForContainer(IContainer folder) {
         for (Set<IFile> files : myPrerequisites.values()) {
             for (IFile file : files) {
@@ -403,6 +417,7 @@ public class MakeRule {
         return false;
     }
 
+    @Override
     public boolean needsExecuting(IFolder buildfolder) {
         Set<IFile> dependencyFiles = new HashSet<>();
         //check whether all targets exists
@@ -485,7 +500,8 @@ public class MakeRule {
         return newestTime;
     }
 
-    public String getAnnouncement() {
+    @Override
+	public String getAnnouncement() {
         String announcement = getTool().getAnnouncement();
         if (announcement.isBlank()) {
             announcement = DEFAULT_BUILDSTEP_ANNOUNCEMENT;

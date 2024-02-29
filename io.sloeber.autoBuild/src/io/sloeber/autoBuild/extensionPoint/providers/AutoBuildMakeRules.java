@@ -1,8 +1,5 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.CONFIG_NAME_VARIABLE;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,40 +10,48 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
-import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 
+import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
 import io.sloeber.schema.api.IToolChain;
 
-public class MakeRules implements Iterable<MakeRule> {
+public class AutoBuildMakeRules implements IAutoBuildMakeRules {
     static private boolean VERBOSE = false;
+    private Set<IContainer> myContainersToBuild = new HashSet<>();
+    private  ICSourceEntry[] mySrcEntries;
+    private IAutoBuildConfigurationDescription myAutoBuildCfgDesc;
+    private List<IFile> mySourceFiles=new LinkedList<>();
 
     @SuppressWarnings("nls")
     static private final List<String> InputFileIgnoreList = new LinkedList<>(
             List.of(".settings", ".project", ".cproject", ".autoBuildProject"));
 
-    private Set<MakeRule> myMakeRules = new LinkedHashSet<>();
+    private Set<IAutoBuildMakeRule> myMakeRules = new LinkedHashSet<>();
 
-    public MakeRules() {
+    public AutoBuildMakeRules() {
         // default constructor is fine
     }
 
-    public void addRule(MakeRule newMakeRule) {
+    @Override 
+    public Set<IContainer> getFoldersThatContainSourceFiles(){
+    	return myContainersToBuild;
+    }
+    
+    @Override
+	public void addRule(IAutoBuildMakeRule newMakeRule) {
         if (newMakeRule.isSimpleRule()) {
             Map<IOutputType, Set<IFile>> targets = newMakeRule.getTargets();
 
@@ -56,7 +61,7 @@ public class MakeRules implements Iterable<MakeRule> {
                 outputType = curTarget.getKey();
                 correctOutputPath = curTarget.getValue().toArray(new IFile[1])[0];
             }
-            MakeRule makerule = findTarget(outputType, correctOutputPath);
+            AutoBuildMakeRule makerule = (AutoBuildMakeRule)findTarget(outputType, correctOutputPath);
             if (makerule != null) {
                 Map<IInputType, Set<IFile>> prerequisites = newMakeRule.getPrerequisites();
 
@@ -77,8 +82,8 @@ public class MakeRules implements Iterable<MakeRule> {
 
     }
 
-    public MakeRule findTarget(IOutputType outputType, IFile correctOutputPath) {
-        for (MakeRule makeRule : myMakeRules) {
+    public IAutoBuildMakeRule findTarget(IOutputType outputType, IFile correctOutputPath) {
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
             for (Entry<IOutputType, Set<IFile>> target : makeRule.getTargets().entrySet()) {
                 if ((target.getKey() == outputType) && (target.getValue().contains(correctOutputPath))) {
                     return makeRule;
@@ -88,30 +93,30 @@ public class MakeRules implements Iterable<MakeRule> {
         return null;
     }
 
-    public void addRule(ITool tool, IInputType inputType, IFile InputFile, IOutputType outputType,
+    @Override
+	public void addRule(ITool tool, IInputType inputType, IFile InputFile, IOutputType outputType,
             IFile correctOutputFile, int sequenceID) {
-        MakeRule newMakeRule = findTarget(outputType, correctOutputFile);
+    	IAutoBuildMakeRule newMakeRule = findTarget(outputType, correctOutputFile);
         if (newMakeRule == null) {
-            newMakeRule = new MakeRule(tool, inputType, InputFile, outputType, correctOutputFile, sequenceID);
+            newMakeRule = new AutoBuildMakeRule(tool, inputType, InputFile, outputType, correctOutputFile, sequenceID);
         }
-        //		newMakeRule.addPrerequisite(inputType, InputFile);
         addRule(newMakeRule);
-
     }
 
     public int size() {
         return myMakeRules.size();
     }
 
-    public void addRules(MakeRules makeRules) {
-        for (MakeRule makeRule : makeRules.getMakeRules()) {
+    @Override
+	public void addRules(IAutoBuildMakeRules makeRules) {
+        for (IAutoBuildMakeRule makeRule : makeRules) {
             addRule(makeRule);
         }
     }
 
     public Map<IOutputType, Set<IFile>> getTargets() {
         Map<IOutputType, Set<IFile>> ret = new HashMap<>();
-        for (MakeRule makeRule : myMakeRules) {
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
             Map<IOutputType, Set<IFile>> toAdd = makeRule.getTargets();
             for (Entry<IOutputType, Set<IFile>> addEntry : toAdd.entrySet()) {
                 IOutputType toAddKey = addEntry.getKey();
@@ -130,43 +135,43 @@ public class MakeRules implements Iterable<MakeRule> {
 
     public Set<String> getAllMacroNames() {
         Set<String> ret = new HashSet<>();
-        for (MakeRule makeRule : myMakeRules) {
-            ret.addAll(makeRule.getAllMacros());
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
+            ret.addAll(((AutoBuildMakeRule)makeRule).getAllMacros());
         }
         return ret;
     }
 
     public Set<String> getPrerequisiteMacros() {
         Set<String> ret = new HashSet<>();
-        for (MakeRule makeRule : myMakeRules) {
-            ret.addAll(makeRule.getPrerequisiteMacros());
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
+            ret.addAll(((AutoBuildMakeRule)makeRule).getPrerequisiteMacros());
         }
         return ret;
     }
 
     public Set<String> getTargetMacros() {
         Set<String> ret = new HashSet<>();
-        for (MakeRule makeRule : myMakeRules) {
-            ret.addAll(makeRule.getTargetMacros());
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
+            ret.addAll(((AutoBuildMakeRule)makeRule).getTargetMacros());
         }
         return ret;
     }
 
     public Set<IFile> getMacroElements(String macroName) {
         Set<IFile> ret = new HashSet<>();
-        for (MakeRule makeRule : myMakeRules) {
-            ret.addAll(makeRule.getMacroElements(macroName));
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
+            ret.addAll(((AutoBuildMakeRule)makeRule).getMacroElements(macroName));
         }
         return ret;
     }
 
-    public Set<MakeRule> getMakeRules() {
+    public Set<IAutoBuildMakeRule> getMakeRules() {
         return myMakeRules;
     }
 
     public Set<IFile> getTargetsForTool(ITool targetTool) {
         Set<IFile> ret = new HashSet<>();
-        for (MakeRule curMakeRule : myMakeRules) {
+        for (IAutoBuildMakeRule curMakeRule : myMakeRules) {
             if (curMakeRule.isTool(targetTool)) {
                 ret.addAll(curMakeRule.getTargetFiles());
             }
@@ -175,13 +180,13 @@ public class MakeRules implements Iterable<MakeRule> {
     }
 
     @Override
-    public Iterator<MakeRule> iterator() {
+    public Iterator<IAutoBuildMakeRule> iterator() {
         return myMakeRules.iterator();
     }
 
-    public MakeRules getRulesForContainer(IContainer container) {
-        MakeRules rulesForContainer = new MakeRules();
-        for (MakeRule curMakeRule : myMakeRules) {
+    public AutoBuildMakeRules getRulesForContainer(IContainer container) {
+        AutoBuildMakeRules rulesForContainer = new AutoBuildMakeRules();
+        for (IAutoBuildMakeRule curMakeRule : myMakeRules) {
             if ((curMakeRule.getSequenceGroupID() == 0) && curMakeRule.isForContainer(container)) {
                 rulesForContainer.addRule(curMakeRule);
             }
@@ -211,20 +216,18 @@ public class MakeRules implements Iterable<MakeRule> {
      * @return The MakeRules needed to build this autobuild configuration
      * @throws CoreException
      */
-    public MakeRules(AutoBuildConfigurationDescription autoBuildConfData, IFolder buildfolder,
-            Set<IContainer> containersToBuild) throws CoreException {
-
+    public AutoBuildMakeRules(IAutoBuildConfigurationDescription autoBuildConfData) throws CoreException {
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
-        subDirVisitor.myBuildfolder = buildfolder;
-        subDirVisitor.myAutoBuildConfData = autoBuildConfData;
-        subDirVisitor.myConfig = autoBuildConfData.getConfiguration();
-        subDirVisitor.myContainersToBuild = containersToBuild;
-        subDirVisitor.mySrcEntries = IAutoBuildConfigurationDescription.getResolvedSourceEntries(autoBuildConfData);
+        myAutoBuildCfgDesc = autoBuildConfData;
+        mySrcEntries = IAutoBuildConfigurationDescription.getResolvedSourceEntries(autoBuildConfData);
+        AutoBuildBuilderExtension.beforeAddingSourceRules(this,autoBuildConfData);
         autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
 
+        AutoBuildBuilderExtension.beforeAddingSecondaryRules(this,autoBuildConfData);
         // Now we have the makeRules for the source files generate the MakeRules for the
         // created files
-        generateHigherLevelMakeRules(autoBuildConfData, buildfolder);
+        generateHigherLevelMakeRules();
+        AutoBuildBuilderExtension.endOfRuleCreation(this,autoBuildConfData);
     }
 
 
@@ -235,11 +238,7 @@ public class MakeRules implements Iterable<MakeRule> {
      * all appropriate files found
      */
     class SourceLevelMakeRuleGenerator implements IResourceProxyVisitor {
-        IFolder myBuildfolder;
-        IConfiguration myConfig;
-        Set<IContainer> myContainersToBuild;
-        ICSourceEntry[] mySrcEntries;
-        AutoBuildConfigurationDescription myAutoBuildConfData;
+
 
         @Override
         public boolean visit(IResourceProxy proxy) throws CoreException {
@@ -258,7 +257,7 @@ public class MakeRules implements Iterable<MakeRule> {
                 return false;
             }
             if (proxy.getType() == IResource.FILE) {
-                if (getMakeRulesFromSourceFile(myAutoBuildConfData, (IFile) resource)) {
+                if (addMakeRulesFromSourceFile( (IFile) resource)) {
                     IContainer parent = ((IFile) resource).getParent();
                     myContainersToBuild.add(parent);
                 }
@@ -274,46 +273,16 @@ public class MakeRules implements Iterable<MakeRule> {
          * @param inputFile
          * @return true if a makerule has been created
          */
-        protected boolean getMakeRulesFromSourceFile(AutoBuildConfigurationDescription autoBuildConfData,
-                IFile inputFile) {
+        protected boolean addMakeRulesFromSourceFile( IFile inputFile) {
 
-            IToolChain toolchain=autoBuildConfData.getProjectType().getToolChain();
+            IToolChain toolchain=myAutoBuildCfgDesc.getProjectType().getToolChain();
             String ext = inputFile.getFileExtension();
             if (ext == null || ext.isBlank()) {
                 return false;
             }
             int numRulesAtStart = myMakeRules.size();
             for (ITool tool : toolchain.getTools()) {
-                addRules(tool.getMakeRules(autoBuildConfData, null, inputFile, 0, VERBOSE));
-                //                if (!tool.isEnabled(autoBuildConfData)) {
-                //                    continue;
-                //                }
-                //                for (IInputType inputType : tool.getInputTypes()) {
-                //                    if (inputType.isAssociatedWith(inputFile)) {
-                //                        for (IOutputType outputType : tool.getOutputTypes()) {
-                //                            IFile outputFile = outputType.getOutputName(buildfolder, inputFile, cConfDes, inputType);
-                //                            if (outputFile == null) {
-                //                                if (VERBOSE) {
-                //                                    System.out.println(inputFile + BLANK + tool.getName() + ACCEPTED_BY
-                //                                            + inputType.getName() + IGNORED_BY + outputType.getName());
-                //                                }
-                //                                continue;
-                //                            }
-                //                            if (VERBOSE) {
-                //                                System.out.println(inputFile + BLANK + tool.getName() + ACCEPTED_BY
-                //                                        + inputType.getName() + ACCEPTED_BY + outputType.getName());
-                //                            }
-                //                            MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType, outputFile, 0);
-                //
-                //                            addRule(newMakeRule);
-                //                            ret = true;
-                //                        }
-                //                    } else {
-                //                        if (VERBOSE) {
-                //                            System.out.println(inputFile + BLANK + tool.getName() + IGNORED_BY + inputType.getName());
-                //                        }
-                //                    }
-                //                }
+                addRules(tool.getMakeRules(myAutoBuildCfgDesc, null, inputFile, 0, VERBOSE));
             }
             return numRulesAtStart != myMakeRules.size();
         }
@@ -335,10 +304,9 @@ public class MakeRules implements Iterable<MakeRule> {
      * 
      * @return The MakeRules that have been created
      */
-    protected static MakeRules getMakeRulesFromGeneratedFiles(AutoBuildConfigurationDescription autoBuildConfData,
-            Map<IOutputType, Set<IFile>> generatedFiles, int makeRuleSequenceID) {
-        MakeRules newMakeRules = new MakeRules();
-        IToolChain toolchain=autoBuildConfData.getProjectType().getToolChain();
+    protected AutoBuildMakeRules getMakeRulesFromGeneratedFiles( Map<IOutputType, Set<IFile>> generatedFiles, int makeRuleSequenceID) {
+        AutoBuildMakeRules newMakeRules = new AutoBuildMakeRules();
+        IToolChain toolchain=myAutoBuildCfgDesc.getProjectType().getToolChain();
 
         for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
             IOutputType outputTypeIn = entry.getKey();
@@ -346,7 +314,7 @@ public class MakeRules implements Iterable<MakeRule> {
             for (IFile file : files) {
                 for (ITool tool : toolchain.getTools()) {
                     newMakeRules.addRules(
-                            tool.getMakeRules(autoBuildConfData, outputTypeIn, file, makeRuleSequenceID, VERBOSE));
+                            tool.getMakeRules(myAutoBuildCfgDesc, outputTypeIn, file, makeRuleSequenceID, VERBOSE));
 
                     //                    for (IInputType inputType : tool.getInputTypes()) {
                     //                        if (inputType.isAssociatedWith(file, outputTypeIn)) {
@@ -390,14 +358,13 @@ public class MakeRules implements Iterable<MakeRule> {
      * @param buildfolder
      * @param cConfDes
      */
-    private void generateHigherLevelMakeRules(AutoBuildConfigurationDescription autoBuildConfData,
-            IFolder buildfolder) {
+    private void generateHigherLevelMakeRules() {
         int makeRuleSequenceID = 1;
         Map<IOutputType, Set<IFile>> generatedFiles = getTargets();
         if (VERBOSE) {
             System.out.println("Trying to resolve generated files level 1 (that is from source files"); //$NON-NLS-1$
         }
-        MakeRules newMakeRules = getMakeRulesFromGeneratedFiles(autoBuildConfData, generatedFiles, makeRuleSequenceID);
+        AutoBuildMakeRules newMakeRules = getMakeRulesFromGeneratedFiles( generatedFiles, makeRuleSequenceID);
         while (makeRuleSequenceID < 20 && newMakeRules.size() > 0) {
             generatedFiles.clear();
             generatedFiles.putAll(newMakeRules.getTargets());
@@ -406,7 +373,7 @@ public class MakeRules implements Iterable<MakeRule> {
             if (VERBOSE) {
                 System.out.println("Trying to resolve generated files level " + String.valueOf(makeRuleSequenceID)); //$NON-NLS-1$
             }
-            newMakeRules = getMakeRulesFromGeneratedFiles(autoBuildConfData, generatedFiles, makeRuleSequenceID);
+            newMakeRules = getMakeRulesFromGeneratedFiles( generatedFiles, makeRuleSequenceID);
         }
         if (newMakeRules.size() != 0) {
             System.err.println("Makerules did not resolve to targets. Probably caused by recursion"); //$NON-NLS-1$
@@ -426,7 +393,7 @@ public class MakeRules implements Iterable<MakeRule> {
     public Set<IFile> getFinalTargets() {
         Set<IFile> ret = new HashSet<>();
         int highestSequenceID = 1; //(0 is for sure not the highest)
-        for (MakeRule curMakeRule : myMakeRules) {
+        for (IAutoBuildMakeRule curMakeRule : myMakeRules) {
             if (curMakeRule.getSequenceGroupID() > highestSequenceID) {
                 highestSequenceID = curMakeRule.getSequenceGroupID();
                 ret.clear();
@@ -440,20 +407,25 @@ public class MakeRules implements Iterable<MakeRule> {
 
     public Set<String> getDependencyMacros() {
         Set<String> ret = new HashSet<>();
-        for (MakeRule makeRule : myMakeRules) {
-            ret.addAll(makeRule.getDependencyMacros());
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
+            ret.addAll(((AutoBuildMakeRule)makeRule).getDependencyMacros());
         }
         return ret;
     }
 
     public Set<IFile> getBuildFiles() {
         Set<IFile> targetFiles = new HashSet<>();
-        for (MakeRule makeRule : myMakeRules) {
+        for (IAutoBuildMakeRule makeRule : myMakeRules) {
             targetFiles.addAll(makeRule.getTargetFiles());
             targetFiles.addAll(makeRule.getDependencyFiles());
         }
         return targetFiles;
     }
+
+	@Override
+	public List<IFile> getSourceFilesToBuild() {
+		return mySourceFiles;
+	}
 
     //	public Map<IOutputType, Set<IFile>> getTargets() {
     //		Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();

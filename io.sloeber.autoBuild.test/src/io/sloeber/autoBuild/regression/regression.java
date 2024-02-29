@@ -30,8 +30,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRule;
-import io.sloeber.autoBuild.extensionPoint.providers.MakeRules;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
@@ -236,8 +237,8 @@ public class regression {
         IFolder buildRoot = autoData.getBuildFolder();
 
         //Generate the make Rules
-        MakeRules myMakeRules = new MakeRules(autoData, buildRoot, new HashSet<>());
-        for (MakeRule curRule : myMakeRules) {
+        IAutoBuildMakeRules myMakeRules = new AutoBuildMakeRules(autoData);
+        for (IAutoBuildMakeRule curRule : myMakeRules) {
             if (curRule.getTool().equals(iTool)) {
                 if (curRule.getTargetFiles().size() == 1) {
                     return curRule.getRecipes(buildRoot, autoData)[0];
