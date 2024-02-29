@@ -198,7 +198,7 @@ public class InoPreprocessor {
 	 * @param autoBuildCfDes 
 	 * @throws CoreException
 	 */
-	public static IFile getSloeberInoCPPFile(IAutoBuildConfigurationDescription autoBuildCfDes) throws CoreException {
+	public static IFile getSloeberInoCPPFile(IAutoBuildConfigurationDescription autoBuildCfDes)  {
 		IFolder buildFolder=autoBuildCfDes.getBuildFolder();
 		return buildFolder.getFile(generatedFileName);
 	}
