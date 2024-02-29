@@ -25,18 +25,18 @@ public class AutoBuildBuilderExtension {
                 monitor);
     }
 
-	public static void beforeAddingSourceRules(IAutoBuildMakeRules makeRules, IAutoBuildConfigurationDescription autoBuildConfData) {
+	public  void beforeAddingSourceRules(IAutoBuildMakeRules makeRules, IAutoBuildConfigurationDescription autoBuildConfData) {
 		//Nothing to do here
 		return ;
 	}
 
-	public static void beforeAddingSecondaryRules(AutoBuildMakeRules autoBuildMakeRules,
+	public  void beforeAddingSecondaryRules(AutoBuildMakeRules autoBuildMakeRules,
 			IAutoBuildConfigurationDescription autoBuildConfData) {
 		//Nothing to do here
 		return ;
 	}
 
-	public static void endOfRuleCreation(AutoBuildMakeRules autoBuildMakeRules,
+	public  void endOfRuleCreation(AutoBuildMakeRules autoBuildMakeRules,
 			IAutoBuildConfigurationDescription autoBuildConfData) {
 		//Nothing to do here
 		return ;
