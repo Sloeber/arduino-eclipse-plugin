@@ -34,6 +34,7 @@ public class AutoBuildMakeRules implements IAutoBuildMakeRules {
     private  ICSourceEntry[] mySrcEntries;
     private IAutoBuildConfigurationDescription myAutoBuildCfgDesc;
     private List<IFile> mySourceFiles=new LinkedList<>();
+    AutoBuildBuilderExtension myBuilderExt;
 
     @SuppressWarnings("nls")
     static private final List<String> InputFileIgnoreList = new LinkedList<>(
@@ -220,14 +221,23 @@ public class AutoBuildMakeRules implements IAutoBuildMakeRules {
         SourceLevelMakeRuleGenerator subDirVisitor = new SourceLevelMakeRuleGenerator();
         myAutoBuildCfgDesc = autoBuildConfData;
         mySrcEntries = IAutoBuildConfigurationDescription.getResolvedSourceEntries(autoBuildConfData);
-        AutoBuildBuilderExtension.beforeAddingSourceRules(this,autoBuildConfData);
-        autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
-
-        AutoBuildBuilderExtension.beforeAddingSecondaryRules(this,autoBuildConfData);
+        myBuilderExt=myAutoBuildCfgDesc.getProjectType().getBuilderExtension();
+        
+        myBuilderExt.beforeAddingSourceRules(this,autoBuildConfData);
+		autoBuildConfData.getProject().accept(subDirVisitor, IResource.NONE);
+		for (IFile curSourceFile : mySourceFiles) {
+			if (addMakeRulesFromSourceFile(curSourceFile)) {
+				IContainer parent = curSourceFile.getParent();
+				myContainersToBuild.add(parent);
+			}
+		}
+        
+        
+        myBuilderExt.beforeAddingSecondaryRules(this,autoBuildConfData);
         // Now we have the makeRules for the source files generate the MakeRules for the
         // created files
         generateHigherLevelMakeRules();
-        AutoBuildBuilderExtension.endOfRuleCreation(this,autoBuildConfData);
+        myBuilderExt.endOfRuleCreation(this,autoBuildConfData);
     }
 
 
@@ -257,36 +267,35 @@ public class AutoBuildMakeRules implements IAutoBuildMakeRules {
                 return false;
             }
             if (proxy.getType() == IResource.FILE) {
-                if (addMakeRulesFromSourceFile( (IFile) resource)) {
-                    IContainer parent = ((IFile) resource).getParent();
-                    myContainersToBuild.add(parent);
-                }
+            	mySourceFiles.add((IFile) resource);
                 return false;
             }
             return true;
         }
 
-        /**
-         * For the found source file give the makerules that need to be executed
-         * to build the project
-         * 
-         * @param inputFile
-         * @return true if a makerule has been created
-         */
-        protected boolean addMakeRulesFromSourceFile( IFile inputFile) {
 
-            IToolChain toolchain=myAutoBuildCfgDesc.getProjectType().getToolChain();
-            String ext = inputFile.getFileExtension();
-            if (ext == null || ext.isBlank()) {
-                return false;
-            }
-            int numRulesAtStart = myMakeRules.size();
-            for (ITool tool : toolchain.getTools()) {
-                addRules(tool.getMakeRules(myAutoBuildCfgDesc, null, inputFile, 0, VERBOSE));
-            }
-            return numRulesAtStart != myMakeRules.size();
-        }
     }
+    
+	/**
+	 * For the found source file give the makerules that need to be executed to
+	 * build the project
+	 * 
+	 * @param inputFile
+	 * @return true if a makerule has been created
+	 */
+	private boolean addMakeRulesFromSourceFile(IFile inputFile) {
+
+		IToolChain toolchain = myAutoBuildCfgDesc.getProjectType().getToolChain();
+		String ext = inputFile.getFileExtension();
+		if (ext == null || ext.isBlank()) {
+			return false;
+		}
+		int numRulesAtStart = myMakeRules.size();
+		for (ITool tool : toolchain.getTools()) {
+			addRules(tool.getMakeRules(myAutoBuildCfgDesc, null, inputFile, 0, VERBOSE));
+		}
+		return numRulesAtStart != myMakeRules.size();
+	}
 
     /**
      * Helper method to generateHigherLevelMakeRules Generate the makerules for the
