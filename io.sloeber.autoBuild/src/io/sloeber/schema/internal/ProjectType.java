@@ -117,9 +117,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		}
 
 		if(modelBuilders[SUPER].isBlank()) {
-			System.err.println("ProjectType "+myName+" does not contain builders "); //$NON-NLS-1$ //$NON-NLS-2$
 			myBuilders=AutoBuildManager.getBuilders();
-			//TOFIX filter builders that say they are incompatible
 			myDefaultBuilder=AutoBuildManager.getDefaultBuilder();
 		}else {
 		for (String curBuilderID : modelBuilders[SUPER].split(SEMICOLON)) {
