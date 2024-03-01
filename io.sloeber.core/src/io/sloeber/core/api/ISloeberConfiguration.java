@@ -102,4 +102,8 @@ public interface ISloeberConfiguration {
 
     IFile getTargetFile();
 
+	void setCompileDescription(CompileDescription newCompDesc);
+
+	void setOtherDescription(OtherDescription newOtherDesc);
+
 }

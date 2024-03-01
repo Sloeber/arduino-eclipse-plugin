@@ -4,8 +4,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
-import org.eclipse.cdt.ui.newui.ICPropertyTab;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
 import io.sloeber.core.api.ISloeberConfiguration;
@@ -34,8 +32,7 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 	 */
 	protected ICConfigurationDescription getConfdesc() {
 		if (this.page != null) {
-			ICConfigurationDescription curConfDesc = getResDesc().getConfiguration();
-			return curConfDesc;
+			return getResDesc().getConfiguration();
 		}
 		return null;
 	}
@@ -45,66 +42,62 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 	}
 
 	@Override
-	public void handleTabEvent(int kind, Object data) {
-		switch (kind) {
-		case ICPropertyTab.OK:
-			if (canBeVisible())
-				performOK();
-			break;
-		case ICPropertyTab.APPLY:
-			if (canBeVisible())
-				performApply(getResDesc(), (ICResourceDescription) data);
-			break;
-		case ICPropertyTab.CANCEL:
-			if (canBeVisible())
-				performCancel();
-			break;
-		case ICPropertyTab.DEFAULTS:
-			if (canBeVisible() /* && getResDesc() != null */) {
-				updateData(getResDesc());
-				performDefaults();
-			}
-			break;
-		case ICPropertyTab.UPDATE:
-			mySloeberCfg = ISloeberConfiguration.getConfig(getConfdesc());
-			updateScreen(true);
-			break;
-		case ICPropertyTab.DISPOSE:
-			dispose();
-			break;
-		case ICPropertyTab.VISIBLE:
-			if (canSupportMultiCfg() || !page.isMultiCfg()) {
-				if (canBeVisible()) {
-					setVisible(data != null);
-					setButtonVisible(data != null);
-				} else
-					setVisible(false);
-			} else
-				setAllVisible(false, null);
-			break;
-		case ICPropertyTab.SET_ICON:
-			icon = (Image) data;
-			break;
-		default:
-			break;
-		}
-	}
-
-	@Override
 	protected void updateData(ICResourceDescription cfg) {
 		mySloeberCfg = ISloeberConfiguration.getConfig(getConfdesc());
 		updateScreen(true);
 	}
 
-	@Override
-	public boolean canBeVisible() {
-		return true;
-	}
 
 	@Override
 	protected void updateButtons() {
 		// nothing to do here
 
 	}
-
 }
+
+
+//@Override
+//public void handleTabEvent(int kind, Object data) {
+//	switch (kind) {
+//	case ICPropertyTab.OK:
+//		if (canBeVisible())
+//			performOK();
+//		break;
+//	case ICPropertyTab.APPLY:
+//		if (canBeVisible())
+//			performApply(getResDesc(), (ICResourceDescription) data);
+//		break;
+//	case ICPropertyTab.CANCEL:
+//		if (canBeVisible())
+//			performCancel();
+//		break;
+//	case ICPropertyTab.DEFAULTS:
+//		if (canBeVisible() /* && getResDesc() != null */) {
+//			updateData(getResDesc());
+//			performDefaults();
+//		}
+//		break;
+//	case ICPropertyTab.UPDATE:
+//		mySloeberCfg = ISloeberConfiguration.getConfig(getConfdesc());
+//		updateScreen(true);
+//		break;
+//	case ICPropertyTab.DISPOSE:
+//		dispose();
+//		break;
+//	case ICPropertyTab.VISIBLE:
+//		if (canSupportMultiCfg() || !page.isMultiCfg()) {
+//			if (canBeVisible()) {
+//				setVisible(data != null);
+//				setButtonVisible(data != null);
+//			} else
+//				setVisible(false);
+//		} else
+//			setAllVisible(false, null);
+//		break;
+//	case ICPropertyTab.SET_ICON:
+//		icon = (Image) data;
+//		break;
+//	default:
+//		break;
+//	}
+//}

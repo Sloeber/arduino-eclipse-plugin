@@ -264,7 +264,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateScreen(boolean updateData) {
-		if (updateData) {
+		if (mySloeberCfg!=null) {
 			myBoardDesc = mySloeberCfg.getBoardDescription();
 		}
 		disableListeners = true;
@@ -292,6 +292,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		myBoardDesc.setProgrammer(myControlUploadProtocol.getText());
 		myBoardDesc.setBoardName(mycontrolBoardName.getText());
 		myBoardDesc.setOptions(getOptions());
+		if(mySloeberCfg != null) {
+			mySloeberCfg.setBoardDescription(myBoardDesc);
+		}
 	}
 
 	private void setTheLabelCombos() {

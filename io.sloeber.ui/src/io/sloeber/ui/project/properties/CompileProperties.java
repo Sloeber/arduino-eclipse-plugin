@@ -135,7 +135,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateScreen(boolean updateData) {
-		if (updateData) {
+		if (mySloeberCfg!=null) {
 			myCompDesc = mySloeberCfg.getCompileDescription();
 		}
 		disableListeners = true;
@@ -174,6 +174,9 @@ public class CompileProperties extends SloeberCpropertyTab {
 		myCompDesc.set_Archive_CompileOptions(this.myArchiveCommand.getText());
 		myCompDesc.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
 		myCompDesc.set_Link_CompileOptions(this.myLinkCommand.getText());
+		if(mySloeberCfg!=null) {
+			mySloeberCfg.setCompileDescription(myCompDesc);
+		}
 
 	}
 

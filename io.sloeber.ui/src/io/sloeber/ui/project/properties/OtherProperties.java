@@ -25,6 +25,8 @@ public class OtherProperties extends SloeberCpropertyTab {
 			case SWT.Selection:
 				getFromScreen();
 				break;
+			default:
+				break;
 			}
 		}
 	};
@@ -51,7 +53,7 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateScreen(boolean updateData) {
-		if (updateData) {
+		if (mySloeberCfg!=null) {
 			myOtherDesc = mySloeberCfg.getOtherDescription();
 		}
 		myOtherProperties.setSelection(myOtherDesc.IsVersionControlled());
@@ -59,17 +61,19 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 	private void getFromScreen() {
 		myOtherDesc.setVersionControlled(myOtherProperties.getSelection());
+		if (mySloeberCfg!=null) {
+			mySloeberCfg.setOtherDescription(myOtherDesc);
+		}
 	}
 
 	@Override
 	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
-		// TODO Auto-generated method stub
-
+		getFromScreen();
 	}
 
 	@Override
 	protected void performDefaults() {
-		// TODO Auto-generated method stub
+		myOtherDesc.setVersionControlled(false);
 
 	}
 

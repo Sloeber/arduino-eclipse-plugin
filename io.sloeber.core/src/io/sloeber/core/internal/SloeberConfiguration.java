@@ -11,7 +11,6 @@ import static io.sloeber.core.api.Const.*;
 import org.eclipse.cdt.make.core.IMakeTarget;
 import org.eclipse.cdt.make.core.IMakeTargetManager;
 import org.eclipse.cdt.make.core.MakeCorePlugin;
-import org.eclipse.cdt.make.internal.core.MakeTarget;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -39,19 +38,17 @@ import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescription implements ISloeberConfiguration {
-
     //configuration data
-    BoardDescription myBoardDescription;
-    OtherDescription myOtherDesc;
-    CompileDescription myCompileDescription;
+	private BoardDescription myBoardDescription;
+	private OtherDescription myOtherDesc;
+	private CompileDescription myCompileDescription;
 
     //operational data
-    boolean myMemoryIsDirty = true;
+    private boolean myMemoryIsDirty = true;
+    private boolean calculatingEnvVars=false;
 
     //derived data
     private Map<String, String> myEnvironmentVariables = new HashMap<>();
-    private boolean myIsCleaningMemory = false;
-    private boolean myIsUpdatingProject = false;
 
     /**
      * copy constructor
@@ -70,16 +67,16 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
         SloeberConfiguration src = (SloeberConfiguration) source;
         setAutoBuildDescription(owner);
-        myBoardDescription = new BoardDescription(src.getBoardDescription());
-        myOtherDesc = new OtherDescription(src.getOtherDescription());
-        myCompileDescription = new CompileDescription(src.getCompileDescription());
+        setBoardDescription(src.getBoardDescription());
+       setOtherDescription(src.getOtherDescription());
+        setCompileDescription(src.getCompileDescription());
     }
 
     public SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc,
             CompileDescription compileDescriptor) {
-        myBoardDescription = boardDesc;
-        myOtherDesc = otherDesc;
-        myCompileDescription = compileDescriptor;
+        setBoardDescription( boardDesc);
+        setOtherDescription(otherDesc);
+        setCompileDescription(compileDescriptor);
     }
 
     public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, String lines, String lineStart,
@@ -112,9 +109,22 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     }
 
     @Override
+    public void setOtherDescription(OtherDescription newOtherDesc) {
+        myOtherDesc=new OtherDescription( newOtherDesc);
+        setIsDirty();
+    }
+    
+    @Override
     public CompileDescription getCompileDescription() {
         return new CompileDescription(myCompileDescription);
     }
+    
+    @Override
+    public void  setCompileDescription(CompileDescription newCompDesc ) {
+    	myCompileDescription=new CompileDescription(newCompDesc);
+    	setIsDirty();
+    }
+
 
     @Override
     public void copyData(AutoBuildConfigurationExtensionDescription from) {
@@ -175,8 +185,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     }
 
     private void configureIfDirty() {
-        if (myMemoryIsDirty && !myIsCleaningMemory) {
-            cleanMemory();
+        if (myMemoryIsDirty ) {
+        	getEnvVars();
+        	myMemoryIsDirty=false;
         }
         if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
             if (projectNeedsUpdate()) {
@@ -203,58 +214,53 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         return false;
     }
 
-    private void cleanMemory() {
-        if (getAutoBuildDescription() == null) {
-            //We can not configure if the AutoBuildDescription is not known
-            System.err.println("SloeberConfiguration can not be configured if the AutoBuildDescription is not known"); //$NON-NLS-1$
-            return;
-        }
-        myIsCleaningMemory = true;
-        getEnvVars();
-        myIsCleaningMemory = false;
-        myMemoryIsDirty = false;
 
-        return;
+	private void getEnvVars() {
+		if (calculatingEnvVars) {
+			return;
+		}
+		try {
+			calculatingEnvVars = true;
+			IProject project = getProject();
 
-    }
+			myEnvironmentVariables.clear();
 
-    private void getEnvVars() {
-        IProject project = getProject();
+			myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
+			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
+					getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
 
-        myEnvironmentVariables.clear();
+			if (myBoardDescription != null) {
+				myEnvironmentVariables.putAll(myBoardDescription.getEnvVars());
+			}
+			if (myCompileDescription != null) {
+				myEnvironmentVariables.putAll(myCompileDescription.getEnvVars());
+			}
+			if (myOtherDesc != null) {
+				myEnvironmentVariables.putAll(myOtherDesc.getEnvVars());
+			}
+			// set the paths
+			String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
+			if (Common.isWindows) {
+				myEnvironmentVariables.put(SLOEBER_MAKE_LOCATION,
+						ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
+				myEnvironmentVariables.put(SLOEBER_AWK_LOCATION,
+						ConfigurationPreferences.getAwkPath().addTrailingSeparator().toOSString());
 
-        myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
-        myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
-                getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
-
-        if (myBoardDescription != null) {
-            myEnvironmentVariables.putAll(myBoardDescription.getEnvVars());
-        }
-        if (myCompileDescription != null) {
-            myEnvironmentVariables.putAll(myCompileDescription.getEnvVars());
-        }
-        if (myOtherDesc != null) {
-            myEnvironmentVariables.putAll(myOtherDesc.getEnvVars());
-        }
-        // set the paths
-        String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
-        if (Common.isWindows) {
-            myEnvironmentVariables.put(SLOEBER_MAKE_LOCATION,
-                    ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
-            myEnvironmentVariables.put(SLOEBER_AWK_LOCATION,
-                    ConfigurationPreferences.getAwkPath().addTrailingSeparator().toOSString());
-
-            String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
-            myEnvironmentVariables.put("PATH", //$NON-NLS-1$
-                    makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32" //$NON-NLS-1$
-                            + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
-                            + pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
-        } else {
-            myEnvironmentVariables.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
-                    + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
-        }
-    }
+				String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
+				myEnvironmentVariables.put("PATH", //$NON-NLS-1$
+						makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
+								+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot
+								+ "\\system32" //$NON-NLS-1$
+								+ pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
+								+ pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
+			} else {
+				myEnvironmentVariables.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
+						+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
+			}
+		} finally {
+			calculatingEnvVars = false;
+		}
+	}
 
     /**
      * get the text for the decorator
@@ -317,10 +323,10 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
             if (itarget == null) {
                 itarget = targetManager.createTarget(getProject(), targetName,
                         "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
-                if (itarget instanceof MakeTarget) {
-                    ((MakeTarget) itarget).setBuildTarget(targetName);
+                //if (itarget instanceof MakeTarget) {
+                //    itarget.setBuildTarget(targetName);
                     targetManager.addTarget(targetResource, itarget);
-                }
+                //}
             }
             if (itarget != null) {
                 itarget.build(new NullProgressMonitor());
@@ -373,27 +379,18 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
      *
      * 
      */
-    private void updateArduinoCodeLinks() {
-        if (myIsUpdatingProject) {
-            return;
-        }
-        myIsUpdatingProject = true;
-        try {
-            IPath corePath = myBoardDescription.getActualCoreCodePath();
-            IProject project = getProject();
-            IFolder arduinoVariantFolder = getArduinoVariantFolder();
-            if (corePath != null) {
-                Helpers.LinkFolderToFolder(corePath, getArduinoCoreFolder());
-                IPath variantPath = myBoardDescription.getActualVariantPath();
-                if ((variantPath == null) || (!variantPath.toFile().exists())) {
-                    // remove the existing link
-                    Helpers.removeCodeFolder(arduinoVariantFolder);
-                } else {
-                    Helpers.LinkFolderToFolder(variantPath, arduinoVariantFolder);
-                }
-            }
-        } finally {
-            myIsUpdatingProject = false;
-        }
-    }
+	private void updateArduinoCodeLinks() {
+		IPath corePath = myBoardDescription.getActualCoreCodePath();
+		IFolder arduinoVariantFolder = getArduinoVariantFolder();
+		if (corePath != null) {
+			Helpers.LinkFolderToFolder(corePath, getArduinoCoreFolder());
+			IPath variantPath = myBoardDescription.getActualVariantPath();
+			if ((variantPath == null) || (!variantPath.toFile().exists())) {
+				// remove the existing link
+				Helpers.removeCodeFolder(arduinoVariantFolder);
+			} else {
+				Helpers.LinkFolderToFolder(variantPath, arduinoVariantFolder);
+			}
+		}
+	}
 }
