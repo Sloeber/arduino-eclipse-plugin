@@ -86,7 +86,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 			
 			genericListenerEnd();
-			setTheLabelCombos(true,true);
+			setTheLabelCombos(true);
 		}
 
 	};
@@ -99,7 +99,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			}
 			
 			genericListenerEnd();
-			setTheLabelCombos(true,true);
+			setTheLabelCombos(true);
 		}
 	};
 	protected Listener myChangeListener = new Listener() {
@@ -195,6 +195,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		myControlUploadProtocol.addListener(myChangeListener);
 		myControlUploadPort.addListener(myChangeListener);
 		genericListenerEnd();
+		setTheLabelCombos(true); 
 
 	}
 
@@ -284,7 +285,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 
 		myControlUploadPort.setText(myBoardDesc.getUploadPort());
-		setTheLabelCombos(	 boardsFileChanged , boardIDChanged);
+		setTheLabelCombos(	 boardsFileChanged || boardIDChanged);
 		disableListeners = false;
 	}
 
@@ -300,9 +301,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 	}
 
-	private void setTheLabelCombos(		boolean boardsFileChanged ,boolean boardIDChanged) {
+	private void setTheLabelCombos(boolean recreateOptions) {
 		saveUsedOptionValues();
-		if (boardsFileChanged || boardIDChanged) {
+		if (recreateOptions) {
 			for (LabelCombo labelCombo : myBoardOptionCombos.values()) {
 				labelCombo.dispose();
 			}
@@ -328,8 +329,8 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 					} else {
 						// use last used name for this menu ID
 						optionValue = myUsedOptionValues.get(menuID);
-						if(optionValue==null) {
-							optionValue = myBoardDesc.getDefaultValueNameFromMenu( menuID);
+						if (optionValue == null) {
+							optionValue = myBoardDesc.getDefaultValueNameFromMenu(menuID);
 						}
 					}
 					if (optionValue != null) {

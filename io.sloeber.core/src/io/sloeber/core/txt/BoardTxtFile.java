@@ -53,7 +53,7 @@ public class BoardTxtFile extends TxtFile {
      * @return The nice names that are the possible selections
      */
     public String[] getMenuItemNamesFromMenuID(String menuID, String boardID) {
-        HashSet<String> ret = new HashSet<>();
+        List<String> ret = new LinkedList<>();
 
         KeyValueTree boardMenuInfo = myData.getChild(boardID + DOT + MENU + DOT + menuID);
         for (KeyValueTree menuData : boardMenuInfo.getChildren().values()) {
@@ -174,7 +174,7 @@ public class BoardTxtFile extends TxtFile {
      */
     public String[] getAllSectionNames(String[] toaddNames) {
 
-        HashSet<String> allNames = new HashSet<>();
+        LinkedList<String> allNames = new LinkedList<>();
         for (String curName : toaddNames) {
             allNames.add(curName);
         }
@@ -186,10 +186,7 @@ public class BoardTxtFile extends TxtFile {
                 }
             }
         }
-        String[] sBoards = new String[allNames.size()];
-        allNames.toArray(sBoards);
-        Arrays.sort(sBoards);
-        return sBoards;
+        return allNames.toArray( new String[allNames.size()]);
     }
 
     public List<String> getAllBoardIDs() {

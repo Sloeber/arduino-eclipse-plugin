@@ -110,7 +110,7 @@ public class KeyValueTree extends Const {
 
     private Map<String, String> toKeyValues(String prefix, KeyValueTree theRoot) {
 
-        Map<String, String> ret = new HashMap<>();
+        Map<String, String> ret = new LinkedHashMap<>();
         Entry<String, String> firstEntry = this.toKeyValue(prefix, theRoot);
         if (firstEntry != null) {
             ret.put(firstEntry.getKey(), firstEntry.getValue());
