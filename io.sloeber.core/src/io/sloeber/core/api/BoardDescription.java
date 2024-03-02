@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -1085,4 +1084,11 @@ public class BoardDescription {
         return myBoardID.equals("yun"); //$NON-NLS-1$
     }
 
+    
+	public String getDefaultValueIDFromMenu(String menuID) {
+		return this.mySloeberBoardTxtFile.getDefaultValueIDFromMenu(getBoardID(),menuID);
+	}
+	public String getDefaultValueNameFromMenu(String menuID) {
+		return this.mySloeberBoardTxtFile.getDefaultValueNameFromMenu(getBoardID(),menuID);
+	}
 }

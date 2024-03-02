@@ -217,4 +217,20 @@ public class BoardTxtFile extends TxtFile {
         return myData.getChild(boardID).toKeyValues(EMPTY, false);
     }
 
+	public String getDefaultValueIDFromMenu(String boardID ,String menuID) {
+        KeyValueTree boardMenuInfo = myData.getChild(boardID + DOT + MENU + DOT + menuID);
+        for (KeyValueTree menuData : boardMenuInfo.getChildren().values()) {
+            return menuData.getKey();
+        }
+        return null;
+	}
+
+	public String getDefaultValueNameFromMenu(String boardID, String menuID) {
+        KeyValueTree boardMenuInfo = myData.getChild(boardID + DOT + MENU + DOT + menuID);
+        for (KeyValueTree menuData : boardMenuInfo.getChildren().values()) {
+            return menuData.getValue();
+        }
+        return null;
+	}
+
 }

@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -57,8 +56,6 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 	private TreeMap<String, File> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private Map<String, String> myUsedOptionValues = new HashMap<>();
-	private File myCurrentLabelComboBoardFile = null;
-	private String myCurrentOptionBoardID = null;
 	private Listener myCompleteListener = null;
 	private boolean disableListeners = false;
 	private BoardDescription myBoardDesc = new BoardDescription();
@@ -87,8 +84,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myControlUploadProtocol.setItems(myBoardDesc.getUploadProtocols());
 			myControlUploadProtocol.setText(myBoardDesc.getProgrammer());
 
-			setTheLabelCombos();
+			
 			genericListenerEnd();
+			setTheLabelCombos(true,true);
 		}
 
 	};
@@ -99,8 +97,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			if (disableListeners) {
 				return;
 			}
-			setTheLabelCombos();
+			
 			genericListenerEnd();
+			setTheLabelCombos(true,true);
 		}
 	};
 	protected Listener myChangeListener = new Listener() {
@@ -268,8 +267,12 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myBoardDesc = mySloeberCfg.getBoardDescription();
 		}
 		disableListeners = true;
+		
+		String nexBoardsFileText=tidyUpLength(myBoardDesc.getReferencingBoardsFile().toString());
+		boolean boardsFileChanged =myControlBoardsTxtFile.getText().equals(nexBoardsFileText);
+		boolean boardIDChanged=mycontrolBoardName.getText().equals(myBoardDesc.getBoardName());
 
-		myControlBoardsTxtFile.setText(tidyUpLength(myBoardDesc.getReferencingBoardsFile().toString()));
+		myControlBoardsTxtFile.setText(nexBoardsFileText);
 		mycontrolBoardName.setItems(myBoardDesc.getCompatibleBoards());
 		mycontrolBoardName.setText(myBoardDesc.getBoardName());
 
@@ -281,7 +284,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 
 		myControlUploadPort.setText(myBoardDesc.getUploadPort());
-		setTheLabelCombos();
+		setTheLabelCombos(	 boardsFileChanged , boardIDChanged);
 		disableListeners = false;
 	}
 
@@ -297,19 +300,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 	}
 
-	private void setTheLabelCombos() {
-
+	private void setTheLabelCombos(		boolean boardsFileChanged ,boolean boardIDChanged) {
 		saveUsedOptionValues();
-
-		File onScreenComboBoardFile = myBoardDesc.getReferencingBoardsFile();
-		String onScreenBoardID = myBoardDesc.getBoardID();
-		boolean boardsFileChanged = !onScreenComboBoardFile.equals(myCurrentLabelComboBoardFile);
-		boolean boardIDChanged = !onScreenBoardID.equals(myCurrentOptionBoardID);
 		if (boardsFileChanged || boardIDChanged) {
-			myCurrentLabelComboBoardFile = onScreenComboBoardFile;
-			myCurrentOptionBoardID = onScreenBoardID;
-
-			saveUsedOptionValues();
 			for (LabelCombo labelCombo : myBoardOptionCombos.values()) {
 				labelCombo.dispose();
 			}
@@ -335,6 +328,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 					} else {
 						// use last used name for this menu ID
 						optionValue = myUsedOptionValues.get(menuID);
+						if(optionValue==null) {
+							optionValue = myBoardDesc.getDefaultValueNameFromMenu( menuID);
+						}
 					}
 					if (optionValue != null) {
 						newLabelCombo.setText(optionValue);
@@ -345,9 +341,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 			myComposite.layout(true);
 			myComposite.pack();
-			myScrollComposite.setContent(myComposite);
-			Point point = myComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-			myScrollComposite.setMinSize(point);
+			myComposite.redraw();
 		} else {
 			Map<String, String> boardOptions = myBoardDesc.getOptions();
 			for (Entry<String, LabelCombo> curOptionCombo : myBoardOptionCombos.entrySet()) {
