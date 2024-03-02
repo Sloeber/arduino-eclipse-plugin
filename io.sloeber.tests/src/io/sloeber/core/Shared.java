@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
-
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.Common;
@@ -73,11 +73,9 @@ public class Shared {
                 return true;
             }
         }
-        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
-        ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
+        IAutoBuildConfigurationDescription activeConfig = IAutoBuildConfigurationDescription.getActiveConfig(project, false);
 
-        IFolder buildFolder = project.getFolder(activeConfig.getName());
+        IFolder buildFolder = activeConfig.getBuildFolder();
         String projName = project.getName();
         String[] validOutputss = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
                 "application.axf" };
