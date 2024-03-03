@@ -481,7 +481,7 @@ public class RegressionTest {
      */
 
     @Test
-    public void openAndCloseUsesSavedSettings() throws Exception {
+    public void openModAndCloseUsesSavedSettings() throws Exception {
         CodeDescription codeDesc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 
         String proj1Name = "openModAndClose1";
