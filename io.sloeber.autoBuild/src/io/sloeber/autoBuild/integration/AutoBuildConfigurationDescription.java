@@ -649,6 +649,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		return myCdtConfigurationDescription;
 	}
 
+	@Override
 	public IProject getProject() {
 		return myCdtConfigurationDescription.getProjectDescription().getProject();
 	}
