@@ -17,7 +17,7 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 	public void beforeAddingSourceRules(IAutoBuildMakeRules makeRules,
 			IAutoBuildConfigurationDescription autoBuildConfData) {
 		IFile sloeberInoCppFile=InoPreprocessor.getSloeberInoCPPFile(autoBuildConfData);
-		if(sloeberInoCppFile.exists()) {
+		if(sloeberInoCppFile != null &&  sloeberInoCppFile.exists()) {
 			makeRules.getSourceFilesToBuild().add(sloeberInoCppFile);
 		}
 		super.beforeAddingSourceRules(makeRules, autoBuildConfData);
