@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
+import static io.sloeber.core.api.Common.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,8 @@ public class CompileDescription {
                 return myCustomWarningLevel;
             case NONE:
                 // this is default
+			default:
+				break;
             }
             return "${compiler.warning_flags.none}"; //$NON-NLS-1$
         }
@@ -107,18 +110,21 @@ public class CompileDescription {
         public String getEnvValue() {
             switch (this) {
             case ARDUINO_WAY:
-                return "${sloeber.size_command.awk}"; //$NON-NLS-1$
+            	if(isWindows) {
+                return "wsl -- ${sloeber.size_command.awk}"; //$NON-NLS-1$
+            	}
+            	return "${sloeber.size_command.awk}"; //$NON-NLS-1$
             case AVR_ALTERNATIVE:
                 return "${sloeber.size_command.avr}"; //$NON-NLS-1$
             case RAW_RESULT:
                 return "${recipe.size.pattern}"; //$NON-NLS-1$
             case CUSTOM:
                 return myCustomSizeCommand;
-
+			default:
+				break;
             }
             return "${recipe.size.pattern}"; //$NON-NLS-1$
         }
-
     }
 
     private WarningLevels myWarningLevel = WarningLevels.NONE;
@@ -343,6 +349,8 @@ public class CompileDescription {
             case SLOEBER_SIZE_CUSTOM:
                 customSizeCommand = value;
                 break;
+			default:
+				break;
             }
             myWarningLevel = WarningLevels.valueOf(warningLevel);
             myWarningLevel.setCustomWarningLevel(customWarningLevel, true);

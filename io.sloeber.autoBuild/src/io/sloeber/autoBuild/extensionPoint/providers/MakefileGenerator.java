@@ -133,7 +133,6 @@ public class MakefileGenerator  {
 			System.out.println("Start MakeFile Generation for " + myProject.getName() + " for config " //$NON-NLS-1$ //$NON-NLS-2$
 					+ myCConfigurationDescription.getName());
 		}
-		beforeRuleGeneration();
 		MultiStatus status;
 		myMakeRules = new AutoBuildMakeRules(myAutoBuildConfData);
 		myContainersToBuild =myMakeRules.getFoldersThatContainSourceFiles();
@@ -146,7 +145,6 @@ public class MakefileGenerator  {
 			status.add(new Status(IStatus.ERROR, Activator.getId(), NO_SOURCE_FOLDERS, info, null));
 			return status;
 		}
-		beforeMakefileGeneration();
 		// We have all the rules. Time to make the make files
 		Set<String> srcMacroNames = myMakeRules.getPrerequisiteMacros();
 		Set<String> objMacroNames = myMakeRules.getTargetMacros();
@@ -159,7 +157,6 @@ public class MakefileGenerator  {
 		topMakeGeneratefile(dependencyMacroNames);
 
 		checkCancel(monitor);
-		afterMakefileGeneration();
 
 		if (VERBOSE) {
 			System.out.println("MakeFile Generation done for " + myProject.getName() + " for config " //$NON-NLS-1$ //$NON-NLS-2$
@@ -225,70 +222,6 @@ public class MakefileGenerator  {
 		return buffer;
 	}
 
-	/****************************************************************************************
-	 * Convenience methods to interfere in the makefile generation
-	 *****************************************************************************************/
-	/***
-	 * Method that asks the rule from the makerule Override this if you want to
-	 * modify the rule of all/some targets
-	 * 
-	 * @param makeRule
-	 * @return
-	 */
-	// protected StringBuffer getRule(MakeRule makeRule) {
-	// return makeRule.getRule(myProject, myTopBuildDir, myAutoBuildConfData);
-	// }
-
-	protected void afterMakefileGeneration() {
-		// nothing to do.
-	}
-
-	protected void beforeMakefileGeneration() {
-		// nothing to do.
-	}
-
-	protected void beforeRuleGeneration() {
-		// nothing to do.
-		// TOFIX this should be done differently
-		// JABA SLOEBER create the size.awk file
-		// ICConfigurationDescription confDesc =
-		// ManagedBuildManager.getDescriptionForConfiguration(config);
-		// IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
-		// IFile sizeAwkFile1 =
-		// root.getFile(topBuildDir.getFullPath().append("size.awk"));
-		// File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
-		// String regex = Common.getBuildEnvironmentVariable(confDesc,
-		// "recipe.size.regex", EMPTY);
-		// String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
-		// regex = Common.getBuildEnvironmentVariable(confDesc,
-		// "recipe.size.regex.data", EMPTY);
-		// awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
-		// regex = Common.getBuildEnvironmentVariable(confDesc,
-		// "recipe.size.regex.eeprom", EMPTY);
-		// awkContent += "/" + regex + "/ {arduino_eeprom += $2 }\n";
-		// awkContent += "END { print \"\\n";
-		// String max = Common.getBuildEnvironmentVariable(confDesc,
-		// "upload.maximum_size", "10000");
-		// awkContent += Messages.sizeReportSketch.replace("maximum_size", max);
-		// awkContent += "\\n";
-		// max = Common.getBuildEnvironmentVariable(confDesc,
-		// "upload.maximum_data_size", "10000");
-		// awkContent += Messages.sizeReportData.replace("maximum_data_size", max);
-		// awkContent += "\\n";
-		// awkContent += "\"}";
-		//
-		// try {
-		// FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// END JABA SLOEBER create the size.awk file
-	}
-
-	/****************************************************************************************
-	 * End of Convenience methods to interfere in the makefile generation
-	 *****************************************************************************************/
 
 	/****************************************************************************************
 	 * Sources/objects MakeFile generation code
