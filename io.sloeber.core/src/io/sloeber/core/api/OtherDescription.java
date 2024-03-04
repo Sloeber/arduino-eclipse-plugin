@@ -1,15 +1,9 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.api.Const.*;
-
-import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-
-import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
@@ -33,7 +27,8 @@ public class OtherDescription {
         myIsVersionControlled = srcObject.myIsVersionControlled;
     }
 
-    public Map<String, String> getEnvVars() {
+    @SuppressWarnings("static-method")
+	public Map<String, String> getEnvVars() {
         Map<String, String> allVars = new TreeMap<>();
         // Nothing needs to be put in the environment variables
         return allVars;
@@ -60,6 +55,8 @@ public class OtherDescription {
             case KEY_SLOEBER_IS_VERSION_CONTROLLED:
                 myIsVersionControlled = Boolean.parseBoolean(value);
                 break;
+			default:
+				break;
             }
         }
     }
@@ -75,5 +72,10 @@ public class OtherDescription {
     public void setVersionControlled(boolean myIsVersionControlled) {
         this.myIsVersionControlled = myIsVersionControlled;
     }
+
+	@SuppressWarnings("static-method")
+	public boolean needsRebuild(OtherDescription newOtherDesc) {
+		return false;
+	}
 
 }

@@ -22,6 +22,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
@@ -136,6 +139,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 	private boolean myIsWritable = false;
+	private boolean myForceCleanBeforeBuild=false;
 
 	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,String rootCodeFolder) {
 		initializeResourceData(rootCodeFolder,myBuildFolderString);
@@ -209,6 +213,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myPostBuildStep = base.myPostBuildStep;
 		myPostBuildStepAnouncement = base.myPostBuildStepAnouncement;
 		myBuilders = base.myBuilders;
+		myForceCleanBeforeBuild=base.myForceCleanBeforeBuild;
 		myCustomToolCommands.clear();
 		for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : base.myCustomToolCommands.entrySet()) {
 			Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
@@ -270,6 +275,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public void setBuildTools(IBuildTools buildTools) {
 		myBuildTools = buildTools;
+		forceCleanBeforeBuild();
 	}
 
 	/**
@@ -856,6 +862,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public void setBuildFolderString(String buildFolder) {
 		checkIfWeCanWrite();
+		IFolder oldBuildFolder =getBuildFolder();
+		if(oldBuildFolder!=null && oldBuildFolder.exists()) {
+			try {
+				oldBuildFolder.delete(true, new NullProgressMonitor());
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
 		myBuildFolderString = buildFolder;
 	}
 
@@ -1252,6 +1266,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			myCustomToolCommands.put(tool, customCommands);
 		}
 		customCommands.put(resource, customCommand);
+		forceCleanBeforeBuild();
 	}
 
 	@Override
@@ -1310,6 +1325,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			myCustomToolPattern.put(tool, customCommands);
 		}
 		customCommands.put(resource, pattern);
+		forceCleanBeforeBuild();
 
 	}
 
@@ -1437,6 +1453,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		// myDescription = myAutoBuildConfiguration.getDescription();
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
 		options_updateDefault();
+		forceCleanBeforeBuild();
 	}
 
 	@Override
@@ -1478,5 +1495,23 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public ToolFlavour getBuildToolsFlavour() {
 		return getBuildTools().getToolFlavour();
 	}
+	
+	@Override
+	public void forceCleanBeforeBuild() {
+		myForceCleanBeforeBuild=true;
+	}
+
+	public void forceFullBuildIfNeeded(IProgressMonitor monitor) throws CoreException {
+		if(myForceCleanBeforeBuild) {
+			myForceCleanBeforeBuild=false;
+			IFolder buildFolder=getBuildFolder();
+			if(buildFolder!=null &&buildFolder.exists()) {
+				buildFolder.delete(true, monitor);
+			}
+				
+		}
+		
+	}
+	
 
 }

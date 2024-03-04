@@ -184,12 +184,13 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         for (AutoBuildConfigurationDescription curAutoConfig : cfgsToBuild) {
         	String[] envp= getEnvironmentVariables(curAutoConfig);
         	IBuilder builder = curAutoConfig.getBuilder(BuildRunnerID);
+        	curAutoConfig.forceFullBuildIfNeeded(monitor);
             buildProjectConfiguration(kind,envp, builder, curAutoConfig, monitor);
         }
 
     }
 
-    private String[] getEnvironmentVariables(AutoBuildConfigurationDescription autoConfig) {
+    private static String[] getEnvironmentVariables(AutoBuildConfigurationDescription autoConfig) {
     	//Get the environment variables
 		IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IEnvironmentVariable[] vars = mngr.getVariables(autoConfig.getCdtConfigurationDescription(), true);
@@ -326,14 +327,14 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                 // it is the builder that decides on the incremental
                 if (!curAutoConf.isIncrementalBuildEnabled()) {
                     outputTrace(projectName,
-                            curAutoConf.getName() + " >>The config is setup to ignore incremental builds ");
+                            curAutoConf.getName() + " >>The config is setup to ignore incremental builds "); //$NON-NLS-1$
                     cfgToIgnore.add(curAutoConf);
                 }
                 break;
 			default:                
             case AUTO_BUILD:
                 if (!curAutoConf.isAutoBuildEnabled()) {
-                    outputTrace(projectName, curAutoConf.getName() + ">>The config is setup to ignore auto builds ");
+                    outputTrace(projectName, curAutoConf.getName() + ">>The config is setup to ignore auto builds "); //$NON-NLS-1$
                     cfgToIgnore.add(curAutoConf);
                 }
                 break;

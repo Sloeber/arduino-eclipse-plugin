@@ -45,7 +45,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     //operational data
     private boolean myMemoryIsDirty = true;
-    private boolean calculatingEnvVars=false;
+    private boolean myCalculatingEnvVars=false;
 
     //derived data
     private Map<String, String> myEnvironmentVariables = new HashMap<>();
@@ -110,6 +110,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public void setOtherDescription(OtherDescription newOtherDesc) {
+    	if(myOtherDesc!=null && myOtherDesc.needsRebuild(newOtherDesc)) {
+    		getAutoBuildDescription().forceCleanBeforeBuild();
+    	}
         myOtherDesc=new OtherDescription( newOtherDesc);
         setIsDirty();
     }
@@ -121,6 +124,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
     
     @Override
     public void  setCompileDescription(CompileDescription newCompDesc ) {
+    	if(myCompileDescription!=null && myCompileDescription.needsRebuild(newCompDesc)) {
+    		getAutoBuildDescription().forceCleanBeforeBuild();
+    	}
     	myCompileDescription=new CompileDescription(newCompDesc);
     	setIsDirty();
     }
@@ -216,11 +222,11 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 
 	private void getEnvVars() {
-		if (calculatingEnvVars) {
+		if (myCalculatingEnvVars) {
 			return;
 		}
 		try {
-			calculatingEnvVars = true;
+			myCalculatingEnvVars = true;
 			IProject project = getProject();
 
 			myEnvironmentVariables.clear();
@@ -258,7 +264,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 						+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
 			}
 		} finally {
-			calculatingEnvVars = false;
+			myCalculatingEnvVars = false;
 		}
 	}
 
@@ -344,6 +350,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public void setBoardDescription(BoardDescription boardDescription) {
+    	if(myBoardDescription!=null && myBoardDescription.needsRebuild(boardDescription)) {
+    		getAutoBuildDescription().forceCleanBeforeBuild();
+    	}
         myBoardDescription = new BoardDescription(boardDescription);
         setIsDirty();
     }

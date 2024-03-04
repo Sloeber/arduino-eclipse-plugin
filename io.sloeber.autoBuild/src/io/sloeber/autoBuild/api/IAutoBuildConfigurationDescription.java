@@ -384,4 +384,9 @@ public interface IAutoBuildConfigurationDescription {
 	ToolFlavour getBuildToolsFlavour();
 
 	public IProject getProject();
+
+	/**
+	 * call this method if a clean is required before a build is started
+	 */
+	void forceCleanBeforeBuild();
 }
