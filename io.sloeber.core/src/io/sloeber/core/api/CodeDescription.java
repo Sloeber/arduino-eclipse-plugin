@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -144,7 +143,6 @@ public class CodeDescription implements ICodeProvider {
 	 * given the source descriptor, add the sources to the project returns a set of
 	 * libraries that need to be installed
 	 **/
-	@SuppressWarnings("nls")
 	Map<String, IPath> getNeededLibraries(IProject project, IProgressMonitor monitor) {
 		Map<String, IPath> libraries = new TreeMap<>();
 
@@ -260,6 +258,7 @@ public class CodeDescription implements ICodeProvider {
 		return myExamples.get(0);
 	}
 
+	@SuppressWarnings("nls")
 	@Override
 	public boolean createFiles(IFolder srcFolder, IProgressMonitor monitor) {
 		try {
@@ -331,6 +330,8 @@ public class CodeDescription implements ICodeProvider {
 					e.printStackTrace();
 				}
 				break;
+			default:
+				break;
 			}
 
 		} catch (CoreException e) {
@@ -354,17 +355,17 @@ public class CodeDescription implements ICodeProvider {
 
 	@Override
 	public String getName() {
-		return "Sloeber code provider";
+		return "Sloeber code provider"; //$NON-NLS-1$
 	}
 
 	@Override
 	public String getDescription() {
-		return "a provider for sloeber projects";
+		return "a provider for sloeber projects"; //$NON-NLS-1$
 	}
 
 	@Override
 	public String getID() {
-		return "io.slober.core.code.provider";
+		return "io.slober.core.code.provider"; //$NON-NLS-1$
 	}
 
 	@Override
