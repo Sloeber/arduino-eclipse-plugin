@@ -2,6 +2,8 @@ package io.sloeber.buildTool.api;
 
 import java.util.Set;
 
+import io.sloeber.schema.api.IProjectType;
+
 public interface IBuildToolProvider {
 
     /**
@@ -37,6 +39,7 @@ public interface IBuildToolProvider {
     /**
      * Just give a targetTool that holdsallTools
      * if none exists return null
+     * @param projectType 
      * @return
      */
 	IBuildTools getAnyInstalledTargetTool();
@@ -44,5 +47,11 @@ public interface IBuildToolProvider {
 	Set<IBuildTools> getAllInstalledBuildTools();
 	
 	public void refreshToolchains();
+
+	boolean supports(IProjectType projectType);
+
+	String getDescription();
+
+	boolean isTest();
 
 }

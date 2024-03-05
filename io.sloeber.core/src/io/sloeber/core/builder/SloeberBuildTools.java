@@ -9,6 +9,11 @@ import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 import io.sloeber.buildTool.api.IBuildTools;
 
 public class SloeberBuildTools implements IBuildTools {
+	private String myProviderID = null;
+
+	public SloeberBuildTools(String providerID) {
+		myProviderID = providerID;
+	}
 
 	@Override
 	public boolean holdsAllTools() {
@@ -47,7 +52,7 @@ public class SloeberBuildTools implements IBuildTools {
 
 	@Override
 	public String getProviderID() {
-		return SloeberBuildToolsProvider.SLOEBER_BUILD_TOOL_PROVIDER_ID;
+		return myProviderID;
 	}
 
 	@Override

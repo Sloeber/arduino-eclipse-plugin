@@ -11,12 +11,12 @@ import org.eclipse.cdt.core.build.IToolChainManager;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.buildTool.api.IBuildToolProvider;
+import io.sloeber.buildTool.api.ExtensionBuildToolProvider;
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
 
-public class UserDefinedBuildToolProvider implements IBuildToolProvider {
+public class UserDefinedBuildToolProvider extends ExtensionBuildToolProvider {
 	private static IToolChainManager manager = Activator.getService(IToolChainManager.class);
-	private static String NAME = "Tools provided in preferences";
 	private static Map<String, CDTBuildTool> myCDTBuildTools = new HashMap<>();
 	private static boolean myHoldsAllTool = false;
 	{
@@ -48,15 +48,6 @@ public class UserDefinedBuildToolProvider implements IBuildToolProvider {
 		return myCDTBuildTools.get(targetToolID);
 	}
 
-	@Override
-	public String getID() {
-		return this.getClass().getName();
-	}
-
-	@Override
-	public String getName() {
-		return NAME;
-	}
 
 	@Override
 	public IBuildTools getAnyInstalledTargetTool() {
@@ -66,6 +57,12 @@ public class UserDefinedBuildToolProvider implements IBuildToolProvider {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean supports(IProjectType projectType) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override

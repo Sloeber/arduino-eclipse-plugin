@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.Platform;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
+import io.sloeber.buildTool.api.ExtensionBuildToolProvider;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildToolProvider;
 
@@ -118,9 +120,14 @@ public class BuildToolManager implements IBuildToolManager {
 	}
 
 	@Override
-	public IBuildTools getAnyInstalledBuildTools() {
+	public IBuildTools getAnyInstalledBuildTools(IProjectType projectType) {
 		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
-			return cur.getAnyInstalledTargetTool();
+			if (cur.supports(projectType) && projectType.supportsToolProvider(cur)) {
+				IBuildTools ret = cur.getAnyInstalledTargetTool();
+				if (ret!=null) {
+					return ret;
+				}
+			}
 		}
 		return null;
 	}
@@ -139,8 +146,9 @@ public class BuildToolManager implements IBuildToolManager {
 					for (IConfigurationElement curElement : extension.getConfigurationElements()) {
 						try {
 							if ("ToolProvider".equals(curElement.getName())) {
-								IBuildToolProvider toolprovider = (IBuildToolProvider) curElement
+								ExtensionBuildToolProvider toolprovider = (ExtensionBuildToolProvider) curElement
 										.createExecutableExtension("toolProvider");
+								toolprovider.initialize(curElement);
 								if(refresh) {
 									toolprovider.refreshToolchains();
 								}

@@ -19,6 +19,7 @@ import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
+import io.sloeber.buildTool.api.IBuildToolProvider;
 import io.sloeber.buildTool.api.IBuildTools;
 
 /**
@@ -123,7 +124,7 @@ public interface IProjectType extends ISchemaObject {
     public IToolChain getToolChain();
 
 	public Map<String, IBuilder> getBuilders();
-	public Map<String, IBuildTools> getSupportedBuildTools();
+	public boolean supportsToolProvider(IBuildToolProvider buildToolsProvider);
 	public AutoBuildBuilderExtension getBuilderExtension();
 
 	public IBuilder getdefaultBuilder();

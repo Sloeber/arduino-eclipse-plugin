@@ -111,10 +111,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					String[] defaultIds = iConfig.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
 					List<ILanguageSettingsProvider> providers = LanguageSettingsManager
 							.createLanguageSettingsProviders(defaultIds);
+					ILanguageSettingsProvidersKeeper languageKeeper=(ILanguageSettingsProvidersKeeper) cdtCfgDes;
 					if (cdtCfgDes instanceof ILanguageSettingsProvidersKeeper) {
-						((ILanguageSettingsProvidersKeeper) cdtCfgDes)
-								.setDefaultLanguageSettingsProvidersIds(defaultIds);
-						((ILanguageSettingsProvidersKeeper) cdtCfgDes).setLanguageSettingProviders(providers);
+						languageKeeper.setLanguageSettingProviders(providers);
 					}
 				}
 				if (!myNeedsMoreWork) {

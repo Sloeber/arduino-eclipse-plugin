@@ -1967,7 +1967,7 @@ The default is AutoBuildBuilderExtension
       commands and command locations
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":io.sloeber.buildTool.api.IBuildToolProvider"/>
+                  <meta.attribute kind="java" basedOn="io.sloeber.buildTool.api.ExtensionBuildToolProvider:"/>
                </appinfo>
             </annotation>
          </attribute>

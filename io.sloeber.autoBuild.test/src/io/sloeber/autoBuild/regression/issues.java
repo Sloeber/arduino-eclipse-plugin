@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 
-import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.buildTool.api.IBuildToolManager;
@@ -28,7 +27,6 @@ import io.sloeber.buildTool.api.IBuildTools;
 @SuppressWarnings({ "nls", "static-method" })
 public class issues {
 	private static String codeRootFolder="src";
-    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
 
     @BeforeAll
     public static void beforeAll() {
@@ -102,8 +100,9 @@ public class issues {
         String projectName = "setDescription";
         CoreModel coreModel = CoreModel.getDefault();
 
+        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(defaultProjectType);
         IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder,cpp_exeCodeProvider,
-                targetTool, false, null);
+        		buildTools, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {

@@ -3,7 +3,6 @@ package io.sloeber.autoBuild.regression;
 import static org.junit.Assert.*;
 import static io.sloeber.autoBuild.helpers.Defaults.*;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -27,7 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
@@ -48,7 +46,7 @@ public class regression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static private String codeRootFolder="src";
     static int testCounter = 1;
-    static IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
+
 
     @BeforeAll
     public static void beforeAll() {
@@ -80,6 +78,7 @@ public class regression {
         String projectName = "createCloseOpenProject";
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
+        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
         		cpp_exeCodeProvider, buildTools, false, null); 
 
@@ -119,6 +118,7 @@ public class regression {
         String projectName = "setBuilder";
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
+        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
         		cpp_exeCodeProvider, buildTools, false, null);
 
@@ -179,6 +179,7 @@ public class regression {
         IProject testProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
         if (testProject == null || !testProject.exists()) {
         	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, "io.sloeber.autoBuild.test",  "io.sloeber.autoBuild.projectType.test.options", true);
+        	IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
             testProject = AutoBuildProject.createProject(projectName, projectType, 
                     CCProjectNature.CC_NATURE_ID,codeRootFolder,
                     cpp_exeCodeProvider, buildTools, false, null);

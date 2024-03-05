@@ -32,9 +32,9 @@ public interface IBuildTools {
     boolean holdsAllTools();
 
     /**
-     * Get rovider may provide different versions of tools.
-     * This can bthe ID that identifies the selection made in the tool provider
-     * A tool pe V1.0 and V2.3 but also completely different tool set (like in
+     * A buildTool provider may provide different versions of tools.
+     * This can the ID that identifies the selection made in the tool provider
+     * A tool may be V1.0 and V2.3 but also completely different tool set (like in
      * embedded world)
      * By providing the selectionID This selection can be made persistent.
      * 

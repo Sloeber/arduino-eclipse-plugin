@@ -2,6 +2,8 @@ package io.sloeber.buildTool.api;
 
 import java.util.Set;
 
+import io.sloeber.schema.api.IProjectType;
+
 public interface IBuildToolManager {
 
     public enum ToolType {
@@ -109,13 +111,14 @@ public interface IBuildToolManager {
     public Set<IBuildTools> getAllInstalledTargetTools();
     
     /**
-     * get a build tools
+     * get a build tools that is compatible with the given
+     * projectType
      * Doesn't matter which tool provider
      * 
      * 
      * @return a build tools
      */
-    public IBuildTools getAnyInstalledBuildTools();
+    public IBuildTools getAnyInstalledBuildTools(IProjectType projectType);
 
     /**
      * Get all the build tool providers known to the 

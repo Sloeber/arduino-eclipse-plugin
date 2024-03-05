@@ -15,7 +15,7 @@
 <provider
       class="io.sloeber.core.toolchain.ArduinoLanguageProvider"
       id="io.sloeber.languageSettingsProvider"
-      name="%provider.compoler.settings.name"
+      name="%sloeber..languageSettingsProvider"
       parameter='${COMMAND} -E -P -v -dD -D__IN_ECLIPSE__ "${INPUTS}"'
       prefer-non-shared="true">
 <language-scope id="org.eclipse.cdt.core.gcc"/>
@@ -312,7 +312,6 @@
         </toolChain>
      <configuration
            id="io.sloeber.core.configuration.release"
-           languageSettingsProviders="io.sloeber.languageSettingsProvider"
            name="%configuration.name">
         
      </configuration>

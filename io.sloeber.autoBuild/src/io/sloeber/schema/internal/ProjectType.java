@@ -15,8 +15,13 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
@@ -25,6 +30,7 @@ import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.buildTool.api.IBuildToolProvider;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
@@ -43,6 +49,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 	private String[] modelBuildProperties;
 	private String[] modelBuildArtifactType;
 	private String[] modelBuilders;
+	private String[] modelSupportedToolProviders;
 	//private String[] modelBuilderExtension; not needed
 
 	private Map<String, Configuration> myConfigMap = new HashMap<>();
@@ -58,6 +65,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 	private Map<String, IBuilder> myBuilders = new HashMap<>();
 	private IBuilder myDefaultBuilder;
 	private AutoBuildBuilderExtension myBuilderExtension;
+	private Set<String> mySupportedToolProviders=new HashSet<>();
 
 	/*
 	 * C O N S T R U C T O R S
@@ -79,6 +87,11 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		modelEnvironmentVariableSupplier = getAttributes(PROJECT_ENVIRONMENT_SUPPLIER);
 		modelBuildMacroSupplier = getAttributes(PROJECT_BUILD_MACRO_SUPPLIER);
 		modelBuilders = getAttributes(PROJECT_BUILDERS);
+		modelSupportedToolProviders= getAttributes(MODEL_TOOL_PROVIDERS);
+		
+		if(!modelSupportedToolProviders[SUPER].isBlank()) {
+			mySupportedToolProviders.addAll(Arrays.asList(  modelSupportedToolProviders[SUPER].split(SEMICOLON)));
+		}
 		
 		
 		myIsTest=Boolean.valueOf(modelIsTest[SUPER]).booleanValue();
@@ -273,17 +286,18 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		return getToolChain().getOption( optionID);
 	}
 
-
 	@Override
-	public Map<String, IBuildTools> getSupportedBuildTools() {
-		// TODO Auto-generated method stub
-		return null;
+	public AutoBuildBuilderExtension getBuilderExtension() {
+		return myBuilderExtension;
 	}
 
 
 	@Override
-	public AutoBuildBuilderExtension getBuilderExtension() {
-		return myBuilderExtension;
+	public boolean supportsToolProvider(IBuildToolProvider buildToolsProvider) {
+		if(mySupportedToolProviders.size()==0) {
+			return true;
+		}
+		return mySupportedToolProviders.contains(buildToolsProvider.getID());
 	}
 
 }

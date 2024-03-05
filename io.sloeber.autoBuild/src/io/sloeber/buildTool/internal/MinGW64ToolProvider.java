@@ -8,27 +8,25 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.buildTool.api.IBuildToolProvider;
+import io.sloeber.buildTool.api.ExtensionBuildToolProvider;
 
-public class MinGW64ToolProvider implements IBuildToolProvider {
-	final private static String MINGW_ID = "Mingw64"; //$NON-NLS-1$
-	final private static String MINGW_NAME = "Mingw 64 bit tools"; //$NON-NLS-1$
+public class MinGW64ToolProvider extends ExtensionBuildToolProvider {
 	private static boolean myHoldsAllTools = false;
 	private static Map<String, IBuildTools> myTargetTools = new HashMap<>();
 	private static String[] mingw64Locations = { "C:\\MinGW64", "C:\\Program Files\\mingw-w64" }; //$NON-NLS-1$ //$NON-NLS-2$
-	static {
+
+	@Override
+	public void initialize(IConfigurationElement element) {
+		super.initialize(element);
 		findTools();
 	}
 
-	public MinGW64ToolProvider() {
-		// nothing to be done here
-	}
-
-	private static void findTools() {
+	private void findTools() {
 		if (isWindows) {
 			myTargetTools.clear();
 			for (String curMinGWLocation : mingw64Locations) {
@@ -41,7 +39,7 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 						File curToolTarget = curToolTargetPath.toFile();
 						if (curToolTarget.exists() && curToolTarget.isDirectory()) {
 							// we have a winner
-							IBuildTools newTargetTool=new MinGWTargetTool(curToolTargetPath, MINGW_ID, curChild);
+							IBuildTools newTargetTool=new MinGWTargetTool(curToolTargetPath, getID(), curChild);
 							myTargetTools.put(curChild,newTargetTool );
 							myHoldsAllTools=myHoldsAllTools||newTargetTool.holdsAllTools();
 									
@@ -56,11 +54,6 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 	@Override
 	public boolean holdsAllTools() {
 		return myHoldsAllTools;
-	}
-
-	@Override
-	public String getID() {
-		return MINGW_ID;
 	}
 
 
@@ -82,15 +75,12 @@ public class MinGW64ToolProvider implements IBuildToolProvider {
 		return new HashSet<>( myTargetTools.values());
 	}
 
-	@Override
-	public String getName() {
-		return MINGW_NAME;
-	}
 
 	@Override
 	public void refreshToolchains() {
 		findTools();
 		
 	}
+
 
 }

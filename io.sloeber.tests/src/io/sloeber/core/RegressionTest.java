@@ -428,6 +428,18 @@ public class RegressionTest {
         theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
                 inCompileDescription, new NullProgressMonitor());
 
+        // also do a build
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+        if (Shared.hasBuildErrors(theTestProject)) {
+            fail("Failed to compile the project before close:" + projectName);
+        }
+        
+        // also do a clean
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
+        
+        
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
 
@@ -468,7 +480,7 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
         if (Shared.hasBuildErrors(theTestProject)) {
-            fail("Failed to compile the project:" + projectName);
+            fail("Failed to compile the project after open:" + projectName);
         }
 
     }

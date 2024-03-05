@@ -206,14 +206,21 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         IPath corePath = myBoardDescription.getActualCoreCodePath();
         IFolder coreFolder = getArduinoCoreFolder();
         if (!coreFolder.getLocation().equals(corePath)) {
+        	System.out.println("projectNeedsUpdate core Folder mismatch");
+        	System.out.println("corefolder "+coreFolder.getLocation());
+        	System.out.println("corePath   "+corePath);
             return true;
         }
         IFolder arduinoVariantFolder = getArduinoVariantFolder();
         IPath variantPath = myBoardDescription.getActualVariantPath();
-        if ((variantPath == null) || (variantPath.toFile().exists())) {
+        if ((!variantPath.toFile().exists()) && (arduinoVariantFolder.exists())) {
+        	System.out.println("projectNeedsUpdate variant Folder exists but sdhould not");
             return true;
         }
-        if (!arduinoVariantFolder.getLocation().equals(variantPath)) {
+        if ((variantPath.toFile().exists()) &&!arduinoVariantFolder.getLocation().equals(variantPath)) {
+        	System.out.println("projectNeedsUpdate variant Folder mismatch");
+        	System.out.println("folder   "+arduinoVariantFolder.getLocation());
+        	System.out.println("location "+variantPath);
             return true;
         }
 

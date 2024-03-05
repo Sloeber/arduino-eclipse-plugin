@@ -11,7 +11,7 @@
 		
   <projectType
         buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
-        builders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
+        supportedBuilders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
         id="io.sloeber.autoBuild.projectType.compound.exe"
         name="%autoBuild.projectType.name">
      <toolChain
@@ -174,7 +174,7 @@
   </projectType>
   <projectType
         buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe"
-        builders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
+        supportedBuilders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
         id="io.sloeber.autoBuild.projectType.exe"
         name="exe">
      <configuration
@@ -195,7 +195,7 @@
   </projectType>
   <projectType
         buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib"
-        builders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
+        supportedBuilders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
         id="io.sloeber.autoBuild.projectType.static.lib"
         name="static_lib">
      <configuration
@@ -216,7 +216,7 @@
   </projectType>
   <projectType
         buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-        builders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
+        supportedBuilders="io.sloeber.autoBuild.internal.builder;io.sloeber.autoBuild.make.builder"
         id="io.sloeber.autoBuild.projectType.dynamic.lib"
         name="dynamic_lib">
      <configuration

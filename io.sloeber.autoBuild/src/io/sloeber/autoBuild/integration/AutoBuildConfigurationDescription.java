@@ -267,7 +267,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (myBuildTools == null) {
 			// TODO add real error warning
 			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null" ); //$NON-NLS-1$
-			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools();
+			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
 		}
 		return myBuildTools;
 	}
@@ -426,11 +426,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					String selectionID = value;
 					IBuildToolManager buildToolManager =IBuildToolManager.getDefault();
 					myBuildTools = buildToolManager.getBuildTools(providerID, selectionID);
-					if (myBuildTools == null) {
-						// TODO add real error warning
-						System.err.println("unable to identify build Tools from :" + curLine); //$NON-NLS-1$
-						myBuildTools=buildToolManager.getAnyInstalledBuildTools();
-					}
+
 				}
 
 				// gather the complex field data
@@ -452,6 +448,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			}
 		}
 		myProjectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
+		if (myBuildTools == null) {
+			// TODO add real error warning
+			System.err.println("unable to identify build Tools "); //$NON-NLS-1$
+			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
+		}
 		myAutoBuildConfiguration = myProjectType.getConfiguration(confName);
 		for (IBuilder buildRunner : getAvailableBuilders()) {
 			if (myBuilder == null || buildRunner.getId().equals(builderID)) {

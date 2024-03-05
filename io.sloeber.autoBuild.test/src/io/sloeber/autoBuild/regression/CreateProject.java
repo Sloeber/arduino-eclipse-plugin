@@ -10,7 +10,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
@@ -29,78 +28,81 @@ import org.eclipse.core.resources.IProject;
 
 @SuppressWarnings("nls")
 class CreateProject {
-    static IBuildTools targetTool = IBuildToolManager.getDefault().getAnyInstalledBuildTools();
-    private static String codeRootFolder="src";
-    @BeforeAll
-    static void beforeAll() {
-        Shared.setDeleteProjects(false);
-        Shared.setCloseProjects(false);
-    }
+
+	private static String codeRootFolder = "src";
+
+	@BeforeAll
+	static void beforeAll() {
+		Shared.setDeleteProjects(false);
+		Shared.setCloseProjects(false);
+	}
 
 	@SuppressWarnings("static-method")
-    @ParameterizedTest
-    @MethodSource("projectCreationInfoProvider")
-    void testExample(String myProjectName, String extensionPointID, String extensionID, String projectTypeID,
-            String natureID, ICodeProvider codeProvider) throws Exception {
+	@ParameterizedTest
+	@MethodSource("projectCreationInfoProvider")
+	void testExample(String myProjectName, IProjectType projectType, IBuildTools buildTools, 
+			String natureID, ICodeProvider codeProvider) throws Exception {
 
-    	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, extensionID, projectTypeID, true);
-        IProject testProject = AutoBuildProject.createProject(myProjectName,  projectType,
-                natureID, codeRootFolder,codeProvider, targetTool, false, null);
-        ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
-        for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
-            cProjectDesc.setActiveConfiguration(curConfig);
-            CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
-            Shared.BuildAndVerifyActiveConfig(testProject);
-        }
-    }
+		IProject testProject = AutoBuildProject.createProject(myProjectName, projectType, natureID, codeRootFolder,
+				codeProvider, buildTools, false, null);
+		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
+		for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+			cProjectDesc.setActiveConfiguration(curConfig);
+			CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
+			Shared.BuildAndVerifyActiveConfig(testProject);
+		}
+	}
 
-    static Stream<Arguments> projectCreationInfoProvider() {
-        int testCounter = 1;
-        List<Arguments> ret = new LinkedList<>();
-        for (String extensionPointID : AutoBuildManager.supportedExtensionPointIDs()) {
-            for (String extensionID : AutoBuildManager.getSupportedExtensionIDs(extensionPointID)) {
-                for (IProjectType projectType : AutoBuildManager.getProjectTypes(extensionPointID, extensionID)) {
-                	if(projectType.isTest()) {
-                		continue;
-                	}
-                    String projectID = projectType.getId();
+	static Stream<Arguments> projectCreationInfoProvider() {
+		int testCounter = 1;
+		List<Arguments> ret = new LinkedList<>();
+		for (String extensionPointID : AutoBuildManager.supportedExtensionPointIDs()) {
+			for (String extensionID : AutoBuildManager.getSupportedExtensionIDs(extensionPointID)) {
+				for (IProjectType projectType : AutoBuildManager.getProjectTypes(extensionPointID, extensionID)) {
+					if (projectType.isTest()) {
+						continue;
+					}
+					String projectID = projectType.getId();
+					IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
+					if(buildTools==null) {
+						continue;
+					}
 
-
-                        ICodeProvider codeProvider_cpp = null;
-                        ICodeProvider codeProvider_c = null;
-                        switch (projectID) {
-                        case "io.sloeber.autoBuild.projectType.exe":
-                            codeProvider_cpp = cpp_exeCodeProvider;
-                            codeProvider_c = c_exeCodeProvider;
-                            break;
-                        case "io.sloeber.autoBuild.projectType.static.lib":
-                        case "io.sloeber.autoBuild.projectType.dynamic.lib":
-                            codeProvider_cpp =cpp_LibProvider;
-                            codeProvider_c = c_LibProvider;
-                            break;
-                        case "io.sloeber.autoBuild.projectType.compound.exe":
-                            codeProvider_cpp = compoundProvider;
-                            break;
-                        default:
-                            codeProvider_cpp = cpp_exeCodeProvider;
-                        }
-                        String projectName = AutoBuildCommon
-                                .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_CPP_"
-                                        + projectType.getName() + "_" + extensionID);
-                        testCounter++;
-                        ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
-                                CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
-                        if (codeProvider_c != null) {
-                            projectName = AutoBuildCommon
-                                    .MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_C_"
-                                            + projectType.getName() + "_" + extensionID);
-                            testCounter++;
-                            ret.add(Arguments.of(projectName, extensionPointID, extensionID, projectID,
-                                    CProjectNature.C_NATURE_ID, codeProvider_c));
-                        }
-                }
-            }
-        }
-        return ret.stream();
-    }
+					ICodeProvider codeProvider_cpp = null;
+					ICodeProvider codeProvider_c = null;
+					switch (projectID) {
+					case "io.sloeber.autoBuild.projectType.exe":
+						codeProvider_cpp = cpp_exeCodeProvider;
+						codeProvider_c = c_exeCodeProvider;
+						break;
+					case "io.sloeber.autoBuild.projectType.static.lib":
+					case "io.sloeber.autoBuild.projectType.dynamic.lib":
+						codeProvider_cpp = cpp_LibProvider;
+						codeProvider_c = c_LibProvider;
+						break;
+					case "io.sloeber.autoBuild.projectType.compound.exe":
+						codeProvider_cpp = compoundProvider;
+						break;
+					default:
+						codeProvider_cpp = cpp_exeCodeProvider;
+					}
+					String projectName = AutoBuildCommon
+							.MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_CPP_"
+									+ projectType.getName() + "_" + extensionID);
+					testCounter++;
+					ret.add(Arguments.of(projectName, projectType, buildTools, 
+							CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
+					if (codeProvider_c != null) {
+						projectName = AutoBuildCommon
+								.MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_C_"
+										+ projectType.getName() + "_" + extensionID);
+						testCounter++;
+						ret.add(Arguments.of(projectName, projectType, buildTools, 
+								CProjectNature.C_NATURE_ID, codeProvider_c));
+					}
+				}
+			}
+		}
+		return ret.stream();
+	}
 }

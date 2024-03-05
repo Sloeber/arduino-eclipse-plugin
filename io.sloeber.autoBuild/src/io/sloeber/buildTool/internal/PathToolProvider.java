@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.buildTool.api.IBuildToolProvider;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import static java.io.File.pathSeparator;
@@ -23,6 +24,7 @@ public class PathToolProvider implements IBuildToolProvider {
     private static Map<String,IBuildTools> myTargetTools=new HashMap<>();
     private static String myID="PathToolProvider";
     private static String NAME="Tool on the path";
+    private static String DESCRIPTION="The Tools on the path";
 
     static {
     	findTools();
@@ -110,6 +112,19 @@ public class PathToolProvider implements IBuildToolProvider {
 	public void refreshToolchains() {
 		findTools();
 		
+	}
+	@Override
+	public boolean supports(IProjectType projectType) {
+		// We assume everything goes
+		return true;
+	}
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+	@Override
+	public boolean isTest() {
+		return false;
 	}
 
 

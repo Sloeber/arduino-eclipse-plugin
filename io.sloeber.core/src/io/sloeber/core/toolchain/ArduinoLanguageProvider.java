@@ -25,7 +25,7 @@ public class ArduinoLanguageProvider implements ILanguageSettingsProvider {
 
     @Override
     public String getName() {
-        return "ArduinoLanguageProvider"; //$NON-NLS-1$
+        return "Sloeber language Settings provider"; //$NON-NLS-1$
     }
 
     @Override

@@ -101,12 +101,16 @@ public class CreateBasicProjects {
     private void doBuilds(String builderID, String projectName, String extensionPointID,
             String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,IBuildTools targetTool,
             Boolean shouldMakefileExists) throws Exception {
+    	String shortProjectName=projectName;
+    	if(projectName.length()>41) {
+    		shortProjectName=projectName.substring(0, 40);
+    	}
         if (buildTypeActiveBuild) {
-            buildAllConfigsAsActive(builderID, projectName, extensionPointID, extensionID, projectTypeID,
+            buildAllConfigsAsActive(builderID, shortProjectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider,targetTool, shouldMakefileExists);
         }
         if (!buildTypeActiveBuild) {
-            buildAllConfigs(builderID, "all_" + projectName, extensionPointID, extensionID, projectTypeID,
+            buildAllConfigs(builderID, "all_" + shortProjectName, extensionPointID, extensionID, projectTypeID,
                     natureID, codeProvider, targetTool,shouldMakefileExists);
         }
 

@@ -209,7 +209,7 @@ public class InoPreprocessor {
 	public static void deleteSloeberInoCPPFile(IAutoBuildConfigurationDescription autoBuildCfDes,
 			IProgressMonitor monitor) throws CoreException {
 		IFile sloeberInoCpp = getSloeberInoCPPFile(autoBuildCfDes);
-		if (sloeberInoCpp.exists()) {
+		if (sloeberInoCpp!= null && sloeberInoCpp.exists()) {
 			sloeberInoCpp.delete(true, monitor);
 		}
 	}
@@ -260,8 +260,9 @@ public class InoPreprocessor {
 		try {
 			currentFileContent = Files.readString(java.nio.file.Path.of(generatedFile.getLocation().toOSString()),
 					Charset.defaultCharset());
-		} catch (IOException e) {
+		} catch (@SuppressWarnings("unused") IOException e) {
 			// This happens when the generated file does not yet exist
+			//nothing needs to be done as  currentFileContent = null is ok 
 		}
 
 		if (!newFileContent.equals(currentFileContent)) {

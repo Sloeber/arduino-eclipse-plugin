@@ -241,5 +241,9 @@ public class AutoBuildConstants {
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; 
     public static final String PROJECT_BUILDERS = "builders";
     public static final String BUILDER_EXTENSION = "builderExtension";
+    public static final String SUPPORTED_PROJECT_TYPES = "supportsProjectTypes";
+    public static final String MODEL_TOOL_PROVIDERS = "supportedToolProviders";
+    
+    
     
 }
