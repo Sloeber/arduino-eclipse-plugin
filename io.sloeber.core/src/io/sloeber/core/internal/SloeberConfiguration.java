@@ -419,14 +419,16 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		ret.add(getArduinoCoreFolder());
 		ret.add(getArduinoVariantFolder());
 		try {
-			for(IResource curMember:getArduinoLibraryFolder().members()) {
-				if(curMember instanceof IFolder) {
-					IFolder curFolder =(IFolder) curMember;
-					IFolder srcFolder =curFolder.getFolder(SRC_FODER);
-					if(srcFolder.exists()) {
-						ret.add(srcFolder);
-					}else {
-					ret.add(curFolder);
+			if (getArduinoLibraryFolder().exists()) {
+				for (IResource curMember : getArduinoLibraryFolder().members()) {
+					if (curMember instanceof IFolder) {
+						IFolder curFolder = (IFolder) curMember;
+						IFolder srcFolder = curFolder.getFolder(SRC_FODER);
+						if (srcFolder.exists()) {
+							ret.add(srcFolder);
+						} else {
+							ret.add(curFolder);
+						}
 					}
 				}
 			}
