@@ -63,48 +63,48 @@ public class Helpers {
      * @return true if the configuration description has changed
      *         (setprojectdescription is needed to make the changes effective)
      */
-    public static boolean addIncludeFolder(ICConfigurationDescription configurationDescription,
-            List<IPath> IncludePaths, boolean isWorkspacePath) {
-
-        boolean confDesckMustBeSet = false;
-        if (IncludePaths == null) {
-            return false;
-        }
-        ICLanguageSetting[] languageSettings = configurationDescription.getRootFolderDescription()
-                .getLanguageSettings();
-        int pathSetting = ICSettingEntry.VALUE_WORKSPACE_PATH;
-        if (!isWorkspacePath) {
-            pathSetting = 0;
-        }
-
-        // Add include path to all languages
-        for (int idx = 0; idx < languageSettings.length; idx++) {
-            ICLanguageSetting lang = languageSettings[idx];
-            String LangID = lang.getLanguageId();
-            if (LangID != null) {
-                if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
-                    ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-                    HashSet<IPath> toAddPaths = new HashSet<>(IncludePaths);
-                    for (ICLanguageSettingEntry curLangSetting : OrgIncludeEntries) {
-                        CIncludePathEntry curIncludePathEntry = (CIncludePathEntry) curLangSetting;
-                        toAddPaths.remove(curIncludePathEntry.getFullPath());
-                    }
-                    if (!toAddPaths.isEmpty()) {
-                        confDesckMustBeSet = true;
-                        ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length
-                                + toAddPaths.size()];
-                        System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
-                        int startPointer = OrgIncludeEntries.length;
-                        for (IPath curPath : toAddPaths) {
-                            IncludeEntries[startPointer++] = new CIncludePathEntry(curPath, pathSetting);
-                        }
-                        lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
-                    }
-                }
-            }
-        }
-        return confDesckMustBeSet;
-    }
+//    public static boolean addIncludeFolder(ICConfigurationDescription configurationDescription,
+//            List<IPath> IncludePaths, boolean isWorkspacePath) {
+//
+//        boolean confDesckMustBeSet = false;
+//        if (IncludePaths == null) {
+//            return false;
+//        }
+//        ICLanguageSetting[] languageSettings = configurationDescription.getRootFolderDescription()
+//                .getLanguageSettings();
+//        int pathSetting = ICSettingEntry.VALUE_WORKSPACE_PATH;
+//        if (!isWorkspacePath) {
+//            pathSetting = 0;
+//        }
+//
+//        // Add include path to all languages
+//        for (int idx = 0; idx < languageSettings.length; idx++) {
+//            ICLanguageSetting lang = languageSettings[idx];
+//            String LangID = lang.getLanguageId();
+//            if (LangID != null) {
+//                if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
+//                    ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
+//                    HashSet<IPath> toAddPaths = new HashSet<>(IncludePaths);
+//                    for (ICLanguageSettingEntry curLangSetting : OrgIncludeEntries) {
+//                        CIncludePathEntry curIncludePathEntry = (CIncludePathEntry) curLangSetting;
+//                        toAddPaths.remove(curIncludePathEntry.getFullPath());
+//                    }
+//                    if (!toAddPaths.isEmpty()) {
+//                        confDesckMustBeSet = true;
+//                        ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length
+//                                + toAddPaths.size()];
+//                        System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
+//                        int startPointer = OrgIncludeEntries.length;
+//                        for (IPath curPath : toAddPaths) {
+//                            IncludeEntries[startPointer++] = new CIncludePathEntry(curPath, pathSetting);
+//                        }
+//                        lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
+//                    }
+//                }
+//            }
+//        }
+//        return confDesckMustBeSet;
+//    }
 
     /**
      * Removes include folders that are not valid. This method does not save the

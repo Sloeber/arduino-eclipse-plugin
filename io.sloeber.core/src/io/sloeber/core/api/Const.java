@@ -142,6 +142,8 @@ public class Const {
     public static final String SAM = "sam";
     public static final String SAMD = "samd";
     public static final String UNO = "uno";
+    
+    public static final String SRC_FODER = "src"; 
 
     public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
     public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";

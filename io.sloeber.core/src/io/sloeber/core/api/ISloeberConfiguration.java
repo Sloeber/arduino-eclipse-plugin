@@ -3,6 +3,7 @@ package io.sloeber.core.api;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -105,5 +106,7 @@ public interface ISloeberConfiguration {
 	void setCompileDescription(CompileDescription newCompDesc);
 
 	void setOtherDescription(OtherDescription newOtherDesc);
-
+	
+	public Set<IFolder> getIncludeFolders();
+	
 }

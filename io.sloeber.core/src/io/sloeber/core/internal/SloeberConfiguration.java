@@ -1,8 +1,10 @@
 package io.sloeber.core.internal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static io.sloeber.core.api.Common.*;
@@ -15,6 +17,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -206,21 +209,21 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         IPath corePath = myBoardDescription.getActualCoreCodePath();
         IFolder coreFolder = getArduinoCoreFolder();
         if (!coreFolder.getLocation().equals(corePath)) {
-        	System.out.println("projectNeedsUpdate core Folder mismatch");
-        	System.out.println("corefolder "+coreFolder.getLocation());
-        	System.out.println("corePath   "+corePath);
+//        	System.out.println("projectNeedsUpdate core Folder mismatch");
+//        	System.out.println("corefolder "+coreFolder.getLocation());
+//        	System.out.println("corePath   "+corePath);
             return true;
         }
         IFolder arduinoVariantFolder = getArduinoVariantFolder();
         IPath variantPath = myBoardDescription.getActualVariantPath();
         if ((!variantPath.toFile().exists()) && (arduinoVariantFolder.exists())) {
-        	System.out.println("projectNeedsUpdate variant Folder exists but sdhould not");
+//        	System.out.println("projectNeedsUpdate variant Folder exists but sdhould not");
             return true;
         }
         if ((variantPath.toFile().exists()) &&!arduinoVariantFolder.getLocation().equals(variantPath)) {
-        	System.out.println("projectNeedsUpdate variant Folder mismatch");
-        	System.out.println("folder   "+arduinoVariantFolder.getLocation());
-        	System.out.println("location "+variantPath);
+//        	System.out.println("projectNeedsUpdate variant Folder mismatch");
+//        	System.out.println("folder   "+arduinoVariantFolder.getLocation());
+//        	System.out.println("location "+variantPath);
             return true;
         }
 
@@ -408,5 +411,29 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				Helpers.LinkFolderToFolder(variantPath, arduinoVariantFolder);
 			}
 		}
+	}
+
+	@Override
+	public Set<IFolder> getIncludeFolders() {
+		Set<IFolder> ret = new HashSet<>();
+		ret.add(getArduinoCodeFolder());
+		ret.add(getArduinoVariantFolder());
+		try {
+			for(IResource curMember:getArduinoLibraryFolder().members()) {
+				if(curMember instanceof IFolder) {
+					IFolder curFolder =(IFolder) curMember;
+					IFolder srcFolder =curFolder.getFolder(SRC_FODER);
+					if(srcFolder.exists()) {
+						ret.add(srcFolder);
+					}else {
+					ret.add(curFolder);
+					}
+				}
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }

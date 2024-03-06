@@ -50,9 +50,7 @@ public class SloeberProject extends Common {
     public static String PROJECT_ID = "io.sloeber.core.sketch"; //$NON-NLS-1$
     private static String SLOEBER_BUILD_TOOL_PROVIDER_ID = "io.sloeber.core.arduino.ToolProvider"; //$NON-NLS-1$
     private static QualifiedName sloeberQualifiedName = new QualifiedName(NODE_ARDUINO, "SloeberProject"); //$NON-NLS-1$
-    //    private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
-    //    private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
-    //    private Map<String, OtherDescription> myOtherDescriptions = new HashMap<>();
+
     private IProject myProject = null;
 
     private SloeberProject(IProject project) {

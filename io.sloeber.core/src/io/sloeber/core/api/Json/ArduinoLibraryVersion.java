@@ -38,7 +38,7 @@ public class ArduinoLibraryVersion extends Node implements Comparable<ArduinoLib
     private String checksum;
     private ArduinoLibrary myParent;
 
-    public static final String LIBRARY_SOURCE_FODER = "src"; //$NON-NLS-1$
+    
 
     @SuppressWarnings("nls")
     public ArduinoLibraryVersion(JsonElement json, ArduinoLibrary arduinoLibrary) {

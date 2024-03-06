@@ -447,33 +447,33 @@ public class Libraries {
         }
     }
 
-    public static boolean adjustProjectDescription(ICConfigurationDescription confdesc,
-            Map<String, List<IPath>> foldersToInclude) {
-        List<IPath> foldersToAddToInclude = foldersToInclude.get(INCLUDE);
-        boolean descriptionMustBeSet = Helpers.addIncludeFolder(confdesc, foldersToAddToInclude, true);
-        List<IPath> foldersToRemoveFromBuildPath = foldersToInclude.get(REMOVE);
-        if ((foldersToRemoveFromBuildPath != null) && (!foldersToRemoveFromBuildPath.isEmpty())) {
-            ICSourceEntry[] sourceEntries = confdesc.getSourceEntries();
-            for (IPath curFile : foldersToRemoveFromBuildPath) {
-                try {
-                    if (!CDataUtil.isExcluded(curFile, sourceEntries)) {
-                        sourceEntries = CDataUtil.setExcluded(curFile, true, true, sourceEntries);
-                        descriptionMustBeSet = true;
-                    }
-
-                } catch (CoreException e1) {
-                    // ignore
-                }
-            }
-            try {
-                confdesc.setSourceEntries(sourceEntries);
-            } catch (Exception e) {
-                // ignore
-            }
-
-        }
-        return descriptionMustBeSet;
-    }
+//    public static boolean adjustProjectDescription(ICConfigurationDescription confdesc,
+//            Map<String, List<IPath>> foldersToInclude) {
+//        List<IPath> foldersToAddToInclude = foldersToInclude.get(INCLUDE);
+//        boolean descriptionMustBeSet = Helpers.addIncludeFolder(confdesc, foldersToAddToInclude, true);
+//        List<IPath> foldersToRemoveFromBuildPath = foldersToInclude.get(REMOVE);
+//        if ((foldersToRemoveFromBuildPath != null) && (!foldersToRemoveFromBuildPath.isEmpty())) {
+//            ICSourceEntry[] sourceEntries = confdesc.getSourceEntries();
+//            for (IPath curFile : foldersToRemoveFromBuildPath) {
+//                try {
+//                    if (!CDataUtil.isExcluded(curFile, sourceEntries)) {
+//                        sourceEntries = CDataUtil.setExcluded(curFile, true, true, sourceEntries);
+//                        descriptionMustBeSet = true;
+//                    }
+//
+//                } catch (CoreException e1) {
+//                    // ignore
+//                }
+//            }
+//            try {
+//                confdesc.setSourceEntries(sourceEntries);
+//            } catch (Exception e) {
+//                // ignore
+//            }
+//
+//        }
+//        return descriptionMustBeSet;
+//    }
 
     private static Map<String, String> myIncludeHeaderReplacement;
 
@@ -502,8 +502,8 @@ public class Libraries {
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
             IPath sourcePath = CurItem.getValue();
             String curLibName = CurItem.getKey();
-            if (sourcePath.append(ArduinoLibraryVersion.LIBRARY_SOURCE_FODER).toFile().exists()) {
-                sourcePath = sourcePath.append(ArduinoLibraryVersion.LIBRARY_SOURCE_FODER);
+            if (sourcePath.append(SRC_FODER).toFile().exists()) {
+                sourcePath = sourcePath.append(SRC_FODER);
             }
             File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
                 @Override
