@@ -245,8 +245,16 @@ public class SloeberProject extends Common {
                 	for(;index<orgSourceEntries.length;index++) {
                 		newSourceEntries[index]=orgSourceEntries[index];
                 	}
-                	IPath excludes[] = new IPath[1];
+                	IPath excludes[] = new IPath[7];
         			excludes[0] = IPath.fromOSString("**/*.ino");
+        			excludes[1] = IPath.fromOSString("libraries/?*/**/?xamples/**");
+        			excludes[2] = IPath.fromOSString("libraries/?*/**/?xtras/**");
+        			excludes[3] = IPath.fromOSString("libraries/?*/**/test*/**");
+        			excludes[4] = IPath.fromOSString("libraries/?*/**/third-party/**");
+        			excludes[5] = IPath.fromOSString("libraries/**/._*");
+        			excludes[6] = IPath.fromOSString("libraries/?*/utility/*/*");
+        			
+        			
         			IPath arduinoRoot=IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(CONFIG_NAME_VARIABLE);
                 	newSourceEntries[index]=new CSourceEntry(arduinoRoot, excludes, ICSettingEntry.NONE);
                 	curConfig.setSourceEntries(newSourceEntries);

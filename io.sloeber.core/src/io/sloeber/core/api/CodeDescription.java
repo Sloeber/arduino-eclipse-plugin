@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -260,9 +261,9 @@ public class CodeDescription implements ICodeProvider {
 
 	@SuppressWarnings("nls")
 	@Override
-	public boolean createFiles(IFolder srcFolder, IProgressMonitor monitor) {
+	public boolean createFiles(IFolder targetFolder, IProgressMonitor monitor) {
 		try {
-			IProject project = srcFolder.getProject();
+			IProject project = targetFolder.getProject();
 
 			save();
 			Map<String, String> replacers = new TreeMap<>();
@@ -276,15 +277,15 @@ public class CodeDescription implements ICodeProvider {
 			case None:
 				break;
 			case defaultIno:
-				Helpers.addFileToProject(srcFolder.getFile(project.getName() + ".ino"),
+				Helpers.addFileToProject(targetFolder.getFile(project.getName() + ".ino"),
 						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false, replacers),
 						monitor, false);
 				break;
 			case defaultCPP:
-				Helpers.addFileToProject(srcFolder.getFile(project.getName() + ".cpp"),
+				Helpers.addFileToProject(targetFolder.getFile(project.getName() + ".cpp"),
 						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_CPP, false, replacers),
 						monitor, false);
-				Helpers.addFileToProject(srcFolder.getFile(project.getName() + ".h"),
+				Helpers.addFileToProject(targetFolder.getFile(project.getName() + ".h"),
 						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_H, false, replacers),
 						monitor, false);
 				break;
@@ -304,7 +305,7 @@ public class CodeDescription implements ICodeProvider {
 							}
 							try (InputStream theFileStream = Stream.openContentStream(sourceFile.toString(), true,
 									replacers);) {
-								Helpers.addFileToProject(srcFolder.getFile(renamedFile), theFileStream, monitor, false);
+								Helpers.addFileToProject(targetFolder.getFile(renamedFile), theFileStream, monitor, false);
 							} catch (IOException e) {
 								log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 										"Failed to add template file :" + sourceFile.toString(), e));
@@ -319,11 +320,11 @@ public class CodeDescription implements ICodeProvider {
 				try {
 					for (IPath curPath : myExamples) {
 						if (myMakeLinks) {
-							IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(project.getLocation());
-							Helpers.linkDirectory( curPath, folder);
+							Helpers.linkDirectory( curPath, targetFolder);
 						} else {
-							Files.copy(curPath.toPath(), project.getLocation().toPath());
-							FileModifiers.addPragmaOnce(curPath);
+							//Files.copy(curPath.toPath(), targetFolder.getLocation().toPath());
+							FileUtils.copyDirectory(curPath.toFile(), targetFolder.getLocation().toFile());
+	                        FileModifiers.addPragmaOnce(targetFolder.getFullPath());
 						}
 					}
 				} catch (IOException e) {

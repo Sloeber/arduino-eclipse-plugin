@@ -41,7 +41,7 @@ public class BoardDescription {
     private static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + ARDUINO_VARIANTS_FOLDER_NAME + DOT + PATH;
+    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
     private static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
     private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
@@ -843,7 +843,7 @@ public class BoardDescription {
         IPath variantPath = getActualVariantPath();
         if (variantPath != null) {
             allVars.put(ENV_KEY_BUILD_VARIANT_PATH, variantPath.toOSString());
-        } else {// teensy does not use variants
+        } else {// teensy does not use variant
             allVars.put(ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
         }
 

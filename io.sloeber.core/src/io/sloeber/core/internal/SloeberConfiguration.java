@@ -416,7 +416,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	@Override
 	public Set<IFolder> getIncludeFolders() {
 		Set<IFolder> ret = new HashSet<>();
-		ret.add(getArduinoCodeFolder());
+		ret.add(getArduinoCoreFolder());
 		ret.add(getArduinoVariantFolder());
 		try {
 			for(IResource curMember:getArduinoLibraryFolder().members()) {
