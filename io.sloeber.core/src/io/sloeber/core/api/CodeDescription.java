@@ -324,7 +324,7 @@ public class CodeDescription implements ICodeProvider {
 						} else {
 							//Files.copy(curPath.toPath(), targetFolder.getLocation().toPath());
 							FileUtils.copyDirectory(curPath.toFile(), targetFolder.getLocation().toFile());
-	                        FileModifiers.addPragmaOnce(targetFolder.getFullPath());
+	                        FileModifiers.addPragmaOnce(targetFolder.getLocation());
 						}
 					}
 				} catch (IOException e) {
