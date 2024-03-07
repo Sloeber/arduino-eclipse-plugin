@@ -46,7 +46,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.01.test 01 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.01.test 03 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -219,7 +219,7 @@ public class WorkAround extends Const {
 
     /**
      * Method that does the actual conversion of the provided platform.txt to the
-     * platform.sloeber.txt without eh house keeping. Basically this produces the
+     * platform.sloeber.txt without the house keeping. Basically this produces the
      * content of platform.sloeber.txt after the header
      * 
      * @param inPlatformTxt
@@ -232,6 +232,8 @@ public class WorkAround extends Const {
         String platformTXT = inPlatformTxt.replace("\r\n", "\n");
         // remove spaces before =
         platformTXT = platformTXT.replaceAll("(?m)^(\\S*)\\s*=", "$1=");
+        //remove -MMD (the dependency generation parameter
+        platformTXT = platformTXT.replaceAll(" -MMD ", " ");
 
         platformTXT = solveOSStuff(platformTXT);
 
