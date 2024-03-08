@@ -68,6 +68,8 @@ public class SloeberProjectVariableSupplier implements IEnvironmentVariableProvi
             return get_SLOEBER_HOME();
         case RUNTIME_IDE_PATH:
             return get_RUNTIME_IDE_PATH();
+		default:
+			break;
         }
         return null;
     }
