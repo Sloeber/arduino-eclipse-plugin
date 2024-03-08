@@ -179,7 +179,7 @@
                     id="io.sloeber.compiler.c.link.output"
                     name="%outputType.C.link.name"
                     namePattern="*.o"
-                    nameProvider="io.sloeber.managedBuild.Internal.CompileOutputNameProvider">
+                    nameProvider="io.sloeber.core.builder.CompileOutputNameProvider">
               </outputType>
               <outputType
                     buildVariable="AR_OBJ"
@@ -220,7 +220,7 @@
                     id="io.sloeber.compiler.S.sketch.link.output"
                     name="%outputType.S.link.name"
                     namePattern="%.o"
-                    nameProvider="io.sloeber.managedBuild.Internal.CompileOutputNameProvider"
+                    nameProvider="io.sloeber.core.builder.CompileOutputNameProvider"
                     superClass="io.sloeber.compiler.c.link.output">
               </outputType>
               <outputType
@@ -240,6 +240,7 @@
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.archiver.name"
+                    nameProvider="io.sloeber.core.builder.ArchiveOutputNameProvider"
                     outputExtension="ar"
                     outputName="${archive_file}">
               </outputType>

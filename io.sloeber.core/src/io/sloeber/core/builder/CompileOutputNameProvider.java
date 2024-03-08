@@ -1,4 +1,4 @@
-package io.sloeber.managedBuild.Internal;
+package io.sloeber.core.builder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,13 +70,13 @@ public class CompileOutputNameProvider implements IOutputNameProvider {
 				KeyValueTree rootSection = libProps.getData();
 				ret = Boolean.valueOf(rootSection.getValue(LIBRARY_DOT_A_LINKAGE)).booleanValue();
 			}
-			isArchiveLib.put(libName, ret);
+			isArchiveLib.put(libName, Boolean.valueOf(ret));
 			return ret;
 
 		}
 		// It is standard sketch code. No archiver needed
 
-		return true;
+		return false;
 	}
 
 }
