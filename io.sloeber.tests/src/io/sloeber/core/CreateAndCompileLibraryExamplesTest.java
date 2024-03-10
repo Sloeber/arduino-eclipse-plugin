@@ -2,14 +2,12 @@ package io.sloeber.core;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
-
+import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.junit.Assume;
 import org.junit.Test;
@@ -19,6 +17,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
@@ -61,10 +60,10 @@ public class CreateAndCompileLibraryExamplesTest {
                 Arduino.arduino_101(), Arduino.zeroProgrammingPort(), Arduino.ethernet() };
 
         LinkedList<Object[]> examples = new LinkedList<>();
-        TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
-        for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
+        Map<String, IExample> exampleFolders = LibraryManager.getAllExamples(null);
+        for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
-            IPath examplePath = curexample.getValue();
+            IPath examplePath = curexample.getValue().getCodeLocation();
             Example example = new Example(fqn, examplePath);
 
             // with the current amount of examples only do one
@@ -119,9 +118,9 @@ public class CreateAndCompileLibraryExamplesTest {
             myTotalFails++;
             return;
         }
-        ArrayList<IPath> paths = new ArrayList<>();
+        Set<IExample> paths = new HashSet<>();
 
-        paths.add(myExample.getPath());
+        paths.add(myExample);
         CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
         Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);

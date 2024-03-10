@@ -403,7 +403,7 @@ public class BoardDescription {
     /**
      * return the actual adress en,coded in the upload port example uploadport com4
      * returns com4 uploadport = arduino.local at 199.25.25.1 returns arduino.local
-     * 
+     *
      * @return
      */
     public String getActualUploadPort() {
@@ -418,7 +418,7 @@ public class BoardDescription {
      * Set the upload port like in the gui. The upload port can be a comport or a
      * networkadress space and something else note that getuploadport returns the
      * before space part of this method
-     * 
+     *
      * @param newUploadPort
      */
     public void setUploadPort(String newUploadPort) {
@@ -511,10 +511,6 @@ public class BoardDescription {
         return this.mySloeberBoardTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
     }
 
-    public TreeMap<String, IPath> getAllExamples() {
-        updateWhenDirty();
-        return LibraryManager.getAllExamples(this);
-    }
 
     public String getMenuNameFromMenuID(String id) {
         return this.mySloeberBoardTxtFile.getMenuNameFromID(id);
@@ -668,7 +664,7 @@ public class BoardDescription {
 
     /**
      * true if this board needs a networkUpload else false
-     * 
+     *
      * @return
      */
     public boolean isNetworkUpload() {
@@ -705,7 +701,7 @@ public class BoardDescription {
 
     /**
      * create a BoardDescription based on the environment variables given
-     * 
+     *
      * @param envVars
      */
     public BoardDescription(Map<String, String> envVars) {
@@ -741,7 +737,7 @@ public class BoardDescription {
      * files configuration files are files needed to setup the sloeber environment
      * for instance when openiung a project or after import of a project in the
      * workspace
-     * 
+     *
      * @return the minimum list of environment variables to recreate the project
      */
     public Map<String, String> getEnvVarsConfig() {
@@ -777,7 +773,7 @@ public class BoardDescription {
 
     /**
      * get the environment variables that need to be stored in version control
-     * 
+     *
      * @return the minimum list of environment variables to recreate the project
      *         from version control
      */
@@ -946,7 +942,7 @@ public class BoardDescription {
      * This method only returns environment variables with and without version
      * number
      * These are purely based on the tool dependencies
-     * 
+     *
      * @param platformVersion
      * @return environment variables pointing to the tools used by the platform
      */
@@ -1084,7 +1080,7 @@ public class BoardDescription {
         return myBoardID.equals("yun"); //$NON-NLS-1$
     }
 
-    
+
 	public String getDefaultValueIDFromMenu(String menuID) {
 		return this.mySloeberBoardTxtFile.getDefaultValueIDFromMenu(getBoardID(),menuID);
 	}

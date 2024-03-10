@@ -80,7 +80,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     }
 
     @Override
-    public String getName() {
+    public String getNodeName() {
         return name;
     }
 
@@ -160,7 +160,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ArduinoPackage) {
-            return ((ArduinoPackage) obj).getName().equals(this.name);
+            return ((ArduinoPackage) obj).getNodeName().equals(this.name);
         }
         return super.equals(obj);
     }

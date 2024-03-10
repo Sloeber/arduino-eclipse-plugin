@@ -4,18 +4,20 @@ package io.sloeber.core;
  * This test compiles all examples on all Arduino avr hardware
  * That is "compatible hardware as not all examples can be compiled for all hardware
  * for instance when serial2 is used a uno will not work but a mega will
- *  
+ *
  *
  * At the time of writing 560 examples are compiled
- * 
+ *
  */
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -27,6 +29,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
@@ -58,15 +61,15 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         LinkedList<Object[]> examples = new LinkedList<>();
         List<MCUBoard> allBoards = Arduino.getAllBoards();
 
-        TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
-        for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+        for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
-            IPath examplePath = curexample.getValue();
+            IPath examplePath = curexample.getValue().getCodeLocation();
             Example example = new Example(fqn, examplePath);
             if (!skipExample(example)) {
-                ArrayList<IPath> paths = new ArrayList<>();
+                Set<IExample> paths = new HashSet<>();
 
-                paths.add(examplePath);
+                paths.add( curexample.getValue());
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
                 for (MCUBoard curboard : allBoards) {
                     if (curboard.isExampleSupported(example)) {
@@ -86,7 +89,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         // skip Teensy stuff on Arduino hardware
         // Teensy is so mutch more advanced that most arduino avr hardware can not
         // handle it
-        return example.getPath().toString().contains("Teensy");
+        return example.getCodeLocation().toString().contains("Teensy");
     }
 
     @Test

@@ -1,6 +1,8 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.core.api.Const.EXAMPLES_FODER;
+import static io.sloeber.core.api.Const.eXAMPLES_FODER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.VersionNumber;
 
 /**
@@ -20,7 +23,7 @@ import io.sloeber.core.api.VersionNumber;
  *
  */
 
-public class ArduinoLibraryVersion extends Node implements Comparable<ArduinoLibraryVersion> {
+public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersion, Comparable<ArduinoLibraryVersion> {
 
     private String name;
     private VersionNumber version;
@@ -38,7 +41,7 @@ public class ArduinoLibraryVersion extends Node implements Comparable<ArduinoLib
     private String checksum;
     private ArduinoLibrary myParent;
 
-    
+
 
     @SuppressWarnings("nls")
     public ArduinoLibraryVersion(JsonElement json, ArduinoLibrary arduinoLibrary) {
@@ -144,6 +147,11 @@ public class ArduinoLibraryVersion extends Node implements Comparable<ArduinoLib
     }
 
     @Override
+    public String getNodeName() {
+        return name;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -163,7 +171,28 @@ public class ArduinoLibraryVersion extends Node implements Comparable<ArduinoLib
         return version.toString();
     }
 
+    @Override
     public IPath getInstallPath() {
         return myParent.getInstallPath().append(version.toString());
     }
+
+	@Override
+	public boolean isHardwareLib() {
+		return false;
+	}
+
+	@Override
+	public boolean isPrivateLib() {
+		return false;
+	}
+
+
+	@Override
+	public IPath getExamplePath() {
+		IPath Lib_examples = getInstallPath().append(eXAMPLES_FODER);
+        if(Lib_examples.toFile().exists()) {
+        	return Lib_examples;
+        }
+		return getInstallPath().append(EXAMPLES_FODER);
+	}
 }

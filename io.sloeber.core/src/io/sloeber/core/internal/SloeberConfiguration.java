@@ -1,5 +1,6 @@
 package io.sloeber.core.internal;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -34,6 +36,7 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.common.ConfigurationPreferences;
@@ -45,6 +48,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private BoardDescription myBoardDescription;
 	private OtherDescription myOtherDesc;
 	private CompileDescription myCompileDescription;
+	private Map <String,IArduinoLibraryVersion> myLibraries=new HashMap<>();
 
     //operational data
     private boolean myMemoryIsDirty = true;
@@ -58,7 +62,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
      * This constructor must be implemented for each derived class of
      * AutoBuildConfigurationExtensionDescription
      * or you will get run time errors
-     * 
+     *
      * @param owner
      * @param source
      * @throws Exception
@@ -119,12 +123,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         myOtherDesc=new OtherDescription( newOtherDesc);
         setIsDirty();
     }
-    
+
     @Override
     public CompileDescription getCompileDescription() {
         return new CompileDescription(myCompileDescription);
     }
-    
+
     @Override
     public void  setCompileDescription(CompileDescription newCompDesc ) {
     	if(myCompileDescription!=null && myCompileDescription.needsRebuild(newCompDesc)) {
@@ -152,11 +156,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         }
         configureIfDirty();
         return ret;
-    }
-
-    public void addLibrariesToProject(IProject projectHandle, Map<String, IPath> librariesToAdd) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -280,7 +279,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     /**
      * get the text for the decorator
-     * 
+     *
      * @param text
      * @return
      */
@@ -396,7 +395,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
      * Arduino/[cfg name].
      * 2 linked subfolders named core and variant link to the real Arduino code note
      *
-     * 
+     *
      */
 	private void updateArduinoCodeLinks() {
 		IPath corePath = myBoardDescription.getActualCoreCodePath();
@@ -438,4 +437,76 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		}
 		return ret;
 	}
+
+	@Override
+    public void reAttachLibraries() {
+		IProgressMonitor monitor=new NullProgressMonitor();
+		IFolder libFolder=getArduinoLibraryFolder();
+		//Remove all existing lib folders that are not known or are linking to the wrong lib
+		try {
+			for(IResource curResource:libFolder.members()) {
+				if(curResource instanceof IFolder) {
+					IFolder curFolder =(IFolder)curResource;
+					IArduinoLibraryVersion curLib=myLibraries.get(curFolder.getName());
+					if((curLib==null)||(!curLib.getInstallPath().equals(curFolder.getLocation()))) {
+						try {
+							curFolder.delete(true, monitor);
+						} catch (CoreException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//Add all remaining needed libs
+		for(IArduinoLibraryVersion curLib:myLibraries.values()) {
+			IFolder curLibFolder =libFolder.getFolder(curLib.getName());
+			if(!curLibFolder.exists()) {
+				Helpers.LinkFolderToFolder(curLib.getInstallPath(),curLibFolder);
+			}
+		}
+    }
+
+	@Override
+	public Map<String, IArduinoLibraryVersion> getUsedLibraries() {
+		return new HashMap<>(myLibraries);
+	}
+
+	@Override
+	public boolean addLibraries(Collection<IArduinoLibraryVersion> librartiesToAdd) {
+		boolean ret=false;
+		IFolder libFolder=getArduinoLibraryFolder();
+		for(IArduinoLibraryVersion curLib:librartiesToAdd) {
+			Helpers.LinkFolderToFolder(curLib.getInstallPath(), libFolder.getFolder(curLib.getName()));
+			myLibraries.put(curLib.getName(), curLib);
+			ret=true;
+		}
+		return ret;
+	}
+
+	@Override
+	public boolean removeLibraries(Collection<IArduinoLibraryVersion> librariesToRemove) {
+		boolean ret=false;
+		IProgressMonitor monitor= new NullProgressMonitor();
+		IFolder libFolder=getArduinoLibraryFolder();
+		for(IArduinoLibraryVersion curLib:librariesToRemove) {
+			if(myLibraries.containsKey(curLib.getName())) {
+				ret=true;
+				myLibraries.remove(curLib.getName());
+				try {
+					libFolder.getFolder(curLib.getName()).delete(true, monitor);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return ret;
+	}
+
 }

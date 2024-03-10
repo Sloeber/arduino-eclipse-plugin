@@ -15,10 +15,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -39,6 +36,8 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.ConfigurationPreferences;
@@ -151,10 +150,12 @@ public class Shared {
             projectCounter = globalBuildCounter;
         }
         String projectName = String.format("%05d_%s", Integer.valueOf(projectCounter), boardDescriptor.getBoardID());
-        if (codeDescriptor.getExampleName() != null) {
-            if (codeDescriptor.getExamples().get(0).toString().toLowerCase().contains("libraries")) {
+        IExample example=codeDescriptor.getLinkedExample();
+        if (example != null) {
+        	IArduinoLibraryVersion lib=example.getArduinoLibrary();
+            if (lib!=null) {
                 projectName = String.format("%05d_Library_%s_%s", Integer.valueOf(projectCounter),
-                        codeDescriptor.getLibraryName(), codeDescriptor.getExampleName());
+                		lib.getName(), codeDescriptor.getExampleName());
             } else {
                 projectName = String.format("%05d_%s", Integer.valueOf(projectCounter),
                         codeDescriptor.getExampleName());
@@ -294,7 +295,7 @@ public class Shared {
     /**
      * Extracts a zip file specified by the zipFilePath to a directory specified by
      * destDirectory (will be created if does not exists)
-     * 
+     *
      * @param zipFilePath
      * @param destDirectory
      * @throws IOException
@@ -325,7 +326,7 @@ public class Shared {
 
     /**
      * Extracts a zip entry (file entry)
-     * 
+     *
      * @param zipIn
      * @param filePath
      * @throws IOException

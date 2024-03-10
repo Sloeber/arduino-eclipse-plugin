@@ -130,7 +130,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
 
     //Below are the Node overrides
     @Override
-    public String getName() {
+    public String getNodeName() {
         return name;
     }
 

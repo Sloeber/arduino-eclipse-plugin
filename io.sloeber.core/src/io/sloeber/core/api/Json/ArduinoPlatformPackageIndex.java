@@ -33,7 +33,7 @@ public class ArduinoPlatformPackageIndex extends Node
 
     public ArduinoPackage getPackage(String packageName) {
         for (ArduinoPackage pkg : myPackages) {
-            if (pkg.getName().equals(packageName)) {
+            if (pkg.getNodeName().equals(packageName)) {
                 return pkg;
             }
         }
@@ -96,7 +96,7 @@ public class ArduinoPlatformPackageIndex extends Node
     }
 
     @Override
-    public String getName() {
+    public String getNodeName() {
         return myJsonFile.getName();
     }
 

@@ -2,8 +2,8 @@ package io.sloeber.ui.listeners;
 
 import java.util.Map;
 
+import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IInstallLibraryHandler;
-import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class MyLibraryInstallHandler implements IInstallLibraryHandler {
@@ -14,7 +14,7 @@ public class MyLibraryInstallHandler implements IInstallLibraryHandler {
 	}
 
 	@Override
-	public Map<String, ArduinoLibraryVersion> selectLibrariesToInstall(Map<String, ArduinoLibraryVersion> proposedLibsToInstall) {
+	public Map<String, IArduinoLibraryVersion> selectLibrariesToInstall(Map<String, IArduinoLibraryVersion> proposedLibsToInstall) {
 		return proposedLibsToInstall;
 	}
 

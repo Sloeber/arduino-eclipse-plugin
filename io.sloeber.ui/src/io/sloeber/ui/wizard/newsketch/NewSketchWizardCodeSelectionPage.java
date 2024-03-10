@@ -1,7 +1,7 @@
 package io.sloeber.ui.wizard.newsketch;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Listener;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CodeDescription.CodeTypes;
+import io.sloeber.core.api.IExample;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 
@@ -203,7 +204,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		case CustomTemplate:
 			return CodeDescription.createCustomTemplate(new Path(myTemplateFolderEditor.getStringValue()));
 		case sample:
-			ArrayList<IPath> sampleFolders = myExampleEditor.GetSampleFolders();
+			Set<IExample> sampleFolders = myExampleEditor.GetSampleFolders();
 			boolean link = myCheckBoxUseCurrentLinkSample.getSelection();
 			return CodeDescription.createExample(link, sampleFolders);
 		default:

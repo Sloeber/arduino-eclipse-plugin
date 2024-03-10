@@ -2,6 +2,7 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,8 +20,11 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
 
 public interface ISloeberConfiguration {
-    public static ISloeberConfiguration getActiveConfig(IProject project) {
-    	IAutoBuildConfigurationDescription autoBuild =IAutoBuildConfigurationDescription.getActiveConfig(project, false);
+	public static ISloeberConfiguration getActiveConfig(IProject project) {
+		return getActiveConfig( project,false);
+	}
+    public static ISloeberConfiguration getActiveConfig(IProject project,boolean write) {
+    	IAutoBuildConfigurationDescription autoBuild =IAutoBuildConfigurationDescription.getActiveConfig(project, write);
     	if(autoBuild==null) {
     		return null;
     	}
@@ -76,7 +80,7 @@ public interface ISloeberConfiguration {
 
     /**
      * get the text for the decorator
-     * 
+     *
      * @param text
      * @return
      */
@@ -106,7 +110,14 @@ public interface ISloeberConfiguration {
 	void setCompileDescription(CompileDescription newCompDesc);
 
 	void setOtherDescription(OtherDescription newOtherDesc);
-	
+
 	public Set<IFolder> getIncludeFolders();
-	
+
+	public boolean addLibraries(Collection<IArduinoLibraryVersion> librariesToAdd);
+	public boolean removeLibraries(Collection<IArduinoLibraryVersion> librariesToRemove);
+
+	void reAttachLibraries();
+
+	Map<String, IArduinoLibraryVersion> getUsedLibraries();
+
 }

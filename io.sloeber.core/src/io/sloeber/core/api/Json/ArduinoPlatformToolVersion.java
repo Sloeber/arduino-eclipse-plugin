@@ -53,8 +53,8 @@ public class ArduinoPlatformToolVersion extends Node {
     }
 
     @Override
-    public String getName() {
-        return myParentTool.getName();
+    public String getNodeName() {
+        return myParentTool.getNodeName();
     }
 
     public VersionNumber getVersion() {
@@ -86,7 +86,7 @@ public class ArduinoPlatformToolVersion extends Node {
         for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
             for (ArduinoPlatformVersion curplatformVersion : curPlatform.getVersions()) {
                 for (ArduinoPlatformTooldDependency curTooldependency : curplatformVersion.getToolsDependencies()) {
-                    if (curTooldependency.getName().equals(myParentTool.getName())
+                    if (curTooldependency.getName().equals(myParentTool.getNodeName())
                             && curTooldependency.getVersion().compareTo(myVersion) == 0) {
                         myInstallPath = curTooldependency.getInstallPath();
                         return myInstallPath;
@@ -135,14 +135,14 @@ public class ArduinoPlatformToolVersion extends Node {
 
         HashMap<String, String> vars = new HashMap<>();
         String installPath = getInstallPath().toOSString();
-        String keyString = RUNTIME_TOOLS + getName() + getVersion() + DOT_PATH;
+        String keyString = RUNTIME_TOOLS + getNodeName() + getVersion() + DOT_PATH;
         vars.put(keyString, installPath);
-        keyString = RUNTIME_TOOLS + getName() + '-' + getVersion() + DOT_PATH;
+        keyString = RUNTIME_TOOLS + getNodeName() + '-' + getVersion() + DOT_PATH;
         vars.put(keyString, installPath);
         if (skipDefault) {
             return vars;
         }
-        keyString = RUNTIME_TOOLS + getName() + DOT_PATH;
+        keyString = RUNTIME_TOOLS + getNodeName() + DOT_PATH;
         vars.put(keyString, installPath);
         return vars;
     }

@@ -2,16 +2,14 @@ package io.sloeber.core;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +19,7 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
@@ -66,17 +65,18 @@ public class CreateAndCompileExamplesTest {
 				Arduino.due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllLibraryExamples();
-		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			ArrayList<IPath> paths = new ArrayList<>();
+		TreeMap<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+		for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
+			IExample example=curexample.getValue();
 
-			paths.add(new Path(curexample.getValue().toString()));
-			CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
+			Set<IExample> tmpExamples = new HashSet<>();
+			tmpExamples.add(example);
+			CodeDescription codeDescriptor = CodeDescription.createExample(false, tmpExamples);
 
 			String fqn=curexample.getKey();
-			Example example=new Example(fqn,curexample.getValue());
+			Example newExample=new Example(fqn,example.getCodeLocation());
             // with the current amount of examples only do one
-            MCUBoard board = Example.pickBestBoard(example, myBoards);
+            MCUBoard board = Example.pickBestBoard(newExample, myBoards);
             if (board != null) {
                 BoardDescription curBoard = board.getBoardDescriptor();
                 if (curBoard != null) {
@@ -125,7 +125,7 @@ public class CreateAndCompileExamplesTest {
         // failures
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-       
+
         Shared.buildCounter++;
         if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileDescription())) {
             myTotalFails++;

@@ -228,7 +228,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 			private boolean myWordMatches(ArduinoPackage pac) {
 				boolean ret = wordMatches(pac.getEmail());
 				ret |= wordMatches(pac.getMaintainer());
-				ret |= wordMatches(pac.getName());
+				ret |= wordMatches(pac.getNodeName());
 				ret |= wordMatches(pac.getWebsiteURL().toString());
 				ret |= wordMatches(pac.getPackageIndex().getJsonFile().toString());
 				return ret;
@@ -408,11 +408,11 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 					@Override
 					public void update(ViewerCell cell) {
 						if (cell.getElement() instanceof ArduinoPlatformPackageIndex) {
-							cell.setText(((ArduinoPlatformPackageIndex) cell.getElement()).getName());
+							cell.setText(((ArduinoPlatformPackageIndex) cell.getElement()).getNodeName());
 
 						}
 						if (cell.getElement() instanceof ArduinoPackage) {
-							cell.setText(((ArduinoPackage) cell.getElement()).getName());
+							cell.setText(((ArduinoPackage) cell.getElement()).getNodeName());
 
 						}
 						if (cell.getElement() instanceof ArduinoPlatform) {

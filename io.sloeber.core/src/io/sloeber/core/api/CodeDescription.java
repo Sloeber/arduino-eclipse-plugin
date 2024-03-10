@@ -6,16 +6,17 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -28,7 +29,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Helpers;
-import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.Stream;
 
 /**
@@ -56,7 +56,7 @@ public class CodeDescription implements ICodeProvider {
 	private CodeTypes myCodeType;
 	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
-	private ArrayList<IPath> myExamples = new ArrayList<>();
+	private Set<IExample> myExamples = new HashSet<>();
 	private Map<String, String> myReplacers = null;
 
 	public IPath getTemPlateFoldername() {
@@ -70,7 +70,7 @@ public class CodeDescription implements ICodeProvider {
 	 * source code note that the keys \{include\} \{title\} \{SerialMonitorSerial\}
 	 * are already used. Please use other keys as your replacements will overwrite
 	 * the ones already used
-	 * 
+	 *
 	 * @param myReplacers a list of find an replace key value pairs. null is no
 	 *                    replace needed
 	 */
@@ -94,10 +94,10 @@ public class CodeDescription implements ICodeProvider {
 		return new CodeDescription(CodeTypes.defaultCPP);
 	}
 
-	public static CodeDescription createExample(boolean link, ArrayList<IPath> sampleFolders) {
+	public static CodeDescription createExample(boolean link, Set<IExample> examples) {
 		CodeDescription codeDescriptor = new CodeDescription(CodeTypes.sample);
 		codeDescriptor.myMakeLinks = link;
-		codeDescriptor.myExamples = sampleFolders;
+		codeDescriptor.myExamples.addAll(examples ) ;
 		return codeDescriptor;
 	}
 
@@ -144,32 +144,30 @@ public class CodeDescription implements ICodeProvider {
 	 * given the source descriptor, add the sources to the project returns a set of
 	 * libraries that need to be installed
 	 **/
-	Map<String, IPath> getNeededLibraries(IProject project, IProgressMonitor monitor) {
-		Map<String, IPath> libraries = new TreeMap<>();
+	Set<IArduinoLibraryVersion> getNeededLibraries() {
+		Set<IArduinoLibraryVersion> libraries = new HashSet<>();
 
 		if (myCodeType == CodeTypes.sample) {
-			for (IPath curPath : myExamples) {
-				String libName = getLibraryName(curPath);
-				if (libName != null) {
-					libraries.put(libName, Libraries.getLibraryCodeFolder(curPath));
-				}
+			for (IExample curExample : myExamples) {
+				libraries.add(curExample.getArduinoLibrary());
 			}
 		}
+		libraries.remove(null);
 		return libraries;
 	}
 
 	@SuppressWarnings("nls")
 	private void loadLastUsedExamples() {
-		String examplePathNames[] = InstancePreferences
-				.getString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
-
-		for (String curpath : examplePathNames) {
-			myExamples.add(new Path(curpath));
-		}
+//		String examplePathNames[] = InstancePreferences
+//				.getString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
+//
+//		for (String curpath : examplePathNames) {
+//			myExamples.add(new Path(curpath));
+//		}
 	}
 
-	public ArrayList<IPath> getExamples() {
-		return myExamples;
+	public Set<IExample> getExamples() {
+		return new HashSet<>(myExamples);
 	}
 
 	private void saveLastUsedExamples() {
@@ -198,7 +196,8 @@ public class CodeDescription implements ICodeProvider {
 	public String getExampleName() {
 		switch (myCodeType) {
 		case sample:
-			return myExamples.get(0).lastSegment();
+			IExample example=myExamples.iterator().next();
+			return example.getCodeLocation().lastSegment();
 		default:
 			break;
 		}
@@ -217,26 +216,27 @@ public class CodeDescription implements ICodeProvider {
 	public String getLibraryName() {
 		switch (myCodeType) {
 		case sample:
-			return getLibraryName(myExamples.get(0));
+			IExample example=myExamples.iterator().next();
+			return example.getArduinoLibrary().getName();
 		default:
 			break;
 		}
 		return null;
 	}
 
-	@SuppressWarnings("nls")
-	private static String getLibraryName(IPath examplePath) {
-		if (ConfigurationPreferences.getInstallationPathExamples().isPrefixOf(examplePath)) {
-			return null;
-		}
-		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
-			return examplePath.removeLastSegments(3).lastSegment();
-		}
-		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(5).lastSegment())) {
-			return examplePath.removeLastSegments(4).lastSegment();
-		}
-		return examplePath.removeLastSegments(2).lastSegment();
-	}
+//	@SuppressWarnings("nls")
+//	private static String getLibraryName(IPath examplePath) {
+//		if (ConfigurationPreferences.getInstallationPathExamples().isPrefixOf(examplePath)) {
+//			return null;
+//		}
+//		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
+//			return examplePath.removeLastSegments(3).lastSegment();
+//		}
+//		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(5).lastSegment())) {
+//			return examplePath.removeLastSegments(4).lastSegment();
+//		}
+//		return examplePath.removeLastSegments(2).lastSegment();
+//	}
 
 	public boolean isLinkedExample() {
 
@@ -249,14 +249,14 @@ public class CodeDescription implements ICodeProvider {
 	 * examples should be in the include path ... I don't want to support this use
 	 * case because if you want to do so you should know what you are doing and you
 	 * don't need this
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the path to the first linked example or NULL
 	 */
-	public IPath getLinkedExamplePath() {
-		if (!isLinkedExample())
+	public IExample getLinkedExample() {
+		if (!isLinkedExample()||myExamples.size()==0)
 			return null;
-		return myExamples.get(0);
+		return myExamples.iterator().next();
 	}
 
 	@SuppressWarnings("nls")
@@ -318,7 +318,8 @@ public class CodeDescription implements ICodeProvider {
 				break;
 			case sample:
 				try {
-					for (IPath curPath : myExamples) {
+					for (IExample curExample : myExamples) {
+						IPath curPath=curExample.getCodeLocation();
 						if (myMakeLinks) {
 							Helpers.linkDirectory( curPath, targetFolder);
 						} else {

@@ -3,18 +3,17 @@ package io.sloeber.core.api;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
-import io.sloeber.core.tools.Libraries;
 
 public class Sketch {
 
@@ -41,11 +40,15 @@ public class Sketch {
     }
 
     public static void reAttachLibrariesToProject(IProject iProject) {
-        Libraries.reAttachLibrariesToProject(iProject);
+        CoreModel coreModel = CoreModel.getDefault();
+        ICProjectDescription projectDescription = coreModel.getProjectDescription(iProject, false);
+    	for (ICConfigurationDescription curconfDesc : projectDescription.getConfigurations()) {
+    		ISloeberConfiguration.getConfig(curconfDesc).reAttachLibraries();
+    	}
     }
 
     public static boolean isSketch(IProject proj) {
-        return getConfigLocalFile(proj).exists();
+        return IAutoBuildConfigurationDescription.getActiveConfig(proj,false)!=null;
     }
 
     public static IFile getConfigVersionFile(IProject proj) {
@@ -59,29 +62,22 @@ public class Sketch {
         return proj.getFile(SLOEBER_PROJECT);
     }
 
-    public static boolean removeLibrariesFromProject(IProject project, ICProjectDescription projDesc,
-            Set<String> libraries) {
-        return Libraries.removeLibrariesFromProject(project, projDesc, libraries);
 
+    public static Map<String, IArduinoLibraryVersion> getAllAvailableLibraries(ISloeberConfiguration confDesc) {
+    	return LibraryManager.getAllAvailableLibraries( confDesc);
+        //return Libraries.getAllInstalledLibraries(confDesc);
     }
 
-    public static Map<String, IPath> getAllAvailableLibraries(ISloeberConfiguration confDesc) {
-        return Libraries.getAllInstalledLibraries(confDesc);
-    }
-
-    public static Set<String> getAllImportedLibraries(IProject project) {
-        return Libraries.getAllLibrariesFromProject(project);
-    }
 
     /**
      * Adds a folder to the project and adds the folder to the linked folders if
      * needed Stores the projectDescription if it has changed
-     * 
+     *
      * @param project
      *            the project to add the folder to
      * @param path
      *            the path that needs adding to the project
-     * 
+     *
      * @throws CoreException
      */
     public static void addCodeFolder(IProject project, Path path) throws CoreException {

@@ -8,12 +8,14 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.core.api.IExample;
 import io.sloeber.providers.ESP32;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
 @SuppressWarnings("nls")
-public class Example {
+public class Example implements IExample{
     private String myFQN;
     private String myLibName;
     private IPath myPath;
@@ -79,9 +81,6 @@ public class Example {
         }
     }
 
-    public IPath getPath() {
-        return myPath;
-    }
 
     public String getLibName() {
         return myLibName;
@@ -412,7 +411,7 @@ public class Example {
         ret.add("Library/arduino-ess/ess-yun");
         // I have no linket board in test setup
         ret.add("Library/arduino-ess/linkit-one-dweet");
-        //cores\arduino/WString.h:38:74: error: statement-expressions 
+        //cores\arduino/WString.h:38:74: error: statement-expressions
         ret.add("Library/ArduinoTrace/TraceFromGlobalScope");
         // no matching function for call to 'aREST::handle(EthernetClient&)'
         ret.add("Library/aREST/Ethernet");
@@ -525,7 +524,7 @@ public class Example {
             }
         }
         System.out.println(
-                "No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getPath().toOSString());
+                "No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getCodeLocation().toOSString());
         return null;
     }
 
@@ -577,4 +576,33 @@ public class Example {
         }
 
     }
+
+	@Override
+	public IArduinoLibraryVersion getArduinoLibrary() {
+		// as these are examples (not from libs but ide examples
+		//the lib is null
+		//I may fake a lib in the future
+		return null;
+	}
+
+	@Override
+	public IPath getCodeLocation() {
+		return myPath;
+	}
+
+	@Override
+	public String getName() {
+		return getInoName();
+	}
+
+	@Override
+	public String getID() {
+		return "example "+getName();
+	}
+
+	@Override
+	public String[] getBreadCrumbs() {
+		// Not needed for test as this is only used in the ui
+		return null;
+	}
 }

@@ -56,9 +56,9 @@ public class ArduinoLibraryIndex extends Node
             return ret;
         }
         for (ArduinoLibrary curLibrary : libraries.values()) {
-            if (libNames.contains(curLibrary.getName())) {
+            if (libNames.contains(curLibrary.getNodeName())) {
                 if (!curLibrary.isInstalled()) {
-                    ret.put(curLibrary.getName(), curLibrary.getNewestVersion());
+                    ret.put(curLibrary.getNodeName(), curLibrary.getNewestVersion());
                 }
             }
         }
@@ -91,7 +91,7 @@ public class ArduinoLibraryIndex extends Node
     }
 
     @Override
-    public String getName() {
+    public String getNodeName() {
         return jsonFile.getName();
     }
 
@@ -107,7 +107,7 @@ public class ArduinoLibraryIndex extends Node
 
     @Override
     public String getID() {
-        return getName();
+        return getNodeName();
     }
 
     @Override

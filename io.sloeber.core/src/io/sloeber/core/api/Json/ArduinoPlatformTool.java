@@ -53,7 +53,7 @@ public class ArduinoPlatformTool extends Node {
     }
 
     @Override
-    public String getName() {
+    public String getNodeName() {
         return myName;
     }
 
@@ -78,7 +78,7 @@ public class ArduinoPlatformTool extends Node {
 
     @Override
     public String getID() {
-        return getName();
+        return getNodeName();
     }
 
     /**

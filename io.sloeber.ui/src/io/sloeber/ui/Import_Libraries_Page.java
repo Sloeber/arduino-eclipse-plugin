@@ -2,19 +2,15 @@ package io.sloeber.ui;
 
 import static io.sloeber.ui.Activator.*;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -29,9 +25,9 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
 import io.sloeber.core.api.Const;
+import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ISloeberConfiguration;
-import io.sloeber.core.api.Sketch;
-import io.sloeber.core.tools.Libraries;
+import io.sloeber.core.api.LibraryManager;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {
 
@@ -90,18 +86,18 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		theGriddata.horizontalSpan = 1;
 		this.myLibrarySelector.setLayoutData(theGriddata);
 
+		ISloeberConfiguration sloeberCfg=ISloeberConfiguration.getActiveConfig(myProject);
 		// find the items to add to the list
-		Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		allLibraries = Sketch.getAllAvailableLibraries(ISloeberConfiguration.getActiveConfig(myProject));
+		Map<String, IArduinoLibraryVersion> allLibraries =  LibraryManager.getAllAvailableLibraries(sloeberCfg);
 
 		// Get the data in the tree
-		Set<String> allLibrariesAlreadyUsed = Sketch.getAllImportedLibraries(this.myProject);
+		Map<String, IArduinoLibraryVersion> alreadyUsedLibs = sloeberCfg.getUsedLibraries();
 		this.myLibrarySelector.setRedraw(false);
-		for (Entry<String, IPath> curlib : allLibraries.entrySet()) {
+		for (Entry<String, IArduinoLibraryVersion> curlib : allLibraries.entrySet()) {
 			TreeItem child = new TreeItem(this.myLibrarySelector, SWT.NONE);
 			child.setText(curlib.getKey());
-			if (allLibrariesAlreadyUsed.contains(curlib.getKey()))
-				child.setChecked(true);
+			child.setChecked(alreadyUsedLibs.get(curlib.getKey())!=null);
+			child.setData(curlib.getValue());
 		}
 
 		this.myLibrarySelector.setRedraw(true);
@@ -118,7 +114,6 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		return null;
 	}
 
-	@SuppressWarnings("restriction")
 	public boolean PerformFinish() {
 		// check if there is a incompatibility in the library folder name
 		// windows only
@@ -137,23 +132,22 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 			}
 		}
 		TreeItem selectedTreeItems[] = this.myLibrarySelector.getItems();
-		Set<String> selectedLibraries = new TreeSet<>();
-		Set<String> unselectedLibraries = new TreeSet<>();
+		Set<IArduinoLibraryVersion> selectedLibraries = new HashSet<>();
+		Set<IArduinoLibraryVersion> unselectedLibraries = new HashSet<>();
 		for (TreeItem CurItem : selectedTreeItems) {
 			if (CurItem.getChecked())
-				selectedLibraries.add(CurItem.getText());
+				selectedLibraries.add((IArduinoLibraryVersion)CurItem.getData());
 			else
-				unselectedLibraries.add(CurItem.getText());
+				unselectedLibraries.add((IArduinoLibraryVersion)CurItem.getData());
 		}
-		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-		ICProjectDescription projDesc = mngr.getProjectDescription(myProject, true);
-		ISloeberConfiguration activeConfDesc = ISloeberConfiguration.getActiveConfig(myProject);
-		boolean descNeedsSaving1 = Sketch.removeLibrariesFromProject(myProject, projDesc, unselectedLibraries);
-		Libraries.addLibrariesToProject(myProject, activeConfDesc, selectedLibraries);
-		if (descNeedsSaving1) {
+		CoreModel coreModel = CoreModel.getDefault();
+		ICProjectDescription projDesc = coreModel.getProjectDescription(myProject, true);
+		ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getActiveConfig(projDesc);
+		if(!unselectedLibraries.isEmpty()||!selectedLibraries.isEmpty()) {
+		sloeberCfg.removeLibraries( unselectedLibraries);
+		sloeberCfg.addLibraries( selectedLibraries);
 			try {
-
-				mngr.setProjectDescription(myProject, projDesc, true, null);
+				coreModel.setProjectDescription(myProject, projDesc, true, null);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}

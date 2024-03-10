@@ -75,7 +75,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			}
 
 			@Override
-			public String getName() {
+			public String getNodeName() {
 				return this.name;
 			}
 
@@ -105,7 +105,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 			@Override
 			public String getID() {
-				return getName();
+				return getNodeName();
 			}
 		}
 
@@ -131,11 +131,11 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			}
 
 			@Override
-			public String getName() {
+			public String getNodeName() {
 				if (canUpdate()) {
-					return myLib.getName() + canUpdateLabel;
+					return myLib.getNodeName() + canUpdateLabel;
 				}
-				return myLib.getName();
+				return myLib.getNodeName();
 			}
 
 			public boolean canUpdate() {
@@ -150,7 +150,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					myTooltip = "Architectures:" + libVers.getArchitectures().toString() + blankLine
 							+ libVers.getSentence() + blankLine + libVers.getParagraph() + blankLine + "Author: "
 							+ libVers.getAuthor() + blankLine + "Maintainer: " + libVers.getMaintainer() + blankLine
-							+ "provided by: " + libVers.getParent().getParent().getName();
+							+ "provided by: " + libVers.getParent().getParent().getNodeName();
 				}
 				return myTooltip;
 			}
@@ -207,7 +207,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 			@Override
 			public String getID() {
-				return getName();
+				return getNodeName();
 			}
 
 		}
@@ -219,9 +219,9 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					Category category = this.categories.get(categoryName);
 					if (category == null) {
 						category = new Category(categoryName);
-						this.categories.put(category.getName(), category);
+						this.categories.put(category.getNodeName(), category);
 					}
-					category.libraries.put(arduinoLibrary.getName(), new Library(category, arduinoLibrary));
+					category.libraries.put(arduinoLibrary.getNodeName(), new Library(category, arduinoLibrary));
 				}
 			}
 		}
@@ -246,7 +246,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		}
 
 		@Override
-		public String getName() {
+		public String getNodeName() {
 			return null;
 		}
 
@@ -399,7 +399,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 								lib.setVersion((ArduinoLibraryVersion) null);
 
 							}
-							item.setText(0, lib.getName());
+							item.setText(0, lib.getNodeName());
 							item.setText(1, lib.getVersionString());
 							verifySubtreeCheckStatus(item.getParentItem());
 						}
@@ -417,7 +417,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					if (displayVersion == null) {
 						displayVersion = selectedLib.getLatest();
 						selectedLib.setVersion(displayVersion);
-						item.setText(0, selectedLib.getName());
+						item.setText(0, selectedLib.getNodeName());
 					}
 					combo.select(combo.indexOf(displayVersion.getVersion().toString()));
 
@@ -436,7 +436,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 							LibraryTree.Library lib = (LibraryTree.Library) item.getData();
 							lib.setVersion(new VersionNumber(combo.getText()));
 							item.setText(1, lib.getVersionString());
-							item.setText(0, lib.getName());
+							item.setText(0, lib.getNodeName());
 							// Item selected: end the editing session
 							combo.dispose();
 						}
@@ -485,7 +485,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			switch (col) {
 			case 0:
 				if (element instanceof LibraryTree.Library) {
-					return ((LibraryTree.Library) element).getName();
+					return ((LibraryTree.Library) element).getNodeName();
 				}
 				return emptyString;
 			case 1:
@@ -517,7 +517,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		@Override
 		public void update(ViewerCell cell) {
 			if (cell.getColumnIndex() == 0) {
-				cell.setText(((Node) cell.getElement()).getName());
+				cell.setText(((Node) cell.getElement()).getNodeName());
 			} else if (cell.getElement() instanceof LibraryTree.Library) {
 				cell.setText(((LibraryTree.Library) cell.getElement()).getVersionString());
 			} else {
