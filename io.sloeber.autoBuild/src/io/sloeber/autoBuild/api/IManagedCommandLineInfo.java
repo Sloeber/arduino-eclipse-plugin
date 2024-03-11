@@ -14,7 +14,7 @@
 package io.sloeber.autoBuild.api;
 
 /**
- * @noextend This class is not intended to be subclassed by clients.
+ * @noextend This interface is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IManagedCommandLineInfo {
