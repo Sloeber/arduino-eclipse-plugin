@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -21,8 +22,6 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.ui.Messages;
 
 public class SampleSelector {
-	private static final String EXAMPLEPATH = "examplePath"; //$NON-NLS-1$
-
 	protected Tree mySampleTree;
 	protected Label myLabel;
 	TreeMap<String, IExample> myExamples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -104,64 +103,93 @@ public class SampleSelector {
 
 	}
 
+	class ItemSorter {
+		public TreeMap<String, ItemSorter> myItems = new TreeMap<>();
+		public IExample myExample = null;
+		public static Set<IExample> myToSelectList;
+
+		ItemSorter() {
+		}
+
+		public void createChildren(TreeItem curItem) {
+			for (Entry<String, ItemSorter> curentry : myItems.entrySet()) {
+				String key = curentry.getKey();
+				ItemSorter curSorter = curentry.getValue();
+				TreeItem newItem = new TreeItem(curItem, SWT.NONE);
+				newItem.setText(key);
+				curSorter.createChildren(newItem);
+				//newItem.setExpanded(true);
+			}
+			if (myExample == null) {
+				curItem.setGrayed(true);
+			} else {
+				boolean isSelected = myToSelectList.contains(myExample);
+				curItem.setChecked(isSelected);
+				curItem.setData(myExample);
+				if (isSelected) {
+					// expand all parents
+					TreeItem parentTreeItem = curItem;
+					while (parentTreeItem != null) {
+						parentTreeItem.setExpanded(true);
+						parentTreeItem.setChecked(true);
+						parentTreeItem.setGrayed(true);
+						parentTreeItem = parentTreeItem.getParentItem();
+					}
+				}
+			}
+
+		}
+	}
+
 	/**
-	 * This method adds all examples to the selection listbox All examples
-	 * already in the listbox are removed first.
+	 * This method adds all examples to the selection listbox All examples already
+	 * in the listbox are removed first.
 	 *
 	 * @param paths
 	 *
-	 * @param arduinoExample
-	 *            The folder with the arduino samples
-	 * @param privateLibrary
-	 *            The folder with the private libraries
-	 * @param hardwareLibrary
-	 *            The folder with the hardware libraries
+	 * @param arduinoExample    The folder with the arduino samples
+	 * @param privateLibrary    The folder with the private libraries
+	 * @param hardwareLibrary   The folder with the hardware libraries
 	 * @param mPlatformPathPath
 	 */
 
 	public void AddAllExamples(BoardDescription platformPath, Set<IExample> arrayList) {
 		myNumSelected = 0;
-		myExamples.putAll( LibraryManager.getExamplesAll(platformPath));
+		myExamples.putAll(LibraryManager.getExamplesAll(platformPath));
 
 		mySampleTree.removeAll();
+		mySampleTree.setRedraw(false);
 
-		// Add the examples to the tree
-		for (IExample curExample : this.myExamples.values()) {
+		// sort the items
+		ItemSorter sortedItems = new ItemSorter();
+		ItemSorter.myToSelectList = arrayList;
+
+		for (IExample curExample : myExamples.values()) {
 			String keys[] = curExample.getBreadCrumbs();
-			TreeItem curItems[] = this.mySampleTree.getItems();
-			TreeItem curItem = findItem(curItems, keys[0]);
-			if (curItem == null) {
-				curItem = new TreeItem(this.mySampleTree, SWT.NONE);
-				curItem.setText(keys[0]);
-			}
-			curItems = this.mySampleTree.getItems();
-			TreeItem prefItem = curItem;
+			ItemSorter curParent = sortedItems;
 			for (String curKey : keys) {
-				curItem = findItem(curItems, curKey);
-				if (curItem == null) {
-
-					curItem = new TreeItem(prefItem, SWT.NONE);
-					curItem.setText(curKey);
+				ItemSorter curSorter = curParent.myItems.get(curKey);
+				if (curSorter == null) {
+					curSorter = new ItemSorter();
+					curParent.myItems.put(curKey, curSorter);
 				}
-				prefItem = curItem;
-				curItems = curItem.getItems();
+				curParent = curSorter;
 			}
-
-			curItem.setData(EXAMPLEPATH, curExample);
-
+			curParent.myExample = curExample;
 		}
-		// Mark the examples selected
-		setLastUsedExamples(arrayList);
+
+		for (Entry<String, ItemSorter> curentry : sortedItems.myItems.entrySet()) {
+			String key = curentry.getKey();
+			ItemSorter curSorter = curentry.getValue();
+
+			TreeItem curItem = new TreeItem(mySampleTree, SWT.NONE);
+			curItem.setText(key);
+			curSorter.createChildren(curItem);
+			//curItem.setExpanded(true);
+		}
+		mySampleTree.setRedraw(true);
 	}
 
-	private static TreeItem findItem(TreeItem items[], String text) {
-		for (TreeItem curitem : items) {
-			if (text.equals(curitem.getText())) {
-				return curitem;
-			}
-		}
-		return null;
-	}
 
 	public void setEnabled(boolean enable) {
 		this.mySampleTree.setEnabled(enable);
@@ -178,8 +206,8 @@ public class SampleSelector {
 	}
 
 	/**
-	 * you can only set 1 listener. The listener is triggered each time a item
-	 * is selected or deselected
+	 * you can only set 1 listener. The listener is triggered each time a item is
+	 * selected or deselected
 	 *
 	 * @param listener
 	 */
@@ -187,44 +215,6 @@ public class SampleSelector {
 		this.mylistener = listener;
 	}
 
-	/**
-	 * Marks the previous selected example(s) as selected and expands the items
-	 * plus all parent items
-	 *
-	 * @param arrayList
-	 */
-	private void setLastUsedExamples(Set<IExample> arrayList) {
-
-		TreeItem[] startIems = this.mySampleTree.getItems();
-		for (TreeItem curItem : startIems) {
-			recursiveSetExamples(curItem, arrayList);
-		}
-		this.myNumSelectedLabel.setText(Integer.toString(this.myNumSelected));
-	}
-
-	private void recursiveSetExamples(TreeItem curTreeItem, Set<IExample> arrayList) {
-		for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
-			if (curchildTreeItem.getItems().length == 0) {
-				for (IExample curLastUsedExample : arrayList) {
-					IExample ss = (IExample) curchildTreeItem.getData(EXAMPLEPATH);
-					if (curLastUsedExample.getID().equals(ss.getID())) {
-						curchildTreeItem.setChecked(true);
-						curchildTreeItem.setExpanded(true);
-						TreeItem parentTreeItem = curTreeItem;
-						while (parentTreeItem != null) {
-							parentTreeItem.setExpanded(true);
-							parentTreeItem.setChecked(true);
-							parentTreeItem.setGrayed(true);
-							parentTreeItem = parentTreeItem.getParentItem();
-						}
-						this.myNumSelected += 1;
-					}
-				}
-			} else {
-				recursiveSetExamples(curchildTreeItem, arrayList);
-			}
-		}
-	}
 
 	public Set<IExample> GetSampleFolders() {
 		this.mySampleTree.getItems();
@@ -238,10 +228,8 @@ public class SampleSelector {
 	private List<IExample> recursiveGetSelectedExamples(TreeItem TreeItem) {
 		List<IExample> ret = new ArrayList<>();
 		for (TreeItem curchildTreeItem : TreeItem.getItems()) {
-			if (curchildTreeItem.getChecked() && (curchildTreeItem.getData(EXAMPLEPATH) != null)) {
-				IExample location = (IExample) curchildTreeItem.getData(EXAMPLEPATH);
-				ret.add(location);
-
+			if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+				ret.add( (IExample) curchildTreeItem.getData());
 			}
 			ret.addAll(recursiveGetSelectedExamples(curchildTreeItem));
 		}
