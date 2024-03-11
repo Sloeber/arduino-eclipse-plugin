@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFolder;
@@ -69,6 +71,33 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		setControl(composite);
 	}
 
+	class ItemSorter {
+		public static ISloeberConfiguration sloeberCfg;
+		public TreeMap<String, ItemSorter> myItems = new TreeMap<>();
+		public IArduinoLibraryVersion myLib = null;
+
+		ItemSorter() {
+		}
+
+		public void createChildren(TreeItem curItem) {
+			for (Entry<String, ItemSorter> curentry : myItems.entrySet()) {
+				String key = curentry.getKey();
+				ItemSorter curSorter = curentry.getValue();
+				TreeItem newItem = new TreeItem(curItem, SWT.NONE);
+				newItem.setText(key);
+				curSorter.createChildren(newItem);
+				newItem.setExpanded(true);
+			}
+			if (myLib == null) {
+				curItem.setGrayed(true);
+			}else {
+				curItem.setChecked(sloeberCfg.getUsedLibraries().get(myLib.getName()) != null);
+				curItem.setData(myLib);
+			}
+
+		}
+	}
+
 	@Override
 	protected void createSourceGroup(Composite parent) {
 		if (myProject == null)
@@ -93,49 +122,38 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		Map<String, IArduinoLibraryVersion> allLibraries = LibraryManager
 				.getLibrariesAll(sloeberCfg.getBoardDescription());
 
-		// Get the data in the tree
-		Map<String, IArduinoLibraryVersion> alreadyUsedLibs = sloeberCfg.getUsedLibraries();
-		myLibrarySelector.setRedraw(false);
+		// sort the items
+		ItemSorter sortedItems = new ItemSorter();
+		ItemSorter.sloeberCfg = sloeberCfg;
 
 		for (IArduinoLibraryVersion curlib : allLibraries.values()) {
 			String keys[] = curlib.getBreadCrumbs();
-			TreeItem curItems[] = myLibrarySelector.getItems();
-			TreeItem curItem = findItem(curItems, keys[0]);
-			if (curItem == null) {
-				curItem = new TreeItem(myLibrarySelector, SWT.NONE);
-				curItem.setText(keys[0]);
-				curItems= myLibrarySelector.getItems();
-			}
-
-			TreeItem prefItem = curItem;
+			ItemSorter curParent = sortedItems;
 			for (String curKey : keys) {
-				curItem = findItem(curItems, curKey);
-				if (curItem == null) {
-
-					curItem = new TreeItem(prefItem, SWT.NONE);
-					curItem.setText(curKey);
-
+				ItemSorter curSorter = curParent.myItems.get(curKey);
+				if (curSorter == null) {
+					curSorter = new ItemSorter();
+					curParent.myItems.put(curKey, curSorter);
 				}
-				prefItem = curItem;
-				curItems = curItem.getItems();
+				curParent = curSorter;
 			}
-			prefItem.setChecked(alreadyUsedLibs.get(curlib.getName())!=null);
-			prefItem.setData( curlib);
-
+			curParent.myLib = curlib;
 		}
+		myLibrarySelector.setRedraw(false);
 
+		for (Entry<String, ItemSorter> curentry : sortedItems.myItems.entrySet()) {
+			String key = curentry.getKey();
+			ItemSorter curSorter = curentry.getValue();
+
+			TreeItem curItem = new TreeItem(myLibrarySelector, SWT.NONE);
+			curItem.setText(key);
+			curSorter.createChildren(curItem);
+			curItem.setExpanded(true);
+		}
 		myLibrarySelector.setRedraw(true);
 
 	}
 
-	private static TreeItem findItem(TreeItem items[], String text) {
-		for (TreeItem curitem : items) {
-			if (text.equals(curitem.getText())) {
-				return curitem;
-			}
-		}
-		return null;
-	}
 
 	@Override
 	protected ITreeContentProvider getFileProvider() {
@@ -165,7 +183,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 			}
 		}
 		TreeItem selectedTreeItems[] = this.myLibrarySelector.getItems();
-		Set<IArduinoLibraryVersion> selectedLibraries =getSelectedLibraries();
+		Set<IArduinoLibraryVersion> selectedLibraries = getSelectedLibraries();
 		for (TreeItem CurItem : selectedTreeItems) {
 			if (CurItem.getChecked())
 				selectedLibraries.add((IArduinoLibraryVersion) CurItem.getData());
@@ -181,7 +199,6 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		}
 		return true;
 	}
-
 
 	public Set<IArduinoLibraryVersion> getSelectedLibraries() {
 		Set<IArduinoLibraryVersion> ret = new HashSet<>();
@@ -202,7 +219,5 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		}
 		return ret;
 	}
-
-
 
 }
