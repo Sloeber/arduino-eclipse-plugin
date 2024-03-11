@@ -175,22 +175,6 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 	}
 
 	public boolean PerformFinish() {
-		// check if there is a incompatibility in the library folder name
-		// windows only
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			IFolder folder = this.myProject.getFolder(Const.ARDUINO_LIBRARY_FOLDER_NAME);
-			if (!folder.exists()) {
-				try {
-					folder.create(false, true, null);
-				} catch (CoreException e) {
-					log(new Status(IStatus.ERROR, PLUGIN_ID,
-							"Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity problem", //$NON-NLS-1$
-							e));
-					return true;
-				}
-
-			}
-		}
 		Set<IArduinoLibraryVersion> selectedLibraries = getSelectedLibraries();
 		CoreModel coreModel = CoreModel.getDefault();
 		ICProjectDescription projDesc = coreModel.getProjectDescription(myProject, true);
