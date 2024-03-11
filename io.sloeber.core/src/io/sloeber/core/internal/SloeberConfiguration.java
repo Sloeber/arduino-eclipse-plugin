@@ -483,6 +483,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		boolean ret=false;
 		IFolder libFolder=getArduinoLibraryFolder();
 		for(IArduinoLibraryVersion curLib:librartiesToAdd) {
+			if(curLib==null) {
+				continue;
+			}
 			Helpers.LinkFolderToFolder(curLib.getInstallPath(), libFolder.getFolder(curLib.getName()));
 			myLibraries.put(curLib.getName(), curLib);
 			ret=true;
