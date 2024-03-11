@@ -68,7 +68,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
         LinkedList<Object[]> examples = new LinkedList<>();
         List<MCUBoard> allBoards = Teensy.getAllBoards();
 
-        TreeMap<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();

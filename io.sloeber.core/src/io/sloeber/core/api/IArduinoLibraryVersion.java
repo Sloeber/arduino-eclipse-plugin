@@ -24,5 +24,7 @@ public interface IArduinoLibraryVersion {
 	 */
 	boolean isPrivateLib();
 
+	String[] getBreadCrumbs();
+
 
 }

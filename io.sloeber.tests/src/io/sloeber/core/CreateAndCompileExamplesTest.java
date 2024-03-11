@@ -65,7 +65,7 @@ public class CreateAndCompileExamplesTest {
 				Arduino.due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+		TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
 		for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
 			IExample example=curexample.getValue();
 

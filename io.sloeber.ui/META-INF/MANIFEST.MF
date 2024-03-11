@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.debug.ui,
  org.apache.commons.commons-io,
- io.sloeber.autoBuild;bundle-version="4.4.3"
+ io.sloeber.autoBuild;bundle-version="4.4.3",
+ org.eclipse.jface
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Sloeber.io

@@ -109,7 +109,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 			}
 		}
 
-		Map<String, IArduinoLibraryVersion> availableLibs = LibraryManager.getAllAvailableLibraries(SloeberCfg);
+		Map<String, IArduinoLibraryVersion> availableLibs = LibraryManager.getLibrariesAll(SloeberCfg.getBoardDescription());
 
 		//Check wether we need to download and install libraries
 		IInstallLibraryHandler installHandler = LibraryManager.getInstallLibraryHandler();
@@ -131,7 +131,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 						LibraryManager.install(curLib.getValue(), new NullProgressMonitor());
 					}
 					//As libraries have been installed update the lst of available libraries
-					availableLibs= LibraryManager.getAllAvailableLibraries(SloeberCfg);
+					availableLibs= LibraryManager.getLibrariesAll(SloeberCfg.getBoardDescription());
 				}
 			}
 		}

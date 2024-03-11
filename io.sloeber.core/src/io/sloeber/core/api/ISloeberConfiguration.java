@@ -119,5 +119,6 @@ public interface ISloeberConfiguration {
 	void reAttachLibraries();
 
 	Map<String, IArduinoLibraryVersion> getUsedLibraries();
+	void setLibraries(Set<IArduinoLibraryVersion> selectedLibraries);
 
 }

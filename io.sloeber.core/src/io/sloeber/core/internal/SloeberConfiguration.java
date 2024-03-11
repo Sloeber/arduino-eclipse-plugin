@@ -77,6 +77,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         setBoardDescription(src.getBoardDescription());
        setOtherDescription(src.getOtherDescription());
         setCompileDescription(src.getCompileDescription());
+        myLibraries=src.myLibraries;
     }
 
     public SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc,
@@ -507,6 +508,13 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public void setLibraries(Set<IArduinoLibraryVersion> selectedLibraries) {
+		myLibraries.clear();
+		addLibraries(selectedLibraries);
+		reAttachLibraries();
 	}
 
 }

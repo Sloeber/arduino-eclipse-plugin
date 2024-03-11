@@ -60,7 +60,7 @@ public class CreateAndCompileLibraryExamplesTest {
                 Arduino.arduino_101(), Arduino.zeroProgrammingPort(), Arduino.ethernet() };
 
         LinkedList<Object[]> examples = new LinkedList<>();
-        Map<String, IExample> exampleFolders = LibraryManager.getAllExamples(null);
+        Map<String, IExample> exampleFolders = LibraryManager.getExamplesAll(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();

@@ -2,7 +2,6 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
 
-import java.util.Map;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -62,11 +61,6 @@ public class Sketch {
         return proj.getFile(SLOEBER_PROJECT);
     }
 
-
-    public static Map<String, IArduinoLibraryVersion> getAllAvailableLibraries(ISloeberConfiguration confDesc) {
-    	return LibraryManager.getAllAvailableLibraries( confDesc);
-        //return Libraries.getAllInstalledLibraries(confDesc);
-    }
 
 
     /**

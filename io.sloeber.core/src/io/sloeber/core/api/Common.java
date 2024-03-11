@@ -90,7 +90,7 @@ public class Common {
      * filenames containing spaces in Windows, see Note 1 < less than used to
      * redirect input, allowed in Unix filenames, see Note 1 > greater than used
      * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
-     * 
+     *
      * # is excluded as it is seen as a special character by make
      * =======
      * character, but Windows itself always accepts it as a separator.[6][vague]) \
@@ -205,7 +205,7 @@ public class Common {
                 ICConfigurationDescription configurationDescription = sloeberConf.getAutoBuildDesc()
                         .getCdtConfigurationDescription();
                 return envManager.getVariable(envName, configurationDescription, expanded).getValue();
-            } catch (Exception e) {// ignore all errors and return the default value
+            } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
             }
         }
         return defaultvalue;
@@ -221,7 +221,7 @@ public class Common {
     /**
      * Check whether the string starts with the SLOEBER_HOME path If it does replace
      * with environment variable This keeps things more compatible over environments
-     * 
+     *
      * @param path
      *            string to check
      * @return modified string or the original
@@ -236,7 +236,7 @@ public class Common {
 
     /**
      * Support for the environment variable SLOBER_HOME
-     * 
+     *
      * @param file
      * @return
      */
@@ -267,7 +267,7 @@ public class Common {
     /**
      * this is some code to work around issue
      * https://github.com/eclipse-cdt/cdt/issues/539
-     * 
+     *
      */
     public static String getFileExtension(String fileName) {
         int dotPosition = fileName.lastIndexOf('.');

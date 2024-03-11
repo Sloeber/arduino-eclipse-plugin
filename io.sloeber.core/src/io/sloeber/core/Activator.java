@@ -2,8 +2,6 @@ package io.sloeber.core;
 
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
-import static org.eclipse.core.resources.IResource.*;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,12 +12,10 @@ import java.net.URL;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -226,7 +222,7 @@ public class Activator extends Plugin {
                     myScope.putInt(FLAG_START, curFsiStatus);
                     URL pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
                     pluginStartInitiator.getContent();
-                } catch (Exception e) {
+                } catch (@SuppressWarnings("unused") Exception e) {
                     // if this happens there is no real harm or functionality
                     // lost
                 }
@@ -258,18 +254,6 @@ public class Activator extends Plugin {
                 }
                 registerListeners();
 
-                // This is not install job but to migrate 4.3 to 4.4
-                // A refresh seems to trigger the code at a convenient time
-                final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-                for (IProject curProject : workspaceRoot.getProjects()) {
-                    if (curProject.isOpen()) {
-                        try {
-                            curProject.refreshLocal(DEPTH_INFINITE, monitor);
-                        } catch (@SuppressWarnings("unused") CoreException e) {
-                            // ignore
-                        }
-                    }
-                }
                 return Status.OK_STATUS;
             }
 

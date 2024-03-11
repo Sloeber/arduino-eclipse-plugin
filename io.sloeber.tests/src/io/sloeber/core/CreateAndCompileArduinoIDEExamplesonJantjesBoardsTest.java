@@ -56,7 +56,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
         List<MCUBoard> allBoards = Jantje.getAllBoards();
         LinkedList<Object[]> examples = new LinkedList<>();
 
-        Map<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+        Map<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();

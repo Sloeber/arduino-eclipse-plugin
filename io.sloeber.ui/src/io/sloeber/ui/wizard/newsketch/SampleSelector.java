@@ -42,6 +42,7 @@ public class SampleSelector {
 		this.mySampleTree = new Tree(composite, SWT.CHECK | SWT.BORDER);
 		theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 		theGriddata.horizontalSpan = ncols;
+		mySampleTree.setSortDirection(SWT.UP);
 		this.mySampleTree.setLayoutData(theGriddata);
 		// Get the data in the tree
 		this.mySampleTree.setRedraw(false);
@@ -120,7 +121,7 @@ public class SampleSelector {
 
 	public void AddAllExamples(BoardDescription platformPath, Set<IExample> arrayList) {
 		myNumSelected = 0;
-		myExamples.putAll( LibraryManager.getAllExamples(platformPath));
+		myExamples.putAll( LibraryManager.getExamplesAll(platformPath));
 
 		mySampleTree.removeAll();
 

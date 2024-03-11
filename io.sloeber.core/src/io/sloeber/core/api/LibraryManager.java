@@ -253,47 +253,17 @@ public class LibraryManager {
 
 	/**
 	 * find all examples that are delivered with a library This does not include the
-	 * libraries delivered with hardware
+	 * libraries delivered with hardware nor the examples
 	 *
 	 * @return
 	 */
-	public static TreeMap<String, IExample> getAllLibraryExamples() {
+	public static TreeMap<String, IExample> getExamplesLibrary(BoardDescription boardDescriptor) {
 		TreeMap<String, IExample> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-		// Get the examples installed by the library manager
-		Map<String, IArduinoLibraryVersion> installedLibs = getInstalledManagerLibraries();
+		Map<String, IArduinoLibraryVersion> installedLibs = getLibrariesAll(boardDescriptor);
 		for (IArduinoLibraryVersion curLib : installedLibs.values()) {
-			examples.putAll(getLibExamples(curLib));
+			examples.putAll(getExamplesFromFolder(curLib, curLib.getExamplePath().toFile(), 2));
 		}
-
-		// get the examples from the user provide library locations
-		Map<String, IArduinoLibraryVersion> privateLibs = findAllPrivateLibraries();
-		for (IArduinoLibraryVersion curLib : privateLibs.values()) {
-			examples.putAll(getLibExamples(curLib));
-		}
-		return examples;
-	}
-
-	/***
-	 * finds all the example folders for both the version including and without
-	 * version libraries
-	 *
-	 * @param location The parent folder of the libraries
-	 */
-	private static TreeMap<String, IExample> getLibExamples(IArduinoLibraryVersion lib) {
-		TreeMap<String, IExample> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
-		IPath examplePath = lib.getExamplePath();
-		if (examplePath == null || !examplePath.toFile().exists()) {
-			// Either dir does not exist or is not a directory
-			return examples;
-		}
-		String[] exampleFolders = examplePath.toFile().list();
-		if (exampleFolders == null) {
-			// no files/folders in the examples folder
-			return examples;
-		}
-		examples.putAll(getExamplesFromFolder(lib,lib.getExamplePath().toFile(), 2));
 
 		return examples;
 	}
@@ -304,8 +274,9 @@ public class LibraryManager {
 	 *
 	 * @param File
 	 */
-	private static TreeMap<String, IExample> getExamplesFromFolder(IArduinoLibraryVersion lib, File location, int maxDepth) {
-		TreeMap<String, IExample> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private static Map<String, IExample> getExamplesFromFolder(IArduinoLibraryVersion lib, File location,
+			int maxDepth) {
+		Map<String, IExample> examples = new HashMap<>();
 		File[] children = location.listFiles();
 		if ((children == null) || (maxDepth <= 0)) {
 			// Either dir does not exist or is not a directory or we reached the depth
@@ -314,34 +285,14 @@ public class LibraryManager {
 		for (File exampleFolder : children) {
 			String extension = getFileExtension(exampleFolder.getName());
 			if (exampleFolder.isDirectory()) {
-				examples.putAll(getExamplesFromFolder(lib,exampleFolder, maxDepth - 1));
+				examples.putAll(getExamplesFromFolder(lib, exampleFolder, maxDepth - 1));
 			} else if (EXAMPLE_INDICATION_EXTENSIONS.contains(extension)) {
-				IExample newExample=new Example(lib, new Path(location.toString()));
-				examples.put(newExample.getID(),newExample);
+				IExample newExample = new Example(lib, new Path(location.toString()));
+				examples.put(newExample.getID(), newExample);
 			}
 		}
 		return examples;
 	}
-
-	/*
-	 * Get the examples of the libraries from the selected hardware These may be
-	 * referenced libraries
-	 */
-	private static TreeMap<String, IExample> getAllHardwareLibraryExamples(BoardDescription boardDescriptor) {
-		TreeMap<String, IExample> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		if (boardDescriptor != null) {
-			File platformPath = boardDescriptor.getreferencingPlatformPath().append(ARDUINO_LIBRARY_FOLDER_NAME)
-					.toFile();
-			if (platformPath.exists()) {
-				for (File curFile : platformPath.listFiles()) {
-					ArduinoHardwareLibrary lib = new ArduinoHardwareLibrary(new Path(curFile.toString()), false);
-					examples.putAll(getExamplesFromFolder(lib, curFile, 3));
-				}
-			}
-		}
-		return examples;
-	}
-
 
 	/**
 	 * find all examples for this type of board. That is the examples provided by
@@ -354,15 +305,13 @@ public class LibraryManager {
 	 * @param boardDescriptor
 	 * @return
 	 */
-	public static Map<String, IExample> getAllExamples(BoardDescription boardDescriptor) {
+	public static Map<String, IExample> getExamplesAll(BoardDescription boardDescriptor) {
 		Map<String, IExample> examples = new HashMap<>();
-		// Get the examples of the library manager installed libraries
-
-		examples.putAll(getAllLibraryExamples());
-		// This one should be the last as hashmap overwrites doubles. This way
-		// hardware libraries are preferred to others
-		examples.putAll(getAllHardwareLibraryExamples(boardDescriptor));
-
+		// Get the examples arduinoPlugin/examples
+		IPath exampleFolder = ConfigurationPreferences.getInstallationPathExamples();
+		examples.putAll(getExamplesFromFolder(null, exampleFolder.toFile(), 5));
+		// get the examples related to libraries
+		examples.putAll(getExamplesLibrary(boardDescriptor));
 		return examples;
 	}
 
@@ -383,18 +332,20 @@ public class LibraryManager {
 	 * manager plus all the libraries provided by the core plus all the libraries
 	 * provided by the personal libraries
 	 *
-	 * @param confDesc
+	 * @param confDesc can be null
 	 * @return
 	 */
-	public static Map<String, IArduinoLibraryVersion> getAllAvailableLibraries(ISloeberConfiguration confDesc) {
+	public static Map<String, IArduinoLibraryVersion> getLibrariesAll(BoardDescription boardDescriptor) {
 		Map<String, IArduinoLibraryVersion> libraries = new HashMap<>();
-		libraries.putAll(getInstalledManagerLibraries());
-		libraries.putAll(findAllPrivateLibraries());
-		libraries.putAll(findAllHarwareLibraries(confDesc));
+		libraries.putAll(getLibrariesdManaged());
+		libraries.putAll(getLibrariesPrivate());
+		if (boardDescriptor != null) {
+			libraries.putAll(getLibrariesHarware(boardDescriptor));
+		}
 		return libraries;
 	}
 
-	public static Map<String, IArduinoLibraryVersion> getInstalledManagerLibraries() {
+	private static Map<String, IArduinoLibraryVersion> getLibrariesdManaged() {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		for (ArduinoLibraryIndex libindex : libraryIndices) {
 			for (ArduinoLibrary curLib : libindex.getLibraries()) {
@@ -407,11 +358,11 @@ public class LibraryManager {
 		return ret;
 	}
 
-	private static Map<String, IArduinoLibraryVersion> findAllPrivateLibraries() {
+	private static Map<String, IArduinoLibraryVersion> getLibrariesPrivate() {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
 		for (String curLibPath : privateLibPaths) {
-			ret.putAll(findAllPrivateLibs(new Path(curLibPath), 2, false));
+			ret.putAll(getLibrariesFromFolder(new Path(curLibPath), 2, false,true));
 		}
 		return ret;
 
@@ -425,8 +376,8 @@ public class LibraryManager {
 	 *         method returns a key value pair of key equals foldername and value
 	 *         equals full path.
 	 */
-	private static Map<String, IArduinoLibraryVersion> findAllPrivateLibs(IPath ipath, int depth,
-			boolean isHardwareLib) {
+	private static Map<String, IArduinoLibraryVersion> getLibrariesFromFolder(IPath ipath, int depth,
+			boolean isHardwareLib,boolean isPrivate) {
 		if (ConfigurationPreferences.getInstallationPathLibraries().isPrefixOf(ipath)) {
 			System.err.println("The method findAllPrivateLibs should not be called on Library manager installed libs"); //$NON-NLS-1$
 		}
@@ -445,8 +396,14 @@ public class LibraryManager {
 			}
 			String fileExt = (new Path(curChild)).getFileExtension();
 			if (LIBRARY_INDICATION_FILES.contains(curChild) || CODE_EXTENSIONS.contains(fileExt)) {
-				IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);
-				ret.put(retVersion.getName(), retVersion);
+				if (isHardwareLib) {
+					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath,isPrivate);
+					ret.put(retVersion.getName(), retVersion);
+				} else {
+					IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);
+					ret.put(retVersion.getName(), retVersion);
+				}
+
 				return ret;
 			}
 		}
@@ -459,7 +416,7 @@ public class LibraryManager {
 			IPath LibPath = ipath.append(curFolder);
 			File LibPathFile = LibPath.toFile();
 			if (LibPathFile.isDirectory() && !LibPathFile.isHidden()) {
-				ret.putAll(findAllPrivateLibs(LibPath, depth - 1, isHardwareLib));
+				ret.putAll(getLibrariesFromFolder(LibPath, depth - 1, isHardwareLib,isPrivate));
 			}
 		}
 		return ret;
@@ -473,18 +430,17 @@ public class LibraryManager {
 	 * @param project the project to find all hardware libraries for
 	 * @return all the library folder names. May contain empty values.
 	 */
-	private static Map<String, IArduinoLibraryVersion> findAllHarwareLibraries(ISloeberConfiguration sloeberCfg) {
+	private static Map<String, IArduinoLibraryVersion> getLibrariesHarware(BoardDescription boardDescriptor) {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
-		BoardDescription boardDescriptor = sloeberCfg.getBoardDescription();
 		// first add the referenced
 		IPath libPath = boardDescriptor.getReferencedCoreLibraryPath();
 		if (libPath != null) {
-			ret.putAll(findAllPrivateLibs(libPath, 1, true));
+			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate()));
 		}
 		// then add the referencing
 		libPath = boardDescriptor.getReferencingLibraryPath();
 		if (libPath != null) {
-			ret.putAll(findAllPrivateLibs(libPath, 1, true));
+			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate()));
 		}
 		return ret;
 	}

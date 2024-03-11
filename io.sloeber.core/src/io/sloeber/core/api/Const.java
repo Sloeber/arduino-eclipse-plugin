@@ -50,7 +50,7 @@ public class Const {
     public static final String SOURCE = "source";
     public static final String COMPILER = "compiler";
     public static final String PRIVATE = "private";
-    public static final String MANAGED = "managed";
+    public static final String MANAGED = "Managed";
 
     public static final String NETWORK = "network";
     public static final String PORT = "port";

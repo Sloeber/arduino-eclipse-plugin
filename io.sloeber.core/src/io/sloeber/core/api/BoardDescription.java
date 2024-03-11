@@ -1087,4 +1087,8 @@ public class BoardDescription {
 	public String getDefaultValueNameFromMenu(String menuID) {
 		return this.mySloeberBoardTxtFile.getDefaultValueNameFromMenu(getBoardID(),menuID);
 	}
+
+	public boolean isPrivate() {
+		return ! sloeberHomePath.isPrefixOf( new Path(myUserSelectedBoardsTxtFile.toString()));
+	}
 }

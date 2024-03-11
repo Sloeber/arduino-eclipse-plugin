@@ -11,7 +11,6 @@ package io.sloeber.core;
  */
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -61,7 +60,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         LinkedList<Object[]> examples = new LinkedList<>();
         List<MCUBoard> allBoards = Arduino.getAllBoards();
 
-        TreeMap<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();

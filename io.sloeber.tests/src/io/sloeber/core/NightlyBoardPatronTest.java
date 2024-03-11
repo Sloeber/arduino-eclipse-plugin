@@ -57,7 +57,7 @@ public class NightlyBoardPatronTest {
         MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 
         LinkedList<Object[]> examples = new LinkedList<>();
-        TreeMap<String, IExample> exampleFolders = LibraryManager.getAllLibraryExamples();
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();

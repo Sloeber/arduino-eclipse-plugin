@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IPath;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
@@ -35,6 +36,9 @@ public class Example implements IExample {
 
 	@Override
 	public String getID() {
+		if (myLib == null) {
+			return EXAMPLES_FODER + COLON + getName();
+		}
 		return myLib.getName() + COLON + getName();
 	}
 
@@ -44,9 +48,7 @@ public class Example implements IExample {
 		if (myLib == null) {
 			ret.add(EXAMPLES_FODER);
 		} else {
-			ret.add(myLib.isPrivateLib() ? PRIVATE : MANAGED);
-			ret.add(myLib.isHardwareLib() ? ARDUINO_HARDWARE_FOLDER_NAME : ARDUINO_LIBRARY_FOLDER_NAME);
-			ret.add(myLib.getName());
+			ret.addAll(  Arrays.asList( myLib.getBreadCrumbs()));
 		}
 		ret.add(getName());
 		return ret.toArray(new String[ret.size()]);
