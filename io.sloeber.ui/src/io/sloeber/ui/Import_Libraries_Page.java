@@ -86,13 +86,23 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 				TreeItem newItem = new TreeItem(curItem, SWT.NONE);
 				newItem.setText(key);
 				curSorter.createChildren(newItem);
-				newItem.setExpanded(true);
 			}
 			if (myLib == null) {
 				curItem.setGrayed(true);
 			}else {
-				curItem.setChecked(sloeberCfg.getUsedLibraries().get(myLib.getName()) != null);
+				boolean isSelected = sloeberCfg.getUsedLibraries().get(myLib.getName()) != null;
+				curItem.setChecked(isSelected);
 				curItem.setData(myLib);
+				if (isSelected) {
+					// expand all parents
+					TreeItem parentTreeItem = curItem;
+					while (parentTreeItem != null) {
+						parentTreeItem.setExpanded(true);
+						parentTreeItem.setChecked(true);
+						parentTreeItem.setGrayed(true);
+						parentTreeItem = parentTreeItem.getParentItem();
+					}
+				}
 			}
 
 		}
@@ -148,7 +158,6 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 			TreeItem curItem = new TreeItem(myLibrarySelector, SWT.NONE);
 			curItem.setText(key);
 			curSorter.createChildren(curItem);
-			curItem.setExpanded(true);
 		}
 		myLibrarySelector.setRedraw(true);
 
@@ -182,12 +191,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 
 			}
 		}
-		TreeItem selectedTreeItems[] = this.myLibrarySelector.getItems();
 		Set<IArduinoLibraryVersion> selectedLibraries = getSelectedLibraries();
-		for (TreeItem CurItem : selectedTreeItems) {
-			if (CurItem.getChecked())
-				selectedLibraries.add((IArduinoLibraryVersion) CurItem.getData());
-		}
 		CoreModel coreModel = CoreModel.getDefault();
 		ICProjectDescription projDesc = coreModel.getProjectDescription(myProject, true);
 		ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getActiveConfig(projDesc);
@@ -212,8 +216,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		List<IArduinoLibraryVersion> ret = new ArrayList<>();
 		for (TreeItem curchildTreeItem : TreeItem.getItems()) {
 			if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
-				IArduinoLibraryVersion location = (IArduinoLibraryVersion) curchildTreeItem.getData();
-				ret.add(location);
+				ret.add((IArduinoLibraryVersion) curchildTreeItem.getData());
 			}
 			ret.addAll(internalGetSelectedLibraries(curchildTreeItem));
 		}
