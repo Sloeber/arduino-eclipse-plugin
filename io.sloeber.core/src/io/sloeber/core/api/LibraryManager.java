@@ -52,7 +52,7 @@ public class LibraryManager {
 	private static final Set<String> EXAMPLE_INDICATION_EXTENSIONS = new HashSet<>(
 			Arrays.asList("ino", "pde", "cpp", "c")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private static final Set<String> LIBRARY_INDICATION_FILES = new HashSet<>(
-			Arrays.asList(SRC_FODER, EXAMPLES_FODER, eXAMPLES_FODER, LIBRARY_PROPERTIES));
+			Arrays.asList(SRC_FODER, EXAMPLES_FOLDER, eXAMPLES_FODER, LIBRARY_PROPERTIES));
 	private static final Set<String> IGNORE_FILES = new HashSet<>(Arrays.asList(DOT, DOT + DOT));
 	private static final Set<String> CODE_EXTENSIONS = new HashSet<>(Arrays.asList("h", "cpp")); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -397,7 +397,7 @@ public class LibraryManager {
 			String fileExt = (new Path(curChild)).getFileExtension();
 			if (LIBRARY_INDICATION_FILES.contains(curChild) || CODE_EXTENSIONS.contains(fileExt)) {
 				if (isHardwareLib) {
-					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath,isPrivate);
+					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath);
 					ret.put(retVersion.getName(), retVersion);
 				} else {
 					IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);

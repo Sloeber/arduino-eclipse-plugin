@@ -59,11 +59,11 @@ public class SampleSelector {
 						thechangeItem.setChecked(!thechangeItem.getChecked());
 					} else {
 						if (thechangeItem.getChecked()) {
-							SampleSelector.this.myNumSelected += 1;
+							SampleSelector.this.myNumSelected++;
 							SampleSelector.this.myNumSelectedLabel
 									.setText(Integer.toString(SampleSelector.this.myNumSelected));
 						} else {
-							SampleSelector.this.myNumSelected -= 1;
+							SampleSelector.this.myNumSelected--;
 							SampleSelector.this.myNumSelectedLabel
 									.setText(Integer.toString(SampleSelector.this.myNumSelected));
 						}
@@ -106,7 +106,7 @@ public class SampleSelector {
 	class ItemSorter {
 		public TreeMap<String, ItemSorter> myItems = new TreeMap<>();
 		public IExample myExample = null;
-		public static Set<IExample> myToSelectList;
+		public static Set<String> myToSelectList=new HashSet<>();
 
 		ItemSorter() {
 		}
@@ -123,10 +123,12 @@ public class SampleSelector {
 			if (myExample == null) {
 				curItem.setGrayed(true);
 			} else {
-				boolean isSelected = myToSelectList.contains(myExample);
+				boolean isSelected = myToSelectList.contains(myExample.toSaveString());
 				curItem.setChecked(isSelected);
 				curItem.setData(myExample);
 				if (isSelected) {
+					//increase the selected count
+					myNumSelected++;
 					// expand all parents
 					TreeItem parentTreeItem = curItem;
 					while (parentTreeItem != null) {
@@ -153,7 +155,7 @@ public class SampleSelector {
 	 * @param mPlatformPathPath
 	 */
 
-	public void AddAllExamples(BoardDescription platformPath, Set<IExample> arrayList) {
+	public void AddAllExamples(BoardDescription platformPath, Set<IExample> savedExampleList) {
 		myNumSelected = 0;
 		myExamples.putAll(LibraryManager.getExamplesAll(platformPath));
 
@@ -162,7 +164,11 @@ public class SampleSelector {
 
 		// sort the items
 		ItemSorter sortedItems = new ItemSorter();
-		ItemSorter.myToSelectList = arrayList;
+
+		ItemSorter.myToSelectList.clear();
+		for(IExample curExample:savedExampleList) {
+			ItemSorter.myToSelectList.add(curExample.toSaveString());
+		}
 
 		for (IExample curExample : myExamples.values()) {
 			String keys[] = curExample.getBreadCrumbs();
@@ -187,6 +193,7 @@ public class SampleSelector {
 			curSorter.createChildren(curItem);
 			//curItem.setExpanded(true);
 		}
+		myNumSelectedLabel.setText(Integer.toString(myNumSelected));
 		mySampleTree.setRedraw(true);
 	}
 

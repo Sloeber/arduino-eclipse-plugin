@@ -1,7 +1,5 @@
 package io.sloeber.ui;
 
-import static io.sloeber.ui.Activator.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,12 +9,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -27,7 +21,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-import io.sloeber.core.api.Const;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.LibraryManager;

@@ -1,17 +1,12 @@
 package io.sloeber.core.internal;
 
-import static io.sloeber.core.api.Const.ARDUINO_LIBRARY_FOLDER_NAME;
-import static io.sloeber.core.api.Const.EXAMPLES_FODER;
-import static io.sloeber.core.api.Const.MANAGED;
-import static io.sloeber.core.api.Const.PRIVATE;
-import static io.sloeber.core.api.Const.SPACE;
-import static io.sloeber.core.api.Const.eXAMPLES_FODER;
-
-import java.util.ArrayList;
+import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.core.common.InstancePreferences;
 
 public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 	private IPath myInstallPath;
@@ -20,6 +15,20 @@ public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 	public ArduinoPrivateLibraryVersion(IPath installPath) {
 		myInstallPath = installPath;
 		myName = myInstallPath.lastSegment();
+	}
+
+	public ArduinoPrivateLibraryVersion(String curSaveString) {
+		String[] parts=curSaveString.split(SEMI_COLON);
+		myName=parts[parts.length-1];
+		String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
+		for (String curLibPath : privateLibPaths) {
+			Path curPrivPath=new Path(curLibPath);
+			if(curPrivPath.append(myName).toFile().exists()) {
+				myInstallPath=curPrivPath.append(myName);
+				return;
+			}
+		}
+		//This should not happen
 	}
 
 	@Override
@@ -42,27 +51,21 @@ public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 		return true;
 	}
 
-
 	@Override
 	public IPath getExamplePath() {
 		IPath Lib_examples = getInstallPath().append(eXAMPLES_FODER);
 		if (Lib_examples.toFile().exists()) {
 			return Lib_examples;
 		}
-		return getInstallPath().append(EXAMPLES_FODER);
+		return getInstallPath().append(EXAMPLES_FOLDER);
 	}
 
 	@Override
 	public String[] getBreadCrumbs() {
-		ArrayList<String> ret = new ArrayList<>();
-		if (isHardwareLib()) {
-			ret.add("Board"); //$NON-NLS-1$
-		} else {
-			ret.add(isPrivateLib() ? PRIVATE + SPACE + ARDUINO_LIBRARY_FOLDER_NAME
-					: MANAGED + SPACE + ARDUINO_LIBRARY_FOLDER_NAME);
-		}
-		ret.add(getName());
-		return ret.toArray(new String[ret.size()]);
+		String ret[] = new String[2];
+		ret[0]=PRIVATE + SPACE + ARDUINO_LIBRARY_FOLDER_NAME;
+		ret[1]=getName();
+		return ret;
 	}
 
 }

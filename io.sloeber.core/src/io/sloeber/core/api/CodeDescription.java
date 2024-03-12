@@ -6,8 +6,6 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -25,8 +23,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.internal.Example;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Stream;
@@ -107,14 +105,14 @@ public class CodeDescription implements ICodeProvider {
 		return codeDescriptor;
 	}
 
-	public static CodeDescription createLastUsed() {
+	public static CodeDescription createLastUsed(BoardDescription boardDescription) {
 
 		String typeDescriptor = InstancePreferences.getString(SLOEBER_SKETCH_TEMPLATE_USE_DEFAULT, new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
 		CodeDescription ret = new CodeDescription(codeType);
 		ret.myTemPlateFoldername = new Path(
 				InstancePreferences.getString(SLOEBER_SKETCH_TEMPLATE_FOLDER, new String()));
-		ret.loadLastUsedExamples();
+		ret.loadLastUsedExamples(boardDescription);
 		return ret;
 	}
 
@@ -157,13 +155,19 @@ public class CodeDescription implements ICodeProvider {
 	}
 
 	@SuppressWarnings("nls")
-	private void loadLastUsedExamples() {
-//		String examplePathNames[] = InstancePreferences
-//				.getString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
-//
-//		for (String curpath : examplePathNames) {
-//			myExamples.add(new Path(curpath));
-//		}
+	private void loadLastUsedExamples(BoardDescription boardDescription) {
+		String examplePathNames[] = InstancePreferences
+				.getString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
+
+		Map<String, IExample> allExamples =LibraryManager.getExamplesAll(boardDescription);
+			for(IExample curExample:allExamples.values()) {
+				String saveString=curExample.toSaveString();
+				for (String curSaveString : examplePathNames) {
+					if(saveString.equals(curSaveString)) {
+						myExamples.add(curExample);
+					}
+			}
+		}
 	}
 
 	public Set<IExample> getExamples() {
@@ -171,12 +175,20 @@ public class CodeDescription implements ICodeProvider {
 	}
 
 	private void saveLastUsedExamples() {
-		if (myExamples != null) {
-			String toStore = myExamples.stream().map(Object::toString).collect(Collectors.joining("\n")); //$NON-NLS-1$
-			InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, toStore);
-		} else {
-			InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, new String());
+		String toStore =new String();
+		if (myExamples != null &&myExamples.size()>0) {
+			Set<Example> examples=new HashSet<>();
+			for(IExample curExample:myExamples) {
+				if(curExample instanceof Example) {
+					examples.add((Example)curExample);
+				}
+			}
+			if(examples.size()>0) {
+			toStore = examples.stream().map(Example::toSaveString).collect(Collectors.joining(NEWLINE));
+
+			}
 		}
+		InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, toStore);
 
 	}
 

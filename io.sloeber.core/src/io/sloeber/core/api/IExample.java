@@ -8,4 +8,5 @@ public interface IExample  {
 	public String getName();
 	public String getID();
 	public String[] getBreadCrumbs();
+	String toSaveString();
 }

@@ -25,6 +25,7 @@ public class Const {
     public static final String FALSE = "FALSE";
     public static final String TRUE = "TRUE";
     public static final String COLON = ":";
+    public static final String SEMI_COLON = ";";
     public static final String EMPTY = "";
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
@@ -51,6 +52,8 @@ public class Const {
     public static final String COMPILER = "compiler";
     public static final String PRIVATE = "private";
     public static final String MANAGED = "Managed";
+    public static final String BOARD = "Board";
+
 
     public static final String NETWORK = "network";
     public static final String PORT = "port";
@@ -148,7 +151,7 @@ public class Const {
 
     public static final String SRC_FODER = "src";
     public static final String eXAMPLES_FODER = "examples";
-    public static final String EXAMPLES_FODER = "Examples";
+    public static final String EXAMPLES_FOLDER = "Examples";
 
     public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
     public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";

@@ -605,4 +605,10 @@ public class Example implements IExample{
 		// Not needed for test as this is only used in the ui
 		return null;
 	}
+
+	@Override
+	public String toSaveString() {
+		// Not needed for test as this is only used in the ui
+		return null;
+	}
 }
