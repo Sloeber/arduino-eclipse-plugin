@@ -16,9 +16,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -79,19 +79,20 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeClean(int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
+	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
 		buildRoot.delete(true, monitor);
 		buildRoot.create(true, true, monitor);
 		return false;
 	}
-	
+
 	@Override
-	public boolean invokeBuild(int kind, String envp[],IAutoBuildConfigurationDescription inAutoData, IMarkerGenerator markerGenerator,
+	public boolean invokeBuild(int kind, IAutoBuildConfigurationDescription inAutoData, IMarkerGenerator markerGenerator,
 			 IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		AutoBuildConfigurationDescription autoData=(AutoBuildConfigurationDescription) inAutoData;
+		String envp[]=autoData.getEnvironmentVariables();
 		SubMonitor parentMon = SubMonitor.convert(monitor);
 		IProject project = autoData.getProject();
 		IConfiguration configuration = autoData.getConfiguration();
@@ -244,7 +245,7 @@ public class InternalBuildRunner implements IBuildRunner {
 
 //        String[] envp = BuildRunnerForMake.getEnvironment(autoData.getCdtConfigurationDescription(),
 //                autoData.getConfiguration().getBuilder().appendEnvironment());
-//				
+//
 
 
 

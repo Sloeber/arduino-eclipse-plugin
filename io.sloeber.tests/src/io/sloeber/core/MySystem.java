@@ -1,8 +1,8 @@
 package io.sloeber.core;
 
 import static org.junit.Assert.*;
+import static io.sloeber.core.api.Const.*;
 
-import io.sloeber.core.api.Common;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
@@ -21,7 +21,7 @@ public class MySystem {
     private static String getMachine() {
 
         if ("jan".equals(System.getProperty("user.name"))) {
-            if (Common.isWindows) {
+            if (isWindows) {
                 return jantjesWindowsMachine;
             }
             return jantjesLinuxMachine;
@@ -52,12 +52,12 @@ KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04
 
 KERNEL=="ttyUSB*", ACTION=="add", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="s_NanoFakeChina"
 
-            
+
              */
             MCUBoard[] boards = { Teensy.teensypp2().setUploadPort("/dev/s_teensy"),
-                    Arduino.leonardo().setUploadPort("/dev/s_Leonardo"), 
+                    Arduino.leonardo().setUploadPort("/dev/s_Leonardo"),
                     Arduino.fried2016().setUploadPort("/dev/s_Fried"), //werkt niet
-                    Arduino.zeroNatviePort().setUploadPort("/dev/s_ZeroNa"), 
+                    Arduino.zeroNatviePort().setUploadPort("/dev/s_ZeroNa"),
                     Arduino.yun().setUploadPort("/dev/s_Yun"), ESP8266.wemosD1().setUploadPort("/dev/ttyUSB0"),
                     Arduino.arduino_101().setUploadPort("/dev/s_Arduino_101"),
                     Arduino.zeroProgrammingPort().setUploadPort("/dev/s_ZeroProg"),
@@ -69,7 +69,7 @@ KERNEL=="ttyUSB*", ACTION=="add", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="75
         case jantjesWindowsMachine:
             //due native upload gives to mutch trouble even in arduino IDE
             MCUBoard[] boards = { Teensy.teensypp2().setUploadPort("COM103"),
-                    //	Teensy.Teensy3_1("COM24"), 
+                    //	Teensy.Teensy3_1("COM24"),
                     Arduino.leonardo().setUploadPort("COM101"), Arduino.fried2016().setUploadPort("COM102"),
                     Arduino.zeroNatviePort().setUploadPort("COM104"), //boardSponsor
                     Arduino.yun().setUploadPort("COM106"), ESP8266.wemosD1().setUploadPort("COM108"),

@@ -1,7 +1,7 @@
 package io.sloeber.core;
 
 import static org.junit.Assert.*;
-import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package io.sloeber.autoBuild.Internal;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +23,6 @@ import org.eclipse.core.runtime.Path;
 import org.osgi.framework.Bundle;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	private String myID = null;

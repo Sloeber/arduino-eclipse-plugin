@@ -1,6 +1,6 @@
 package io.sloeber.core.txt;
 
-import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Common;
-import io.sloeber.core.api.Const;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.tools.FileModifiers;
@@ -32,27 +31,27 @@ import io.sloeber.core.tools.FileModifiers;
  * installation on boards.txt or platform.txt programmers.txt files
  * Sloeber creates boards.sloeber.txt or platform.sloeber.txt
  * programmers.sloeber.txt files
- * 
+ *
  * Sloeber tries to minimize workarounds in the code
- * 
+ *
  * The first line of the worked around files contain a key. A newer version of
  * sloeber that has a different workaround should change the key. This way the
  * worked around files can be persisted and updated when needed
- * 
+ *
  * @author jan
  *
  */
 @SuppressWarnings("nls")
-public class WorkAround extends Const {
+public class WorkAround  {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.01.test 03 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.01.test 09 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
      * none platform.txt and boards.txt workarounds need to be done during install
      * time
-     * 
+     *
      * @param arduinoPlatformVersion
      */
     static public void applyKnownWorkArounds(ArduinoPlatformVersion arduinoPlatformVersion) {
@@ -87,10 +86,10 @@ public class WorkAround extends Const {
      * takes a boards.txt file and returns a worked around file. The worked around
      * file is persisted on disk for easy debugging/ reduce code impact and
      * performance.
-     * 
+     *
      * @param requestedFileToWorkAround
      *            the board.txt that you want to process
-     * 
+     *
      * @return the worked around file or requestedFileToWorkAround if it does not
      *         exist or an error occurred
      */
@@ -170,11 +169,11 @@ public class WorkAround extends Const {
      * method takes a platform.txt file and returns a worked around file. The worked
      * around file is persisted on disk for easy debugging/ reduce code impact and
      * performance.
-     * 
-     * 
+     *
+     *
      * @param requestedFileToWorkAround
      *            the platform.txt you want to process
-     * 
+     *
      * @return the worked around file or requestedFileToWorkAround if it does not
      *         exist or an error occurred
      */
@@ -221,7 +220,7 @@ public class WorkAround extends Const {
      * Method that does the actual conversion of the provided platform.txt to the
      * platform.sloeber.txt without the house keeping. Basically this produces the
      * content of platform.sloeber.txt after the header
-     * 
+     *
      * @param inPlatformTxt
      *            the content of the platform.txt
      * @param requestedFileToWorkAround
@@ -251,7 +250,7 @@ public class WorkAround extends Const {
 
     /**
      * This method applies workarounds for specific platforms
-     * 
+     *
      * @param inPlatformTxt
      * @return
      */
@@ -290,10 +289,10 @@ public class WorkAround extends Const {
 
     /**
      * This method applies workaround to specific releases of specific platforms
-     * 
+     *
      * @param inPlatformTxt
      *            The content of the platform.txt
-     * 
+     *
      * @param requestedFileToWorkAround
      *            The path of the platform.txt so we can validate for
      *            provider/architecture and versions
@@ -315,7 +314,7 @@ public class WorkAround extends Const {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (@SuppressWarnings("unused") Exception e) {
             // ignore
         }
         return platformTXT;
@@ -323,7 +322,7 @@ public class WorkAround extends Const {
 
     /**
      * This method applies the default workarounds
-     * 
+     *
      * @param inPlatformTxt
      * @return
      */
@@ -338,10 +337,12 @@ public class WorkAround extends Const {
             changed = changed.replace(" \"{object_file}\" ", " {OUTPUT} ");
             changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
             changed = changed + "{sloeber.extra.compile} {sloeber.extra.c.compile} {sloeber.extra.all}";
-            String codan = changed.replace(RECIPE_C_to_O, CODAN_C_to_O);
+            String codan = changed.replace(RECIPE_C_to_O, RECIPE_C_O_CODAN);
             codan = codan.replace(" -o ", " ");
             codan = codan.replace(" {FLAGS} ", " ");
             codan = codan.replace(" {OUTPUT} ", " ");
+            codan = codan.replace(" {compiler.cpreprocessor.flags} ", " ");
+            codan = codan.replace(" {INPUTS} ", DISCOVERY_PARAMETERS.replace("${", "{")+BLANK);
 
             platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
         }
@@ -353,10 +354,12 @@ public class WorkAround extends Const {
             changed = changed.replace(" \"{object_file}\" ", " {OUTPUT}  ");
             changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
             changed = changed + "{sloeber.extra.compile} {sloeber.extra.cpp.compile} {sloeber.extra.all}";
-            String codan = changed.replace(RECIPE_CPP_to_O, CODAN_CPP_to_O);
+            String codan = changed.replace(RECIPE_CPP_to_O, RECIPE_CPP_O_CODAN);
             codan = codan.replace(" -o ", " ");
             codan = codan.replace(" {FLAGS} ", " ");
             codan = codan.replace(" {OUTPUT} ", " ");
+            codan = codan.replace(" {compiler.cpreprocessor.flags} ", " ");
+            codan = codan.replace(" {INPUTS} ", DISCOVERY_PARAMETERS.replace("${", "{")+BLANK);
 
             platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
         }
@@ -569,11 +572,11 @@ public class WorkAround extends Const {
      * method takes a programmers.txt file and returns a worked around file. The
      * worked around file is persisted on disk for easy debugging/ reduce code
      * impact and performance.
-     * 
-     * 
+     *
+     *
      * @param requestedFileToWorkAround
      *            the programmers.txt you want to process
-     * 
+     *
      * @return the worked around file or requestedFileToWorkAround if it does not
      *         exist or an error occurred
      */
@@ -628,7 +631,7 @@ public class WorkAround extends Const {
 
     /**
      * If the sloeber.txt variant exists delete it if it is outdated
-     * 
+     *
      * @param actualProgrammersTXT
      */
     private static void deleteIfOutdated(File actualProgrammersTXT) {
@@ -637,7 +640,7 @@ public class WorkAround extends Const {
             String firstLine = null;
             try (BufferedReader Buff = new BufferedReader(new FileReader(actualProgrammersTXT));) {
                 firstLine = Buff.readLine().trim();
-            } catch (Exception e) {
+            } catch (@SuppressWarnings("unused") Exception e) {
                 // ignore and delete the file
             }
             if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine)) {

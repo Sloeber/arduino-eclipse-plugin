@@ -1,5 +1,7 @@
 package io.sloeber.buildTool.api;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.util.Set;
 
 import io.sloeber.schema.api.IProjectType;
@@ -42,7 +44,7 @@ public interface IBuildToolManager {
         }
 
 		public boolean isForLanguage(String languageId) {
-			if("org.eclipse.cdt.core.assembly".equals(languageId)) { //$NON-NLS-1$
+			if(LANGUAGEID_ASSEMBLY.equals(languageId)) {
 				switch(this) {
 				case A_TO_O:
 					return true;
@@ -50,7 +52,7 @@ public interface IBuildToolManager {
 						return false;
 				}
 			}
-			if("org.eclipse.cdt.core.gcc".equals(languageId)) { //$NON-NLS-1$
+			if(LANGUAGEID_C.equals(languageId)) {
 				switch(this) {
 				case C_TO_O:case O_TO_C_DYNAMIC_LIB:case O_TO_C_EXE:
 					return true;
@@ -58,7 +60,7 @@ public interface IBuildToolManager {
 						return false;
 				}
 			}
-			if("org.eclipse.cdt.core.g++".equals(languageId)) { //$NON-NLS-1$
+			if(LANGUAGEID_CPP.equals(languageId)) {
 				switch(this) {
 				case CPP_TO_O:case O_TO_CPP_DYNAMIC_LIB:case O_TO_CPP_EXE:case O_TO_ARCHIVE:
 					return true;
@@ -78,7 +80,7 @@ public interface IBuildToolManager {
     /**
      * There should only be one BuildToolManger.
      * Use this static method to get the BuildToolManager
-     * 
+     *
      * @return
      */
     public static IBuildToolManager getDefault() {
@@ -96,50 +98,50 @@ public interface IBuildToolManager {
     /**
      * Given the tool provider and the build tool ID return the build tools
      * @param toolProviderID
-     * @param ID
+     * @param buildToolsID
      * @return the buildTools or null if not found
      */
-    public IBuildTools getBuildTools(String toolProviderID,String ID);
+    public IBuildTools getBuildTools(String toolProviderID,String buildToolsID);
 
     /**
      * get all installed targetTools
      * Doesn't matter which tool provider
-     * 
-     * 
+     *
+     *
      * @return a tool
      */
     public Set<IBuildTools> getAllInstalledTargetTools();
-    
+
     /**
      * get a build tools that is compatible with the given
      * projectType
      * Doesn't matter which tool provider
-     * 
-     * 
+     *
+     *
      * @return a build tools
      */
     public IBuildTools getAnyInstalledBuildTools(IProjectType projectType);
 
     /**
-     * Get all the build tool providers known to the 
-     * Build tool Manager 
-     * 
-     * @param onlyHoldsTools if true only return the providers that have actually 
+     * Get all the build tool providers known to the
+     * Build tool Manager
+     *
+     * @param onlyHoldsTools if true only return the providers that have actually
      * 						installed tools
      * 						if false return all known tool providers
-     * 
+     *
      * @return a set of IBuildToolProvider
      */
 	public Set<IBuildToolProvider> GetToolProviders(boolean onlyHoldsTools);
-	
+
 	/**
 	 * refresh the toolchains known.
-	 * The manager caches the toolchains. 
+	 * The manager caches the toolchains.
 	 * When this method is called the cache needs to be refreshed.
-	 * 
+	 *
 	 */
 	public void refreshToolchains();
-	
+
 
 	public IBuildToolProvider GetToolProviderByName(String toolProviderName);
 }

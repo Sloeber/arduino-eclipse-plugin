@@ -14,7 +14,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +31,6 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.buildTool.api.IBuildToolProvider;
-import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
@@ -88,12 +87,12 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		modelBuildMacroSupplier = getAttributes(PROJECT_BUILD_MACRO_SUPPLIER);
 		modelBuilders = getAttributes(PROJECT_BUILDERS);
 		modelSupportedToolProviders= getAttributes(MODEL_TOOL_PROVIDERS);
-		
+
 		if(!modelSupportedToolProviders[SUPER].isBlank()) {
 			mySupportedToolProviders.addAll(Arrays.asList(  modelSupportedToolProviders[SUPER].split(SEMICOLON)));
 		}
-		
-		
+
+
 		myIsTest=Boolean.valueOf(modelIsTest[SUPER]).booleanValue();
 
 		myEnvironmentVariableProvider = (IEnvironmentVariableProvider) createExecutableExtension(
@@ -106,7 +105,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		if(myBuilderExtension==null) {
 			myBuilderExtension=new AutoBuildBuilderExtension();
 		}
-		
+
 		// Load the toolchains first
 		IConfigurationElement[] toolChainElements = element.getChildren(IToolChain.TOOL_CHAIN_ELEMENT_NAME);
 		for (IConfigurationElement configElement : toolChainElements) {
@@ -135,7 +134,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		}else {
 		for (String curBuilderID : modelBuilders[SUPER].split(SEMICOLON)) {
 			IBuilder curBuilder = AutoBuildManager.getBuilder(curBuilderID);
-			
+
 			if (curBuilder == null) {
 				System.err.println("Failed to find builder with ID " + curBuilder); //$NON-NLS-1$
 			} else {
@@ -157,7 +156,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.cdt.managedbuilder.core.IProjectType#getConfigurations()
 	 */
 	@Override
@@ -180,7 +179,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.cdt.core.build.managed.IProjectType#isSupported()
 	 */
 	@Override
@@ -199,7 +198,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.cdt.core.build.managed.IProjectType#
 	 * getEnvironmentVariableSupplier()
 	 */
@@ -210,7 +209,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.cdt.managedbuilder.core.IProjectType#getBuildMacroSupplier()
 	 */
 	@Override

@@ -14,7 +14,8 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

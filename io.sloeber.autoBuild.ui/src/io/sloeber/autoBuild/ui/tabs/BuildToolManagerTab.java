@@ -33,9 +33,9 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param comp the composite to add the controls
-	 * @param parentListener if not null the parent that needs to be notified if the page is 
+	 * @param parentListener if not null the parent that needs to be notified if the page is
 	 */
 	public void internalCreateControls(Composite comp,DialogCompleteEvent parentListener) {
 		myParentListener=parentListener;
@@ -75,7 +75,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		for (IBuildToolProvider buildToolProvider : buildToolManager.GetToolProviders(true)) {
 			myToolProviderCombo.add(buildToolProvider.getName());
 		}
-		
+
 		myToolProviderCombo.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -96,16 +96,16 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 				IBuildTools buildTools=getSelecteddBuildTool();
 				if(buildTools!=null &&myAutoConfDesc!=null) {
 					myAutoConfDesc.setBuildTools(buildTools);
-					setLabelText(buildTools);
+					setLabelText();
 				}
 				if(myParentListener!=null) {
-					myParentListener.completeEvent(getSelecteddBuildTool()!=null);
+					myParentListener.completeEvent(buildTools!=null);
 				}
 			}
 		});
-		
+
 		myRefreshButton.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				buildToolManager.refreshToolchains();
@@ -117,11 +117,11 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 				myToolProviderCombo.setText(selected);
 
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		myIsUpdating = false;
@@ -151,6 +151,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		if (toolProvider != null && toolProvider.getAllInstalledBuildTools()!=null) {
 			for (IBuildTools buildTools : toolProvider.getAllInstalledBuildTools()) {
 				myBuildToolCombo.add(buildTools.getSelectionID());
+				myBuildToolCombo.setData(buildTools.getSelectionID(), buildTools);
 			}
 		}
 		myBuildToolCombo.select(0);
@@ -159,12 +160,13 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 			myAutoConfDesc.setBuildTools(buildTools);
 		}
 		if(myParentListener!=null) {
-			myParentListener.completeEvent(getSelecteddBuildTool()!=null);
+			myParentListener.completeEvent(buildTools!=null);
 		}
-		setLabelText(buildTools);
+		setLabelText();
 	}
 
-	private void setLabelText(IBuildTools buildTools) {
+	private void setLabelText() {
+		IBuildTools buildTools=getSelecteddBuildTool();
 		if (buildTools == null) {
 			myLabel.setText("No build tool selected");
 			return;
@@ -194,12 +196,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 	}
 
 	public IBuildTools getSelecteddBuildTool() {
-		myToolProviderName = myToolProviderCombo.getText();
-		IBuildToolProvider toolProvider = buildToolManager.GetToolProviderByName(myToolProviderName);
-		if (toolProvider == null) {
-			return null;
-		}
-		return toolProvider.getTargetTool(myBuildToolCombo.getText());
+		return(IBuildTools)myBuildToolCombo.getData(myBuildToolCombo.getText());
 	}
 
 	@Override
@@ -220,7 +217,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 			String id = buildTools.getSelectionID();
 			int index = myBuildToolCombo.indexOf(id);
 			myBuildToolCombo.select(index);
-			setLabelText(buildTools);
+			setLabelText();
 		}
 	}
 

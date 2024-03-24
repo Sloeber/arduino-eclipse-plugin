@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,6 +112,8 @@ public abstract class SchemaObject implements ISchemaObject {
                 myOptions.add(new OptionCategory(this, root, curChild));
                 break;
             }
+			default:
+				break;
             }
 
         }
@@ -143,7 +145,7 @@ public abstract class SchemaObject implements ISchemaObject {
     /**
      * Crreate the executable component given in the extension (of one of the
      * superclasses)
-     * 
+     *
      * @param attributeName
      *            the attributename containing the class info
      * @param compatibilityType
@@ -180,9 +182,9 @@ public abstract class SchemaObject implements ISchemaObject {
     /**
      * This method together with some legacy compatibility classes make it possible
      * to continue using the old class names in the plugin.xml for ported classes
-     * 
+     *
      * @param element
-     * 
+     *
      * @param className
      *            the FQN classname (can not be null)
      * @param attributeName

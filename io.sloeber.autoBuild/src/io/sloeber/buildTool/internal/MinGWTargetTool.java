@@ -1,10 +1,7 @@
 package io.sloeber.buildTool.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
@@ -15,7 +12,7 @@ import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
 public class MinGWTargetTool implements IBuildTools {
-	final private static String MAKE_COMMAND ="mingw32-make.exe";
+	final private static String MAKE_COMMAND ="mingw32-make.exe"; //$NON-NLS-1$
     private  IPath myMinGWBinPath = null;
     private String myId=null;
     private String myProviderID=null;
@@ -89,6 +86,11 @@ public class MinGWTargetTool implements IBuildTools {
 	@Override
 	public String getPathExtension() {
 		return myMinGWBinPath.toOSString();
+	}
+
+	@Override
+	public String getDiscoveryCommand(ToolType toolType) {
+		return getToolLocation().append( getCommand(toolType)).toString() +DISCOVERY_PARAMETERS;
 	}
 
 

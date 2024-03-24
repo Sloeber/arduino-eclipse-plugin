@@ -1,8 +1,8 @@
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,42 +59,42 @@ public class Tool extends SchemaObject implements ITool {
      * A tool is enabled if the enablement part of the xml model validates to true
      * and the modelNatureFilter matches the nature of the project The table below
      * shows the decisions
-     * 
+     *
      * tool cnature ccnature result
      * both yes yes true
      * both yes no true
      * both no yes true
      * both no no false
-     * 
+     *
      * cnature yes yes false
      * cnature yes no true
      * cnature no yes false
      * cnature no no false
-     * 
+     *
      * ccnature yes yes true
      * ccnature yes no false
      * ccnature no yes true
      * ccnature no no false
-     * 
+     *
      * note that the case no/no should not happen as a MBS project should have a
      * cNature and/or CCNature Therefore the code simplifies the decision table to
-     * 
+     *
      * tool cnature ccnature result
      * both yes yes true
      * both yes no true
      * both no yes true
      * both no no true
-     * 
+     *
      * cnature yes yes false
      * cnature yes no true
      * cnature no yes false
      * cnature no no true
-     * 
+     *
      * ccnature yes yes true
      * ccnature yes no false
      * ccnature no yes true
      * ccnature no no false
-     * 
+     *
      */
 
     private String[] myModelOutputFlag;
@@ -138,6 +138,8 @@ public class Tool extends SchemaObject implements ITool {
                 return !resource.getProject().hasNature(CCProjectNature.CC_NATURE_ID);
             case "ccnature": //$NON-NLS-1$
                 return resource.getProject().hasNature(CCProjectNature.CC_NATURE_ID);
+			default:
+				break;
             }
         } catch (CoreException e) {
             e.printStackTrace();
@@ -265,7 +267,7 @@ public class Tool extends SchemaObject implements ITool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.cdt.managedbuilder.core.ITool#getErrorParserList()
      */
     @Override
@@ -680,6 +682,11 @@ public class Tool extends SchemaObject implements ITool {
 			return false;
 		}
 		return myToolType.isForLanguage(languageId) ;
+	}
+
+	@Override
+	public ToolType getToolType() {
+		return myToolType;
 	}
 
 }

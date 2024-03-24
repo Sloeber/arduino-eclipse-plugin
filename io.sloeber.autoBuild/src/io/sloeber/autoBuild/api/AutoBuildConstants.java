@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.integration;
+package io.sloeber.autoBuild.api;
 
 import java.io.File;
 
@@ -135,6 +135,7 @@ public class AutoBuildConstants {
     public static final String OUTPUT_PREFIX_PRM_NAME = "OUTPUT_PREFIX";
     public static final String OUTPUT_PRM_NAME = "OUTPUT";
     public static final String INPUTS_PRM_NAME = "INPUTS";
+    public static final String INPUTS_VARIABLE = "${INPUTS}";
     public static final String VARIABLE_PREFIX = "${";
     public static final String VARIABLE_SUFFIX = "}";
     public static final String DEPENDENCY_SUFFIX = "_DEPS";
@@ -143,7 +144,7 @@ public class AutoBuildConstants {
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String KEY_BUILDTOOLS = "buildTools";
-    
+
     public static final String SUPERCLASS = "superClass";
     public static final String IS_ABSTRACT = "isAbstract";
     public static final String IS_SYSTEM = "isSystem";
@@ -232,18 +233,22 @@ public class AutoBuildConstants {
     public static final String OWNER = "owner";
     public static final String BIN_FOLDER = "bin";
     public static final String ENV_VAR_PATH ="PATH";
-    public static final String IS_TEST = "isTest"; 
-    public static final String PROJECTTYPE_ELEMENT_NAME = "projectType"; 
-    public static final String PROJECT_ENVIRONMENT_SUPPLIER = "environmentSupplier"; 
-    public static final String PROJECT_BUILD_MACRO_SUPPLIER = "buildMacroSupplier"; 
-    public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; 
-    public static final String BUILD_PROPERTIES = "buildProperties"; 
-    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; 
+    public static final String IS_TEST = "isTest";
+    public static final String PROJECTTYPE_ELEMENT_NAME = "projectType";
+    public static final String PROJECT_ENVIRONMENT_SUPPLIER = "environmentSupplier";
+    public static final String PROJECT_BUILD_MACRO_SUPPLIER = "buildMacroSupplier";
+    public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider";
+    public static final String BUILD_PROPERTIES = "buildProperties";
+    public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType";
     public static final String PROJECT_BUILDERS = "builders";
     public static final String BUILDER_EXTENSION = "builderExtension";
     public static final String SUPPORTED_PROJECT_TYPES = "supportsProjectTypes";
     public static final String MODEL_TOOL_PROVIDERS = "supportedToolProviders";
-    
-    
-    
+
+    public static final String LANGUAGEID_C = "org.eclipse.cdt.core.gcc";
+    public static final String LANGUAGEID_CPP = "org.eclipse.cdt.core.g++";
+    public static final String LANGUAGEID_ASSEMBLY = "org.eclipse.cdt.core.assembly";
+    public static final String DISCOVERY_PARAMETERS ="  -E -P -v -dD "+INPUTS_VARIABLE;
+
+
 }

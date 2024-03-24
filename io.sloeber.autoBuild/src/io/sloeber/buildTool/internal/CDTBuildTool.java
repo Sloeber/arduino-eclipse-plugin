@@ -1,6 +1,7 @@
 package io.sloeber.buildTool.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +91,11 @@ public class CDTBuildTool implements IBuildTools {
 	@Override
 	public String getPathExtension() {
 		return null;
+	}
+
+	@Override
+	public String getDiscoveryCommand(ToolType toolType) {
+		return getToolLocation().append( getCommand(toolType)).toString() + DISCOVERY_PARAMETERS;
 	}
 
 

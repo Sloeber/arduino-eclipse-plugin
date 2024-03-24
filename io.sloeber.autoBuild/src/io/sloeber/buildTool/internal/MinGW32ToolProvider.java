@@ -1,5 +1,7 @@
 package io.sloeber.buildTool.internal;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,7 +13,6 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.ExtensionBuildToolProvider;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 public class MinGW32ToolProvider extends ExtensionBuildToolProvider {
 
@@ -22,7 +23,7 @@ public class MinGW32ToolProvider extends ExtensionBuildToolProvider {
     private static boolean myHoldsAllTools = false;
 	private static Map<String,IBuildTools> myTargetTools=new HashMap<>();
 
-	
+
     @Override
 	public void initialize(IConfigurationElement element) {
 		super.initialize(element);
@@ -34,13 +35,13 @@ public class MinGW32ToolProvider extends ExtensionBuildToolProvider {
     	myTargetTools.clear();
         myMinGWHome = org.eclipse.cdt.internal.core.MinGW.getMinGWHome();
         if (myMinGWHome != null) {
-           
+
             myMinGWBinPath = new Path(myMinGWHome).append(BIN_FOLDER);
-            IBuildTools targetTool= new MinGWTargetTool(myMinGWBinPath, MINGW_ID,MINGW_ID);
-            myTargetTools.put(getID(), targetTool);
+            IBuildTools targetTool= new MinGWTargetTool(myMinGWBinPath, getID(),MINGW_ID);
+            myTargetTools.put(targetTool.getSelectionID(), targetTool);
             myHoldsAllTools = targetTool.holdsAllTools();
         }
-		
+
 	}
 
 	@Override
@@ -73,6 +74,6 @@ public class MinGW32ToolProvider extends ExtensionBuildToolProvider {
 	public void refreshToolchains() {
 		findTools();
 	}
-	
-	
+
+
 }

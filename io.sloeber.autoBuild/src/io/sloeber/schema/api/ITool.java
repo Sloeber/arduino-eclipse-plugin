@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
 /**
  * This interface represents a utility of some sort that is used in the build
@@ -128,7 +129,7 @@ public interface ITool extends ISchemaObject {
 
     /**
      * Returns the announcement string for this tool
-     * 
+     *
      * @return String
      */
     public String getAnnouncement();
@@ -142,14 +143,14 @@ public interface ITool extends ISchemaObject {
 
     /**
      * Returns command line pattern for this tool
-     * 
+     *
      * @return String
      */
     public String getDefaultCommandLinePattern();
 
     /**
      * Returns the command line generator specified for this tool
-     * 
+     *
      * @return IManagedCommandLineGenerator
      */
     public IManagedCommandLineGenerator getCommandLineGenerator();
@@ -157,7 +158,7 @@ public interface ITool extends ISchemaObject {
     /**
      * Given a list of options/option value combinations
      * return the variables to expand the command line
-     * 
+     *
      * @param autoBuildConfData
      * @param selectedOptions
      *            option with the selected value
@@ -180,13 +181,13 @@ public interface ITool extends ISchemaObject {
      * Note it is recipes (plural) because though in most cases there will be only
      * one recipe
      * there can be multiple
-     * 
+     *
      * If there are multiple input files and a project level custom command is
      * provided the project level custom command will be used.
      * If there is only one input file (and a custom command is provided that
      * matches
      * the input file) that custom command will be used
-     * 
+     *
      * @param autoBuildConfData
      * @param buildFolder
      * @param inputFiles
@@ -202,7 +203,7 @@ public interface ITool extends ISchemaObject {
 
     /**
      * Get the dependency file for this target
-     * 
+     *
      * @param curTargetFile
      * @return the dependency file
      */
@@ -220,5 +221,7 @@ public interface ITool extends ISchemaObject {
     public IOption getOption(String key);
 
 	public boolean isForLanguage(String languageId);
+
+	ToolType getToolType();
 
 }

@@ -1,7 +1,7 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.io.BufferedReader;
 import java.io.File;

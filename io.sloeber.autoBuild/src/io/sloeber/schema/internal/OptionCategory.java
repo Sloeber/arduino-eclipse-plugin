@@ -14,7 +14,8 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.eclipse.core.runtime.IConfigurationElement;

@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.api;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.CONFIG_NAME_VARIABLE;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.CONFIG_NAME_VARIABLE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,20 +51,20 @@ public interface IAutoBuildConfigurationDescription {
         AutoBuildConfigurationDescription ret = (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
         ret.setWritable(true);
         return ret;
-        //      Note:  
+        //      Note:
         //      The code above always returns a readable configdesc
-        //        eventhough the method below exists it is not defined in ICConfigurationDescription 
+        //        eventhough the method below exists it is not defined in ICConfigurationDescription
         //        and as sutch not usable
         //        boolean writable =!confDesc.isReadOnly();
         //        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData(writable);
 
     }
-    
+
 	/**
-	 * Get the source entries and 
+	 * Get the source entries and
 	 * resolve the ${ConfigName} in the name
 	 * The filters are not changed
-	 * 
+	 *
 	 * @param autoBuildConfData
 	 * @return
 	 */
@@ -134,7 +134,7 @@ public interface IAutoBuildConfigurationDescription {
      * Though this m�ay be settable in a IFolder the GUI works with a text field so
      * I opted to
      * make the interface work with text fields
-     * 
+     *
      * @param buildFolder
      */
     public void setBuildFolderString(String buildFolder);
@@ -142,14 +142,14 @@ public interface IAutoBuildConfigurationDescription {
     /**
      * See setBuildFolderString for more info
      * This method is solely intended to be used by the gui
-     * 
+     *
      * @return the build folder in a editable string representation
      */
     public String getBuildFolderString();
 
     /**
      * Get build folder to do build actions
-     * 
+     *
      * @return the build folder in IFolder format based on the resolved buildfolder
      *         string representation
      */
@@ -165,7 +165,7 @@ public interface IAutoBuildConfigurationDescription {
      * (the build on safe) enabled for this CDT project configuration
      * For autobuild to happen both the eclipse workspace has to have autobuild on
      * and the cdt configuration.
-     * 
+     *
      * @return true if the autobuild will build when eclipse workspace has autobuild
      *         on
      */
@@ -173,7 +173,7 @@ public interface IAutoBuildConfigurationDescription {
 
     /**
      * see isAutoBuildEnabled
-     * 
+     *
      * @param enabled
      */
     public void setAutoBuildEnabled(boolean enabled);
@@ -199,7 +199,7 @@ public interface IAutoBuildConfigurationDescription {
     /**
      * Get the command to run at the start of the build
      * No environment var or build var extension is done
-     * 
+     *
      * @return The actual command to run as provided by setPrebuildStep
      */
     public String getPrebuildStep();
@@ -224,16 +224,16 @@ public interface IAutoBuildConfigurationDescription {
     /**
      * Get the options (for a file) selected by the user combined with the default
      * options.
-     * 
+     *
      * File specific values overrule folder specific values
      * which overrule project specific values Only the parentfolder options are
      * taken into account
-     * 
+     *
      * @param resource
      *            the resource you want the selected options for
      * @param tool
      *            The tool you want the options for
-     * 
+     *
      * @return a TreeMap of <IOption,optionValue> ordered on optionID
      */
     public TreeMap<IOption, String> getSelectedOptions(IResource resource, ITool tool);
@@ -243,11 +243,11 @@ public interface IAutoBuildConfigurationDescription {
     /**
      * Get the options (for a set of files) selected by the user combined with the
      * default options.
-     * 
+     *
      * File specific values overrule folder specific values
      * which overrule project specific values Only the parentfolder options are
      * taken into account
-     * 
+     *
      * Note:
      * There may be conflicting options.
      * For example the list may contain 2 cpp files where one states it should
@@ -255,12 +255,12 @@ public interface IAutoBuildConfigurationDescription {
      * and the other with debug info
      * This method should log an error in the error log if this happens and take one
      * of the 2 options
-     * 
+     *
      * @param resources
      *            the resources you want the selected options for
      * @param tool
      *            The tool you want the options for
-     * 
+     *
      * @return a Map of <IOption,optionValue>
      */
     public Map<IOption, String> getSelectedOptions(Set<? extends IResource> resources, ITool tool);
@@ -273,7 +273,7 @@ public interface IAutoBuildConfigurationDescription {
      * the custom command if appropriate
      * Use null as custom command to remove the custom command.
      * use null as resource to remove all custom commands for this tool
-     * 
+     *
      * @param tool
      *            the tool the custom command is provided for
      * @param resource
@@ -299,9 +299,9 @@ public interface IAutoBuildConfigurationDescription {
      * It only returns a value if the user has set a value for this
      * option/tool/resource combinations using
      * setOptionValue
-     * 
+     *
      * The only use I can think of is to maintain user set option values
-     * 
+     *
      * @param resource
      *            only show option values explicitly set for this resource
      * @param tool
@@ -326,10 +326,10 @@ public interface IAutoBuildConfigurationDescription {
     /**
      * Get the AutoBuildConfigurationExtensionDescription for this
      * IAutoBuildConfigurationDescription
-     * 
+     *
      * see setAutoBuildConfigurationExtensionDescription for more explenation on
      * IAutoBuildConfigurationExtensionDescription
-     * 
+     *
      * @return null if no extension is given
      */
     public AutoBuildConfigurationExtensionDescription getAutoBuildConfigurationExtensionDescription();
@@ -350,7 +350,7 @@ public interface IAutoBuildConfigurationDescription {
      * IAutoBuildConfigurationExtensionDescription once
      * at configuration creation and that the clone load save methods should deal
      * with changes
-     * 
+     *
      * @param newExtension
      */
     public void setAutoBuildConfigurationExtensionDescription(AutoBuildConfigurationExtensionDescription newExtension);
@@ -364,29 +364,33 @@ public interface IAutoBuildConfigurationDescription {
 	 * project level; folder level and file level. The result are the options that
 	 * should be used to build commands for the file suppose the file
 	 * src/folder1/folder2/sourceFile.cpp and the option A
-	 * 
+	 *
 	 * src folder1 folder2 sourceFile.cpp value 1 2 3 4 4 1 2 3 3 1 2 2 1 1
 	 *
 	 */
-	TreeMap<IOption, String> getSelectedOptions(IResource file);
+    public TreeMap<IOption, String> getSelectedOptions(IResource file);
 
 	public Set<IBuilder> getAvailableBuilders();
 
 	/**
 	 * Get the buildrunner with the specified id
-	 * 
+	 *
 	 * @param buildRunnerID
 	 * @return the buildrunner with the id. If the buildrunner is not found
 	 *         returns the default buildrunner
 	 */
-	IBuilder getBuilder(String builderID);
+	public IBuilder getBuilder(String builderID);
 
-	ToolFlavour getBuildToolsFlavour();
+	public ToolFlavour getBuildToolsFlavour();
 
 	public IProject getProject();
 
 	/**
 	 * call this method if a clean is required before a build is started
 	 */
-	void forceCleanBeforeBuild();
+	public void forceCleanBeforeBuild();
+
+	public String getDiscoveryCommand(String languageId);
+
+	String[] getEnvironmentVariables();
 }

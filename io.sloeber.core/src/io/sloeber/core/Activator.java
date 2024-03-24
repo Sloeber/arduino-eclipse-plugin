@@ -84,7 +84,7 @@ public class Activator extends Plugin {
 
         // add required properties for Arduino serial port on linux, if not
         // defined
-        if (Common.isLinux && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
+        if (isLinux && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
             System.setProperty(ENV_KEY_GNU_SERIAL_PORTS, ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
         }
 
@@ -175,7 +175,7 @@ public class Activator extends Plugin {
      */
     private static boolean isInstallPathToLong() {
         IPath installPath = ConfigurationPreferences.getInstallationPath();
-        if (Common.isWindows) {
+        if (isWindows) {
             return installPath.toString().length() > 40;
         }
         return false;

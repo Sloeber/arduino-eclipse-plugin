@@ -1,7 +1,8 @@
 package io.sloeber.autoBuild.integration;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -13,7 +14,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
@@ -34,6 +39,7 @@ import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
+import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 import io.sloeber.schema.api.IBuilder;
 import io.sloeber.schema.api.IConfiguration;
 import io.sloeber.schema.api.IOption;
@@ -100,7 +106,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 * of the toolchain/configuration .... When the tool is null I would expect the
 	 * IResource to be a IProject When the tool is not null this option is only
 	 * valid when we deal with this tool
-	 * 
+	 *
 	 */
 	private Map<IResource, Map<IOption, String>> myDefaultOptions = new HashMap<>();
 	private Map<IResource, Map<IOption, String>> mySelectedOptions = new HashMap<>();
@@ -123,7 +129,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private boolean myUseStandardBuildArguments = true;
 	private String myCustomBuildCommand = EMPTY_STRING;
 	private int myParallelizationNum = PARRALLEL_BUILD_OPTIMAL_JOBS;
-	private String myBuildFolderString = BIN_FOLDER+SLACH+CONFIG_NAME_VARIABLE;
+	private String myBuildFolderString = BIN_FOLDER + SLACH + CONFIG_NAME_VARIABLE;
 
 	private String myAutoMakeTarget = DEFAULT_AUTO_MAKE_TARGET;
 	private String myIncrementalMakeTarget = DEFAULT_INCREMENTAL_MAKE_TARGET;
@@ -139,10 +145,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
 	private boolean myIsWritable = false;
-	private boolean myForceCleanBeforeBuild=false;
+	private boolean myForceCleanBeforeBuild = false;
 
-	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,String rootCodeFolder) {
-		initializeResourceData(rootCodeFolder,myBuildFolderString);
+	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,
+			String rootCodeFolder) {
+		initializeResourceData(rootCodeFolder, myBuildFolderString);
 		myBuildTools = buildTools;
 		myIsWritable = true;
 		myCdtConfigurationDescription = null;
@@ -154,16 +161,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
 		myBuilders = myProjectType.getBuilders();
 		myBuilder = myProjectType.getdefaultBuilder();
-		if(myBuilder==null) {
-			System.err.println("project "+project.getName()+" has no default builder"); //$NON-NLS-1$ //$NON-NLS-2$
-			myBuilder=AutoBuildManager.getDefaultBuilder();
+		if (myBuilder == null) {
+			System.err.println("project " + project.getName() + " has no default builder"); //$NON-NLS-1$ //$NON-NLS-2$
+			myBuilder = AutoBuildManager.getDefaultBuilder();
 		}
 		myIsCleanBuildEnabled = myBuilder.getBuildRunner().supportsCleanBuild();
 		myIsIncrementalBuildEnabled = myBuilder.getBuildRunner().supportsIncrementalBuild();
 		myIsAutoBuildEnabled = myBuilder.getBuildRunner().supportsAutoBuild();
 
-
-		
 	}
 
 	// Copy constructor
@@ -176,6 +181,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		}
 		myBuildTools = base.getBuildTools();
 		myAutoBuildConfiguration = base.myAutoBuildConfiguration;
+		myProjectType = myAutoBuildConfiguration.getProjectType();
 		myCdtConfigurationDescription = cfgDescription;
 		myBuilder = base.myBuilder;
 		myBuilders = base.myBuilders;
@@ -201,7 +207,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myCustomBuildCommand = base.myCustomBuildCommand;
 		myParallelizationNum = base.myParallelizationNum;
 		myBuildFolderString = base.myBuildFolderString;
-		
+
 		myIsAutoBuildEnabled = base.myIsAutoBuildEnabled;
 
 		myAutoMakeTarget = base.myAutoMakeTarget;
@@ -213,7 +219,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myPostBuildStep = base.myPostBuildStep;
 		myPostBuildStepAnouncement = base.myPostBuildStepAnouncement;
 		myBuilders = base.myBuilders;
-		myForceCleanBeforeBuild=base.myForceCleanBeforeBuild;
+		myForceCleanBeforeBuild = base.myForceCleanBeforeBuild;
 		myCustomToolCommands.clear();
 		for (Entry<ITool, Map<IResource, String>> curCustomToolEntry : base.myCustomToolCommands.entrySet()) {
 			Map<IResource, String> newMap = new HashMap<>(curCustomToolEntry.getValue());
@@ -230,7 +236,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					.getAutoBuildConfigurationExtensionDescription();
 
 			try {
-				// TOFIX JABA is this ever going to work?
 				@SuppressWarnings("rawtypes")
 				Constructor ctor = baseExtensionDesc.getClass().getDeclaredConstructor(
 						AutoBuildConfigurationDescription.class, AutoBuildConfigurationExtensionDescription.class);
@@ -243,20 +248,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				System.err.println(
 						"ERROR: Classed derived from AutoBuildConfigurationExtensionDescription need to implement a constructor with parameters AutoBuildConfigurationDescription and AutoBuildConfigurationExtensionDescription"); //$NON-NLS-1$
 				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
+				System.err.println(
+						"ERROR: Failed to create class derived from AutoBuildConfigurationExtensionDescription"); //$NON-NLS-1$
 				e.printStackTrace();
 			}
 		}
@@ -266,8 +260,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	public IBuildTools getBuildTools() {
 		if (myBuildTools == null) {
 			// TODO add real error warning
-			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null" ); //$NON-NLS-1$
-			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
+			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null"); //$NON-NLS-1$
+			myBuildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
 		}
 		return myBuildTools;
 	}
@@ -283,7 +277,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 * contain multiple configurations and as sutch a filtering is needed The
 	 * lineStart and lineEnd are used to filter content only applicable to this
 	 * configuration
-	 * 
+	 *
 	 * @param cfgDescription the CDT configuration this object will belong to
 	 * @param curConfigsText the persistent content
 	 * @param lineStart      only consider lines that start with this string
@@ -298,7 +292,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		String extensionID = null;
 		String projectTypeID = null;
 		String confName = null;
-		String builderID=null;
+		String builderID = null;
 		String autoCfgExtentionDesc = null;
 		String autoCfgExtentionBundel = null;
 		myCdtConfigurationDescription = cfgDescription;
@@ -386,7 +380,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				myCustomBuildCommand = value;
 				break;
 			case KEY_BUILDER_ID:
-				builderID=value;
+				builderID = value;
 				break;
 			case KEY_AUTO_MAKE_TARGET:
 				myAutoMakeTarget = value;
@@ -424,7 +418,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					found = true;
 					String providerID = key.substring(KEY_BUILDTOOLS.length() + DOT.length());
 					String selectionID = value;
-					IBuildToolManager buildToolManager =IBuildToolManager.getDefault();
+					IBuildToolManager buildToolManager = IBuildToolManager.getDefault();
 					myBuildTools = buildToolManager.getBuildTools(providerID, selectionID);
 
 				}
@@ -451,7 +445,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (myBuildTools == null) {
 			// TODO add real error warning
 			System.err.println("unable to identify build Tools "); //$NON-NLS-1$
-			myBuildTools=IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
+			myBuildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
 		}
 		myAutoBuildConfiguration = myProjectType.getConfiguration(confName);
 		for (IBuilder buildRunner : getAvailableBuilders()) {
@@ -468,7 +462,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		// it is time to
 		// reconstruct the more complicated fields
 
-		IProject project =getProject(); 
+		IProject project = getProject();
 		// reconstruct the selected options
 		for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
 			String key = curOptionIndex.getKey();
@@ -483,13 +477,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			if (!resourceString.isBlank()) {
 				resource = project.getFile(resourceString);
 			}
-			IOption option =myProjectType.getOption(optionID);
+			IOption option = myProjectType.getOption(optionID);
 
-			if (resource==null || option == null) {
+			if (resource == null || option == null) {
 				// TODO log a error in error log
-				System.err.println("failed to map option(" + optionID + ")/value(" + value + ")/resource("+resource+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			}else {
-			setOptionValueInternal(resource,  option, value);
+				System.err.println(
+						"failed to map option(" + optionID + ")/value(" + value + ")/resource(" + resource + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			} else {
+				setOptionValueInternal(resource, option, value);
 			}
 
 		}
@@ -564,10 +559,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	}
 
-
 	private static Bundle getBundle(String symbolicName) {
 		return Platform.getBundle(symbolicName);
-		//return org.eclipse.core.internal.registry.osgi.OSGIUtils.getDefault().getBundle(symbolicName);
+		// return
+		// org.eclipse.core.internal.registry.osgi.OSGIUtils.getDefault().getBundle(symbolicName);
 		// TOFIX Below is an alternative but as I could not test at the time ...
 		// BundleContext bundleContext = Activator.getBundleContext();
 		// if (bundleContext == null) {
@@ -593,7 +588,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 */
 	private void options_updateDefault() {
 		myDefaultOptions.clear();
-		IProject project=getProject();
+		IProject project = getProject();
 		Map<IOption, String> defaultOptions = myAutoBuildConfiguration.getDefaultOptions(project, this);
 		IToolChain toolchain = myAutoBuildConfiguration.getProjectType().getToolChain();
 		defaultOptions.putAll(toolchain.getDefaultOptions(project, this));
@@ -685,7 +680,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		return myName;
 	}
 
-
 	@Override
 	public String getDescription() {
 		return myDescription;
@@ -732,8 +726,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		return myProperties.put(key, value);
 	}
 
-
-
 	private static TreeMap<IOption, String> getSortedOptionMap() {
 		TreeMap<IOption, String> ret = new TreeMap<>(new java.util.Comparator<>() {
 
@@ -777,7 +769,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 * project level; folder level and file level. The result are the options that
 	 * should be used to build commands for the file suppose the file
 	 * src/folder1/folder2/sourceFile.cpp and the option A
-	 * 
+	 *
 	 * src folder1 folder2 sourceFile.cpp value 1 2 3 4 4 1 2 3 3 1 2 2 1 1
 	 *
 	 */
@@ -834,7 +826,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	public String[] getErrorParserList() {
-		// TODO JABA I for now return the required but this should be the selected
+		// TODO JABA I for now return the required but maybe this should be the selected
 		return myRequiredErrorParserList;
 	}
 
@@ -863,8 +855,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public void setBuildFolderString(String buildFolder) {
 		checkIfWeCanWrite();
-		IFolder oldBuildFolder =getBuildFolder();
-		if(oldBuildFolder!=null && oldBuildFolder.exists()) {
+		IFolder oldBuildFolder = getBuildFolder();
+		if (oldBuildFolder != null && oldBuildFolder.exists()) {
 			try {
 				oldBuildFolder.delete(true, new NullProgressMonitor());
 			} catch (CoreException e) {
@@ -1011,8 +1003,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		ret.append(myDescription);
 		ret.append(lineEnd);
 
-		ret.append(linePrefix + KEY_BUILDTOOLS + DOT + getBuildTools().getProviderID() + EQUAL + getBuildTools().getSelectionID()
-				+ lineEnd);
+		ret.append(linePrefix + KEY_BUILDTOOLS + DOT + getBuildTools().getProviderID() + EQUAL
+				+ getBuildTools().getSelectionID() + lineEnd);
 
 		// ret.append(linePrefix + ID + EQUAL + myId + lineEnd);
 
@@ -1113,8 +1105,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public Set<IBuilder> getAvailableBuilders() {
-		if(myBuilders.size()==0) {
-			myBuilders=myProjectType.getBuilders();
+		if (myBuilders.size() == 0) {
+			myBuilders = myProjectType.getBuilders();
 		}
 		return new HashSet<>(myBuilders.values());
 	}
@@ -1367,7 +1359,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID) {
 		checkIfWeCanWrite();
-		setOptionValueInternal(resource,  option, valueID);
+		setOptionValueInternal(resource, option, valueID);
 		options_combine();
 	}
 
@@ -1472,7 +1464,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	/**
 	 * Get the buildrunner with the specified id
-	 * 
+	 *
 	 * @param buildRunnerID
 	 * @return the buildrunner with the id. If the buildrunner is not found returns
 	 *         the default buildrunner
@@ -1491,28 +1483,126 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	}
 
-
 	@Override
 	public ToolFlavour getBuildToolsFlavour() {
 		return getBuildTools().getToolFlavour();
 	}
-	
+
 	@Override
 	public void forceCleanBeforeBuild() {
-		myForceCleanBeforeBuild=true;
+		myForceCleanBeforeBuild = true;
 	}
 
 	public void forceFullBuildIfNeeded(IProgressMonitor monitor) throws CoreException {
-		if(myForceCleanBeforeBuild) {
-			myForceCleanBeforeBuild=false;
-			IFolder buildFolder=getBuildFolder();
-			if(buildFolder!=null &&buildFolder.exists()) {
+		if (myForceCleanBeforeBuild) {
+			myForceCleanBeforeBuild = false;
+			IFolder buildFolder = getBuildFolder();
+			if (buildFolder != null && buildFolder.exists()) {
 				buildFolder.delete(true, monitor);
 			}
-				
+
 		}
-		
+
 	}
-	
+
+	@Override
+	public String getDiscoveryCommand(String languageId) {
+
+		IFolder buildFolder = getBuildFolder();
+		IFile specFile = buildFolder.getFile("spec.cpp"); //$NON-NLS-1$
+		if(LANGUAGEID_C.equals(languageId)) {
+			specFile = buildFolder.getFile("spec.c"); //$NON-NLS-1$
+		}
+		try {
+			AutoBuildCommon.createFolder(buildFolder);
+			if (!specFile.exists()) {
+				java.io.File file = new java.io.File(specFile.getLocation().toOSString());
+				file.createNewFile();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String specInFile = specFile.getLocation().toOSString();
+		String basicCommand=internalgetDiscoveryCommand(languageId);
+		if(basicCommand==null||basicCommand.isBlank()) {
+			return null;
+		}
+		if(!basicCommand.contains(BLANK)) {
+			//No blanks so this may be a environment var that needs 1 level of expansion
+			basicCommand=AutoBuildCommon.getVariableValue(basicCommand, basicCommand, false, this);
+		}
+		basicCommand =basicCommand.replace(INPUTS_VARIABLE, specInFile);
+		return AutoBuildCommon.resolve(basicCommand, this);
+	}
+
+	private String internalgetDiscoveryCommand(String languageId) {
+		if (myAutoBuildCfgExtDes != null) {
+			String ret = myAutoBuildCfgExtDes.getDiscoveryCommand(languageId);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		List<ITool> tools = myProjectType.getToolChain().getTools();
+		switch (languageId) {
+		case LANGUAGEID_CPP:
+		case LANGUAGEID_C:
+			for (ITool curTool : tools) {
+				if (curTool.isForLanguage(languageId)) {
+					ToolType toolType = curTool.getToolType();
+					if (toolType == null) {
+						continue;
+					}
+					String command = myBuildTools.getDiscoveryCommand(toolType);
+					if (command != null) {
+						return command;
+					}
+				}
+			}
+			break;
+		case LANGUAGEID_ASSEMBLY:
+			// We do not do discovery for assembly
+			break;
+		default:
+			System.err.println("getDiscoveryCommand got unsupported language id " + languageId); //$NON-NLS-1$
+			break;
+		}
+		return null;
+	}
+
+
+	@Override
+	public String[] getEnvironmentVariables() {
+		// Get the environment variables
+		IEnvironmentVariableManager mngr = CCorePlugin.getDefault().getBuildEnvironmentManager();
+		IEnvironmentVariable[] vars = mngr.getVariables(getCdtConfigurationDescription(), true);
+		Map<String, String> envMap = new HashMap<>();
+		for (IEnvironmentVariable var : vars) {
+			envMap.put(var.getName(), var.getValue());
+		}
+
+		IBuildTools targetTool = getBuildTools();
+		if (targetTool != null) {
+			if (targetTool.getEnvironmentVariables() != null) {
+				for (Entry<String, String> curEnv : targetTool.getEnvironmentVariables().entrySet()) {
+					envMap.put(curEnv.getKey(), curEnv.getValue());
+				}
+			}
+			if (targetTool.getPathExtension() != null) {
+				String systemPath = envMap.get(ENV_VAR_PATH);
+				if (systemPath == null) {
+					envMap.put(ENV_VAR_PATH, targetTool.getPathExtension());
+				} else {
+					envMap.put(ENV_VAR_PATH, targetTool.getPathExtension() + File.pathSeparator + systemPath);
+				}
+			}
+		}
+
+		Set<String> envSet = new HashSet<>();
+		for (Entry<String, String> curEnv : envMap.entrySet()) {
+			envSet.add(curEnv.getKey() + EQUAL + curEnv.getValue());
+		}
+		return envSet.toArray(new String[envSet.size()]);
+	}
 
 }

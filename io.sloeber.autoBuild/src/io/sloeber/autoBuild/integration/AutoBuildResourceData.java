@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.integration;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 import java.util.Arrays;
 /**

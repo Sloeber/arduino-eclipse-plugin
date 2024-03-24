@@ -14,10 +14,11 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;

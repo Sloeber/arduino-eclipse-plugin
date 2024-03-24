@@ -34,24 +34,24 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 	}
 
 	@Override
-	public boolean invokeBuild(IBuilder builder, int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
+	public boolean invokeBuild(IBuilder builder, int kind,  IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		InoPreprocessor.generateSloeberInoCPPFile(false, autoData,monitor);
-		return super.invokeBuild(builder, kind, envp, autoData, markerGenerator, console, monitor);
+		return super.invokeBuild(builder, kind, autoData, markerGenerator, console, monitor);
 	}
 
 	@Override
-	public boolean invokeClean(IBuilder builder, int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
+	public boolean invokeClean(IBuilder builder, int kind,  IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		 InoPreprocessor.deleteSloeberInoCPPFile(autoData,monitor);
-		return super.invokeClean(builder, kind, envp, autoData, markerGenerator, console, monitor);
+		return super.invokeClean(builder, kind, autoData, markerGenerator, console, monitor);
 	}
 
 	public SloeberBuilderExtension() {
 		// Nothing to do here
 	}
-	
-	
+
+
 	@SuppressWarnings("nls")
 	private static void generateAwkFile(IAutoBuildConfigurationDescription autoBuildConfData) {
 		IFile sizeAwkFile1 = autoBuildConfData.getBuildFolder().getFile("size.awk");

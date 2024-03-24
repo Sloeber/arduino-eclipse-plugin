@@ -47,16 +47,16 @@ public interface IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public  boolean invokeBuild(int kind,String envp[], IAutoBuildConfigurationDescription autoData,
+    public  boolean invokeBuild(int kind, IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
-    public  boolean invokeClean(int kind,String envp[], IAutoBuildConfigurationDescription autoData,
+    public  boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
-    
-    
+
+
     public  String getName();
 
     public  boolean supportsParallelBuild();

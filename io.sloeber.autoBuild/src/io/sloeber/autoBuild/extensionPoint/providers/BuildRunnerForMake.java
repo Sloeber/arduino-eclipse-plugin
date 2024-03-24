@@ -16,7 +16,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ import io.sloeber.schema.api.IConfiguration;
 public class BuildRunnerForMake implements IBuildRunner {
 
 	@Override
-	public boolean invokeClean(int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
+	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
 		buildRoot.delete(true, monitor);
@@ -72,7 +72,7 @@ public class BuildRunnerForMake implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeBuild(int kind, String envp[], IAutoBuildConfigurationDescription inAutoData,
+	public boolean invokeBuild(int kind, IAutoBuildConfigurationDescription inAutoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		AutoBuildConfigurationDescription autoData=(AutoBuildConfigurationDescription) inAutoData;
@@ -154,7 +154,7 @@ public class BuildRunnerForMake implements IBuildRunner {
 				}
 
 				buildRunnerHelper.setLaunchParameters(launcher, new Path(buildCommand),
-						args.toArray(new String[args.size()]), buildFolderURI, envp);
+						args.toArray(new String[args.size()]), buildFolderURI, autoData.getEnvironmentVariables());
 				buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
 				buildRunnerHelper.removeOldMarkers(project, monitor);
 				buildRunnerHelper.greeting(kind, cfgName, configuration.getProjectType().getToolChain().getName(),
@@ -186,7 +186,7 @@ public class BuildRunnerForMake implements IBuildRunner {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kind
 	 * @param autoData
 	 * @param builder
@@ -254,11 +254,11 @@ public class BuildRunnerForMake implements IBuildRunner {
 	/*
 	 * (non-javadoc) Emits a message to the console indicating that there were no
 	 * source files to build
-	 * 
+	 *
 	 * @param buildType
-	 * 
+	 *
 	 * @param status
-	 * 
+	 *
 	 * @param configName
 	 */
 	private static String createNoSourceMessage(int buildType, IStatus status,

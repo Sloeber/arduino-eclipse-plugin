@@ -58,9 +58,6 @@ public class Common {
         return null;
     }
 
-    public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
-    public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
-    public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
 
     /**
      * This method makes sure that a string can be used as a file or folder name

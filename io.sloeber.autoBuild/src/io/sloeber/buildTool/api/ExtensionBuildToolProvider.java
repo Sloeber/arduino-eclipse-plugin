@@ -1,12 +1,13 @@
 package io.sloeber.buildTool.api;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import io.sloeber.schema.api.IProjectType;
 
 public abstract class ExtensionBuildToolProvider implements IBuildToolProvider{
@@ -36,8 +37,6 @@ public abstract class ExtensionBuildToolProvider implements IBuildToolProvider{
 	}
 
 
-	
-	
 	@Override
 	public boolean supports(IProjectType projectType) {
 		if(mySupportedProjectTypeIDs.size()==0) {

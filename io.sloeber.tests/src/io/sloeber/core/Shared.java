@@ -31,10 +31,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
+import static io.sloeber.core.api.Const.*;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
@@ -234,7 +234,7 @@ public class Shared {
          * move the file
          *
          */
-        if (Common.isLinux) {
+        if (isLinux) {
             java.nio.file.Path esptool2root = packageRoot.resolve("digistump").resolve("tools").resolve("esptool2")
                     .resolve("0.9.1");
             java.nio.file.Path esptool2wrong = esptool2root.resolve("0.9.1").resolve("esptool2");
@@ -251,7 +251,7 @@ public class Shared {
          * Elector heeft core Platino maar de directory noemt platino. In windows geen
          * probleem maar in case sensitive linux dus wel
          */
-        if (Common.isLinux) {
+        if (isLinux) {
             java.nio.file.Path cores = packageRoot.resolve("Elektor").resolve("hardware").resolve("avr")
                     .resolve("1.0.0").resolve("cores");
             java.nio.file.Path coreWrong = cores.resolve("platino");

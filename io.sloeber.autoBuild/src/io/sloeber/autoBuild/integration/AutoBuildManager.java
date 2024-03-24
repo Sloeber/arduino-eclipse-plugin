@@ -14,8 +14,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

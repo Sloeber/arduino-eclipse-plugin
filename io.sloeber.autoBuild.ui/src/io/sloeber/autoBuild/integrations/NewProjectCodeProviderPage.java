@@ -94,7 +94,7 @@ public class NewProjectCodeProviderPage extends WizardPage {
 		labelGridData.horizontalSpan = 2;
 		myDescriptionText = new Label(usercomp, SWT.LEAD | SWT.WRAP);
 		myDescriptionText.setLayoutData(labelGridData);
-		
+
 		showCorrectCodeProviderButtons();
 
 	}
@@ -115,7 +115,7 @@ public class NewProjectCodeProviderPage extends WizardPage {
 			curButton.setVisible(false);
 		}
 		int curButtonCounter = 0;
-		System.out.println("recalculating code on target "+mySelectedProjectTarget+" for nature "+mySelectedNatureID);
+		//System.out.println("recalculating code on target "+mySelectedProjectTarget+" for nature "+mySelectedNatureID);
 		HashMap<String, ICodeProvider> codeProviders = codeManager.getCodeProviders(mySelectedProjectTarget,
 				mySelectedNatureID);
 		boolean needsRedraw = false;
@@ -140,7 +140,7 @@ public class NewProjectCodeProviderPage extends WizardPage {
 
 		}
 		if (needsRedraw) {
-			
+
 			myParent.pack(true);
 			myButtonComp.pack(true);
 			myParent.layout(true, true);

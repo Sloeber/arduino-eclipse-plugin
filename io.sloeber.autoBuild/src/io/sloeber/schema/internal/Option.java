@@ -31,8 +31,8 @@
  *******************************************************************************/
 package io.sloeber.schema.internal;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
 
 import java.util.ArrayList;
@@ -165,6 +165,8 @@ public class Option extends SchemaObject implements IOption {
             }
             break;
         }
+		default:
+			break;
 
         }
 
@@ -987,8 +989,6 @@ public class Option extends SchemaObject implements IOption {
 			ITool tool=(ITool)myParent;
 			return tool.isForLanguage(languageId);
 		}
-		//TOFIX options can have builders and toolchains as parent as well
-		//however JABA thinks maybe we should get rid of those
 		return false;
 	}
 

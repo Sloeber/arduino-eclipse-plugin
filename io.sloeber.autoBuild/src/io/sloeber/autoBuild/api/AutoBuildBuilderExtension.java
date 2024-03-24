@@ -12,16 +12,16 @@ import io.sloeber.schema.api.IBuilder;
 
 @SuppressWarnings({"static-method","unused" })
 public class AutoBuildBuilderExtension {
-	
-	public boolean invokeBuild(IBuilder builder, int kind, String[] envp, IAutoBuildConfigurationDescription autoData,
+
+	public boolean invokeBuild(IBuilder builder, int kind, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
-		return builder.getBuildRunner().invokeBuild(kind,envp, autoData, markerGenerator,  console, monitor);
+		return builder.getBuildRunner().invokeBuild(kind, autoData, markerGenerator,  console, monitor);
 	}
-	
-    public  boolean invokeClean(IBuilder builder,int kind,String envp[], IAutoBuildConfigurationDescription autoData,
+
+    public  boolean invokeClean(IBuilder builder,int kind, IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException{
-    	return builder.getBuildRunner().invokeClean(kind, envp,autoData, markerGenerator,  console,
+    	return builder.getBuildRunner().invokeClean(kind, autoData, markerGenerator,  console,
                 monitor);
     }
 

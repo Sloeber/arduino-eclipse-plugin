@@ -14,7 +14,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.ui.tabs;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 import java.text.MessageFormat;
 

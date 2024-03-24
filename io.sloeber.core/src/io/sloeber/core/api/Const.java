@@ -2,6 +2,8 @@ package io.sloeber.core.api;
 
 import org.eclipse.core.runtime.IStatus;
 
+import io.sloeber.autoBuild.api.AutoBuildConstants;
+
 /**
  * ArduinoConst only contains global strings used in sloeber.
  *
@@ -9,7 +11,7 @@ import org.eclipse.core.runtime.IStatus;
  *
  */
 @SuppressWarnings("nls")
-public class Const {
+public class Const extends AutoBuildConstants {
     //Some private stuff as you should use other defines to get to this name
     private static final String ARDUINO = "arduino";
 
@@ -136,8 +138,8 @@ public class Const {
     public static final String RECIPE_C_COMBINE = RECIPE + DOT + "c.combine" + DOT + PATTERN;
 
     public static final String CODAN = "CODAN";
-    public static final String CODAN_C_to_O = RECIPE + DOT + "c.o" + DOT + CODAN;
-    public static final String CODAN_CPP_to_O = RECIPE + DOT + "cpp.o" + DOT + CODAN;
+    public static final String RECIPE_C_O_CODAN = RECIPE + DOT + "c.o" + DOT + CODAN;
+    public static final String RECIPE_CPP_O_CODAN = RECIPE + DOT + "cpp.o" + DOT + CODAN;
 
     public static final String SLOEBER_OBJCOPY = ENV_KEY_SLOEBER_START + "objcopy";
 
@@ -159,6 +161,8 @@ public class Const {
     public static final String RELEASE = "Release";
 
     public static final short PLOTTER_START_DATA = (short) 0xCDAB;// This is the
+
+
     // 205 171 or
     // -85 -51 flag
     // that

@@ -114,7 +114,8 @@
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.cpp"
                  name="%tool.Arduino.CPP2O.name"
-                 natureFilter="both">
+                 natureFilter="both"
+                 toolType="cpp-&gt;cpp.o">
               <optionCategory
                     id="io.sloeber.core.cpp.optionCategory.includePaths"
                     name="%optionCategory.include.name">
@@ -154,7 +155,8 @@
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.compiler.c"
                  name="%tool.Arduino.C2O.name"
-                 natureFilter="both">
+                 natureFilter="both"
+                 toolType="c-&gt;c.o">
               <optionCategory
                     id="io.sloeber.core.c.optionCategory.includePaths"
                     name="%optionCategory.include.name">
@@ -195,7 +197,8 @@
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.s"
                  name="%tool.Arduino.S20.name"
-                 natureFilter="both">
+                 natureFilter="both"
+                 toolType="a-&gt;a.o">
               <optionCategory
                     id="io.sloeber.core.asm.optionCategory.includePaths"
                     name="%optionCategory.include.name">
@@ -235,7 +238,8 @@
                  commandLinePattern="recipe.ar.pattern"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.ar"
-                 name="%tool.archiver.name">
+                 name="%tool.archiver.name"
+                 toolType="o-&gt;ar">
               <outputType
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
@@ -257,7 +261,8 @@
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.combine"
                  name="%tool.combiner.name"
-                 natureFilter="both">
+                 natureFilter="both"
+                 toolType="cpp.o-&gt;exe">
               <outputType
                     buildVariable="ELF"
                     id="io.sloeber.tool.combiner.output"

@@ -1,5 +1,6 @@
 package io.sloeber.core.builder;
 
+import static  io.sloeber.core.api.Const.*;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
@@ -64,6 +65,18 @@ public class SloeberBuildTools implements IBuildTools {
 	@Override
 	public String getPathExtension() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDiscoveryCommand(ToolType toolType) {
+		switch (toolType) {
+		case CPP_TO_O:
+			return RECIPE_CPP_O_CODAN;
+		case C_TO_O:
+			return RECIPE_C_O_CODAN;
+		default:
+		}
 		return null;
 	}
 

@@ -93,6 +93,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
         Map<String, String> envVars = new HashMap<>();
         int lineStartLength = lineStart.length();
         for (String curLine : lines.split(Pattern.quote(lineEnd))) {
+			if (!curLine.startsWith(lineStart)) {
+				continue;
+			}
             String cleanCurLine = curLine.substring(lineStartLength);
             String[] elements = cleanCurLine.split(EQUAL, 2);
             if (elements.length == 2) {
@@ -256,7 +259,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			}
 			// set the paths
 			String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
-			if (Common.isWindows) {
+			if (isWindows) {
 				myEnvironmentVariables.put(SLOEBER_MAKE_LOCATION,
 						ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
 				myEnvironmentVariables.put(SLOEBER_AWK_LOCATION,

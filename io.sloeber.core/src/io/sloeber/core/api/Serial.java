@@ -28,6 +28,8 @@
 
 package io.sloeber.core.api;
 
+import static io.sloeber.core.api.Const.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -121,7 +123,7 @@ public class Serial implements SerialPortEventListener {
 
     public static List<String> list() {
         try {
-            String pattern = Common.isMac ? Const.JSSC_MAC_DEFAULT_FILTER_PATTERN : Const.EMPTY;
+            String pattern = isMac ? Const.JSSC_MAC_DEFAULT_FILTER_PATTERN : Const.EMPTY;
 
             String systemEnv = System.getenv(Const.JSSC_SERIAL_FILTER_PATTERN_KEY);
             if (systemEnv != null) {
@@ -140,7 +142,7 @@ public class Serial implements SerialPortEventListener {
                 }
             }
 
-            String portSearchKey = (Common.isMac || Common.isLinux) ? "/dev/" : Const.EMPTY; //$NON-NLS-1$
+            String portSearchKey = (isMac || isLinux) ? "/dev/" : Const.EMPTY; //$NON-NLS-1$
             String[] portNames;
             if (!pattern.isBlank()) {
                 portNames = SerialPortList.getPortNames(portSearchKey, Pattern.compile(pattern));
@@ -356,7 +358,7 @@ public class Serial implements SerialPortEventListener {
      * to send a byte buffer (most often the case for networking and serial i/o) and
      * will only use the bottom 8 bits of each char in the string. (Meaning that
      * internally it uses String.getBytes)
-     * 
+     *
      * If you want to move Unicode data, you can first convert the String to a byte
      * stream in the representation of your choice (i.e. UTF8 or two-byte Unicode
      * data), and send it as a byte array.

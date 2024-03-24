@@ -1,6 +1,5 @@
 package io.sloeber.buildTool.internal;
 
-import static io.sloeber.autoBuild.integration.AutoBuildConstants.*;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,6 +14,7 @@ import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static java.io.File.pathSeparator;
 import static java.nio.file.Files.isExecutable;
 import static java.lang.System.getenv;
@@ -118,7 +118,7 @@ public class PathBuildTool implements IBuildTools {
      * copied from
      * https://stackoverflow.com/questions/934191/how-to-check-existence-of-a-program-in-the-path#23539220
      * and added EXTENSIONS
-     * 
+     *
      * @param exe
      * @return
      */
@@ -153,6 +153,11 @@ public class PathBuildTool implements IBuildTools {
 	@Override
 	public String getPathExtension() {
 		return null;
+	}
+
+	@Override
+	public String getDiscoveryCommand(ToolType toolType) {
+		return getToolLocation().append( getCommand(toolType)).toString() + DISCOVERY_PARAMETERS;
 	}
 
 
