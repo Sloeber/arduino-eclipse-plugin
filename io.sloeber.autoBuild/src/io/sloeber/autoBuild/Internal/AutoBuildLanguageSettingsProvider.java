@@ -82,13 +82,11 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 	private static final String DEFAULT_CONSOLE_ICON = "icons/obj16/inspect_sys.gif"; //$NON-NLS-1$
 	private static final String GMAKE_ERROR_PARSER_ID = "org.eclipse.cdt.core.GmakeErrorParser"; //$NON-NLS-1$
 
-
-
 	private static final int MONITOR_SCALE = 100;
 	private static final int TICKS_OUTPUT_PARSING = 1 * MONITOR_SCALE;
 	private static final int TICKS_EXECUTE_COMMAND = 1 * MONITOR_SCALE;
 
-	private Map<String, List<ICLanguageSettingEntry>> myDiscoveryCache=new HashMap<>();
+	private Map<String, List<ICLanguageSettingEntry>> myDiscoveryCache = new HashMap<>();
 	private SDMarkerGenerator markerGenerator = new SDMarkerGenerator();
 	private boolean isConsoleEnabled = false;
 
@@ -280,7 +278,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		if (discoveryCommand == null || discoveryCommand.isBlank()) {
 			return LanguageSettingsStorage.getPooledList(list);
 		}
-		if (myDiscoveryCache.get(discoveryCommand)==null) {
+		if (myDiscoveryCache.get(discoveryCommand) == null) {
 			myDiscoveryCache.put(discoveryCommand, runForLanguage(languageId, discoveryCommand, autoConf,
 					autoConf.getProject(), new NullProgressMonitor()));
 		}
@@ -336,7 +334,8 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 			} else {
 				// that looks in extension points registry and won't find the id, this console
 				// is not shown
-				console = CCorePlugin.getDefault().getConsole(Activator.PLUGIN_ID +DOT+ currentLanguageId + ".console.hidden"); //$NON-NLS-1$
+				console = CCorePlugin.getDefault()
+						.getConsole(Activator.PLUGIN_ID + DOT + currentLanguageId + ".console.hidden"); //$NON-NLS-1$
 			}
 			console.start(currentProject);
 
@@ -356,33 +355,34 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 			}
 
 			String[] envp = autoConf.getEnvironmentVariables();
-			IFolder buildFolder=autoConf.getBuildFolder();
+			IFolder buildFolder = autoConf.getBuildFolder();
 			AutoBuildCommon.createFolder(buildFolder);
 
 			// Using GMAKE_ERROR_PARSER_ID as it can handle generated error messages
-			ErrorParserManager epm = new ErrorParserManager(currentProject, buildFolder.getLocationURI(),
-					markerGenerator, new String[] { GMAKE_ERROR_PARSER_ID });
-			ConsoleParserAdapter consoleParser = new ConsoleParserAdapter();
-			consoleParser.startup(autoConf.getCdtConfigurationDescription(), epm);
-			List<IConsoleParser> parsers = new ArrayList<>();
-			parsers.add(consoleParser);
+			try (ErrorParserManager epm = new ErrorParserManager(currentProject, buildFolder.getLocationURI(),
+					markerGenerator, new String[] { GMAKE_ERROR_PARSER_ID });) {
+				ConsoleParserAdapter consoleParser = new ConsoleParserAdapter();
+				consoleParser.startup(autoConf.getCdtConfigurationDescription(), epm);
+				List<IConsoleParser> parsers = new ArrayList<>();
+				parsers.add(consoleParser);
 
-			buildRunnerHelper.setLaunchParameters(launcher, program, args, buildFolder.getLocationURI(),
-					envp);
-			buildRunnerHelper.prepareStreams(epm, parsers, console, subMonitor.split(TICKS_OUTPUT_PARSING));
+				buildRunnerHelper.setLaunchParameters(launcher, program, args, buildFolder.getLocationURI(), envp);
+				buildRunnerHelper.prepareStreams(epm, parsers, console, subMonitor.split(TICKS_OUTPUT_PARSING));
 
-			buildRunnerHelper.greeting(// ManagedMakeMessages
-					// .getFormattedString(
-					"AbstractBuiltinSpecsDetector.RunningScannerDiscovery"//$NON-NLS-1$
-			// , getName())
-			);
+				buildRunnerHelper.greeting(// ManagedMakeMessages
+						// .getFormattedString(
+						"AbstractBuiltinSpecsDetector.RunningScannerDiscovery"//$NON-NLS-1$
+				// , getName())
+				);
 
-			buildRunnerHelper.build(subMonitor.split(TICKS_EXECUTE_COMMAND));
+				buildRunnerHelper.build(subMonitor.split(TICKS_EXECUTE_COMMAND));
 
-			buildRunnerHelper.close();
-			buildRunnerHelper.goodbye();
-			ret.addAll(consoleParser.includeEntries);
-			ret.addAll(consoleParser.macroEntries);
+				epm.close();
+				buildRunnerHelper.close();
+				buildRunnerHelper.goodbye();
+				ret.addAll(consoleParser.includeEntries);
+				ret.addAll(consoleParser.macroEntries);
+			}
 
 		} catch (Exception e) {
 			Activator.log(new CoreException(
@@ -439,56 +439,59 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 	private class ConsoleParserAdapter implements ICBuildOutputParser {
 		List<ICLanguageSettingEntry> macroEntries = new ArrayList<>();
 		List<ICLanguageSettingEntry> includeEntries = new ArrayList<>();
-		int flags=ICSettingEntry.BUILTIN;
-		boolean inIncludes=false;
+		int flags = ICSettingEntry.BUILTIN;
+		boolean inIncludes = false;
 
 		@Override
 		public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker)
 				throws CoreException {
-			//nothing to do
+			// nothing to do
 		}
 
 		@Override
 		public boolean processLine(String line) {
-			System.out.println(line);
+			// System.out.println(line);
 
-			for(Entry<Pattern, outputTypes> curMatcher:outputMatchers.entrySet()) {
-				Pattern pat=curMatcher.getKey();
-				Matcher match= pat.matcher(line);
-				if(match.find()) {
-					switch(curMatcher.getValue()) {
+			for (Entry<Pattern, outputTypes> curMatcher : outputMatchers.entrySet()) {
+				Pattern pat = curMatcher.getKey();
+				Matcher match = pat.matcher(line);
+				if (match.find()) {
+					switch (curMatcher.getValue()) {
 					case INCLUDE1:
-						flags=ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.LOCAL;
-						inIncludes=true;
+						flags = ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.LOCAL;
+						inIncludes = true;
 						return true;
 					case INCLUDE2:
-						flags=ICSettingEntry.BUILTIN | ICSettingEntry.READONLY  ;
-						inIncludes=true;
+						flags = ICSettingEntry.BUILTIN | ICSettingEntry.READONLY;
+						inIncludes = true;
 						return true;
-					case FRAMEWORK:{
-						int localflags=ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.FRAMEWORKS_MAC ;
+					case FRAMEWORK: {
+						int localflags = ICSettingEntry.BUILTIN | ICSettingEntry.READONLY
+								| ICSettingEntry.FRAMEWORKS_MAC;
 						includeEntries.add(CDataUtil.createCIncludeFileEntry(getCanonical(match.group(1)), localflags));
 						return true;
 					}
-					case DEFINE1:{
-						int localflags=ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.FRAMEWORKS_MAC ;
-						macroEntries.add(CDataUtil.createCMacroEntry(match.group(1),match.group(2), localflags));
+					case DEFINE1: {
+						int localflags = ICSettingEntry.BUILTIN | ICSettingEntry.READONLY
+								| ICSettingEntry.FRAMEWORKS_MAC;
+						macroEntries.add(CDataUtil.createCMacroEntry(match.group(1), match.group(2), localflags));
 						return true;
 					}
-					case DEFINE2:{
-						int localflags=ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.FRAMEWORKS_MAC ;
-						macroEntries.add(CDataUtil.createCMacroEntry(match.group(1),match.group(2), localflags));
+					case DEFINE2: {
+						int localflags = ICSettingEntry.BUILTIN | ICSettingEntry.READONLY
+								| ICSettingEntry.FRAMEWORKS_MAC;
+						macroEntries.add(CDataUtil.createCMacroEntry(match.group(1), match.group(2), localflags));
 						return true;
 					}
 					case END_OF_INCLUDES:
-						inIncludes=false;
+						inIncludes = false;
 						return true;
 					default:
 						break;
 					}
 				}
 			}
-			if(inIncludes) {
+			if (inIncludes) {
 				includeEntries.add(CDataUtil.createCIncludePathEntry(getCanonical(line), flags));
 				return true;
 			}
@@ -496,11 +499,11 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		}
 
 		private static String getCanonical(String path) {
-			String canonical=path;
+			String canonical = path;
 			try {
-				File path2= new File(path.trim());
+				File path2 = new File(path.trim());
 				canonical = path2.getCanonicalPath();
-			} catch ( IOException e) {
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -509,45 +512,23 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 		@Override
 		public void shutdown() {
-			//nothing to do
+			// nothing to do
 		}
 	}
 
+	private enum outputTypes {
+		INCLUDE1, INCLUDE2, FRAMEWORK, DEFINE1, DEFINE2, END_OF_INCLUDES
+	}
 
-//	private static final AbstractOptionParser[] optionParsers = {
-//			new IncludePathOptionParser("#include \"(\\S.*)\"", "$1",
-//					ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.LOCAL),
-//			new IncludePathOptionParser("#include <(\\S.*)>", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY),
-//			new IncludePathOptionParser("#framework <(\\S.*)>", "$1",
-//					ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.FRAMEWORKS_MAC),
-//			new MacroOptionParser("#define\\s+(\\S*\\(.*?\\))\\s*(.*)", "$1", "$2",
-//					ICSettingEntry.BUILTIN | ICSettingEntry.READONLY),
-//			new MacroOptionParser("#define\\s+(\\S*)\\s*(.*)", "$1", "$2",
-//					ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), };
-	private  enum outputTypes { INCLUDE1,  INCLUDE2 , FRAMEWORK,DEFINE1,DEFINE2,END_OF_INCLUDES}
-	private static  Map<Pattern,outputTypes> outputMatchers=new HashMap<>() {{
-		put(Pattern.compile("#include \"(\\S.*)\""),outputTypes.INCLUDE1); //$NON-NLS-1$
-		put(Pattern.compile("#include <(\\S.*)>"), outputTypes.INCLUDE2); //$NON-NLS-1$
-		put(Pattern.compile("#framework <(\\S.*)>"), outputTypes.FRAMEWORK); //$NON-NLS-1$
-		put(Pattern.compile("#define\\s+(\\S*\\(.*?\\))\\s*(.*)"), outputTypes.DEFINE1); //$NON-NLS-1$
-		put(Pattern.compile("#define\\s+(\\S*)\\s*(.*)"), outputTypes.DEFINE2); //$NON-NLS-1$
-		put(Pattern.compile("End of search list\\."), outputTypes.END_OF_INCLUDES); //$NON-NLS-1$
-	}};
-
-
-//		case IOption.INCLUDE_FILES: {
-//				list.add(CDataUtil.createCIncludeFileEntry(curName, flags));
-//		case IOption.INCLUDE_PATH: {
-//				list.add(CDataUtil.createCIncludePathEntry(curName, flags));
-//		case IOption.LIBRARIES: {
-//				list.add(CDataUtil.createCLibraryFileEntry(curName, flags));
-//		case IOption.LIBRARY_PATHS: {
-//				list.add(CDataUtil.createCLibraryPathEntry(curName, flags));
-//		case IOption.LIBRARY_FILES: {
-//				list.add(CDataUtil.createCLibraryFileEntry(curName, flags));
-//		case IOption.PREPROCESSOR_SYMBOLS: {
-//					list.add(CDataUtil.createCMacroEntry(parts[0], parts[1], flags));
-//		case IOption.MACRO_FILES: {
-//				list.add(CDataUtil.createCMacroFileEntry(curName, flags));
+	private static Map<Pattern, outputTypes> outputMatchers = new HashMap<>() {
+		{
+			put(Pattern.compile("#include \"(\\S.*)\""), outputTypes.INCLUDE1); //$NON-NLS-1$
+			put(Pattern.compile("#include <(\\S.*)>"), outputTypes.INCLUDE2); //$NON-NLS-1$
+			put(Pattern.compile("#framework <(\\S.*)>"), outputTypes.FRAMEWORK); //$NON-NLS-1$
+			put(Pattern.compile("#define\\s+(\\S*\\(.*?\\))\\s*(.*)"), outputTypes.DEFINE1); //$NON-NLS-1$
+			put(Pattern.compile("#define\\s+(\\S*)\\s*(.*)"), outputTypes.DEFINE2); //$NON-NLS-1$
+			put(Pattern.compile("End of search list\\."), outputTypes.END_OF_INCLUDES); //$NON-NLS-1$
+		}
+	};
 
 }
