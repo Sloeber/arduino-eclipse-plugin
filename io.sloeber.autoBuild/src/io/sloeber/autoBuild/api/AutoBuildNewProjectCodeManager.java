@@ -15,8 +15,8 @@ import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 
 public class AutoBuildNewProjectCodeManager {
-	private static final String CODE_TEMPLATE_PROVIDER_EXTENSION_POINT = "io.sloeber.autoBuild.templateCodeProvider";
-	private static final String CODE_TEMPLATE_PROVIDER_EXTENSION = "templateCode";
+	private static final String CODE_TEMPLATE_PROVIDER_EXTENSION_POINT = "io.sloeber.autoBuild.templateCodeProvider"; //$NON-NLS-1$
+	private static final String CODE_TEMPLATE_PROVIDER_EXTENSION = "templateCode"; //$NON-NLS-1$
 	private static AutoBuildNewProjectCodeManager autoBuildTemplateCodeManager = null;
 	// myCodeProviders should actually be per plugin ID in case the code provider ID
 	// is
@@ -74,7 +74,7 @@ public class AutoBuildNewProjectCodeManager {
 					} catch (IOException | URISyntaxException e) {
 						e.printStackTrace();
 					}
-					
+
 				}
 			}
 		}

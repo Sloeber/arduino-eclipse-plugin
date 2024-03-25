@@ -20,8 +20,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.HashMap;

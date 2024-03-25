@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.internal.SchemaObject;
 
 public class Enablement {
     private List<Expression> myExpressions = new LinkedList<>();
@@ -99,7 +98,7 @@ public class Enablement {
         return exp.getValue();
     }
 
-    public Enablement(IConfigurationElement element, SchemaObject schemaObject) {
+    public Enablement(IConfigurationElement element) {
         // ExpressionConverter myExpressionConverter = ExpressionConverter.getDefault();
         ElementHandler[] handlers = new ElementHandler[2];
         handlers[0] = new ElementHandler() {
@@ -118,7 +117,7 @@ public class Enablement {
                 case "checkToolFlavour": //$NON-NLS-1$
                     return new ToolFlavourExpression(configElement);
                 case "checkOption": //$NON-NLS-1$
-                    return new CheckOptionExpression(configElement, schemaObject);
+                    return new CheckOptionExpression(configElement);
                 case ExpressionTagNames.ENABLEMENT: {
                     MBSEnablementExpression result = new MBSEnablementExpression(configElement);
                     processChildren(converter, configElement, result);

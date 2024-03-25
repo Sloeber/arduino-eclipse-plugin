@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.internal.SchemaObject;
 
 public class CheckOptionExpression extends Expression {
 
@@ -31,7 +30,7 @@ public class CheckOptionExpression extends Expression {
     private String myExpectedValue;
     //private SchemaObject mySchemaObject;
 
-    public CheckOptionExpression(IConfigurationElement element, SchemaObject schemaObject) {
+    public CheckOptionExpression(IConfigurationElement element) {
         // mySchemaObject = schemaObject;
         myOptionID = element.getAttribute(KEY_OPTION_ID);
         myHolderID = element.getAttribute(KEY_HOLDER_ID);

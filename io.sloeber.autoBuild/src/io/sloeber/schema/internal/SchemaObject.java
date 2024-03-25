@@ -97,7 +97,7 @@ public abstract class SchemaObject implements ISchemaObject {
         if (myName.isBlank()) {
             myName = myID;
         }
-        myEnablement = new Enablement(element, this);
+        myEnablement = new Enablement(element);
         readOptions(root);
     }
 

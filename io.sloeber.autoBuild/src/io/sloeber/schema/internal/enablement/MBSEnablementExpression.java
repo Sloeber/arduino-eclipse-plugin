@@ -54,6 +54,8 @@ public class MBSEnablementExpression extends CompositeExpression {
             case UI_VISIBILITY:
                 myType = myType | ENABLEMENT_GUI_VISIBLE;
                 break;
+			default:
+				break;
             }
         }
     }

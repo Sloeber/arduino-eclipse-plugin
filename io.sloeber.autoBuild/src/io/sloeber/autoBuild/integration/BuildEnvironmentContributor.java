@@ -1,10 +1,10 @@
 /*******************************************************************************
  * This class is the entry point for the environment variables provided by this plugin
  * The plugin= autoBuild
- * 
+ *
  * With entry point I mean: this class is registered in/called/used by CDT
- * 
- * This class should know all environment variable classes defined 
+ *
+ * This class should know all environment variable classes defined
  * in the extension point and directly call them
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
@@ -29,9 +29,10 @@ public class BuildEnvironmentContributor implements IEnvironmentContributor {
         IProjectType pType = myAutoData.getProjectType();
         if (pType != null) {
             myProjectEnvironmentVariableProvider = pType.getEnvironmentVariableProvider();
+            myConfigurationEnvironmentVariableProvider = pType.getToolChain()
+                    .getEnvironmentVariableProvider();
         }
-        myConfigurationEnvironmentVariableProvider = pType.getToolChain()
-                .getEnvironmentVariableProvider();
+
     }
 
     @Override

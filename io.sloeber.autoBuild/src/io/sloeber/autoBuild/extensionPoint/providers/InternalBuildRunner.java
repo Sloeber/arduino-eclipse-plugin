@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -255,7 +254,7 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				fProcess = launcher.execute(commandPath, onlyArgs, envp, autoData.getBuildFolder().getLocation(),
 						monitor);
-			} catch (CoreException e1) {
+			} catch (@SuppressWarnings("unused") CoreException e1) {
 				// ignore and handle null case
 			}
 			if (fProcess == null) {

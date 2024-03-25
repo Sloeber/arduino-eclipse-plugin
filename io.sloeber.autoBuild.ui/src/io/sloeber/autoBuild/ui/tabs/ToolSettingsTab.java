@@ -253,8 +253,8 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         optionList.setLabelProvider(new ToolListLabelProvider());
         optionList.addFilter(new ViewerFilter() {
             @Override
-            public boolean select(Viewer viewer, Object parent, Object element) {
-                if (/*parent instanceof IResourceConfiguration &&*/ element instanceof ITool) {
+            public boolean select(Viewer viewer, Object parent1, Object element) {
+                if (element instanceof ITool) {
                     return !((ITool) element).getCustomBuildStep();
                 }
                 return true;
@@ -433,7 +433,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
                     case IOption.BOOLEAN: {
                         boolean originalValue = Boolean.valueOf(optionValue).booleanValue();
-                        fieldEditor = new TriStateBooleanFieldEditor(optId, nameStr, tipStr, mySettingsPageContainer,
+                        fieldEditor = new TriStateBooleanFieldEditor(optId, nameStr,  mySettingsPageContainer,
                                 contextId, originalValue);
                         // tipStr is handled in TriStateBooleanFieldEditor constructor
                         break;
@@ -535,7 +535,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                 //    fieldsMap.put(optId,fieldEditor);
                 //    fieldEditorsToParentMap.put(fieldEditor,mySettingsPageContainer);
 
-            } catch (Exception e) {
+            } catch (@SuppressWarnings("unused") Exception e) {
                 //ignore
             }
         }
@@ -547,7 +547,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
      * Method displayOptionsForTool
      * @param tool
      */
-    private void displayOptionsForTool(ITool tool, boolean forceDefaultValues) {
+    private void displayOptionsForTool(ITool tool) {
         //erase current content
         for (Control curChild : mySettingsPageContainer.getChildren()) {
             curChild.dispose();
@@ -710,7 +710,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
             }
             if (toolListElement instanceof ITool) {
                 tool = (ITool) toolListElement;
-                displayOptionsForTool(tool, forceDefaultValues);
+                displayOptionsForTool(tool);
             }
         }
     }
@@ -788,6 +788,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
     @Override
     public void updateButtons() {
+    	//ignore
     }
 
     private Map<String, CustomFieldEditorDescriptor> customFieldEditorDescriptorIndex;
@@ -861,7 +862,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         protected Button button = null;
         private boolean myOriginalValue = true;
 
-        public TriStateBooleanFieldEditor(String name, String labelText, String tooltip, Composite parent,
+        public TriStateBooleanFieldEditor(String name, String labelText, Composite parent,
                 String contextId, boolean curValue) {
             super(name, labelText, parent);
             myOriginalValue = curValue;
@@ -887,6 +888,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
 
         @Override
         protected void doLoad() {
+        	//nothing to do
         }
 
     }

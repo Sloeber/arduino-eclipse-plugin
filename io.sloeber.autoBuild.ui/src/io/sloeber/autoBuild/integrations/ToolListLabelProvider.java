@@ -92,7 +92,7 @@ public class ToolListLabelProvider extends LabelProvider {
         throw unknownElement(element);
     }
 
-    protected RuntimeException unknownElement(Object element) {
+    private static RuntimeException unknownElement(Object element) {
         return new RuntimeException(
                 NLS.bind(Messages.BuildPropertyPage_error_Unknown_tree_element, element.getClass().getName()));
     }
@@ -105,7 +105,7 @@ public class ToolListLabelProvider extends LabelProvider {
     @Override
     public void dispose() {
         if (descriptor != null && manager != null) {
-            manager.destroyImage(descriptor);
+            manager.destroy(descriptor);
         }
     }
 }

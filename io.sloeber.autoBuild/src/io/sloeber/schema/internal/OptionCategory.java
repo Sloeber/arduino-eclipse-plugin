@@ -31,7 +31,6 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
     private URL myIconPathURL;
     private int myWeight = 50;
 
-    private String[] myModelOwner;
     private String[] myModelIcon;
     private String[] myModelWeight;
 
@@ -48,7 +47,6 @@ public class OptionCategory extends SchemaObject implements IOptionCategory {
 
         loadNameAndID(root, element);
 
-        myModelOwner = getAttributes(OWNER);
         myModelIcon = getAttributes(ICON);
         myModelWeight = getAttributes(WEIGHT);
 

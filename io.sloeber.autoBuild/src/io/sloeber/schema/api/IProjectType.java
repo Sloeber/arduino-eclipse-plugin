@@ -20,7 +20,6 @@ import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
 import io.sloeber.buildTool.api.IBuildToolProvider;
-import io.sloeber.buildTool.api.IBuildTools;
 
 /**
  * This class represents project-types in the Auto build system.
@@ -28,7 +27,7 @@ import io.sloeber.buildTool.api.IBuildTools;
  * acts as a template for the projects that a user will create.
  * The project-type contains one or more children of type configuration.
  * These are the default configurations that the user can choose from.
- * 
+ *
  * @since 2.1
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
@@ -100,14 +99,14 @@ public interface IProjectType extends ISchemaObject {
     /**
      * return the extensionPointID that describes this XML model that describes this
      * configuration
-     * 
+     *
      * @return the extensionPointID of the XML
      */
     public String getExtensionPointID();
 
     /**
      * return the extensiontID that describes this configuration
-     * 
+     *
      * @return the extensionID of the model
      */
     public String getExtensionID();

@@ -46,7 +46,7 @@ public class FileListControlFieldEditor extends FieldEditor {
 
     /**
      * Creates a file list control field editor.
-     * 
+     *
      * @param name
      *            the name of the preference this field editor works on
      * @param labelText
@@ -65,7 +65,7 @@ public class FileListControlFieldEditor extends FieldEditor {
 
     /**
      * Creates a file list control field editor.
-     * 
+     *
      * @param name
      *            the name of the preference this field editor works on
      * @param labelText
@@ -89,7 +89,7 @@ public class FileListControlFieldEditor extends FieldEditor {
     }
     /**
      * Creates a file list control field editor.
-     * 
+     *
      * @param name
      *            the name of the preference this field editor works on
      * @param labelText
@@ -148,7 +148,7 @@ public class FileListControlFieldEditor extends FieldEditor {
     /**
      * Sets the filter-path for the underlying Browse dialog. Only applies when
      * browseType is 'file' or 'dir'.
-     * 
+     *
      * @param filterPath
      *
      * @since 7.0
@@ -160,7 +160,7 @@ public class FileListControlFieldEditor extends FieldEditor {
     /**
      * Sets the filter-extensions for the underlying Browse dialog. Only applies
      * when browseType is 'file'.
-     * 
+     *
      * @param filterExtensions
      *
      * @since 7.0
@@ -190,14 +190,14 @@ public class FileListControlFieldEditor extends FieldEditor {
 
             @Override
             public void fileListChanged(FileListControl fileList, String oldValue[], String newValue[]) {
-                handleFileListChange(fileList, oldValue, newValue);
+                handleFileListChange( oldValue, newValue);
             }
 
         });
         topLayout.setLayout(layout);
     }
 
-    private void handleFileListChange(FileListControl fileList, String oldValue[], String newValue[]) {
+    private void handleFileListChange( String oldValue[], String newValue[]) {
         //		values = fileList.getItems();
         fireValueChanged(VALUE, createList(oldValue), createList(newValue));
     }
@@ -277,7 +277,7 @@ public class FileListControlFieldEditor extends FieldEditor {
 
     /**
      * Parse the string with the separator and returns the string array.
-     * 
+     *
      * @param stringList
      * @return
      */

@@ -280,10 +280,12 @@ public class NewVarDialog extends Dialog {
             if (dir != null)
                 fMacroValueEdit.setText(dir);
             break;
+		default:
+			break;
         }
     }
 
-    private int getBrowseType(int type) {
+    private static int getBrowseType(int type) {
         int browseType = IOption.BROWSE_NONE;
         switch (type) {
         case ICdtVariable.VALUE_PATH_FILE:
@@ -351,7 +353,8 @@ public class NewVarDialog extends Dialog {
                 loadVar(var.getName(), var.getValueType(), var.getStringListValue());
             else
                 loadVar(var.getName(), var.getValueType(), var.getStringValue());
-        } catch (CdtVariableException e) {
+        } catch (@SuppressWarnings("unused") CdtVariableException e) {
+        	//ignore
         }
     }
 
@@ -359,7 +362,7 @@ public class NewVarDialog extends Dialog {
      * returns an empty string in the case the string passed is null.
      * otherwise returns the string passed
      */
-    private String notNull(String str) {
+    private static String notNull(String str) {
         return str == null ? EMPTY_STRING : str;
     }
 
@@ -380,10 +383,8 @@ public class NewVarDialog extends Dialog {
         }
     }
 
-    private boolean macroNamesEqual(String name1, String name2) {
-        name1 = name1.trim();
-        name2 = name2.trim();
-        return name1.equals(name2);
+    private static boolean macroNamesEqual(String name1, String name2) {
+        return name1.trim().equals(name2.trim());
     }
 
     /*
@@ -502,6 +503,7 @@ public class NewVarDialog extends Dialog {
     }
 
     private void handleMacroValueModified() {
+    	//Nothing to do
     }
 
     /*

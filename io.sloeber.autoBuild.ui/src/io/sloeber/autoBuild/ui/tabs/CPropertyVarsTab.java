@@ -39,7 +39,6 @@ import org.eclipse.cdt.ui.newui.StringListModeControl;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.cdt.utils.envvar.EnvVarOperationProcessor;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.JFacePreferences;
@@ -61,6 +60,7 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -129,10 +129,12 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
 
         @Override
         public void dispose() {
+        	//nothing to do
         }
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        	//nothing to do
         }
     }
 
@@ -195,6 +197,8 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
                 }
             case 2:
                 return getString(var);
+			default:
+				break;
             }
             return EMPTY_STR;
         }
@@ -218,7 +222,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
     /*
      * called when the user macro selection was changed
      */
-    private void handleSelectionChanged(SelectionChangedEvent event) {
+    private void handleSelectionChanged() {
         updateButtons();
     }
 
@@ -255,6 +259,8 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
         case 2:
             handleDelButton();
             break;
+		default:
+			break;
         }
         tv.getTable().setFocus();
     }
@@ -276,9 +282,9 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
     }
 
     private ICConfigurationDescription[] getCfs() {
-        if (cfgd instanceof ICMultiItemsHolder)
+        if (cfgd instanceof ICMultiItemsHolder) {
             return (ICConfigurationDescription[]) ((ICMultiItemsHolder) cfgd).getItems();
-        else
+        }
             return new ICConfigurationDescription[] { cfgd };
     }
 
@@ -304,7 +310,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
 
     private void handleAddButton() {
         NewVarDialog dlg = new NewVarDialog(usercomp.getShell(), null, cfgd, getVariables());
-        if (dlg.open() == Dialog.OK)
+        if (dlg.open() == Window.OK)
             addOrEdit(dlg.getDefinedMacro(), dlg.isForAllCfgs);
     }
 
@@ -312,7 +318,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
         ICdtVariable _vars[] = getSelectedUserMacros();
         if (_vars != null && _vars.length == 1) {
             NewVarDialog dlg = new NewVarDialog(usercomp.getShell(), _vars[0], cfgd, getVariables());
-            if (dlg.open() == Dialog.OK)
+            if (dlg.open() == Window.OK)
                 addOrEdit(dlg.getDefinedMacro(), false);
         }
     }
@@ -437,7 +443,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                handleSelectionChanged(event);
+                handleSelectionChanged();
             }
         });
         tableViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -459,6 +465,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
 
             @Override
             public void keyReleased(KeyEvent e) {
+            	//Nothing to do
             }
         });
         GridData gd = new GridData(GridData.FILL_BOTH);
@@ -469,7 +476,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
     /*
      * answers whether the macro of a given name can be sreated
      */
-    private boolean canCreate(ICdtVariable v) {
+    private static boolean canCreate(ICdtVariable v) {
         if (v == null)
             return false;
         String name = v.getName();
@@ -528,8 +535,8 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
             ICdtVariable[] v = new ICdtVariable[obs.length];
             System.arraycopy(obs, 0, v, 0, obs.length);
             return v;
-        } else
-            return vmgr.getVariables(cfgd);
+        }
+		return vmgr.getVariables(cfgd);
     }
 
     private void updateData() {
@@ -596,7 +603,7 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
 
     /**
      * Checks whether variable is user's.
-     * 
+     *
      * @param v
      *            - variable to check.
      * @return {@code true} if the variable is user's or {@code false} otherwise.
@@ -610,23 +617,24 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
                 if (vmgr.isUserVariable(v, cfs[i]))
                     return true;
             return false;
-        } else
-            return vmgr.isUserVariable(v, cfgd);
+        }
+		return vmgr.isUserVariable(v, cfgd);
     }
 
-    private String getString(ICdtVariable v) {
-        if (fUserSup.isDynamic(v))
-            return Messages.MacrosBlock_label_value_eclipse_dynamic;
-        String value = EMPTY_STR;
-        try {
-            if (CdtVariableResolver.isStringListVariable(v.getValueType()))
-                value = vmgr.convertStringListToString(v.getStringListValue(), VALUE_DELIMITER);
-            else
-                value = v.getStringValue();
-        } catch (CdtVariableException e1) {
-        }
-        return value;
-    }
+	private String getString(ICdtVariable v) {
+		if (fUserSup.isDynamic(v))
+			return Messages.MacrosBlock_label_value_eclipse_dynamic;
+		String value = EMPTY_STR;
+		try {
+			if (CdtVariableResolver.isStringListVariable(v.getValueType()))
+				value = vmgr.convertStringListToString(v.getStringListValue(), VALUE_DELIMITER);
+			else
+				value = v.getStringValue();
+		} catch (@SuppressWarnings("unused") CdtVariableException e1) {
+			//Ignore
+		}
+		return value;
+	}
 
     @Override
     protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
@@ -663,7 +671,8 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
                 if (fUserSup.setWorkspaceVariables(prefvars))
                     if (page instanceof PrefPage_Abstract)
                         PrefPage_Abstract.isChanged = true;
-            } catch (CoreException e) {
+            } catch (@SuppressWarnings("unused") CoreException e) {
+            	//Nothing
             }
         prefvars = null;
         super.performOK();
@@ -697,8 +706,8 @@ public class CPropertyVarsTab extends AbstractCPropertyTab {
                 if (s1 == null)
                     s1 = AbstractPage.EMPTY_STR;
                 return (s0.compareTo(s1));
-            } else
-                return 0;
+            }
+			return 0;
         }
     }
 

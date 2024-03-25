@@ -64,7 +64,7 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
     /**
      * Is this outputType for staticlib, shared lib or exe
      * This is based on the outputType id last segment
-     * 
+     *
      * @param outputType
      * @return
      */
@@ -78,6 +78,8 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
             return SHARED_LIB_TYPE;
         case EXECUTABLE:
             return EXE_TYPE;
+		default:
+			break;
         }
         return TYPE_ERROR;
     }
@@ -96,6 +98,8 @@ public class NameProviderAutoBuild implements IOutputNameProvider {
             return libName + DOT + DYNAMIC_LIB_EXTENSION;
         case EXE_TYPE:
             return EXE_NAME;
+		default:
+			break;
 
         }
         return null;
