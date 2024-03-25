@@ -24,7 +24,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
@@ -36,9 +35,9 @@ import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.schema.api.IProjectType;
 
 @SuppressWarnings({ "nls" })
-public class CreateBasicProjects {
+public class AutoBuildCreateBasicProjects {
     static int testCounter = 1;
-    //below are test limiting options buildTypeActiveBuild=null and  
+    //below are test limiting options buildTypeActiveBuild=null and
     private boolean buildTypeActiveBuild = true;
     private boolean doTestDefaultBuilder = true;
     private boolean doTestInternalBuilder = true;

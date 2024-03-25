@@ -27,7 +27,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 
 @SuppressWarnings("nls")
-class CreateProject {
+class AutoBuildCreateProject {
 
 	private static String codeRootFolder = "src";
 

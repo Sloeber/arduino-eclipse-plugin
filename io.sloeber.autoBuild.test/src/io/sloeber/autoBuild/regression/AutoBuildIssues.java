@@ -25,7 +25,7 @@ import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildTools;
 
 @SuppressWarnings({ "nls", "static-method" })
-public class issues {
+public class AutoBuildIssues {
 	private static String codeRootFolder="src";
 
     @BeforeAll

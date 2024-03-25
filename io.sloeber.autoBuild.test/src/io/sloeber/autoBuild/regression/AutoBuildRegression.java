@@ -42,7 +42,7 @@ import io.sloeber.schema.api.IProjectType;
 import io.sloeber.schema.api.ITool;
 
 @SuppressWarnings({ "static-method", "nls", "boxing" })
-public class regression {
+public class AutoBuildRegression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
     static private String codeRootFolder="src";
     static int testCounter = 1;

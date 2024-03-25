@@ -370,7 +370,7 @@ public class BoardsManager {
                 status.add(install(curPlatform, monitor));
             }
 
-        } catch (Exception e) {
+        } catch (@SuppressWarnings("unused") Exception e) {
             // do nothing
         }
         myIsReady = true;
@@ -578,7 +578,7 @@ public class BoardsManager {
                 if (localFile.exists()) {
                     localFile.delete();
                 }
-            } catch (Exception e) {
+            } catch (@SuppressWarnings("unused") Exception e) {
                 // ignore
             }
         }
