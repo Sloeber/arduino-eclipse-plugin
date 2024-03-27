@@ -28,18 +28,21 @@
               name="%autoBuild.tool.gpp.compiler"
               superClass="cdt.autobuild.tool.cpp.compiler">
            <outputType
+                 buildVariable="OBJS"
                  id="io.sloeber.autoBuild.gpp.compiler.outputType.exe"
                  name="%autoBuild.outputType.CPP.exe.name"
                  namePattern="%.o"
                  nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
            </outputType>
            <outputType
+                 buildVariable="OBJS"
                  id="io.sloeber.autoBuild.gpp.compiler.outputType.staticLib"
                  name="%autoBuild.outputType.CPP.staticLib.name"
                  namePattern="%.o"
                  nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
            </outputType>
            <outputType
+                 buildVariable="OBJS"
                  id="io.sloeber.autoBuild.gpp.compiler.outputType.sharedLib"
                  name="%autoBuild.outputType.CPP.sharedLib.name"
                  namePattern="%.o"
@@ -104,18 +107,21 @@
               name="%autoBuild.tool.gcc.compiler"
               superClass="cdt.autobuild.tool.c.compiler">
            <outputType
+                 buildVariable="OBJS"
                  id="io.sloeber.autoBuild.gcc.compiler.outputType.exe"
                  name="%autoBuild.outputType.C.exe.name"
                  namePattern="%.o"
                  nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
            </outputType>
            <outputType
+                 buildVariable="OBJS"
                  id="io.sloeber.autoBuild.gcc.compiler.outputType.staticLib"
                  name="%autoBuild.outputType.C.staticLib.name"
                  namePattern="%.o"
                  nameProvider="io.sloeber.autoBuild.extensionPoint.providers.NameProviderAutoBuild">
            </outputType>
            <outputType
+                 buildVariable="OBJS"
                  id="io.sloeber.autoBuild.gcc.compiler.outputType.sharedLib"
                  name="%autoBuild.outputType.C.sharedLib.name"
                  namePattern="%.o"
@@ -2060,7 +2066,7 @@
       <extension
             point="org.eclipse.cdt.core.LanguageSettingsProvider">
          <provider
-               class="io.sloeber.autoBuild.Internal.AutoBuildLanguageSettingsProvider"
+               class="io.sloeber.autoBuild.internal.AutoBuildLanguageSettingsProvider"
                id="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider"
                name="%autoBuildLanguageStingsProvider"
                prefer-non-shared="false">
@@ -2076,6 +2082,15 @@
                id="io.sloeber.autoBuild.cpp.hello.world"
                isTest="false"
                name="cpp hello world code">
+         </templateCode>
+         <templateCode
+               CodeLocation="template/compound"
+               ContainsCppCode="true"
+               SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
+               description="Code for a project that builds libraries and executable in one go. Needs the compound project to work properly."
+               id="io.sloeber.autoBuild.templateCode.compound"
+               isTest="false"
+               name="compound project">
          </templateCode>
       </extension>
       

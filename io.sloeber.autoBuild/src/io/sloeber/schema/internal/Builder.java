@@ -26,8 +26,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 
 import io.sloeber.autoBuild.api.IBuildRunner;
-import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
+import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.schema.api.IBuilder;
 
 public class Builder extends SchemaObject implements IBuilder {

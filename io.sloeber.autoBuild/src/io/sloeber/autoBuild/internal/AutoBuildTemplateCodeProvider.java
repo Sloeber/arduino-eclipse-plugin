@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.internal;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 

@@ -18,7 +18,7 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,7 +48,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import io.sloeber.autoBuild.Internal.AutoBuildRunnerHelper;
+
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IBuildRunner;
@@ -56,6 +56,7 @@ import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.autoBuild.internal.AutoBuildRunnerHelper;
 import io.sloeber.schema.api.IConfiguration;
 
 public class InternalBuildRunner implements IBuildRunner {

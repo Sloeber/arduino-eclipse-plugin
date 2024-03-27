@@ -12,7 +12,7 @@
  * Intel Corporation - Initial API and implementation
  * Miwako Tokugawa (Intel Corporation) - bug 222817 (OptionCategoryApplicability)
  *******************************************************************************/
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.internal;
 
 import io.sloeber.schema.api.IOption;
 import io.sloeber.schema.api.IOptionCategory;

@@ -550,9 +550,9 @@
                SupportedArtifactTypes="org.eclipse.cdt.build.core.buildArtefactType.exe"
                ContainsCppCode="true"
                description="Code for a project that builds libraries and executable in one go. Needs the compound project to work properly."
-               id="io.sloeber.autoBuild.templateCode.compound"
+               id="io.sloeber.autoBuild.test.templateCode.compound"
                isTest="true"
-               name="compound project">
+               name="compound test project">
          </templateCode>
          <templateCode
                CodeLocation="templates/c_exe"

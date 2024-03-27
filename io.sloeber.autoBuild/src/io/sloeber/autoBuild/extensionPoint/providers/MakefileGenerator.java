@@ -2,7 +2,7 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -38,37 +38,7 @@ import io.sloeber.schema.api.IToolChain;
  */
 public class MakefileGenerator  {
 	static private boolean VERBOSE = false;
-    public final static String AT = "@"; //$NON-NLS-1$
-    public final static  String COLON = ":"; //$NON-NLS-1$
-    public final static  int COLS_PER_LINE = 80;
-    public final static  String COMMENT_SYMBOL = "#"; //$NON-NLS-1$
-    public final static  String DOLLAR_SYMBOL = "$"; //$NON-NLS-1$
-    public final static  String DEP_EXT = "d"; //$NON-NLS-1$
-    public final static  String DEPFILE_NAME = "subdir.dep"; //$NON-NLS-1$
-    public final static  String DOT = "."; //$NON-NLS-1$
-    public final static  String DASH = "-"; //$NON-NLS-1$
-    public final static  String ECHO = "echo"; //$NON-NLS-1$
-    public final static  String IN_MACRO = "$<"; //$NON-NLS-1$
-    public final static  String LINEBREAK = "\\\n"; //$NON-NLS-1$
-    public final static  String LOGICAL_AND = "&&"; //$NON-NLS-1$
-    public final static  String MAKEFILE_DEFS = "makefile.defs"; //$NON-NLS-1$
-    public final static  String MAKEFILE_INIT = "makefile.init"; //$NON-NLS-1$
-    public final static  String MAKEFILE_NAME = "makefile"; //$NON-NLS-1$
-    public final static  String MAKEFILE_TARGETS = "makefile.targets"; //$NON-NLS-1$
-    public final static  String MAKE = "$(MAKE)"; //$NON-NLS-1$
-    public final static  String NO_PRINT_DIR = "--no-print-directory"; //$NON-NLS-1$
-
-    public final static  String MODFILE_NAME = "subdir.mk"; //$NON-NLS-1$
-    public final static  String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
-    public final static  String OBJECTS_MAKFILE = "objects.mk"; //$NON-NLS-1$
-    public final static  String OUT_MACRO = "$@"; //$NON-NLS-1$
-    public final static  String ROOT = ".."; //$NON-NLS-1$
-    public final static  String SEPARATOR = "/"; //$NON-NLS-1$
-    public final static  String SINGLE_QUOTE = "'"; //$NON-NLS-1$
-    public final static  String SRCSFILE_NAME = "sources.mk"; //$NON-NLS-1$
-    public final static  String TAB = "\t"; //$NON-NLS-1$
-    public final static  String WHITESPACE = " "; //$NON-NLS-1$
-    public final static  String WILDCARD = "%"; //$NON-NLS-1$
+	 public static final int COLS_PER_LINE = 80;
 
     // Generation error codes
     public static final int SPACES_IN_PATH = 0;
@@ -264,13 +234,13 @@ public class MakefileGenerator  {
 		StringBuffer macroBuffer = new StringBuffer();
 		macroBuffer.append(addDefaultHeader());
 
-		for (String macroName : outputMacros) {
-			if (!macroName.isBlank()) {
-				macroBuffer.append(macroName).append(MAKE_EQUAL);
-				macroBuffer.append(NEWLINE);
-				macroBuffer.append(NEWLINE);
-			}
-		}
+//		for (String macroName : outputMacros) {
+//			if (!macroName.isBlank()) {
+//				macroBuffer.append(macroName).append(MAKE_EQUAL);
+//				macroBuffer.append(NEWLINE);
+//				macroBuffer.append(NEWLINE);
+//			}
+//		}
 		IFile fileHandle = myBuildRoot.getFile(OBJECTS_MAKFILE);
 		save(macroBuffer, fileHandle);
 	}
@@ -291,19 +261,6 @@ public class MakefileGenerator  {
 		buffer.append(topMakeGetIncludeDependencies());
 		buffer.append(topMakeGetRMCommand(objMacroNames));
 		buffer.append(topMakeGetTargets());// this is the include dependencies
-		// TOFIX the content from the append below should come from a registered method
-		buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n" //$NON-NLS-1$ //$NON-NLS-2$
-				+ "\t@echo trying to burn bootloader ${bootloader.tool}\n" //$NON-NLS-1$
-				+ "\t${tools.${bootloader.tool}.erase.pattern}\n" + "\t${tools.${bootloader.tool}.bootloader.pattern}\n" //$NON-NLS-1$ //$NON-NLS-2$
-				+ "\n" + "uploadWithBuild: all\n" //$NON-NLS-1$ //$NON-NLS-2$
-				+ "\t@echo trying to build and upload with upload tool ${upload.tool}\n" //$NON-NLS-1$
-				+ "\t${tools.${upload.tool}.upload.pattern}\n" + "\n" + "uploadWithoutBuild: \n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				+ "\t@echo trying to upload without build with upload tool ${upload.tool}\n" //$NON-NLS-1$
-				+ "\t${tools.${upload.tool}.upload.pattern}\n" + "    \n" + "uploadWithProgrammerWithBuild: all\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				+ "\t@echo trying to build and upload with programmer ${program.tool}\n" //$NON-NLS-1$
-				+ "\t${tools.${program.tool}.program.pattern}\n" + "\n" + "uploadWithProgrammerWithoutBuild: \n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				+ "\t@echo trying to upload with programmer ${program.tool} without build\n" //$NON-NLS-1$
-				+ "\t${tools.${program.tool}.program.pattern}\n\n"); //$NON-NLS-1$
 		buffer.append(topMakeGetMacros());
 		buffer.append(topMakeGetMakeRules());
 		buffer.append(topMakeGetFinalTargets());
@@ -325,9 +282,12 @@ public class MakefileGenerator  {
 		return buffer;
 	}
 
-	protected static StringBuffer topMakeGetRMCommand(Set<String> myDependencyMacros) {
+	protected StringBuffer topMakeGetRMCommand(Set<String> myDependencyMacros) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("-include " + ROOT + FILE_SEPARATOR + MAKEFILE_INIT).append(NEWLINE); //$NON-NLS-1$
+		IFile makeInitFile=myProject.getFile(MAKEFILE_INIT);
+		buffer.append("-include " +GetNiceFileName(myBuildRoot,makeInitFile)).append(NEWLINE); //$NON-NLS-1$
+		IFile makeExtendile=myBuildRoot.getFile(MAKE_FILE_EXTENSION);
+		buffer.append("-include " +GetNiceFileName(myBuildRoot,makeExtendile)).append(NEWLINE); //$NON-NLS-1$
 		buffer.append(NEWLINE);
 		// Get the clean command from the build model
 		buffer.append("RM := "); //$NON-NLS-1$
@@ -344,7 +304,8 @@ public class MakefileGenerator  {
 			buffer.append("endif").append(NEWLINE).append(NEWLINE); //$NON-NLS-1$
 		}
 		// Include makefile.defs supplemental makefile
-		buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_DEFS).append(NEWLINE); //$NON-NLS-1$
+		IFile makeDefFile=myProject.getFile(MAKEFILE_DEFS);
+		buffer.append("-include ").append(GetNiceFileName(myBuildRoot,makeDefFile)).append(NEWLINE); //$NON-NLS-1$
 		return (buffer.append(NEWLINE));
 	}
 
@@ -441,10 +402,10 @@ public class MakefileGenerator  {
 			String preannouncebuildStep = myAutoBuildConfData.getPreBuildAnouncement();
 			buffer.append(PREBUILD).append(COLON).append(NEWLINE);
 			if (preannouncebuildStep.length() > 0) {
-				buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(preannouncebuildStep));
+				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(preannouncebuildStep));
 			}
 			buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
-			buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+			buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
 		}
 
 		String postbuildStep = myAutoBuildConfData.getPostbuildStep();
@@ -455,10 +416,10 @@ public class MakefileGenerator  {
 			String postannouncebuildStep = myAutoBuildConfData.getPostBuildAnouncement();
 			buffer.append(POSTBUILD).append(COLON).append(NEWLINE);
 			if (postannouncebuildStep.length() > 0) {
-				buffer.append(TAB).append(DASH).append(AT).append(escapedEcho(postannouncebuildStep));
+				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(postannouncebuildStep));
 			}
 			buffer.append(TAB).append(DASH).append(postbuildStep).append(NEWLINE);
-			buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+			buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
 		}
 
 		return buffer;
@@ -491,7 +452,8 @@ public class MakefileGenerator  {
 				.append(CLEAN).append(WHITESPACE).append(POSTBUILD).append(WHITESPACE).append(TARGET_OBJECTS)
 				.append(NEWLINE);
 		// Include makefile.targets supplemental makefile
-		buffer.append("-include ").append(ROOT).append(FILE_SEPARATOR).append(MAKEFILE_TARGETS).append(NEWLINE); //$NON-NLS-1$
+		IFile makeTargetFile=myProject.getFile(MAKEFILE_TARGETS);
+		buffer.append("-include ").append(GetNiceFileName(myBuildRoot,makeTargetFile)).append(NEWLINE); //$NON-NLS-1$
 		return buffer;
 	}
 
@@ -596,9 +558,9 @@ public class MakefileGenerator  {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(enumTargets(makeRule, myBuildRoot)).append(COLON).append(WHITESPACE);
 		buffer.append(enumPrerequisites(makeRule, myBuildRoot)).append(NEWLINE);
-		buffer.append(TAB).append(AT)
+		buffer.append(TAB).append(AT_SYMBOL)
 				.append(escapedEcho(MakefileGenerator_message_start_file + WHITESPACE + OUT_MACRO));
-		buffer.append(TAB).append(AT).append(escapedEcho(tool.getAnnouncement()));
+		buffer.append(TAB).append(AT_SYMBOL).append(escapedEcho(tool.getAnnouncement()));
 
 		// // JABA add sketch.prebuild and postbuild if needed
 		// //TOFIX this should not be here
@@ -630,10 +592,34 @@ public class MakefileGenerator  {
 		// // end JABA add sketch.prebuild and postbuild if needed
 
 		buffer.append(NEWLINE);
-		buffer.append(TAB).append(AT)
+		buffer.append(TAB).append(AT_SYMBOL)
 				.append(escapedEcho(MakefileGenerator_message_finish_file + WHITESPACE + OUT_MACRO));
-		buffer.append(TAB).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+		buffer.append(TAB).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
 		return buffer;
 	}
 
+
+    /**
+     * Outputs a comment formatted as follows: ##### ....... ##### # <Comment
+     * message> ##### ....... #####
+     */
+    static private  StringBuffer addDefaultHeader() {
+        StringBuffer buffer = new StringBuffer();
+        outputCommentLine(buffer);
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_header).append(NEWLINE);
+        outputCommentLine(buffer);
+        buffer.append(NEWLINE);
+        return buffer;
+    }
+
+
+    /**
+     * Put COLS_PER_LINE comment charaters in the argument.
+     */
+    static private void outputCommentLine(StringBuffer buffer) {
+        for (int i = 0; i < COLS_PER_LINE; i++) {
+            buffer.append(COMMENT_SYMBOL);
+        }
+        buffer.append(NEWLINE);
+    }
 }

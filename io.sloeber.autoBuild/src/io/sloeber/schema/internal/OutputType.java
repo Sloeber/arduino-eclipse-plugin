@@ -15,6 +15,7 @@
 package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -26,7 +27,7 @@ import org.eclipse.core.runtime.content.IContentTypeManager;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
+import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.schema.api.IInputType;
 import io.sloeber.schema.api.IOutputType;
 import io.sloeber.schema.api.ITool;
@@ -199,6 +200,7 @@ public class OutputType extends SchemaObject implements IOutputType {
     private static IFile getOutputFile(IAutoBuildConfigurationDescription autoBuildConfData, IFolder buildFolder,
             IFile inputFile, String outputFile) {
         String resolvedFile = AutoBuildCommon.resolve(outputFile, autoBuildConfData);
+        resolvedFile=makeNameMakeSafe(resolvedFile);
         if (buildFolder.getProjectRelativePath().isPrefixOf(inputFile.getProjectRelativePath())) {
             return buildFolder.getFile(resolvedFile);
         }

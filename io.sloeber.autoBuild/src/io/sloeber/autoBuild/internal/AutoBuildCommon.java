@@ -1,8 +1,6 @@
-package io.sloeber.autoBuild.extensionPoint.providers;
+package io.sloeber.autoBuild.internal;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
-import static io.sloeber.autoBuild.core.Messages.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,15 +58,7 @@ public class AutoBuildCommon {
         return path;
     }
 
-    /**
-     * Put COLS_PER_LINE comment charaters in the argument.
-     */
-    static protected void outputCommentLine(StringBuffer buffer) {
-        for (int i = 0; i < COLS_PER_LINE; i++) {
-            buffer.append(COMMENT_SYMBOL);
-        }
-        buffer.append(NEWLINE);
-    }
+
 
     static public boolean containsSpecialCharacters(String path) {
         return path.matches(".*(\\s|[\\{\\}\\(\\)\\$\\@%=;]).*"); //$NON-NLS-1$
@@ -184,18 +174,7 @@ public class AutoBuildCommon {
         return ECHO + WHITESPACE + SINGLE_QUOTE + escapedString + SINGLE_QUOTE + NEWLINE;
     }
 
-    /**
-     * Outputs a comment formatted as follows: ##### ....... ##### # <Comment
-     * message> ##### ....... #####
-     */
-    static protected StringBuffer addDefaultHeader() {
-        StringBuffer buffer = new StringBuffer();
-        outputCommentLine(buffer);
-        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MakefileGenerator_comment_header).append(NEWLINE);
-        outputCommentLine(buffer);
-        buffer.append(NEWLINE);
-        return buffer;
-    }
+
 
     /**
      * Strips outermost quotes of Strings of the form "a" and 'a' or returns the
@@ -379,10 +358,10 @@ public class AutoBuildCommon {
 
     static public String GetNiceFileName(IPath buildPath, IPath filePath) {
         String ret;
-        if (buildPath.isPrefixOf(filePath) || buildPath.removeLastSegments(1).isPrefixOf(filePath)) {
-            ret = filePath.makeRelativeTo(buildPath).toOSString();
+        if (buildPath.isPrefixOf(filePath) || buildPath.removeLastSegments(3).isPrefixOf(filePath)) {
+            ret = filePath.makeRelativeTo(buildPath).toString();
         } else {
-            ret = filePath.toOSString();
+            ret = filePath.toString();
         }
 
         return ret;
@@ -411,7 +390,7 @@ public class AutoBuildCommon {
      * Non existing environment variables are removed
      * List type environment variables are seperated by an empty string
      * The context for resolution is the configuration provided
-     * 
+     *
      * @param unresolved
      * @param icConfigurationDescription
      * @return a string that holds the resolved unresolved input. Never returns null
@@ -438,7 +417,7 @@ public class AutoBuildCommon {
      * resolves a string untill it contains no more environment variable references
      * (read ${xx})
      * That is: it will try maximum 20 times and then stop
-     * 
+     *
      * @param unresolved
      * @param nonexistentMacrosValue
      * @param listDelimiter
@@ -500,7 +479,7 @@ public class AutoBuildCommon {
      * filenames containing spaces in Windows, see Note 1 < less than used to
      * redirect input, allowed in Unix filenames, see Note 1 > greater than used
      * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
-     * 
+     *
      * # is excluded as it is seen as a special character by make
      * =======
      * character, but Windows itself always accepts it as a separator.[6][vague]) \
@@ -542,7 +521,7 @@ public class AutoBuildCommon {
 
     /**
      * given a pattern provide the name
-     * 
+     *
      * @param myNamePattern
      *            the pattern used to get the filename
      * @param inputFile
@@ -577,7 +556,7 @@ public class AutoBuildCommon {
     }
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //I copied the code below from the CDT code base because the CDT code contain historical 
+    //I copied the code below from the CDT code base because the CDT code contain historical
     // backwards limitation (not expanding when there is a newline)
     //I opted to just copy the code
     //I didn't feel like asking if it was an option to remove the limitation because "to much time/frustration to little result"
@@ -636,6 +615,12 @@ public class AutoBuildCommon {
         result = result.replace(VARIABLE_SUFFIX_MASKED, VARIABLE_SUFFIX);
 
         return result;
+    }
+    
+    public static String makeNameMakeSafe( String fileName) {
+       // if(myReplceSpaceWith_) {
+        return fileName.replace(BLANK, UNDER_SCORE);
+        //}
     }
 
 }

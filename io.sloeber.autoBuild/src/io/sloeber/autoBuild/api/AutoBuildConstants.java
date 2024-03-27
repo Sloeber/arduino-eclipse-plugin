@@ -51,6 +51,7 @@ public class AutoBuildConstants {
     public static final String NEWLINE = "\n";
     public static final String EQUAL = "=";
     public static final String BLANK = " ";
+    public static final String UNDER_SCORE = "_";
     public static final String ALL = "all";
     public static final String LINE_BREAK_REGEX = "\\r?\\n";
 
@@ -67,7 +68,7 @@ public class AutoBuildConstants {
     public static final String EXE_NAME = isWindows ? PROJECT_NAME_VARIABLE + ".exe" : PROJECT_NAME_VARIABLE;
 
     public static final String LIBRARY_PATH_SUFFIX = "libraries";
-    public static final int COLS_PER_LINE = 80;
+
     public static final String COMMENT_SYMBOL = "#";
     public static final String COMMENT_START = "# ";
     public static final String DOLLAR_SYMBOL = "$";
@@ -249,6 +250,7 @@ public class AutoBuildConstants {
     public static final String LANGUAGEID_CPP = "org.eclipse.cdt.core.g++";
     public static final String LANGUAGEID_ASSEMBLY = "org.eclipse.cdt.core.assembly";
     public static final String DISCOVERY_PARAMETERS ="  -E -P -v -dD "+INPUTS_VARIABLE;
+	public static final String MAKE_FILE_EXTENSION = "makefile.extension";
 
 
 }

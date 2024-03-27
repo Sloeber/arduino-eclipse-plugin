@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.internal;
 
 import java.io.IOException;
 import java.io.OutputStream;

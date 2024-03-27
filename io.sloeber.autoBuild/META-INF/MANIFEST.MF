@@ -22,8 +22,7 @@ Require-Bundle: org.eclipse.cdt.core;bundle-version="7.0.0",
  org.eclipse.cdt.build.gcc.core
 Automatic-Module-Name: io.sloeber.core
 Bundle-Activator: io.sloeber.autoBuild.core.Activator
-Export-Package: io.sloeber.autoBuild.Internal;x-internal:=true,
- io.sloeber.autoBuild.api;
+Export-Package: io.sloeber.autoBuild.api;
   uses:="io.sloeber.schema.api,
    org.eclipse.swt.widgets,
    org.eclipse.cdt.core.resources,
@@ -67,6 +66,7 @@ Export-Package: io.sloeber.autoBuild.Internal;x-internal:=true,
    org.eclipse.cdt.core.envvar,
    io.sloeber.buildTool.api,
    org.eclipse.cdt.core.language.settings.providers",
+ io.sloeber.autoBuild.internal;x-internal:=true,
  io.sloeber.buildTool.api;uses:="org.eclipse.core.runtime",
  io.sloeber.buildTool.internal;x-internal:=true,
  io.sloeber.schema.api;

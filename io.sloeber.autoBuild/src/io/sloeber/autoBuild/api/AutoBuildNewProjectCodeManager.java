@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
-import io.sloeber.autoBuild.Internal.AutoBuildTemplateCodeProvider;
+import io.sloeber.autoBuild.internal.AutoBuildTemplateCodeProvider;
 
 public class AutoBuildNewProjectCodeManager {
 	private static final String CODE_TEMPLATE_PROVIDER_EXTENSION_POINT = "io.sloeber.autoBuild.templateCodeProvider"; //$NON-NLS-1$

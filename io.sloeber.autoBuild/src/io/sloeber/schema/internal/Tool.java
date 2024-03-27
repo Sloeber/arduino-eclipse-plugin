@@ -2,7 +2,7 @@ package io.sloeber.schema.internal;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
-import static io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,11 +34,11 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
-import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
 import io.sloeber.schema.api.IInputType;
@@ -599,6 +599,8 @@ public class Tool extends SchemaObject implements ITool {
         if (depName.isBlank()) {
             return null;
         }
+        depName=makeNameMakeSafe(depName);
+
         IResource fileParent = curTargetFile.getParent();
         if (fileParent instanceof IFolder) {
             IFolder folder = (IFolder) fileParent;

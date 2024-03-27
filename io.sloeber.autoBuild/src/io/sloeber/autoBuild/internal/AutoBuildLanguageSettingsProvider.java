@@ -12,7 +12,7 @@
  *     Andrew Gvozdev - initial API and implementation
  *******************************************************************************/
 
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.internal;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
@@ -67,7 +67,6 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildCommon;
 import io.sloeber.schema.api.IOption;
 
 /**
