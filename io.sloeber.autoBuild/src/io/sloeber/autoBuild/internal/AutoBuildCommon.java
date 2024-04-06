@@ -116,6 +116,10 @@ public class AutoBuildCommon {
         if (!folder.getParent().exists()) {
             createFolder(folder.getFolder("..")); //$NON-NLS-1$
         }
+        //in case another threat created the folder by now (did happen)
+        if (folder.exists()) {
+            return;
+        }
         folder.create(true, true, null);
         folder.setDerived(true, null);
     }
@@ -616,7 +620,7 @@ public class AutoBuildCommon {
 
         return result;
     }
-    
+
     public static String makeNameMakeSafe( String fileName) {
        // if(myReplceSpaceWith_) {
         return fileName.replace(BLANK, UNDER_SCORE);
