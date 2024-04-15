@@ -1,5 +1,6 @@
 package io.sloeber.autoBuild.regression;
 
+import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.helpers.Defaults.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,7 @@ class AutoBuildCreateProject {
 	@SuppressWarnings("static-method")
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
-	void testExample(String myProjectName, IProjectType projectType, IBuildTools buildTools, 
+	void testExample(String myProjectName, IProjectType projectType, IBuildTools buildTools,
 			String natureID, ICodeProvider codeProvider) throws Exception {
 
 		IProject testProject = AutoBuildProject.createProject(myProjectName, projectType, natureID, codeRootFolder,
@@ -71,16 +72,16 @@ class AutoBuildCreateProject {
 					ICodeProvider codeProvider_cpp = null;
 					ICodeProvider codeProvider_c = null;
 					switch (projectID) {
-					case "io.sloeber.autoBuild.projectType.exe":
+					case PROJECT_TYPE_ID_EXE:
 						codeProvider_cpp = cpp_exeCodeProvider;
 						codeProvider_c = c_exeCodeProvider;
 						break;
 					case "io.sloeber.autoBuild.projectType.static.lib":
-					case "io.sloeber.autoBuild.projectType.dynamic.lib":
+					case PROJECT_TYPE_ID_DYNAMIC_LIB:
 						codeProvider_cpp = cpp_LibProvider;
 						codeProvider_c = c_LibProvider;
 						break;
-					case "io.sloeber.autoBuild.projectType.compound.exe":
+					case PROJECT_TYPE_ID_COMPOUND_EXE:
 						codeProvider_cpp = compoundProvider;
 						break;
 					default:
@@ -90,14 +91,14 @@ class AutoBuildCreateProject {
 							.MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_CPP_"
 									+ projectType.getName() + "_" + extensionID);
 					testCounter++;
-					ret.add(Arguments.of(projectName, projectType, buildTools, 
+					ret.add(Arguments.of(projectName, projectType, buildTools,
 							CCProjectNature.CC_NATURE_ID, codeProvider_cpp));
 					if (codeProvider_c != null) {
 						projectName = AutoBuildCommon
 								.MakeNameCompileSafe(String.format("%03d", Integer.valueOf(testCounter)) + "_C_"
 										+ projectType.getName() + "_" + extensionID);
 						testCounter++;
-						ret.add(Arguments.of(projectName, projectType, buildTools, 
+						ret.add(Arguments.of(projectName, projectType, buildTools,
 								CProjectNature.C_NATURE_ID, codeProvider_c));
 					}
 				}
