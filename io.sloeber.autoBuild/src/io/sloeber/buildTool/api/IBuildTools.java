@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
+import io.sloeber.schema.api.IProjectType;
 
 /**
  * This is a set of tools on the local disk to build a target
@@ -17,19 +18,19 @@ public interface IBuildTools {
      * This tool provider find tools on the local disk
      * This method does not tell you how many locations of tools were found
      * It only tells you there is at least one location on disk that contains all
-     * the tools
-     * expected for the toolflavour.
-     * For instance MVC needs a resource compiler tooltype where a ll other tools do
+     * the tools expected for the toolflavour.
+     * For instance MVC needs a resource compiler tooltype where a all other tools do
      * not need this
-     * So if the tool type is GNU and not resource compiler is found but the others
-     * are this method
-     * should return true where MVC toolFlavour should return false
-     *
+     * For example:
+     * 1) If the tool type is GNU the existence of the resource compiler does not
+     * affect the outcome of this method
+     * 2) If the tool type is MVC the existence of the resource compiler
+     * affects the outcome of this method
      *
      * @return true if tools were found
      *         false if no tools were found
      */
-    boolean holdsAllTools();
+    boolean holdsAllTools( );
 
     /**
      * A buildTool provider may provide different versions of tools.
@@ -118,5 +119,7 @@ public interface IBuildTools {
 	String getBuildCommand();
 
 	String getPathExtension();
+
+	boolean isProjectTypeSupported(IProjectType projectType);
 
 }

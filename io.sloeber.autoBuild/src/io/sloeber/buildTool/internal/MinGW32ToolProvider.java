@@ -37,7 +37,7 @@ public class MinGW32ToolProvider extends ExtensionBuildToolProvider {
         if (myMinGWHome != null) {
 
             myMinGWBinPath = new Path(myMinGWHome).append(BIN_FOLDER);
-            IBuildTools targetTool= new MinGWTargetTool(myMinGWBinPath, getID(),MINGW_ID);
+            IBuildTools targetTool= new MinGWTargetTool(myMinGWBinPath, this,MINGW_ID);
             myTargetTools.put(targetTool.getSelectionID(), targetTool);
             myHoldsAllTools = targetTool.holdsAllTools();
         }

@@ -7,24 +7,26 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
+import io.sloeber.buildTool.api.IBuildToolProvider;
 
 public class MinGWTargetTool implements IBuildTools {
 	final private static String MAKE_COMMAND ="mingw32-make.exe"; //$NON-NLS-1$
     private  IPath myMinGWBinPath = null;
     private String myId=null;
-    private String myProviderID=null;
+    private IBuildToolProvider myToolProvider=null;
     private String myBuildCommand=null;
     private static boolean myHoldsAllTools = true;//TOFIX should at least check
 
 
 
-    public MinGWTargetTool(IPath minGWBinPath,String providerID,String id) {
+    public MinGWTargetTool(IPath minGWBinPath,IBuildToolProvider toolProvider,String id) {
     	 myMinGWBinPath = minGWBinPath;
     	 myId=id;
-    	 myProviderID=providerID;
+    	 myToolProvider=toolProvider;
     	 if(minGWBinPath.append(MAKE_COMMAND).toFile().exists()) {
     		 myBuildCommand=minGWBinPath.append(MAKE_COMMAND).toOSString();
     	 }
@@ -41,7 +43,7 @@ public class MinGWTargetTool implements IBuildTools {
     }
 	@Override
 	public String getProviderID() {
-		return myProviderID;
+		return myToolProvider.getID();
 	}
 
     @Override
@@ -93,7 +95,9 @@ public class MinGWTargetTool implements IBuildTools {
 		return getToolLocation().append( getCommand(toolType)).toString() +DISCOVERY_PARAMETERS;
 	}
 
-
-
+	@Override
+	public boolean isProjectTypeSupported(IProjectType projectType) {
+		return myToolProvider.supports(projectType);
+	}
 
 }

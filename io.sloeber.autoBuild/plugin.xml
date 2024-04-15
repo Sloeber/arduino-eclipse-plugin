@@ -2001,6 +2001,12 @@
         name="%user.defined.tool.provider"
         toolProvider="io.sloeber.buildTool.internal.UserDefinedBuildToolProvider">
   </ToolProvider>
+  <ToolProvider
+        Description="The build Tools on the path"
+        id="io.sloeber.autoBuild.Path.BuildToolProvider"
+        name="%path.build.tool.provider"
+        toolProvider="io.sloeber.buildTool.internal.PathToolProvider">
+  </ToolProvider>
   <builder
         autoBuildTarget="all"
         buildRunner="io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake"

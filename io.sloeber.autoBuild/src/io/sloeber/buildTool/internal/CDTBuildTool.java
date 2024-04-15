@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.schema.api.IProjectType;
 import io.sloeber.buildTool.api.IBuildToolManager;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
 import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
@@ -98,5 +99,9 @@ public class CDTBuildTool implements IBuildTools {
 		return getToolLocation().append( getCommand(toolType)).toString() + DISCOVERY_PARAMETERS;
 	}
 
+	@Override
+	public boolean isProjectTypeSupported(IProjectType projectType) {
+		return true;
+	}
 
 }

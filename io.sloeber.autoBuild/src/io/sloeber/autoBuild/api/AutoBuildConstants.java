@@ -252,5 +252,14 @@ public class AutoBuildConstants {
     public static final String DISCOVERY_PARAMETERS ="  -E -P -v -dD "+INPUTS_VARIABLE;
 	public static final String MAKE_FILE_EXTENSION = "makefile.extension";
 
+	public static final String EXTENSION_CPP="cpp";
+	public static final String EXTENSION_C="c";
+	public static final String SPEC_BASE="spec";
+	public static final String TOOL_PREFIX ="TOOL_PREFIX";
+	public static final String TOOL_SUFFIX ="TOOL_SUFFIX";
 
+	public static final String  PROJECT_TYPE_ID_DYNAMIC_LIB ="io.sloeber.autoBuild.projectType.dynamic.lib";
+	public static final String  PROJECT_TYPE_ID_STATIC_LIB="io.sloeber.autoBuild.projectType.static.lib";
+	public static final String  PROJECT_TYPE_ID_COMPOUND_EXE="io.sloeber.autoBuild.projectType.compound.exe";
+	public static final String  PROJECT_TYPE_ID_EXE="io.sloeber.autoBuild.projectType.exe";
 }

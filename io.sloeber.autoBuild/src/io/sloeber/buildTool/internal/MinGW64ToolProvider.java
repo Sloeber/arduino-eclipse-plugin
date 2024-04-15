@@ -39,16 +39,16 @@ public class MinGW64ToolProvider extends ExtensionBuildToolProvider {
 						File curToolTarget = curToolTargetPath.toFile();
 						if (curToolTarget.exists() && curToolTarget.isDirectory()) {
 							// we have a winner
-							IBuildTools newTargetTool=new MinGWTargetTool(curToolTargetPath, getID(), curChild);
+							IBuildTools newTargetTool=new MinGWTargetTool(curToolTargetPath, this, curChild);
 							myTargetTools.put(curChild,newTargetTool );
 							myHoldsAllTools=myHoldsAllTools||newTargetTool.holdsAllTools();
-									
+
 						}
 					}
 				}
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class MinGW64ToolProvider extends ExtensionBuildToolProvider {
 	@Override
 	public void refreshToolchains() {
 		findTools();
-		
+
 	}
 
 
