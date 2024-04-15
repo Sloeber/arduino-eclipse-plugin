@@ -108,6 +108,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         }
 
         try {
+        	project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
             invokeBuild(project,kind, args, monitor);
         } finally {
             synchronized (projectsThatAreBuilding) {
