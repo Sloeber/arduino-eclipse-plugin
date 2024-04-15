@@ -1,14 +1,21 @@
 package io.sloeber.autoBuild.internal;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static java.io.File.pathSeparator;
+import static java.lang.System.getenv;
+import static java.nio.file.Files.isExecutable;
+import static java.util.regex.Pattern.quote;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
@@ -114,11 +121,7 @@ public class AutoBuildCommon {
             return;
         }
         if (!folder.getParent().exists()) {
-            createFolder(folder.getFolder("..")); //$NON-NLS-1$
-        }
-        //in case another threat created the folder by now (did happen)
-        if (folder.exists()) {
-            return;
+            createFolder((IFolder)folder.getParent());
         }
         folder.create(true, true, null);
         folder.setDerived(true, null);
@@ -626,5 +629,38 @@ public class AutoBuildCommon {
         return fileName.replace(BLANK, UNDER_SCORE);
         //}
     }
+
+
+	/**
+	 * copied from
+	 * https://stackoverflow.com/questions/934191/how-to-check-existence-of-a-program-in-the-path#23539220
+	 * and added EXTENSIONS
+	 *
+	 * @param exe
+	 * @return
+	 */
+	@SuppressWarnings("nls")
+	public static boolean canExecute(final String exe) {
+		if (exe == null || exe.isBlank()) {
+			new Throwable().printStackTrace();
+			return false;
+		}
+		String knownExtensions[] = { "", ".exe", ".bat", ".com", ".cmd" };
+		final var paths = getenv(ENV_VAR_PATH).split(quote(pathSeparator));
+		return Stream.of(paths).map(Paths::get).anyMatch(path -> {
+			final var p = path.resolve(exe);
+			var found = false;
+
+			for (final var extension : knownExtensions) {
+				if (isExecutable(java.nio.file.Path.of(p.toString() + extension))) {
+					found = true;
+					break;
+				}
+			}
+
+			return found;
+		});
+	}
+
 
 }

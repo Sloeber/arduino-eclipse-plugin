@@ -17,6 +17,10 @@ public class Activator extends Plugin {
         return myBundleContext;
     }
 
+    public static Activator getInstance() {
+    	return instance;
+    }
+
     @Override
     public void start(BundleContext context) throws Exception {
         myBundleContext = context;

@@ -3,6 +3,7 @@ package io.sloeber.autoBuild.integration;
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -36,6 +38,7 @@ import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
+import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.buildTool.api.IBuildTools;
 import io.sloeber.buildTool.api.IBuildToolManager;
@@ -1506,25 +1509,27 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	}
 
+	private static String getSpecFile(String languageId) {
+		String ext = EXTENSION_CPP;
+		if (LANGUAGEID_C.equals(languageId)) {
+			ext = EXTENSION_C;
+		}
+		String specFileName = SPEC_BASE + DOT + ext;
+		IPath ret = Activator.getInstance().getStateLocation().append(specFileName);
+		File specFile = new java.io.File(ret.toOSString());
+		if (!specFile.exists()) {
+			try {
+				specFile.createNewFile();
+			} catch (IOException e) {
+				Activator.log(e);
+			}
+		}
+		return ret.toString();
+	}
+
 	@Override
 	public String getDiscoveryCommand(String languageId) {
-
-		IFolder buildFolder = getBuildFolder();
-		IFile specFile = buildFolder.getFile("spec.cpp"); //$NON-NLS-1$
-		if(LANGUAGEID_C.equals(languageId)) {
-			specFile = buildFolder.getFile("spec.c"); //$NON-NLS-1$
-		}
-		try {
-			AutoBuildCommon.createFolder(buildFolder);
-			if (!specFile.exists()) {
-				java.io.File file = new java.io.File(specFile.getLocation().toOSString());
-				file.createNewFile();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String specInFile = specFile.getLocation().toOSString();
+		String specInFile = getSpecFile(languageId);
 		String basicCommand=internalgetDiscoveryCommand(languageId);
 		if(basicCommand==null||basicCommand.isBlank()) {
 			return null;
