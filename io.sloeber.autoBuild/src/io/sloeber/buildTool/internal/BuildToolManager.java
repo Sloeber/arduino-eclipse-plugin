@@ -171,7 +171,7 @@ public class BuildToolManager implements IBuildToolManager {
 	}
 
 	@Override
-	public Set<IBuildTools> getAllInstalledTargetTools() {
+	public Set<IBuildTools> getAllInstalledBuildTools() {
 		 Set<IBuildTools> ret=new HashSet<>();
 		for (IBuildToolProvider cur : toolHoldingProviders.values()) {
 			ret.addAll( cur.getAllInstalledBuildTools());

@@ -118,7 +118,7 @@ public interface IBuildToolManager {
 	 *
 	 * @return a tool
 	 */
-	public Set<IBuildTools> getAllInstalledTargetTools();
+	public Set<IBuildTools> getAllInstalledBuildTools();
 
 	/**
 	 * get a build tools that is compatible with the given projectType Doesn't

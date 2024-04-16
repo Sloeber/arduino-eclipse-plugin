@@ -45,7 +45,7 @@ public class AutoBuildCreateBasicProjects {
 	private boolean doTestInternalBuilder = true;
 	private boolean doTestMakeBuilder = true;
 	private static String codeRootFolder = "src";
-	static Set<IBuildTools> buildTools = IBuildToolManager.getDefault().getAllInstalledTargetTools();
+	static Set<IBuildTools> buildTools = IBuildToolManager.getDefault().getAllInstalledBuildTools();
 
 	@BeforeAll
 	static void beforeAll() {
