@@ -29,7 +29,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       <vmArgs>-Dorg.eclipse.update.reconcile=false
 -Dlog4j.configuration=log4j/log4j.xml
 -Xms256m
--Xmx1024m
+-Xmx2048m
 --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -267,12 +267,12 @@ United States, other countries, or both.
    </configurations>
 
    <repositories>
-      <repository location="https://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
-      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="false" />
-      <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/releases/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
-      <repository location="https://download.eclipse.org/nebula/releases/latest/" enabled="true" />
+      <repository location="https://eclipse.baeyens.it/update/V4/stable/" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" name="" enabled="false" />
+      <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/releases/latest/" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/eclipse/updates/latest" name="" enabled="true" />
+      <repository location="https://download.eclipse.org/nebula/releases/latest/" name="" enabled="true" />
    </repositories>
 
    <preferencesInfo>

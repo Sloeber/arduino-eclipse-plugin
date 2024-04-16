@@ -28,7 +28,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       <vmArgs>-Dorg.eclipse.update.reconcile=false
 -Dlog4j.configuration=log4j/log4j.xml
 -Xms256m
--Xmx1024m
+-Xmx2048m
 --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
