@@ -16,7 +16,7 @@ package io.sloeber.autoBuild.api;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import io.sloeber.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IOption;
 
 /**
  * This interface can be implemented by clients to contribute custom

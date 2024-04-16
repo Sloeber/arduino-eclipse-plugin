@@ -42,10 +42,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.internal.Builder;
-import io.sloeber.schema.internal.ProjectType;
+import io.sloeber.autoBuild.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.internal.Builder;
+import io.sloeber.autoBuild.schema.internal.ProjectType;
 
 /**
  * This is the main entry point for getting at the build information for the

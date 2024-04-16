@@ -27,8 +27,8 @@ import org.eclipse.jface.viewers.Viewer;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IOptionCategory;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

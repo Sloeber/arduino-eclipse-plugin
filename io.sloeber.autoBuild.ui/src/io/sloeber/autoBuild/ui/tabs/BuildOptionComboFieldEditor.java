@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IOption;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

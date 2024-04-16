@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
-import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
+import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.core.api.SloeberProject;
 
 public class SloeberBuildTools implements IBuildTools {
 	private String myProviderID = null;
@@ -78,6 +80,11 @@ public class SloeberBuildTools implements IBuildTools {
 		default:
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isProjectTypeSupported(IProjectType projectType) {
+		return SloeberProject.PROJECT_ID.equals(projectType.getId());
 	}
 
 }

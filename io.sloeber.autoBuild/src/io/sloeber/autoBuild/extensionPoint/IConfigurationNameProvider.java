@@ -14,7 +14,7 @@
 
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
 
 public interface IConfigurationNameProvider {
 

@@ -25,10 +25,10 @@ import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.api.IToolChain;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IOutputType;
+import io.sloeber.autoBuild.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IToolChain;
 
 /**
  * This is the default makefile generator Feel free to extend to add the flavors

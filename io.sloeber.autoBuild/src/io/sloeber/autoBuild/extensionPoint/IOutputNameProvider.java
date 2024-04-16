@@ -2,8 +2,8 @@ package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.core.resources.IFile;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOutputType;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IOutputType;
 
 public interface IOutputNameProvider {
     /***********

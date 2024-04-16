@@ -46,7 +46,7 @@ Export-Package: cc.arduino.packages;x-internal:=true,
  io.sloeber.core.tools;x-friends:="io.sloeber.tests",
  io.sloeber.core.tools.uploaders;x-internal:=true,
  io.sloeber.core.txt;x-friends:="io.sloeber.tests"
-Import-Package: io.sloeber.schema.api,
+Import-Package: io.sloeber.autoBuild.schema.api,
  org.apache.commons.io;version="2.13.0",
  org.eclipse.cdt.make.core
 Automatic-Module-Name: io.sloeber.core

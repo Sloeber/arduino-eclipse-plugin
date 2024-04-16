@@ -29,11 +29,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.tools.templates.core.IGenerator;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.internal.Configuration;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.internal.Configuration;
 
 public class AutoBuildProjectGenerator implements IGenerator {
 	private URI myProjectURI = null;
@@ -166,18 +166,18 @@ public class AutoBuildProjectGenerator implements IGenerator {
 		myBuilderID = builderName;
 	}
 
-	public void setTargetTool(IBuildTools targetTool) {
-		myBuldTools = targetTool;
+	public void setBuildTools(IBuildTools buildTool) {
+		myBuldTools = buildTool;
 	}
 
 	public void setCodeRootFolder(String codeRootFolder) {
 		myCodeRootFolder=codeRootFolder;
-		
+
 	}
 
 	public void setProjectType(IProjectType projectType) {
 		myProjectType=projectType;
-		
+
 	}
 
 }

@@ -38,20 +38,20 @@ import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolType;
-import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ITool;
-import io.sloeber.schema.api.IToolChain;
-import io.sloeber.schema.internal.Configuration;
-import io.sloeber.schema.internal.Tool;
+import io.sloeber.autoBuild.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IToolChain;
+import io.sloeber.autoBuild.schema.internal.Configuration;
+import io.sloeber.autoBuild.schema.internal.Tool;
 
 public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		implements IAutoBuildConfigurationDescription {
@@ -265,7 +265,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (myBuildTools == null) {
 			// TODO add real error warning
 			System.err.println("AutoBuildConfigurationDescription.myBuildTools should never be null"); //$NON-NLS-1$
-			myBuildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
+			myBuildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(myProjectType);
 		}
 		return myBuildTools;
 	}
@@ -422,7 +422,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 					found = true;
 					String providerID = key.substring(KEY_BUILDTOOLS.length() + DOT.length());
 					String selectionID = value;
-					IBuildToolManager buildToolManager = IBuildToolManager.getDefault();
+					IBuildToolsManager buildToolManager = IBuildToolsManager.getDefault();
 					myBuildTools = buildToolManager.getBuildTools(providerID, selectionID);
 
 				}
@@ -449,7 +449,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (myBuildTools == null) {
 			// TODO add real error warning
 			System.err.println("unable to identify build Tools "); //$NON-NLS-1$
-			myBuildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(myProjectType);
+			myBuildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(myProjectType);
 		}
 		myAutoBuildConfiguration = myProjectType.getConfiguration(confName);
 		for (IBuilder buildRunner : getAvailableBuilders()) {
@@ -1587,19 +1587,19 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			envMap.put(var.getName(), var.getValue());
 		}
 
-		IBuildTools targetTool = getBuildTools();
-		if (targetTool != null) {
-			if (targetTool.getEnvironmentVariables() != null) {
-				for (Entry<String, String> curEnv : targetTool.getEnvironmentVariables().entrySet()) {
+		IBuildTools buildTools = getBuildTools();
+		if (buildTools != null) {
+			if (buildTools.getEnvironmentVariables() != null) {
+				for (Entry<String, String> curEnv : buildTools.getEnvironmentVariables().entrySet()) {
 					envMap.put(curEnv.getKey(), curEnv.getValue());
 				}
 			}
-			if (targetTool.getPathExtension() != null) {
+			if (buildTools.getPathExtension() != null) {
 				String systemPath = envMap.get(ENV_VAR_PATH);
 				if (systemPath == null) {
-					envMap.put(ENV_VAR_PATH, targetTool.getPathExtension());
+					envMap.put(ENV_VAR_PATH, buildTools.getPathExtension());
 				} else {
-					envMap.put(ENV_VAR_PATH, targetTool.getPathExtension() + File.pathSeparator + systemPath);
+					envMap.put(ENV_VAR_PATH, buildTools.getPathExtension() + File.pathSeparator + systemPath);
 				}
 			}
 		}

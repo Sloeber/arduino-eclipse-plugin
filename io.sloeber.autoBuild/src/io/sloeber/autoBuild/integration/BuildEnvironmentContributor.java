@@ -17,7 +17,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentContributor;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
-import io.sloeber.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 
 public class BuildEnvironmentContributor implements IEnvironmentContributor {
     IEnvironmentVariableProvider myProjectEnvironmentVariableProvider = null;

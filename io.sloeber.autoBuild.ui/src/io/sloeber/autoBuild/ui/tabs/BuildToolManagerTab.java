@@ -13,13 +13,13 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildToolProvider;
-import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsProvider;
 
 public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 	private static final String NEWLINE = "\n"; //$NON-NLS-1$
-	private IBuildToolManager buildToolManager = IBuildToolManager.getDefault();
+	private IBuildToolsManager buildToolManager = IBuildToolsManager.getDefault();
 	private boolean myIsUpdating = true;
 	private Combo myToolProviderCombo;
 	private Combo myBuildToolCombo;
@@ -72,7 +72,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		myToolProviderCombo.setLayoutData(controlGridData);
 		myBuildToolCombo.setLayoutData(controlGridData);
 
-		for (IBuildToolProvider buildToolProvider : buildToolManager.GetToolProviders(true)) {
+		for (IBuildToolsProvider buildToolProvider : buildToolManager.GetToolProviders(true)) {
 			myToolProviderCombo.add(buildToolProvider.getName());
 		}
 
@@ -111,7 +111,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 				buildToolManager.refreshToolchains();
 				String selected =myToolProviderCombo.getText();
 				myToolProviderCombo.removeAll();
-				for (IBuildToolProvider buildToolProvider : buildToolManager.GetToolProviders(true)) {
+				for (IBuildToolsProvider buildToolProvider : buildToolManager.GetToolProviders(true)) {
 					myToolProviderCombo.add(buildToolProvider.getName());
 				}
 				myToolProviderCombo.setText(selected);
@@ -146,7 +146,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 
 	private void updateBuildToolsCombo() {
 		myToolProviderName = myToolProviderCombo.getText();
-		IBuildToolProvider toolProvider = buildToolManager.GetToolProviderByName(myToolProviderName);
+		IBuildToolsProvider toolProvider = buildToolManager.GetToolProviderByName(myToolProviderName);
 		myBuildToolCombo.removeAll();
 		if (toolProvider != null && toolProvider.getAllInstalledBuildTools()!=null) {
 			for (IBuildTools buildTools : toolProvider.getAllInstalledBuildTools()) {
@@ -208,7 +208,7 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		IBuildTools buildTools = myAutoConfDesc.getBuildTools();
 		if (buildTools != null) {
 			String providerID = buildTools.getProviderID();
-			IBuildToolProvider buildToolProvider = buildToolManager.getToolProvider(providerID);
+			IBuildToolsProvider buildToolProvider = buildToolManager.getToolProvider(providerID);
 			if (buildToolProvider != null) {
 				int index = myToolProviderCombo.indexOf(buildToolProvider.getName());
 				myToolProviderCombo.select(index);

@@ -7,7 +7,7 @@ import org.osgi.framework.Bundle;
 import io.sloeber.autoBuild.api.AutoBuildNewProjectCodeManager;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 
 @SuppressWarnings("nls")
 public class Defaults {

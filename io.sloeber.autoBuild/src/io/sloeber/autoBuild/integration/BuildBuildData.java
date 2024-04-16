@@ -22,7 +22,8 @@ import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.runtime.IPath;
-import io.sloeber.schema.api.IBuilder;
+
+import io.sloeber.autoBuild.schema.api.IBuilder;
 
 public class BuildBuildData extends CBuildData {
     private IBuilder fBuilder;

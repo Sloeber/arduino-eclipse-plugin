@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 
 /**
  * Project Settings Tab in project properties Build Settings This allows to

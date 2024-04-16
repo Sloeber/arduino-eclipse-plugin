@@ -5,9 +5,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.ui.tabs.BuildToolManagerTab;
 import io.sloeber.autoBuild.ui.tabs.DialogCompleteEvent;
-import io.sloeber.buildTool.api.IBuildTools;
 
 public class NewProjectBuildToolsPage extends  WizardPage {
 

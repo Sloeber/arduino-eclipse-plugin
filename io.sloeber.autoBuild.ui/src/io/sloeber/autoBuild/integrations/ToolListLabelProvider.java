@@ -24,9 +24,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import io.sloeber.autoBuild.schema.api.IOptionCategory;
+import io.sloeber.autoBuild.schema.api.ITool;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.api.ITool;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

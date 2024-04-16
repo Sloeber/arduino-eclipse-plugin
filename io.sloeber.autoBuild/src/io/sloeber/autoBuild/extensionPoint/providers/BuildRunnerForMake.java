@@ -56,8 +56,8 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.internal.AutoBuildRunnerHelper;
-import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
 
 public class BuildRunnerForMake implements IBuildRunner {
 

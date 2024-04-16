@@ -559,6 +559,13 @@
         <setEntry value="io.sloeber.autoBuild.test@default:default"/>
         <setEntry value="io.sloeber.autoBuild.ui@default:default"/>
         <setEntry value="io.sloeber.autoBuild@default:default"/>
+        <setEntry value="io.sloeber.core.nl1@default:false"/>
+        <setEntry value="io.sloeber.core@default:default"/>
+        <setEntry value="io.sloeber.product.sdk@default:default"/>
+        <setEntry value="io.sloeber.product@default:default"/>
+        <setEntry value="io.sloeber.tests@default:default"/>
+        <setEntry value="io.sloeber.ui.nl1@default:false"/>
+        <setEntry value="io.sloeber.ui@default:default"/>
         <setEntry value="org.eclipse.cdt.build.gcc.core@default:default"/>
         <setEntry value="org.eclipse.cdt.core.native@default:default"/>
         <setEntry value="org.eclipse.cdt.core.win32.x86_64@default:false"/>

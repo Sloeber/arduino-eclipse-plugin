@@ -48,8 +48,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import io.sloeber.autoBuild.schema.api.IOption;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.schema.api.IOption;
 
 /**
  * the dialog used to create or edit the build macro

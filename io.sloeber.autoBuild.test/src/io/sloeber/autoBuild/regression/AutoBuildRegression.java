@@ -30,16 +30,16 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 @SuppressWarnings({ "static-method", "nls", "boxing" })
 public class AutoBuildRegression {
@@ -78,7 +78,7 @@ public class AutoBuildRegression {
         String projectName = "createCloseOpenProject";
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
-        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
+        IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
         		cpp_exeCodeProvider, buildTools, false, null); 
 
@@ -118,7 +118,7 @@ public class AutoBuildRegression {
         String projectName = "setBuilder";
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
-        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
+        IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
         		cpp_exeCodeProvider, buildTools, false, null);
 
@@ -179,7 +179,7 @@ public class AutoBuildRegression {
         IProject testProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
         if (testProject == null || !testProject.exists()) {
         	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, "io.sloeber.autoBuild.test",  "io.sloeber.autoBuild.projectType.test.options", true);
-        	IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
+        	IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
             testProject = AutoBuildProject.createProject(projectName, projectType, 
                     CCProjectNature.CC_NATURE_ID,codeRootFolder,
                     cpp_exeCodeProvider, buildTools, false, null);

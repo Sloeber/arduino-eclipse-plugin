@@ -18,14 +18,14 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.buildTool.api.IBuildToolManager.ToolFlavour;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IBuilder;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IProjectType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 public interface IAutoBuildConfigurationDescription {
 

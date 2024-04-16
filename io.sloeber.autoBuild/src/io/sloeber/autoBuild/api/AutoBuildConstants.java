@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 
-import io.sloeber.schema.api.IToolChain;
+import io.sloeber.autoBuild.schema.api.IToolChain;
 
 /**
  * ArduinoConst only contains global strings used in this plugin.

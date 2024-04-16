@@ -17,9 +17,9 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.helpers.Shared;
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildTools;
 
 @SuppressWarnings({ "restriction", "nls", "static-method" })
 public class CConfigurationDescriptionInvestigation {
@@ -40,7 +40,7 @@ public class CConfigurationDescriptionInvestigation {
     public void testConfigDescription() {
         beforeAll();
         String projectName = "testConfigDescription";
-        IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(defaultProjectType);
+        IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(defaultProjectType);
         IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder, cpp_exeCodeProvider, buildTools, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {

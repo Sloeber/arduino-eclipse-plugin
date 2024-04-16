@@ -23,11 +23,11 @@ import io.sloeber.autoBuild.api.AutoBuildConstants;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
+import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.tools.Helpers;
-import io.sloeber.schema.api.IBuilder;
 
 public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 

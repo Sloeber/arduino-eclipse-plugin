@@ -13,7 +13,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
 
-import io.sloeber.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IInputType;
 
 public class FolderData extends CDefaultFolderData {
     private static final String AUTO_BUILD_FOLDER_DATA = "AutoBuild.FolderData"; //$NON-NLS-1$

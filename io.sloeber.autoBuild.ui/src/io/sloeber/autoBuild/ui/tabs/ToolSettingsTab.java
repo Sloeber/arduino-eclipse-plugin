@@ -77,11 +77,11 @@ import org.eclipse.ui.PlatformUI;
 import io.sloeber.autoBuild.api.ICustomBuildOptionEditor;
 import io.sloeber.autoBuild.integrations.ToolListLabelProvider;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
+import io.sloeber.autoBuild.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IOptionCategory;
+import io.sloeber.autoBuild.schema.api.ITool;
 import io.sloeber.autoBuild.ui.internal.Activator;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOptionCategory;
-import io.sloeber.schema.api.ITool;
 
 /**
  * Tool Settings Tab in project properties Build Settings

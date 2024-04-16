@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IBuilder;
 
 @SuppressWarnings({"static-method","unused" })
 public class AutoBuildBuilderExtension {

@@ -34,14 +34,14 @@ import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.autoBuild.api.AutoBuildConstants;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.core.Activator;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.natures.SloeberNature;
-import io.sloeber.schema.api.IProjectType;
 
 public class SloeberProject extends Common {
     protected static final String CONFIG_NAME_VARIABLE = AutoBuildConstants.CONFIG_NAME_VARIABLE;
@@ -195,7 +195,7 @@ public class SloeberProject extends Common {
 				IProject newProjectHandle = root.getProject(realProjectName);
 				// IndexerController.doNotIndex(newProjectHandle);
 
-				IBuildTools buildTools = IBuildToolManager.getDefault().getBuildTools(SLOEBER_BUILD_TOOL_PROVIDER_ID,
+				IBuildTools buildTools = IBuildToolsManager.getDefault().getBuildTools(SLOEBER_BUILD_TOOL_PROVIDER_ID,
 						realProjectName);
 				IProjectType projectType = AutoBuildManager.getProjectType(LATEST_EXTENSION_POINT_ID,
 						LATEST_EXTENSION_ID, PROJECT_ID, true);

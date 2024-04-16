@@ -768,15 +768,13 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="targetTool" type="string">
+         <attribute name="targetTools" type="string">
             <annotation>
                <documentation>
-                  Specifies a semi-colon separated list of the Tool(s)
-      that can create the final build artifact (the end target
-      of the build). The first tool found in the configuration
-      is used. A list is needed, for example, when a
-      tool-chain has different tools for different project
-      natures.
+                  Specifies a semi-colon separated list of the Tools
+      that create the final build artifact (the end target
+      of the build). If none is specified (default) the target is defined
+      as the last tool that is run (typically the combiner)
                </documentation>
             </annotation>
          </attribute>
@@ -1175,21 +1173,21 @@ The default is AutoBuildBuilderExtension
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+
                </documentation>
                <appinfo>
                   <meta.attribute translatable="true"/>
@@ -1725,14 +1723,14 @@ The default is AutoBuildBuilderExtension
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+
                </documentation>
             </annotation>
          </attribute>
@@ -2022,7 +2020,7 @@ If left blank all rpoject types are assumed to be supported
       </appinfo>
       <documentation>
          An implementation of this extension point is supplied in
-   &lt;samp&gt;org.eclipse.cdt.ui&lt;/samp&gt;
+   &lt;samp&gt;io.sloeber.autoBuild&lt;/samp&gt;
       </documentation>
    </annotation>
 

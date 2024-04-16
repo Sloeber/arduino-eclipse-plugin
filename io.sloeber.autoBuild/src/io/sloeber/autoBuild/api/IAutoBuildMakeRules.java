@@ -6,9 +6,9 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IOutputType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 public interface IAutoBuildMakeRules extends  Iterable<IAutoBuildMakeRule> {
 

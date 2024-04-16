@@ -8,9 +8,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IOutputType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 public interface IAutoBuildMakeRule {
 
@@ -31,7 +31,7 @@ public interface IAutoBuildMakeRule {
 	/**
 	 * A simple rule is a rule that takes exactly 1 input type
 	 * and exactly 1 output type containing exactly 1 file
-	 * 
+	 *
 	 * @return true if this rule is a simple rule
 	 *         otherwise false
 	 */
@@ -44,7 +44,7 @@ public interface IAutoBuildMakeRule {
 
 	boolean needsExecuting(IFolder buildfolder);
 
-	boolean isTool(ITool targetTool);
+	boolean isTool(ITool tool);
 
 	boolean isForContainer(IContainer folder);
 

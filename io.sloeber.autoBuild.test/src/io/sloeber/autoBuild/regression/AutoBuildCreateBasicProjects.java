@@ -29,12 +29,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 
 @SuppressWarnings({ "nls" })
 public class AutoBuildCreateBasicProjects {
@@ -45,7 +45,7 @@ public class AutoBuildCreateBasicProjects {
 	private boolean doTestInternalBuilder = true;
 	private boolean doTestMakeBuilder = true;
 	private static String codeRootFolder = "src";
-	static Set<IBuildTools> buildTools = IBuildToolManager.getDefault().getAllInstalledBuildTools();
+	static Set<IBuildTools> buildTools = IBuildToolsManager.getDefault().getAllInstalledBuildTools();
 
 	@BeforeAll
 	static void beforeAll() {
@@ -66,12 +66,12 @@ public class AutoBuildCreateBasicProjects {
 
 	static void buildAllConfigsAsActive(String builderID, String projectName, String extensionPointID,
 			String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,
-			IBuildTools targetTool, Boolean shouldMakefileExists) throws Exception {
+			IBuildTools buildTools, Boolean shouldMakefileExists) throws Exception {
 
 		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		IProject testProject = AutoBuildProject.createProject(
 				String.format("%03d", Integer.valueOf(testCounter++)) + "_" + projectName, projectType, natureID,
-				codeRootFolder, codeProvider, targetTool, false, null);
+				codeRootFolder, codeProvider, buildTools, false, null);
 		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
 		for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
 			cProjectDesc.setActiveConfiguration(curConfig);
@@ -81,13 +81,13 @@ public class AutoBuildCreateBasicProjects {
 	}
 
 	static void buildAllConfigs(String builderName, String projectName, String extensionPointID, String extensionID,
-			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools targetTool,
+			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools buildTools,
 			Boolean shouldMakefileExists) throws Exception {
 
 		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		IProject testProject = AutoBuildProject.createProject(
 				String.format("%03d", Integer.valueOf(testCounter++)) + "_" + projectName, projectType, natureID,
-				codeRootFolder, codeProvider, targetTool, false, null);
+				codeRootFolder, codeProvider, buildTools, false, null);
 		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
 		Set<String> configs = new HashSet<>();
 
@@ -103,7 +103,7 @@ public class AutoBuildCreateBasicProjects {
 	}
 
 	private void doBuilds(String builderID, String projectName, String extensionPointID, String extensionID,
-			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools targetTool,
+			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools buildTools,
 			Boolean shouldMakefileExists) throws Exception {
 		String shortProjectName = projectName;
 		if (projectName.length() > 41) {
@@ -111,11 +111,11 @@ public class AutoBuildCreateBasicProjects {
 		}
 		if (buildTypeActiveBuild) {
 			buildAllConfigsAsActive(builderID, shortProjectName, extensionPointID, extensionID, projectTypeID, natureID,
-					codeProvider, targetTool, shouldMakefileExists);
+					codeProvider, buildTools, shouldMakefileExists);
 		}
 		if (!buildTypeActiveBuild) {
 			buildAllConfigs(builderID, "all_" + shortProjectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, targetTool, shouldMakefileExists);
+					natureID, codeProvider, buildTools, shouldMakefileExists);
 		}
 
 	}
@@ -123,34 +123,34 @@ public class AutoBuildCreateBasicProjects {
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
 	void testDefaultBuilder(String projectName, String extensionPointID, String extensionID, String projectTypeID,
-			String natureID, ICodeProvider codeProvider, IBuildTools targetTool) throws Exception {
+			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		beforeAll();
 		if (doTestDefaultBuilder) {
 			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
-					targetTool, null);
+					buildTools, null);
 		}
 	}
 
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
 	void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
-			String natureID, ICodeProvider codeProvider, IBuildTools targetTool) throws Exception {
+			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		beforeAll();
 		if (doTestInternalBuilder) {
 			String projectName = "Internal_" + inProjectName;
 
 			doBuilds(AutoBuildProject.INTERNAL_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, targetTool, Boolean.FALSE);
+					natureID, codeProvider, buildTools, Boolean.FALSE);
 		}
 	}
 
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
 	void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
-			String natureID, ICodeProvider codeProvider, IBuildTools targetTool) throws Exception {
+			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		beforeAll();
 		if (doTestMakeBuilder) {
-			Assumptions.assumeFalse(targetTool.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider"),"Ignoring as make is not assumed on the path") ;
+			Assumptions.assumeFalse(buildTools.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider"),"Ignoring as make is not assumed on the path") ;
 			String projectName = "make_" + inProjectName;
 			if (projectName.length() > 40) {
 				// somethimes the build fails due to to long filenames
@@ -158,7 +158,7 @@ public class AutoBuildCreateBasicProjects {
 				projectName = projectName.substring(0, 40);
 			}
 			doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, targetTool, Boolean.TRUE);
+					natureID, codeProvider, buildTools, Boolean.TRUE);
 		}
 	}
 

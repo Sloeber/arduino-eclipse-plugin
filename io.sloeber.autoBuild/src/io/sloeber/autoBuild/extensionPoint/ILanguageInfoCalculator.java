@@ -16,8 +16,8 @@ package io.sloeber.autoBuild.extensionPoint;
 import org.eclipse.core.resources.IResource;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 public interface ILanguageInfoCalculator {
     String getLanguageName(IResource rcInfo, IAutoBuildConfigurationDescription confDesc, ITool tool, IInputType type);

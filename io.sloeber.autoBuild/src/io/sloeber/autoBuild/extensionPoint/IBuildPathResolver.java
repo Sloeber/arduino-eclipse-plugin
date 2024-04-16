@@ -13,7 +13,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint;
 
-import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
 
 /**
  * This interface is to be implemented by the tool-integrator to provide some specific

@@ -25,10 +25,10 @@ import org.osgi.framework.FrameworkUtil;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IProjectType;
 
 public class NewProjectWizard extends TemplateWizard {
 	private WizardNewProjectCreationPage myMainPage;

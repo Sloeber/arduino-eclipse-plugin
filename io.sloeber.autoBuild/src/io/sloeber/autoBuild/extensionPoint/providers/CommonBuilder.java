@@ -48,7 +48,7 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
-import io.sloeber.schema.api.IBuilder;
+import io.sloeber.autoBuild.schema.api.IBuilder;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 

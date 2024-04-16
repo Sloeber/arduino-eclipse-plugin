@@ -17,7 +17,7 @@ package io.sloeber.autoBuild.extensionPoint;
 import java.util.Map;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IOption;
 
 /**
  * This interface can be implemented by clients to contribute custom

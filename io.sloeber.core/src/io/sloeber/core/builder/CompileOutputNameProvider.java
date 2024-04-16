@@ -9,12 +9,13 @@ import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IOutputType;
+
 import static io.sloeber.core.api.Const.*;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOutputType;
 
 @SuppressWarnings("nls")
 public class CompileOutputNameProvider implements IOutputNameProvider {

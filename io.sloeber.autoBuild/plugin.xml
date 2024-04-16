@@ -1987,25 +1987,25 @@
         Description="A tool provider for MinGW 32"
         id="io.sloeber.autoBuild.ToolProvider.minGW32"
         name="%minGW32ToolProviderName"
-        toolProvider="io.sloeber.buildTool.internal.MinGW32ToolProvider">
+        toolProvider="io.sloeber.autoBuild.buildTools.internal.MinGW32ToolsProvider">
   </ToolProvider>
   <ToolProvider
         Description="A tool provider for MinGW 64"
         id="io.sloeber.autoBuild.ToolProvider.minGW64"
         name="%minGW64ToolProviderName"
-        toolProvider="io.sloeber.buildTool.internal.MinGW64ToolProvider">
+        toolProvider="io.sloeber.autoBuild.buildTools.internal.MinGW64ToolsProvider">
   </ToolProvider>
   <ToolProvider
         Description="%user.defined.tool.provider.description"
         id="io.sloeber.autoBuild.User.defined.ToolProvider"
         name="%user.defined.tool.provider"
-        toolProvider="io.sloeber.buildTool.internal.UserDefinedBuildToolProvider">
+        toolProvider="io.sloeber.autoBuild.buildTools.internal.UserDefinedBuildToolsProvider">
   </ToolProvider>
   <ToolProvider
         Description="The build Tools on the path"
         id="io.sloeber.autoBuild.Path.BuildToolProvider"
         name="%path.build.tool.provider"
-        toolProvider="io.sloeber.buildTool.internal.PathToolProvider">
+        toolProvider="io.sloeber.autoBuild.buildTools.internal.PathToolsProvider">
   </ToolProvider>
   <builder
         autoBuildTarget="all"

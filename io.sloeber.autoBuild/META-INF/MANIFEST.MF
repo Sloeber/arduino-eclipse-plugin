@@ -33,6 +33,8 @@ Export-Package: io.sloeber.autoBuild.api;
    org.eclipse.core.resources,
    org.eclipse.cdt.core.envvar,
    io.sloeber.buildTool.api",
+ io.sloeber.autoBuild.buildTools.api;uses:="org.eclipse.core.runtime",
+ io.sloeber.autoBuild.buildTools.internal;x-friends:="io.sloeber.autoBuild.test",
  io.sloeber.autoBuild.core;uses:="org.osgi.framework,org.eclipse.core.runtime,org.eclipse.osgi.util",
  io.sloeber.autoBuild.extensionPoint;
   uses:="org.eclipse.cdt.core.cdtvariables,
@@ -67,9 +69,7 @@ Export-Package: io.sloeber.autoBuild.api;
    io.sloeber.buildTool.api,
    org.eclipse.cdt.core.language.settings.providers",
  io.sloeber.autoBuild.internal;x-friends:="io.sloeber.autoBuild.test",
- io.sloeber.buildTool.api;uses:="org.eclipse.core.runtime",
- io.sloeber.buildTool.internal;x-friends:="io.sloeber.autoBuild.test",
- io.sloeber.schema.api;
+ io.sloeber.autoBuild.schema.api;
   uses:="io.sloeber.autoBuild.extensionPoint,
    io.sloeber.autoBuild.extensionPoint.providers,
    io.sloeber.autoBuild.integration,
@@ -77,8 +77,8 @@ Export-Package: io.sloeber.autoBuild.api;
    org.eclipse.core.resources,
    io.sloeber.autoBuild.api,
    org.eclipse.cdt.core.settings.model.extension",
- io.sloeber.schema.internal;x-friends:="io.sloeber.autoBuild.test",
- io.sloeber.schema.internal.enablement;x-friends:="io.sloeber.autoBuild.test"
+ io.sloeber.autoBuild.schema.internal;x-friends:="io.sloeber.autoBuild.test",
+ io.sloeber.autoBuild.schema.internal.enablement;x-friends:="io.sloeber.autoBuild.test"
 Import-Package: org.apache.commons.io,
  org.eclipse.cdt.build.core.scannerconfig,
  org.eclipse.cdt.build.internal.core.scannerconfig2,

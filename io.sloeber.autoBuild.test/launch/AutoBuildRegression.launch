@@ -400,7 +400,7 @@
         <setEntry value="org.eclipse.tools.templates.freemarker@default:default"/>
         <setEntry value="org.eclipse.tools.templates.ui@default:default"/>
     </setAttribute>
-    <booleanAttribute key="show_selected_only" value="false"/>
+    <booleanAttribute key="show_selected_only" value="true"/>
     <booleanAttribute key="tracing" value="false"/>
     <booleanAttribute key="useCustomFeatures" value="false"/>
     <booleanAttribute key="useDefaultConfig" value="true"/>

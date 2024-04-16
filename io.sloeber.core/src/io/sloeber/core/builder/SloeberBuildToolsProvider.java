@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import io.sloeber.buildTool.api.ExtensionBuildToolProvider;
-import io.sloeber.buildTool.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.ExtensionBuildToolsProvider;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 
-public class SloeberBuildToolsProvider extends ExtensionBuildToolProvider {
+public class SloeberBuildToolsProvider extends ExtensionBuildToolsProvider {
 	private static Set<IBuildTools> myAllBuildTools = new HashSet<>();
 	private static IBuildTools myBuildTools = null;
 
@@ -30,16 +30,6 @@ public class SloeberBuildToolsProvider extends ExtensionBuildToolProvider {
 	}
 
 	@Override
-	public IBuildTools getTargetTool(String targetToolID) {
-		return myBuildTools;
-	}
-
-	@Override
-	public IBuildTools getAnyInstalledTargetTool() {
-		return myBuildTools;
-	}
-
-	@Override
 	public Set<IBuildTools> getAllInstalledBuildTools() {
 		return myAllBuildTools;
 	}
@@ -47,6 +37,16 @@ public class SloeberBuildToolsProvider extends ExtensionBuildToolProvider {
 	@Override
 	public void refreshToolchains() {
 		// nothing to do
+	}
+
+	@Override
+	public IBuildTools getBuildTools(String buildToolsID) {
+		return myBuildTools;
+	}
+
+	@Override
+	public IBuildTools getAnyInstalledBuildTools() {
+		return myBuildTools;
 	}
 
 }

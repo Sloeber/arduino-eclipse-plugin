@@ -57,7 +57,7 @@ import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.internal.AutoBuildRunnerHelper;
-import io.sloeber.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
 
 public class InternalBuildRunner implements IBuildRunner {
 	static public final String ID = Messages.InternalBuilderName;

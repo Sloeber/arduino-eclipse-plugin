@@ -67,7 +67,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IOption;
 
 /**
  * Implementation of language settings provider for autoBuild.

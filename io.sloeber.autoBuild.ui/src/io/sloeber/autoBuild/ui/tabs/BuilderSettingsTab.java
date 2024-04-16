@@ -34,8 +34,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import io.sloeber.autoBuild.api.IBuildRunner;
+import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.autoBuild.ui.internal.Messages;
-import io.sloeber.schema.api.IBuilder;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.

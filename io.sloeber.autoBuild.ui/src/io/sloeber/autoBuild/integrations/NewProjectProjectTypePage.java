@@ -6,9 +6,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.ui.tabs.DialogCompleteEvent;
 import io.sloeber.autoBuild.ui.tabs.ProjectSettingsTab;
-import io.sloeber.schema.api.IProjectType;
 
 public class NewProjectProjectTypePage extends WizardPage {
 	private ProjectSettingsTab myProjectSettingsTab;

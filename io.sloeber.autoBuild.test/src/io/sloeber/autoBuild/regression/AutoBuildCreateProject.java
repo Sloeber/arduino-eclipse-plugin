@@ -13,12 +13,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
-import io.sloeber.buildTool.api.IBuildToolManager;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -64,7 +64,7 @@ class AutoBuildCreateProject {
 						continue;
 					}
 					String projectID = projectType.getId();
-					IBuildTools buildTools = IBuildToolManager.getDefault().getAnyInstalledBuildTools(projectType);
+					IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
 					if(buildTools==null) {
 						continue;
 					}

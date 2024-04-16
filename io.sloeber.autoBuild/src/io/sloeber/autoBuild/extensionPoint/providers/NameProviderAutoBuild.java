@@ -2,9 +2,9 @@ package io.sloeber.autoBuild.extensionPoint.providers;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IOutputType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 

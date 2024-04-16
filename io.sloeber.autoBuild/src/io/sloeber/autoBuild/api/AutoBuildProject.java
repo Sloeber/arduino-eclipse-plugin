@@ -9,9 +9,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.integration.AutoBuildProjectGenerator;
-import io.sloeber.buildTool.api.IBuildTools;
-import io.sloeber.schema.api.IProjectType;
+import io.sloeber.autoBuild.schema.api.IProjectType;
 
 public class AutoBuildProject {
 	public static final String COMMON_BUILDER_ID="io.sloeber.autoBuild.AutoMakeBuilder"; //$NON-NLS-1$
@@ -62,7 +62,7 @@ public class AutoBuildProject {
                 internalMonitor = new NullProgressMonitor();
             }
             theGenerator.setCodeRootFolder(codeRootFolder);
-            theGenerator.setTargetTool(buildTools);
+            theGenerator.setBuildTools(buildTools);
             theGenerator.setProjectType(projectType);
             theGenerator.setProjectName(projectName);
             theGenerator.setCodeProvider(codeProvider);

@@ -34,10 +34,10 @@ import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
-import io.sloeber.schema.api.IInputType;
-import io.sloeber.schema.api.IOption;
-import io.sloeber.schema.api.IOutputType;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IInputType;
+import io.sloeber.autoBuild.schema.api.IOption;
+import io.sloeber.autoBuild.schema.api.IOutputType;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 
@@ -196,7 +196,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 
     /**
      * validate if the makerule contains valid recipes
-     * 
+     *
      * @return true if valid
      *         false if not
      */
@@ -225,7 +225,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 
         //from all the options for this project; get the options for this tool/prerequisites
         // not there is a filtering happening in this step and there may be duplicates
-        // here we will assume this is handled properly by AutoBuildConfigurationDescription 
+        // here we will assume this is handled properly by AutoBuildConfigurationDescription
         TreeMap<IOption, String> selectedOptions = autoBuildConfData.getSelectedOptions(inputFiles, myTool);
 
         //with all the options applicable for this makerule generate variables to expand in the recipes
@@ -364,7 +364,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
     /**
      * A simple rule is a rule that takes exactly 1 input type
      * and exactly 1 output type containing exactly 1 file
-     * 
+     *
      * @return true if this rule is a simple rule
      *         otherwise false
      */
@@ -392,8 +392,8 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
     }
 
     @Override
-    public boolean isTool(ITool targetTool) {
-        return myTool.getName().equals(targetTool.getName());
+    public boolean isTool(ITool tool) {
+        return myTool.getName().equals(tool.getName());
     }
 
     @Override
@@ -455,7 +455,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
         if (oldestPreReqTimeStamp > jongestTargetTimeStamp) {
             return true;
         }
-        
+
         //get the newest dependency timeStamp
         long oldestDependencyTimeStamp = Long.MIN_VALUE;
         for (IFile curdepFile : dependencyFiles) {
@@ -471,10 +471,10 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
     /**
      * given a dependency file; return the time stamp of the youngest file mentioned
      * in the dependency file
-     * 
+     *
      * @param depFile
      *            the dependency file created by a compiler
-     * 
+     *
      * @return the timestamp of the oldest file in the files; 0 if a referenced file
      *         does not exist
      */

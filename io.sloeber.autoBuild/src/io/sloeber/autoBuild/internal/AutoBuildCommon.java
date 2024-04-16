@@ -40,8 +40,8 @@ import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.schema.api.IConfiguration;
-import io.sloeber.schema.api.ITool;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
+import io.sloeber.autoBuild.schema.api.ITool;
 
 public class AutoBuildCommon {
     static public String ECHO_BLANK_LINE = ECHO + WHITESPACE + SINGLE_QUOTE + WHITESPACE + SINGLE_QUOTE + NEWLINE;
