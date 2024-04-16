@@ -89,7 +89,7 @@ public class Shared {
 		// check to see if any of the expected outputfiles exists
 		String[] validOutputs = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
 				"lib_" + projName + ".so", projName + ".so", "lib_" + projName + ".a", projName + ".dll",
-				"application.axf" };
+				"application.axf",projName };
 		for (String validOutput : validOutputs) {
 			if (buildRootFolder.getFile(validOutput).exists()) {
 				return;
@@ -151,7 +151,7 @@ public class Shared {
 	/**
 	 * clean all the configuration by looping over all the configurations and
 	 * setting them active and then call a clean build
-	 * 
+	 *
 	 * @param iProject
 	 * @throws CoreException
 	 */
@@ -170,7 +170,7 @@ public class Shared {
 	/**
 	 * clean all the configuration by looping over all the configurations and
 	 * setting them active and then call a clean build
-	 * 
+	 *
 	 * @param iProject
 	 * @throws CoreException
 	 */
