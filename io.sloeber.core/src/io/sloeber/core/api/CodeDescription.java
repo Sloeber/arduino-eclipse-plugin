@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -273,9 +274,9 @@ public class CodeDescription implements ICodeProvider {
 
 	@SuppressWarnings("nls")
 	@Override
-	public boolean createFiles(IFolder targetFolder, IProgressMonitor monitor) {
+	public boolean createFiles(IContainer scrContainer, IProgressMonitor monitor) {
 		try {
-			IProject project = targetFolder.getProject();
+			IProject project = scrContainer.getProject();
 
 			save();
 			Map<String, String> replacers = new TreeMap<>();
@@ -289,15 +290,15 @@ public class CodeDescription implements ICodeProvider {
 			case None:
 				break;
 			case defaultIno:
-				Helpers.addFileToProject(targetFolder.getFile(project.getName() + ".ino"),
+				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString( project.getName() + ".ino")),
 						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false, replacers),
 						monitor, false);
 				break;
 			case defaultCPP:
-				Helpers.addFileToProject(targetFolder.getFile(project.getName() + ".cpp"),
+				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(project.getName() + ".cpp")),
 						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_CPP, false, replacers),
 						monitor, false);
-				Helpers.addFileToProject(targetFolder.getFile(project.getName() + ".h"),
+				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(project.getName() + ".h")),
 						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_H, false, replacers),
 						monitor, false);
 				break;
@@ -317,7 +318,7 @@ public class CodeDescription implements ICodeProvider {
 							}
 							try (InputStream theFileStream = Stream.openContentStream(sourceFile.toString(), true,
 									replacers);) {
-								Helpers.addFileToProject(targetFolder.getFile(renamedFile), theFileStream, monitor, false);
+								Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(renamedFile)), theFileStream, monitor, false);
 							} catch (IOException e) {
 								log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 										"Failed to add template file :" + sourceFile.toString(), e));
@@ -333,11 +334,18 @@ public class CodeDescription implements ICodeProvider {
 					for (IExample curExample : myExamples) {
 						IPath curPath=curExample.getCodeLocation();
 						if (myMakeLinks) {
-							Helpers.linkDirectory( curPath, targetFolder);
+							if(scrContainer instanceof IFolder) {
+							IFolder folder=(IFolder)scrContainer;
+							Helpers.linkDirectory( curPath, folder);
+							}
+							else {
+								log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+										"Can not create links to project root"));
+							}
 						} else {
 							//Files.copy(curPath.toPath(), targetFolder.getLocation().toPath());
-							FileUtils.copyDirectory(curPath.toFile(), targetFolder.getLocation().toFile());
-	                        FileModifiers.addPragmaOnce(targetFolder.getLocation());
+							FileUtils.copyDirectory(curPath.toFile(), scrContainer.getLocation().toFile());
+	                        FileModifiers.addPragmaOnce(scrContainer.getLocation());
 						}
 					}
 				} catch (IOException e) {

@@ -44,8 +44,9 @@ public class AutoBuildCreateBasicProjects {
 	private boolean doTestDefaultBuilder = true;
 	private boolean doTestInternalBuilder = true;
 	private boolean doTestMakeBuilder = true;
-	private static String codeRootFolder = "src";
-	static Set<IBuildTools> buildTools = IBuildToolsManager.getDefault().getAllInstalledBuildTools();
+	private static String myCodeSrcFolder = "src";
+	private static String myCodeRootFolder = "";
+	static Set<IBuildTools> myBuildTools = IBuildToolsManager.getDefault().getAllInstalledBuildTools();
 
 	@BeforeAll
 	static void beforeAll() {
@@ -66,7 +67,7 @@ public class AutoBuildCreateBasicProjects {
 
 	static void buildAllConfigsAsActive(String builderID, String projectName, String extensionPointID,
 			String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,
-			IBuildTools buildTools, Boolean shouldMakefileExists) throws Exception {
+			IBuildTools buildTools,String codeRootFolder, Boolean shouldMakefileExists) throws Exception {
 
 		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		IProject testProject = AutoBuildProject.createProject(
@@ -82,7 +83,7 @@ public class AutoBuildCreateBasicProjects {
 
 	static void buildAllConfigs(String builderName, String projectName, String extensionPointID, String extensionID,
 			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools buildTools,
-			Boolean shouldMakefileExists) throws Exception {
+			String codeRootFolder,Boolean shouldMakefileExists) throws Exception {
 
 		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		IProject testProject = AutoBuildProject.createProject(
@@ -104,49 +105,49 @@ public class AutoBuildCreateBasicProjects {
 
 	private void doBuilds(String builderID, String projectName, String extensionPointID, String extensionID,
 			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools buildTools,
-			Boolean shouldMakefileExists) throws Exception {
+			String codeRootFolder,Boolean shouldMakefileExists) throws Exception {
 		String shortProjectName = projectName;
 		if (projectName.length() > 41) {
 			shortProjectName = projectName.substring(0, 40);
 		}
 		if (buildTypeActiveBuild) {
 			buildAllConfigsAsActive(builderID, shortProjectName, extensionPointID, extensionID, projectTypeID, natureID,
-					codeProvider, buildTools, shouldMakefileExists);
+					codeProvider, buildTools,codeRootFolder, shouldMakefileExists);
 		}
 		if (!buildTypeActiveBuild) {
 			buildAllConfigs(builderID, "all_" + shortProjectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools, shouldMakefileExists);
+					natureID, codeProvider, buildTools, codeRootFolder,shouldMakefileExists);
 		}
 
 	}
 
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
-	void testDefaultBuilder(String projectName, String extensionPointID, String extensionID, String projectTypeID,
+	void testDefaultBuilderSrc(String projectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		beforeAll();
 		if (doTestDefaultBuilder) {
 			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
-					buildTools, null);
+					buildTools, myCodeSrcFolder,null);
 		}
 	}
 
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
-	void testInternaltBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
+	void testInternaltBuilderSrc(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		beforeAll();
 		if (doTestInternalBuilder) {
 			String projectName = "Internal_" + inProjectName;
 
 			doBuilds(AutoBuildProject.INTERNAL_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools, Boolean.FALSE);
+					natureID, codeProvider, buildTools, myCodeSrcFolder,Boolean.FALSE);
 		}
 	}
 
 	@ParameterizedTest
 	@MethodSource("projectCreationInfoProvider")
-	void testMakeBuilder(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
+	void testMakeBuilderSrc(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		beforeAll();
 		if (doTestMakeBuilder) {
@@ -158,7 +159,49 @@ public class AutoBuildCreateBasicProjects {
 				projectName = projectName.substring(0, 40);
 			}
 			doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools, Boolean.TRUE);
+					natureID, codeProvider, buildTools,myCodeSrcFolder, Boolean.TRUE);
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("projectCreationInfoProvider")
+	void testDefaultBuilderRoot(String projectName, String extensionPointID, String extensionID, String projectTypeID,
+			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
+		beforeAll();
+		if (doTestDefaultBuilder) {
+			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
+					buildTools,myCodeRootFolder, null);
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("projectCreationInfoProvider")
+	void testInternaltBuilderRoot(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
+			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
+		beforeAll();
+		if (doTestInternalBuilder) {
+			String projectName = "Internal_" + inProjectName;
+
+			doBuilds(AutoBuildProject.INTERNAL_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
+					natureID, codeProvider, buildTools,myCodeRootFolder, Boolean.FALSE);
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("projectCreationInfoProvider")
+	void testMakeBuilderRoot(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
+			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
+		beforeAll();
+		if (doTestMakeBuilder) {
+			Assumptions.assumeFalse(buildTools.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider"),"Ignoring as make is not assumed on the path") ;
+			String projectName = "make_" + inProjectName;
+			if (projectName.length() > 40) {
+				// somethimes the build fails due to to long filenames
+				// as the project name is part of the targetName
+				projectName = projectName.substring(0, 40);
+			}
+			doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
+					natureID, codeProvider, buildTools, myCodeRootFolder,Boolean.TRUE);
 		}
 	}
 
@@ -194,7 +237,7 @@ public class AutoBuildCreateBasicProjects {
 			default:
 				codeProvider_cpp = cpp_exeCodeProvider;
 			}
-			for (IBuildTools curBuildTools : buildTools) {
+			for (IBuildTools curBuildTools : myBuildTools) {
 				if (curBuildTools.isProjectTypeSupported(projectType)) {
 					String projectName = AutoBuildCommon.MakeNameCompileSafe(projectType.getName() + "_" + extensionID
 							+ "_" + curBuildTools.getProviderID() + "_" + curBuildTools.getSelectionID());

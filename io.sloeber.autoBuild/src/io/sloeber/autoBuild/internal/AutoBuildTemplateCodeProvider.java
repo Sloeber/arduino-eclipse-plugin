@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.cdt.core.CProjectNature;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.FileLocator;
@@ -55,22 +56,22 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	}
 
 	@Override
-	public boolean createFiles(IFolder targetFolder, IProgressMonitor monitor) {
+	public boolean createFiles(IContainer targetContainer, IProgressMonitor monitor) {
 		try {
 			File templateFolder = myTemplateFolder.toFile();
-			return recursiveCreateFiles(templateFolder, targetFolder, monitor);
+			return recursiveCreateFiles(templateFolder, targetContainer, monitor);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	private boolean recursiveCreateFiles(File templateFolder, IFolder targetFolder, IProgressMonitor monitor) {
+	private boolean recursiveCreateFiles(File templateFolder, IContainer targetFolder, IProgressMonitor monitor) {
 		try {
 			for (File curMember : templateFolder.listFiles()) {
 				if (curMember.isFile()) {
 					File sourceFile = curMember;
-					IFile targetFile = targetFolder.getFile(sourceFile.getName());
+					IFile targetFile = targetFolder.getFile(IPath.fromOSString( sourceFile.getName()));
 
 					try (InputStream theFileStream = new FileInputStream(sourceFile.toString())) {
 						targetFile.create(theFileStream, true, monitor);
@@ -80,7 +81,7 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 
 				} else {
 					// curmember is a folder
-					IFolder newtargetFolder = targetFolder.getFolder(curMember.getName());
+					IFolder newtargetFolder = targetFolder.getFolder(IPath.fromOSString(curMember.getName()));
 					newtargetFolder.create(true, true, monitor);
 					recursiveCreateFiles(curMember, newtargetFolder, monitor);
 				}

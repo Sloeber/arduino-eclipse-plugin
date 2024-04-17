@@ -18,6 +18,7 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.core.filesystem.URIUtil;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -59,7 +60,7 @@ public class Helpers {
      *            The path to add to the include folders
      * @param isWorkspacePath
      *            is this path in the workspace
-     * 
+     *
      * @return true if the configuration description has changed
      *         (setprojectdescription is needed to make the changes effective)
      */

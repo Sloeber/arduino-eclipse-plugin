@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
@@ -28,9 +29,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.tools.templates.core.IGenerator;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.schema.internal.Configuration;
@@ -45,7 +48,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	private String myBuilderID = null;
 	private boolean myNeedsMoreWork = false;
 	private IBuildTools myBuldTools = null;
-	private String myCodeRootFolder=null;
+	private String myCodeRootFolder = null;
 
 	public AutoBuildProjectGenerator() {
 
@@ -73,9 +76,13 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				}
 				AutoBuildNature.addNature(myProject, monitor);
 
-				IFolder srcFolder = myProject.getFolder(myCodeRootFolder);
-				if (!srcFolder.exists()) {
-					srcFolder.create(true, true, monitor);
+				IContainer srcFolder = myProject;
+				if (!myCodeRootFolder.isBlank()) {
+					IFolder actualFolder = myProject.getFolder(myCodeRootFolder);
+					srcFolder = actualFolder;
+					if (!srcFolder.exists()) {
+						actualFolder.create(true, true, monitor);
+					}
 				}
 				if (myCodeProvider != null) {
 					myCodeProvider.createFiles(srcFolder, monitor);
@@ -86,13 +93,14 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 				ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
 
-				IProjectType sloeberProjType = AutoBuildManager.getProjectType(myProjectType.getExtensionPointID(), myProjectType.getExtensionID(),
-						myProjectType.getId(), true);
+				IProjectType sloeberProjType = AutoBuildManager.getProjectType(myProjectType.getExtensionPointID(),
+						myProjectType.getExtensionID(), myProjectType.getId(), true);
 				if (sloeberProjType == null) {
 					// project type not found can not continue
 					IStatus status = new Status(IStatus.ERROR, Activator.getId(),
 							"Did not find the projectType with " + myProjectType.getId() + " for extension ID " //$NON-NLS-1$ //$NON-NLS-2$
-									+ myProjectType.getExtensionID() + " in extensionpointID " + myProjectType.getExtensionPointID()); //$NON-NLS-1$
+									+ myProjectType.getExtensionID() + " in extensionpointID " //$NON-NLS-1$
+									+ myProjectType.getExtensionPointID());
 					CoreException exception = new CoreException(status);
 					throw (exception);
 				}
@@ -100,7 +108,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				for (IConfiguration iConfig : modelConfigs) {
 					Configuration config = (Configuration) iConfig;
 					AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject,
-							myBuldTools,myCodeRootFolder);
+							myBuldTools, myCodeRootFolder);
 					assert (data != null);
 					ICConfigurationDescription cdtCfgDes = des
 							.createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
@@ -111,7 +119,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					String[] defaultIds = iConfig.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
 					List<ILanguageSettingsProvider> providers = LanguageSettingsManager
 							.createLanguageSettingsProviders(defaultIds);
-					ILanguageSettingsProvidersKeeper languageKeeper=(ILanguageSettingsProvidersKeeper) cdtCfgDes;
+					ILanguageSettingsProvidersKeeper languageKeeper = (ILanguageSettingsProvidersKeeper) cdtCfgDes;
 					if (cdtCfgDes instanceof ILanguageSettingsProvidersKeeper) {
 						languageKeeper.setLanguageSettingProviders(providers);
 					}
@@ -120,6 +128,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					des.setCdtProjectCreated();
 				}
 				mngr.setProjectDescription(myProject, des);
+				for(ICConfigurationDescription curConfig:des.getConfigurations()) {
+					IAutoBuildConfigurationDescription autodesc=IAutoBuildConfigurationDescription.getConfig(curConfig);
+					AutoBuildCommon.createFolder( autodesc.getBuildFolder());
+				}
 			}
 		};
 		try {
@@ -149,7 +161,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
 		return myProject;
 	}
 
-
 	public void setCodeProvider(ICodeProvider codeProvider) {
 		myCodeProvider = codeProvider;
 	}
@@ -171,12 +182,12 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	}
 
 	public void setCodeRootFolder(String codeRootFolder) {
-		myCodeRootFolder=codeRootFolder;
+		myCodeRootFolder = codeRootFolder;
 
 	}
 
 	public void setProjectType(IProjectType projectType) {
-		myProjectType=projectType;
+		myProjectType = projectType;
 
 	}
 
