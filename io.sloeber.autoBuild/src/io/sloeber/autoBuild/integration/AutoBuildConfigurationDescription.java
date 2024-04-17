@@ -153,7 +153,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,
 			String rootCodeFolder) {
-		initializeResourceData(rootCodeFolder, myBuildFolderString);
+		initializeResourceData(project,rootCodeFolder, myBuildFolderString);
 		myBuildTools = buildTools;
 		myIsWritable = true;
 		myCdtConfigurationDescription = null;

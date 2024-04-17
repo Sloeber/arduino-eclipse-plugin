@@ -77,7 +77,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				AutoBuildNature.addNature(myProject, monitor);
 
 				IContainer srcFolder = myProject;
-				if (!myCodeRootFolder.isBlank()) {
+				if (myCodeRootFolder!=null && !myCodeRootFolder.isBlank()) {
 					IFolder actualFolder = myProject.getFolder(myCodeRootFolder);
 					srcFolder = actualFolder;
 					if (!srcFolder.exists()) {

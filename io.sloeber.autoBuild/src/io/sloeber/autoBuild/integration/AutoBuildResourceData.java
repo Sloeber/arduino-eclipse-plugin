@@ -40,7 +40,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 
     /**
      * Copy constructor
-     * 
+     *
      * @param cfgDescription
      */
     public void clone(AutoBuildConfigurationDescription parent, AutoBuildConfigurationDescription autoBuildResourceBase,
@@ -59,7 +59,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 
     /**
      * persistency constructor based on text
-     * 
+     *
      * @param cfgDescription
      *            the configuration that owns the reosurceDatas
      * @param curConfigsText
@@ -221,11 +221,10 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
         return ret;
     }
 
-	protected void initializeResourceData(String rootCodeFolder, String BuildFolderString) {
+	protected void initializeResourceData(IProject project,String rootCodeFolder, String BuildFolderString) {
 		mySourceEntries = new ICSourceEntry[1];
-		if (rootCodeFolder == null) {
+		if (rootCodeFolder == null || rootCodeFolder.isBlank()) {
 			// exclude the bin folder
-			IProject project =((AutoBuildConfigurationDescription)this).getProject();
 			String buildRootFolder = new Path(BuildFolderString).segment(0);
 			IPath excludes[] = new IPath[1];
 			excludes[0] = project.getFolder(buildRootFolder).getProjectRelativePath();
