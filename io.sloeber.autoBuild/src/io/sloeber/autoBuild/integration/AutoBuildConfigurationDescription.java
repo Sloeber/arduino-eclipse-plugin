@@ -153,7 +153,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,
 			String rootCodeFolder) {
-		initializeResourceData(project,rootCodeFolder, myBuildFolderString);
+		initializeResourceData(project, rootCodeFolder, myBuildFolderString);
 		myBuildTools = buildTools;
 		myIsWritable = true;
 		myCdtConfigurationDescription = null;
@@ -897,7 +897,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		}
 
 		if (includeArgs) {
-			String args = myBuilder.getArguments(myIsParallelBuild, myParallelizationNum, myStopOnFirstBuildError);
+			String args = myBuilder.getArguments( myParallelizationNum, myStopOnFirstBuildError);
 			if (args.isBlank()) {
 				return command;
 			}
@@ -940,8 +940,22 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	@Override
-	public int getParallelizationNum() {
-		return myParallelizationNum;
+	public int getParallelizationNum(boolean actualNumber) {
+		if (!actualNumber) {
+			return myParallelizationNum;
+		}
+		if (!isParallelBuild()) {
+			return 1;
+		}
+		switch (myParallelizationNum) {
+		case PARRALLEL_BUILD_UNLIMITED_JOBS:
+			return 999;
+		case PARRALLEL_BUILD_OPTIMAL_JOBS:
+			return AutoBuildCommon.getOptimalParallelJobNum();
+		default:
+			return myParallelizationNum;
+		}
+
 	}
 
 	@Override
@@ -1530,15 +1544,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public String getDiscoveryCommand(String languageId) {
 		String specInFile = getSpecFile(languageId);
-		String basicCommand=internalgetDiscoveryCommand(languageId);
-		if(basicCommand==null||basicCommand.isBlank()) {
+		String basicCommand = internalgetDiscoveryCommand(languageId);
+		if (basicCommand == null || basicCommand.isBlank()) {
 			return null;
 		}
-		if(!basicCommand.contains(BLANK)) {
-			//No blanks so this may be a environment var that needs 1 level of expansion
-			basicCommand=AutoBuildCommon.getVariableValue(basicCommand, basicCommand, false, this);
+		if (!basicCommand.contains(BLANK)) {
+			// No blanks so this may be a environment var that needs 1 level of expansion
+			basicCommand = AutoBuildCommon.getVariableValue(basicCommand, basicCommand, false, this);
 		}
-		basicCommand =basicCommand.replace(INPUTS_VARIABLE, specInFile);
+		basicCommand = basicCommand.replace(INPUTS_VARIABLE, specInFile);
 		return AutoBuildCommon.resolve(basicCommand, this);
 	}
 
@@ -1575,7 +1589,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		}
 		return null;
 	}
-
 
 	@Override
 	public String[] getEnvironmentVariables() {

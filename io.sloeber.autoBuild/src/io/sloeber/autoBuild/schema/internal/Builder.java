@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IExtensionPoint;
 
 import io.sloeber.autoBuild.api.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.providers.BuildRunnerForMake;
-import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 
 public class Builder extends SchemaObject implements IBuilder {
@@ -111,7 +110,7 @@ public class Builder extends SchemaObject implements IBuilder {
     }
 
     @Override
-    public String getArguments(boolean parallel, int numParallel, boolean stopOnError) {
+    public String getArguments( int numParallel, boolean stopOnError) {
         String ret = modelarguments[SUPER];
         String separator = EMPTY_STRING;
         if (!ret.isBlank()) {
@@ -121,15 +120,9 @@ public class Builder extends SchemaObject implements IBuilder {
             ret = ret + separator + modelignoreErrCmd[SUPER];
             separator = BLANK;
         }
-        if (parallel) {
-            int actualParallel = numParallel;
-            if (numParallel == PARRALLEL_BUILD_OPTIMAL_JOBS) {
-                actualParallel = AutoBuildCommon.getOptimalParallelJobNum();
-            }
-            if (numParallel == PARRALLEL_BUILD_UNLIMITED_JOBS) {
-                actualParallel = 999;
-            }
-            String parallelParameter = modelparallelBuildCmd[SUPER].replace(ASTERISK, Integer.toString(actualParallel));
+        if (numParallel>1) {
+
+            String parallelParameter = modelparallelBuildCmd[SUPER].replace(ASTERISK, Integer.toString(numParallel));
             ret = ret + separator + parallelParameter;
             separator = BLANK;
         }

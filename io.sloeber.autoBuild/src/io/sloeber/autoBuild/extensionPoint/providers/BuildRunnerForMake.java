@@ -122,7 +122,7 @@ public class BuildRunnerForMake implements IBuildRunner {
 			args.add(curArg);
 		}
 		if (autoData.getCustomBuildArguments().isBlank()) {
-			String builderArguments = builder.getArguments(autoData.isParallelBuild(), autoData.getParallelizationNum(),
+			String builderArguments = builder.getArguments( autoData.getParallelizationNum(true),
 					autoData.stopOnFirstBuildError());
 			String resolvedBuilderArguments = AutoBuildCommon.resolve(builderArguments, autoData);
 			args.addAll(Arrays.asList(CommandLineUtil.argumentsToArray(resolvedBuilderArguments)));

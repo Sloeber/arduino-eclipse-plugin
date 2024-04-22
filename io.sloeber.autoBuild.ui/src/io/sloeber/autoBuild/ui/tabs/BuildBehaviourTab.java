@@ -179,6 +179,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         gl.marginHeight = 0;
         c3.setLayout(gl);
 
+        //text will be replaced during update data
         Integer one = Integer.valueOf(1);
         myParalOpt_OptimalButton = new Button(c3, SWT.RADIO);
         myParalOpt_OptimalButton.setText(MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, one));
@@ -329,9 +330,11 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
     }
 
     private void updateDisplayedData() {
-        int parallelnum = myAutoConfDesc.getParallelizationNum();
+        int parallelType = myAutoConfDesc.getParallelizationNum(false);
+        int parallelnum = myAutoConfDesc.getParallelizationNum(true);
         int optimalNum = myAutoConfDesc.getOptimalParallelJobNum();
-        switch (parallelnum) {
+        myParalOpt_OptimalButton.setText(MessageFormat.format(Messages.BuilderSettingsTab_UseOptimalJobs, Integer.valueOf(optimalNum)));
+        switch (parallelType) {
         case PARRALLEL_BUILD_UNLIMITED_JOBS:
             myParalOpt_NumberSpinner.setSelection(optimalNum);
             myParalOpt_UnlimitedButton.setSelection(true);
@@ -419,7 +422,7 @@ public class BuildBehaviourTab extends AbstractAutoBuildPropertyTab {
         myParalOpt_SpecificButton.setEnabled(isParallelOn);
         myParalOpt_UnlimitedButton.setEnabled(isParallelOn);
 
-        myParalOpt_NumberSpinner.setEnabled(myAutoConfDesc.getParallelizationNum() >= 0);
+        myParalOpt_NumberSpinner.setEnabled(myAutoConfDesc.getParallelizationNum(false) >= 0);
     }
 
     // This page can be displayed for project only

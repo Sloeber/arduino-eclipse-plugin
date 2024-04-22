@@ -21,20 +21,20 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * This class purely exists to avoid warnings because AutoBuild code is outside
  * of CDT
  * and BuildRunnerHelper is not API
- * 
+ *
  * @author jan
  *
  */
 public class AutoBuildRunnerHelper extends BuildRunnerHelper {
 
     @Override
-    public OutputStream getOutputStream() {
+    public synchronized  OutputStream getOutputStream() {
         // TODO Auto-generated method stub
         return super.getOutputStream();
     }
 
     @Override
-    public OutputStream getErrorStream() {
+    public synchronized  OutputStream getErrorStream() {
         // TODO Auto-generated method stub
         return super.getErrorStream();
     }
@@ -120,5 +120,20 @@ public class AutoBuildRunnerHelper extends BuildRunnerHelper {
     public static String[] envMapToEnvp(Map<String, String> envMap) {
         return BuildRunnerHelper.envMapToEnvp(envMap);
     }
+
+	/**
+	 * Print a message to the console info output. Note that this message is colored
+	 * with the color assigned to "Info" stream.
+	 * @param msg - message to print.
+	 */
+	public synchronized  void toConsole(String msg) {
+			try(OutputStream out=getOutputStream();) {
+				out.write(msg.getBytes());
+				out.write('\n');
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
 
 }

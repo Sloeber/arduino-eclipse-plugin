@@ -60,7 +60,7 @@ public interface IBuilder extends ISchemaObject {
      *
      * @return String
      */
-    public String getArguments(boolean parallel, int numParallel, boolean stopOnError);
+    public String getArguments( int numParallel, boolean stopOnError);
 
 
     /**

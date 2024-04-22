@@ -104,12 +104,37 @@ public interface IAutoBuildConfigurationDescription {
 
     public void setStopOnFirstBuildError(boolean stopOnFirstBuildError);
 
+    /**
+     * is the build supposed to be run with multiple threads or not.
+     *
+     * @return true if multiple threads should be used else false.
+     */
     public boolean isParallelBuild();
 
     public void setIsParallelBuild(boolean parallelBuild);
 
-    public int getParallelizationNum();
+    /**
+     * Return the number of threads to use during the build
+     * if actualNumber is false this method can returns the value set with setParallelizationNum
+     * if actualNumber is true the returned number is no longer "encoded" and is safe to use
+     * as the number of threads.
+     * This method takes isParallelBuild into account. if isParallelBuild is false this method returns 1
+     *
+     * @param actualNumber if true this will return the actual number of threads that should be used
+     * during the build
+     * If false returns what has been set in setParallelizationNum
+     * @return
+     */
+    public int getParallelizationNum(boolean actualNumber);
 
+    /**
+     * setParallelizationNum sets the number of threads to use during a parallel build
+     * valid values are PARRALLEL_BUILD_UNLIMITED_JOBS PARRALLEL_BUILD_OPTIMAL_JOBS any number >0
+     * When the number >0 this is the actual threads to use.
+     * PARRALLEL_BUILD_UNLIMITED_JOBS PARRALLEL_BUILD_OPTIMAL_JOBS are <0
+     *
+     * @param parallelizationNum
+     */
     public void setParallelizationNum(int parallelizationNum);
 
     public boolean isCleanBuildEnabled();
