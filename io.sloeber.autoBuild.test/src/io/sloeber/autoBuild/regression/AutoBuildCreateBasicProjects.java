@@ -49,7 +49,7 @@ public class AutoBuildCreateBasicProjects {
 	static Set<IBuildTools> myBuildTools = IBuildToolsManager.getDefault().getAllInstalledBuildTools();
 
 	@BeforeAll
-	static void beforeAll() {
+	public static void beforeAll() {
 		Shared.setDeleteProjects(false);
 		Shared.setCloseProjects(false);
 		// turn off auto building to make sure autobuild does not start a build behind
@@ -75,6 +75,9 @@ public class AutoBuildCreateBasicProjects {
 				codeRootFolder, codeProvider, buildTools, false, null);
 		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
 		for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
+			IAutoBuildConfigurationDescription autConf=IAutoBuildConfigurationDescription.getConfig(curConfig);
+			autConf.setParallelizationNum(PARRALLEL_BUILD_OPTIMAL_JOBS);
+			autConf.setIsParallelBuild(true);
 			cProjectDesc.setActiveConfiguration(curConfig);
 			CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
 			Shared.BuildAndVerifyActiveConfig(testProject, builderID, shouldMakefileExists);
@@ -118,6 +121,8 @@ public class AutoBuildCreateBasicProjects {
 			buildAllConfigs(builderID, "all_" + shortProjectName, extensionPointID, extensionID, projectTypeID,
 					natureID, codeProvider, buildTools, codeRootFolder,shouldMakefileExists);
 		}
+		//change the 2 ways of building all configs
+		buildTypeActiveBuild=!buildTypeActiveBuild;
 
 	}
 
@@ -125,7 +130,6 @@ public class AutoBuildCreateBasicProjects {
 	@MethodSource("projectCreationInfoProvider")
 	void testDefaultBuilderSrc(String projectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
-		beforeAll();
 		if (doTestDefaultBuilder) {
 			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
 					buildTools, myCodeSrcFolder,null);
@@ -136,7 +140,6 @@ public class AutoBuildCreateBasicProjects {
 	@MethodSource("projectCreationInfoProvider")
 	void testInternaltBuilderSrc(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
-		beforeAll();
 		if (doTestInternalBuilder) {
 			String projectName = "Internal_" + inProjectName;
 
@@ -149,7 +152,6 @@ public class AutoBuildCreateBasicProjects {
 	@MethodSource("projectCreationInfoProvider")
 	void testMakeBuilderSrc(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
-		beforeAll();
 		if (doTestMakeBuilder) {
 			Assumptions.assumeFalse(buildTools.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider"),"Ignoring as make is not assumed on the path") ;
 			String projectName = "make_" + inProjectName;
@@ -167,7 +169,6 @@ public class AutoBuildCreateBasicProjects {
 	@MethodSource("projectCreationInfoProvider")
 	void testDefaultBuilderRoot(String projectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
-		beforeAll();
 		if (doTestDefaultBuilder) {
 			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
 					buildTools,myCodeRootFolder, null);
@@ -178,7 +179,6 @@ public class AutoBuildCreateBasicProjects {
 	@MethodSource("projectCreationInfoProvider")
 	void testInternaltBuilderRoot(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
-		beforeAll();
 		if (doTestInternalBuilder) {
 			String projectName = "Internal_" + inProjectName;
 
@@ -191,7 +191,6 @@ public class AutoBuildCreateBasicProjects {
 	@MethodSource("projectCreationInfoProvider")
 	void testMakeBuilderRoot(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
-		beforeAll();
 		if (doTestMakeBuilder) {
 			Assumptions.assumeFalse(buildTools.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider"),"Ignoring as make is not assumed on the path") ;
 			String projectName = "make_" + inProjectName;
