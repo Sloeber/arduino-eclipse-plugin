@@ -82,6 +82,11 @@ public class AutoBuildCreateBasicProjects {
 			CCorePlugin.getDefault().setProjectDescription(testProject, cProjectDesc);
 			Shared.BuildAndVerifyActiveConfig(testProject, builderID, shouldMakefileExists);
 		}
+		endTest(testProject);
+	}
+
+	static void endTest(IProject project) throws CoreException {
+			project.delete(true, true, null);
 	}
 
 	static void buildAllConfigs(String builderName, String projectName, String extensionPointID, String extensionID,
@@ -104,6 +109,7 @@ public class AutoBuildCreateBasicProjects {
 			Shared.verifyConfig(testProject, IAutoBuildConfigurationDescription.getConfig(curConfig),
 					shouldMakefileExists);
 		}
+		endTest(testProject);
 	}
 
 	private void doBuilds(String builderID, String projectName, String extensionPointID, String extensionID,
