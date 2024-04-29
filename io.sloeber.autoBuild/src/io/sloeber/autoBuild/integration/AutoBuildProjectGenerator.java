@@ -153,7 +153,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	}
 
 	public void setLocationURI(URI locationURI) {
-		// TODO Auto-generated method stub
 		myProjectURI = locationURI;
 	}
 

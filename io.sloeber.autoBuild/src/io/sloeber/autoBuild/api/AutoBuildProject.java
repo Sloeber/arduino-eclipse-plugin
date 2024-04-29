@@ -1,5 +1,6 @@
 package io.sloeber.autoBuild.api;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,14 +22,20 @@ public class AutoBuildProject {
     public static final String ARGS_TARGET_KEY = "The key to specify the value is the target to build"; //$NON-NLS-1$
     public static final String ARGS_CONFIGS_KEY = "The names of the configurations to build"; //$NON-NLS-1$
 
+    public static IProject createProject(String projectName,URI locationURI, IProjectType projectType, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools buildTools,
+            boolean needsMoreWork, IProgressMonitor monitor) {
+        return createProject(projectName, locationURI, projectType, null, natureID,codeRootFolder, codeProvider,
+        		buildTools, needsMoreWork, monitor);
+    }
+
     public static IProject createProject(String projectName, IProjectType projectType, String natureID, String codeRootFolder,ICodeProvider codeProvider, IBuildTools buildTools,
             boolean needsMoreWork, IProgressMonitor monitor) {
-        return createProject(projectName, projectType, null, natureID,codeRootFolder, codeProvider,
+        return createProject(projectName, null, projectType, null, natureID,codeRootFolder, codeProvider,
         		buildTools, needsMoreWork, monitor);
     }
 
     /**
-     * 
+     *
      * @param projectName
      *            The name of the project
      * @param extensionPointID
@@ -50,10 +57,10 @@ public class AutoBuildProject {
      *            if false you will need to call setCdtProjectCreated and
      *            setProjectDescription
      * @param monitor
-     * 
+     *
      * @return the created project
      */
-    public static IProject createProject(String projectName, IProjectType projectType, String builderName, String natureID,String codeRootFolder, ICodeProvider codeProvider,
+    public static IProject createProject(String projectName,URI locationURI, IProjectType projectType, String builderName, String natureID,String codeRootFolder, ICodeProvider codeProvider,
             IBuildTools buildTools, boolean needsMoreWork, IProgressMonitor monitor) {
         AutoBuildProjectGenerator theGenerator = new AutoBuildProjectGenerator();
         try {
@@ -65,6 +72,7 @@ public class AutoBuildProject {
             theGenerator.setBuildTools(buildTools);
             theGenerator.setProjectType(projectType);
             theGenerator.setProjectName(projectName);
+            theGenerator.setLocationURI(locationURI);
             theGenerator.setCodeProvider(codeProvider);
             theGenerator.setBuilderName(builderName);
             theGenerator.setNatureID(natureID);
@@ -108,7 +116,7 @@ public class AutoBuildProject {
      * Method used to decode a string to a set of strings
      * This method is used by AutoBuild to get the configurations from the args of
      * the build command in CommanBuild
-     * 
+     *
      * @param value
      * @return
      */
