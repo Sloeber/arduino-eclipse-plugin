@@ -3,6 +3,7 @@ package io.sloeber.autoBuild.integrations;
 import static io.sloeber.autoBuild.ui.internal.Messages.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -42,6 +43,7 @@ public class NewProjectWizard extends TemplateWizard {
 	public boolean performFinish() {
 		try {
 			String projectName = myMainPage.getProjectName();
+			URI projectURI=myMainPage.getLocationURI();
 			IProjectType projectType = myProjectTypePage.getProjectType();
 			String natureID = myNaturePage.getNatureID();
 			ICodeProvider codeProvider = myCodeProviderPage.getCodeProvider();
@@ -53,7 +55,7 @@ public class NewProjectWizard extends TemplateWizard {
 						throws CoreException, InvocationTargetException, InterruptedException {
 					SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
-					AutoBuildProject.createProject(projectName, projectType, natureID, codeRootFolder, codeProvider,
+					AutoBuildProject.createProject(projectName, projectURI,projectType, natureID, codeRootFolder, codeProvider,
 							buildTools, false, sub);
 					sub.done();
 				}

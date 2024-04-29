@@ -199,19 +199,13 @@ public class SloeberProject extends Common {
 						realProjectName);
 				IProjectType projectType = AutoBuildManager.getProjectType(LATEST_EXTENSION_POINT_ID,
 						LATEST_EXTENSION_ID, PROJECT_ID, true);
-				newProjectHandle = AutoBuildProject.createProject(realProjectName, projectType,
-						CCProjectNature.CC_NATURE_ID, "src", codeDesc, buildTools, false, internalMonitor);
+				newProjectHandle = AutoBuildProject.createProject(realProjectName,projectURI, projectType,
+						CCProjectNature.CC_NATURE_ID, "src", codeDesc, buildTools, true, internalMonitor);
 
 				// Add the sketch code
 				Set<IArduinoLibraryVersion> librariesToAdd = codeDesc.getNeededLibraries();
 
 				SloeberNature.addNature(newProjectHandle, internalMonitor);
-
-				// create a sloeber project
-				// SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
-				// the line below will trigger environment var requests causing loops if called
-				// to early
-				// ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
 
 				CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 				ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle, true);
@@ -222,14 +216,15 @@ public class SloeberProject extends Common {
 					for (int index = 0; index < orgSourceEntries.length; index++) {
 						newSourceEntries[index+1] = orgSourceEntries[index];
 					}
-					IPath excludes[] = new IPath[7];
+					IPath excludes[] = new IPath[8];
 					excludes[0] = IPath.fromOSString("**/*.ino"); //$NON-NLS-1$
-					excludes[1] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
-					excludes[2] = IPath.fromOSString("libraries/?*/**/?xtras/**"); //$NON-NLS-1$
-					excludes[3] = IPath.fromOSString("libraries/?*/**/test*/**"); //$NON-NLS-1$
-					excludes[4] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
-					excludes[5] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
-					excludes[6] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
+					excludes[1] = IPath.fromOSString("libraries/?*/**/doc*/**"); //$NON-NLS-1$
+					excludes[2] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
+					excludes[3] = IPath.fromOSString("libraries/?*/**/?xtras/**"); //$NON-NLS-1$
+					excludes[4] = IPath.fromOSString("libraries/?*/**/test*/**"); //$NON-NLS-1$
+					excludes[5] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
+					excludes[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
+					excludes[7] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
 
 					//IPath arduinoRoot = IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(CONFIG_NAME_VARIABLE);
 					IPath arduinoRoot = IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(curConfig.getName());
@@ -245,7 +240,7 @@ public class SloeberProject extends Common {
 						continue;
 					}
 					AutoBuildConfigurationDescription autoBuildConfig = (AutoBuildConfigurationDescription) iAutoBuildConfig;
-
+					autoBuildConfig.setIsParallelBuild(compileDescriptor.isParallelBuildEnabled());
 					SloeberConfiguration sloeberConfiguration = new SloeberConfiguration(boardDescriptor, otherDesc,
 							compileDescriptor);
 					autoBuildConfig.setAutoBuildConfigurationExtensionDescription(sloeberConfiguration);
