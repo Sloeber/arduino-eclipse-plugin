@@ -52,12 +52,9 @@ public class Example implements IExample{
         myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
 
         myRequiredBoardAttributes.myCompatibleBoardIDs.remove(null);
-        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getCodeAttributes(getLibFolder()));
+        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getCodeAttributes(myPath));
     }
 
-    private IPath getLibFolder() {//Need to remove the examples folder and the example folder
-        return myPath.removeLastSegments(2);
-    }
 
     private static int getNumADCUsedInExample(String myFQN2) {
         switch (myFQN2) {

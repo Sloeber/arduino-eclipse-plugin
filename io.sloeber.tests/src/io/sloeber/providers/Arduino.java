@@ -158,6 +158,7 @@ public class Arduino extends MCUBoard {
         attributes.myNumAD = getNumADCsAvailable(boardID, attributes.myNumAD);
         attributes.directMode = !doesNotSupportDirectModeList().contains(boardID);
         attributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
+        attributes.digitalPinToPCICR =!doesNotSupportDigitalPinToPCICR().contains(boardID);
     }
 
     private static int getNumADCsAvailable(String boardID, int standard) {
@@ -185,6 +186,13 @@ public class Arduino extends MCUBoard {
         ret.add("robotMotor");
         ret.add("edge_control");
         ret.add("nicla_sense");
+        return ret;
+    }
+
+    private static List<String> doesNotSupportDigitalPinToPCICR() {
+        List<String> ret = new LinkedList<>();
+        ret.add("robotControl");
+        ret.add("robotMotor");
         return ret;
     }
 

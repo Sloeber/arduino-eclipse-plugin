@@ -27,6 +27,8 @@ public class Attributes {
      * Only a very rare selection of boards supports input_pulldown as pin mode
      */
     public boolean inputPullDown = false;
+
+    public boolean digitalPinToPCICR = false;
     /*
      * No board is out of the box compatible with code that needs a change
      */

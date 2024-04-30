@@ -135,6 +135,10 @@ public class Libraries {
 		case"Ethernet":
 			ret.serial = true;
 			break;
+		case"Firmata":
+		case"SoftwareSerial":
+			ret.digitalPinToPCICR=true;
+			break;
 		default:
 			break;
 		}
