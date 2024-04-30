@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.BoardAttributes;
+import io.sloeber.core.AttributesBoard;
 import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
@@ -17,7 +17,7 @@ import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 public abstract class MCUBoard {
 
     protected BoardDescription myBoardDescriptor = null;
-    public BoardAttributes myAttributes = new BoardAttributes();
+    public AttributesBoard myAttributes = new AttributesBoard();
     public String mySerialPort = "Serial";
 
     public abstract MCUBoard createMCUBoard(BoardDescription boardDesc);
@@ -26,6 +26,7 @@ public abstract class MCUBoard {
 
     public static List<MCUBoard> getAllBoards(String provider, MCUBoard board) {
         List<MCUBoard> ret = new LinkedList<>();
+        ret.add(board);//make the board provided the first in the list
         ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
         for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
             ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
@@ -62,12 +63,12 @@ public abstract class MCUBoard {
                 }
             }
         }
-        return myAttributes.compatibleWithExampleRequirements(example.getRequiredBoardAttributes());
+        return example.getRequiredBoardAttributes().compatibleWithBoardAttributes(myAttributes);
     }
 
     /**
      * give the name of the board as it appears in boards.txt
-     * 
+     *
      * @return the name of the board as shown in the gui
      */
     public String getID() {
@@ -77,6 +78,9 @@ public abstract class MCUBoard {
         return myBoardDescriptor.getBoardID();
     }
 
+    /**
+	 * @param example not used here but used in overloaded methods
+	 */
     @SuppressWarnings({ "static-method" })
     public Map<String, String> getBoardOptions(Example example) {
         Map<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -85,7 +89,7 @@ public abstract class MCUBoard {
 
     /**
      * give the name of the board as it appears in boards.txt
-     * 
+     *
      * @return the name of the board as shown in the gui or null
      */
     public String getName() {

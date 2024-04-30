@@ -65,8 +65,12 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();
             Example example = new Example(fqn, examplePath);
-            if (!skipExample(example)) {
-                Set<IExample> paths = new HashSet<>();
+            if (skipExample(example)) {
+            	System.out.println("skipping example "+example.getName());
+            	continue;
+            }
+            int numExamplesToStart=examples.size();
+            Set<IExample> paths = new HashSet<>();
 
                 paths.add( curexample.getValue());
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
@@ -77,7 +81,9 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
                         examples.add(theData);
                     }
                 }
-            }
+                if(numExamplesToStart==examples.size()) {
+                	System.err.println("No boards found for example "+example.getName());
+                }
         }
 
         return examples;

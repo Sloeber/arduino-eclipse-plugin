@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -19,10 +20,10 @@ public class Example implements IExample{
     private String myFQN;
     private String myLibName;
     private IPath myPath;
-    private BoardAttributes myRequiredBoardAttributes;
+    private AttributesCode myRequiredBoardAttributes;
     private static int noBoardFoundCount = 0;
 
-    public BoardAttributes getRequiredBoardAttributes() {
+    public AttributesCode getRequiredBoardAttributes() {
         return myRequiredBoardAttributes;
     }
 
@@ -30,7 +31,7 @@ public class Example implements IExample{
         myFQN = fqn;
         myPath = path;
         getLibNameFromPath();
-        myRequiredBoardAttributes = new BoardAttributes();
+        myRequiredBoardAttributes = new AttributesCode();
         myRequiredBoardAttributes.serial = examplesUsingSerial().contains(myFQN);
         myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(myFQN);
         myRequiredBoardAttributes.serialUSB = examplesUsingSerialUSB().contains(myFQN);
@@ -43,14 +44,15 @@ public class Example implements IExample{
         myRequiredBoardAttributes.midi = examplesUsingMidi().contains(myFQN) || myFQN.contains("USB_MIDI");
         //        myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
         myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(myFQN);
-        myRequiredBoardAttributes.boardID = getRequiredBoardID(myFQN);
+        myRequiredBoardAttributes.myCompatibleBoardIDs.add( getRequiredBoardID(myFQN));
         //        myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
         myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
         myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink");
         myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
         myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
 
-        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibFolder()));
+        myRequiredBoardAttributes.myCompatibleBoardIDs.remove(null);
+        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getCodeAttributes(getLibFolder()));
     }
 
     private IPath getLibFolder() {//Need to remove the examples folder and the example folder
@@ -427,6 +429,8 @@ public class Example implements IExample{
         ret.add("Library/Boodskap_Message_library/SimpleMessageUsage");
         //uses #include <ArduinoDebug.hpp>
         ret.add("Library/107-Arduino-BoostUnits/Basic");
+        //uses lib from internet
+        ret.add("libraries/FreeRTOS/11.0.1-5/examples/GoldilocksAnalogueTestSuite");
         return ret;
     }
 
@@ -457,15 +461,15 @@ public class Example implements IExample{
         }
 
         // if example states which board it wants use that board
-        if (example.getRequiredBoardAttributes().boardID != null) {
-            String wantedBoardName = example.getRequiredBoardAttributes().boardID;
+        if (example.getRequiredBoardAttributes().myCompatibleBoardIDs.size() >0) {
+            Set<String> compatibleBoardName = example.getRequiredBoardAttributes().myCompatibleBoardIDs;
             for (MCUBoard curBoard : myBoards) {
-                if (curBoard.getID().equals(wantedBoardName)) {
+                if (compatibleBoardName.contains( curBoard.getID())) {
                     return curBoard;
                 }
             }
             System.out.println(
-                    "Example " + example.getFQN() + " requires board " + wantedBoardName + " that is not listed");
+                    "Example " + example.getFQN() + " requires boards " + compatibleBoardName + " that is not listed");
             return null;
         }
 

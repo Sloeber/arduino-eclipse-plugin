@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.BoardAttributes;
+import io.sloeber.core.AttributesBoard;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Json.ArduinoPackage;
@@ -136,7 +136,7 @@ public class Arduino extends MCUBoard {
     protected void setAttributes() {
         String boardID = myBoardDescriptor.getBoardID();
         sharedsetAttributes(boardID, myAttributes);
-        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
+        myAttributes.myArchitecture=myBoardDescriptor.getArchitecture();
         //        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
         //        myAttributes.serial1 = supportSerial1List().contains(boardID);
         //        myAttributes.keyboard = supportKeyboardList().contains(boardID);
@@ -148,7 +148,7 @@ public class Arduino extends MCUBoard {
         //        myAttributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
     }
 
-    static protected void sharedsetAttributes(String boardID, BoardAttributes attributes) {
+    static protected void sharedsetAttributes(String boardID, AttributesBoard attributes) {
         attributes.serial = !doesNotSupportSerialList().contains(boardID);
         attributes.serial1 = supportSerial1List().contains(boardID);
         attributes.keyboard = supportKeyboardList().contains(boardID);

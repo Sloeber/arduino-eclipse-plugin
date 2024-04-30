@@ -52,7 +52,7 @@ public class ESP8266 extends MCUBoard {
 
     @Override
     protected void setAttributes() {
-        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
+        myAttributes.myArchitecture=myBoardDescriptor.getArchitecture();
 
     }
 
