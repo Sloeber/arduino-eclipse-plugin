@@ -69,6 +69,7 @@ public class InternalBuildRunner implements IBuildRunner {
 	private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
 	private static final int TICKS_EXECUTE_COMMAND = 1 * PROGRESS_MONITOR_SCALE;
 	private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
+	private boolean myHasBuildError=false;
 
 	private static void createFolder(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
 			throws CoreException {
@@ -80,6 +81,8 @@ public class InternalBuildRunner implements IBuildRunner {
 			folder.create(force, local, monitor);
 		}
 	}
+
+
 
 	@Override
 	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
@@ -136,7 +139,6 @@ public class InternalBuildRunner implements IBuildRunner {
 				epm.deferDeDuplication();
 				int sequenceID = -1;
 				boolean lastSequenceID = true;
-				boolean isError = false;
 
 				// Run preBuildStep if existing
 				String preBuildStep = autoData.getPrebuildStep();
@@ -153,13 +155,22 @@ public class InternalBuildRunner implements IBuildRunner {
 						}
 					}
 				}
+				myHasBuildError=false;
 				do {
 					sequenceID++;
 					lastSequenceID = true;
 
-					ExecutorService executor = Executors.newFixedThreadPool(parrallelNum);
+					ExecutorService executor =null;
+					if(parrallelNum>1) {
+						executor=Executors.newFixedThreadPool(parrallelNum);
+					}else {
+						executor=Executors.newSingleThreadExecutor();
+					}
 					for (IAutoBuildMakeRule curRule : myMakeRules) {
 						if (curRule.getSequenceGroupID() != sequenceID) {
+							continue;
+						}
+						if(myHasBuildError) {
 							continue;
 						}
 						lastSequenceID = false;
@@ -204,7 +215,7 @@ public class InternalBuildRunner implements IBuildRunner {
 							&& autoData.getAutoMakeTarget().equals(TARGET_OBJECTS)) {
 						lastSequenceID = true;
 					}
-				} while (!(lastSequenceID || isError));
+				} while (!(lastSequenceID || myHasBuildError));
 				// Run postBuildStep if existing
 				String postBuildStep = autoData.getPostbuildStep();
 				postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
@@ -239,6 +250,7 @@ public class InternalBuildRunner implements IBuildRunner {
 		private IProgressMonitor myMonitor;
 		private AutoBuildRunnerHelper myBuildRunnerHelper;
 
+
 		RuleRunner(IAutoBuildMakeRule curRule, String envp[], AutoBuildConfigurationDescription autoData,
 				IProgressMonitor monitor, AutoBuildRunnerHelper buildRunnerHelper) {
 			myRule = curRule;
@@ -272,7 +284,7 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	private void reportBuildError() {
-		// TOFIX JABA add stop on first error build logic
+		myHasBuildError=true;
 	}
 
 	private static int launchCommand(String curRecipe, String envp[], AutoBuildConfigurationDescription autoData,
