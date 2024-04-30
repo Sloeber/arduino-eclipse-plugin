@@ -125,7 +125,12 @@ public class Libraries {
 		// ret.esp8266_mcu = esp8266_mcu(libName);
 		ret.myCompatibleBoardIDs.add( getRequiredBoardID(path.lastSegment()));
 		ret.myArchitectures.addAll(getSupportedArchitectures(path));
-		switch (path.segment(path.segmentCount() - 2)) {
+		String libName=path.segment(path.segmentCount() - 4);
+		if("libraries".equals(libName)) {
+			libName=path.segment(path.segmentCount() - 3);
+		}
+
+		switch (libName) {
 		case "FreeRTOS":
 		case "GSM":
 			ret.buildInLed = true;
@@ -136,12 +141,23 @@ public class Libraries {
 			ret.serial = true;
 			break;
 		case"Firmata":
+			String exampleName=path.segment(path.segmentCount() - 1);
+			ret.digitalPinToPCICR=true;
+			switch (exampleName) {
+			case "StandardFirmataBLE":
+				ret.worksOutOfTheBox=false;
+				break;
+			default:
+				break;
+			}
+			break;
 		case"SoftwareSerial":
 			ret.digitalPinToPCICR=true;
 			break;
 		default:
 			break;
 		}
+
 		ret.myArchitectures.remove(null);
 		ret.myCompatibleBoardIDs.remove(null);
 		ret.myArchitectures.remove("*");
