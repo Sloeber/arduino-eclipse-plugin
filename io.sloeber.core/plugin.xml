@@ -101,7 +101,7 @@
               environmentSupplier="io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier"
               id="io.sloeber.core.toolChain.release"
               isAbstract="false"
-              languageSettingsProviders="io.sloeber.languageSettingsProvider"
+              languageSettingsProviders="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider;io.sloeber.languageSettingsProvider"
               name="%toolChain.name"
               osList="all">
            <tool
