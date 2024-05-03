@@ -164,7 +164,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
     @Override
     public IProject getProject() {
-        return getAutoBuildDescription().getCdtConfigurationDescription().getProjectDescription().getProject();
+        return getAutoBuildDescription().getProject();
     }
 
     @Override

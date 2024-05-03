@@ -24,7 +24,18 @@ public interface IArduinoLibraryVersion {
 	 */
 	boolean isPrivateLib();
 
+	/**
+	 *
+	 * @return getFQN().segments()
+	 */
 	String[] getBreadCrumbs();
+
+	/**
+	 * returns a path that identifies this object in a path form
+	 *
+	 * @return
+	 */
+	IPath getFQN();
 
 
 }

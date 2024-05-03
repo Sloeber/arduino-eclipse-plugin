@@ -22,15 +22,8 @@ public class Const extends AutoBuildConstants {
     public static final int SLOEBER_STATUS_DEBUG = IStatus.CANCEL;
 
     // java stuff so I do not have to add all the time $NON-NLS-1$
-    public static final String DOT = ".";
-    public static final String SLACH = "/";
-    public static final String FALSE = "FALSE";
-    public static final String TRUE = "TRUE";
-    public static final String COLON = ":";
     public static final String SEMI_COLON = ";";
     public static final String EMPTY = "";
-    public static final String NEWLINE = "\n";
-    public static final String EQUAL = "=";
     public static final String SPACE = " ";
 
     // arduino txt basic keys
@@ -46,12 +39,10 @@ public class Const extends AutoBuildConstants {
     public static final String MENU = "menu";
     public static final String STEP = "step";
     public static final String PATTERN = "pattern";
-    public static final String NAME = "name";
     public static final String HARDWARE = "hardware";
     public static final String PLATFORM = "platform";
     public static final String TXT = "txt";
     public static final String SOURCE = "source";
-    public static final String COMPILER = "compiler";
     public static final String PRIVATE = "private";
     public static final String MANAGED = "Managed";
     public static final String BOARD = "Board";
@@ -91,6 +82,7 @@ public class Const extends AutoBuildConstants {
     public static final String SLOEBER_VARIANT_FOLDER_NAME = VARIANT;
     public static final String SLOEBER_CODE_FOLDER_NAME = CORE;
     public static final String SLOEBER_LIBRARY_FOLDER_NAME = ARDUINO_LIBRARY_FOLDER_NAME;
+    public static final String SLOEBER_LIBRARY_FQN = "Library";
     public static final String BOARDS_FILE_NAME = "boards" + DOT + TXT;
     public static final String PLATFORM_FILE_NAME = PLATFORM + DOT + TXT;
 

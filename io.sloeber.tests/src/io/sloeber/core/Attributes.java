@@ -28,7 +28,10 @@ public class Attributes {
      */
     public boolean inputPullDown = false;
 
-    public boolean digitalPinToPCICR = false;
+    public boolean digitalPinToPCICR = true;
+    public boolean USBCON=false;
+    public boolean RX_TX_PIN=true;
+    public boolean SD=true;
     /*
      * No board is out of the box compatible with code that needs a change
      */

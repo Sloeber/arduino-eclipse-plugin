@@ -410,7 +410,6 @@
         <setEntry value="org.apache.xmlgraphics@default:default"/>
         <setEntry value="org.apiguardian.api@default:default"/>
         <setEntry value="org.eclipse.ant.core@default:default"/>
-        <setEntry value="org.eclipse.ant.optional.junit@default:false"/>
         <setEntry value="org.eclipse.compare.core@default:default"/>
         <setEntry value="org.eclipse.compare@default:default"/>
         <setEntry value="org.eclipse.core.commands@default:default"/>
@@ -530,7 +529,6 @@
         <setEntry value="org.eclipse.ui@default:default"/>
         <setEntry value="org.eclipse.urischeme@default:default"/>
         <setEntry value="org.freemarker.freemarker@default:default"/>
-        <setEntry value="org.glassfish.hk2.osgi-resource-locator@default:default"/>
         <setEntry value="org.hamcrest.core@default:default"/>
         <setEntry value="org.hamcrest@default:default"/>
         <setEntry value="org.junit@default:default"/>
@@ -553,7 +551,6 @@
         <setEntry value="org.osgi.util.promise@default:default"/>
         <setEntry value="org.tukaani.xz@default:default"/>
         <setEntry value="slf4j.api@default:default"/>
-        <setEntry value="slf4j.simple@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
         <setEntry value="io.sloeber.autoBuild.test@default:default"/>
@@ -563,7 +560,7 @@
         <setEntry value="io.sloeber.core@default:default"/>
         <setEntry value="io.sloeber.product.sdk@default:default"/>
         <setEntry value="io.sloeber.product@default:default"/>
-        <setEntry value="io.sloeber.tests@default:default"/>
+        <setEntry value="io.sloeber.tests"/>
         <setEntry value="io.sloeber.ui.nl1@default:false"/>
         <setEntry value="io.sloeber.ui@default:default"/>
         <setEntry value="org.eclipse.cdt.build.gcc.core@default:default"/>

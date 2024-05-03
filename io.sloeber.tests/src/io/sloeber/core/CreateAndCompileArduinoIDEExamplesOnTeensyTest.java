@@ -79,7 +79,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
                 for (MCUBoard curBoard : allBoards) {
-                    if (curBoard.isExampleSupported(example)) {
+                    if (example.worksOnBoard(curBoard)) {
                         String projectName = Shared.getProjectName(codeDescriptor, example, curBoard);
                         Map<String, String> boardOptions = curBoard.getBoardOptions(example);
                         BoardDescription boardDescriptor = curBoard.getBoardDescriptor();

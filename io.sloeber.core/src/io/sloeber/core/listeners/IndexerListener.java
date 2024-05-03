@@ -117,7 +117,10 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 			// Check if there are libraries that are not found in
 			// the installed libraries
 			Set<String> uninstalledIncludedHeaders = new TreeSet<>(UnresolvedIncludedHeaders);
-			uninstalledIncludedHeaders.removeAll(availableLibs.keySet());
+			for(IArduinoLibraryVersion curlib:availableLibs.values()) {
+				uninstalledIncludedHeaders.remove(curlib.getName());
+			}
+			//uninstalledIncludedHeaders.removeAll(availableLibs.keySet());
 			if (!uninstalledIncludedHeaders.isEmpty()) {
 				// some libraries may need to be installed
 
@@ -136,14 +139,21 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 			}
 		}
 
-		//now we can add the libs to the project
-		availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
-		if (!availableLibs.isEmpty()) {
+		//find the libs we can add
+		String toInstallLibString=new String();
+		Set< IArduinoLibraryVersion> toInstallLibs=new HashSet<>();
+		for(IArduinoLibraryVersion curlib:availableLibs.values()) {
+			if(UnresolvedIncludedHeaders.contains(curlib.getName())) {
+				toInstallLibs.add(curlib);
+				toInstallLibString=toInstallLibString+SPACE+curlib.getFQN();
+			}
+		}
+		if (!toInstallLibs.isEmpty()) {
 			// there are possible libraries to add
 			Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
 					+ SloeberCfg.getProject().getName() + COLON + SPACE
-					+ availableLibs.keySet().toString()));
-			SloeberCfg.addLibraries(availableLibs.values());
+					+ toInstallLibString));
+			SloeberCfg.addLibraries(toInstallLibs);
 		}
 	}
 

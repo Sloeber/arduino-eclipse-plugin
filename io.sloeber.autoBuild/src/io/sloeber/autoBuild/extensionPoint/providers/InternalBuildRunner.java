@@ -163,9 +163,10 @@ public class InternalBuildRunner implements IBuildRunner {
 					ExecutorService executor =null;
 					if(parrallelNum>1) {
 						executor=Executors.newFixedThreadPool(parrallelNum);
-					}else {
-						executor=Executors.newSingleThreadExecutor();
 					}
+//					else {
+//						executor=Executors.newSingleThreadExecutor();
+//					}
 					for (IAutoBuildMakeRule curRule : myMakeRules) {
 						if (curRule.getSequenceGroupID() != sequenceID) {
 							continue;
@@ -200,15 +201,21 @@ public class InternalBuildRunner implements IBuildRunner {
 						}
 
 						Runnable worker = new RuleRunner(curRule, envp, autoData, monitor, buildRunnerHelper);
-						executor.execute(worker);
+						if(executor!=null) {
+							executor.execute(worker);
+						}else {
+						 worker.run();
+						}
+
 
 					}
-
+					if(executor!=null) {
 					// This will make the executor accept no new threads
 					// and finish all existing threads in the queue
 					executor.shutdown();
 					// Wait until all threads are finish
 					executor.awaitTermination(20, TimeUnit.MINUTES);
+					}
 					epm.deDuplicate();
 
 					if (kind == IncrementalProjectBuilder.AUTO_BUILD

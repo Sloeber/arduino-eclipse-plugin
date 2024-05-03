@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,6 +40,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 	private int size;
 	private String checksum;
 	private ArduinoLibrary myParent;
+	private IPath myFQN;
 
 	@SuppressWarnings("nls")
 	public ArduinoLibraryVersion(JsonElement json, ArduinoLibrary arduinoLibrary) {
@@ -63,6 +65,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 			archiveFileName = getSafeString(jsonObject, "archiveFileName");
 			size = jsonObject.get("size").getAsInt();
 			checksum = getSafeString(jsonObject, "checksum");
+			calculateFQN();
 		} catch (Exception e) {
 			throw new JsonParseException("failed to parse json  " + e.getMessage());
 		}
@@ -136,7 +139,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 			// No need to look at the versions
 			return ret;
 		}
-		return getID().compareTo(other.getID());
+		return version.toString().compareTo(other.getVersion().toString());
 	}
 
 	public ArduinoLibrary getLibrary() {
@@ -192,11 +195,18 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 		return getInstallPath().append(EXAMPLES_FOLDER);
 	}
 
+	private void calculateFQN() {
+		myFQN=  Path.fromPortableString(SLOEBER_LIBRARY_FQN);
+		myFQN=myFQN.append(MANAGED).append(getName());
+	}
+
 	@Override
 	public String[] getBreadCrumbs() {
-		String ret[] = new String[2];
-		ret[0] = MANAGED + SPACE + ARDUINO_LIBRARY_FOLDER_NAME;
-		ret[1] = getName();
-		return ret;
+		return myFQN.segments();
+	}
+
+	@Override
+	public IPath getFQN() {
+		return myFQN;
 	}
 }

@@ -47,24 +47,7 @@ public abstract class MCUBoard {
         return myBoardDescriptor;
     }
 
-    public boolean isExampleSupported(Example example) {
-        if (myBoardDescriptor == null) {
-            return false;
-        }
-        /*
-         * There is one know Teensy example that does not
-         * run on all teensy boards
-         */
-        if ("Teensy".equalsIgnoreCase(getID())) {
-            if (example.getFQN().contains("Teensy/USB_Mouse/Buttons")) {
-                String boardID = myBoardDescriptor.getBoardID();
-                if ("teensypp2".equals(boardID) || "teensy2".equals(boardID)) {
-                    return false;
-                }
-            }
-        }
-        return example.getRequiredBoardAttributes().compatibleWithBoardAttributes(myAttributes);
-    }
+
 
     /**
      * give the name of the board as it appears in boards.txt

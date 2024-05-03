@@ -351,7 +351,7 @@ public class LibraryManager {
 			for (ArduinoLibrary curLib : libindex.getLibraries()) {
 				IArduinoLibraryVersion instVersion = curLib.getInstalledVersion();
 				if (instVersion != null) {
-					ret.put(instVersion.getName(), instVersion);
+					ret.put(instVersion.getFQN().toPortableString(), instVersion);
 				}
 			}
 		}
@@ -398,10 +398,10 @@ public class LibraryManager {
 			if (LIBRARY_INDICATION_FILES.contains(curChild) || CODE_EXTENSIONS.contains(fileExt)) {
 				if (isHardwareLib) {
 					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath);
-					ret.put(retVersion.getName(), retVersion);
+					ret.put(retVersion.getFQN().toPortableString(), retVersion);
 				} else {
 					IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);
-					ret.put(retVersion.getName(), retVersion);
+					ret.put(retVersion.getFQN().toPortableString(), retVersion);
 				}
 
 				return ret;

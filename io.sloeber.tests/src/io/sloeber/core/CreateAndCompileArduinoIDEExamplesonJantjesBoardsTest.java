@@ -67,7 +67,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
                 paths.add( curexample.getValue());
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
                 for (MCUBoard curboard : allBoards) {
-                    if (curboard.isExampleSupported(example)) {
+                    if (example.worksOnBoard(curboard) ) {
                         Object[] theData = new Object[] { Shared.getCounterName(codeDescriptor.getExampleName()),
                                 codeDescriptor, curboard.getBoardDescriptor() };
                         examples.add(theData);

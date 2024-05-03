@@ -113,7 +113,7 @@ public class CreateAndCompileLibraryExamplesTest {
 
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        if (!myBoard.isExampleSupported(myExample)) {
+        if (! myExample.worksOnBoard(myBoard)) {
             fail("Trying to run a test on unsoprted board");
             myTotalFails++;
             return;

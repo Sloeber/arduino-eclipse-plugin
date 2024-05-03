@@ -11,15 +11,18 @@ import io.sloeber.core.common.InstancePreferences;
 public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 	private IPath myInstallPath;
 	private String myName;
+	private IPath myFQN;
 
 	public ArduinoPrivateLibraryVersion(IPath installPath) {
 		myInstallPath = installPath;
 		myName = myInstallPath.lastSegment();
+		calcFQN();
 	}
 
 	public ArduinoPrivateLibraryVersion(String curSaveString) {
 		String[] parts=curSaveString.split(SEMI_COLON);
 		myName=parts[parts.length-1];
+		calcFQN();
 		String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
 		for (String curLibPath : privateLibPaths) {
 			Path curPrivPath=new Path(curLibPath);
@@ -60,12 +63,19 @@ public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 		return getInstallPath().append(EXAMPLES_FOLDER);
 	}
 
+	private void calcFQN() {
+		myFQN=  Path.fromPortableString(SLOEBER_LIBRARY_FQN);
+		myFQN= myFQN.append(PRIVATE).append(getName());
+	}
+
 	@Override
 	public String[] getBreadCrumbs() {
-		String ret[] = new String[2];
-		ret[0]=PRIVATE + SPACE + ARDUINO_LIBRARY_FOLDER_NAME;
-		ret[1]=getName();
-		return ret;
+		return myFQN.segments();
+	}
+
+	@Override
+	public IPath getFQN() {
+		return myFQN;
 	}
 
 }

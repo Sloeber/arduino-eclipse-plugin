@@ -5,24 +5,40 @@ import org.eclipse.core.runtime.Path;
 
 import static io.sloeber.core.api.Const.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
+import io.sloeber.core.common.ConfigurationPreferences;
 
 public class Example implements IExample {
 	private IArduinoLibraryVersion myLib;
 	private IPath myExampleLocation;
+	private IPath myFQN;
+	private String myName;
 
 	@Override
 	public String toSaveString() {
 		return String.join(SEMI_COLON, getBreadCrumbs());
 	}
 
-
 	public Example(IArduinoLibraryVersion lib, Path path) {
 		myLib = lib;
 		myExampleLocation = path;
+		myName = path.lastSegment();
+		calculateFQN();
+	}
+
+	private void calculateFQN() {
+		if (myLib == null) {
+			myFQN = Path.fromPortableString(EXAMPLES_FOLDER );
+			IPath exampleFolder = ConfigurationPreferences.getInstallationPathExamples();
+			if (exampleFolder.isPrefixOf(myExampleLocation)) {
+				myFQN = myFQN.append(myExampleLocation.makeRelativeTo(exampleFolder));
+			} else {
+				myFQN = myFQN.append(myExampleLocation);
+			}
+		} else {
+			myFQN = myLib.getFQN().append(myName);
+		}
 	}
 
 	@Override
@@ -37,31 +53,18 @@ public class Example implements IExample {
 
 	@Override
 	public String getName() {
-		return myExampleLocation.lastSegment();
+		return myName;
 	}
 
 	@Override
 	public String getID() {
-		if (myLib == null) {
-			return EXAMPLES_FOLDER + COLON + getName();
-		}
-		return myLib.getName() + COLON + getName();
+		return myFQN.toString();
 	}
 
 	@Override
 	public String[] getBreadCrumbs() {
-		ArrayList<String> ret = new ArrayList<>();
-		if (myLib == null) {
-			ret.add(EXAMPLES_FOLDER);
-			//remmove arduinoplugin/examples
-			IPath filteredPath=myExampleLocation.removeFirstSegments(2);
-			ret.addAll(Arrays.asList( filteredPath.segments()));
-		} else {
-			ret.addAll(  Arrays.asList( myLib.getBreadCrumbs()));
-			ret.add(getName());
-		}
+		return myFQN.segments();
 
-		return ret.toArray(new String[ret.size()]);
 	}
 
 }

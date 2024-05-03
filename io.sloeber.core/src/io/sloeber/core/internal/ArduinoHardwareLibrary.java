@@ -3,6 +3,7 @@ package io.sloeber.core.internal;
 import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Common;
@@ -11,10 +12,12 @@ import io.sloeber.core.api.IArduinoLibraryVersion;
 public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 	private IPath myInstallPath;
 	private String myName;
+	private IPath myFQN;
 
 	public ArduinoHardwareLibrary(IPath installPath) {
 		myInstallPath = installPath;
 		myName = myInstallPath.lastSegment();
+		calculateFQN();
 	}
 
 	public ArduinoHardwareLibrary(String curSaveString, BoardDescription boardDesc) {
@@ -24,6 +27,7 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 		if(!myInstallPath.toFile().exists()) {
 			myInstallPath=boardDesc.getReferencedCoreLibraryPath().append(myName);
 		}
+		calculateFQN();
 	}
 
 	@Override
@@ -55,12 +59,20 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 		return getInstallPath().append(EXAMPLES_FOLDER);
 	}
 
+
+	private void calculateFQN() {
+		myFQN=  Path.fromPortableString(SLOEBER_LIBRARY_FQN);
+		myFQN= myFQN.append(BOARD).append(getName());
+	}
+
 	@Override
 	public String[] getBreadCrumbs() {
-		String[] ret = new String[2];
-		ret[0]=BOARD;
-		ret[1]=getName();
-		return ret;
+		return myFQN.segments();
+	}
+
+	@Override
+	public IPath getFQN() {
+		return myFQN;
 	}
 
 }

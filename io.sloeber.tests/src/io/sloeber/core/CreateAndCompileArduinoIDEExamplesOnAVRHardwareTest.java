@@ -57,9 +57,15 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     public static Collection examples() {
         Shared.waitForAllJobsToFinish();
         Preferences.setUseBonjour(false);
+        
+        
+//        Example testExample = new Example("Firmata:AllInputsFirmata", new Path("C:/Users/jan/Documents/Arduino/libraries/Firmata/examples/AllInputsFirmata"));
+//        MCUBoard robotControler= Arduino.robotControl();
+//        boolean ret=testExample.worksOnBoard(robotControler);
+
+
         LinkedList<Object[]> examples = new LinkedList<>();
         List<MCUBoard> allBoards = Arduino.getAllBoards();
-
         TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
@@ -75,7 +81,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
                 paths.add( curexample.getValue());
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
                 for (MCUBoard curboard : allBoards) {
-                    if (curboard.isExampleSupported(example)) {
+                    if (example.worksOnBoard(curboard)) {
                         String projectName = Shared.getProjectName(codeDescriptor, example, curboard);
                         Object[] theData = new Object[] { projectName, codeDescriptor, curboard };
                         examples.add(theData);

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber Tests
-Bundle-SymbolicName: io.sloeber.tests
+Bundle-SymbolicName: io.sloeber.tests;singleton:=true
 Bundle-Version: 4.4.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
