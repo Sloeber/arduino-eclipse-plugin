@@ -1,37 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>io.sloeber.arduino-eclipse-plugin</groupId>
-    <artifactId>io.sloeber.parent</artifactId>
-    <version>4.4.2-SNAPSHOT</version>
-    <relativePath>../io.sloeber.parent</relativePath>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.sloeber.arduino-eclipse-plugin</groupId>
+		<artifactId>io.sloeber.parent</artifactId>
+		<version>4.4.3-SNAPSHOT</version>
+		<relativePath>../io.sloeber.parent</relativePath>
+	</parent>
 
-  <artifactId>io.sloeber.autoBuild.test</artifactId>
-  <packaging>eclipse-test-plugin</packaging>
+	<artifactId>io.sloeber.autoBuild.test</artifactId>
+	<packaging>eclipse-test-plugin</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.9.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-surefire-plugin</artifactId>
-		<version>${tycho.version}</version>
-		<configuration>
-			<systemProperties>
-				<org.eclipse.cdt.core.console>org.eclipse.cdt.core.systemConsole</org.eclipse.cdt.core.console>
-			</systemProperties>
-		</configuration>
-      </plugin>
-    </plugins>
-  </build>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<systemProperties>
+						<org.eclipse.cdt.core.console>
+							org.eclipse.cdt.core.systemConsole</org.eclipse.cdt.core.console>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

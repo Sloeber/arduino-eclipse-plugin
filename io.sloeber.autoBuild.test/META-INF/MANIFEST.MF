@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: io.sloeber.autoBuild.test;singleton:=true
-Bundle-Version: 4.4.2.qualifier
+Bundle-Version: 4.4.3.qualifier
 Require-Bundle: org.eclipse.cdt.core;bundle-version="7.4.200",
  org.eclipse.equinox.registry,
  org.eclipse.core.resources,
