@@ -282,6 +282,10 @@ public class Arduino extends MCUBoard {
         return getAllBoards(providerArduino, uno());
     }
 
+    public static List<MCUBoard> getAllAvrBoards() {
+        return getAllBoards(providerArduino,AVRArchitectureName, uno());
+    }
+
     private static List<String> getAllmBedBoardNames() {
         List<String> ret = new LinkedList<>();
         ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(providerArduino);
@@ -299,5 +303,4 @@ public class Arduino extends MCUBoard {
         }
         return ret;
     }
-
 }

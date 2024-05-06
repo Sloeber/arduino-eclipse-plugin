@@ -1,6 +1,7 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
+import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -24,10 +27,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.widgets.Display;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
@@ -45,23 +48,14 @@ import io.sloeber.providers.Teensy;
 import io.sloeber.ui.monitor.SerialConnection;
 
 @SuppressWarnings({ "nls", "unused" })
-@RunWith(Parameterized.class)
 public class CompileAndUpload {
 
 	private static final boolean reinstall_boards_and_libraries = false;
-	private MCUBoard myBoard;
-	private String myName;
+
 	private static String interval = "1500";// change between 1500 and 100
 
-	public CompileAndUpload(String name, MCUBoard board) {
-		this.myBoard = board;
-		this.myName = name;
 
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Parameters(name = "{index}: {0}")
-	public static Collection examples() {
+	static Stream<Arguments> uploadBourds() {
 		WaitForInstallerToFinish();
 
 		try {
@@ -96,14 +90,14 @@ public class CompileAndUpload {
 		}
 
 		MCUBoard[] boards = MySystem.getUploadBoards();
-		// , new NodeMCUBoard()
-		LinkedList<Object[]> examples = new LinkedList<>();
+		List<Arguments> ret = new LinkedList<>();
 
 		for (MCUBoard curBoard : boards) {
-			examples.add(new Object[]{curBoard.getID(), curBoard});
+			ret.add(Arguments.of(curBoard));
 		}
 
-		return examples;
+		return ret.stream();
+
 	}
 
 	/*
@@ -140,8 +134,10 @@ public class CompileAndUpload {
         Teensy.installLatest();
     }
 
-    @Test
-    public void testExamples() throws Exception {
+	@ParameterizedTest
+	@MethodSource("uploadBourds")
+    public void  testExamples(	MCUBoard myBoard)  throws Exception {
+		 String myName=myBoard.getID();
         IPath templateFolder = Shared.getTemplateFolder("fastBlink");
         CompileDescription compileOptions = new CompileDescription();
         DateTimeFormatter df = DateTimeFormatter.ofPattern("YYYY/MM/dd-HH-mm-ss");
@@ -152,17 +148,18 @@ public class CompileAndUpload {
         replacers.put("{SerialMonitorSerial}", myBoard.mySerialPort);
 
 		codeDescriptor.setReplacers(replacers);
-		Build_Verify_upload(codeDescriptor,	compileOptions, SerialDumpContent);
+		Build_Verify_upload(myBoard,codeDescriptor,	compileOptions, SerialDumpContent);
 
 	}
 
-	public void Build_Verify_upload(CodeDescription codeDescriptor,
+	public void Build_Verify_upload(MCUBoard myBoard,CodeDescription codeDescriptor,
 			CompileDescription compileOptions, String SerialDumpContent) {
 
+		 String myName=myBoard.getID();
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		String projectName = String.format("%05d_%s",  Integer.valueOf(Shared.buildCounter++),
-				this.myName);
+				myName);
 		try {
             theTestProject = SloeberProject.createArduinoProject(projectName, null,
                     myBoard.getBoardDescriptor(), codeDescriptor, compileOptions, monitor);
@@ -207,11 +204,11 @@ public class CompileAndUpload {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		verifySerialOutput(SerialDumpContent);
+		verifySerialOutput( myBoard,SerialDumpContent);
 	}
 
-	public boolean serialOutputMismatch;
-	public void verifySerialOutput(String serialDumpContent) {
+	boolean serialOutputMismatch;
+	public void verifySerialOutput(MCUBoard myBoard,String serialDumpContent) {
 		String comPort = myBoard.getBoardDescriptor().getActualUploadPort();
 		Display display = SerialConnection.getDisplay();
 		display.syncExec(new Runnable() {

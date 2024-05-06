@@ -3,18 +3,18 @@ package io.sloeber.core;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
+
 import org.eclipse.core.runtime.IPath;
 import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.IExample;
@@ -29,25 +29,14 @@ import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
 @SuppressWarnings({ "nls" })
-@RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
     private static final boolean reinstall_boards_and_examples = false;
     private static final int maxFails = 100;
     private static final int mySkipAtStart = 0;
 
-    private static int myTotalFails = 0;
-    private Example myExample;
-    private MCUBoard myBoard;
+    private int myTotalFails = 0;
 
-    @SuppressWarnings("unused")
-    public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Example example) {
-        myBoard = boardID;
-        myExample = example;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Parameters(name = "{index}: {0}")
-    public static Collection examples() {
+    public static Stream<Arguments> CreateAndCompileLibraryExamplesTestData() {
         Preferences.setUseBonjour(false);
         Preferences.setUseArduinoToolSelection(true);
         Shared.waitForAllJobsToFinish();
@@ -59,7 +48,7 @@ public class CreateAndCompileLibraryExamplesTest {
                 Arduino.cirquitPlaygroundExpress(), Arduino.gemma(), Adafruit.trinket8MH(), Arduino.yun(),
                 Arduino.arduino_101(), Arduino.zeroProgrammingPort(), Arduino.ethernet() };
 
-        LinkedList<Object[]> examples = new LinkedList<>();
+        List<Arguments> ret = new LinkedList<>();
         Map<String, IExample> exampleFolders = LibraryManager.getExamplesAll(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
@@ -70,15 +59,11 @@ public class CreateAndCompileLibraryExamplesTest {
             MCUBoard curBoard = Example.pickBestBoard(example, myBoards);
 
             if (curBoard != null) {
-                Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
-                        example };
-                examples.add(theData);
+            	ret.add(Arguments.of( example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
+                        example ));
             }
-
         }
-
-        return examples;
-
+		return ret.stream();
     }
 
     /*
@@ -108,23 +93,24 @@ public class CreateAndCompileLibraryExamplesTest {
 
     }
 
-    @Test
-    public void testExamples() {
+	@ParameterizedTest
+	@MethodSource("CreateAndCompileLibraryExamplesTestData")
+    public void testExamples(String name, MCUBoard boardID, Example example) {
 
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        if (! myExample.worksOnBoard(myBoard)) {
+        if (! example.worksOnBoard(boardID)) {
             fail("Trying to run a test on unsoprted board");
             myTotalFails++;
             return;
         }
         Set<IExample> paths = new HashSet<>();
 
-        paths.add(myExample);
+        paths.add(example);
         CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
-        Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
-        BoardDescription boardDescriptor = myBoard.getBoardDescriptor();
+        Map<String, String> boardOptions = boardID.getBoardOptions(example);
+        BoardDescription boardDescriptor = boardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
         if (!Shared.BuildAndVerify(boardDescriptor, codeDescriptor)) {
             myTotalFails++;

@@ -6,26 +6,24 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
 import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
-
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings("nls")
-@RunWith(Parameterized.class)
 public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     // use the boolean below to avoid downloading and installation
@@ -34,11 +32,11 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static final boolean apply_known_work_Arounds = true;
     private static final boolean closeFailedProjects = false;
 
-    private static int myTotalFails = 0;
+    private int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipTestsAtStart = 0;
-    private BoardDescription mBoard;
-    private static final String[] packageUrlsToIgnoreonAllOSes = {
+
+	private static final String[] packageUrlsToIgnoreonAllOSes = {
             // There is a newer version
             "https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
             // Third party url implies this is outdated (it also doesn't work)
@@ -261,13 +259,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     };
 
-    public CreateAndCompileDefaultInoOnAllBoardsTest(BoardDescription board) {
-        this.mBoard = board;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Parameters(name = "{index}: {0} ")
-    public static Collection boards() {
+    public static Stream<Arguments> allBoards() {
         Shared.setCloseFailedProjects(closeFailedProjects);
         // make sure all plugin installation is done
         Shared.waitForAllJobsToFinish();
@@ -281,10 +273,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             System.out.println("Adding boards of " + curBoardFile.toString());
             boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile));
         }
-        // to avoid warnings set the upload port to some value
-        for (BoardDescription curBoard : boards) {
-            curBoard.setUploadPort("none");
-        }
+
 
         HashSet<String> boardsToIgnoreList = new HashSet<>(Arrays.asList(boardsToIgnoreOnAllOses));
 
@@ -294,15 +283,15 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         if (isWindows) {
             boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnWindows));
         }
-        List<BoardDescription> ignoreBoards = new ArrayList<>();
+        List<Arguments> ret = new LinkedList<>();
         for (BoardDescription curBoard : boards) {
-            if (boardsToIgnoreList.contains(curBoard.getBoardName())) {
-                ignoreBoards.add(curBoard);
+            if (!boardsToIgnoreList.contains(curBoard.getBoardName())) {
+            	// to avoid warnings set the upload port to some value
+            	curBoard.setUploadPort("none");
+            	ret.add(Arguments.of(  curBoard));
             }
         }
-
-        boards.removeAll(ignoreBoards);
-        return boards;
+		return ret.stream();
     }
 
     /*
@@ -345,14 +334,15 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         Shared.waitForAllJobsToFinish();
     }
 
-    @Test
-    public void testBoard() throws Exception {
+	@ParameterizedTest
+	@MethodSource("allBoards")
+    public void testBoard(BoardDescription board) throws Exception {
         Shared.buildCounter++;
         Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", Shared.buildCounter >= mySkipTestsAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-        if (!Shared.BuildAndVerify(this.mBoard, CodeDescription.createCustomTemplate(templateFolder), null,
+        if (!Shared.BuildAndVerify(board, CodeDescription.createCustomTemplate(templateFolder), null,
         		Shared.buildCounter)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());

@@ -11,21 +11,19 @@ package io.sloeber.core;
  */
 import static org.junit.Assert.*;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
 import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.IExample;
@@ -34,38 +32,25 @@ import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings({ "nls" })
-@RunWith(Parameterized.class)
+@SuppressWarnings({ "nls" ,"static-method"})
 public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
-    private CodeDescription myCodeDescriptor;
-    private MCUBoard myBoard;
-    private String myProjectName;
     private static int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
 
-    public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String projectName, CodeDescription codeDescriptor,
-            MCUBoard board) {
 
-        myCodeDescriptor = codeDescriptor;
-        myBoard = board;
-        myProjectName = projectName;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Parameters(name = " {0}")
-    public static Collection examples() {
+    public static Stream<Arguments>  avrHardwareData() {
         Shared.waitForAllJobsToFinish();
         Preferences.setUseBonjour(false);
-        
-        
+
+
 //        Example testExample = new Example("Firmata:AllInputsFirmata", new Path("C:/Users/jan/Documents/Arduino/libraries/Firmata/examples/AllInputsFirmata"));
 //        MCUBoard robotControler= Arduino.robotControl();
 //        boolean ret=testExample.worksOnBoard(robotControler);
 
 
-        LinkedList<Object[]> examples = new LinkedList<>();
-        List<MCUBoard> allBoards = Arduino.getAllBoards();
+		List<Arguments> ret = new LinkedList<>();
+        List<MCUBoard> allBoards = Arduino.getAllAvrBoards();
         TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
@@ -75,7 +60,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
             	System.out.println("skipping example "+example.getName());
             	continue;
             }
-            int numExamplesToStart=examples.size();
+            int numExamplesToStart=ret.size();
             Set<IExample> paths = new HashSet<>();
 
                 paths.add( curexample.getValue());
@@ -83,16 +68,15 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
                 for (MCUBoard curboard : allBoards) {
                     if (example.worksOnBoard(curboard)) {
                         String projectName = Shared.getProjectName(codeDescriptor, example, curboard);
-                        Object[] theData = new Object[] { projectName, codeDescriptor, curboard };
-                        examples.add(theData);
+                        ret.add(Arguments.of( projectName, codeDescriptor, curboard ));
                     }
                 }
-                if(numExamplesToStart==examples.size()) {
+                if(numExamplesToStart==ret.size()) {
                 	System.err.println("No boards found for example "+example.getName());
                 }
         }
 
-        return examples;
+		return ret.stream();
 
     }
 
@@ -103,13 +87,15 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         return example.getCodeLocation().toString().contains("Teensy");
     }
 
-    @Test
-    public void testExample() {
+	@ParameterizedTest
+	@MethodSource("avrHardwareData")
+    public void testExample(String projectName, CodeDescription codeDescriptor,
+            MCUBoard board) {
 
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
-        if (!Shared.BuildAndVerify(myProjectName, myBoard.getBoardDescriptor(), myCodeDescriptor,
+        if (!Shared.BuildAndVerify(projectName, board.getBoardDescriptor(), codeDescriptor,
                 new CompileDescription())) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());

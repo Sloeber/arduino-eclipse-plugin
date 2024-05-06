@@ -25,10 +25,33 @@ public abstract class MCUBoard {
     protected abstract void setAttributes();
 
     public static List<MCUBoard> getAllBoards(String provider, MCUBoard board) {
+    	return getAllBoards( provider, null ,board) ;
+//        List<MCUBoard> ret = new LinkedList<>();
+//        ret.add(board);//make the board provided the first in the list
+//        ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
+//        for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+//            ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
+//            if (curPlatformVersion != null) {
+//                List<BoardDescription> boardDescriptions = BoardDescription
+//                        .makeBoardDescriptors(curPlatformVersion.getBoardsFile());
+//                for (BoardDescription curBoardDesc : boardDescriptions) {
+//                    MCUBoard curBoard = board.createMCUBoard(curBoardDesc);
+//                    curBoard.myAttributes.boardID = curBoardDesc.getBoardID();
+//                    ret.add(curBoard);
+//                }
+//            }
+//        }
+//        return ret;
+    }
+
+    public static List<MCUBoard> getAllBoards(String provider, String architecture, MCUBoard board) {
         List<MCUBoard> ret = new LinkedList<>();
         ret.add(board);//make the board provided the first in the list
         ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
         for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+        	if(architecture!=null && !architecture.equals( curPlatform.getArchitecture())) {
+        		continue;
+        	}
             ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
             if (curPlatformVersion != null) {
                 List<BoardDescription> boardDescriptions = BoardDescription
