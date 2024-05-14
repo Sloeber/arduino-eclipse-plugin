@@ -39,7 +39,7 @@ import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.schema.internal.Configuration;
 
 public class AutoBuildProjectGenerator implements IGenerator {
-	private URI myProjectURI = null;
+	private URI myLocationURI = null;
 	private String myProjectName = null;
 	private IProject myProject = null;
 	private IProjectType myProjectType = null;
@@ -64,8 +64,8 @@ public class AutoBuildProjectGenerator implements IGenerator {
 			@Override
 			public void run(IProgressMonitor internalMonitor) throws CoreException {
 				IProjectDescription description = workspace.newProjectDescription(myProjectName);
-				if (myProjectURI != null) {
-					description.setLocationURI(myProjectURI);
+				if (myLocationURI != null) {
+					description.setLocationURI(myLocationURI);
 				}
 				myProject = root.getProject(myProjectName);
 				myProject.create(description, monitor);
@@ -153,7 +153,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 	}
 
 	public void setLocationURI(URI locationURI) {
-		myProjectURI = locationURI;
+		myLocationURI = locationURI;
 	}
 
 	public IProject getProject() {
