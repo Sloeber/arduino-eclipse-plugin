@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.net.URI;
+import org.junit.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -12,10 +14,13 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -70,7 +75,7 @@ public class RegressionTest {
     /**
      * make sure when switching between a board with variant file and without the
      * build still succeeds
-     * 
+     *
      * @throws CoreException
      */
     @Test
@@ -130,7 +135,7 @@ public class RegressionTest {
 
     /**
      * support void loop{};
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -207,7 +212,7 @@ public class RegressionTest {
 
     /**
      * support void loop{};
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -237,7 +242,7 @@ public class RegressionTest {
      * This test will fail if the arduino compile option are not taken into account
      * To do sa a bunch of defines are added to the command line and the code checks
      * whether these defines are set properly
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -274,7 +279,7 @@ public class RegressionTest {
     /**
      * If a .ino file is including a include using extern C is this handled properly
      * by the ino to cpp parser
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -307,7 +312,7 @@ public class RegressionTest {
     /**
      * If a .ino file is defining defines before including a include this should be
      * handled properly by the ino to cpp parser
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -334,7 +339,7 @@ public class RegressionTest {
 
     /**
      * Does Sloeber still compile after a configuration renamen
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -371,7 +376,7 @@ public class RegressionTest {
 
     //    /**
     //     * Does Sloeber still compile after a project rename
-    //     * 
+    //     *
     //     * @throws Exception
     //     */
     //    @Test
@@ -412,7 +417,7 @@ public class RegressionTest {
     /**
      * open and close a project should keep the compileDescription and
      * BoardDescriotion
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -433,12 +438,12 @@ public class RegressionTest {
         if (Shared.hasBuildErrors(theTestProject)) {
             fail("Failed to compile the project before close:" + projectName);
         }
-        
+
         // also do a clean
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
-        
-        
+
+
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
 
@@ -487,7 +492,7 @@ public class RegressionTest {
     /**
      * open and close a project should keep the compileDescription and
      * BoardDescriotion
-     * 
+     *
      * @throws Exception
      */
 
@@ -572,6 +577,58 @@ public class RegressionTest {
 
     }
 
+
+
+
+
+
+
+
+    @Test
+    public void createProjectWithURI() throws Exception {
+        CodeDescription codeDesc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+
+        String proj1Name = "projectWithURI";
+        String codeFolderName = "locationWithURI";
+        BoardDescription proj1BoardDesc = Arduino.uno().getBoardDescriptor();
+        OtherDescription otherDesc = new OtherDescription();
+        CompileDescription proj1CompileDesc = getBunkersCompileDescription();
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IPath projectFolder= workspace.getRoot().getLocation().removeLastSegments(1).append(codeFolderName);
+        URI uri= projectFolder.toFile().toURI();
+         //workspace.getRoot().getFolder(Path.fromOSString(codeFolderName)).getLocationURI();
+        IProject proj = SloeberProject.createArduinoProject(proj1Name, uri, proj1BoardDesc, codeDesc,
+                proj1CompileDesc, otherDesc, new NullProgressMonitor());
+
+        proj.build(IncrementalProjectBuilder.FULL_BUILD, null);
+        Assert.assertFalse("Failed to compile the project: " + proj1Name,Shared.hasBuildErrors(proj));
+        String fileLocation=projectFolder.append("src").append(proj1Name+".cpp").toString();
+
+        IFile cppFile =proj.getFolder("src").getFile(proj1Name+".cpp");
+        Assert.assertTrue("File not in correct location",cppFile.exists());
+        Assert.assertEquals("File not in correct location",cppFile.getLocation().toString(),fileLocation);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static CompileDescription getBunkersCompileDescription() {
         CompileDescription inCompileDescription = new CompileDescription();
 
@@ -591,7 +648,7 @@ public class RegressionTest {
     /**
      * check to see whether upload recipe key is correct for a couple of boards that
      * have failed in the past
-     * 
+     *
      * @throws Exception
      */
     @Test
