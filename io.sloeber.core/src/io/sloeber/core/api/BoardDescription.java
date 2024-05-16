@@ -341,7 +341,9 @@ public class BoardDescription {
         myBoardID = srcObject.myBoardID;
         myUploadPort = srcObject.myUploadPort;
         myProgrammer = srcObject.myProgrammer;
+        myUploadTool = srcObject.myUploadTool;
         myOptions = new TreeMap<>(srcObject.myOptions);
+
     }
 
     public String getuploadTool() {
