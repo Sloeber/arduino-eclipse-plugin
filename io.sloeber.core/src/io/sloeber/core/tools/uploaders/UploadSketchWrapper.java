@@ -47,7 +47,6 @@ import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.communication.ArduinoSerial;
 import io.sloeber.core.tools.ExternalCommandLauncher;
@@ -333,7 +332,7 @@ public class UploadSketchWrapper {
 
         /**
          * upload files using scp
-         * 
+         *
          * @param scp
          * @param hexFile
          * @throws IOException
