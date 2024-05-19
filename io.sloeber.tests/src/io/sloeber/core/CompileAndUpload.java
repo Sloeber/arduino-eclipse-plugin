@@ -34,12 +34,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.core.api.SloeberProject;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP32;
 import io.sloeber.providers.ESP8266;

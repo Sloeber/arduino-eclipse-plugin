@@ -30,10 +30,8 @@ import org.eclipse.core.resources.IProject;
 @SuppressWarnings("nls")
 class AutoBuildCreateProject {
 
-	private static String codeRootFolder = "src";
-
 	@BeforeAll
-	static void beforeAll() {
+	public static void beforeAll() {
 		Shared.setDeleteProjects(false);
 		Shared.setCloseProjects(false);
 	}
@@ -44,8 +42,7 @@ class AutoBuildCreateProject {
 	void testExample(String myProjectName, IProjectType projectType, IBuildTools buildTools,
 			String natureID, ICodeProvider codeProvider) throws Exception {
 
-		IProject testProject = AutoBuildProject.createProject(myProjectName, projectType, natureID, codeRootFolder,
-				codeProvider, buildTools, false, null);
+		IProject testProject = AutoBuildProject.createProject(myProjectName, projectType, natureID, codeProvider, buildTools, false, null);
 		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
 		for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
 			cProjectDesc.setActiveConfiguration(curConfig);

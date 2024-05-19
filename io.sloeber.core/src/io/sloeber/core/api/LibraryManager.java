@@ -32,7 +32,6 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.api.Json.ArduinoLibrary;
 import io.sloeber.core.api.Json.ArduinoLibraryIndex;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.internal.ArduinoHardwareLibrary;

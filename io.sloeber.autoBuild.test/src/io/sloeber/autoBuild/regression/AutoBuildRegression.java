@@ -44,7 +44,6 @@ import io.sloeber.autoBuild.schema.api.ITool;
 @SuppressWarnings({ "static-method", "nls", "boxing" })
 public class AutoBuildRegression {
     static private String extensionPointID = "io.sloeber.autoBuild.buildDefinitions";
-    static private String codeRootFolder="src";
     static int testCounter = 1;
 
 
@@ -70,7 +69,7 @@ public class AutoBuildRegression {
      * close it
      * open it
      * build it
-     * 
+     *
      */
     @Test
     public void createCloseOpenProject() throws Exception {
@@ -79,8 +78,8 @@ public class AutoBuildRegression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
-        IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
-        		cpp_exeCodeProvider, buildTools, false, null); 
+        IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,
+        		cpp_exeCodeProvider, buildTools, false, null);
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -91,7 +90,7 @@ public class AutoBuildRegression {
         testProject.close(new NullProgressMonitor());
         //wait a while
         Thread.sleep(5000);
-        //open the project 
+        //open the project
         testProject.open(new NullProgressMonitor());
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -109,7 +108,7 @@ public class AutoBuildRegression {
      * open it
      * build it
      * check for makefile existence
-     * 
+     *
      */
 
     @Test
@@ -119,7 +118,7 @@ public class AutoBuildRegression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
-        IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,codeRootFolder,
+        IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,
         		cpp_exeCodeProvider, buildTools, false, null);
 
         //Build the active configuration and verify proper building
@@ -132,7 +131,7 @@ public class AutoBuildRegression {
 
         IFile makeFile = activeConfig.getBuildFolder().getFile("makefile");
         boolean hasMakefile = makeFile.exists();
-        IBuilder builder=null; 
+        IBuilder builder=null;
         if (hasMakefile) {
         	builder=activeConfig.getBuilder(AutoBuildProject.INTERNAL_BUILDER_ID);
         } else {
@@ -159,7 +158,7 @@ public class AutoBuildRegression {
         testProject.close(new NullProgressMonitor());
         //wait a while
         Thread.sleep(5000);
-        //open the project 
+        //open the project
         testProject.open(new NullProgressMonitor());
         //Build all the configurations and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
@@ -180,9 +179,8 @@ public class AutoBuildRegression {
         if (testProject == null || !testProject.exists()) {
         	IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, "io.sloeber.autoBuild.test",  "io.sloeber.autoBuild.projectType.test.options", true);
         	IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
-            testProject = AutoBuildProject.createProject(projectName, projectType, 
-                    CCProjectNature.CC_NATURE_ID,codeRootFolder,
-                    cpp_exeCodeProvider, buildTools, false, null);
+            testProject = AutoBuildProject.createProject(projectName, projectType,
+                    CCProjectNature.CC_NATURE_ID, cpp_exeCodeProvider, buildTools, false, null);
         }
 
         //get the project and autobuild configurations

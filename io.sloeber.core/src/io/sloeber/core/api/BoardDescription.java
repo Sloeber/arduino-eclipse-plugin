@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import io.sloeber.core.api.Json.ArduinoPlatform;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.KeyValueTree;

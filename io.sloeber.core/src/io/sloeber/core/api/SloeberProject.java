@@ -200,7 +200,7 @@ public class SloeberProject extends Common {
 				IProjectType projectType = AutoBuildManager.getProjectType(LATEST_EXTENSION_POINT_ID,
 						LATEST_EXTENSION_ID, PROJECT_ID, true);
 				newProjectHandle = AutoBuildProject.createProject(realProjectName,projectURI, projectType,
-						CCProjectNature.CC_NATURE_ID, "src", codeDesc, buildTools, true, internalMonitor);
+						CCProjectNature.CC_NATURE_ID, codeDesc, buildTools, true, internalMonitor);
 
 				// Add the sketch code
 				Set<IArduinoLibraryVersion> librariesToAdd = codeDesc.getNeededLibraries();

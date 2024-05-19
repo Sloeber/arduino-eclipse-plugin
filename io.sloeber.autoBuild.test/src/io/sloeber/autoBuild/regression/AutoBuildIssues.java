@@ -26,7 +26,6 @@ import io.sloeber.autoBuild.helpers.Shared;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class AutoBuildIssues {
-	private static String codeRootFolder="src";
 
     @BeforeAll
     public static void beforeAll() {
@@ -101,7 +100,7 @@ public class AutoBuildIssues {
         CoreModel coreModel = CoreModel.getDefault();
 
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(defaultProjectType);
-        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder,cpp_exeCodeProvider,
+        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,cpp_exeCodeProvider,
         		buildTools, false, null);
 
         ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
@@ -118,13 +117,13 @@ public class AutoBuildIssues {
 
         }
 
-        //open and close the project and try again    
+        //open and close the project and try again
         Thread.sleep(5000);
         //close the project
         testProject.close(new NullProgressMonitor());
         //wait a while
         Thread.sleep(5000);
-        //open the project 
+        //open the project
         testProject.open(new NullProgressMonitor());
 
         ICProjectDescription cProjectDescOpen = CCorePlugin.getDefault().getProjectDescription(testProject, true);

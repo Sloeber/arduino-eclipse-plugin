@@ -194,14 +194,14 @@ public class InoPreprocessor {
 		if(		resourceFound &&  !projectInoFound) {
 			//This is a project with ino files but none with the ${proName}.ino file
 			projectInoFiles.put(iProject, inoResources.get(0));
-			
+
 		}
 		return inoResources;
 	}
 
 	/**
 	 * Delete the sloeber.ino.cpp file if there is one
-	 * 
+	 *
 	 * @param monitor
 	 * @param autoBuildCfDes
 	 * @throws CoreException
@@ -215,8 +215,8 @@ public class InoPreprocessor {
 	}
 
 	/**
-	 * Delete the sloeber.ino.cpp file if there is one
-	 * 
+	 * get the sloeber.ino.cpp file if there is one
+	 *
 	 * @param monitor
 	 * @param autoBuildCfDes
 	 * @throws CoreException
@@ -236,12 +236,16 @@ public class InoPreprocessor {
 	 * exists The reason this method exists is because the ${projName}.ino file and
 	 * the sloeber.ino.cpp file need to be in the same folder or the include file
 	 * references may not exists or reference different files
-	 * 
+	 *
 	 * @param projectInoFile
 	 * @return
 	 */
 	private static IFile getSloeberInoCppFromProjectIno(IFile projectInoFile) {
-		return ((IFolder)projectInoFile.getParent()).getFile(generatedFileName);
+		IResource parent =projectInoFile.getParent();
+		if(parent instanceof IFolder) {
+		return ((IFolder)parent).getFile(generatedFileName);
+		}
+		return ((IProject)parent).getFile(generatedFileName);
 	}
 
 	/**
@@ -262,7 +266,7 @@ public class InoPreprocessor {
 					Charset.defaultCharset());
 		} catch (@SuppressWarnings("unused") IOException e) {
 			// This happens when the generated file does not yet exist
-			//nothing needs to be done as  currentFileContent = null is ok 
+			//nothing needs to be done as  currentFileContent = null is ok
 		}
 
 		if (!newFileContent.equals(currentFileContent)) {

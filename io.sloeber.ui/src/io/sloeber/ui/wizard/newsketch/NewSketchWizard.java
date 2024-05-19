@@ -40,6 +40,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 			Messages.ui_new_sketch_arduino_information);
 	protected NewSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(
 			Messages.ui_new_sketch_sketch_template_location);
+	private NewProjectSourceLocationPage mySourceLocationPage= new NewProjectSourceLocationPage("code location page");
 	private IConfigurationElement mConfig;
 	private IProject mProject;
 
@@ -72,14 +73,16 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		mNewArduinoSketchWizardCodeSelectionPage
 				.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
 		mNewArduinoSketchWizardCodeSelectionPage.setSketchWizardPage(mArduinoPage);
+
+
+
 		//
 		// actually add the pages to the wizard
 		//
 		addPage(this.mWizardPage);
 		addPage(this.mArduinoPage);
 		addPage(this.mNewArduinoSketchWizardCodeSelectionPage);
-//		BoardDescription boardID = this.mArduinoPage.getBoardDescriptor();
-//		this.mNewArduinoSketchWizardCodeSelectionPage.setBoardDescriptor(boardID);
+		addPage(mySourceLocationPage);
 	}
 
 	@Override
@@ -89,6 +92,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		}
 		BoardDescription boardDescription = this.mArduinoPage.getBoardDescriptor();
 		CodeDescription codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
+		codeDescription.setCodeFolder(mySourceLocationPage.getSourceCodeLocation());
 		CompileDescription compileDescription = new CompileDescription();
 		URI locationURI = (!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null;
 		compileDescription.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());

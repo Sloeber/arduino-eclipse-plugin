@@ -32,6 +32,7 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	private boolean myContainsCppcode = false;
 	private Set<String> myBuildArtifactTypes = new HashSet<>();
 	private IPath myTemplateFolder;
+	private String myCodeFolder="src"; //$NON-NLS-1$
 
 	@SuppressWarnings("nls")
 	public AutoBuildTemplateCodeProvider(Bundle bundle, IConfigurationElement element)
@@ -130,6 +131,17 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	@Override
 	public boolean getContainsCppCode() {
 		return myContainsCppcode;
+	}
+
+	@Override
+	public String getCodeFolder() {
+		return myCodeFolder;
+	}
+
+	@Override
+	public void setCodeFolder(String codeFolder) {
+		myCodeFolder=codeFolder;
+
 	}
 
 }

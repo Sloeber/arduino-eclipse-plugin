@@ -21,8 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
 

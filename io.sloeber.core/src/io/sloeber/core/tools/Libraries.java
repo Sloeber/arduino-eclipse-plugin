@@ -15,8 +15,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.Common;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 public class Libraries {
     public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$

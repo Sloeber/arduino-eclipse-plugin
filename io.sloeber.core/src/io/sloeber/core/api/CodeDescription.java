@@ -57,6 +57,7 @@ public class CodeDescription implements ICodeProvider {
 	private boolean myMakeLinks = false;
 	private Set<IExample> myExamples = new HashSet<>();
 	private Map<String, String> myReplacers = null;
+	private String myCodeFolder ="src"; //$NON-NLS-1$
 
 	public IPath getTemPlateFoldername() {
 		return myTemPlateFoldername;
@@ -393,5 +394,16 @@ public class CodeDescription implements ICodeProvider {
 	@Override
 	public boolean getContainsCppCode() {
 		return true;
+	}
+
+	@Override
+	public String getCodeFolder() {
+		return myCodeFolder ;
+	}
+
+	@Override
+	public void setCodeFolder(String codeFolder) {
+		myCodeFolder=codeFolder;
+
 	}
 }

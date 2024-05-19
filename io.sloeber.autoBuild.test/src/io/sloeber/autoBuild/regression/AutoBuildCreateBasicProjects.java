@@ -44,8 +44,6 @@ public class AutoBuildCreateBasicProjects {
 	private boolean doTestDefaultBuilder = true;
 	private boolean doTestInternalBuilder = true;
 	private boolean doTestMakeBuilder = true;
-	private static String myCodeSrcFolder = "src";
-	private static String myCodeRootFolder = null;
 	static Set<IBuildTools> myBuildTools = IBuildToolsManager.getDefault().getAllInstalledBuildTools();
 
 	@BeforeAll
@@ -67,12 +65,12 @@ public class AutoBuildCreateBasicProjects {
 
 	static void buildAllConfigsAsActive(String builderID, String projectName, String extensionPointID,
 			String extensionID, String projectTypeID, String natureID, ICodeProvider codeProvider,
-			IBuildTools buildTools,String codeRootFolder, Boolean shouldMakefileExists) throws Exception {
+			IBuildTools buildTools, Boolean shouldMakefileExists) throws Exception {
 
 		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		IProject testProject = AutoBuildProject.createProject(
 				String.format("%03d", Integer.valueOf(testCounter++)) + "_" + projectName, projectType, natureID,
-				codeRootFolder, codeProvider, buildTools, false, null);
+				 codeProvider, buildTools, false, null);
 		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
 		for (ICConfigurationDescription curConfig : cProjectDesc.getConfigurations()) {
 			IAutoBuildConfigurationDescription autConf=IAutoBuildConfigurationDescription.getConfig(curConfig);
@@ -91,12 +89,12 @@ public class AutoBuildCreateBasicProjects {
 
 	static void buildAllConfigs(String builderName, String projectName, String extensionPointID, String extensionID,
 			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools buildTools,
-			String codeRootFolder,Boolean shouldMakefileExists) throws Exception {
+			Boolean shouldMakefileExists) throws Exception {
 
 		IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		IProject testProject = AutoBuildProject.createProject(
 				String.format("%03d", Integer.valueOf(testCounter++)) + "_" + projectName, projectType, natureID,
-				codeRootFolder, codeProvider, buildTools, false, null);
+				 codeProvider, buildTools, false, null);
 		ICProjectDescription cProjectDesc = CCorePlugin.getDefault().getProjectDescription(testProject, true);
 		Set<String> configs = new HashSet<>();
 
@@ -114,18 +112,18 @@ public class AutoBuildCreateBasicProjects {
 
 	private void doBuilds(String builderID, String projectName, String extensionPointID, String extensionID,
 			String projectTypeID, String natureID, ICodeProvider codeProvider, IBuildTools buildTools,
-			String codeRootFolder,Boolean shouldMakefileExists) throws Exception {
+			Boolean shouldMakefileExists) throws Exception {
 		String shortProjectName = projectName;
 		if (projectName.length() > 41) {
 			shortProjectName = projectName.substring(0, 40);
 		}
 		if (buildTypeActiveBuild) {
 			buildAllConfigsAsActive(builderID, shortProjectName, extensionPointID, extensionID, projectTypeID, natureID,
-					codeProvider, buildTools,codeRootFolder, shouldMakefileExists);
+					codeProvider, buildTools, shouldMakefileExists);
 		}
 		if (!buildTypeActiveBuild) {
 			buildAllConfigs(builderID, "all_" + shortProjectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools, codeRootFolder,shouldMakefileExists);
+					natureID, codeProvider, buildTools, shouldMakefileExists);
 		}
 		//change the 2 ways of building all configs
 		buildTypeActiveBuild=!buildTypeActiveBuild;
@@ -138,7 +136,7 @@ public class AutoBuildCreateBasicProjects {
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		if (doTestDefaultBuilder) {
 			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
-					buildTools, myCodeSrcFolder,null);
+					buildTools, null);
 		}
 	}
 
@@ -150,7 +148,7 @@ public class AutoBuildCreateBasicProjects {
 			String projectName = "Internal_" + inProjectName;
 
 			doBuilds(AutoBuildProject.INTERNAL_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools, myCodeSrcFolder,Boolean.FALSE);
+					natureID, codeProvider, buildTools, Boolean.FALSE);
 		}
 	}
 
@@ -167,7 +165,7 @@ public class AutoBuildCreateBasicProjects {
 				projectName = projectName.substring(0, 40);
 			}
 			doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools,myCodeSrcFolder, Boolean.TRUE);
+					natureID, codeProvider, buildTools, Boolean.TRUE);
 		}
 	}
 
@@ -177,7 +175,7 @@ public class AutoBuildCreateBasicProjects {
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		if (doTestDefaultBuilder) {
 			doBuilds(null, projectName, extensionPointID, extensionID, projectTypeID, natureID, codeProvider,
-					buildTools,myCodeRootFolder, null);
+					buildTools, null);
 		}
 	}
 
@@ -189,7 +187,7 @@ public class AutoBuildCreateBasicProjects {
 			String projectName = "Internal_" + inProjectName;
 
 			doBuilds(AutoBuildProject.INTERNAL_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools,myCodeRootFolder, Boolean.FALSE);
+					natureID, codeProvider, buildTools, Boolean.FALSE);
 		}
 	}
 
@@ -206,7 +204,7 @@ public class AutoBuildCreateBasicProjects {
 				projectName = projectName.substring(0, 40);
 			}
 			doBuilds(AutoBuildProject.MAKE_BUILDER_ID, projectName, extensionPointID, extensionID, projectTypeID,
-					natureID, codeProvider, buildTools, myCodeRootFolder,Boolean.TRUE);
+					natureID, codeProvider, buildTools, Boolean.TRUE);
 		}
 	}
 

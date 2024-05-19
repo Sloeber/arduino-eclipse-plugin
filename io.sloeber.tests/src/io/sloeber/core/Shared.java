@@ -36,11 +36,11 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")

@@ -24,7 +24,6 @@ import io.sloeber.autoBuild.helpers.Shared;
 @SuppressWarnings({ "restriction", "nls", "static-method" })
 public class CConfigurationDescriptionInvestigation {
     static int testCounter = 1;
-    static private String codeRootFolder="src";
 
     @BeforeAll
     static void beforeAll() {
@@ -41,7 +40,7 @@ public class CConfigurationDescriptionInvestigation {
         beforeAll();
         String projectName = "testConfigDescription";
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(defaultProjectType);
-        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID,codeRootFolder, cpp_exeCodeProvider, buildTools, false, null);
+        IProject testProject = AutoBuildProject.createProject(projectName, defaultProjectType, defaultNatureID, cpp_exeCodeProvider, buildTools, false, null);
         ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(testProject, true);
         for (ICConfigurationDescription curConf : projectDesc.getConfigurations()) {
             assertFalse("conf is readOnly class instance", curConf instanceof CConfigurationDescriptionCache);

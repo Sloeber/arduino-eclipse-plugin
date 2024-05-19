@@ -32,8 +32,8 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.Common;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Json.ArduinoInstallable;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 public class PackageManager {
     private static final String FILE = Messages.FILE_TAG;

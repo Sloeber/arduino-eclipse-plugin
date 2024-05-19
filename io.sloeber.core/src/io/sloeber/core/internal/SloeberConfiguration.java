@@ -36,10 +36,10 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.OtherDescription;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 

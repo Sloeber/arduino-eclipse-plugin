@@ -2,8 +2,8 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.ConfigurationPreferences.*;
 import static io.sloeber.core.api.Const.*;
-import static io.sloeber.core.common.ConfigurationPreferences.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -47,7 +47,6 @@ import io.sloeber.core.api.Json.ArduinoPlatformTool;
 import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.InstallProgress;
 import io.sloeber.core.tools.MyMultiStatus;

@@ -1,14 +1,13 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.api.ConfigurationPreferences.*;
 import static io.sloeber.core.api.Const.*;
-import static io.sloeber.core.common.ConfigurationPreferences.*;
 
 import java.util.HashSet;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 
 /**

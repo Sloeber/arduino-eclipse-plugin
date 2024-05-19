@@ -6,9 +6,6 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -18,7 +15,6 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.core.filesystem.URIUtil;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -225,16 +221,14 @@ public class Helpers {
 
 		if (!file.exists() && (contentStream != null)) {
 			IPath filePath = file.getProjectRelativePath();
-			IFolder curFolder = file.getProject().getFolder(filePath.segment(0));
-			int curSegment = 1;
-			do {
 
+			for (int curSegment = 0;curSegment < (filePath.segmentCount()-1);curSegment++)
+			 {
+				IFolder curFolder = file.getProject().getFolder(filePath.segment(curSegment));
 				if (!curFolder.exists()) {
 					curFolder.create(true, false, monitor);
 				}
-				curFolder = curFolder.getFolder(filePath.segment(curSegment));
-				curSegment++;
-			} while (curSegment < filePath.segmentCount() );
+			}
 			file.create(contentStream, true, monitor);
 		}
 		return file;

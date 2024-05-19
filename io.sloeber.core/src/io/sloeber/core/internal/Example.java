@@ -5,9 +5,9 @@ import org.eclipse.core.runtime.Path;
 
 import static io.sloeber.core.api.Const.*;
 
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 public class Example implements IExample {
 	private IArduinoLibraryVersion myLib;

@@ -42,4 +42,8 @@ public interface ICodeProvider {
 	String getID();
 
 	boolean getContainsCppCode();
+
+	String getCodeFolder();
+
+	void setCodeFolder(String codeFolder);
 }
