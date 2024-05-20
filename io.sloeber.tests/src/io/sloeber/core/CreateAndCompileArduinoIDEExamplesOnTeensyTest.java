@@ -65,7 +65,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
                 for (MCUBoard curBoard : allBoards) {
                     if (example.worksOnBoard(curBoard)) {
-                        String projectName = Shared.getProjectName(codeDescriptor, example, curBoard);
+                        String projectName = Shared.getProjectName(codeDescriptor,  curBoard);
                         Map<String, String> boardOptions = curBoard.getBoardOptions(example);
                         BoardDescription boardDescriptor = curBoard.getBoardDescriptor();
                         boardDescriptor.setOptions(boardOptions);

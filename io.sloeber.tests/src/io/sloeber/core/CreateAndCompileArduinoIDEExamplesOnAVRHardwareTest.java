@@ -67,7 +67,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
                 for (MCUBoard curboard : allBoards) {
                     if (example.worksOnBoard(curboard)) {
-                        String projectName = Shared.getProjectName(codeDescriptor, example, curboard);
+                        String projectName = Shared.getProjectName(codeDescriptor,  curboard);
                         ret.add(Arguments.of( projectName, codeDescriptor, curboard ));
                     }
                 }
