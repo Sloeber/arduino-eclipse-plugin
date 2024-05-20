@@ -268,7 +268,11 @@ public class Shared {
 	}
 
 	public static String getProjectName(CodeDescription codeDescriptor, MCUBoard board) {
-		return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), codeDescriptor.getExampleName(),
+		String codeString =codeDescriptor.getExampleName();
+		if(codeString==null) {
+			codeString =codeDescriptor.getCodeType().toString();
+		}
+		return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), codeString,
 				board.getBoardDescriptor().getBoardID());
 	}
 
