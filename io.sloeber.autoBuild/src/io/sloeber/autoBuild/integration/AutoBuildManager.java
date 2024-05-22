@@ -220,6 +220,7 @@ public class AutoBuildManager extends AbstractCExtension {
 		for (IExtension extension : extensions) {
 			ret.add(extension.getUniqueIdentifier());
 		}
+		ret.remove(null);
 		return ret.toArray(new String[ret.size()]);
 	}
 
