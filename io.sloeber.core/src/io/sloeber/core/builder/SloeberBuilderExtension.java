@@ -47,12 +47,12 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		InoPreprocessor.generateSloeberInoCPPFile(false, autoData, monitor);
 		if (builder.getId().equals(AutoBuildProject.MAKE_BUILDER_ID)) {
-			generateMakeFiles(autoData);
+			generateExtensionMakeFile(autoData);
 		}
 		return super.invokeBuild(builder, kind, autoData, markerGenerator, console, monitor);
 	}
 
-	private static void generateMakeFiles(IAutoBuildConfigurationDescription autoData) {
+	private static void generateExtensionMakeFile(IAutoBuildConfigurationDescription autoData) {
 		IFile file = autoData.getBuildFolder().getFile(AutoBuildConstants.MAKE_FILE_EXTENSION);
 		if (file.exists()) {
 			return;
