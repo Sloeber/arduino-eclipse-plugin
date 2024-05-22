@@ -486,8 +486,11 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
             while ((curLine = reader.readLine()) != null) {
                 if (curLine.endsWith(COLON)) {
                     String headerName = curLine.substring(0, curLine.length() - 1).replace(BACKSLACH + BLANK, BLANK);
-                    headerName = buildPath.getFile(headerName).getLocation().toString();
                     Path headerFile = Path.of(headerName);
+                    if(!headerFile.isAbsolute()) {
+                        headerName = buildPath.getFile(headerName).getLocation().toString();
+                        headerFile = Path.of(headerName);
+                    }
                     BasicFileAttributes attr = Files.readAttributes(headerFile, BasicFileAttributes.class);
                     newestTime = Math.max(attr.lastModifiedTime().toMillis(), newestTime);
                 }
