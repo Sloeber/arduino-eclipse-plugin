@@ -47,15 +47,15 @@ public class NewProjectWizard extends TemplateWizard {
 			IProjectType projectType = myProjectTypePage.getProjectType();
 			String natureID = myNaturePage.getNatureID();
 			ICodeProvider codeProvider = myCodeProviderPage.getCodeProvider();
+			codeProvider.setCodeFolder(mySourceLocationPage.getSourceCodeLocation());
 			IBuildTools buildTools = myBuildToolsPage.getBuildTools();
-			String codeRootFolder = mySourceLocationPage.getSourceCodeLocation();
 			getContainer().run(true, true, new WorkspaceModifyOperation() {
 				@Override
 				protected void execute(IProgressMonitor monitor)
 						throws CoreException, InvocationTargetException, InterruptedException {
 					SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
-					AutoBuildProject.createProject(projectName, projectURI,projectType, natureID, codeRootFolder, codeProvider,
+					AutoBuildProject.createProject(projectName, projectURI,projectType, natureID, codeProvider,
 							buildTools, false, sub);
 					sub.done();
 				}
