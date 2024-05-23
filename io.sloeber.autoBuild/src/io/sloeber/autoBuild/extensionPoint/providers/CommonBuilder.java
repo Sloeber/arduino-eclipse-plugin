@@ -172,14 +172,16 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         //now that all referenced projects and configs are build.
         //build the configs requested to build
         String BuildRunnerID = null;
+        String targetName = null;
         if (args != null) {
         	BuildRunnerID = args.get(AutoBuildProject.ARGS_BUILDER_KEY);
+        	targetName = args.get(AutoBuildProject.ARGS_TARGET_KEY);
         }
 
         for (AutoBuildConfigurationDescription curAutoConfig : cfgsToBuild) {
         	IBuilder builder = curAutoConfig.getBuilder(BuildRunnerID);
         	curAutoConfig.forceFullBuildIfNeeded(monitor);
-            buildProjectConfiguration(kind, builder, curAutoConfig, monitor);
+            buildProjectConfiguration(kind,targetName, builder, curAutoConfig, monitor);
         }
 
     }
@@ -314,7 +316,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     }
 
-    private void buildProjectConfiguration(int kind, IBuilder builder,
+    private void buildProjectConfiguration(int kind, String targetName, IBuilder builder,
             AutoBuildConfigurationDescription autoData, IProgressMonitor monitor) throws CoreException {
         ICConfigurationDescription cConfDesc = autoData.getCdtConfigurationDescription();
         String configName = cConfDesc.getName();
@@ -330,7 +332,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             setCurrentProject(project);
             AutoBuildCommon.createFolder(autoData.getBuildFolder());
             AutoBuildBuilderExtension builderExt=autoData.getProjectType().getBuilderExtension();
-            if(builderExt.invokeBuild(builder,kind, autoData, this,  console, monitor)) {
+            if(builderExt.invokeBuild(builder,kind,targetName, autoData, this,  console, monitor)) {
                 forgetLastBuiltState();
             }
         } catch (CoreException e) {

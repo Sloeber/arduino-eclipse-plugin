@@ -13,9 +13,9 @@ import io.sloeber.autoBuild.schema.api.IBuilder;
 @SuppressWarnings({"static-method","unused" })
 public class AutoBuildBuilderExtension {
 
-	public boolean invokeBuild(IBuilder builder, int kind, IAutoBuildConfigurationDescription autoData,
+	public boolean invokeBuild(IBuilder builder, int kind, String targetName,  IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
-		return builder.getBuildRunner().invokeBuild(kind, autoData, markerGenerator,  console, monitor);
+		return builder.getBuildRunner().invokeBuild(kind,targetName, autoData, markerGenerator,  console, monitor);
 	}
 
     public  boolean invokeClean(IBuilder builder,int kind, IAutoBuildConfigurationDescription autoData,

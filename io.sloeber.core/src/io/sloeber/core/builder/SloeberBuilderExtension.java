@@ -1,9 +1,5 @@
 package io.sloeber.core.builder;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.COMMENT_SYMBOL;
-import static io.sloeber.autoBuild.api.AutoBuildConstants.NEWLINE;
-import static io.sloeber.autoBuild.api.AutoBuildConstants.WHITESPACE;
-import static io.sloeber.autoBuild.core.Messages.MakefileGenerator_comment_header;
 import static io.sloeber.core.api.Const.*;
 
 import java.io.ByteArrayInputStream;
@@ -43,13 +39,13 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 	}
 
 	@Override
-	public boolean invokeBuild(IBuilder builder, int kind, IAutoBuildConfigurationDescription autoData,
+	public boolean invokeBuild(IBuilder builder, int kind, String targetName, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		InoPreprocessor.generateSloeberInoCPPFile(false, autoData, monitor);
 		if (builder.getId().equals(AutoBuildProject.MAKE_BUILDER_ID)) {
 			generateExtensionMakeFile(autoData);
 		}
-		return super.invokeBuild(builder, kind, autoData, markerGenerator, console, monitor);
+		return super.invokeBuild(builder, kind,targetName, autoData, markerGenerator, console, monitor);
 	}
 
 	private static void generateExtensionMakeFile(IAutoBuildConfigurationDescription autoData) {

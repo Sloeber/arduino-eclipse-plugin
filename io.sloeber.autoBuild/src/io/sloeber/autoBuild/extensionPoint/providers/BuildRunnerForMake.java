@@ -73,7 +73,7 @@ public class BuildRunnerForMake implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeBuild(int kind, IAutoBuildConfigurationDescription inAutoData,
+	public boolean invokeBuild(int kind, String targetName,  IAutoBuildConfigurationDescription inAutoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		AutoBuildConfigurationDescription autoData=(AutoBuildConfigurationDescription) inAutoData;
@@ -99,12 +99,6 @@ public class BuildRunnerForMake implements IBuildRunner {
 			customTarget = autoData.getAutoMakeTarget();
 			break;
 		}
-		case IncrementalProjectBuilder.CLEAN_BUILD: {
-			defaultTarget = builder.getCleanBuildTarget();
-			customTarget = autoData.getCleanMakeTarget();
-			isClean = true;
-			break;
-		}
 		default:
 		case IncrementalProjectBuilder.INCREMENTAL_BUILD:
 		case IncrementalProjectBuilder.FULL_BUILD: {
@@ -117,6 +111,9 @@ public class BuildRunnerForMake implements IBuildRunner {
 		customTarget = AutoBuildCommon.resolve(customTarget, autoData);
 		if (customTarget.isBlank()) {
 			customTarget = defaultTarget;
+		}
+		if(targetName!=null) {
+			customTarget=targetName;
 		}
 		for (String curArg : customTarget.split("\\s+")) { //$NON-NLS-1$
 			args.add(curArg);

@@ -94,7 +94,7 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeBuild(int kind, IAutoBuildConfigurationDescription inAutoData,
+	public boolean invokeBuild(int kind, String targetName,  IAutoBuildConfigurationDescription inAutoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) inAutoData;

@@ -11,14 +11,11 @@ import java.util.regex.Pattern;
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
-import org.eclipse.cdt.make.core.IMakeTarget;
-import org.eclipse.cdt.make.core.IMakeTargetManager;
-import org.eclipse.cdt.make.core.MakeCorePlugin;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -29,12 +26,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
+import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
@@ -44,195 +41,192 @@ import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescription implements ISloeberConfiguration {
-    //configuration data
+	// configuration data
 	private BoardDescription myBoardDescription;
 	private OtherDescription myOtherDesc;
 	private CompileDescription myCompileDescription;
-	private Map <String,IArduinoLibraryVersion> myLibraries=new HashMap<>();
+	private Map<String, IArduinoLibraryVersion> myLibraries = new HashMap<>();
 
-    //operational data
-    private boolean myMemoryIsDirty = true;
-    private boolean myCalculatingEnvVars=false;
+	// operational data
+	private boolean myMemoryIsDirty = true;
+	private boolean myCalculatingEnvVars = false;
 
-    //derived data
-    private Map<String, String> myEnvironmentVariables = new HashMap<>();
+	// derived data
+	private Map<String, String> myEnvironmentVariables = new HashMap<>();
 
-    /**
-     * copy constructor
-     * This constructor must be implemented for each derived class of
-     * AutoBuildConfigurationExtensionDescription
-     * or you will get run time errors
-     *
-     * @param owner
-     * @param source
-     * @throws Exception
-     */
-    public SloeberConfiguration(AutoBuildConfigurationDescription owner,
-            AutoBuildConfigurationExtensionDescription source) {
-        // the code below will throw an error in case source is not an instance of SloeberConfiguration
-        // This may sound strange for you but this is exactly what I want JABA
+	/**
+	 * copy constructor This constructor must be implemented for each derived class
+	 * of AutoBuildConfigurationExtensionDescription or you will get run time errors
+	 *
+	 * @param owner
+	 * @param source
+	 * @throws Exception
+	 */
+	public SloeberConfiguration(AutoBuildConfigurationDescription owner,
+			AutoBuildConfigurationExtensionDescription source) {
+		// the code below will throw an error in case source is not an instance of
+		// SloeberConfiguration
+		// This may sound strange for you but this is exactly what I want JABA
 
-        SloeberConfiguration src = (SloeberConfiguration) source;
-        setAutoBuildDescription(owner);
-        setBoardDescription(src.getBoardDescription());
-       setOtherDescription(src.getOtherDescription());
-        setCompileDescription(src.getCompileDescription());
-        myLibraries=src.myLibraries;
-    }
+		SloeberConfiguration src = (SloeberConfiguration) source;
+		setAutoBuildDescription(owner);
+		setBoardDescription(src.getBoardDescription());
+		setOtherDescription(src.getOtherDescription());
+		setCompileDescription(src.getCompileDescription());
+		myLibraries = src.myLibraries;
+	}
 
-    public SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc,
-            CompileDescription compileDescriptor) {
-        setBoardDescription( boardDesc);
-        setOtherDescription(otherDesc);
-        setCompileDescription(compileDescriptor);
-    }
+	public SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc,
+			CompileDescription compileDescriptor) {
+		setBoardDescription(boardDesc);
+		setOtherDescription(otherDesc);
+		setCompileDescription(compileDescriptor);
+	}
 
-    public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, String lines, String lineStart,
-            String lineEnd) {
-        setAutoBuildDescription(autoCfgDescription);
-        Map<String, String> envVars = new HashMap<>();
-        int lineStartLength = lineStart.length();
-        for (String curLine : lines.split(Pattern.quote(lineEnd))) {
+	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, String lines, String lineStart,
+			String lineEnd) {
+		setAutoBuildDescription(autoCfgDescription);
+		Map<String, String> envVars = new HashMap<>();
+		int lineStartLength = lineStart.length();
+		for (String curLine : lines.split(Pattern.quote(lineEnd))) {
 			if (!curLine.startsWith(lineStart)) {
 				continue;
 			}
-            String cleanCurLine = curLine.substring(lineStartLength);
-            String[] elements = cleanCurLine.split(EQUAL, 2);
-            if (elements.length == 2) {
-                envVars.put(elements[0], elements[1]);
-            }
-        }
-        myBoardDescription = new BoardDescription(envVars);
-        myOtherDesc = new OtherDescription(envVars);
-        myCompileDescription = new CompileDescription(envVars);
-        myMemoryIsDirty = true;
-        //configure(); Seems I can not dpo the config here
-    }
+			String cleanCurLine = curLine.substring(lineStartLength);
+			String[] elements = cleanCurLine.split(EQUAL, 2);
+			if (elements.length == 2) {
+				envVars.put(elements[0], elements[1]);
+			}
+		}
+		myBoardDescription = new BoardDescription(envVars);
+		myOtherDesc = new OtherDescription(envVars);
+		myCompileDescription = new CompileDescription(envVars);
+		myMemoryIsDirty = true;
+		// configure(); Seems I can not dpo the config here
+	}
 
-    @Override
-    public BoardDescription getBoardDescription() {
-        return new BoardDescription(myBoardDescription);
-    }
+	@Override
+	public BoardDescription getBoardDescription() {
+		return new BoardDescription(myBoardDescription);
+	}
 
-    @Override
-    public OtherDescription getOtherDescription() {
-        return new OtherDescription(myOtherDesc);
-    }
+	@Override
+	public OtherDescription getOtherDescription() {
+		return new OtherDescription(myOtherDesc);
+	}
 
-    @Override
-    public void setOtherDescription(OtherDescription newOtherDesc) {
-    	if(myOtherDesc!=null && myOtherDesc.needsRebuild(newOtherDesc)) {
-    		getAutoBuildDescription().forceCleanBeforeBuild();
-    	}
-        myOtherDesc=new OtherDescription( newOtherDesc);
-        setIsDirty();
-    }
+	@Override
+	public void setOtherDescription(OtherDescription newOtherDesc) {
+		if (myOtherDesc != null && myOtherDesc.needsRebuild(newOtherDesc)) {
+			getAutoBuildDescription().forceCleanBeforeBuild();
+		}
+		myOtherDesc = new OtherDescription(newOtherDesc);
+		setIsDirty();
+	}
 
-    @Override
-    public CompileDescription getCompileDescription() {
-        return new CompileDescription(myCompileDescription);
-    }
+	@Override
+	public CompileDescription getCompileDescription() {
+		return new CompileDescription(myCompileDescription);
+	}
 
-    @Override
-    public void  setCompileDescription(CompileDescription newCompDesc ) {
-    	if(myCompileDescription!=null && myCompileDescription.needsRebuild(newCompDesc)) {
-    		getAutoBuildDescription().forceCleanBeforeBuild();
-    	}
-    	myCompileDescription=new CompileDescription(newCompDesc);
-    	setIsDirty();
-    }
+	@Override
+	public void setCompileDescription(CompileDescription newCompDesc) {
+		if (myCompileDescription != null && myCompileDescription.needsRebuild(newCompDesc)) {
+			getAutoBuildDescription().forceCleanBeforeBuild();
+		}
+		myCompileDescription = new CompileDescription(newCompDesc);
+		setIsDirty();
+	}
 
+	@Override
+	public void copyData(AutoBuildConfigurationExtensionDescription from) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void copyData(AutoBuildConfigurationExtensionDescription from) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	@Override
+	public StringBuffer serialize(String linePrefix, String lineEnd) {
+		StringBuffer ret = new StringBuffer();
+		Map<String, String> envVars = myBoardDescription.getEnvVarsConfig();
+		envVars.putAll(myOtherDesc.getEnvVarsConfig());
+		envVars.putAll(myCompileDescription.getEnvVarsConfig());
+		for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+			ret.append(linePrefix + curEnvVar.getKey() + EQUAL + curEnvVar.getValue() + lineEnd);
+		}
+		configureIfDirty();
+		return ret;
+	}
 
-    @Override
-    public StringBuffer serialize(String linePrefix, String lineEnd) {
-        StringBuffer ret = new StringBuffer();
-        Map<String, String> envVars = myBoardDescription.getEnvVarsConfig();
-        envVars.putAll(myOtherDesc.getEnvVarsConfig());
-        envVars.putAll(myCompileDescription.getEnvVarsConfig());
-        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-            ret.append(linePrefix + curEnvVar.getKey() + EQUAL + curEnvVar.getValue() + lineEnd);
-        }
-        configureIfDirty();
-        return ret;
-    }
+	@Override
+	public IProject getProject() {
+		return getAutoBuildDescription().getProject();
+	}
 
-    @Override
-    public IProject getProject() {
-        return getAutoBuildDescription().getProject();
-    }
+	@Override
+	public IFolder getArduinoCodeFolder() {
+		String cdtConfDescName = getAutoBuildDescription().getCdtConfigurationDescription().getName();
+		IProject project = getProject();
+		return project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFolder(cdtConfDescName);
+	}
 
-    @Override
-    public IFolder getArduinoCodeFolder() {
-        String cdtConfDescName = getAutoBuildDescription().getCdtConfigurationDescription().getName();
-        IProject project = getProject();
-        return project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFolder(cdtConfDescName);
-    }
+	@Override
+	public IFolder getArduinoCoreFolder() {
+		return getArduinoCodeFolder().getFolder(SLOEBER_CODE_FOLDER_NAME);
+	}
 
-    @Override
-    public IFolder getArduinoCoreFolder() {
-        return getArduinoCodeFolder().getFolder(SLOEBER_CODE_FOLDER_NAME);
-    }
+	@Override
+	public IFolder getArduinoVariantFolder() {
+		return getArduinoCodeFolder().getFolder(SLOEBER_VARIANT_FOLDER_NAME);
+	}
 
-    @Override
-    public IFolder getArduinoVariantFolder() {
-        return getArduinoCodeFolder().getFolder(SLOEBER_VARIANT_FOLDER_NAME);
-    }
+	@Override
+	public IFolder getArduinoLibraryFolder() {
+		return getArduinoCodeFolder().getFolder(SLOEBER_LIBRARY_FOLDER_NAME);
+	}
 
-    @Override
-    public IFolder getArduinoLibraryFolder() {
-        return getArduinoCodeFolder().getFolder(SLOEBER_LIBRARY_FOLDER_NAME);
-    }
+	@Override
+	public Map<String, String> getEnvironmentVariables() {
+		configureIfDirty();
 
-    @Override
-    public Map<String, String> getEnvironmentVariables() {
-        configureIfDirty();
+		return myEnvironmentVariables;
+	}
 
-        return myEnvironmentVariables;
-    }
+	private void configureIfDirty() {
+		if (myMemoryIsDirty) {
+			getEnvVars();
+			myMemoryIsDirty = false;
+		}
+		if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
+			if (projectNeedsUpdate()) {
+				updateArduinoCodeLinks();
+			}
+		}
+	}
 
-    private void configureIfDirty() {
-        if (myMemoryIsDirty ) {
-        	getEnvVars();
-        	myMemoryIsDirty=false;
-        }
-        if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
-            if (projectNeedsUpdate()) {
-                updateArduinoCodeLinks();
-            }
-        }
-    }
-
-    private boolean projectNeedsUpdate() {
-        IPath corePath = myBoardDescription.getActualCoreCodePath();
-        IFolder coreFolder = getArduinoCoreFolder();
-        if (!coreFolder.getLocation().equals(corePath)) {
+	private boolean projectNeedsUpdate() {
+		IPath corePath = myBoardDescription.getActualCoreCodePath();
+		IFolder coreFolder = getArduinoCoreFolder();
+		if (!coreFolder.getLocation().equals(corePath)) {
 //        	System.out.println("projectNeedsUpdate core Folder mismatch");
 //        	System.out.println("corefolder "+coreFolder.getLocation());
 //        	System.out.println("corePath   "+corePath);
-            return true;
-        }
-        IFolder arduinoVariantFolder = getArduinoVariantFolder();
-        IPath variantPath = myBoardDescription.getActualVariantPath();
-        if ((!variantPath.toFile().exists()) && (arduinoVariantFolder.exists())) {
+			return true;
+		}
+		IFolder arduinoVariantFolder = getArduinoVariantFolder();
+		IPath variantPath = myBoardDescription.getActualVariantPath();
+		if ((!variantPath.toFile().exists()) && (arduinoVariantFolder.exists())) {
 //        	System.out.println("projectNeedsUpdate variant Folder exists but sdhould not");
-            return true;
-        }
-        if ((variantPath.toFile().exists()) &&!arduinoVariantFolder.getLocation().equals(variantPath)) {
+			return true;
+		}
+		if ((variantPath.toFile().exists()) && !arduinoVariantFolder.getLocation().equals(variantPath)) {
 //        	System.out.println("projectNeedsUpdate variant Folder mismatch");
 //        	System.out.println("folder   "+arduinoVariantFolder.getLocation());
 //        	System.out.println("location "+variantPath);
-            return true;
-        }
+			return true;
+		}
 
-        return false;
-    }
-
+		return false;
+	}
 
 	private void getEnvVars() {
 		if (myCalculatingEnvVars) {
@@ -281,126 +275,139 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		}
 	}
 
-    /**
-     * get the text for the decorator
-     *
-     * @param text
-     * @return
-     */
-    @Override
-    public String getDecoratedText(String text) {
-        String boardName = myBoardDescription.getBoardName();
-        String portName = myBoardDescription.getActualUploadPort();
-        if (portName.isEmpty()) {
-            portName = Messages.decorator_no_port;
-        }
-        if (boardName.isEmpty()) {
-            boardName = Messages.decorator_no_platform;
-        }
+	/**
+	 * get the text for the decorator
+	 *
+	 * @param text
+	 * @return
+	 */
+	@Override
+	public String getDecoratedText(String text) {
+		String boardName = myBoardDescription.getBoardName();
+		String portName = myBoardDescription.getActualUploadPort();
+		if (portName.isEmpty()) {
+			portName = Messages.decorator_no_port;
+		}
+		if (boardName.isEmpty()) {
+			boardName = Messages.decorator_no_platform;
+		}
 
-        return text + ' ' + boardName + ' ' + ':' + portName;
-    }
+		return text + ' ' + boardName + ' ' + ':' + portName;
+	}
 
-    /**
-     * Synchronous upload of the sketch to the board returning the status.
-     *
-     * @param project
-     * @return the status of the upload. Status.OK means upload is OK
-     */
-    @Override
-    public IStatus upload() {
+	/**
+	 * Synchronous upload of the sketch to the board returning the status.
+	 *
+	 * @param project
+	 * @return the status of the upload. Status.OK means upload is OK
+	 */
+	@Override
+	public IStatus upload() {
 
-        Job upLoadJob = UploadSketchWrapper.upload(this);
+		Job upLoadJob = UploadSketchWrapper.upload(this);
 
-        if (upLoadJob == null)
-            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, null);
-        try {
-            upLoadJob.join();
-            return upLoadJob.getResult();
-        } catch (InterruptedException e) {
-            // not sure if this is needed
-            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, e);
-        }
-    }
+		if (upLoadJob == null)
+			return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, null);
+		try {
+			upLoadJob.join();
+			return upLoadJob.getResult();
+		} catch (InterruptedException e) {
+			// not sure if this is needed
+			return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, e);
+		}
+	}
 
-    @Override
-    public IStatus upLoadUsingProgrammer() {
-        return BuildTarget("uploadWithProgrammerWithoutBuild"); //$NON-NLS-1$
-    }
+	@Override
+	public IStatus upLoadUsingProgrammer() {
+		return BuildTarget("uploadWithProgrammerWithoutBuild"); //$NON-NLS-1$
+	}
 
-    @Override
-    public IStatus burnBootloader() {
-        return BuildTarget("BurnBootLoader"); //$NON-NLS-1$
-    }
+	@Override
+	public IStatus burnBootloader() {
+		return BuildTarget("BurnBootLoader"); //$NON-NLS-1$
+	}
 
-    private IStatus BuildTarget(String targetName) {
+	private IStatus BuildTarget(String targetName) {
 
-        try {
-            IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
-            IContainer targetResource = getAutoBuildDesc().getBuildFolder();
-            IMakeTarget itarget = targetManager.findTarget(targetResource, targetName);
-            if (itarget == null) {
-                itarget = targetManager.createTarget(getProject(), targetName,
-                        "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
-                //if (itarget instanceof MakeTarget) {
-                //    itarget.setBuildTarget(targetName);
-                    targetManager.addTarget(targetResource, itarget);
-                //}
-            }
-            if (itarget != null) {
-                itarget.build(new NullProgressMonitor());
-            }
-        } catch (CoreException e) {
-            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e);
-        }
-        return Status.OK_STATUS;
-    }
+		try {
+			Map<String, String> args = new HashMap<>();
+			args.put(AutoBuildProject.ARGS_BUILDER_KEY, AutoBuildProject.MAKE_BUILDER_ID);
+			// args.put(AutoBuildProject.ARGS_CONFIGS_KEY, getAutoBuildDesc() );
+			args.put(AutoBuildProject.ARGS_TARGET_KEY, targetName);
 
-    @Override
-    public boolean canBeIndexed() {
-        return true;
-    }
+			getProject().build(IncrementalProjectBuilder.FULL_BUILD, AutoBuildProject.COMMON_BUILDER_ID, args,
+					new NullProgressMonitor());
+		} catch (CoreException e) {
+			return new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e);
+		}
 
-    @Override
-    public void setBoardDescription(BoardDescription boardDescription) {
-    	if(myBoardDescription!=null && myBoardDescription.needsRebuild(boardDescription)) {
-    		getAutoBuildDescription().forceCleanBeforeBuild();
-    	}
-        myBoardDescription = new BoardDescription(boardDescription);
-        setIsDirty();
-    }
+//
+//        try {
+//            IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
+//            IContainer targetResource = getAutoBuildDesc().getBuildFolder();
+//            IMakeTarget itarget = targetManager.findTarget(targetResource, targetName);
+//            if (itarget == null) {
+//                itarget = targetManager.createTarget(getProject(), targetName,
+//                        "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
+//                //if (itarget instanceof MakeTarget) {
+//                //    itarget.setBuildTarget(targetName);
+//                    targetManager.addTarget(targetResource, itarget);
+//                //}
+//            }
+//            if (itarget != null) {
+//                itarget.build(new NullProgressMonitor());
+//            }
+//        } catch (CoreException e) {
+//            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e);
+//        }
+		return Status.OK_STATUS;
+	}
 
-    private void setIsDirty() {
-        myMemoryIsDirty = true;
-    }
+	@Override
+	public boolean canBeIndexed() {
+		return true;
+	}
 
-    @Override
-    public IFile getTargetFile() {
-        // I assume the extension is .hex as the Arduino Framework does not provide the
-        // extension nor a key for the uploadable sketch (=build target)
-        // as currently this method is only used for network upload via yun this is ok
-        // for now
-        IProject project = getProject();
-        return getAutoBuildDescription().getBuildFolder().getFile(project.getName() + ".hex"); //$NON-NLS-1$
-    }
+	@Override
+	public void setBoardDescription(BoardDescription boardDescription) {
+		if (myBoardDescription != null && myBoardDescription.needsRebuild(boardDescription)) {
+			getAutoBuildDescription().forceCleanBeforeBuild();
+		}
+		myBoardDescription = new BoardDescription(boardDescription);
+		setIsDirty();
+	}
 
-    @Override
-    public String getBundelName() {
-        return Activator.getId();
-    }
+	private void setIsDirty() {
+		myMemoryIsDirty = true;
+	}
 
-    @Override
-    public IAutoBuildConfigurationDescription getAutoBuildDesc() {
-        return getAutoBuildDescription();
-    }
+	@Override
+	public IFile getTargetFile() {
+		// I assume the extension is .hex as the Arduino Framework does not provide the
+		// extension nor a key for the uploadable sketch (=build target)
+		// as currently this method is only used for network upload via yun this is ok
+		// for now
+		IProject project = getProject();
+		return getAutoBuildDescription().getBuildFolder().getFile(project.getName() + ".hex"); //$NON-NLS-1$
+	}
 
-    /**
-     * This method adds or updates the Arduino code links in a subfolder named
-     * Arduino/[cfg name].
-     * 2 linked subfolders named core and variant link to the real Arduino code note
-     *
-     *
-     */
+	@Override
+	public String getBundelName() {
+		return Activator.getId();
+	}
+
+	@Override
+	public IAutoBuildConfigurationDescription getAutoBuildDesc() {
+		return getAutoBuildDescription();
+	}
+
+	/**
+	 * This method adds or updates the Arduino code links in a subfolder named
+	 * Arduino/[cfg name]. 2 linked subfolders named core and variant link to the
+	 * real Arduino code note
+	 *
+	 *
+	 */
 	private void updateArduinoCodeLinks() {
 		IPath corePath = myBoardDescription.getActualCoreCodePath();
 		IFolder arduinoVariantFolder = getArduinoVariantFolder();
@@ -443,16 +450,17 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	}
 
 	@Override
-    public void reAttachLibraries() {
-		IProgressMonitor monitor=new NullProgressMonitor();
-		IFolder libFolder=getArduinoLibraryFolder();
-		//Remove all existing lib folders that are not known or are linking to the wrong lib
+	public void reAttachLibraries() {
+		IProgressMonitor monitor = new NullProgressMonitor();
+		IFolder libFolder = getArduinoLibraryFolder();
+		// Remove all existing lib folders that are not known or are linking to the
+		// wrong lib
 		try {
-			for(IResource curResource:libFolder.members()) {
-				if(curResource instanceof IFolder) {
-					IFolder curFolder =(IFolder)curResource;
-					IArduinoLibraryVersion curLib=myLibraries.get(curFolder.getName());
-					if((curLib==null)||(!curLib.getInstallPath().equals(curFolder.getLocation()))) {
+			for (IResource curResource : libFolder.members()) {
+				if (curResource instanceof IFolder) {
+					IFolder curFolder = (IFolder) curResource;
+					IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
+					if ((curLib == null) || (!curLib.getInstallPath().equals(curFolder.getLocation()))) {
 						try {
 							curFolder.delete(true, monitor);
 						} catch (CoreException e) {
@@ -467,14 +475,14 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			e.printStackTrace();
 		}
 
-		//Add all remaining needed libs
-		for(IArduinoLibraryVersion curLib:myLibraries.values()) {
-			IFolder curLibFolder =libFolder.getFolder(curLib.getName());
-			if(!curLibFolder.exists()) {
-				Helpers.LinkFolderToFolder(curLib.getInstallPath(),curLibFolder);
+		// Add all remaining needed libs
+		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
+			IFolder curLibFolder = libFolder.getFolder(curLib.getName());
+			if (!curLibFolder.exists()) {
+				Helpers.LinkFolderToFolder(curLib.getInstallPath(), curLibFolder);
 			}
 		}
-    }
+	}
 
 	@Override
 	public Map<String, IArduinoLibraryVersion> getUsedLibraries() {
@@ -483,27 +491,27 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public boolean addLibraries(Collection<IArduinoLibraryVersion> librartiesToAdd) {
-		boolean ret=false;
-		IFolder libFolder=getArduinoLibraryFolder();
-		for(IArduinoLibraryVersion curLib:librartiesToAdd) {
-			if(curLib==null) {
+		boolean ret = false;
+		IFolder libFolder = getArduinoLibraryFolder();
+		for (IArduinoLibraryVersion curLib : librartiesToAdd) {
+			if (curLib == null) {
 				continue;
 			}
 			Helpers.LinkFolderToFolder(curLib.getInstallPath(), libFolder.getFolder(curLib.getName()));
 			myLibraries.put(curLib.getName(), curLib);
-			ret=true;
+			ret = true;
 		}
 		return ret;
 	}
 
 	@Override
 	public boolean removeLibraries(Collection<IArduinoLibraryVersion> librariesToRemove) {
-		boolean ret=false;
-		IProgressMonitor monitor= new NullProgressMonitor();
-		IFolder libFolder=getArduinoLibraryFolder();
-		for(IArduinoLibraryVersion curLib:librariesToRemove) {
-			if(myLibraries.containsKey(curLib.getName())) {
-				ret=true;
+		boolean ret = false;
+		IProgressMonitor monitor = new NullProgressMonitor();
+		IFolder libFolder = getArduinoLibraryFolder();
+		for (IArduinoLibraryVersion curLib : librariesToRemove) {
+			if (myLibraries.containsKey(curLib.getName())) {
+				ret = true;
 				myLibraries.remove(curLib.getName());
 				try {
 					libFolder.getFolder(curLib.getName()).delete(true, monitor);

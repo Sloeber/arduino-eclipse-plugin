@@ -32,6 +32,9 @@ public interface IBuildRunner {
      *
      * @param kind
      *            - kind from the IncrementalProjectBuilder
+     * @param targetName
+     * 			the name of the target.
+     * 			when null the target is assumed to be all
      * @param project
      *            - project being built
      * @param icConfigurationDescription
@@ -47,7 +50,7 @@ public interface IBuildRunner {
      * @throws CoreException
      *             standard core exception if something goes wrong
      */
-    public  boolean invokeBuild(int kind, IAutoBuildConfigurationDescription autoData,
+    public  boolean invokeBuild(int kind, String targetName, IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 

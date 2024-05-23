@@ -11,6 +11,7 @@ import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.core.api.SloeberProject;
 
+@SuppressWarnings("nls")
 public class SloeberBuildTools implements IBuildTools {
 	private String myProviderID = null;
 
@@ -60,8 +61,7 @@ public class SloeberBuildTools implements IBuildTools {
 
 	@Override
 	public String getBuildCommand() {
-		// TODO Auto-generated method stub
-		return null;
+		return "${MAKE_HOME}make"; //$NON-NLS-1$
 	}
 
 	@Override
