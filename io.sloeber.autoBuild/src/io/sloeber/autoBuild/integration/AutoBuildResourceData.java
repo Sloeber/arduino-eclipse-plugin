@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.integration;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.Arrays;
 /**
@@ -31,197 +31,166 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
+
 public abstract class AutoBuildResourceData extends CConfigurationData {
-    protected static final String KEY_SOURCE_ENTRY = "SourceEntry"; //$NON-NLS-1$
-    //protected IProject myProject;
-    private Map<String, CResourceData> myResourceDatas = new HashMap<>();
-    private ICSourceEntry mySourceEntries[] = null;
-    private CFolderData myRootFolderData;
+	protected static final String KEY_SOURCE_ENTRY = "SourceEntry"; //$NON-NLS-1$
+	// protected IProject myProject;
+	private Map<String, CResourceData> myResourceDatas = new HashMap<>();
+	private ICSourceEntry mySourceEntries[] = null;
+	private CFolderData myRootFolderData;
 
-    /**
-     * Copy constructor
-     *
-     * @param cfgDescription
-     */
-    public void clone(AutoBuildConfigurationDescription parent, AutoBuildConfigurationDescription autoBuildResourceBase,
-            boolean clone) {
-        myRootFolderData = new FolderData(parent, autoBuildResourceBase.getRootFolderData(), clone);
-        //myProject=autoBuildResourceBase.getProject();
-        cloneSourceEntries(autoBuildResourceBase.getSourceEntries());
+	/**
+	 * Copy constructor
+	 *
+	 * @param cfgDescription
+	 */
+	public void clone(AutoBuildConfigurationDescription parent, AutoBuildConfigurationDescription autoBuildResourceBase,
+			boolean clone) {
+		myRootFolderData = new FolderData(parent, autoBuildResourceBase.getRootFolderData(), clone);
+		// myProject=autoBuildResourceBase.getProject();
+		cloneSourceEntries(autoBuildResourceBase.getSourceEntries());
 
-    }
+	}
 
-    private void cloneSourceEntries(ICSourceEntry entries[]) {
-        if (!Arrays.equals(entries, mySourceEntries)) {
-            mySourceEntries = entries != null ? (ICSourceEntry[]) entries.clone() : null;
-        }
-    }
+	private void cloneSourceEntries(ICSourceEntry entries[]) {
+		if (!Arrays.equals(entries, mySourceEntries)) {
+			mySourceEntries = entries != null ? (ICSourceEntry[]) entries.clone() : null;
+		}
+	}
 
-    /**
-     * persistency constructor based on text
-     *
-     * @param cfgDescription
-     *            the configuration that owns the reosurceDatas
-     * @param curConfigsText
-     *            The text that needs parsing
-     * @param lineStart
-     *            the beginning of each line that needs to be ignored
-     * @param lineEnd
-     *            The ending of each line that needs to be ignored
-     */
-    public AutoBuildResourceData(ICConfigurationDescription cfgDescription, String curConfigsText, String lineStart,
-            String lineEnd) {
-        //TODO read  Map<String, CResourceData> myResourceDatas = new HashMap<>();
-        //TODO read ICSourceEntry mySourceEntries[] = null;
-        //TODO read CFolderData myRootFolderData;
-        Set<ICSourceEntry> sourceEntries = new HashSet<>();
-        String[] lines = curConfigsText.split(Pattern.quote(lineEnd));
-        for (String curLine : lines) {
-            if (!curLine.startsWith(lineStart)) {
-                continue;
-            }
-            String field[] = curLine.substring(lineStart.length()).split(Pattern.quote(EQUAL), 2);
-            if (field.length < 2) {
-                System.err.println("error processing " + curLine + NEWLINE); //$NON-NLS-1$
-                continue;
-            }
-            String keysField = field[0];
-            String valuesField = field[1];
-            String keys[] = keysField.split(Pattern.quote(DOT), 2);
+	/**
+	 * persistency constructor based on text
+	 *
+	 * @param cfgDescription the configuration that owns the reosurceDatas
+	 * @param curConfigsText The text that needs parsing
+	 * @param lineStart      the beginning of each line that needs to be ignored
+	 * @param lineEnd        The ending of each line that needs to be ignored
+	 */
+	public AutoBuildResourceData(ICConfigurationDescription cfgDescription, KeyValueTree keyValues) {
+		// TODO read Map<String, CResourceData> myResourceDatas = new HashMap<>();
+		// TODO read ICSourceEntry mySourceEntries[] = null;
+		// TODO read CFolderData myRootFolderData;
+		Set<CSourceEntry> sourceEntries = new HashSet<>();
+		for (KeyValueTree cursourceEntykeyValue : keyValues.getChildren().values()) {
+			String name = cursourceEntykeyValue.getKey();
+			String value = cursourceEntykeyValue.getValue();
+			String values[] = value.split(Pattern.quote(COLON));
+			if (values.length < 2) {
+				// no exclusion patterns
+				int flags = Integer.valueOf(value).intValue();
+				sourceEntries.add(new CSourceEntry(name, null, flags));
+			} else {
+				int flags = Integer.valueOf(values[0]).intValue();
+				Set<IPath> exclusionPatterns = new HashSet<>();
+				for (int curEx = 1; curEx < values.length; curEx++) {
+					exclusionPatterns.add(new Path(values[curEx]));
+				}
+				sourceEntries.add(
+						new CSourceEntry(name, exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
+			}
+		}
+		mySourceEntries = sourceEntries.toArray(new ICSourceEntry[sourceEntries.size()]);
+	}
 
-            String key = keys[0];
-            switch (key) {
-            case KEY_SOURCE_ENTRY:
-                String name = keys[1];
-                if (keys.length < 2) {
-                    System.err.println("error processing keys of " + curLine + NEWLINE); //$NON-NLS-1$
-                    continue;
-                }
-                String values[] = valuesField.split(Pattern.quote(COLON));
-                if (values.length < 2) {
-                    //no exclusion patterns
-                    int flags = Integer.valueOf(valuesField).intValue();
-                    sourceEntries.add(new CSourceEntry(name, null, flags));
-                } else {
-                    int flags = Integer.valueOf(values[0]).intValue();
-                    Set<IPath> exclusionPatterns = new HashSet<>();
-                    for (int curEx = 1; curEx < values.length; curEx++) {
-                        exclusionPatterns.add(new Path(values[curEx]));
-                    }
-                    sourceEntries.add(new CSourceEntry(name,
-                            exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
-                }
-                break;
-			default:
-				break;
-            }
-        }
-        if (sourceEntries.size() > 0) {
-            mySourceEntries = sourceEntries.toArray(new ICSourceEntry[sourceEntries.size()]);
-        }
-    }
+	public AutoBuildResourceData() {
+	}
 
-    public AutoBuildResourceData() {
-    }
+	@Override
+	public void removeResourceData(CResourceData data) throws CoreException {
+		checkIfWeCanWrite();
+		myResourceDatas.remove(data.getId());
+		return;
+	}
 
-    @Override
-    public void removeResourceData(CResourceData data) throws CoreException {
-        checkIfWeCanWrite();
-        myResourceDatas.remove(data.getId());
-        return;
-    }
+	@Override
+	public CFolderData createFolderData(IPath path, CFolderData base) throws CoreException {
+		checkIfWeCanWrite();
+		CDataFactory factory = CDataFactory.getDefault();
+		CFolderData folderData = factory.createFolderData(this, base, null, false, path);
+		myResourceDatas.put(folderData.getId(), folderData);
+		return folderData;
+	}
 
-    @Override
-    public CFolderData createFolderData(IPath path, CFolderData base) throws CoreException {
-        checkIfWeCanWrite();
-        CDataFactory factory = CDataFactory.getDefault();
-        CFolderData folderData = factory.createFolderData(this, base, null, false, path);
-        myResourceDatas.put(folderData.getId(), folderData);
-        return folderData;
-    }
+	@Override
+	public CFileData createFileData(IPath path, CFileData base) throws CoreException {
+		checkIfWeCanWrite();
+		CDataFactory factory = CDataFactory.getDefault();
+		CFileData fileData = factory.createFileData(this, base, null, null, false, path);
+		myResourceDatas.put(fileData.getId(), fileData);
+		return fileData;
+	}
 
-    @Override
-    public CFileData createFileData(IPath path, CFileData base) throws CoreException {
-        checkIfWeCanWrite();
-        CDataFactory factory = CDataFactory.getDefault();
-        CFileData fileData = factory.createFileData(this, base, null, null, false, path);
-        myResourceDatas.put(fileData.getId(), fileData);
-        return fileData;
-    }
-
-    @Override
-    public CFileData createFileData(IPath path, CFolderData base, CLanguageData langData) throws CoreException {
-        checkIfWeCanWrite();
-        CDataFactory factory = CDataFactory.getDefault();
-        CFileData fileData = factory.createFileData(this, base, langData, null, false, path);
-        myResourceDatas.put(fileData.getId(), fileData);
-        return fileData;
-    }
+	@Override
+	public CFileData createFileData(IPath path, CFolderData base, CLanguageData langData) throws CoreException {
+		checkIfWeCanWrite();
+		CDataFactory factory = CDataFactory.getDefault();
+		CFileData fileData = factory.createFileData(this, base, langData, null, false, path);
+		myResourceDatas.put(fileData.getId(), fileData);
+		return fileData;
+	}
 
 	@Override
 	public ICSourceEntry[] getSourceEntries() {
 		return mySourceEntries.clone();
 	}
 
-    @Override
-    public void setSourceEntries(ICSourceEntry[] entries) {
-        checkIfWeCanWrite();
-        cloneSourceEntries(entries);
-    }
+	@Override
+	public void setSourceEntries(ICSourceEntry[] entries) {
+		checkIfWeCanWrite();
+		cloneSourceEntries(entries);
+	}
 
-    @Override
-    public CFolderData getRootFolderData() {
-        if (myRootFolderData == null) {
-            //CDataFactory factory = CDataFactory.getDefault();
-            //myRootFolderData = factory.createFolderData(this, null, myRootFolderID, false, Path.ROOT);
-            AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
-            myRootFolderData = new FolderData(autoBuildConfDesc.getProject(), autoBuildConfDesc);
-        }
-        return myRootFolderData;
-    }
+	@Override
+	public CFolderData getRootFolderData() {
+		if (myRootFolderData == null) {
+			// CDataFactory factory = CDataFactory.getDefault();
+			// myRootFolderData = factory.createFolderData(this, null, myRootFolderID,
+			// false, Path.ROOT);
+			AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
+			myRootFolderData = new FolderData(autoBuildConfDesc.getProject(), autoBuildConfDesc);
+		}
+		return myRootFolderData;
+	}
 
-    @Override
-    public CResourceData[] getResourceDatas() {
-        //        if (!myResourceDataContainsRootFolder) {
-        //            //myResourceDataContainsRootFolder = true;
-        //            AutoBuildConfigurationDescription autoBuildConfDesc = ((AutoBuildConfigurationDescription) this);
-        //            FolderData rootFolderData = new FolderData(myProject, autoBuildConfDesc);
-        //
-        //            myResourceDatas.clear();
-        //            myResourceDatas.put(rootFolderData.getId(), rootFolderData);
-        //        }
-        Set<CResourceData> ret = new HashSet<>();
-        ret.addAll(myResourceDatas.values());
-        ret.add(getRootFolderData());
+	@Override
+	public CResourceData[] getResourceDatas() {
+		// if (!myResourceDataContainsRootFolder) {
+		// //myResourceDataContainsRootFolder = true;
+		// AutoBuildConfigurationDescription autoBuildConfDesc =
+		// ((AutoBuildConfigurationDescription) this);
+		// FolderData rootFolderData = new FolderData(myProject, autoBuildConfDesc);
+		//
+		// myResourceDatas.clear();
+		// myResourceDatas.put(rootFolderData.getId(), rootFolderData);
+		// }
+		Set<CResourceData> ret = new HashSet<>();
+		ret.addAll(myResourceDatas.values());
+		ret.add(getRootFolderData());
 
-        return ret.toArray(new CResourceData[ret.size()]);
+		return ret.toArray(new CResourceData[ret.size()]);
 
-    }
+	}
 
-    abstract protected void checkIfWeCanWrite();
+	abstract protected void checkIfWeCanWrite();
 
-    protected StringBuffer serialize(String linePrefix, String lineEnd) {
-        StringBuffer ret = new StringBuffer();
-        //TODO store  Map<String, CResourceData> myResourceDatas = new HashMap<>();
-        if (mySourceEntries != null) {
-            for (ICSourceEntry curSourceEntry : mySourceEntries) {
-                String key = curSourceEntry.getName();
-                if (key.isBlank()) {
-                    key = ROOT;
-                }
-                ret.append(linePrefix + KEY_SOURCE_ENTRY + DOT + key + EQUAL);
-                ret.append(Integer.toString(curSourceEntry.getFlags()));
-                for (IPath curExclusion : curSourceEntry.getExclusionPatterns()) {
-                    ret.append(COLON + curExclusion.toString());
-                }
-                ret.append(lineEnd);
-            }
-        }
-        //TODO store CFolderData myRootFolderData;
-        return ret;
-    }
+	protected void serialize(KeyValueTree keyValuePairs) {
+		if (mySourceEntries != null) {
+			for (ICSourceEntry curSourceEntry : mySourceEntries) {
+				String key = curSourceEntry.getName();
+				if (key.isBlank()) {
+					key = ROOT;
+				}
+				String value = Integer.toString(curSourceEntry.getFlags());
+				for (IPath curExclusion : curSourceEntry.getExclusionPatterns()) {
+					value = value + COLON + curExclusion.toString();
+				}
+				keyValuePairs.addChild(key, value);
+			}
+		}
+	}
 
-	protected void initializeResourceData(IProject project,String rootCodeFolder, String BuildFolderString) {
+	protected void initializeResourceData(IProject project, String rootCodeFolder, String BuildFolderString) {
 		mySourceEntries = new ICSourceEntry[1];
 		if (rootCodeFolder == null || rootCodeFolder.isBlank()) {
 			// exclude the bin folder

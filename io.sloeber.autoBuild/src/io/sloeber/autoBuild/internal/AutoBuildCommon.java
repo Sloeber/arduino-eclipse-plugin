@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.internal;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import static java.io.File.pathSeparator;
 import static java.lang.System.getenv;
 import static java.nio.file.Files.isExecutable;

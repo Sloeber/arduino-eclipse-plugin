@@ -14,7 +14,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.schema.internal;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -298,5 +298,7 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		}
 		return mySupportedToolProviders.contains(buildToolsProvider.getID());
 	}
+
+
 
 }

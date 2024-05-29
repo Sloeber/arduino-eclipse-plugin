@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.buildTools.api;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;

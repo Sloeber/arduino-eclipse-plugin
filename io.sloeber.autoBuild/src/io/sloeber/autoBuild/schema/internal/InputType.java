@@ -15,7 +15,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.schema.internal;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -5,12 +5,14 @@ import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
+
 import java.util.Set;
 
 public class BoardTxtFile extends TxtFile {
@@ -67,7 +69,7 @@ public class BoardTxtFile extends TxtFile {
     /**
      * Get all the acceptable values for a option for a board The outcome of this
      * method can be used to fill the menu options combobox
-     * 
+     *
      * The result is ordered because the first item is the default
      *
      * @param menu
@@ -205,10 +207,10 @@ public class BoardTxtFile extends TxtFile {
     /**
      * Get all the key value pairs that need to be added to the environment
      * variables for the given boardID
-     * 
+     *
      * The boardID prefix is removed from the result so uno.cpu.freq=9600 will
      * result in key value <"cpu.freq","9600">
-     * 
+     *
      */
     public Map<String, String> getBoardEnvironVars(String boardID) {
         return myData.getChild(boardID).toKeyValues(EMPTY, false);

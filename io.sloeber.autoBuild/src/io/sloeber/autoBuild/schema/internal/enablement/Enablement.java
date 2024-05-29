@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.schema.internal.enablement;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;

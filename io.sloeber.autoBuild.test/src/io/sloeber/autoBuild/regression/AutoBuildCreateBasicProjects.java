@@ -1,7 +1,8 @@
 package io.sloeber.autoBuild.regression;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.helpers.Defaults.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;

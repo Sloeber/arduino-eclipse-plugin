@@ -1,7 +1,7 @@
 package io.sloeber.autoBuild.schema.internal;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.core.Messages.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import java.net.MalformedURLException;

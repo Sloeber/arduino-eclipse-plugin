@@ -53,6 +53,7 @@ Export-Package: io.sloeber.autoBuild.api;
    org.eclipse.core.resources,
    io.sloeber.autoBuild.api,
    org.eclipse.cdt.core.resources",
+ io.sloeber.autoBuild.helpers.api,
  io.sloeber.autoBuild.integration;
   uses:="io.sloeber.schema.api,
    org.eclipse.cdt.core.settings.model.extension.impl,

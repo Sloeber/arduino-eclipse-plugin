@@ -6,7 +6,7 @@ import io.sloeber.autoBuild.schema.api.IInputType;
 import io.sloeber.autoBuild.schema.api.IOutputType;
 import io.sloeber.autoBuild.schema.api.ITool;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

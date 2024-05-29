@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.helpers.api;
 
 import java.io.File;
 

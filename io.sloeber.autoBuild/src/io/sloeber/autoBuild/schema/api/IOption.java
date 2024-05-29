@@ -21,7 +21,7 @@ package io.sloeber.autoBuild.schema.api;
 import org.eclipse.core.resources.IResource;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.Map;
 

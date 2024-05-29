@@ -2,7 +2,7 @@ package io.sloeber.core.api;
 
 import org.eclipse.core.runtime.IStatus;
 
-import io.sloeber.autoBuild.api.AutoBuildConstants;
+import io.sloeber.autoBuild.helpers.api.AutoBuildConstants;
 
 /**
  * ArduinoConst only contains global strings used in sloeber.

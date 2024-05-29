@@ -14,7 +14,8 @@ Require-Bundle: io.sloeber.core,
  junit-jupiter-api;bundle-version="5.10.2",
  org.junit;bundle-version="4.13.2",
  org.apache.log4j,
-  org.eclipse.swt
+ org.eclipse.swt,
+ io.sloeber.autoBuild
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor,

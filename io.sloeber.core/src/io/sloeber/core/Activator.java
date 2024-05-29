@@ -10,8 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
@@ -40,7 +38,6 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
-import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.listeners.resourceChangeListener;
 import io.sloeber.core.tools.PackageManager;
@@ -185,9 +182,6 @@ public class Activator extends Plugin {
         IndexerListener myindexerListener = new IndexerListener();
         CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
-        CoreModel singCoreModel = CoreModel.getDefault();
-        singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
-                CProjectDescriptionEvent.ABOUT_TO_APPLY);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener,
                 IResourceChangeEvent.POST_CHANGE);

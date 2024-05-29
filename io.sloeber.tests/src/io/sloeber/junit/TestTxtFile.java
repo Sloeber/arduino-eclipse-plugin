@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import io.sloeber.core.txt.KeyValueTree;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 
 @SuppressWarnings({ "nls", "static-method" })
 public class TestTxtFile {
@@ -95,7 +95,7 @@ public class TestTxtFile {
     }
 
     private KeyValueTree getDataSet1() {
-        KeyValueTree root = KeyValueTree.createTxtRoot();
+        KeyValueTree root = KeyValueTree.createRoot();
 
         KeyValueTree key2 = root.addChild("key2", "value2");
         key2.addChild("key2_1", "value2_1");

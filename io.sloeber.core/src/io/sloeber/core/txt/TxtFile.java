@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Const;
 
@@ -37,7 +38,7 @@ import io.sloeber.core.api.Const;
 public class TxtFile {
     private File mLoadedTxtFile = null;
 
-    protected KeyValueTree myData = KeyValueTree.createTxtRoot();
+    protected KeyValueTree myData = KeyValueTree.createRoot();
 
     public TxtFile(File boardsFileName) {
 
@@ -48,7 +49,7 @@ public class TxtFile {
 
     /**
      * given a TXT file add the data from another txt file
-     * 
+     *
      * @param boardsFileName
      * @return
      */
@@ -95,7 +96,7 @@ public class TxtFile {
      * from
      * https://stackoverflow.com/questions/285712/java-reading-a-file-into-an-array#285745
      * reads a file to a string array
-     * 
+     *
      * @param filename
      * @return
      * @throws IOException
@@ -128,9 +129,9 @@ public class TxtFile {
         IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
         String architecture = platformFile.removeLastSegments(1).lastSegment();
         if (architecture == null) {// for error conditions
-            architecture = Const.AVR;
+            architecture = AVR;
         }
-        if (architecture.contains(Const.DOT)) { // This is a version number so
+        if (architecture.contains(DOT)) { // This is a version number so
             // package
             architecture = platformFile.removeLastSegments(2).lastSegment();
         }
@@ -157,7 +158,7 @@ public class TxtFile {
     /**
      * Get all the key value pairs that need to be added to the environment
      * variables
-     * 
+     *
      * prefix something to add at the beginning of each key name
      */
     public Map<String, String> getAllEnvironVars(String prefix) {
@@ -169,7 +170,7 @@ public class TxtFile {
     }
 
     public void reloadTxtFile() {
-        myData = KeyValueTree.createTxtRoot();
+        myData = KeyValueTree.createRoot();
         mergeFile(mLoadedTxtFile);
 
     }

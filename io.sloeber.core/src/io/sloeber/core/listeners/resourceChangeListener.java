@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.core.api.Common;
-import io.sloeber.core.api.SloeberProject;
 
 public class resourceChangeListener implements IResourceChangeListener {
 
@@ -37,27 +36,12 @@ public class resourceChangeListener implements IResourceChangeListener {
                 if (sloeberCfgDelta.getKind() != IResourceDelta.REMOVED) {
                     //the sloeber.cfg file has been added or changed
                     IProject iProject = sloeberCfgDelta.getResource().getProject();
-                    // stop the indexer
-                    //IndexerController.doNotIndex(iProject);
-
-                    /*JABA is this needed?
-                     * SloeberProject curSloeberProject = SloeberProject.getSloeberProject(iProject);
-                    if (curSloeberProject == null) {
-                        // this should not happen as we have a sloeber.cfg file
-                    } else {
-                        //no use updating the cfg if it wasn't read already
-                        if (curSloeberProject.isInMemory()) {
-                            curSloeberProject.sloeberCfgChanged();
-                        }
-                    }*/
-
-                    // log to process later
-                    //changedSloeberCfgFiles.add(iProject);
+                    changedSloeberCfgFiles.add(iProject);
                 }
             }
         }
 
-        // no sloeber.cfg files have been modified
+        // ignore when no sloeber.cfg files have been modified
         if (changedSloeberCfgFiles.size() == 0)
             return;
 
@@ -69,22 +53,10 @@ public class resourceChangeListener implements IResourceChangeListener {
                 ICoreRunnable runnable = new ICoreRunnable() {
 
                     @Override
-                    public void run(IProgressMonitor monitor) throws CoreException {
+                    public void run(IProgressMonitor monitor2) throws CoreException {
                         for (IProject curProject : changedSloeberCfgFiles) {
-                            if (curProject.isOpen()) {
-                                /* JABA is this needed?
-                                SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject);
-                                if (curSloeberProject == null) {
-                                    // this is not a sloeber project;
-                                    // make it one?
-                                } else {
-                                    //no use updating the cfg if it wasn't read already
-                                    if (curSloeberProject.isInMemory()) {
-                                        curSloeberProject.sloeberCfgChanged();
-                                    }
-                                }*/
-                            }
-                            IndexerController.index(curProject);
+                        	curProject.close(monitor2);
+                        	curProject.open(monitor2);
                         }
                     }
                 };

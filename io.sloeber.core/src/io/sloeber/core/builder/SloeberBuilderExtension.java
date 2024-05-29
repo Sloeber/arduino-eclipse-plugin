@@ -15,10 +15,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
-import io.sloeber.autoBuild.api.AutoBuildConstants;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
+import io.sloeber.autoBuild.helpers.api.AutoBuildConstants;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.Common;

@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.integration;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +43,7 @@ import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
@@ -75,18 +76,24 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private static final String KEY = "key"; //$NON-NLS-1$
 	private static final String KEY_VALUE = "value"; //$NON-NLS-1$
 	private static final String KEY_RESOURCE = "resource";//$NON-NLS-1$
+	private static final String KEY_RESOURCE_TYPE = "resource type";//$NON-NLS-1$
+	private static final String KEY_FOLDER="folder";//$NON-NLS-1$
+	private static final String KEY_FILE="file";//$NON-NLS-1$
+	private static final String KEY_PROJECT="project";//$NON-NLS-1$
 	private static final String KEY_BUILDER_ID = "builderID";//$NON-NLS-1$
 	private static final String KEY_AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
 	private static final String KEY_INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
 	private static final String KEY_CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
 	private static final String KEY_EXTENSION = "extension"; //$NON-NLS-1$
 
-	private static final String KEY_PRE_BUILD_STEP = "Build.pre.step"; //$NON-NLS-1$
-	private static final String KEY_PRE_BUILD_ANNOUNCEMENT = "Build.pre.announcement"; //$NON-NLS-1$
-	private static final String KEY_POST_BUILD_STEP = "Build.post.step"; //$NON-NLS-1$
-	private static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build.post.announcement"; //$NON-NLS-1$
+	private static final String KEY_PRE_BUILD_STEP = "Build pre step"; //$NON-NLS-1$
+	private static final String KEY_PRE_BUILD_ANNOUNCEMENT = "Build pre announcement"; //$NON-NLS-1$
+	private static final String KEY_POST_BUILD_STEP = "Build post step"; //$NON-NLS-1$
+	private static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build post announcement"; //$NON-NLS-1$
 	private static final String KEY_AUTOBUILD_EXTENSION_CLASS = "Extension class name"; //$NON-NLS-1$
 	private static final String KEY_AUTOBUILD_EXTENSION_BUNDEL = "Extension bundel name"; //$NON-NLS-1$
+	private static final String KEY_PROVIDER_ID= "provider ID"; //$NON-NLS-1$
+	private static final String KEY_SELECTION_ID= "Selection"; //$NON-NLS-1$
 
 	// Start of fields that need to be copied/made persistent
 	private IConfiguration myAutoBuildConfiguration;
@@ -96,7 +103,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private BuildTargetPlatformData myTargetPlatformData;
 	private IBuildTools myBuildTools;
 	private BuildBuildData myBuildBuildData;
-	private boolean isValid = false;
+	private boolean myIsValid = false;
+	private boolean myIsTeamShared = false;
 	private String myName = EMPTY_STRING;
 	private String myDescription;
 	private Map<String, String> myProperties = new HashMap<>();
@@ -191,7 +199,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myBuilders = base.myBuilders;
 		myTargetPlatformData = new BuildTargetPlatformData(base.myTargetPlatformData, clone);
 		myBuildBuildData = new BuildBuildData(this, base.myBuildBuildData, clone);
-		isValid = base.isValid;
+		myIsValid = base.myIsValid;
 		myName = myCdtConfigurationDescription.getName();
 		myDescription = base.myDescription;
 		myProperties.clear();
@@ -287,164 +295,58 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	 * @param lineStart      only consider lines that start with this string
 	 * @param lineEnd        only consider lines that end with this string
 	 */
-	public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, String curConfigsText,
-			String lineStart, String lineEnd) {
-		super(cfgDescription, curConfigsText, lineStart, lineEnd);
+	public AutoBuildConfigurationDescription(ICConfigurationDescription cfgDescription, KeyValueTree keyValues) {
+		super(cfgDescription, keyValues.getChild(KEY_SOURCE_ENTRY));
 		myId = cfgDescription.getId();
 		myIsWritable = !cfgDescription.isReadOnly();
 		String extensionPointID = null;
 		String extensionID = null;
 		String projectTypeID = null;
 		String confName = null;
-		String builderID = null;
-		String autoCfgExtentionDesc = null;
-		String autoCfgExtentionBundel = null;
 		myCdtConfigurationDescription = cfgDescription;
-		String[] lines = curConfigsText.split(lineEnd);
-		Map<String, String> optionKeyMap = new HashMap<>();
-		Map<String, String> optionValueMap = new HashMap<>();
-		Map<String, String> optionResourceMap = new HashMap<>();
-		Map<String, String> customToolKeyMap = new HashMap<>();
-		Map<String, String> customToolResourceMap = new HashMap<>();
-		Map<String, String> customToolValueMap = new HashMap<>();
-		Map<String, String> customToolPatternKeyMap = new HashMap<>();
-		Map<String, String> customToolPatternResourceMap = new HashMap<>();
-		Map<String, String> customToolPatternValueMap = new HashMap<>();
 
-		// structure to handle the more complex fields
-		Map<String, Map<String, String>> complexStructures = new HashMap<>();
-		complexStructures.put(KEY_PROPERTY + DOT, myProperties);
-		complexStructures.put(OPTION + DOT + KEY + DOT, optionKeyMap);
-		complexStructures.put(OPTION + DOT + KEY_VALUE + DOT, optionValueMap);
-		complexStructures.put(OPTION + DOT + KEY_RESOURCE + DOT, optionResourceMap);
-		complexStructures.put(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT, customToolKeyMap);
-		complexStructures.put(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_VALUE + DOT, customToolValueMap);
-		complexStructures.put(KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_RESOURCE + DOT, customToolResourceMap);
-		complexStructures.put(KEY_CUSTOM_TOOL_PATTERN + DOT + KEY + DOT, customToolPatternKeyMap);
-		complexStructures.put(KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_VALUE + DOT, customToolPatternValueMap);
-		complexStructures.put(KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_RESOURCE + DOT, customToolPatternResourceMap);
 
-		for (String curLine : lines) {
-			if (!curLine.startsWith(lineStart)) {
-				continue;
-			}
-			String field[] = curLine.split(EQUAL, 2);
-			String key = field[0].substring(lineStart.length());
-			String value = field[1];
-			switch (key) {
-			case KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID:
-				extensionPointID = value;
-				break;
-			case KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_ID:
-				extensionID = value;
-				break;
-			case KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + ID:
-				projectTypeID = value;
-				break;
-			case KEY_MODEL + DOT + KEY_CONFIGURATION + DOT + NAME:
-				confName = value;
-				break;
-			case NAME:
-				myName = value;
-				break;
-			case DESCRIPTION:
-				myDescription = value;
-				break;
-			case KEY_BUILDFOLDER:
-				myBuildFolderString = value;
-				break;
-			case KEY_USE_DEFAULT_BUILD_COMMAND:
-				myUseDefaultBuildCommand = Boolean.parseBoolean(value);
-				break;
-			case KEY_GENERATE_MAKE_FILES_AUTOMATICALLY:
-				myGenerateMakeFilesAUtomatically = Boolean.parseBoolean(value);
-				break;
-			case KEY_USE_STANDARD_BUILD_ARGUMENTS:
-				myUseStandardBuildArguments = Boolean.parseBoolean(value);
-				break;
-			case KEY_STOP_ON_FIRST_ERROR:
-				myStopOnFirstBuildError = Boolean.parseBoolean(value);
-				break;
-			case KEY_IS_PARRALLEL_BUILD:
-				myIsParallelBuild = Boolean.parseBoolean(value);
-				break;
-			case KEY_IS_CLEAN_BUILD_ENABLED:
-				myIsCleanBuildEnabled = Boolean.parseBoolean(value);
-				break;
-			case KEY_IS_INCREMENTAL_BUILD_ENABLED:
-				myIsIncrementalBuildEnabled = Boolean.parseBoolean(value);
-				break;
-			case KEY_IS_AUTO_BUILD_ENABLED:
-				myIsAutoBuildEnabled = Boolean.parseBoolean(value);
-				break;
-			case KEY_NUM_PARRALEL_BUILDS:
-				myParallelizationNum = Integer.parseInt(value);
-				break;
-			case KEY_CUSTOM_BUILD_COMMAND:
-				myCustomBuildCommand = value;
-				break;
-			case KEY_BUILDER_ID:
-				builderID = value;
-				break;
-			case KEY_AUTO_MAKE_TARGET:
-				myAutoMakeTarget = value;
-				break;
-			case KEY_INCREMENTAL_MAKE_TARGET:
-				myIncrementalMakeTarget = value;
-				break;
-			case KEY_CLEAN_MAKE_TARGET:
-				myCleanMakeTarget = value;
-				break;
+		KeyValueTree modelKeyValues =keyValues.getChild(KEY_MODEL);
+		KeyValueTree buildToolsKeyValues =keyValues.getChild(KEY_BUILDTOOLS);
+		KeyValueTree projectTypeKeyValues =modelKeyValues.getChild(KEY_PROJECT_TYPE);
+		KeyValueTree configKeyValues =modelKeyValues.getChild(KEY_CONFIGURATION);
 
-			case KEY_PRE_BUILD_STEP:
-				myPreBuildStep = value;
-				break;
-			case KEY_PRE_BUILD_ANNOUNCEMENT:
-				myPreBuildAnnouncement = value;
-				break;
-			case KEY_POST_BUILD_STEP:
-				myPostBuildStep = value;
-				break;
-			case KEY_POST_BUILD_ANNOUNCEMENT:
-				myPostBuildStepAnouncement = value;
-				break;
-			case KEY_AUTOBUILD_EXTENSION_CLASS:
-				autoCfgExtentionDesc = value;
-				break;
-			case KEY_AUTOBUILD_EXTENSION_BUNDEL:
-				autoCfgExtentionBundel = value;
-				break;
+		myName=keyValues.getValue(NAME);
+		myDescription=keyValues.getValue(DESCRIPTION);
+		myBuildFolderString=keyValues.getValue(KEY_BUILDFOLDER);
+		myCustomBuildCommand=keyValues.getValue(KEY_CUSTOM_BUILD_COMMAND);
+		String builderID=keyValues.getValue(KEY_BUILDER_ID);
+		myAutoMakeTarget=keyValues.getValue(KEY_AUTO_MAKE_TARGET);
+		myIncrementalMakeTarget=keyValues.getValue(KEY_INCREMENTAL_MAKE_TARGET);
+		myCleanMakeTarget=keyValues.getValue(KEY_CLEAN_MAKE_TARGET);
+		myPreBuildStep=keyValues.getValue(KEY_PRE_BUILD_STEP);
+		myPreBuildAnnouncement=keyValues.getValue(KEY_PRE_BUILD_ANNOUNCEMENT);
+		myPostBuildStep=keyValues.getValue(KEY_POST_BUILD_STEP);
+		myPostBuildStepAnouncement=keyValues.getValue(KEY_POST_BUILD_ANNOUNCEMENT);
+		String autoCfgExtentionDesc=keyValues.getValue(KEY_AUTOBUILD_EXTENSION_CLASS);
+		myName=keyValues.getValue(NAME);
+		String autoCfgExtentionBundel=keyValues.getValue( KEY_AUTOBUILD_EXTENSION_BUNDEL);
+		myUseDefaultBuildCommand= Boolean.parseBoolean(keyValues.getValue(KEY_USE_DEFAULT_BUILD_COMMAND));
+		myGenerateMakeFilesAUtomatically= Boolean.parseBoolean(keyValues.getValue(KEY_GENERATE_MAKE_FILES_AUTOMATICALLY));
+		myUseStandardBuildArguments= Boolean.parseBoolean(keyValues.getValue(KEY_USE_STANDARD_BUILD_ARGUMENTS));
+		myStopOnFirstBuildError= Boolean.parseBoolean(keyValues.getValue(KEY_STOP_ON_FIRST_ERROR));
+		myIsParallelBuild= Boolean.parseBoolean(keyValues.getValue(KEY_IS_PARRALLEL_BUILD));
+		myIsCleanBuildEnabled= Boolean.parseBoolean(keyValues.getValue(KEY_IS_CLEAN_BUILD_ENABLED));
+		myIsIncrementalBuildEnabled= Boolean.parseBoolean(keyValues.getValue(KEY_IS_INCREMENTAL_BUILD_ENABLED));
+		myIsAutoBuildEnabled= Boolean.parseBoolean(keyValues.getValue(KEY_IS_AUTO_BUILD_ENABLED));
+		myParallelizationNum=Integer.parseInt(keyValues.getValue(KEY_NUM_PARRALEL_BUILDS));
 
-			default:
-				boolean found = false;
 
-				if (key.startsWith(KEY_BUILDTOOLS + DOT)) {
-					found = true;
-					String providerID = key.substring(KEY_BUILDTOOLS.length() + DOT.length());
-					String selectionID = value;
-					IBuildToolsManager buildToolManager = IBuildToolsManager.getDefault();
-					myBuildTools = buildToolManager.getBuildTools(providerID, selectionID);
+		String providerID =buildToolsKeyValues.getValue(	KEY_PROVIDER_ID);
+		String selectionID =buildToolsKeyValues.getValue(	KEY_PROVIDER_ID);
+		myBuildTools = IBuildToolsManager.getDefault().getBuildTools(providerID, selectionID);
 
-				}
 
-				// gather the complex field data
-				if (!found) {
-					for (Entry<String, Map<String, String>> curComplex : complexStructures.entrySet()) {
-						String searchKey = curComplex.getKey();
-						if (key.startsWith(searchKey)) {
-							String propKey = key.substring(searchKey.length());
-							curComplex.getValue().put(propKey, value);
-							found = true;
-							break;
-						}
-					}
-				}
+		extensionPointID=projectTypeKeyValues.getValue(KEY_EXTENSION_POINT_ID);
+		extensionID=projectTypeKeyValues.getValue(KEY_EXTENSION_ID);
+		projectTypeID=projectTypeKeyValues.getValue(ID);
+		confName=configKeyValues.getValue(NAME);
 
-				if (!found && !key.startsWith(KEY_EXTENSION) && !key.startsWith(KEY_SOURCE_ENTRY)) {
-					System.err.println("Following autobuild configuration line is ignored " + curLine); //$NON-NLS-1$
-				}
-			}
-		}
 		myProjectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
 		if (myBuildTools == null) {
 			// TODO add real error warning
@@ -467,76 +369,62 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		// reconstruct the more complicated fields
 
 		IProject project = getProject();
-		// reconstruct the selected options
-		for (Entry<String, String> curOptionIndex : optionKeyMap.entrySet()) {
-			String key = curOptionIndex.getKey();
-			String optionID = curOptionIndex.getValue();
-			String value = optionValueMap.get(key);
-			String resourceString = optionResourceMap.get(key);
-			if (value == null || resourceString == null) {
-				// This Should not happen
-				continue;
-			}
-			IResource resource = project;
-			if (!resourceString.isBlank()) {
-				resource = project.getFile(resourceString);
-			}
-			IOption option = myProjectType.getOption(optionID);
-
-			if (resource == null || option == null) {
-				// TODO log a error in error log
-				System.err.println(
-						"failed to map option(" + optionID + ")/value(" + value + ")/resource(" + resource + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			} else {
-				setOptionValueInternal(resource, option, value);
-			}
-
-		}
 		options_combine();
 
-		// reconstruct the custom tool commands
-		for (Entry<String, String> curOptionIndex : customToolKeyMap.entrySet()) {
-			String cmd = customToolValueMap.get(curOptionIndex.getKey());
-			String resourceString = customToolResourceMap.get(curOptionIndex.getKey());
-			ITool tool = myAutoBuildConfiguration.getProjectType().getToolChain().getTool(curOptionIndex.getValue());
-			if (cmd == null || resourceString == null || tool == null) {
-				// This Should not happen
-			} else {
-				IResource resource = project;
-				if (!resourceString.isBlank()) {
-					resource = project.getFile(resourceString);
-				}
 
-				Map<IResource, String> resourceCmds = myCustomToolCommands.get(tool);
-				if (resourceCmds == null) {
-					resourceCmds = new HashMap<>();
-					myCustomToolCommands.put(tool, resourceCmds);
-				}
-				resourceCmds.put(resource, cmd);
-			}
+		KeyValueTree propertiesKeyValues =keyValues.getChild(KEY_PROPERTY);
+		for (KeyValueTree curProp : propertiesKeyValues.getChildren().values()) {
+			myProperties.put(curProp.getKey(), curProp.getValue());
 		}
 
-		// reconstruct the custom tool patterns
-		for (Entry<String, String> curOptionIndex : customToolPatternKeyMap.entrySet()) {
-			String cmd = customToolPatternValueMap.get(curOptionIndex.getKey());
-			String resourceString = customToolPatternResourceMap.get(curOptionIndex.getKey());
-			ITool tool = myAutoBuildConfiguration.getProjectType().getToolChain().getTool(curOptionIndex.getValue());
-			if (cmd == null || resourceString == null || tool == null) {
-				// This Should not happen
-			} else {
-				IResource resource = project;
-				if (!resourceString.isBlank()) {
-					resource = project.getFile(resourceString);
-				}
 
-				Map<IResource, String> resourceCmds = myCustomToolPattern.get(tool);
-				if (resourceCmds == null) {
-					resourceCmds = new HashMap<>();
-					myCustomToolPattern.put(tool, resourceCmds);
-				}
-				resourceCmds.put(resource, cmd);
+		KeyValueTree optionsKeyValue=keyValues.getChild( OPTION );
+		for (KeyValueTree curResourceProp : optionsKeyValue.getChildren().values()) {
+			IResource resource = getResource(project, curResourceProp);
+			Map<IOption, String> resourceOptions=new HashMap<>();
+			for (KeyValueTree curOption : curResourceProp.getChildren().values()) {
+				String value=curOption.getValue(  KEY_VALUE );
+				IOption option = myProjectType.getOption( curOption.getValue(  KEY  ));
+				resourceOptions.put(option, value);
 			}
+			mySelectedOptions.put(resource, resourceOptions);
 		}
+
+
+
+
+
+
+
+
+
+		KeyValueTree toolCommandKeyValue=keyValues.getChild( KEY_CUSTOM_TOOL_COMMAND );
+		for (KeyValueTree curToolCommand : toolCommandKeyValue.getChildren().values()) {
+			String toolID=curToolCommand.getValue(KEY);
+			ITool tool = myProjectType.getToolChain().getTool(toolID);
+			Map<IResource, String> resourceOptions=new HashMap<>();
+			for (KeyValueTree curOption : curToolCommand.getChildren().values()) {
+				IResource resource = getResource(project, curOption);
+				resourceOptions.put(resource, curOption.getValue(  KEY_VALUE ));
+			}
+			myCustomToolCommands.put(tool, resourceOptions);
+		}
+
+
+
+
+		KeyValueTree toolPatternKeyValue=keyValues.getChild( KEY_CUSTOM_TOOL_PATTERN );
+		for (KeyValueTree curToolCommand : toolPatternKeyValue.getChildren().values()) {
+			String toolID=curToolCommand.getValue(KEY);
+			ITool tool = myProjectType.getToolChain().getTool(toolID);
+			Map<IResource, String> resourceOptions=new HashMap<>();
+			for (KeyValueTree curOption : curToolCommand.getChildren().values()) {
+				IResource resource = getResource(project, curOption);
+				resourceOptions.put(resource, curOption.getValue(  KEY_VALUE ));
+			}
+			myCustomToolPattern.put(tool, resourceOptions);
+		}
+
 
 		// load the auto Build configuration extension description
 		if (autoCfgExtentionDesc != null && autoCfgExtentionBundel != null && (!autoCfgExtentionDesc.isBlank())
@@ -545,11 +433,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				Bundle contributingBundle = getBundle(autoCfgExtentionBundel);
 				Class<?> autoCfgExtentionDescClass = contributingBundle.loadClass(autoCfgExtentionDesc);
 				Constructor<?> ctor = autoCfgExtentionDescClass.getDeclaredConstructor(
-						IAutoBuildConfigurationDescription.class, String.class, String.class, String.class);
+						IAutoBuildConfigurationDescription.class, KeyValueTree.class);
 				ctor.setAccessible(true);
 
 				myAutoBuildCfgExtDes = (AutoBuildConfigurationExtensionDescription) ctor.newInstance(this,
-						curConfigsText, lineStart + KEY_EXTENSION + DOT, lineEnd);
+						keyValues.getChild( KEY_EXTENSION ));
 			} catch (NoSuchMethodException e) {
 				System.err.println(
 						"Classes derived from AutoBuildConfigurationExtensionDescription need to implement constructor IAutoBuildConfigurationDescription, String, String, String"); //$NON-NLS-1$
@@ -563,28 +451,23 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	}
 
+
+	private static IResource getResource(IProject project,KeyValueTree keyValueTree) {
+		String resourceID =keyValueTree.getValue(  KEY_RESOURCE );
+		String resourceType =keyValueTree.getValue(  KEY_RESOURCE_TYPE );
+		switch(resourceType) {
+		case KEY_FILE:
+			 return project.getFile(resourceID);
+	case KEY_FOLDER:
+		 return project.getFolder(resourceID);
+		 default:
+case KEY_PROJECT:
+	 return project;
+}
+	}
+
 	private static Bundle getBundle(String symbolicName) {
 		return Platform.getBundle(symbolicName);
-		// return
-		// org.eclipse.core.internal.registry.osgi.OSGIUtils.getDefault().getBundle(symbolicName);
-		// TOFIX Below is an alternative but as I could not test at the time ...
-		// BundleContext bundleContext = Activator.getBundleContext();
-		// if (bundleContext == null) {
-		// System.err.println("Failed to get the bundleContext");
-		// System.err.println("Could not load the plugin this project is created
-		// with.");
-		// return null;
-		// }
-		// Bundle result = null;
-		// for (Bundle candidate : bundleContext.getBundles()) {
-		// if (candidate.getSymbolicName().equals(symbolicName)) {
-		// if (result == null || result.getVersion().compareTo(candidate.getVersion()) <
-		// 0) {
-		// result = candidate;
-		// }
-		// }
-		// }
-		// return result;
 	}
 
 	/**
@@ -647,7 +530,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myBuildBuildData = new BuildBuildData(this);
 		options_updateDefault();
 
-		isValid = true;
+		myIsValid = true;
 	}
 
 	@Override
@@ -710,7 +593,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public boolean isValid() {
-		return isValid;
+		return myIsValid;
 	}
 
 	@Override
@@ -762,11 +645,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		}
 		return ret;
 	}
-
-	// @Override
-	// public Map<IOption, String> getSelectedOptions(IResource file, ITool tool) {
-	// return convertOptionIDToOption(getSelectedOptionNames(file, tool), tool);
-	// }
 
 	/**
 	 * provide all the options for the resource taking into account setting on the
@@ -1003,101 +881,110 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myCustomBuildCommand = makeArgs;
 	}
 
+
 	@Override
-	public StringBuffer serialize(String linePrefix, String lineEnd) {
-		int counterStart = 0;
-		StringBuffer ret = super.serialize(linePrefix, lineEnd);
-		IProjectType projectType = myAutoBuildConfiguration.getProjectType();
-		ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_POINT_ID + EQUAL
-				+ projectType.getExtensionPointID() + lineEnd);
-		ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + KEY_EXTENSION_ID + EQUAL
-				+ projectType.getExtensionID() + lineEnd);
-		ret.append(linePrefix + KEY_MODEL + DOT + KEY_PROJECT_TYPE + DOT + ID + EQUAL + projectType.getId() + lineEnd);
-		ret.append(linePrefix + KEY_MODEL + DOT + KEY_CONFIGURATION + DOT + NAME + EQUAL
-				+ myAutoBuildConfiguration.getName() + lineEnd);
+	public void serialize(KeyValueTree keyValuePairs) {
+		super.serialize(keyValuePairs.addChild(KEY_SOURCE_ENTRY ));
+		final int counterStart = 0;
+		KeyValueTree modelKeyValue=keyValuePairs.addChild(KEY_MODEL );
+		KeyValueTree projectTypeKeyValue=modelKeyValue.addChild(KEY_PROJECT_TYPE );
+		projectTypeKeyValue.addChild(  KEY_EXTENSION_POINT_ID , getExtensionPointID());
+		projectTypeKeyValue.addChild( KEY_EXTENSION_ID , getExtensionID() );
+		projectTypeKeyValue.addChild(  ID, myProjectType.getId() );
 
-		ret.append(linePrefix + NAME + EQUAL + myName + lineEnd);
-		ret.append(linePrefix + DESCRIPTION + EQUAL);
-		ret.append(myDescription);
-		ret.append(lineEnd);
+		KeyValueTree configurationKeyValue=modelKeyValue.addChild(  KEY_CONFIGURATION);
+		configurationKeyValue.addChild(  NAME , myAutoBuildConfiguration.getName() );
 
-		ret.append(linePrefix + KEY_BUILDTOOLS + DOT + getBuildTools().getProviderID() + EQUAL
-				+ getBuildTools().getSelectionID() + lineEnd);
+		keyValuePairs.addChild( NAME , myName );
+		keyValuePairs.addChild( DESCRIPTION ,myDescription);
 
-		// ret.append(linePrefix + ID + EQUAL + myId + lineEnd);
 
+		KeyValueTree buildToolsKeyValue=keyValuePairs.addChild( KEY_BUILDTOOLS );
+		buildToolsKeyValue.addChild( KEY_PROVIDER_ID,getBuildTools().getProviderID());
+		buildToolsKeyValue.addChild( KEY_SELECTION_ID, getBuildTools().getSelectionID() );
+
+		keyValuePairs.addChild( KEY_BUILDFOLDER , myBuildFolderString );
+		keyValuePairs.addChild( KEY_USE_DEFAULT_BUILD_COMMAND , String.valueOf(myUseDefaultBuildCommand)
+				);
+		keyValuePairs.addChild( KEY_GENERATE_MAKE_FILES_AUTOMATICALLY ,String.valueOf(myGenerateMakeFilesAUtomatically) );
+		keyValuePairs.addChild( KEY_USE_STANDARD_BUILD_ARGUMENTS , String.valueOf(myUseStandardBuildArguments)
+				);
+		keyValuePairs.addChild( KEY_STOP_ON_FIRST_ERROR , String.valueOf(myStopOnFirstBuildError) );
+		keyValuePairs.addChild( KEY_IS_PARRALLEL_BUILD , String.valueOf(myIsParallelBuild) );
+		keyValuePairs.addChild( KEY_IS_CLEAN_BUILD_ENABLED , String.valueOf(myIsCleanBuildEnabled) );
+		keyValuePairs.addChild( KEY_IS_INCREMENTAL_BUILD_ENABLED , String.valueOf(myIsIncrementalBuildEnabled)
+				);
+		keyValuePairs.addChild( KEY_NUM_PARRALEL_BUILDS , String.valueOf(myParallelizationNum) );
+		keyValuePairs.addChild( KEY_CUSTOM_BUILD_COMMAND , myCustomBuildCommand );
+		keyValuePairs.addChild( KEY_BUILDER_ID , myBuilder.getId() );
+		keyValuePairs.addChild( KEY_AUTO_MAKE_TARGET , myAutoMakeTarget );
+		keyValuePairs.addChild( KEY_INCREMENTAL_MAKE_TARGET , myIncrementalMakeTarget );
+		keyValuePairs.addChild( KEY_CLEAN_MAKE_TARGET , myCleanMakeTarget );
+
+		keyValuePairs.addChild( KEY_PRE_BUILD_STEP , myPreBuildStep );
+		keyValuePairs.addChild( KEY_PRE_BUILD_ANNOUNCEMENT , myPreBuildAnnouncement );
+		keyValuePairs.addChild( KEY_POST_BUILD_STEP , myPostBuildStep );
+		keyValuePairs.addChild( KEY_POST_BUILD_ANNOUNCEMENT , myPostBuildStepAnouncement );
+
+
+		KeyValueTree propertiesKeyValue=keyValuePairs.addChild( KEY_PROPERTY );
 		for (Entry<String, String> curProp : myProperties.entrySet()) {
-			ret.append(linePrefix + KEY_PROPERTY + DOT + curProp.getKey() + EQUAL + curProp.getValue() + lineEnd);
+			propertiesKeyValue.addChild(  curProp.getKey(), curProp.getValue() );
 		}
+
 		int counter = counterStart;
+		KeyValueTree optionsKeyValue=keyValuePairs.addChild( OPTION );
 		for (Entry<IResource, Map<IOption, String>> curOption : mySelectedOptions.entrySet()) {
-			IResource resource = curOption.getKey();
+			IResource resource= curOption.getKey();
 			String resourceID = resource.getProjectRelativePath().toString();
+			KeyValueTree curResourceKeyValue=optionsKeyValue.addChild(  String.valueOf(counter) );
+			curResourceKeyValue.addChild(  KEY_RESOURCE , resourceID);
+			if(resource instanceof IFolder) {
+				curResourceKeyValue.addChild(  KEY_RESOURCE_TYPE , KEY_FOLDER);
+			}
+			if(resource instanceof IFile) {
+				curResourceKeyValue.addChild(  KEY_RESOURCE_TYPE , KEY_FILE);
+			}
+			if(resource instanceof IProject) {
+				curResourceKeyValue.addChild(  KEY_RESOURCE_TYPE , KEY_PROJECT);
+			}
+			counter++;
+			int counter2 = counterStart;
 			for (Entry<IOption, String> resourceOptions : curOption.getValue().entrySet()) {
-				ret.append(linePrefix + OPTION + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
-						+ resourceOptions.getKey() + lineEnd);
-				ret.append(linePrefix + OPTION + DOT + KEY_VALUE + DOT + String.valueOf(counter) + EQUAL
-						+ resourceOptions.getValue() + lineEnd);
-				ret.append(linePrefix + OPTION + DOT + KEY_RESOURCE + DOT + String.valueOf(counter) + EQUAL + resourceID
-						+ lineEnd);
-				counter++;
+				KeyValueTree curOptionKeyValue=curResourceKeyValue.addChild(  String.valueOf(counter2) );
+				curOptionKeyValue.addChild(  KEY  , resourceOptions.getKey().getId() );
+				curOptionKeyValue.addChild(  KEY_VALUE  , resourceOptions.getValue() );
+				counter2++;
 			}
 		}
 
-		ret.append(linePrefix + KEY_BUILDFOLDER + EQUAL + myBuildFolderString + lineEnd);
-		ret.append(linePrefix + KEY_USE_DEFAULT_BUILD_COMMAND + EQUAL + String.valueOf(myUseDefaultBuildCommand)
-				+ lineEnd);
-		ret.append(linePrefix + KEY_GENERATE_MAKE_FILES_AUTOMATICALLY + EQUAL
-				+ String.valueOf(myGenerateMakeFilesAUtomatically) + lineEnd);
-		ret.append(linePrefix + KEY_USE_STANDARD_BUILD_ARGUMENTS + EQUAL + String.valueOf(myUseStandardBuildArguments)
-				+ lineEnd);
-		ret.append(linePrefix + KEY_STOP_ON_FIRST_ERROR + EQUAL + String.valueOf(myStopOnFirstBuildError) + lineEnd);
-		ret.append(linePrefix + KEY_IS_PARRALLEL_BUILD + EQUAL + String.valueOf(myIsParallelBuild) + lineEnd);
-		ret.append(linePrefix + KEY_IS_CLEAN_BUILD_ENABLED + EQUAL + String.valueOf(myIsCleanBuildEnabled) + lineEnd);
-		ret.append(linePrefix + KEY_IS_INCREMENTAL_BUILD_ENABLED + EQUAL + String.valueOf(myIsIncrementalBuildEnabled)
-				+ lineEnd);
-		ret.append(linePrefix + KEY_NUM_PARRALEL_BUILDS + EQUAL + String.valueOf(myParallelizationNum) + lineEnd);
-		ret.append(linePrefix + KEY_CUSTOM_BUILD_COMMAND + EQUAL + myCustomBuildCommand + lineEnd);
-		ret.append(linePrefix + KEY_BUILDER_ID + EQUAL + myBuilder.getId() + lineEnd);
-		ret.append(linePrefix + KEY_AUTO_MAKE_TARGET + EQUAL + myAutoMakeTarget + lineEnd);
-		ret.append(linePrefix + KEY_INCREMENTAL_MAKE_TARGET + EQUAL + myIncrementalMakeTarget + lineEnd);
-		ret.append(linePrefix + KEY_CLEAN_MAKE_TARGET + EQUAL + myCleanMakeTarget + lineEnd);
-
-		ret.append(linePrefix + KEY_PRE_BUILD_STEP + EQUAL + myPreBuildStep + lineEnd);
-		ret.append(linePrefix + KEY_PRE_BUILD_ANNOUNCEMENT + EQUAL + myPreBuildAnnouncement + lineEnd);
-		ret.append(linePrefix + KEY_POST_BUILD_STEP + EQUAL + myPostBuildStep + lineEnd);
-		ret.append(linePrefix + KEY_POST_BUILD_ANNOUNCEMENT + EQUAL + myPostBuildStepAnouncement + lineEnd);
-
 		counter = counterStart;
+		KeyValueTree customToolKeyValue=keyValuePairs.addChild( KEY_CUSTOM_TOOL_COMMAND );
 		for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolCommands.entrySet()) {
 			ITool tool = curCustomToolCommands.getKey();
+			customToolKeyValue.addChild( KEY ,tool.getId());
 
 			for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
 				IResource res = curResourceCommand.getKey();
+				KeyValueTree curOptionKeyValue=customToolKeyValue.addChild(  String.valueOf(counter) );
 				String resourceID = res.getProjectRelativePath().toString();
-				ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
-						+ tool.getId() + lineEnd);
-				ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_VALUE + DOT + String.valueOf(counter)
-						+ EQUAL + curResourceCommand.getValue() + lineEnd);
-				ret.append(linePrefix + KEY_CUSTOM_TOOL_COMMAND + DOT + KEY_RESOURCE + DOT + String.valueOf(counter)
-						+ EQUAL + resourceID + lineEnd);
+				curOptionKeyValue.addChild( KEY_VALUE , curResourceCommand.getValue() );
+				curOptionKeyValue.addChild(  KEY_RESOURCE , resourceID );
 				counter++;
 			}
 		}
 
 		counter = counterStart;
+		KeyValueTree customToolPatternKeyValue=keyValuePairs.addChild( KEY_CUSTOM_TOOL_PATTERN );
 		for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolPattern.entrySet()) {
 			ITool tool = curCustomToolCommands.getKey();
-
+			customToolPatternKeyValue.addChild( KEY ,tool.getId());
 			for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
 				IResource res = curResourceCommand.getKey();
 				String resourceID = res.getProjectRelativePath().toString();
-				ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY + DOT + String.valueOf(counter) + EQUAL
-						+ tool.getId() + lineEnd);
-				ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_VALUE + DOT + String.valueOf(counter)
-						+ EQUAL + curResourceCommand.getValue() + lineEnd);
-				ret.append(linePrefix + KEY_CUSTOM_TOOL_PATTERN + DOT + KEY_RESOURCE + DOT + String.valueOf(counter)
-						+ EQUAL + resourceID + lineEnd);
+				KeyValueTree curOptionKeyValue=customToolPatternKeyValue.addChild(  String.valueOf(counter) );
+				curOptionKeyValue.addChild(  KEY_VALUE , curResourceCommand.getValue() );
+				curOptionKeyValue.addChild(  KEY_RESOURCE , resourceID );
 				counter++;
 			}
 		}
@@ -1106,14 +993,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			Class<? extends AutoBuildConfigurationExtensionDescription> referencedClass = myAutoBuildCfgExtDes
 					.getClass();
 
-			ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_BUNDEL + EQUAL + myAutoBuildCfgExtDes.getBundelName()
-					+ lineEnd);
-			ret.append(linePrefix + KEY_AUTOBUILD_EXTENSION_CLASS + EQUAL + referencedClass.getName() + lineEnd);
-			ret.append(myAutoBuildCfgExtDes.serialize(linePrefix + KEY_EXTENSION + DOT, lineEnd));
+			keyValuePairs.addChild( KEY_AUTOBUILD_EXTENSION_BUNDEL , myAutoBuildCfgExtDes.getBundelName()
+					);
+			keyValuePairs.addChild( KEY_AUTOBUILD_EXTENSION_CLASS , referencedClass.getName() );
+			myAutoBuildCfgExtDes.serialize(keyValuePairs.addChild(KEY_EXTENSION));
 		}
-
-		return ret;
-
 	}
 
 	@Override
@@ -1622,6 +1506,16 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			envSet.add(curEnv.getKey() + EQUAL + curEnv.getValue());
 		}
 		return envSet.toArray(new String[envSet.size()]);
+	}
+
+	@Override
+	public boolean isTeamShared() {
+		return myIsTeamShared;
+	}
+
+	@Override
+	public void setTeamShared(boolean isTeamShared) {
+		myIsTeamShared= isTeamShared;
 	}
 
 }

@@ -1,5 +1,7 @@
 package io.sloeber.autoBuild.buildTools.internal;
 
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,8 +15,6 @@ import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IProjectType;
-
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 public class PathBuildTools implements IBuildTools {
 

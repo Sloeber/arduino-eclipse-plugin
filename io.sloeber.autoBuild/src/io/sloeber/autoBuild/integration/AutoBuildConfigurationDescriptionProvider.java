@@ -14,12 +14,12 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -27,129 +27,240 @@ import org.eclipse.cdt.core.settings.model.IModificationContext;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationDataProvider;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 
 /**
  * The main hook ManagedBuild uses to connect to cdt.core's project model.
  * Provides & Persists Build configuration data in the project model storage.
  */
-public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDataProvider {// implements ISettingsChangeListener {
-    public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".ConfigurationDataProvider"; //$NON-NLS-1$
-    private static final String AUTO_BUILD_PROJECT_FILE = ".autoBuildProject"; //$NON-NLS-1$
+public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDataProvider {// implements
+																							// ISettingsChangeListener {
+	public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".ConfigurationDataProvider"; //$NON-NLS-1$
+	private static final String AUTO_BUILD_PROJECT_FILE = ".autoBuildProject"; //$NON-NLS-1$
+	private static final String AUTO_BUILD_TEAM_FILE = "autoBuildProject.cfg"; //$NON-NLS-1$
 
-    public AutoBuildConfigurationDescriptionProvider() {
-    }
 
-    @Override
-    public CConfigurationData applyConfiguration(ICConfigurationDescription cfgDescription,
-            ICConfigurationDescription baseCfgDescription, CConfigurationData baseData, IModificationContext context,
-            IProgressMonitor monitor) throws CoreException {
+//	public class KeyValuePairs{
+//		private String myLinePrefix;
+//		private String myLineEnd;
+//		private Map<String,String> myKeys =new TreeMap<>();
+//		private Set<KeyValuePairs> myChildren =new HashSet<>();
+//		KeyValuePairs(String linePrefix, String lineEnd){
+//			myLinePrefix= linePrefix;
+//			myLineEnd=lineEnd;
+//		}
+//		public void append(String key,String value) {
+//			if(value.isBlank()) {
+//				return;
+//			}
+//			myKeys.put( key , value );
+//		}
+//		public StringBuffer getBuffer() {
+//			return getBuffer(null);
+//		}
+//		public void append(KeyValuePairs stringBuffer) {
+//			myKeys.putAll(stringBuffer.myKeys);
+//
+//		}
+//		public KeyValuePairs getChild(String childKey) {
+//			KeyValuePairs ret=new KeyValuePairs(childKey,myLineEnd);
+//			myChildren.add(ret);
+//			return ret;
+//		}
+//		public StringBuffer getBuffer(Set<String> excludedKeys) {
+//			StringBuffer ret=new StringBuffer();
+//			for(Entry<String, String> curPair:myKeys.entrySet()) {
+//				if(excludedKeys!=null && excludedKeys.contains(curPair.getKey()) ) {
+//					continue;
+//				}
+//				ret.append(myLinePrefix);
+//				ret.append(DOT);
+//				ret.append(curPair.getKey());
+//				ret.append(EQUAL);
+//				ret.append(curPair.getValue());
+//				ret.append(myLineEnd);
+//			}
+//			for(KeyValuePairs child:myChildren) {
+//				ret.append(child.getBuffer(myLinePrefix,excludedKeys));
+//			}
+//			return ret;
+//		}
+//
+//		public StringBuffer getBuffer(String linePrefix,Set<String> excludedKeys) {
+//			StringBuffer ret=new StringBuffer();
+//			for(Entry<String, String> curPair:myKeys.entrySet()) {
+//				if(excludedKeys!=null && excludedKeys.contains(curPair.getKey()) ) {
+//					continue;
+//				}
+//				ret.append(linePrefix );
+//				ret.append(DOT );
+//				ret.append(myLinePrefix);
+//				ret.append(DOT);
+//				ret.append(curPair.getKey());
+//				ret.append(EQUAL);
+//				ret.append(curPair.getValue());
+//				ret.append(myLineEnd);
+//			}
+//			for(KeyValuePairs child:myChildren) {
+//				ret.append(child.getBuffer(linePrefix +myLinePrefix,excludedKeys));
+//			}
+//			return ret;
+//		}
+//
+//
+//	}
 
-        ICProjectDescription projDesc = cfgDescription.getProjectDescription();
-        String lineEnd = getLineEnd();
-        StringBuffer configText = new StringBuffer();
-        for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
-            AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
-                    .getConfigurationData();
 
-            String lineStart = getLinePrefix(curConfDesc);
 
-            configText.append(autoBuildConfigBase.serialize(lineStart, lineEnd));
-        }
+	public AutoBuildConfigurationDescriptionProvider() {
+	}
 
-        File projectFile = getStorageFile(cfgDescription);
-        try {
-            if (projectFile.exists()) {
-                //                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
-                //                String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" + lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
-                FileUtils.write(projectFile, configText, Charset.defaultCharset());
-            } else {
-                FileUtils.write(projectFile, configText, Charset.defaultCharset());
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+	@Override
+	public CConfigurationData applyConfiguration(ICConfigurationDescription cfgDescription,
+			ICConfigurationDescription baseCfgDescription, CConfigurationData baseData, IModificationContext context,
+			IProgressMonitor monitor) throws CoreException {
 
-        return baseData;
-    }
+		ICProjectDescription projDesc = cfgDescription.getProjectDescription();
+		IProject iProject = projDesc.getProject();
 
-    @Override
-    public CConfigurationData createConfiguration(ICConfigurationDescription cfgDescription,
-            ICConfigurationDescription baseCfgDescription, CConfigurationData base, boolean clone,
-            IProgressMonitor monitor) throws CoreException {
-        AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) base;
-        AutoBuildConfigurationDescription ret = new AutoBuildConfigurationDescription(cfgDescription,
-                autoBuildConfigBase, clone);
-        return ret;
-    }
+		StringBuffer teamText=new StringBuffer();
+		Set<String> excludedKeys=new HashSet<>();
+		KeyValueTree keyValuePairs=KeyValueTree.createRoot();
+		//Map<ICConfigurationDescription,KeyValuePairs> keyValues=new TreeMap<>();
+		for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
+			AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
+					.getConfigurationData();
 
-    @Override
-    public CConfigurationData loadConfiguration(ICConfigurationDescription cfgDescription, IProgressMonitor monitor)
-            throws CoreException {
+			KeyValueTree cfgkeyValuePairs=keyValuePairs.addChild(curConfDesc.getName());
 
-        String lineStart = getLinePrefix(cfgDescription);
-        String lineEnd = getLineEnd();
-        File projectFile = getStorageFile(cfgDescription);
-        try {
-            if (projectFile.exists()) {
-                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
-                return new AutoBuildConfigurationDescription(cfgDescription, curConfigsText, lineStart, lineEnd);
-            }
-            //This Should not happen
-            throw new CoreException(null);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+			autoBuildConfigBase.serialize(cfgkeyValuePairs);
+//			configText.append(keyValuePairs.getBuffer());
+//			if (autoBuildConfigBase.isTeamShared()) {
+//				teamText.append(keyValuePairs.getBuffer(excludedKeys));
+//			}
+		}
 
-        return null;
-    }
+		//StringBuffer
 
-    @Override
-    public void removeConfiguration(ICConfigurationDescription cfgDescription, CConfigurationData data,
-            IProgressMonitor monitor) {
-        return;
-        //        String configname = cfgDescription.getName();
-        //        if (cfgDescription.getProjectDescription().getConfigurationByName(configname) != null) {
-        //            //no need to remove the configuration from disk
-        //            return;
-        //        }
-        //        String lineStart = getLinePrefix(cfgDescription);
-        //        String lineEnd = getLineEnd();
-        //        File projectFile = getStorageFile(cfgDescription);
-        //        try {
-        //            if (projectFile.exists()) {
-        //                String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
-        //                String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" + lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
-        //                FileUtils.write(projectFile, clean, Charset.defaultCharset());
-        //            }
-        //        } catch (IOException e) {
-        //            // TODO Auto-generated catch block
-        //            e.printStackTrace();
-        //        }
-        //        return;
-    }
+		File projectFile = getStorageFile(iProject);
+		File teamFile = getTeamFile(iProject); // TODO add config saving
+		try {
+			boolean needsWriting = true;
+			String  configText= keyValuePairs.dump();
+			if (projectFile.exists()) {
+				String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
+				needsWriting = !curConfigsText.equals(configText);
+			}
+			if (needsWriting) {
+				FileUtils.write(projectFile, configText, Charset.defaultCharset());
+			}
+			needsWriting = true;
+			if(teamText.length()<2) {
+				teamFile.delete();
+				needsWriting=false;
+			}
+			if (teamFile.exists()) {
+				String curTeamText = FileUtils.readFileToString(teamFile, Charset.defaultCharset());
+				needsWriting = !curTeamText.equals(teamText.toString());
 
-    @Override
-    public void dataCached(ICConfigurationDescription cfgDescription, CConfigurationData data,
-            IProgressMonitor monitor) {
-        //doc says: default implementation is empty :-)
-        return;
-    }
+			}
+			if (needsWriting) {
+					FileUtils.write(teamFile, teamText, Charset.defaultCharset());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-    private static String getLinePrefix(ICConfigurationDescription cfgDescription) {
-        return cfgDescription.getName() + DOT;
-    }
+		return baseData;
+	}
 
-    private static String getLineEnd() {
-        return NEWLINE;
-    }
+	@Override
+	public CConfigurationData createConfiguration(ICConfigurationDescription cfgDescription,
+			ICConfigurationDescription baseCfgDescription, CConfigurationData base, boolean clone,
+			IProgressMonitor monitor) throws CoreException {
+		AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) base;
+		AutoBuildConfigurationDescription ret = new AutoBuildConfigurationDescription(cfgDescription,
+				autoBuildConfigBase, clone);
+		return ret;
+	}
 
-    private static File getStorageFile(ICConfigurationDescription cfgDescription) {
-        IFile project = cfgDescription.getProjectDescription().getProject().getFile(AUTO_BUILD_PROJECT_FILE);
-        return project.getLocation().toFile();
-    }
+	@Override
+	public CConfigurationData loadConfiguration(ICConfigurationDescription cfgDescription, IProgressMonitor monitor)
+			throws CoreException {
+
+		IProject iProject = cfgDescription.getProjectDescription().getProject();
+		File projectFile = getStorageFile(iProject);
+		File teamFile = getTeamFile(iProject);
+		try {
+			if (projectFile.exists()) {
+				KeyValueTree keyValues =KeyValueTree.createRoot();
+				keyValues.mergeFile(projectFile);
+				//String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
+				if (teamFile.exists()) {
+					keyValues.mergeFile(teamFile);
+//					curConfigsText = curConfigsText + NEWLINE
+//							+ FileUtils.readFileToString(teamFile, Charset.defaultCharset());
+				}
+				return new AutoBuildConfigurationDescription(cfgDescription, keyValues.getChild( cfgDescription.getName()));
+			}
+			// This Should not happen
+			throw new CoreException(null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public void removeConfiguration(ICConfigurationDescription cfgDescription, CConfigurationData data,
+			IProgressMonitor monitor) {
+		return;
+		// String configname = cfgDescription.getName();
+		// if (cfgDescription.getProjectDescription().getConfigurationByName(configname)
+		// != null) {
+		// //no need to remove the configuration from disk
+		// return;
+		// }
+		// String lineStart = getLinePrefix(cfgDescription);
+		// String lineEnd = getLineEnd();
+		// File projectFile = getStorageFile(cfgDescription);
+		// try {
+		// if (projectFile.exists()) {
+		// String curConfigsText = FileUtils.readFileToString(projectFile,
+		// Charset.defaultCharset());
+		// String clean = curConfigsText.replaceAll("(?m)^" + lineStart + ".+$" +
+		// lineEnd, EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
+		// FileUtils.write(projectFile, clean, Charset.defaultCharset());
+		// }
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// return;
+	}
+
+	@Override
+	public void dataCached(ICConfigurationDescription cfgDescription, CConfigurationData data,
+			IProgressMonitor monitor) {
+		// doc says: default implementation is empty :-)
+		return;
+	}
+
+
+	private static File getStorageFile(IProject iProject) {
+		IFile project = iProject.getFile(AUTO_BUILD_PROJECT_FILE);
+		return project.getLocation().toFile();
+	}
+
+	private static File getTeamFile(IProject iProject) {
+		IFile project = iProject.getFile(AUTO_BUILD_TEAM_FILE);
+		return project.getLocation().toFile();
+	}
 }

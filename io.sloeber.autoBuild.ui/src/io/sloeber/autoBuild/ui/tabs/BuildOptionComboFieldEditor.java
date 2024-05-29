@@ -14,7 +14,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.ui.tabs;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.LinkedList;
 import java.util.List;

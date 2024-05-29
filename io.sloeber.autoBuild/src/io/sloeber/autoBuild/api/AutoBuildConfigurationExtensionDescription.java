@@ -1,5 +1,7 @@
 package io.sloeber.autoBuild.api;
 
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
+
 /**
  * this abstract class is the basis to extend AutoBuild with your own project
  * data/methods
@@ -65,7 +67,7 @@ public abstract class AutoBuildConfigurationExtensionDescription {
      * @param lineEnd
      * @return
      */
-    public abstract StringBuffer serialize(String linePrefix, String lineEnd);
+    public abstract void serialize(KeyValueTree keyValuePairs);
 
     /**
      * A simple copy constructor you should likely leave as is.

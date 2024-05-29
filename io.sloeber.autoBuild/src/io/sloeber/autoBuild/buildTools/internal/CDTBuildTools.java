@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.buildTools.internal;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.nio.file.Path;
 import java.util.HashMap;

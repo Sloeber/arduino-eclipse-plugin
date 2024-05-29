@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
-
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
@@ -28,6 +26,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
@@ -53,6 +52,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	// derived data
 	private Map<String, String> myEnvironmentVariables = new HashMap<>();
+	private final static String KEY="key"; //$NON-NLS-1$
+	private final static String VALUE="value"; //$NON-NLS-1$
 
 	/**
 	 * copy constructor This constructor must be implemented for each derived class
@@ -83,27 +84,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		setCompileDescription(compileDescriptor);
 	}
 
-	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, String lines, String lineStart,
-			String lineEnd) {
-		setAutoBuildDescription(autoCfgDescription);
-		Map<String, String> envVars = new HashMap<>();
-		int lineStartLength = lineStart.length();
-		for (String curLine : lines.split(Pattern.quote(lineEnd))) {
-			if (!curLine.startsWith(lineStart)) {
-				continue;
-			}
-			String cleanCurLine = curLine.substring(lineStartLength);
-			String[] elements = cleanCurLine.split(EQUAL, 2);
-			if (elements.length == 2) {
-				envVars.put(elements[0], elements[1]);
-			}
-		}
-		myBoardDescription = new BoardDescription(envVars);
-		myOtherDesc = new OtherDescription(envVars);
-		myCompileDescription = new CompileDescription(envVars);
-		myMemoryIsDirty = true;
-		// configure(); Seems I can not dpo the config here
-	}
+
 
 	@Override
 	public BoardDescription getBoardDescription() {
@@ -145,16 +126,33 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	}
 
 	@Override
-	public StringBuffer serialize(String linePrefix, String lineEnd) {
-		StringBuffer ret = new StringBuffer();
+	public void serialize(KeyValueTree keyValuePairs) {
 		Map<String, String> envVars = myBoardDescription.getEnvVarsConfig();
 		envVars.putAll(myOtherDesc.getEnvVarsConfig());
 		envVars.putAll(myCompileDescription.getEnvVarsConfig());
+		int counter=0;
 		for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-			ret.append(linePrefix + curEnvVar.getKey() + EQUAL + curEnvVar.getValue() + lineEnd);
+			KeyValueTree curKeyValue=keyValuePairs.addChild(String.valueOf(counter));
+			curKeyValue.addChild( KEY, curEnvVar.getKey() );
+			curKeyValue.addChild(VALUE , curEnvVar.getValue() );
+			counter++;
 		}
 		configureIfDirty();
-		return ret;
+	}
+
+	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, KeyValueTree keyValues) {
+		setAutoBuildDescription(autoCfgDescription);
+		Map<String, String> envVars = new HashMap<>();
+		for (KeyValueTree curChild : keyValues.getChildren().values()) {
+			String key=curChild.getValue(KEY);
+			String value=curChild.getValue(VALUE);
+				envVars.put(key, value);
+		}
+		myBoardDescription = new BoardDescription(envVars);
+		myOtherDesc = new OtherDescription(envVars);
+		myCompileDescription = new CompileDescription(envVars);
+		myMemoryIsDirty = true;
+		// configure(); Seems I can not dpo the config here
 	}
 
 	@Override

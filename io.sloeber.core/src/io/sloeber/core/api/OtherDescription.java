@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import io.sloeber.core.txt.KeyValueTree;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
 public class OtherDescription {
@@ -16,7 +17,7 @@ public class OtherDescription {
 
         KeyValueTree tree = configFile.getData();
         KeyValueTree section = tree.getChild(prefix);
-        myIsVersionControlled = Const.TRUE.equalsIgnoreCase(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
+        myIsVersionControlled = TRUE.equalsIgnoreCase(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
     }
 
     public OtherDescription() {
@@ -44,7 +45,7 @@ public class OtherDescription {
 
     /**
      * recreate the config based on the configuration environment variables
-     * 
+     *
      * @param envVars
      */
     public OtherDescription(Map<String, String> envVars) {
@@ -73,7 +74,7 @@ public class OtherDescription {
         this.myIsVersionControlled = myIsVersionControlled;
     }
 
-	@SuppressWarnings("static-method")
+	@SuppressWarnings({ "static-method", "unused" })
 	public boolean needsRebuild(OtherDescription newOtherDesc) {
 		return false;
 	}

@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.api;
 
-import static io.sloeber.autoBuild.api.AutoBuildConstants.CONFIG_NAME_VARIABLE;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.CONFIG_NAME_VARIABLE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -417,5 +417,9 @@ public interface IAutoBuildConfigurationDescription {
 
 	public String getDiscoveryCommand(String languageId);
 
-	String[] getEnvironmentVariables();
+	public String[] getEnvironmentVariables();
+
+	public boolean isTeamShared();
+	public void setTeamShared(boolean isTeamShared);
+
 }

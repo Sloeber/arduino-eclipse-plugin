@@ -1,13 +1,11 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
-import static io.sloeber.core.api.Common.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.sloeber.core.txt.KeyValueTree;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
 public class CompileDescription {
@@ -19,7 +17,7 @@ public class CompileDescription {
 
         /**
          * Set the custom command but only if the warning level is CUSTOM
-         * 
+         *
          * @param customCommand
          *            the command that needs to be used
          */
@@ -47,7 +45,7 @@ public class CompileDescription {
          * warning part in the command string This is a non expanded string for Arduino
          * IDE supported options This is what the user typed in the GUI in the CUSTOM
          * case
-         * 
+         *
          * @return
          */
         public String getEnvValue() {
@@ -76,7 +74,7 @@ public class CompileDescription {
 
         /**
          * Set the custom command but only if the warning level is CUSTOM
-         * 
+         *
          * @param customCommand
          *            the command that needs to be used
          */
@@ -104,7 +102,7 @@ public class CompileDescription {
          * warning part in the command string This is a non expanded string for Arduino
          * IDE supported options This is what the user typed in the GUI in the CUSTOM
          * case
-         * 
+         *
          * @return
          */
         public String getEnvValue() {
@@ -261,7 +259,7 @@ public class CompileDescription {
     /**
      * Given the compile options you currently have and the ones provided Is a
      * rebuild needed if you switch from one to another
-     * 
+     *
      * @param curOptions
      * @return true if a rebuild is needed otherwise false
      */
@@ -280,7 +278,7 @@ public class CompileDescription {
      * files configuration files are files needed to setup the sloeber environment
      * for instance when opening a project or after import of a project in the
      * workspace
-     * 
+     *
      * @return the minimum list of environment variables to recreate the project
      */
     public Map<String, String> getEnvVarsConfig() {
@@ -303,7 +301,7 @@ public class CompileDescription {
     /**
      * Recreate the compile options based on the configuration environment variables
      * given
-     * 
+     *
      * @param envVars
      */
     public CompileDescription(Map<String, String> envVars) {
@@ -414,7 +412,7 @@ public class CompileDescription {
 
     /**
      * Compares 2 compile descriptors
-     * 
+     *
      * @param other
      * @return true if the 2 are equal else false
      */
@@ -425,7 +423,7 @@ public class CompileDescription {
 
     /**
      * Compares the compile options of 2 compile descriptors
-     * 
+     *
      * @param other
      * @return true if the 2 have equal compile options else false
      */
