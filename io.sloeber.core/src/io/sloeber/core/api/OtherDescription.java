@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
@@ -17,7 +16,7 @@ public class OtherDescription {
 
         KeyValueTree tree = configFile.getData();
         KeyValueTree section = tree.getChild(prefix);
-        myIsVersionControlled = TRUE.equalsIgnoreCase(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
+        myIsVersionControlled = Boolean.parseBoolean(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
     }
 
     public OtherDescription() {

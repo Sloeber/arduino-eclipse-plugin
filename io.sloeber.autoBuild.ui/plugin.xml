@@ -35,7 +35,7 @@
 	                  value="io.sloeber.autoBuildNature"/>
            </adapt>
          </enabledWhen>
-        </page>    
+        </page>
         <page
             class="io.sloeber.autoBuild.ui.pages.Page_Variables"
             id="io.sloeber.autoBuild.projectProperties.macro"
@@ -103,7 +103,7 @@
            </enabledWhen>
 
         </page>
-        
+
         <page
               category="org.eclipse.cdt.ui.newui.Page_head_general"
             class="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"
@@ -120,6 +120,21 @@
               </adapt>
            </enabledWhen>
       </page>
+        <page
+              category="io.sloeber.autoBuild.projectProperties.main"
+              class="io.sloeber.autoBuild.ui.pages.Page_Team"
+              id="io.sloeber.autoBuild.ui.pages.Team"
+              name="%Team.name">
+           <enabledWhen>
+              <adapt
+                    type="org.eclipse.core.resources.IProject">
+                 <test
+                       property="org.eclipse.core.resources.projectNature"
+                       value="io.sloeber.autoBuildNature">
+                 </test>
+              </adapt>
+           </enabledWhen>
+        </page>
 
  </extension>
  <extension
@@ -248,14 +263,20 @@
            class="org.eclipse.cdt.ui.newui.CLocationSourceTab"
            icon="icons/obj16/sroot_obj.gif"
            name="%Source.location"
-           weight="080"           
+           weight="080"
            helpId="cdt_u_prop_pns_src"
            parent="io.sloeber.autoBuild.ui.pages.Page_PathAndSymb"/>
+     <tab
+           class="io.sloeber.autoBuild.ui.tabs.TeamSharedTab"
+           name="other options"
+           parent="io.sloeber.autoBuild.ui.pages.Page_Team"
+           weight="030">
+     </tab>
  </extension>
- 
+
 </plugin>
 
 
 
-		
-		
+
+

@@ -226,4 +226,9 @@ public class KeyValueTree {
 		}
 	}
 
+	public void removeChild(String name) {
+		myChildren.remove(name);
+		
+	}
+
 }

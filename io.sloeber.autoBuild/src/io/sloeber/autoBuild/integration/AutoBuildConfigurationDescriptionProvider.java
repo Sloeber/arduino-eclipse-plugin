@@ -127,7 +127,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 		ICProjectDescription projDesc = cfgDescription.getProjectDescription();
 		IProject iProject = projDesc.getProject();
 
-		StringBuffer teamText=new StringBuffer();
+
 		Set<String> excludedKeys=new HashSet<>();
 		KeyValueTree keyValuePairs=KeyValueTree.createRoot();
 		//Map<ICConfigurationDescription,KeyValuePairs> keyValues=new TreeMap<>();
@@ -158,7 +158,16 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			if (needsWriting) {
 				FileUtils.write(projectFile, configText, Charset.defaultCharset());
 			}
+			for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
+				AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
+						.getConfigurationData();
+
+				if(!autoBuildConfigBase.isTeamShared()) {
+					keyValuePairs.removeChild(curConfDesc.getName());
+				}
+			}
 			needsWriting = true;
+			String teamText= keyValuePairs.dump();
 			if(teamText.length()<2) {
 				teamFile.delete();
 				needsWriting=false;
@@ -200,11 +209,8 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			if (projectFile.exists()) {
 				KeyValueTree keyValues =KeyValueTree.createRoot();
 				keyValues.mergeFile(projectFile);
-				//String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
 				if (teamFile.exists()) {
 					keyValues.mergeFile(teamFile);
-//					curConfigsText = curConfigsText + NEWLINE
-//							+ FileUtils.readFileToString(teamFile, Charset.defaultCharset());
 				}
 				return new AutoBuildConfigurationDescription(cfgDescription, keyValues.getChild( cfgDescription.getName()));
 			}

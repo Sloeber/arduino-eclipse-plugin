@@ -58,6 +58,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		implements IAutoBuildConfigurationDescription {
 	private static final String KEY_MODEL = "Model"; //$NON-NLS-1$
 	private static final String KEY_CONFIGURATION = "configuration"; //$NON-NLS-1$
+	private static final String KEY_TEAM= "team"; //$NON-NLS-1$
+	private static final String KEY_IS_SHARED= "is shared"; //$NON-NLS-1$
 	private static final String KEY_PROJECT_TYPE = "projectType"; //$NON-NLS-1$
 	private static final String KEY_EXTENSION_ID = "extensionID"; //$NON-NLS-1$
 	private static final String KEY_EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$
@@ -202,6 +204,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myIsValid = base.myIsValid;
 		myName = myCdtConfigurationDescription.getName();
 		myDescription = base.myDescription;
+		myIsTeamShared=base.myIsTeamShared;
 		myProperties.clear();
 		myProperties.putAll(base.myProperties);
 		options_copy(base.mySelectedOptions, mySelectedOptions);
@@ -310,6 +313,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		KeyValueTree buildToolsKeyValues =keyValues.getChild(KEY_BUILDTOOLS);
 		KeyValueTree projectTypeKeyValues =modelKeyValues.getChild(KEY_PROJECT_TYPE);
 		KeyValueTree configKeyValues =modelKeyValues.getChild(KEY_CONFIGURATION);
+		KeyValueTree teamKeyValues =keyValues.getChild(KEY_TEAM);
+		myIsTeamShared=Boolean.parseBoolean(teamKeyValues.getValue(KEY_IS_SHARED));
 
 		myName=keyValues.getValue(NAME);
 		myDescription=keyValues.getValue(DESCRIPTION);
@@ -888,6 +893,10 @@ case KEY_PROJECT:
 		final int counterStart = 0;
 		KeyValueTree modelKeyValue=keyValuePairs.addChild(KEY_MODEL );
 		KeyValueTree projectTypeKeyValue=modelKeyValue.addChild(KEY_PROJECT_TYPE );
+
+		KeyValueTree teamKeyValues =keyValuePairs.addChild(KEY_TEAM);
+		teamKeyValues.addChild(KEY_IS_SHARED,String.valueOf(myIsTeamShared));
+
 		projectTypeKeyValue.addChild(  KEY_EXTENSION_POINT_ID , getExtensionPointID());
 		projectTypeKeyValue.addChild( KEY_EXTENSION_ID , getExtensionID() );
 		projectTypeKeyValue.addChild(  ID, myProjectType.getId() );
