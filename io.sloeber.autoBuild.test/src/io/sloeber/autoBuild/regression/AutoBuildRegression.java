@@ -30,6 +30,7 @@ import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
+import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
@@ -71,15 +72,15 @@ public class AutoBuildRegression {
      * build it
      *
      */
-    @Test
-    public void createCloseOpenProject() throws Exception {
-        beforeAll();// for one reason or another the beforeall is not called
-        String projectName = "createCloseOpenProject";
+    @ParameterizedTest
+    @MethodSource("OpenCloseValueCmd")
+    public void createCloseOpenProject(String projectName,ICodeProvider codeProvider) throws Exception {
+
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,
-        		cpp_exeCodeProvider, buildTools, false, null);
+        		codeProvider, buildTools, false, null);
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
@@ -370,6 +371,22 @@ public class AutoBuildRegression {
         //        ret.add(Arguments.of("gddddddddddddddddnu", "false", "dddtddddddddddddd7"));
         //        ret.add(Arguments.of("gddddddddddddddddnu", "true", ""));
         //        ret.add(Arguments.of("gddddddddddddddddnu", "false", "dddtddddddddddddd7"));
+
+        return ret.stream();
+    }
+
+
+    static Stream<Arguments> OpenCloseValueCmd() {
+    	ICodeProvider cpp_exeCodeProvider_inRoot=cpp_exeCodeProvider.createCopy();
+    	ICodeProvider cpp_exeCodeProvider_inxxFolder=cpp_exeCodeProvider.createCopy();
+    	ICodeProvider cpp_exeCodeProvider_srcFolder=cpp_exeCodeProvider.createCopy();
+    	cpp_exeCodeProvider_inRoot.setCodeFolder(null);
+    	cpp_exeCodeProvider_inxxFolder.setCodeFolder("xx");
+    	cpp_exeCodeProvider_srcFolder.setCodeFolder("src");
+        List<Arguments> ret = new LinkedList<>();
+        ret.add(Arguments.of("createCloseOpenProjectRoot",cpp_exeCodeProvider_inRoot));
+        ret.add(Arguments.of("createCloseOpenProjectXX",cpp_exeCodeProvider_inxxFolder));
+        ret.add(Arguments.of("createCloseOpenProjectSrc",cpp_exeCodeProvider_srcFolder));
 
         return ret.stream();
     }
