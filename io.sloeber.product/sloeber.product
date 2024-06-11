@@ -22,8 +22,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
    </configIni>
 
    <launcherArgs>
-      <programArgs>-perspective io.sloeber.product.perspective
---launcher.defaultAction openFile
+      <programArgs>--launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
       <vmArgs>-Dorg.eclipse.update.reconcile=false
@@ -264,6 +263,7 @@ United States, other countries, or both.
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
       <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
+      <property name="org.eclipse.ui/defaultPerspectiveId" value="io.sloeber.product.perspective" />
    </configurations>
 
    <repositories>
