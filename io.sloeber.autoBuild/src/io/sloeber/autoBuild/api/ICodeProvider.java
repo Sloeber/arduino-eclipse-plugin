@@ -46,4 +46,7 @@ public interface ICodeProvider {
 	String getCodeFolder();
 
 	void setCodeFolder(String codeFolder);
+
+	//should be clone but didn't get that to work
+	ICodeProvider createCopy();
 }

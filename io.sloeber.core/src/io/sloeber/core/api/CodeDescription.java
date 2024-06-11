@@ -406,4 +406,16 @@ public class CodeDescription implements ICodeProvider {
 		myCodeFolder=codeFolder;
 
 	}
+
+	@Override
+	public ICodeProvider createCopy() {
+		CodeDescription ret=new CodeDescription(myCodeType);
+		ret.myTemPlateFoldername=myTemPlateFoldername;
+		ret.myMakeLinks = myMakeLinks;
+		ret.myExamples = new HashSet<>(myExamples);
+		//TODO check whether myReplacers needs to be copied
+		// Map<String, String> myReplacers = null;
+		ret.myCodeFolder =myCodeFolder;
+		return ret;
+	}
 }

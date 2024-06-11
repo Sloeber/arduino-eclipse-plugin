@@ -32,7 +32,7 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 	private boolean myContainsCppcode = false;
 	private Set<String> myBuildArtifactTypes = new HashSet<>();
 	private IPath myTemplateFolder;
-	private String myCodeFolder="src"; //$NON-NLS-1$
+	private String myCodeFolder = "src"; //$NON-NLS-1$
 
 	@SuppressWarnings("nls")
 	public AutoBuildTemplateCodeProvider(Bundle bundle, IConfigurationElement element)
@@ -56,6 +56,16 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 		myTemplateFolder = new Path(resolvedFileURL.toURI().getPath());
 	}
 
+	private AutoBuildTemplateCodeProvider(AutoBuildTemplateCodeProvider base) {
+		myID = base.myID;
+		myName = base.myName;
+		myDescription = base.myDescription;
+		myContainsCppcode = base.myContainsCppcode;
+		myBuildArtifactTypes = new HashSet<>(base.myBuildArtifactTypes);
+		myTemplateFolder = base.myTemplateFolder;
+		myCodeFolder = base.myCodeFolder;
+	}
+
 	@Override
 	public boolean createFiles(IContainer targetContainer, IProgressMonitor monitor) {
 		try {
@@ -72,7 +82,7 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 			for (File curMember : templateFolder.listFiles()) {
 				if (curMember.isFile()) {
 					File sourceFile = curMember;
-					IFile targetFile = targetFolder.getFile(IPath.fromOSString( sourceFile.getName()));
+					IFile targetFile = targetFolder.getFile(IPath.fromOSString(sourceFile.getName()));
 
 					try (InputStream theFileStream = new FileInputStream(sourceFile.toString())) {
 						targetFile.create(theFileStream, true, monitor);
@@ -140,8 +150,12 @@ public class AutoBuildTemplateCodeProvider implements ICodeProvider {
 
 	@Override
 	public void setCodeFolder(String codeFolder) {
-		myCodeFolder=codeFolder;
+		myCodeFolder = codeFolder;
+	}
 
+	@Override
+	public ICodeProvider createCopy() {
+		return new AutoBuildTemplateCodeProvider(this);
 	}
 
 }
