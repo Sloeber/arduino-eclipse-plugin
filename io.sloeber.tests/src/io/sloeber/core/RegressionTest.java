@@ -4,9 +4,11 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.net.URI;
 import org.junit.Assert;
@@ -63,7 +65,9 @@ public class RegressionTest {
 
 	public static void installAdditionalBoards() {
 
-		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL };
+		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL ,"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json"};
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
+		
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.removeAllInstalledPlatforms();
@@ -696,4 +700,27 @@ public class RegressionTest {
 		assertTrue("Source File not in right location "+projectName, cppFile.exists());
 	}
 
+	
+	/**
+	 * Test wether a platform json redirect is handled properly
+	 * https://github.com/jantje/arduino-eclipse-plugin/issues/393
+	 */
+	@Test
+	public void redirectedJson() {
+		//this board references to arduino avr so install that one to
+	    Arduino.installLatestAVRBoards();
+        BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
+		Map<String, String> options = new HashMap<>();
+		options.put("mhz", "16MHz");
+		BoardDescription boardid = BoardsManager.getBoardDescription("package_talk2.wisen.com_index.json", "Talk2",
+                "avr", "whispernode", options);
+		if (boardid == null) {
+			fail("redirect Json ");
+			return;
+		}
+        if (!Shared.BuildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
+                new CompileDescription())) {
+            fail(Shared.getLastFailMessage() );
+		}
+	}
 }
