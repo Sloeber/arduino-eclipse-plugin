@@ -895,50 +895,50 @@ case KEY_PROJECT:
 		KeyValueTree projectTypeKeyValue=modelKeyValue.addChild(KEY_PROJECT_TYPE );
 
 		KeyValueTree teamKeyValues =keyValuePairs.addChild(KEY_TEAM);
-		teamKeyValues.addChild(KEY_IS_SHARED,String.valueOf(myIsTeamShared));
+		teamKeyValues.addValue(KEY_IS_SHARED,String.valueOf(myIsTeamShared));
 
-		projectTypeKeyValue.addChild(  KEY_EXTENSION_POINT_ID , getExtensionPointID());
-		projectTypeKeyValue.addChild( KEY_EXTENSION_ID , getExtensionID() );
-		projectTypeKeyValue.addChild(  ID, myProjectType.getId() );
+		projectTypeKeyValue.addValue(  KEY_EXTENSION_POINT_ID , getExtensionPointID());
+		projectTypeKeyValue.addValue( KEY_EXTENSION_ID , getExtensionID() );
+		projectTypeKeyValue.addValue(  ID, myProjectType.getId() );
 
 		KeyValueTree configurationKeyValue=modelKeyValue.addChild(  KEY_CONFIGURATION);
-		configurationKeyValue.addChild(  NAME , myAutoBuildConfiguration.getName() );
+		configurationKeyValue.addValue(  NAME , myAutoBuildConfiguration.getName() );
 
-		keyValuePairs.addChild( NAME , myName );
-		keyValuePairs.addChild( DESCRIPTION ,myDescription);
+		keyValuePairs.addValue( NAME , myName );
+		keyValuePairs.addValue( DESCRIPTION ,myDescription);
 
 
 		KeyValueTree buildToolsKeyValue=keyValuePairs.addChild( KEY_BUILDTOOLS );
-		buildToolsKeyValue.addChild( KEY_PROVIDER_ID,getBuildTools().getProviderID());
-		buildToolsKeyValue.addChild( KEY_SELECTION_ID, getBuildTools().getSelectionID() );
+		buildToolsKeyValue.addValue( KEY_PROVIDER_ID,getBuildTools().getProviderID());
+		buildToolsKeyValue.addValue( KEY_SELECTION_ID, getBuildTools().getSelectionID() );
 
-		keyValuePairs.addChild( KEY_BUILDFOLDER , myBuildFolderString );
-		keyValuePairs.addChild( KEY_USE_DEFAULT_BUILD_COMMAND , String.valueOf(myUseDefaultBuildCommand)
+		keyValuePairs.addValue( KEY_BUILDFOLDER , myBuildFolderString );
+		keyValuePairs.addValue( KEY_USE_DEFAULT_BUILD_COMMAND , String.valueOf(myUseDefaultBuildCommand)
 				);
-		keyValuePairs.addChild( KEY_GENERATE_MAKE_FILES_AUTOMATICALLY ,String.valueOf(myGenerateMakeFilesAUtomatically) );
-		keyValuePairs.addChild( KEY_USE_STANDARD_BUILD_ARGUMENTS , String.valueOf(myUseStandardBuildArguments)
+		keyValuePairs.addValue( KEY_GENERATE_MAKE_FILES_AUTOMATICALLY ,String.valueOf(myGenerateMakeFilesAUtomatically) );
+		keyValuePairs.addValue( KEY_USE_STANDARD_BUILD_ARGUMENTS , String.valueOf(myUseStandardBuildArguments)
 				);
-		keyValuePairs.addChild( KEY_STOP_ON_FIRST_ERROR , String.valueOf(myStopOnFirstBuildError) );
-		keyValuePairs.addChild( KEY_IS_PARRALLEL_BUILD , String.valueOf(myIsParallelBuild) );
-		keyValuePairs.addChild( KEY_IS_CLEAN_BUILD_ENABLED , String.valueOf(myIsCleanBuildEnabled) );
-		keyValuePairs.addChild( KEY_IS_INCREMENTAL_BUILD_ENABLED , String.valueOf(myIsIncrementalBuildEnabled)
+		keyValuePairs.addValue( KEY_STOP_ON_FIRST_ERROR , String.valueOf(myStopOnFirstBuildError) );
+		keyValuePairs.addValue( KEY_IS_PARRALLEL_BUILD , String.valueOf(myIsParallelBuild) );
+		keyValuePairs.addValue( KEY_IS_CLEAN_BUILD_ENABLED , String.valueOf(myIsCleanBuildEnabled) );
+		keyValuePairs.addValue( KEY_IS_INCREMENTAL_BUILD_ENABLED , String.valueOf(myIsIncrementalBuildEnabled)
 				);
-		keyValuePairs.addChild( KEY_NUM_PARRALEL_BUILDS , String.valueOf(myParallelizationNum) );
-		keyValuePairs.addChild( KEY_CUSTOM_BUILD_COMMAND , myCustomBuildCommand );
-		keyValuePairs.addChild( KEY_BUILDER_ID , myBuilder.getId() );
-		keyValuePairs.addChild( KEY_AUTO_MAKE_TARGET , myAutoMakeTarget );
-		keyValuePairs.addChild( KEY_INCREMENTAL_MAKE_TARGET , myIncrementalMakeTarget );
-		keyValuePairs.addChild( KEY_CLEAN_MAKE_TARGET , myCleanMakeTarget );
+		keyValuePairs.addValue( KEY_NUM_PARRALEL_BUILDS , String.valueOf(myParallelizationNum) );
+		keyValuePairs.addValue( KEY_CUSTOM_BUILD_COMMAND , myCustomBuildCommand );
+		keyValuePairs.addValue( KEY_BUILDER_ID , myBuilder.getId() );
+		keyValuePairs.addValue( KEY_AUTO_MAKE_TARGET , myAutoMakeTarget );
+		keyValuePairs.addValue( KEY_INCREMENTAL_MAKE_TARGET , myIncrementalMakeTarget );
+		keyValuePairs.addValue( KEY_CLEAN_MAKE_TARGET , myCleanMakeTarget );
 
-		keyValuePairs.addChild( KEY_PRE_BUILD_STEP , myPreBuildStep );
-		keyValuePairs.addChild( KEY_PRE_BUILD_ANNOUNCEMENT , myPreBuildAnnouncement );
-		keyValuePairs.addChild( KEY_POST_BUILD_STEP , myPostBuildStep );
-		keyValuePairs.addChild( KEY_POST_BUILD_ANNOUNCEMENT , myPostBuildStepAnouncement );
+		keyValuePairs.addValue( KEY_PRE_BUILD_STEP , myPreBuildStep );
+		keyValuePairs.addValue( KEY_PRE_BUILD_ANNOUNCEMENT , myPreBuildAnnouncement );
+		keyValuePairs.addValue( KEY_POST_BUILD_STEP , myPostBuildStep );
+		keyValuePairs.addValue( KEY_POST_BUILD_ANNOUNCEMENT , myPostBuildStepAnouncement );
 
 
 		KeyValueTree propertiesKeyValue=keyValuePairs.addChild( KEY_PROPERTY );
 		for (Entry<String, String> curProp : myProperties.entrySet()) {
-			propertiesKeyValue.addChild(  curProp.getKey(), curProp.getValue() );
+			propertiesKeyValue.addValue(  curProp.getKey(), curProp.getValue() );
 		}
 
 		int counter = counterStart;
@@ -947,22 +947,22 @@ case KEY_PROJECT:
 			IResource resource= curOption.getKey();
 			String resourceID = resource.getProjectRelativePath().toString();
 			KeyValueTree curResourceKeyValue=optionsKeyValue.addChild(  String.valueOf(counter) );
-			curResourceKeyValue.addChild(  KEY_RESOURCE , resourceID);
+			curResourceKeyValue.addValue(  KEY_RESOURCE , resourceID);
 			if(resource instanceof IFolder) {
-				curResourceKeyValue.addChild(  KEY_RESOURCE_TYPE , KEY_FOLDER);
+				curResourceKeyValue.addValue(  KEY_RESOURCE_TYPE , KEY_FOLDER);
 			}
 			if(resource instanceof IFile) {
-				curResourceKeyValue.addChild(  KEY_RESOURCE_TYPE , KEY_FILE);
+				curResourceKeyValue.addValue(  KEY_RESOURCE_TYPE , KEY_FILE);
 			}
 			if(resource instanceof IProject) {
-				curResourceKeyValue.addChild(  KEY_RESOURCE_TYPE , KEY_PROJECT);
+				curResourceKeyValue.addValue(  KEY_RESOURCE_TYPE , KEY_PROJECT);
 			}
 			counter++;
 			int counter2 = counterStart;
 			for (Entry<IOption, String> resourceOptions : curOption.getValue().entrySet()) {
 				KeyValueTree curOptionKeyValue=curResourceKeyValue.addChild(  String.valueOf(counter2) );
-				curOptionKeyValue.addChild(  KEY  , resourceOptions.getKey().getId() );
-				curOptionKeyValue.addChild(  KEY_VALUE  , resourceOptions.getValue() );
+				curOptionKeyValue.addValue(  KEY  , resourceOptions.getKey().getId() );
+				curOptionKeyValue.addValue(  KEY_VALUE  , resourceOptions.getValue() );
 				counter2++;
 			}
 		}
@@ -971,14 +971,14 @@ case KEY_PROJECT:
 		KeyValueTree customToolKeyValue=keyValuePairs.addChild( KEY_CUSTOM_TOOL_COMMAND );
 		for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolCommands.entrySet()) {
 			ITool tool = curCustomToolCommands.getKey();
-			customToolKeyValue.addChild( KEY ,tool.getId());
+			customToolKeyValue.addValue( KEY ,tool.getId());
 
 			for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
 				IResource res = curResourceCommand.getKey();
 				KeyValueTree curOptionKeyValue=customToolKeyValue.addChild(  String.valueOf(counter) );
 				String resourceID = res.getProjectRelativePath().toString();
-				curOptionKeyValue.addChild( KEY_VALUE , curResourceCommand.getValue() );
-				curOptionKeyValue.addChild(  KEY_RESOURCE , resourceID );
+				curOptionKeyValue.addValue( KEY_VALUE , curResourceCommand.getValue() );
+				curOptionKeyValue.addValue(  KEY_RESOURCE , resourceID );
 				counter++;
 			}
 		}
@@ -987,13 +987,13 @@ case KEY_PROJECT:
 		KeyValueTree customToolPatternKeyValue=keyValuePairs.addChild( KEY_CUSTOM_TOOL_PATTERN );
 		for (Entry<ITool, Map<IResource, String>> curCustomToolCommands : myCustomToolPattern.entrySet()) {
 			ITool tool = curCustomToolCommands.getKey();
-			customToolPatternKeyValue.addChild( KEY ,tool.getId());
+			customToolPatternKeyValue.addValue( KEY ,tool.getId());
 			for (Entry<IResource, String> curResourceCommand : curCustomToolCommands.getValue().entrySet()) {
 				IResource res = curResourceCommand.getKey();
 				String resourceID = res.getProjectRelativePath().toString();
 				KeyValueTree curOptionKeyValue=customToolPatternKeyValue.addChild(  String.valueOf(counter) );
-				curOptionKeyValue.addChild(  KEY_VALUE , curResourceCommand.getValue() );
-				curOptionKeyValue.addChild(  KEY_RESOURCE , resourceID );
+				curOptionKeyValue.addValue(  KEY_VALUE , curResourceCommand.getValue() );
+				curOptionKeyValue.addValue(  KEY_RESOURCE , resourceID );
 				counter++;
 			}
 		}
@@ -1002,9 +1002,9 @@ case KEY_PROJECT:
 			Class<? extends AutoBuildConfigurationExtensionDescription> referencedClass = myAutoBuildCfgExtDes
 					.getClass();
 
-			keyValuePairs.addChild( KEY_AUTOBUILD_EXTENSION_BUNDEL , myAutoBuildCfgExtDes.getBundelName()
+			keyValuePairs.addValue( KEY_AUTOBUILD_EXTENSION_BUNDEL , myAutoBuildCfgExtDes.getBundelName()
 					);
-			keyValuePairs.addChild( KEY_AUTOBUILD_EXTENSION_CLASS , referencedClass.getName() );
+			keyValuePairs.addValue( KEY_AUTOBUILD_EXTENSION_CLASS , referencedClass.getName() );
 			myAutoBuildCfgExtDes.serialize(keyValuePairs.addChild(KEY_EXTENSION));
 		}
 	}
@@ -1525,6 +1525,19 @@ case KEY_PROJECT:
 	@Override
 	public void setTeamShared(boolean isTeamShared) {
 		myIsTeamShared= isTeamShared;
+	}
+
+	@Override
+	public Set<String> getTeamExclusionKeys() {
+		Set<String> ret = new HashSet<>();
+		if(!myIsTeamShared) {
+			ret.add(getName());
+		}else {
+			if(myAutoBuildCfgExtDes!=null) {
+				ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(getName()+DOT+KEY_EXTENSION));
+			}
+		}
+		return ret;
 	}
 
 }

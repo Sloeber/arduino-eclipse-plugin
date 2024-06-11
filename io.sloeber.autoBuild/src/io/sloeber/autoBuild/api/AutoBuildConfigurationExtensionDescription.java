@@ -1,5 +1,7 @@
 package io.sloeber.autoBuild.api;
 
+import java.util.Set;
+
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 
 /**
@@ -105,5 +107,7 @@ public abstract class AutoBuildConfigurationExtensionDescription {
 	public String getDiscoveryCommand(String languageId) {
     	return null;
     }
+
+	public abstract Set<String> getTeamDefaultExclusionKeys(String name);
 
 }

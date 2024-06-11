@@ -185,7 +185,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 				for (IPath curExclusion : curSourceEntry.getExclusionPatterns()) {
 					value = value + COLON + curExclusion.toString();
 				}
-				keyValuePairs.addChild(key, value);
+				keyValuePairs.addValue(key, value);
 			}
 		}
 	}

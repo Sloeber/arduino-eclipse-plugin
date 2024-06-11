@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 
@@ -16,7 +17,7 @@ public class KeyValueTree {
 
 	private String myValue;
 	private String myKey;
-	private LinkedHashMap<String, KeyValueTree> myChildren;
+	private Map<String, KeyValueTree> myChildren;
 	private KeyValueTree myParent;
 
 	public static KeyValueTree createRoot() {
@@ -24,7 +25,7 @@ public class KeyValueTree {
 	}
 
 	private KeyValueTree(String newKey, String newValue) {
-		myChildren = new LinkedHashMap<>();
+		myChildren = new TreeMap<>();
 		myKey = newKey;
 		myValue = newValue;
 		myParent = null;
@@ -34,7 +35,7 @@ public class KeyValueTree {
 		return this.myParent;
 	}
 
-	public LinkedHashMap<String, KeyValueTree> getChildren() {
+	public Map<String, KeyValueTree> getChildren() {
 		return this.myChildren;
 	}
 
@@ -228,7 +229,21 @@ public class KeyValueTree {
 
 	public void removeChild(String name) {
 		myChildren.remove(name);
-		
+
+	}
+
+	public void removeKey(String deleteKey) {
+		String[] subKeys = deleteKey.split("\\."); //$NON-NLS-1$
+		KeyValueTree parentKeyTree = this;
+		KeyValueTree foundKeyTree = this;
+		for (String curSubKey : subKeys) {
+			parentKeyTree=foundKeyTree;
+			foundKeyTree = foundKeyTree.myChildren.get(curSubKey);
+			if (null == foundKeyTree) {
+				return ;
+			}
+		}
+		parentKeyTree.myChildren.remove(foundKeyTree.getKey());
 	}
 
 }

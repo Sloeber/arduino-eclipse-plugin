@@ -422,4 +422,13 @@ public interface IAutoBuildConfigurationDescription {
 	public boolean isTeamShared();
 	public void setTeamShared(boolean isTeamShared);
 
+	/**
+	 * Get the keys that should not be in the configuration shared via the version control system
+	 * The keys are of the type Key.key.key
+	 * If the configuration should not be in the team file the configuration key is returned
+	 *
+	 * @return a set of strings to exclude from the files to share
+	 */
+	Set<String> getTeamExclusionKeys();
+
 }

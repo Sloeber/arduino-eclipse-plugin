@@ -52,8 +52,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	// derived data
 	private Map<String, String> myEnvironmentVariables = new HashMap<>();
-	private final static String KEY="key"; //$NON-NLS-1$
-	private final static String VALUE="value"; //$NON-NLS-1$
 
 	/**
 	 * copy constructor This constructor must be implemented for each derived class
@@ -130,24 +128,18 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		Map<String, String> envVars = myBoardDescription.getEnvVarsConfig();
 		envVars.putAll(myOtherDesc.getEnvVarsConfig());
 		envVars.putAll(myCompileDescription.getEnvVarsConfig());
-		int counter=0;
 		for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-			KeyValueTree curKeyValue=keyValuePairs.addChild(String.valueOf(counter));
-			curKeyValue.addChild( KEY, curEnvVar.getKey() );
-			curKeyValue.addChild(VALUE , curEnvVar.getValue() );
-			counter++;
+			keyValuePairs.addValue(  curEnvVar.getKey() , curEnvVar.getValue() );
 		}
 		configureIfDirty();
 	}
 
 	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, KeyValueTree keyValues) {
 		setAutoBuildDescription(autoCfgDescription);
-		Map<String, String> envVars = new HashMap<>();
-		for (KeyValueTree curChild : keyValues.getChildren().values()) {
-			String key=curChild.getValue(KEY);
-			String value=curChild.getValue(VALUE);
-				envVars.put(key, value);
-		}
+		Map<String, String> envVars =keyValues.toKeyValues(false);
+//		for (Entry<String, KeyValueTree> curChild : keyValues.getChildren().entrySet()) {
+//			envVars.put(curChild.getKey(), curChild.getValue().getValue());
+//		}
 		myBoardDescription = new BoardDescription(envVars);
 		myOtherDesc = new OtherDescription(envVars);
 		myCompileDescription = new CompileDescription(envVars);
@@ -527,6 +519,13 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		myLibraries.clear();
 		addLibraries(selectedLibraries);
 		reAttachLibraries();
+	}
+
+	@Override
+	public Set<String> getTeamDefaultExclusionKeys(String name) {
+		Set<String> ret=new HashSet<>();
+		ret.add(name+DOT+KEY_SLOEBER_UPLOAD_PORT);
+		return ret;
 	}
 
 }

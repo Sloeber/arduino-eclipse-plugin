@@ -32,27 +32,6 @@ import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
-    private static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
-    private static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
-    private static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
-    private static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
-    private static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
-    private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
-    private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
-    private static final String ENV_KEY_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
-    private static final String ENV_KEY_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
-
-    // stuff to store last used board
-    private static final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
-    private static final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
-    private static final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
-    private static final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
-    private static final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
     /*

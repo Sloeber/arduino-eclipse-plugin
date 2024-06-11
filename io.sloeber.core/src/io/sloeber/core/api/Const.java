@@ -150,6 +150,30 @@ public class Const extends AutoBuildConstants {
     public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
     public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";
 
+
+    public static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
+    public static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
+    public static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
+    public static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
+    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
+    public static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
+    public static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
+    public static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
+    public static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
+    public static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
+    public static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
+    public static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
+    public static final String ENV_KEY_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
+    public static final String ENV_KEY_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
+
+    // stuff to store last used board
+    public static final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
+    public static final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
+    public static final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
+    public static final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
+    public static final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
+
+
     public static final String RELEASE = "Release";
 
     public static final short PLOTTER_START_DATA = (short) 0xCDAB;// This is the

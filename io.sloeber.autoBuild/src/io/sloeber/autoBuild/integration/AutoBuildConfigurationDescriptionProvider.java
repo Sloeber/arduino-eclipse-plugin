@@ -18,7 +18,6 @@ package io.sloeber.autoBuild.integration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -128,7 +127,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 		IProject iProject = projDesc.getProject();
 
 
-		Set<String> excludedKeys=new HashSet<>();
+
 		KeyValueTree keyValuePairs=KeyValueTree.createRoot();
 		//Map<ICConfigurationDescription,KeyValuePairs> keyValues=new TreeMap<>();
 		for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
@@ -164,6 +163,12 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 
 				if(!autoBuildConfigBase.isTeamShared()) {
 					keyValuePairs.removeChild(curConfDesc.getName());
+				}
+				else {
+					Set<String> excludedKeys=autoBuildConfigBase.getTeamExclusionKeys();
+					for(String curKey:excludedKeys) {
+						keyValuePairs.removeKey(curKey);
+					}
 				}
 			}
 			needsWriting = true;
