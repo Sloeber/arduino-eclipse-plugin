@@ -67,7 +67,7 @@ public class RegressionTest {
 
 		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL ,"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json"};
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
-		
+
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.removeAllInstalledPlatforms();
@@ -430,13 +430,13 @@ public class RegressionTest {
 	 *
 	 * @throws Exception
 	 */
-	@Test
-	public void openAndClosePreservesSettings() throws Exception {
+    @ParameterizedTest
+    @MethodSource("openAndClosePreservesSettingsValueCmd")
+	public void openAndClosePreservesSettings(String projectName ,	CodeDescription codeDescriptor) throws Exception {
 		BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
 		IProject theTestProject = null;
-		String projectName = "openAndClose";
-		CodeDescription codeDescriptor = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+
 		CompileDescription inCompileDescription = getBunkersCompileDescription();
 
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
@@ -700,7 +700,7 @@ public class RegressionTest {
 		assertTrue("Source File not in right location "+projectName, cppFile.exists());
 	}
 
-	
+
 	/**
 	 * Test wether a platform json redirect is handled properly
 	 * https://github.com/jantje/arduino-eclipse-plugin/issues/393
@@ -723,4 +723,22 @@ public class RegressionTest {
             fail(Shared.getLastFailMessage() );
 		}
 	}
+
+
+    static Stream<Arguments> openAndClosePreservesSettingsValueCmd() {
+		CodeDescription codeDescriptordefaultCPPRoot = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+		CodeDescription codeDescriptordefaultCPPSrc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+		CodeDescription codeDescriptordefaultCPXX = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+
+		codeDescriptordefaultCPPRoot.setCodeFolder(null);
+		codeDescriptordefaultCPPSrc.setCodeFolder("src");
+		codeDescriptordefaultCPXX.setCodeFolder("XX");
+
+        List<Arguments> ret = new LinkedList<>();
+        ret.add(Arguments.of("openAndCloseRoot",codeDescriptordefaultCPPRoot));
+        ret.add(Arguments.of("openAndCloseSrc",codeDescriptordefaultCPPSrc));
+        ret.add(Arguments.of("openAndCloseXX",codeDescriptordefaultCPXX));
+
+        return ret.stream();
+    }
 }
