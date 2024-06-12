@@ -12,7 +12,6 @@ import io.sloeber.core.api.Preferences;
 
         NightlyBoardPatronTest.class,
         RegressionTest.class,
-        RegressionTestFailingOnTravis.class,
         //UpgradeTest.class, TODO JABA:Need to decide what to do sith these tests as 1 fails and they are kind of obsolete
         CompileAndUpload.class,
         CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest.class,
