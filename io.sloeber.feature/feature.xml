@@ -55,6 +55,7 @@ If you do not agree with this policy, please do not install this software.
 
    <plugin
          id="com.github.luben.zstd-jni"
+         version="0.0.0"/>
 
    <plugin
          id="io.sloeber.autoBuild"
