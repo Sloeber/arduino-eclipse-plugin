@@ -4,5 +4,5 @@ Bundle-Name: Sloeber ui language pack
 Bundle-SymbolicName: io.sloeber.ui.nl1;singleton:=true
 Bundle-Version: 4.4.3.qualifier
 Fragment-Host: io.sloeber.ui;bundle-version="4.2.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: baeyens.it

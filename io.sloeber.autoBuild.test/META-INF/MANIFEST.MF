@@ -19,4 +19,4 @@ Require-Bundle: io.sloeber.autoBuild,
  org.eclipse.ui.workbench,
  io.sloeber.autoBuild.ui;bundle-version="4.4.3"
 Automatic-Module-Name: io.sloeber.autoBuild.test
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

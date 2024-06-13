@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.ui,
  io.sloeber.autoBuild;bundle-version="4.4.3",
  org.eclipse.jface,
  io.sloeber.autoBuild.ui;bundle-version="4.4.3"
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Sloeber.io
 Export-Package: io.sloeber.ui.monitor;x-friends:="io.sloeber.tests",
