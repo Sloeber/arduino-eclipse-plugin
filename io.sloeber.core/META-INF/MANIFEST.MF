@@ -27,7 +27,8 @@ Require-Bundle:
  slf4j.api;bundle-version="2.0.9",
  org.eclipse.ui.intro,
  io.sloeber.autoBuild,
- org.eclipse.cdt.make.core
+ org.eclipse.cdt.make.core,
+ org.apache.commons.lang3;bundle-version="3.14.0"
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,
