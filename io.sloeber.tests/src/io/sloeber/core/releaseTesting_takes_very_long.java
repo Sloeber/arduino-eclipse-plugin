@@ -9,8 +9,6 @@ import io.sloeber.core.api.Preferences;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-
-        NightlyBoardPatronTest.class,
         RegressionTest.class,
         //UpgradeTest.class, TODO JABA:Need to decide what to do sith these tests as 1 fails and they are kind of obsolete
         CompileAndUpload.class,
