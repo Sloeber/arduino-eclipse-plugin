@@ -69,12 +69,14 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 	 */
 	public AutoBuildResourceData(ICConfigurationDescription cfgDescription, KeyValueTree keyValues) {
 		// TODO read Map<String, CResourceData> myResourceDatas = new HashMap<>();
-		// TODO read ICSourceEntry mySourceEntries[] = null;
 		// TODO read CFolderData myRootFolderData;
 		Set<CSourceEntry> sourceEntries = new HashSet<>();
 		for (KeyValueTree cursourceEntykeyValue : keyValues.getChildren().values()) {
 			String name = cursourceEntykeyValue.getKey();
 			String value = cursourceEntykeyValue.getValue();
+			if(ROOT.equals(name)) {
+				name=EMPTY_STRING;
+			}
 			String values[] = value.split(Pattern.quote(COLON));
 			if (values.length < 2) {
 				// no exclusion patterns
@@ -86,8 +88,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 				for (int curEx = 1; curEx < values.length; curEx++) {
 					exclusionPatterns.add(new Path(values[curEx]));
 				}
-				sourceEntries.add(
-						new CSourceEntry(name, exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
+				sourceEntries.add(new CSourceEntry(name, exclusionPatterns.toArray(new IPath[exclusionPatterns.size()]), flags));
 			}
 		}
 		mySourceEntries = sourceEntries.toArray(new ICSourceEntry[sourceEntries.size()]);
@@ -181,7 +182,7 @@ public abstract class AutoBuildResourceData extends CConfigurationData {
 				if (key.isBlank()) {
 					key = ROOT;
 				}
-				String value = Integer.toString(curSourceEntry.getFlags());
+				String value = Integer.toString(curSourceEntry.getFlags());//&~(ICSettingEntry.VALUE_WORKSPACE_PATH));
 				for (IPath curExclusion : curSourceEntry.getExclusionPatterns()) {
 					value = value + COLON + curExclusion.toString();
 				}
