@@ -196,7 +196,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private boolean projectNeedsUpdate() {
 		IPath corePath = myBoardDescription.getActualCoreCodePath();
 		IFolder coreFolder = getArduinoCoreFolder();
-		if (!coreFolder.getLocation().equals(corePath)) {
+		if (! corePath.equals(coreFolder.getLocation())) {
 //        	System.out.println("projectNeedsUpdate core Folder mismatch");
 //        	System.out.println("corefolder "+coreFolder.getLocation());
 //        	System.out.println("corePath   "+corePath);
