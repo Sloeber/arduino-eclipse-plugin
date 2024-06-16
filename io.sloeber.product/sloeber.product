@@ -35,7 +35,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.product/icons/logo_16.png" i32="/io.sloeber.core/icons/logo_32.png" i48="/io.sloeber.core/icons/logo_48.png" i64="/io.sloeber.core/icons/logo_64.png" i128="/io.sloeber.core/icons/logo_128.png" i256="/io.sloeber.core/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.core/icons/logo_16.png" i32="/io.sloeber.core/icons/logo_32.png" i48="/io.sloeber.core/icons/logo_48.png" i64="/io.sloeber.core/icons/logo_64.png" i128="/io.sloeber.core/icons/logo_128.png" i256="/io.sloeber.core/icons/logo_256.png"/>
 
    <splash
       location="io.sloeber.ui"
@@ -44,7 +44,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       startupForegroundColor="C8D5EA" />
    <launcher name="sloeber-ide">
       <linux icon="launch/icon.xpm"/>
-      <macosx icon="launch/icon.icns"/>
+      <macosx icon="/io.sloeber.core/launch/icon.icns"/>
       <win useIco="true">
          <ico path="/io.sloeber.core/launch/icons.ico"/>
          <bmp/>
