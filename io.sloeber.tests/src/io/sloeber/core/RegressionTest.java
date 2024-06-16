@@ -14,7 +14,6 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 import java.net.URI;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -53,9 +52,6 @@ import io.sloeber.providers.Teensy;
 
 @SuppressWarnings({ "nls", "static-method", "null" })
 public class RegressionTest {
-    private static int mySkipAtStart = 0;
-    private  int myTotalFails = 0;
-    private static int maxFails = 40;
 	private static final boolean reinstall_boards_and_libraries = false;
 	private final static String AUTOBUILD_CFG = ".AutoBuildProject";
 
@@ -67,6 +63,7 @@ public class RegressionTest {
 	@BeforeClass
 	public static void WaitForInstallerToFinish() {
 		Shared.waitForAllJobsToFinish();
+		Shared.setDeleteProjects(false);
 		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
 	}
@@ -75,8 +72,6 @@ public class RegressionTest {
 
 		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL ,"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json"};
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
-
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.removeAllInstalledPlatforms();
 		}
@@ -85,6 +80,8 @@ public class RegressionTest {
 		ESP32.installLatest();
 		Arduino.installLatestAVRBoards();
 		Teensy.installLatest();
+        Arduino.installLatestSamDBoards();
+        LibraryManager.installLibrary("RTCZero");
 
 	}
 
@@ -743,33 +740,30 @@ public class RegressionTest {
 		codeDescriptordefaultCPXX.setCodeFolder("XX");
 
         List<Arguments> ret = new LinkedList<>();
-        ret.add(Arguments.of("openAndCloseRoot",codeDescriptordefaultCPPRoot));
-        ret.add(Arguments.of("openAndCloseSrc",codeDescriptordefaultCPPSrc));
-        ret.add(Arguments.of("openAndCloseXX",codeDescriptordefaultCPXX));
+        ret.add(Arguments.of(Shared.getCounterName("openAndCloseRoot"),codeDescriptordefaultCPPRoot));
+        ret.add(Arguments.of(Shared.getCounterName("openAndCloseSrc"),codeDescriptordefaultCPPSrc));
+        ret.add(Arguments.of(Shared.getCounterName("openAndCloseXX"),codeDescriptordefaultCPXX));
 
         return ret.stream();
     }
 
 
     public static Stream<Arguments>  NightlyBoardPatronTestData() {
-        Shared.waitForAllJobsToFinish();
-        Arduino.installLatestSamDBoards();
-        LibraryManager.installLibrary("RTCZero");
-        Shared.waitForAllJobsToFinish();
         Preferences.setUseArduinoToolSelection(true);
         CompileDescription compileOptions = new CompileDescription();
         MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 
         List<Arguments> ret = new LinkedList<>();
-        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
-        for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
+        TreeMap<String, IExample> examples = LibraryManager.getExamplesLibrary(null);
+        for (Map.Entry<String, IExample> curexample : examples.entrySet()) {
             String fqn = curexample.getKey().trim();
-            IPath examplePath = curexample.getValue().getCodeLocation();
+            IExample example= curexample.getValue();
+            IPath examplePath = example.getCodeLocation();
             if (fqn.contains("RTCZero")) {
-                Example example = new Example(fqn,  examplePath);
+                Example SloeberExample = new Example(fqn,  examplePath);
 
-                ret.add(Arguments.of(Shared.getCounterName( example.getLibName() + ":" + fqn + ":" + zeroBoard.getID()),
-                        zeroBoard, example ,compileOptions));
+                ret.add(Arguments.of(Shared.getCounterName( SloeberExample.getLibName() + ":" + example.getName()),
+                        zeroBoard, SloeberExample ,compileOptions));
             }
         }
 		return ret.stream();
@@ -779,21 +773,15 @@ public class RegressionTest {
 
 	@ParameterizedTest
 	@MethodSource("NightlyBoardPatronTestData")
-    public void NightlyBoardPatron(@SuppressWarnings("unused") String name, MCUBoard boardID, Example example,CompileDescription compileOptions) {
-    	Shared.buildCounter++ ;
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter >= mySkipAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+    public void NightlyBoardPatron( String name, MCUBoard boardID, Example example,CompileDescription compileOptions) {
 
         Set<IExample> examples = new HashSet<>();
-
         examples.add(example);
         CodeDescription codeDescriptor = CodeDescription.createExample(false, examples);
 
-        Map<String, String> boardOptions = boardID.getBoardOptions(example);
         BoardDescription boardDescriptor = boardID.getBoardDescriptor();
-        boardDescriptor.setOptions(boardOptions);
-        if(!Shared.BuildAndVerify(boardID.getBoardDescriptor(), codeDescriptor, compileOptions,Shared.buildCounter)) {
-            myTotalFails++;
+        boardDescriptor.setOptions(boardID.getBoardOptions(example));
+        if(!Shared.BuildAndVerify(name,boardID.getBoardDescriptor(), codeDescriptor, compileOptions)) {
             fail(Shared.getLastFailMessage() );
         }
 

@@ -52,7 +52,6 @@ public class Shared {
 		Shared.deleteProjects = deleteProjects;
 	}
 
-	private static int myLocalBuildCounter;
 	private static int myTestCounter;
 	private static String myLastFailMessage = new String();
 	private static boolean closeFailedProjects = false;
@@ -130,7 +129,7 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 */
 	public static boolean BuildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor) {
-		return BuildAndVerify(boardDescriptor, codeDescriptor, null, -1);
+		return BuildAndVerify(boardDescriptor, codeDescriptor, null);
 	}
 
 	/**
@@ -143,22 +142,16 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 */
 	public static boolean BuildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
-			CompileDescription compileOptions, int globalBuildCounter) {
+			CompileDescription compileOptions) {
 
-		int projectCounter = myLocalBuildCounter;
-		if (globalBuildCounter >= 0) {
-			projectCounter = globalBuildCounter;
-		}
-		String projectName = String.format("%05d_%s", Integer.valueOf(projectCounter), boardDescriptor.getBoardID());
+		String projectName = getCounterName( boardDescriptor.getBoardID());
 		IExample example = codeDescriptor.getLinkedExample();
 		if (example != null) {
 			IArduinoLibraryVersion lib = example.getArduinoLibrary();
 			if (lib != null) {
-				projectName = String.format("%05d_Library_%s_%s", Integer.valueOf(projectCounter), lib.getName(),
-						codeDescriptor.getExampleName());
+				projectName = getCounterName("%05d_Library_%s_%s", codeDescriptor.getExampleName());
 			} else {
-				projectName = String.format("%05d_%s", Integer.valueOf(projectCounter),
-						codeDescriptor.getExampleName());
+				projectName = getCounterName(codeDescriptor.getExampleName());
 			}
 		}
 
@@ -173,7 +166,7 @@ public class Shared {
 			CodeDescription codeDescriptor, CompileDescription compileOptions) {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		myLocalBuildCounter++;
+		Shared.buildCounter++;
 
 		try {
 			compileOptions.setEnableParallelBuild(true);
@@ -263,8 +256,11 @@ public class Shared {
 	}
 
 	public static String getCounterName(String name) {
-		String counterName = String.format("%05d_%s", Integer.valueOf(myTestCounter++), name);
-		return counterName;
+		return getCounterName("%05d_%s", name);
+	}
+
+	public static String getCounterName(String format,String name) {
+		return String.format(format, Integer.valueOf(myTestCounter++), name);
 	}
 
 	public static String getProjectName(CodeDescription codeDescriptor, MCUBoard board) {
