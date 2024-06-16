@@ -65,6 +65,7 @@ public class Activator extends Plugin {
             'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 
     private static IResourceChangeListener myResourceChangelistener = new resourceChangeListener();
+    private static IndexerListener myindexerListener = new IndexerListener();
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -179,12 +180,19 @@ public class Activator extends Plugin {
     }
 
     private static void registerListeners() {
-        IndexerListener myindexerListener = new IndexerListener();
         CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener,
                 IResourceChangeEvent.POST_CHANGE);
+
+    }
+
+    private static void unRegisterListeners() {
+        CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
+        CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
+
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(myResourceChangelistener);
 
     }
 
@@ -265,7 +273,7 @@ public class Activator extends Plugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(myResourceChangelistener);
+        unRegisterListeners();
         instance = null;
         super.stop(context);
     }
