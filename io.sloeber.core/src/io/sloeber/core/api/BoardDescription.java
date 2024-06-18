@@ -981,7 +981,7 @@ public class BoardDescription {
             }
         }
         Collections.sort(objcopyCommand);
-        extraVars.put(SLOEBER_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
+        extraVars.put(SLOEBER_OBJCOPY, StringUtil.join(objcopyCommand, NEWLINE));
 
         // handle the hooks
         extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.pre.link", //$NON-NLS-1$
@@ -1009,11 +1009,11 @@ public class BoardDescription {
         Map<String, String> extraVars = new HashMap<>();
         String envVarString = new String();
         String searchString = "XX"; //$NON-NLS-1$
-        String postSeparator = "}\n\t"; //$NON-NLS-1$
-        String preSeparator = "${"; //$NON-NLS-1$
+        String postSeparator = VARIABLE_SUFFIX+NEWLINE;
+        String preSeparator = VARIABLE_PREFIX;
         if (post) {
-            postSeparator = "${"; //$NON-NLS-1$
-            preSeparator = "}\n\t"; //$NON-NLS-1$
+            postSeparator =VARIABLE_PREFIX;
+            preSeparator = VARIABLE_SUFFIX+NEWLINE;
         }
         for (int numDigits = 1; numDigits <= 2; numDigits++) {
             String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
