@@ -184,6 +184,7 @@ public interface IAutoBuildConfigurationDescription {
 
 
     public void setBuilder(IBuilder builder);
+    public void setBuilder(String builderID);
 
     /**
      * Is the eclipse autobuild functionality
@@ -429,6 +430,10 @@ public interface IAutoBuildConfigurationDescription {
 	 *
 	 * @return a set of strings to exclude from the files to share
 	 */
-	Set<String> getTeamExclusionKeys();
+	public Set<String> getTeamExclusionKeys();
+
+	public Map<String, String> getEnvironmentVariableMap();
+
+
 
 }
