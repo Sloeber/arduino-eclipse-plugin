@@ -33,7 +33,13 @@ public class MinGW32ToolsProvider extends ExtensionBuildToolsProvider {
 
     private  void findTools() {
     	myBuildTools.clear();
+    	try {
         myMinGWHome = org.eclipse.cdt.internal.core.MinGW.getMinGWHome();
+    	}
+    	catch(@SuppressWarnings("unused") Exception e) {
+    		//ignore as this fails in maven build due to lack of gui and as such registry
+    		//is not available
+    	}
         if (myMinGWHome != null) {
 
             myMinGWBinPath = new Path(myMinGWHome).append(BIN_FOLDER);
