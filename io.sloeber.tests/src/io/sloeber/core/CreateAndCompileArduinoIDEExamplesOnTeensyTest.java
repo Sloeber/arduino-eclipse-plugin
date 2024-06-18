@@ -90,10 +90,10 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@ParameterizedTest
 	@MethodSource("teensyHardwareData")
     public void testArduinoIDEExamplesOnTeensy(String testName, CodeDescription codeDescriptor,
-            BoardDescription board) {
+            BoardDescription board) throws Exception {
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        if (!Shared.BuildAndVerify(testName, board, codeDescriptor, new CompileDescription())) {
+        if (!Shared.buildAndVerify(testName, board, codeDescriptor, new CompileDescription())) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
         }

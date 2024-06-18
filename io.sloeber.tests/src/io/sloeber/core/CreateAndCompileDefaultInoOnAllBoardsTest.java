@@ -342,7 +342,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-        if (!Shared.BuildAndVerify(board, CodeDescription.createCustomTemplate(templateFolder), null)) {
+        if (!Shared.buildAndVerify(board, CodeDescription.createCustomTemplate(templateFolder), null)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
         }

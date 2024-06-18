@@ -90,11 +90,11 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 	@ParameterizedTest
 	@MethodSource("jantjesHardwareData")
     public void testExample( CodeDescription codeDescriptor,
-            BoardDescription board) {
+            BoardDescription board) throws Exception {
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
-        if (!Shared.BuildAndVerify(board, codeDescriptor)) {
+        if (!Shared.buildAndVerify(board, codeDescriptor)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
         }

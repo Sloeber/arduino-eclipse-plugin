@@ -11,11 +11,15 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICModelMarker;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -32,6 +36,8 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 import static io.sloeber.core.api.Const.*;
+
+import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
@@ -127,9 +133,10 @@ public class Shared {
 	 * @param boardDescriptor
 	 * @param codeDescriptor
 	 * @return true if build is successful otherwise false
+	 * @throws Exception
 	 */
-	public static boolean BuildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor) {
-		return BuildAndVerify(boardDescriptor, codeDescriptor, null);
+	public static boolean buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor) throws Exception {
+		return buildAndVerify(boardDescriptor, codeDescriptor, null);
 	}
 
 	/**
@@ -140,11 +147,12 @@ public class Shared {
 	 * @param codeDescriptor
 	 * @param compileOptions  can be null
 	 * @return true if build is successful otherwise false
+	 * @throws Exception
 	 */
-	public static boolean BuildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
-			CompileDescription compileOptions) {
+	public static boolean buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
+			CompileDescription compileOptions) throws Exception {
 
-		String projectName = getCounterName( boardDescriptor.getBoardID());
+		String projectName = getCounterName(boardDescriptor.getBoardID());
 		IExample example = codeDescriptor.getLinkedExample();
 		if (example != null) {
 			IArduinoLibraryVersion lib = example.getArduinoLibrary();
@@ -159,26 +167,51 @@ public class Shared {
 		if (compileOptions == null) {
 			localCompileOptions = new CompileDescription();
 		}
-		return BuildAndVerify(projectName, boardDescriptor, codeDescriptor, localCompileOptions);
+		return buildAndVerify(projectName, boardDescriptor, codeDescriptor, localCompileOptions);
 	}
 
-	public static boolean BuildAndVerify(String projectName, BoardDescription boardDescriptor,
-			CodeDescription codeDescriptor, CompileDescription compileOptions) {
+	public static boolean buildAndVerify(String projectName, BoardDescription boardDescriptor,
+			CodeDescription codeDescriptor, CompileDescription compileOptions) throws Exception {
+		Set<String> builders = new HashSet<>();
+		builders.add(AutoBuildProject.INTERNAL_BUILDER_ID);
+		return buildAndVerifyGivenBuilders(projectName, boardDescriptor, codeDescriptor, compileOptions, builders);
+	}
+
+	public static boolean buildAndVerifyAllBuilders(String projectName, BoardDescription boardDescriptor,
+			CodeDescription codeDescriptor, CompileDescription compileOptions) throws Exception {
+		Set<String> builders = new HashSet<>();
+		builders.add(AutoBuildProject.INTERNAL_BUILDER_ID);
+		builders.add(AutoBuildProject.MAKE_BUILDER_ID);
+		return buildAndVerifyGivenBuilders(projectName, boardDescriptor, codeDescriptor, compileOptions, builders);
+	}
+
+	public static boolean buildAndVerifyGivenBuilders(String projectName, BoardDescription boardDescriptor,
+			CodeDescription codeDescriptor, CompileDescription compileOptions, Set<String> builders)
+			throws Exception {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		Shared.buildCounter++;
+		boolean projectFreshlyCreated = true;
 
-		try {
-			compileOptions.setEnableParallelBuild(true);
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor, codeDescriptor,
-					compileOptions, monitor);
-			waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			myLastFailMessage = "Failed to create the project:" + projectName;
-			return false;
-		}
-		try {
+		for (String curBuilder : builders) {
+			if (theTestProject == null) {
+				compileOptions.setEnableParallelBuild(true);
+				theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor, codeDescriptor,
+						compileOptions, curBuilder, monitor);
+				waitForAllJobsToFinish(); // for the indexer
+			}
+			// do not set the build tool when the project is freshly created because then
+			// the default case would never be tested
+			if (!projectFreshlyCreated) {
+				// set the builder
+				CoreModel coreModel = CoreModel.getDefault();
+				ICProjectDescription projectDescription = coreModel.getProjectDescription(theTestProject, true);
+				IAutoBuildConfigurationDescription autoDesc = IAutoBuildConfigurationDescription
+						.getActiveConfig(projectDescription);
+				autoDesc.setBuilder(curBuilder);
+				coreModel.setProjectDescription(theTestProject, projectDescription);
+			}
+			projectFreshlyCreated = false;
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 			if (hasBuildErrors(theTestProject)) {
 				waitForAllJobsToFinish(); // for the indexer
@@ -189,27 +222,27 @@ public class Shared {
 					Thread.sleep(2000);
 					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 					if (hasBuildErrors(theTestProject)) {
-						myLastFailMessage = "Failed to compile the project:" + projectName + " build errors";
-						if (closeFailedProjects) {
-							theTestProject.close(null);
-						}
-						return false;
+						myLastFailMessage = myLastFailMessage + NEWLINE + "Failed to compile the project:" + projectName
+								+ " with builder " + curBuilder;
 					}
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			myLastFailMessage = "Failed to compile the project:" + boardDescriptor.getBoardName() + " exception";
+			// clean so we will get a full build at the next build
+			theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+		}
+		if (!myLastFailMessage.isBlank()) {
+			if (closeFailedProjects && theTestProject!=null) {
+				theTestProject.close(null);
+			}
 			return false;
 		}
-		try {
+
+		if (theTestProject != null) {
 			if (deleteProjects) {
 				theTestProject.delete(true, true, null);
 			} else {
 				theTestProject.close(null);
 			}
-		} catch (CoreException e) {
-			e.printStackTrace();
 		}
 		return true;
 	}
@@ -259,14 +292,14 @@ public class Shared {
 		return getCounterName("%05d_%s", name);
 	}
 
-	public static String getCounterName(String format,String name) {
+	public static String getCounterName(String format, String name) {
 		return String.format(format, Integer.valueOf(myTestCounter++), name);
 	}
 
 	public static String getProjectName(CodeDescription codeDescriptor, MCUBoard board) {
-		String codeString =codeDescriptor.getExampleName();
-		if(codeString==null) {
-			codeString =codeDescriptor.getCodeType().toString();
+		String codeString = codeDescriptor.getExampleName();
+		if (codeString == null) {
+			codeString = codeDescriptor.getCodeType().toString();
 		}
 		return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), codeString,
 				board.getBoardDescriptor().getBoardID());

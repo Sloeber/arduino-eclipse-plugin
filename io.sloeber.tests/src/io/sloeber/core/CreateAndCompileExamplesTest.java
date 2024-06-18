@@ -104,7 +104,7 @@ public class CreateAndCompileExamplesTest {
 
 	@ParameterizedTest
 	@MethodSource("examples")
-	public void testExamples(String name, BoardDescription boardDescriptor, CodeDescription codeDescriptor) {
+	public void testExamples(String name, BoardDescription boardDescriptor, CodeDescription codeDescriptor) throws Exception {
         // Stop after X fails because
         // the fails stays open in eclipse and it becomes really slow
         // There are only a number of issues you can handle
@@ -114,7 +114,7 @@ public class CreateAndCompileExamplesTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         Shared.buildCounter++;
-        if (!Shared.BuildAndVerify(name, boardDescriptor, codeDescriptor, new CompileDescription())) {
+        if (!Shared.buildAndVerify(name, boardDescriptor, codeDescriptor, new CompileDescription())) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }

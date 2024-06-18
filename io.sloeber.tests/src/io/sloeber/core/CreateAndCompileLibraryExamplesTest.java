@@ -95,7 +95,7 @@ public class CreateAndCompileLibraryExamplesTest {
 
 	@ParameterizedTest
 	@MethodSource("CreateAndCompileLibraryExamplesTestData")
-    public void testExamples(String name, MCUBoard boardID, Example example) {
+    public void testExamples(String name, MCUBoard boardID, Example example) throws Exception {
 
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
@@ -112,7 +112,7 @@ public class CreateAndCompileLibraryExamplesTest {
         Map<String, String> boardOptions = boardID.getBoardOptions(example);
         BoardDescription boardDescriptor = boardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        if (!Shared.BuildAndVerify(boardDescriptor, codeDescriptor)) {
+        if (!Shared.buildAndVerify(boardDescriptor, codeDescriptor)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
         }

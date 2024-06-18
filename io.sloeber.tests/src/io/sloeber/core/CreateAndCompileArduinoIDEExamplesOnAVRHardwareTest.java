@@ -90,12 +90,12 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 	@ParameterizedTest
 	@MethodSource("avrHardwareData")
     public void testExample(String projectName, CodeDescription codeDescriptor,
-            MCUBoard board) {
+            MCUBoard board) throws Exception {
 
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
-        if (!Shared.BuildAndVerify(projectName, board.getBoardDescriptor(), codeDescriptor,
+        if (!Shared.buildAndVerify(projectName, board.getBoardDescriptor(), codeDescriptor,
                 new CompileDescription())) {
             myTotalFails++;
             fail(Shared.getLastFailMessage());
