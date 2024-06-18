@@ -322,7 +322,7 @@ public class MakefileGenerator  {
 		String sketchPrebuild = getVariableValue("sloeber.prebuild", EMPTY_STRING, true, myAutoBuildConfData); //$NON-NLS-1$
 		if (!sketchPrebuild.isEmpty()) {
 			if (!prebuildStep.isEmpty()) {
-				prebuildStep = prebuildStep + "\n\t" + sketchPrebuild; //$NON-NLS-1$
+				prebuildStep = prebuildStep + NEWLINE+TAB + sketchPrebuild;
 			} else {
 				prebuildStep = sketchPrebuild;
 			}
@@ -427,7 +427,7 @@ public class MakefileGenerator  {
 
 	protected StringBuffer topMakeGetFinalTargets() {
 
-		String cleanCommand = "\t-$(RM)"; //$NON-NLS-1$
+		String cleanCommand = TAB+"-$(RM)"; //$NON-NLS-1$
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(NEWLINE).append(NEWLINE);
 		buffer.append(CLEAN).append(COLON).append(NEWLINE);
