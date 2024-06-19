@@ -38,7 +38,6 @@ import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.utils.CommandLineUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -69,7 +68,7 @@ public class InternalBuildRunner implements IBuildRunner {
 	private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
 	private static final int TICKS_EXECUTE_COMMAND = 1 * PROGRESS_MONITOR_SCALE;
 	private static final int TICKS_REFRESH_PROJECT = 1 * PROGRESS_MONITOR_SCALE;
-	private boolean myHasBuildError=false;
+	private boolean myHasBuildError = false;
 
 	private static void createFolder(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
 			throws CoreException {
@@ -82,8 +81,6 @@ public class InternalBuildRunner implements IBuildRunner {
 		}
 	}
 
-
-
 	@Override
 	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
 			IConsole console, IProgressMonitor monitor) throws CoreException {
@@ -94,11 +91,10 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeBuild(int kind, String targetName,  IAutoBuildConfigurationDescription inAutoData,
+	public boolean invokeBuild(int kind, String targetName, IAutoBuildConfigurationDescription inAutoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 
 		AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) inAutoData;
-		String envp[] = autoData.getEnvironmentVariables();
 		SubMonitor parentMon = SubMonitor.convert(monitor);
 		IProject project = autoData.getProject();
 		IConfiguration configuration = autoData.getConfiguration();
@@ -149,20 +145,20 @@ public class InternalBuildRunner implements IBuildRunner {
 						buildRunnerHelper.toConsole(announcement);
 					}
 					buildRunnerHelper.toConsole(preBuildStep);
-					if (launchCommand(preBuildStep, envp, autoData, monitor, buildRunnerHelper) != 0) {
+					if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
 						if (autoData.stopOnFirstBuildError()) {
 							return false;
 						}
 					}
 				}
-				myHasBuildError=false;
+				myHasBuildError = false;
 				do {
 					sequenceID++;
 					lastSequenceID = true;
 
-					ExecutorService executor =null;
-					if(parrallelNum>1) {
-						executor=Executors.newFixedThreadPool(parrallelNum);
+					ExecutorService executor = null;
+					if (parrallelNum > 1) {
+						executor = Executors.newFixedThreadPool(parrallelNum);
 					}
 //					else {
 //						executor=Executors.newSingleThreadExecutor();
@@ -171,13 +167,13 @@ public class InternalBuildRunner implements IBuildRunner {
 						if (curRule.getSequenceGroupID() != sequenceID) {
 							continue;
 						}
-						if(myHasBuildError) {
+						if (myHasBuildError) {
 							continue;
 						}
 						lastSequenceID = false;
 						//buildRunnerHelper.toConsole("Adding to executor " + curRule.getAnnouncement());
 						if (!curRule.needsExecuting(buildRoot)) {
-							buildRunnerHelper.toConsole("No need to run "+curRule.getAnnouncement());
+							buildRunnerHelper.toConsole("No need to run " + curRule.getAnnouncement());
 							continue;
 						}
 
@@ -200,21 +196,20 @@ public class InternalBuildRunner implements IBuildRunner {
 							e.printStackTrace();
 						}
 
-						Runnable worker = new RuleRunner(curRule, envp, autoData, monitor, buildRunnerHelper);
-						if(executor!=null) {
+						Runnable worker = new RuleRunner(curRule, autoData, monitor, buildRunnerHelper);
+						if (executor != null) {
 							executor.execute(worker);
-						}else {
-						 worker.run();
+						} else {
+							worker.run();
 						}
 
-
 					}
-					if(executor!=null) {
-					// This will make the executor accept no new threads
-					// and finish all existing threads in the queue
-					executor.shutdown();
-					// Wait until all threads are finish
-					executor.awaitTermination(20, TimeUnit.MINUTES);
+					if (executor != null) {
+						// This will make the executor accept no new threads
+						// and finish all existing threads in the queue
+						executor.shutdown();
+						// Wait until all threads are finish
+						executor.awaitTermination(20, TimeUnit.MINUTES);
 					}
 					epm.deDuplicate();
 
@@ -232,7 +227,7 @@ public class InternalBuildRunner implements IBuildRunner {
 						buildRunnerHelper.toConsole(announcement);
 					}
 					buildRunnerHelper.toConsole(postBuildStep);
-					if (launchCommand(postBuildStep, envp, autoData, monitor, buildRunnerHelper) != 0) {
+					if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
 						return false;
 					}
 				}
@@ -252,16 +247,13 @@ public class InternalBuildRunner implements IBuildRunner {
 
 	private class RuleRunner implements Runnable {
 		private IAutoBuildMakeRule myRule;
-		private String myEnvp[];
 		private AutoBuildConfigurationDescription myAutoData;
 		private IProgressMonitor myMonitor;
 		private AutoBuildRunnerHelper myBuildRunnerHelper;
 
-
-		RuleRunner(IAutoBuildMakeRule curRule, String envp[], AutoBuildConfigurationDescription autoData,
-				IProgressMonitor monitor, AutoBuildRunnerHelper buildRunnerHelper) {
+		RuleRunner(IAutoBuildMakeRule curRule, AutoBuildConfigurationDescription autoData, IProgressMonitor monitor,
+				AutoBuildRunnerHelper buildRunnerHelper) {
 			myRule = curRule;
-			myEnvp = envp;
 			myAutoData = autoData;
 			myMonitor = monitor;
 			myBuildRunnerHelper = buildRunnerHelper;
@@ -275,7 +267,7 @@ public class InternalBuildRunner implements IBuildRunner {
 				// run the actual build commands -called recipes
 				for (String curRecipe : myRule.getRecipes(myAutoData.getBuildFolder(), myAutoData)) {
 					myBuildRunnerHelper.toConsole(curRecipe);
-					if (launchCommand(curRecipe, myEnvp, myAutoData, myMonitor, myBuildRunnerHelper) != 0) {
+					if (launchCommand(curRecipe, myAutoData, myMonitor, myBuildRunnerHelper) != 0) {
 						if (myAutoData.stopOnFirstBuildError()) {
 							reportBuildError();
 							break;
@@ -291,14 +283,14 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	private void reportBuildError() {
-		myHasBuildError=true;
+		myHasBuildError = true;
 	}
 
-	private static int launchCommand(String curRecipe, String envp[], AutoBuildConfigurationDescription autoData,
+	private static int launchCommand(String curRecipe, AutoBuildConfigurationDescription autoData,
 			IProgressMonitor monitor, AutoBuildRunnerHelper buildRunnerHelper) throws IOException {
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(false);
-		String[] args = CommandLineUtil.argumentsToArray(curRecipe);
+		String[] args = argumentsToArray(curRecipe);
 		IPath commandPath = new Path(args[0]);
 		String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
 
@@ -306,8 +298,8 @@ public class InternalBuildRunner implements IBuildRunner {
 		try (OutputStream stdout = buildRunnerHelper.getOutputStream();
 				OutputStream stderr = buildRunnerHelper.getErrorStream();) {
 			try {
-				fProcess = launcher.execute(commandPath, onlyArgs, envp, autoData.getBuildFolder().getLocation(),
-						monitor);
+				fProcess = launcher.execute(commandPath, onlyArgs, autoData.getEnvironmentVariables(),
+						autoData.getBuildFolder().getLocation(), monitor);
 			} catch (@SuppressWarnings("unused") CoreException e1) {
 				// ignore and handle null case
 			}
@@ -380,6 +372,240 @@ public class InternalBuildRunner implements IBuildRunner {
 			}
 		}
 
+	}
+
+	public static String[] argumentsToArray(String line) {
+		if (isWindows) {
+			return argumentsToArrayWindowsStyle(line);
+		}
+		return argumentsToArrayUnixStyle(line);
+	}
+
+	/**
+	 * Parsing arguments in a shell style. i.e.
+	 *
+	 * <pre>
+	 * ["a b c" d] -&gt; [[a b c],[d]]
+	 * [a   d] -&gt; [[a],[d]]
+	 * ['"quoted"'] -&gt; [["quoted"]]
+	 * [\\ \" \a] -&gt; [[\],["],[a]]
+	 * ["str\\str\a"] -&gt; [[str\str\a]]
+	 * </pre>
+	 *
+	 * @param line
+	 * @return array of arguments, or empty array if line is null or empty
+	 */
+	@SuppressWarnings("incomplete-switch")
+	public static String[] argumentsToArrayUnixStyle(String line) {
+		final int INITIAL = 0;
+		final int IN_DOUBLE_QUOTES = 1;
+		final int IN_DOUBLE_QUOTES_ESCAPED = 2;
+		final int ESCAPED = 3;
+		final int IN_SINGLE_QUOTES = 4;
+		final int IN_ARG = 5;
+
+		if (line == null) {
+			return new String[0];
+		}
+
+		char[] array = line.trim().toCharArray();
+		ArrayList<String> aList = new ArrayList<>();
+		StringBuilder buffer = new StringBuilder();
+		int state = INITIAL;
+		for (int i = 0; i < array.length; i++) {
+			char c = array[i];
+
+			switch (state) {
+			case IN_ARG:
+				// fall through
+			case INITIAL:
+				if (Character.isWhitespace(c)) {
+					if (state == INITIAL)
+						break; // ignore extra spaces
+					// add argument
+					state = INITIAL;
+					String arg = buffer.toString();
+					buffer = new StringBuilder();
+					aList.add(arg);
+				} else {
+					switch (c) {
+					case '\\':
+						state = ESCAPED;
+						break;
+					case '\'':
+						state = IN_SINGLE_QUOTES;
+						break;
+					case '\"':
+						state = IN_DOUBLE_QUOTES;
+						break;
+					default:
+						state = IN_ARG;
+						buffer.append(c);
+						break;
+					}
+				}
+				break;
+			case IN_DOUBLE_QUOTES:
+				switch (c) {
+				case '\\':
+					state = IN_DOUBLE_QUOTES_ESCAPED;
+					break;
+				case '\"':
+					state = IN_ARG;
+					break;
+				default:
+					buffer.append(c);
+					break;
+				}
+				break;
+			case IN_SINGLE_QUOTES:
+				switch (c) {
+				case '\'':
+					state = IN_ARG;
+					break;
+				default:
+					buffer.append(c);
+					break;
+				}
+				break;
+			case IN_DOUBLE_QUOTES_ESCAPED:
+				switch (c) {
+				case '\"':
+				case '\\':
+					buffer.append(c);
+					break;
+				case 'n':
+					buffer.append("\n"); //$NON-NLS-1$
+					break;
+				default:
+					buffer.append('\\');
+					buffer.append(c);
+					break;
+				}
+				state = IN_DOUBLE_QUOTES;
+				break;
+			case ESCAPED:
+				buffer.append(c);
+				state = IN_ARG;
+				break;
+			}
+		}
+
+		if (state != INITIAL) { // this allow to process empty string as an
+								// argument
+			aList.add(buffer.toString());
+		}
+		return aList.toArray(new String[aList.size()]);
+	}
+
+	/**
+	 * Parsing arguments in a cmd style. i.e.
+	 *
+	 * <pre>
+	 * ["a b c" d] -&gt; [[a b c],[d]]
+	 * [a   d] -&gt; [[a],[d]]
+	 * ['"quoted"'] -&gt; [['quoted']]
+	 * [\\ \" \a] -&gt; [[\\],["],[\a]]
+	 * ["str\\str\a"] -&gt; [[str\\str\a]]
+	 * </pre>
+	 *
+	 * @param line
+	 * @return array of arguments, or empty array if line is null or empty
+	 */
+	@SuppressWarnings("incomplete-switch")
+	public static String[] argumentsToArrayWindowsStyle(String line) {
+		final int INITIAL = 0;
+		final int IN_DOUBLE_QUOTES = 1;
+		final int IN_DOUBLE_QUOTES_ESCAPED = 2;
+		final int ESCAPED = 3;
+		final int IN_ARG = 5;
+
+		if (line == null) {
+			return new String[0];
+		}
+
+		char[] array = line.trim().toCharArray();
+		ArrayList<String> aList = new ArrayList<>();
+		StringBuilder buffer = new StringBuilder();
+		int state = INITIAL;
+		for (int i = 0; i < array.length; i++) {
+			char c = array[i];
+
+			switch (state) {
+			case IN_ARG:
+				// fall through
+			case INITIAL:
+				if (Character.isWhitespace(c)) {
+					if (state == INITIAL)
+						break; // ignore extra spaces
+					// add argument
+					state = INITIAL;
+					String arg = buffer.toString();
+					buffer = new StringBuilder();
+					aList.add(arg);
+				} else {
+					switch (c) {
+					case '\\':
+						state = ESCAPED;
+						break;
+					case '\"':
+						state = IN_DOUBLE_QUOTES;
+						break;
+					default:
+						state = IN_ARG;
+						buffer.append(c);
+						break;
+					}
+				}
+				break;
+			case IN_DOUBLE_QUOTES:
+				switch (c) {
+				case '\\':
+					state = IN_DOUBLE_QUOTES_ESCAPED;
+					break;
+				case '\"':
+					state = IN_ARG;
+					break;
+				default:
+					buffer.append(c);
+					break;
+				}
+				break;
+			case IN_DOUBLE_QUOTES_ESCAPED:
+//				switch (c) {
+//				case '\"':
+//					buffer.append(c);
+//					break;
+//				default:
+//					buffer.append('\\');
+//					buffer.append(c);
+//					break;
+//				}
+				buffer.append('\\');
+				buffer.append(c);
+				state = IN_DOUBLE_QUOTES;
+				break;
+			case ESCAPED:
+				state = IN_ARG;
+//				switch (c) {
+//				case ' ':
+//				case '\"':
+//					buffer.append(c);
+//					break;
+//				default:
+				buffer.append('\\');
+				buffer.append(c);
+//					break;
+//				}
+				break;
+			}
+		}
+
+		if (state != INITIAL) { // this allow to process empty string as an
+								// argument
+			aList.add(buffer.toString());
+		}
+		return aList.toArray(new String[aList.size()]);
 	}
 
 }
