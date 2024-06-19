@@ -43,7 +43,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
    <launcher name="sloeber-ide">
-      <linux icon="launch/icon.xpm"/>
+      <linux icon="/io.sloeber.core/launch/icon.xpm"/>
       <macosx icon="/io.sloeber.core/launch/icon.icns"/>
       <win useIco="true">
          <ico path="/io.sloeber.core/launch/icons.ico"/>
