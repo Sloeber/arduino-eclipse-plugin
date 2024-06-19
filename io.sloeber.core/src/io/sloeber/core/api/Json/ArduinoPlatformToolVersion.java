@@ -135,14 +135,14 @@ public class ArduinoPlatformToolVersion extends Node {
 
         HashMap<String, String> vars = new HashMap<>();
         String installPath = getInstallPath().toOSString();
-        String keyString = RUNTIME_TOOLS + getNodeName() + getVersion() + DOT_PATH;
+        String keyString = ENV_KEY_RUNTIME_TOOLS + getNodeName() + getVersion() + DOT_PATH;
         vars.put(keyString, installPath);
-        keyString = RUNTIME_TOOLS + getNodeName() + '-' + getVersion() + DOT_PATH;
+        keyString = ENV_KEY_RUNTIME_TOOLS + getNodeName() + '-' + getVersion() + DOT_PATH;
         vars.put(keyString, installPath);
         if (skipDefault) {
             return vars;
         }
-        keyString = RUNTIME_TOOLS + getNodeName() + DOT_PATH;
+        keyString = ENV_KEY_RUNTIME_TOOLS + getNodeName() + DOT_PATH;
         vars.put(keyString, installPath);
         return vars;
     }

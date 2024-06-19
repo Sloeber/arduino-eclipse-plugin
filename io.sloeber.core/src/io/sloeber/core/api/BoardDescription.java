@@ -805,9 +805,25 @@ public class BoardDescription {
         String architecture = getArchitecture();
         IPath coreHardwarePath = getreferencedCoreHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        allVars.put(ENV_KEY_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toOSString());
+        allVars.put(ENV_KEY_RUNTIME_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toOSString());
         allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
-        allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
+        allVars.put(ENV_KEY_RUNTIME_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
+        //ide_version is defined in pre_processing_platform_default.txt
+        allVars.put(ENV_KEY_RUNTIME_IDE_VERSION, makeEnvironmentVar("ide_version")); //$NON-NLS-1$
+        allVars.put(ENV_KEY_RUNTIME_IDE_PATH, makeEnvironmentVar(SLOEBER_HOME));
+        if(isWindows) {
+        	allVars.put(ENV_KEY_RUNTIME_OS, "windows"); //$NON-NLS-1$
+        }
+        if(isLinux) {
+        	allVars.put(ENV_KEY_RUNTIME_OS, "linux"); //$NON-NLS-1$
+        }
+        if(isMac) {
+        	allVars.put(ENV_KEY_RUNTIME_OS, "macosx"); //$NON-NLS-1$
+        }
+        allVars.put(ENV_KEY_SOFTWARE,VENDOR_ARDUINO);
+        allVars.put(ENV_KEY_ID,getBoardID());
+        
+
 
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
         allVars.put(ENV_KEY_SERIAL_DOT_PORT, getActualUploadPort());
@@ -932,11 +948,11 @@ public class BoardDescription {
             IPath installPath = tool.getInstallPath();
             if (installPath.toFile().exists()) {
                 String value = installPath.toOSString();
-                String keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
+                String keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
                 vars.put(keyString, value);
-                keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
+                keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
                 vars.put(keyString, value);
-                keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
+                keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + DOT_PATH;
                 vars.put(keyString, value);
             }
         }

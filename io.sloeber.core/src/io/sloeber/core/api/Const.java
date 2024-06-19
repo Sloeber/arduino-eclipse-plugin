@@ -57,6 +57,8 @@ public class Const extends AutoBuildConstants {
     public static final String COM_PORT = "com_port";
 
     public static final String PATH = "path";
+    public static final String IDE="ide";
+    public static final String VERSION="version";
     public static final String PROTOCOL = "protocol";
     public static final String VENDOR_ARDUINO = ARDUINO;
 
@@ -135,7 +137,6 @@ public class Const extends AutoBuildConstants {
 
     public static final String SLOEBER_OBJCOPY = ENV_KEY_SLOEBER_START + "objcopy";
 
-    public static final String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
     public static final String DOT_PATH = DOT + PATH;
 
     public static final String AVR = "avr";
@@ -163,8 +164,16 @@ public class Const extends AutoBuildConstants {
     public static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
     public static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
     public static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
-    public static final String ENV_KEY_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
-    public static final String ENV_KEY_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
+
+    public static final String ENV_KEY_RUNTIME_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
+    public static final String ENV_KEY_RUNTIME_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
+    public static final String ENV_KEY_RUNTIME_IDE_PATH = RUNTIME + DOT + IDE + DOT + PATH;
+    public static final String ENV_KEY_RUNTIME_IDE_VERSION = RUNTIME + DOT + IDE + DOT +VERSION;
+    public static final String ENV_KEY_RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
+    public static final String ENV_KEY_RUNTIME_OS = RUNTIME + DOT + "os";
+    public static final String ENV_KEY_SOFTWARE="software";
+    public static final String ENV_KEY_ID="_id";
+
 
     // stuff to store last used board
     public static final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
