@@ -61,7 +61,7 @@ public class RegressionTest {
 	 * start testing
 	 */
 	@BeforeClass
-	public static void WaitForInstallerToFinish() {
+	public static void beforeClass() {
 		Shared.waitForAllJobsToFinish();
 		Shared.setDeleteProjects(false);
 		Preferences.setUseBonjour(false);
@@ -652,6 +652,7 @@ public class RegressionTest {
 	}
 
 	public static Stream<Arguments> testDifferentSourceFoldersData() {
+		beforeClass();//This is not always called
 		List<Arguments> ret = new LinkedList<>();
 		OtherDescription otherDesc = new OtherDescription();
 		CompileDescription projCompileDesc = new CompileDescription();
@@ -709,9 +710,10 @@ public class RegressionTest {
 	/**
 	 * Test wether a platform json redirect is handled properly
 	 * https://github.com/jantje/arduino-eclipse-plugin/issues/393
+	 * @throws Exception
 	 */
 	@Test
-	public void redirectedJson() {
+	public void redirectedJson() throws Exception {
 		//this board references to arduino avr so install that one to
 	    Arduino.installLatestAVRBoards();
         BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
@@ -723,7 +725,7 @@ public class RegressionTest {
 			fail("redirect Json ");
 			return;
 		}
-        if (!Shared.BuildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
+        if (!Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
                 new CompileDescription())) {
             fail(Shared.getLastFailMessage() );
 		}
@@ -731,6 +733,7 @@ public class RegressionTest {
 
 
     static Stream<Arguments> openAndClosePreservesSettingsValueCmd() {
+    	beforeClass();//This is not always called
 		CodeDescription codeDescriptordefaultCPPRoot = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPPSrc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPXX = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
@@ -749,6 +752,7 @@ public class RegressionTest {
 
 
     public static Stream<Arguments>  NightlyBoardPatronTestData() {
+    	beforeClass();//This is not always called
         Preferences.setUseArduinoToolSelection(true);
         CompileDescription compileOptions = new CompileDescription();
         MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
@@ -773,7 +777,7 @@ public class RegressionTest {
 
 	@ParameterizedTest
 	@MethodSource("NightlyBoardPatronTestData")
-    public void NightlyBoardPatron( String name, MCUBoard boardID, Example example,CompileDescription compileOptions) {
+    public void NightlyBoardPatron( String name, MCUBoard boardID, Example example,CompileDescription compileOptions) throws Exception {
 
         Set<IExample> examples = new HashSet<>();
         examples.add(example);
@@ -781,7 +785,7 @@ public class RegressionTest {
 
         BoardDescription boardDescriptor = boardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardID.getBoardOptions(example));
-        if(!Shared.BuildAndVerify(name,boardID.getBoardDescriptor(), codeDescriptor, compileOptions)) {
+        if(!Shared.buildAndVerifyAllBuilders(name,boardID.getBoardDescriptor(), codeDescriptor, compileOptions)) {
             fail(Shared.getLastFailMessage() );
         }
 
