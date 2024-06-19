@@ -53,7 +53,7 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings({ "nls", "static-method", "null" })
 public class RegressionTest {
 	private static final boolean reinstall_boards_and_libraries = false;
-	private final static String AUTOBUILD_CFG = ".AutoBuildProject";
+	private final static String AUTOBUILD_CFG = ".autoBuildProject";
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
