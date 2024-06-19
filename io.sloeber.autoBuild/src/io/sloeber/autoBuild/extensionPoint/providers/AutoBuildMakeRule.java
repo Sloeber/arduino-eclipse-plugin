@@ -31,8 +31,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
+import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.schema.api.IInputType;
 import io.sloeber.autoBuild.schema.api.IOption;
@@ -288,10 +291,16 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 								break;
 							}
 							case ICSettingEntry.INCLUDE_PATH: {
-								IFolder folder = project.getWorkspace().getRoot()
-										.getFolder(IPath.forPosix(curEntry.getValue()));
+								IPath path = project.getWorkspace().getRoot()
+										.getFolder(IPath.forPosix(curEntry.getValue())).getLocation();
+								if(path==null) {
+									//Log error to allow for investigation
+									Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "No location found for "+curEntry.getValue()));
+
+								}else {
 								includePath = includePath + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_INCLUDE_FOLDER
-										+ folder.getLocation().toString() + DOUBLE_QUOTE;
+										+ path.toString() + DOUBLE_QUOTE;
+								}
 								break;
 							}
 							case ICSettingEntry.MACRO: {
