@@ -185,14 +185,27 @@ public class SloeberProject extends Common {
 	public static IProject createArduinoProject(String projectName, URI projectURI, BoardDescription boardDescriptor,
 			CodeDescription codeDesc, CompileDescription compileDescriptor, IProgressMonitor monitor) {
 		return createArduinoProject(projectName, projectURI, boardDescriptor, codeDesc, compileDescriptor,
-				new OtherDescription(), monitor);
+				new OtherDescription(),AutoBuildProject.INTERNAL_BUILDER_ID, monitor);
+	}
+
+	public static IProject createArduinoProject(String projectName, URI projectURI,  BoardDescription boardDescriptor,
+			CodeDescription codeDesc, CompileDescription compileDescriptor,String builderName,
+			IProgressMonitor monitor) {
+		return createArduinoProject(projectName, projectURI, boardDescriptor, codeDesc, compileDescriptor,
+				new OtherDescription(),builderName, monitor);
+	}
+	public static IProject createArduinoProject(String projectName, URI projectURI,  BoardDescription boardDescriptor,
+			CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,
+			IProgressMonitor monitor) {
+		return createArduinoProject(projectName, projectURI, boardDescriptor, codeDesc, compileDescriptor,
+				otherDesc,AutoBuildProject.INTERNAL_BUILDER_ID, monitor);
 	}
 
 	/*
 	 * Method to create a project based on the board
 	 */
-	public static IProject createArduinoProject(String projectName, URI projectURI, BoardDescription boardDescriptor,
-			CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,
+	public static IProject createArduinoProject(String projectName, URI projectURI,  BoardDescription boardDescriptor,
+			CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,String builderName,
 			IProgressMonitor monitor) {
 
 		String realProjectName = makeNameCompileSafe(projectName);
@@ -210,7 +223,7 @@ public class SloeberProject extends Common {
 				IProjectType projectType = AutoBuildManager.getProjectType(LATEST_EXTENSION_POINT_ID,
 						LATEST_EXTENSION_ID, PROJECT_ID, true);
 				newProjectHandle = AutoBuildProject.createProject(realProjectName, projectURI, projectType,
-						CCProjectNature.CC_NATURE_ID, codeDesc, buildTools, true, internalMonitor);
+						builderName ,CCProjectNature.CC_NATURE_ID, codeDesc, buildTools, true, internalMonitor);
 
 				String rootCodeFolder = codeDesc.getCodeFolder();
 				// Add the sketch code
