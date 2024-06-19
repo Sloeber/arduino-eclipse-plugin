@@ -93,10 +93,9 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
             BoardDescription board) throws Exception {
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        if (!Shared.buildAndVerify(testName, board, codeDescriptor, new CompileDescription())) {
-            myTotalFails++;
-            fail(Shared.getLastFailMessage());
-        }
+        myTotalFails++;
+        assertNull (Shared.buildAndVerify(testName, board, codeDescriptor, new CompileDescription()));
+        myTotalFails--;
     }
 
 }

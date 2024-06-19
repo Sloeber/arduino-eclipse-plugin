@@ -16,11 +16,11 @@ import io.sloeber.providers.Arduino;
 
 /**
  * this test assumes it is stared in a clean workspace and not in the UI thread
- * 
+ *
  * this test copies previous versions sloeber projects into the new workspace
  * opens them and builds them if the build is successful the test is considered
  * successful
- * 
+ *
  * @author jan
  *
  */
@@ -28,7 +28,7 @@ import io.sloeber.providers.Arduino;
 public class UpgradeTest {
     /**
      * Upgrade a single config project
-     * 
+     *
      * @throws Exception
      */
     @Before
@@ -58,21 +58,21 @@ public class UpgradeTest {
         theTestProject.open(null);
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-        if (!Shared.hasBuildErrors(theTestProject)) {
+        if (Shared.hasBuildErrors(theTestProject)==null) {
             fail("The project has been automagically upgraded:" + projectName);
         }
         //try to convert the project
         SloeberProject.convertToArduinoProject(theTestProject, null);
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-        if (Shared.hasBuildErrors(theTestProject)) {
-            fail("Failed to compile the upgraded project:" + projectName);
+        if (Shared.hasBuildErrors(theTestProject)!=null) {
+            fail("Failed to compile the upgraded project:" + Shared.hasBuildErrors(theTestProject));
         }
     }
 
     /**
      * Upgrade a triple dual project
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -82,7 +82,7 @@ public class UpgradeTest {
 
     /**
      * Upgrade a triple config project
-     * 
+     *
      * @throws Exception
      */
     @Test

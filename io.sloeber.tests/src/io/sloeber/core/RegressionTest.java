@@ -111,9 +111,7 @@ public class RegressionTest {
 		}
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " as uno  build errors");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (CoreException e) {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
@@ -133,12 +131,10 @@ public class RegressionTest {
 
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
+			if (Shared.hasBuildErrors(theTestProject)!=null) {
 				Shared.waitForAllJobsToFinish();
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (Shared.hasBuildErrors(theTestProject)) {
-					fail("Failed to compile the project:" + projectName + " as teensy");
-				}
+				Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -164,9 +160,7 @@ public class RegressionTest {
 					new CompileDescription(), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " issue687 is not fixed");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -188,9 +182,7 @@ public class RegressionTest {
 					new CompileDescription(), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " CPP project no longer work");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -212,9 +204,7 @@ public class RegressionTest {
 					new CompileDescription(), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " INO project no longer work");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -240,9 +230,7 @@ public class RegressionTest {
 					unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " issue1047 is not fixed");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -278,10 +266,7 @@ public class RegressionTest {
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName
-						+ " The defines have not been taken into account properly");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -311,10 +296,7 @@ public class RegressionTest {
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName
-						+ " extern \"C\" has not been taken into account properly.");
-			}
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -343,10 +325,7 @@ public class RegressionTest {
 
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		if (Shared.hasBuildErrors(theTestProject)) {
-			fail("Failed to compile the project:" + projectName
-					+ " defines have not been taken into account properly.");
-		}
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -370,9 +349,7 @@ public class RegressionTest {
 
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		if (Shared.hasBuildErrors(theTestProject)) {
-			fail("Failed to compile the project before config rename");
-		}
+		Assert.assertNull("Failed to compile the project before config rename",Shared.hasBuildErrors(theTestProject));
 
 		CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 		ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(theTestProject);
@@ -382,9 +359,7 @@ public class RegressionTest {
 
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		if (Shared.hasBuildErrors(theTestProject)) {
-			fail("Failed to compile the project after config rename");
-		}
+		Assert.assertNull("Failed to compile the project after config rename",Shared.hasBuildErrors(theTestProject));
 	}
 
 	// /**
@@ -450,9 +425,7 @@ public class RegressionTest {
 		// also do a build
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		if (Shared.hasBuildErrors(theTestProject)) {
-			fail("Failed to compile the project before close:" + projectName);
-		}
+		Assert.assertNull("Failed to compile the project before close: "+ projectName,Shared.hasBuildErrors(theTestProject));
 
 		// also do a clean
 		Shared.waitForAllJobsToFinish(); // for the indexer
@@ -497,9 +470,7 @@ public class RegressionTest {
 		// also do a build
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		if (Shared.hasBuildErrors(theTestProject)) {
-			fail("Failed to compile the project after open:" + projectName);
-		}
+		Assert.assertNull("Failed to compile the project after open: "+ projectName,Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -608,7 +579,7 @@ public class RegressionTest {
 				otherDesc, new NullProgressMonitor());
 
 		proj.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertFalse("Failed to compile the project: " + proj1Name, Shared.hasBuildErrors(proj));
+		Assert.assertNull("Failed to compile the project: " + Shared.hasBuildErrors(proj), Shared.hasBuildErrors(proj));
 		String fileLocation = projectFolder.append("src").append(proj1Name + ".cpp").toString();
 
 		IFile cppFile = proj.getFolder("src").getFile(proj1Name + ".cpp");
@@ -694,7 +665,7 @@ public class RegressionTest {
 		Shared.waitForAllJobsToFinish(); // for the indexer
 
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-        assertFalse("Failed to compile "+projectName,Shared.hasBuildErrors(project));
+        assertNull("Failed to compile "+projectName,Shared.hasBuildErrors(project));
 
         String srcFolder=codeDescriptor.getCodeFolder();
         IFile cppFile=null;
@@ -725,10 +696,8 @@ public class RegressionTest {
 			fail("redirect Json ");
 			return;
 		}
-        if (!Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
-                new CompileDescription())) {
-            fail(Shared.getLastFailMessage() );
-		}
+		Assert.assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
+                new CompileDescription()));
 	}
 
 
@@ -785,9 +754,7 @@ public class RegressionTest {
 
         BoardDescription boardDescriptor = boardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardID.getBoardOptions(example));
-        if(!Shared.buildAndVerifyAllBuilders(name,boardID.getBoardDescriptor(), codeDescriptor, compileOptions)) {
-            fail(Shared.getLastFailMessage() );
-        }
+        Assert.assertNull(Shared.buildAndVerifyAllBuilders(name,boardID.getBoardDescriptor(), codeDescriptor, compileOptions));
 
     }
 

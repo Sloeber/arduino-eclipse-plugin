@@ -93,11 +93,9 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
             BoardDescription board) throws Exception {
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-
-        if (!Shared.buildAndVerify(board, codeDescriptor)) {
-            myTotalFails++;
-            fail(Shared.getLastFailMessage());
-        }
+        myTotalFails++;
+        assertNull (Shared.buildAndVerify(board, codeDescriptor));
+        myTotalFails--;
     }
 
 }

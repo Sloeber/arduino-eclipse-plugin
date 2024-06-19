@@ -70,11 +70,12 @@ public class Shared {
 		Shared.closeFailedProjects = closeFailedProjects;
 	}
 
-	public static boolean hasBuildErrors(IProject project) throws CoreException {
+	public static String hasBuildErrors(IProject project) throws CoreException {
+		String projectName=project.getName();
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
 		for (IMarker marker : markers) {
 			if (marker.getAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR) {
-				return true;
+				return projectName +": build is marked failed as it has error marker "+marker.toString();
 			}
 		}
 		IAutoBuildConfigurationDescription activeConfig = IAutoBuildConfigurationDescription.getActiveConfig(project,
@@ -87,11 +88,11 @@ public class Shared {
 		for (String validOutput : validOutputss) {
 			IFile validFile = buildFolder.getFile(validOutput);
 			if (validFile.exists()) {
-				return false;
+				//as soon as you have 1 valid output the build is seen as successfull
+				return null;
 			}
 		}
-
-		return true;
+		return projectName + ": build is marked failed as the project does not contain any of "+validOutputss.toString();
 	}
 
 	public static void waitForAllJobsToFinish() {
@@ -135,7 +136,7 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 * @throws Exception
 	 */
-	public static boolean buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor) throws Exception {
+	public static String buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor) throws Exception {
 		return buildAndVerify(boardDescriptor, codeDescriptor, null);
 	}
 
@@ -149,7 +150,7 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 * @throws Exception
 	 */
-	public static boolean buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
+	public static String buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
 			CompileDescription compileOptions) throws Exception {
 
 		String projectName = getCounterName(boardDescriptor.getBoardID());
@@ -170,14 +171,14 @@ public class Shared {
 		return buildAndVerify(projectName, boardDescriptor, codeDescriptor, localCompileOptions);
 	}
 
-	public static boolean buildAndVerify(String projectName, BoardDescription boardDescriptor,
+	public static String buildAndVerify(String projectName, BoardDescription boardDescriptor,
 			CodeDescription codeDescriptor, CompileDescription compileOptions) throws Exception {
 		Set<String> builders = new HashSet<>();
 		builders.add(AutoBuildProject.INTERNAL_BUILDER_ID);
 		return buildAndVerifyGivenBuilders(projectName, boardDescriptor, codeDescriptor, compileOptions, builders);
 	}
 
-	public static boolean buildAndVerifyAllBuilders(String projectName, BoardDescription boardDescriptor,
+	public static String buildAndVerifyAllBuilders(String projectName, BoardDescription boardDescriptor,
 			CodeDescription codeDescriptor, CompileDescription compileOptions) throws Exception {
 		Set<String> builders = new HashSet<>();
 		builders.add(AutoBuildProject.INTERNAL_BUILDER_ID);
@@ -185,7 +186,7 @@ public class Shared {
 		return buildAndVerifyGivenBuilders(projectName, boardDescriptor, codeDescriptor, compileOptions, builders);
 	}
 
-	public static boolean buildAndVerifyGivenBuilders(String projectName, BoardDescription boardDescriptor,
+	public static String buildAndVerifyGivenBuilders(String projectName, BoardDescription boardDescriptor,
 			CodeDescription codeDescriptor, CompileDescription compileOptions, Set<String> builders)
 			throws Exception {
 		IProject theTestProject = null;
@@ -213,16 +214,18 @@ public class Shared {
 			}
 			projectFreshlyCreated = false;
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (hasBuildErrors(theTestProject)) {
+
+			if (hasBuildErrors(theTestProject)!=null) {
 				waitForAllJobsToFinish(); // for the indexer
 				Thread.sleep(2000);
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (hasBuildErrors(theTestProject)) {
+				if (hasBuildErrors(theTestProject)!=null) {
 					waitForAllJobsToFinish(); // for the indexer
 					Thread.sleep(2000);
 					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-					if (hasBuildErrors(theTestProject)) {
-						myLastFailMessage = myLastFailMessage + NEWLINE + "Failed to compile the project:" + projectName
+					String buildError=hasBuildErrors(theTestProject);
+					if (buildError!=null) {
+						myLastFailMessage = myLastFailMessage + NEWLINE +buildError+ NEWLINE+ "Failed to compile the project:" + projectName
 								+ " with builder " + curBuilder;
 					}
 				}
@@ -234,7 +237,7 @@ public class Shared {
 			if (closeFailedProjects && theTestProject!=null) {
 				theTestProject.close(null);
 			}
-			return false;
+			return myLastFailMessage;
 		}
 
 		if (theTestProject != null) {
@@ -244,7 +247,7 @@ public class Shared {
 				theTestProject.close(null);
 			}
 		}
-		return true;
+		return null;
 	}
 
 	/*

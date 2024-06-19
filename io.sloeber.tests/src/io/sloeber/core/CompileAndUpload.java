@@ -1,6 +1,7 @@
 package io.sloeber.core;
 
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -171,7 +172,7 @@ public class CompileAndUpload {
 		}
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
+			if (Shared.hasBuildErrors(theTestProject)!=null) {
 				// try again because the libraries may not yet been added
 				Shared.waitForAllJobsToFinish(); // for the indexer
 				try {
@@ -182,11 +183,8 @@ public class CompileAndUpload {
 				}
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD,
 						monitor);
-				if (Shared.hasBuildErrors(theTestProject)) {
-					// give up
-					fail("Failed to compile the project:" + projectName
-							+ " build errors");
-				}
+				// give up
+				assertNull (Shared.hasBuildErrors(theTestProject)) ;
 			}
 
 		} catch (CoreException e) {

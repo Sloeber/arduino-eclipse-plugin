@@ -112,9 +112,10 @@ public class CreateAndCompileLibraryExamplesTest {
         Map<String, String> boardOptions = boardID.getBoardOptions(example);
         BoardDescription boardDescriptor = boardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        if (!Shared.buildAndVerify(boardDescriptor, codeDescriptor)) {
+        String error=Shared.buildAndVerify(boardDescriptor, codeDescriptor);
+        if (error!=null) {
             myTotalFails++;
-            fail(Shared.getLastFailMessage());
+            fail(error);
         }
 
     }

@@ -1,5 +1,6 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -114,10 +115,9 @@ public class CreateAndCompileExamplesTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         Shared.buildCounter++;
-        if (!Shared.buildAndVerify(name, boardDescriptor, codeDescriptor, new CompileDescription())) {
-            myTotalFails++;
-            fail(Shared.getLastFailMessage() );
-        }
+        myTotalFails++;
+        assertNull(Shared.buildAndVerify(name, boardDescriptor, codeDescriptor, new CompileDescription()));
+        myTotalFails--;
 
 	}
 
