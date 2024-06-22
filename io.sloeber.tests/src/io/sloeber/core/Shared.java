@@ -1,7 +1,5 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,8 +30,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 import static io.sloeber.core.api.Const.*;
 
@@ -45,7 +41,6 @@ import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.MCUBoard;
 
@@ -96,19 +91,19 @@ public class Shared {
 	}
 
 	public static void waitForAllJobsToFinish() {
-		try {
-			Thread.sleep(1000);
-			IJobManager jobMan = Job.getJobManager();
-			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
-				Thread.sleep(500);
-				// If you do not get out of this loop it probably means you are
-				// runnning the test in the gui thread
-			}
-			// As nothing is running now we can start installing
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			fail("can not find installerjob");
-		}
+//		try {
+//			Thread.sleep(1000);
+//			IJobManager jobMan = Job.getJobManager();
+//			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
+//				Thread.sleep(500);
+//				// If you do not get out of this loop it probably means you are
+//				// runnning the test in the gui thread
+//			}
+//			// As nothing is running now we can start installing
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//			fail("can not find installerjob");
+//		}
 	}
 
 	public static IPath getTemplateFolder(String templateName) throws Exception {
@@ -254,7 +249,7 @@ public class Shared {
 	 * For some boards that do not run out of the box we know how to fix it. This
 	 * code fixes these things
 	 */
-	public static void applyKnownWorkArounds() {
+	public static void applyKnownWorkArounds() throws Exception {
 
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toString());
 
@@ -269,11 +264,7 @@ public class Shared {
 			java.nio.file.Path esptool2wrong = esptool2root.resolve("0.9.1").resolve("esptool2");
 			java.nio.file.Path esptool2right = esptool2root.resolve("esptool2");
 			if (esptool2wrong.toFile().exists()) {
-				try {
-					Files.move(esptool2wrong, esptool2right);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				Files.move(esptool2wrong, esptool2right);
 			}
 		}
 		/*
