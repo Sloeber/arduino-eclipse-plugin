@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariableStatus;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.internal.core.cdtvariables.DefaultVariableContextInfo;
@@ -240,6 +241,7 @@ public class AutoBuildCommon {
             try {
                 folder.create(true, true, null);
             } catch (CoreException e) {
+            	e.printStackTrace();
                 if (e.getStatus().getCode() == IResourceStatus.PATH_OCCUPIED)
                     folder.refreshLocal(IResource.DEPTH_ZERO, null);
                 else
@@ -275,6 +277,7 @@ public class AutoBuildCommon {
                 newFile.setDerived(true, null);
             }
         } catch (CoreException e) {
+        	e.printStackTrace();
             // If the file already existed locally, just refresh to get contents
             if (e.getStatus().getCode() == IResourceStatus.PATH_OCCUPIED)
                 newFile.refreshLocal(IResource.DEPTH_ZERO, null);
@@ -452,8 +455,13 @@ public class AutoBuildCommon {
         ICConfigurationDescription confDesc = autoBuildConfData.getCdtConfigurationDescription();
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         try {
-            return envManager.getVariable(varName, confDesc, resolve).getValue();
-        } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
+        	IEnvironmentVariable envVar=envManager.getVariable(varName, confDesc, resolve);
+        	if(envVar!=null) {
+        		return envVar.getValue();
+        	}
+        } catch ( Exception e) {
+        	// ignore all errors and return the default value
+        	e.printStackTrace();
         }
         return defaultvalue;
     }
