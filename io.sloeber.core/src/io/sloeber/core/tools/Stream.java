@@ -70,7 +70,7 @@ public class Stream {
 				}
 			}
 			input = null;
-			IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null); //$NON-NLS-1$
+			IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), ioe); //$NON-NLS-1$
 			Common.log(status);
 			throw new CoreException(status);
 		} finally {

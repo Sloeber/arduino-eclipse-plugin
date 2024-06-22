@@ -39,7 +39,7 @@ public class ArduinoPlatformTool extends Node {
             myName = getSafeString(jsonObject, "name");
             addVersion(jsonObject);
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse Tool json  " + e.getMessage());
+            throw new JsonParseException("failed to parse Tool json  " + e.getMessage(),e);
         }
     }
 
@@ -83,7 +83,7 @@ public class ArduinoPlatformTool extends Node {
 
     /**
      * Get the newest version of this tool
-     * 
+     *
      * @return the newest version of this tool
      */
     public ArduinoPlatformToolVersion getNewest() {
@@ -93,7 +93,7 @@ public class ArduinoPlatformTool extends Node {
     /**
      * return the installed version with the newest version number
      * Null if no version is installed
-     * 
+     *
      * @return
      */
     public ArduinoPlatformToolVersion getNewestInstalled() {

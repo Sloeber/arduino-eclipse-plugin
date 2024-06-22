@@ -50,7 +50,7 @@ public class ArduinoPlatformPackageIndex extends Node
 
     /**
      * provide a identifier that uniquely identifies this package
-     * 
+     *
      * @return A ID that you can uses to identify this package
      */
     @Override
@@ -69,7 +69,7 @@ public class ArduinoPlatformPackageIndex extends Node
                 myPackages.add(new ArduinoPackage(curElement, this));
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse PackageIndex json  " + e.getMessage());
+            throw new JsonParseException("failed to parse PackageIndex json  " + e.getMessage(),e);
         }
 
         return this;

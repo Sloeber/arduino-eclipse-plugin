@@ -39,7 +39,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
             name = getSafeString(jsonObject, "name");
             addVersion(json);
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse json  " + e.getMessage());
+            throw new JsonParseException("failed to parse json  " + e.getMessage(),e);
         }
 
     }
@@ -92,7 +92,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
 
     /**
      * Get the newest version of this library
-     * 
+     *
      * @return the newest version of this library
      */
     public ArduinoLibraryVersion getNewestVersion() {
@@ -102,7 +102,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
     /**
      * Get the version that is installed
      * If no version is installed return NULL
-     * 
+     *
      * @return
      */
     public ArduinoLibraryVersion getInstalledVersion() {

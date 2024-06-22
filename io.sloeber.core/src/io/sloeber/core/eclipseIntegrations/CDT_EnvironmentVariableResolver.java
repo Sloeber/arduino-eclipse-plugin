@@ -28,15 +28,15 @@ public class CDT_EnvironmentVariableResolver implements IDynamicVariableResolver
             ICConfigurationDescription confDesc = getConfigurationDescription();
             return getBuildEnvironmentVariable(confDesc, varName);
 
-        } catch (@SuppressWarnings("unused") Exception dontCare) {
-            Status iStatus = new Status(IStatus.ERROR, PLUGIN_ID, Messages.projectNotFoundInGUI);
+        } catch ( Exception e) {
+            Status iStatus = new Status(IStatus.ERROR, PLUGIN_ID, Messages.projectNotFoundInGUI,e);
             throw new CoreException(iStatus);
         }
     }
 
     /**
      * Find the active configuration of the project selected in the project manager
-     * 
+     *
      * @return The configuration description or null if not found
      */
     private static ICConfigurationDescription getConfigurationDescription() {
@@ -55,7 +55,9 @@ public class CDT_EnvironmentVariableResolver implements IDynamicVariableResolver
         try {
             IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
             return envManager.getVariable(envName, configurationDescription, true).getValue();
-        } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
+        } catch ( Exception e) {
+        	e.printStackTrace();
+        	// ignore all errors and return the default value
         }
         return new String();
     }
@@ -68,7 +70,7 @@ public class CDT_EnvironmentVariableResolver implements IDynamicVariableResolver
      *
      * @return project related to selected resource in the gui if no project is
      *         found null is returned
-     * 
+     *
      */
     private static IProject getGUISelectedProject() {
         try {

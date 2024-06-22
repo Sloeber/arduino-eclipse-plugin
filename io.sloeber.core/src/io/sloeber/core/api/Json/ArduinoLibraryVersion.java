@@ -67,7 +67,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 			checksum = getSafeString(jsonObject, "checksum");
 			calculateFQN();
 		} catch (Exception e) {
-			throw new JsonParseException("failed to parse json  " + e.getMessage());
+			throw new JsonParseException("failed to parse json  " + e.getMessage(),e);
 		}
 
 	}

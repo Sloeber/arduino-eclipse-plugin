@@ -43,7 +43,7 @@ public class ArduinoPlatformToolVersion extends Node {
                 }
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse Tool json  " + e.getMessage());
+            throw new JsonParseException("failed to parse Tool json  " + e.getMessage(),e);
         }
 
     }
@@ -75,7 +75,7 @@ public class ArduinoPlatformToolVersion extends Node {
      * 1) install in the local platform (resulting in tool duplication)
      * 2) search the dependency tree for the tooldepency and use the installpath
      * from there
-     * 
+     *
      * @return
      */
     public IPath getInstallPath() {

@@ -41,7 +41,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
             architecture = getSafeString(jsonObject, "architecture");
             addVersion(json);
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage());
+            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage(),e);
         }
     }
 
@@ -86,7 +86,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
 
     /**
      * Get the newest version of this platform
-     * 
+     *
      * @return the newest version of this platform
      */
     public ArduinoPlatformVersion getNewestVersion() {
@@ -104,7 +104,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
     /**
      * return the installed version with the newest version number
      * Null if no version is installed
-     * 
+     *
      * @return
      */
     public ArduinoPlatformVersion getNewestInstalled() {

@@ -32,16 +32,16 @@ public class ArduinpPlatformToolSystem extends ArduinoInstallable {
             checksum = getSafeString(jsonObject, "checksum");
             size = getSafeString(jsonObject, "size");
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse Tool json  " + e.getMessage());
+            throw new JsonParseException("failed to parse Tool json  " + e.getMessage(),e);
         }
     }
 
     /**
      * Is the tool compatible with the system sloeber is running on
-     * 
+     *
      * code as taken from arduino HostDependentDownloadableContribution
      * https://github.com/arduino/Arduino/blob/master/arduino-core/src/cc/arduino/contributions/packages/HostDependentDownloadableContribution.java
-     * 
+     *
      * @return true if ok; false if not
      */
     @SuppressWarnings("nls")

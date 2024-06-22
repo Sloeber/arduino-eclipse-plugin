@@ -57,7 +57,7 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
                 }
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage());
+            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage(),e);
         }
     }
 

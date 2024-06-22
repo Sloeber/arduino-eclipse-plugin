@@ -71,7 +71,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
                 }
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse Package json  " + e.getMessage());
+            throw new JsonParseException("failed to parse Package json  " + e.getMessage(),e);
         }
     }
 
@@ -125,7 +125,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     /**
      * get tyhe platform based on the platform ID
      * The platform ID is the architecture
-     * 
+     *
      * @param platformID
      * @return return the platfiorm or null if not found
      */
@@ -205,7 +205,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
 
     /**
      * Is any version of the platform installed
-     * 
+     *
      * @param platformName
      * @return if a platform with this name is installed
      */

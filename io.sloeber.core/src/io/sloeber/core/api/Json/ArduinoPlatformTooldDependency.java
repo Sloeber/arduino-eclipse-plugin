@@ -30,7 +30,7 @@ public class ArduinoPlatformTooldDependency {
             myPackager = getSafeString(jsonObject, "packager");
             myVersion = getSafeVersion(jsonObject, "version");
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse json  " + e.getMessage());
+            throw new JsonParseException("failed to parse json  " + e.getMessage(),e);
         }
     }
 
