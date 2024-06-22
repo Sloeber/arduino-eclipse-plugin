@@ -48,7 +48,7 @@ public class AutoBuildCreateBasicProjects {
 	static Set<IBuildTools> myBuildTools = IBuildToolsManager.getDefault().getAllInstalledBuildTools();
 
 	@BeforeAll
-	public static void beforeAll() {
+	public static void beforeAll() throws CoreException {
 		Shared.setDeleteProjects(false);
 		Shared.setCloseProjects(false);
 		// turn off auto building to make sure autobuild does not start a build behind
@@ -56,12 +56,7 @@ public class AutoBuildCreateBasicProjects {
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceDescription workspaceDesc = workspace.getDescription();
 		workspaceDesc.setAutoBuilding(false);
-		try {
-			workspace.setDescription(workspaceDesc);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		workspace.setDescription(workspaceDesc);
 	}
 
 	static void buildAllConfigsAsActive(String builderID, String projectName, String extensionPointID,

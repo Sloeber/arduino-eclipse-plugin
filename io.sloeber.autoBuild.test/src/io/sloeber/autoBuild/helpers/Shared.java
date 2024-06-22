@@ -55,7 +55,6 @@ public class Shared {
 			try {
 				project.close(null);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
