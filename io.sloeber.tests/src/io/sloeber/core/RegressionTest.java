@@ -78,7 +78,7 @@ public class RegressionTest {
 			BoardsManager.removeAllInstalledPlatforms();
 		}
 		// make sure the needed boards are available
-		
+
 		ESP8266.installLatest();
 		ESP32.installLatest();
 		Arduino.installLatestAVRBoards();
@@ -105,7 +105,6 @@ public class RegressionTest {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), monitor);
-		Shared.waitForAllJobsToFinish(); // for the indexer
 
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
@@ -117,14 +116,12 @@ public class RegressionTest {
 		sloeberConf.setBoardDescription(teensyBoardid);
 		cCorePlugin.setProjectDescription(theTestProject, cProjectDescription);
 
-		Shared.waitForAllJobsToFinish();
 		if (sloeberConf.getArduinoVariantFolder().exists()) {
 			fail("variant folder exists");
 		}
 
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		if (Shared.hasBuildErrors(theTestProject) != null) {
-			Shared.waitForAllJobsToFinish();
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		}
@@ -145,7 +142,6 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -160,7 +156,6 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createDefaultCPP();
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
@@ -176,7 +171,6 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -195,7 +189,6 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoard.getBoardDescriptor(),
 				codeDescriptor, new CompileDescription(), new NullProgressMonitor());
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
@@ -225,7 +218,6 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				compileOptions, new NullProgressMonitor());
 
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -249,7 +241,6 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
 
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -273,7 +264,6 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
 
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
@@ -297,7 +287,6 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
 
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull("Failed to compile the project before config rename", Shared.hasBuildErrors(theTestProject));
 
@@ -307,7 +296,6 @@ public class RegressionTest {
 		activeConfig.setName("renamedConfig");
 		cCorePlugin.setProjectDescription(theTestProject, prjCDesc);
 
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull("Failed to compile the project after config rename", Shared.hasBuildErrors(theTestProject));
 	}
@@ -373,18 +361,14 @@ public class RegressionTest {
 				inCompileDescription, new NullProgressMonitor());
 
 		// also do a build
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		Assert.assertNull("Failed to compile the project before close: " + projectName,
 				Shared.hasBuildErrors(theTestProject));
 
 		// also do a clean
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
 
 		// Read the data we want to test
-		Shared.waitForAllJobsToFinish(); // for the indexer
-
 		ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(theTestProject);
 		BoardDescription createdBoardDesc = sloeberConf.getBoardDescription();
 		CompileDescription createdCompileDesc = sloeberConf.getCompileDescription();
@@ -393,9 +377,7 @@ public class RegressionTest {
 		theTestProject.close(null);
 		// just wait a while
 		Thread.sleep(1000);
-		Shared.waitForAllJobsToFinish();
 		theTestProject.open(null);
-		Shared.waitForAllJobsToFinish();
 
 		// read the data we want to test
 		sloeberConf = ISloeberConfiguration.getActiveConfig(theTestProject);
@@ -419,7 +401,6 @@ public class RegressionTest {
 		}
 
 		// also do a build
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		Assert.assertNull("Failed to compile the project after open: " + projectName,
 				Shared.hasBuildErrors(theTestProject));
@@ -452,7 +433,6 @@ public class RegressionTest {
 				proj2CompileDesc, new NullProgressMonitor());
 
 		// Read the data we want to test
-		Shared.waitForAllJobsToFinish(); // for the indexer
 		ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(proj1);
 		BoardDescription proj1CreatedBoardDesc = sloeberConf.getBoardDescription();
 		CompileDescription proj1CreatedCompileDesc = sloeberConf.getCompileDescription();
@@ -472,7 +452,6 @@ public class RegressionTest {
 		proj2.close(null);
 		// just wait a while
 		Thread.sleep(1000);
-		Shared.waitForAllJobsToFinish();
 
 		// copy from proj1 to proj2
 		FileUtils.copyFile(proj1SloeberFile, proj2SloeberFile);
@@ -480,7 +459,6 @@ public class RegressionTest {
 		// reopen the project
 		proj2.open(null);
 		Thread.sleep(1000);
-		Shared.waitForAllJobsToFinish();
 
 		// reread project 2
 		ISloeberConfiguration sloebercfg2 = ISloeberConfiguration.getActiveConfig(proj2);
@@ -613,8 +591,6 @@ public class RegressionTest {
 		BoardDescription proj1BoardDesc = board.getBoardDescriptor();
 		IProject project = SloeberProject.createArduinoProject(projectName, null, proj1BoardDesc, codeDescriptor,
 				proj1CompileDesc, otherDesc, new NullProgressMonitor());
-
-		Shared.waitForAllJobsToFinish(); // for the indexer
 
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		assertNull("Failed to compile " + projectName, Shared.hasBuildErrors(project));
