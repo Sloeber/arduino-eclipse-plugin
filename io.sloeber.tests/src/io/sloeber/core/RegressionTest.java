@@ -61,22 +61,24 @@ public class RegressionTest {
 	 * start testing
 	 */
 	@BeforeClass
-	public static void beforeClass() {
-		Shared.waitForAllJobsToFinish();
+	public static void beforeClass() throws Exception {
+		Shared.waitForBoardsManager();
 		Shared.setDeleteProjects(false);
 		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
 	}
 
-	public static void installAdditionalBoards() {
+	public static void installAdditionalBoards() throws Exception {
 
 		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL,
 				"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
+		Shared.waitForBoardsManager();
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.removeAllInstalledPlatforms();
 		}
 		// make sure the needed boards are available
+		
 		ESP8266.installLatest();
 		ESP32.installLatest();
 		Arduino.installLatestAVRBoards();
@@ -572,7 +574,7 @@ public class RegressionTest {
 
 	}
 
-	public static Stream<Arguments> testDifferentSourceFoldersData() {
+	public static Stream<Arguments> testDifferentSourceFoldersData() throws Exception {
 		beforeClass();// This is not always called
 		List<Arguments> ret = new LinkedList<>();
 		OtherDescription otherDesc = new OtherDescription();
@@ -650,7 +652,7 @@ public class RegressionTest {
 				new CompileDescription()));
 	}
 
-	static Stream<Arguments> openAndClosePreservesSettingsValueCmd() {
+	static Stream<Arguments> openAndClosePreservesSettingsValueCmd() throws Exception {
 		beforeClass();// This is not always called
 		CodeDescription codeDescriptordefaultCPPRoot = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPPSrc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);

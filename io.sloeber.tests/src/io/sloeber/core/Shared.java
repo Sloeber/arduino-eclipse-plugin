@@ -36,6 +36,7 @@ import static io.sloeber.core.api.Const.*;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
@@ -88,6 +89,20 @@ public class Shared {
 			}
 		}
 		return projectName + ": build is marked failed as the project does not contain any of "+validOutputss.toString();
+	}
+
+
+	public static void waitForBoardsManager() throws Exception {
+		int count=0;
+		while (!(BoardsManager.isReady())) {
+			count++;
+			Thread.sleep(500);
+			// If you do not get out of this loop it probably means you are
+			// runnning the test in the gui thread
+			if(count%10==0) {
+				System.out.println("Waiting for waitForBoardsManager");
+			}
+		}
 	}
 
 	public static void waitForAllJobsToFinish() {
