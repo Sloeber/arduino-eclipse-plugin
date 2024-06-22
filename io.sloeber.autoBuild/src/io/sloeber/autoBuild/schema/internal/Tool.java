@@ -1,8 +1,8 @@
 package io.sloeber.autoBuild.schema.internal;
 
+import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
-import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,12 +35,12 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IInputType;
 import io.sloeber.autoBuild.schema.api.IOption;
 import io.sloeber.autoBuild.schema.api.IOptionCategory;

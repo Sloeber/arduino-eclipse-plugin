@@ -13,7 +13,7 @@ import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
-import io.sloeber.autoBuild.internal.AutoBuildCommon;
+import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 
 public class PathBuildTools implements IBuildTools {

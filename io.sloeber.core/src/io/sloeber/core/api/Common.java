@@ -12,8 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 
-import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -26,6 +24,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.core.Activator;
 
 public class Common {
@@ -197,13 +197,22 @@ public class Common {
     static public String getBuildEnvironmentVariable(ISloeberConfiguration sloeberConf, String envName,
             String defaultvalue, boolean expanded) {
         if (sloeberConf != null) {
-            IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-            try {
-                ICConfigurationDescription configurationDescription = sloeberConf.getAutoBuildDesc()
-                        .getCdtConfigurationDescription();
-                return envManager.getVariable(envName, configurationDescription, expanded).getValue();
-            } catch (@SuppressWarnings("unused") Exception e) {// ignore all errors and return the default value
-            }
+        	IAutoBuildConfigurationDescription autoDesc= sloeberConf.getAutoBuildDesc();
+        	return AutoBuildCommon.getVariableValue(envName, defaultvalue, expanded, autoDesc);
+//            IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+//            try {
+//                ICConfigurationDescription configurationDescription = sloeberConf.getAutoBuildDesc()
+//                        .getCdtConfigurationDescription();
+//                IEnvironmentVariable t= envManager.getVariable(envName, configurationDescription, expanded);
+//                if(t!=null) {
+//                	return envManager.getVariable(envName, configurationDescription, expanded).getValue();
+//                }else {
+//                	return envManager.getVariable(envName, configurationDescription, expanded).getValue();
+//                }
+//            } catch ( Exception e) {
+//            	e.printStackTrace();
+//            	// ignore all errors and return the default value
+//            }
         }
         return defaultvalue;
     }

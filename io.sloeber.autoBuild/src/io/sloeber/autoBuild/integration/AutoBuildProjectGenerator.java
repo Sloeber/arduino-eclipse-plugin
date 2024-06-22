@@ -33,7 +33,7 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.internal.AutoBuildCommon;
+import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.schema.internal.Configuration;

@@ -75,8 +75,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 import io.sloeber.autoBuild.api.ICustomBuildOptionEditor;
+import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.integrations.ToolListLabelProvider;
-import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IOption;
 import io.sloeber.autoBuild.schema.api.IOptionCategory;
 import io.sloeber.autoBuild.schema.api.ITool;

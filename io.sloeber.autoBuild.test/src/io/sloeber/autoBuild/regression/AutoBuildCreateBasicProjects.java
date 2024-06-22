@@ -32,9 +32,9 @@ import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
+import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.Shared;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
-import io.sloeber.autoBuild.internal.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 
 @SuppressWarnings({ "nls" })

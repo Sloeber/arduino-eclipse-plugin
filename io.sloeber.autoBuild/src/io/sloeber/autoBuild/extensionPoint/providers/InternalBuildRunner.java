@@ -16,9 +16,9 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
+import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
-import static io.sloeber.autoBuild.internal.AutoBuildCommon.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
