@@ -93,6 +93,9 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 	private static void checkLibraries(ISloeberConfiguration SloeberCfg) {
 		Map<String, IArduinoLibraryVersion> alreadyAddedLibs = SloeberCfg.getUsedLibraries();
 		Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(SloeberCfg.getProject());
+		// remove pgmspace as it gives a problem
+		UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
+
 		//The line below is for cases where libs have been excluded from the build
 		UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs.keySet());
 
@@ -100,8 +103,6 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 			return;
 		}
 
-		// remove pgmspace as it gives a problem
-		UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
 		for (Map.Entry<String, String> entry : getIncludeHeaderReplacement().entrySet()) {
 			if (UnresolvedIncludedHeaders.contains(entry.getKey())) {
 				UnresolvedIncludedHeaders.remove(entry.getKey());
@@ -180,10 +181,8 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 				index.releaseReadLock();
 			}
 		} catch (CoreException e1) {
-			// ignore
 			e1.printStackTrace();
 		} catch (InterruptedException e) {
-			// ignore
 			e.printStackTrace();
 		}
 		return ret;
