@@ -48,7 +48,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	// operational data
 	private boolean myMemoryIsDirty = true;
-	private boolean myCalculatingEnvVars = false;
 
 	// derived data
 	private Map<String, String> myEnvironmentVariables = new HashMap<>();
@@ -183,8 +182,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	private void configureIfDirty() {
 		if (myMemoryIsDirty) {
-			getEnvVars();
+			getEnvVarsNonExpanding();
 			myMemoryIsDirty = false;
+			getEnvVarsExpanding();
 		}
 		if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
 			if (projectNeedsUpdate()) {
@@ -192,6 +192,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			}
 		}
 	}
+
+
 
 	private boolean projectNeedsUpdate() {
 		IPath corePath = myBoardDescription.getActualCoreCodePath();
@@ -218,19 +220,31 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return false;
 	}
 
-	private void getEnvVars() {
-		if (myCalculatingEnvVars) {
-			return;
-		}
-		try {
-			myCalculatingEnvVars = true;
+	/**
+	 * Get the environment variables that need environment variables to know the value
+	 * For instance the build path is typically related to the configuration name as sutch
+	 * uses the environment variable ${confname}
+	 * Because resolving the environment variables requires the environmentvarioblas of sloeber
+	 * we get a reentrnacy problem
+	 * By seperating the variables that need expansion (Because I assume the expanding variables
+	 * do not rely on expanding variables) I can cope wiith the reentrancy
+	 */
+	private void getEnvVarsExpanding() {
+		myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
+				getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
+	}
+
+	/**
+	 * get the environment variables that do not reliy on variable expansion to get the value.
+	 */
+	private void getEnvVarsNonExpanding() {
 			IProject project = getProject();
 
 			myEnvironmentVariables.clear();
 
 			myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
-			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
-					getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
+//			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
+//					getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
 
 			if (myBoardDescription != null) {
 				myEnvironmentVariables.putAll(myBoardDescription.getEnvVars());
@@ -260,9 +274,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				myEnvironmentVariables.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
 						+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
 			}
-		} finally {
-			myCalculatingEnvVars = false;
-		}
 	}
 
 	/**
@@ -302,7 +313,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			upLoadJob.join();
 			return upLoadJob.getResult();
 		} catch (InterruptedException e) {
-			// not sure if this is needed
 			return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, e);
 		}
 	}
@@ -433,7 +443,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				}
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ret;
@@ -454,14 +463,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 						try {
 							curFolder.delete(true, monitor);
 						} catch (CoreException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
 				}
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -506,7 +513,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				try {
 					libFolder.getFolder(curLib.getName()).delete(true, monitor);
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
