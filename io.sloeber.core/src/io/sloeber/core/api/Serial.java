@@ -274,7 +274,8 @@ public class Serial implements SerialPortEventListener {
 
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {// JABA is not going to add code
+        } catch (InterruptedException e) {
+        	e.printStackTrace();
         }
         setDTR(true);
         setRTS(true);

@@ -131,7 +131,6 @@ public class AutoBuildRunnerHelper extends BuildRunnerHelper {
 				out.write(msg.getBytes());
 				out.write('\n');
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}

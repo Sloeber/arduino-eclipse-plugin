@@ -192,7 +192,7 @@ public class InternalBuildRunner implements IBuildRunner {
 								}
 							}
 						} catch (Exception e) {
-							// don' catch
+							// don bother
 							e.printStackTrace();
 						}
 
@@ -236,7 +236,7 @@ public class InternalBuildRunner implements IBuildRunner {
 			buildRunnerHelper.refreshProject(cfgName, parentMon.newChild(5));
 			buildRunnerHelper.close();
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			String msg = MessageFormat.format(ManagedMakeBuilder_message_error_build,
 					new Object[] { project.getName(), configuration.getName() });
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg, e));
@@ -276,8 +276,9 @@ public class InternalBuildRunner implements IBuildRunner {
 
 				}
 			} catch (IOException e) {
-				reportBuildError();
 				e.printStackTrace();
+				reportBuildError();
+
 			}
 		}
 	}
@@ -300,7 +301,8 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				fProcess = launcher.execute(commandPath, onlyArgs, autoData.getEnvironmentVariables(),
 						autoData.getBuildFolder().getLocation(), monitor);
-			} catch (@SuppressWarnings("unused") CoreException e1) {
+			} catch ( CoreException e1) {
+				e1.printStackTrace();
 				// ignore and handle null case
 			}
 			if (fProcess == null) {
@@ -367,7 +369,8 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				os.write((msg + NEWLINE).getBytes());
 				os.flush();
-			} catch (@SuppressWarnings("unused") IOException e) {
+			} catch ( IOException e) {
+				e.printStackTrace();
 				// ignore;
 			}
 		}

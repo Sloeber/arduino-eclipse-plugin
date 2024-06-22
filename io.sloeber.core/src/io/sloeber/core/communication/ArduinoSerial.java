@@ -30,7 +30,7 @@ public class ArduinoSerial {
      *            The baud rate to set
      * @param openTime
      *            Time to wait after the port has been closed again
-     * 
+     *
      * @return true is successful otherwise false
      */
 
@@ -43,7 +43,6 @@ public class ArduinoSerial {
             serialPort.dispose();
             Thread.sleep(openTime);
         } catch (Exception e) {
-            e.printStackTrace();
             log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                     ArduinoSerial_unable_to_open_serial_port.replace(PORT_TAG, comPort), e));
             return false;
@@ -117,9 +116,8 @@ public class ArduinoSerial {
             {
                 try {
                     Thread.sleep(delayMs);
-                } catch (InterruptedException e) {// Jaba is not going to write
-                    // this
-                    // code
+                } catch (InterruptedException e) {
+                	e.printStackTrace();
                 }
             }
         } while (newPortsCopy.isEmpty());

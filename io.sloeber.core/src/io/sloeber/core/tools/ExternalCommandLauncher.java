@@ -125,6 +125,7 @@ public class ExternalCommandLauncher {
                 try {
                     this.fReader.close();
                 } catch (IOException e) {
+                	e.printStackTrace();
                     // can't do anything
                 }
             }

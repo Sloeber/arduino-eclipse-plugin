@@ -18,7 +18,7 @@ public interface IBuildToolsManager {
 					return valueOf(toolTypeName);
 				}
 			} catch (@SuppressWarnings("unused") Exception e) {
-				// nothing to log here
+				// nothing to log here do not log the stacktrace as it is normal
 			}
 			switch (toolTypeName) {
 			case "a->a.o":

@@ -503,7 +503,6 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 				File path2 = new File(path.trim());
 				canonical = path2.getCanonicalPath();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return canonical;

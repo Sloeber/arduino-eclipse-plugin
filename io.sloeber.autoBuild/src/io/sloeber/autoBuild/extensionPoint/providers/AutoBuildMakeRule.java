@@ -507,7 +507,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 			}
 			reader.close();
 		} catch (@SuppressWarnings("unused") IOException e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 			return Long.MAX_VALUE;
 		}
 		return newestTime;

@@ -186,7 +186,6 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 					FileUtils.write(teamFile, teamText, Charset.defaultCharset());
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -222,7 +221,6 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			// This Should not happen
 			throw new CoreException(null);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

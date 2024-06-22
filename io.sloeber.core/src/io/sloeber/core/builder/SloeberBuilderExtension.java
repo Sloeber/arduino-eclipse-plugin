@@ -69,7 +69,6 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 		try {
 			Helpers.addFileToProject(file, new ByteArrayInputStream(content.getBytes()), null, true);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -114,7 +113,6 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 		try {
 			FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

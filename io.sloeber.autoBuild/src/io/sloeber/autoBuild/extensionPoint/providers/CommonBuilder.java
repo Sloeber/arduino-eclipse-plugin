@@ -209,7 +209,6 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
             }
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

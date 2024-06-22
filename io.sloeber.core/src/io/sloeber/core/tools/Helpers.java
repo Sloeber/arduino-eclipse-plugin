@@ -173,7 +173,8 @@ public class Helpers {
         for (int curfolder = ParentFolders.segmentCount() - 1; curfolder >= 0; curfolder--) {
             try {
                 createNewFolder(project.getFolder(ParentFolders.removeLastSegments(curfolder)), null);
-            } catch (@SuppressWarnings("unused") CoreException e) {// ignore this error as the parent
+            } catch (@SuppressWarnings("unused") CoreException e) {
+            	// ignore this error as the parent
                 // folders may have been created yet
             }
         }

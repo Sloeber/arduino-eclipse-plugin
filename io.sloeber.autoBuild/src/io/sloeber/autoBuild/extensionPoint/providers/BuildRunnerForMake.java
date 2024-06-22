@@ -293,9 +293,11 @@ public class BuildRunnerForMake implements IBuildRunner {
 			consoleOutStream.flush();
 			consoleOutStream.close();
 		} catch (CoreException e) {
+			e.printStackTrace();
 			// Throw the exception back to the builder
 			throw e;
 		} catch (IOException io) { // Ignore console failures...
+			io.printStackTrace();
 			throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), io.getLocalizedMessage(), io));
 		}
 	}

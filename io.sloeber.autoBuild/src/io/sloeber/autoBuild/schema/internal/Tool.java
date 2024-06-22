@@ -209,7 +209,8 @@ public class Tool extends SchemaObject implements ITool {
         if (!myModelIcon[SUPER].isBlank()) {
             try {
                 myIconPathURL = new URL(myModelIcon[SUPER]);
-            } catch (@SuppressWarnings("unused") MalformedURLException e) {
+            } catch ( MalformedURLException e) {
+            	e.printStackTrace();
                 AutoBuildManager.outputIconError(myModelIcon[SUPER]);
                 myIconPathURL = null;
             }
