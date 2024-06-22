@@ -182,8 +182,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	private void configureIfDirty() {
 		if (myMemoryIsDirty) {
-			getEnvVarsNonExpanding();
-			myMemoryIsDirty = false;
+			myMemoryIsDirty = getEnvVarsNonExpanding();
 			getEnvVarsExpanding();
 		}
 		if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
@@ -236,8 +235,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	/**
 	 * get the environment variables that do not reliy on variable expansion to get the value.
+	 * @return true when data was missing
 	 */
-	private void getEnvVarsNonExpanding() {
+	private boolean getEnvVarsNonExpanding() {
 			IProject project = getProject();
 
 			myEnvironmentVariables.clear();
@@ -274,6 +274,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				myEnvironmentVariables.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
 						+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
 			}
+			return (myBoardDescription == null) || (myCompileDescription == null)|| (myOtherDesc == null);
 	}
 
 	/**
