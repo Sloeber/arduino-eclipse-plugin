@@ -1,8 +1,6 @@
 package io.sloeber.core;
 
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -36,7 +34,7 @@ public class CreateAndCompileExamplesTest {
     private static int mySkipAtStart = 0;
 
 
-    public static Stream<Arguments> examples() {
+    public static Stream<Arguments> examples() throws Exception {
 		WaitForInstallerToFinish();
 		Preferences.setUseBonjour(false);
 

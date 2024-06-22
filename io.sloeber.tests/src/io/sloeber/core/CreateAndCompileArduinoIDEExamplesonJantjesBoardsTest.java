@@ -32,7 +32,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
     private static int mySkipAtStart = 0;
 
 
-    public static Stream<Arguments> jantjesHardwareData() {
+    public static Stream<Arguments> jantjesHardwareData() throws Exception {
         Preferences.setUseBonjour(false);
         String[] packageUrlsToAdd = { Jantje.additionalJsonURL };
         BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);

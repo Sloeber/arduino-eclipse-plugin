@@ -28,19 +28,14 @@ import io.sloeber.autoBuild.helpers.Shared;
 public class AutoBuildIssues {
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws CoreException {
         Shared.setDeleteProjects(false);
         Shared.setCloseProjects(false);
         // turn off auto building to make sure autobuild does not start a build behind our backs
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceDescription workspaceDesc = workspace.getDescription();
         workspaceDesc.setAutoBuilding(false);
-        try {
-            workspace.setDescription(workspaceDesc);
-        } catch (CoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        workspace.setDescription(workspaceDesc);
     }
 
     @Test

@@ -36,7 +36,7 @@ public class CreateAndCompileLibraryExamplesTest {
 
     private int myTotalFails = 0;
 
-    public static Stream<Arguments> CreateAndCompileLibraryExamplesTestData() {
+    public static Stream<Arguments> CreateAndCompileLibraryExamplesTestData() throws Exception {
         Preferences.setUseBonjour(false);
         Preferences.setUseArduinoToolSelection(true);
         Shared.waitForAllJobsToFinish();

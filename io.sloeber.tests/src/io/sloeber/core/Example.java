@@ -27,7 +27,7 @@ public class Example implements IExample{
         return myRequiredBoardAttributes;
     }
 
-    public Example(String fqn, IPath path) {
+    public Example(String fqn, IPath path) throws Exception {
         myFQN = fqn;
         myPath = path;
         calcLibName();
@@ -48,7 +48,7 @@ public class Example implements IExample{
         myRequiredBoardAttributes.myCompatibleBoardIDs.add( getRequiredBoardID(myFQN));
         //        myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
         myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
-        
+
         myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
         myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
 

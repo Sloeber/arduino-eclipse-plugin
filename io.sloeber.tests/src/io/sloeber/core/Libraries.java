@@ -2,9 +2,7 @@ package io.sloeber.core;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -222,7 +220,7 @@ public class Libraries {
 		return ret;
 	}
 
-	public static AttributesCode getCodeAttributes(IPath path) {
+	public static AttributesCode getCodeAttributes(IPath path) throws Exception {
 		AttributesCode ret = new AttributesCode();
 
 		ret.myCompatibleBoardIDs.add(getRequiredBoardID(path.lastSegment()));
@@ -246,7 +244,7 @@ public class Libraries {
 		return ret;
 	}
 
-	private static Set<String> getSupportedArchitectures(IPath path) {
+	private static Set<String> getSupportedArchitectures(IPath path) throws Exception {
 		Set<String> ret = new HashSet<>();
 		File libFile = path.append("library.properties").toFile();
 		if (libFile.exists()) {
@@ -262,12 +260,6 @@ public class Libraries {
 					}
 					bufferedReader.close();
 				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 		return ret;

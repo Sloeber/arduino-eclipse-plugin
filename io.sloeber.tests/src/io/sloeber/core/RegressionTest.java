@@ -70,7 +70,8 @@ public class RegressionTest {
 
 	public static void installAdditionalBoards() {
 
-		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL ,"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json"};
+		String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL,
+				"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.removeAllInstalledPlatforms();
@@ -80,8 +81,8 @@ public class RegressionTest {
 		ESP32.installLatest();
 		Arduino.installLatestAVRBoards();
 		Teensy.installLatest();
-        Arduino.installLatestSamDBoards();
-        LibraryManager.installLibrary("RTCZero");
+		Arduino.installLatestSamDBoards();
+		LibraryManager.installLibrary("RTCZero");
 
 	}
 
@@ -100,22 +101,12 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
 		String projectName = "issue555";
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-					new CompileDescription(), monitor);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (CoreException e) {
-			e.printStackTrace();
-			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
-		}
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				new CompileDescription(), monitor);
+		Shared.waitForAllJobsToFinish(); // for the indexer
+
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
 		CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 		ICProjectDescription cProjectDescription = cCorePlugin.getProjectDescription(theTestProject);
@@ -129,16 +120,11 @@ public class RegressionTest {
 			fail("variant folder exists");
 		}
 
-		try {
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		if (Shared.hasBuildErrors(theTestProject) != null) {
+			Shared.waitForAllJobsToFinish();
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)!=null) {
-				Shared.waitForAllJobsToFinish();
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as teensy exception");
+			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 		}
 	}
 
@@ -155,18 +141,11 @@ public class RegressionTest {
 		String projectName = "issue687";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
-		try {
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-					new CompileDescription(), new NullProgressMonitor());
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForAllJobsToFinish(); // for the indexer
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	@Test
@@ -177,17 +156,11 @@ public class RegressionTest {
 		String projectName = "createCPPProject";
 
 		CodeDescription codeDescriptor = CodeDescription.createDefaultCPP();
-		try {
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-					new CompileDescription(), new NullProgressMonitor());
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForAllJobsToFinish(); // for the indexer
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -199,18 +172,11 @@ public class RegressionTest {
 		String projectName = "createDefaultInoProject";
 
 		CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
-		try {
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-					new CompileDescription(), new NullProgressMonitor());
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForAllJobsToFinish(); // for the indexer
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	/**
@@ -225,17 +191,11 @@ public class RegressionTest {
 		String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
-		try {
-			IProject theTestProject = SloeberProject.createArduinoProject(projectName, null,
-					unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(), new NullProgressMonitor());
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
+		IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoard.getBoardDescriptor(),
+				codeDescriptor, new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForAllJobsToFinish(); // for the indexer
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -256,22 +216,16 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
-			CompileDescription compileOptions = new CompileDescription();
-			compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
-			compileOptions.set_C_CompileOptions("-DTEST_C");
-			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-					compileOptions, new NullProgressMonitor());
+		CompileDescription compileOptions = new CompileDescription();
+		compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
+		compileOptions.set_C_CompileOptions("-DTEST_C");
+		compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				compileOptions, new NullProgressMonitor());
 
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
+		Shared.waitForAllJobsToFinish(); // for the indexer
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	/**
@@ -290,18 +244,12 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
-			theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
-					new CompileDescription(), new NullProgressMonitor());
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				new CompileDescription(), new NullProgressMonitor());
 
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
+		Shared.waitForAllJobsToFinish(); // for the indexer
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	/**
@@ -349,7 +297,7 @@ public class RegressionTest {
 
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull("Failed to compile the project before config rename",Shared.hasBuildErrors(theTestProject));
+		Assert.assertNull("Failed to compile the project before config rename", Shared.hasBuildErrors(theTestProject));
 
 		CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 		ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(theTestProject);
@@ -359,7 +307,7 @@ public class RegressionTest {
 
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull("Failed to compile the project after config rename",Shared.hasBuildErrors(theTestProject));
+		Assert.assertNull("Failed to compile the project after config rename", Shared.hasBuildErrors(theTestProject));
 	}
 
 	// /**
@@ -410,9 +358,9 @@ public class RegressionTest {
 	 *
 	 * @throws Exception
 	 */
-    @ParameterizedTest
-    @MethodSource("openAndClosePreservesSettingsValueCmd")
-	public void openAndClosePreservesSettings(String projectName ,	CodeDescription codeDescriptor) throws Exception {
+	@ParameterizedTest
+	@MethodSource("openAndClosePreservesSettingsValueCmd")
+	public void openAndClosePreservesSettings(String projectName, CodeDescription codeDescriptor) throws Exception {
 		BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
 		IProject theTestProject = null;
@@ -425,7 +373,8 @@ public class RegressionTest {
 		// also do a build
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project before close: "+ projectName,Shared.hasBuildErrors(theTestProject));
+		Assert.assertNull("Failed to compile the project before close: " + projectName,
+				Shared.hasBuildErrors(theTestProject));
 
 		// also do a clean
 		Shared.waitForAllJobsToFinish(); // for the indexer
@@ -470,7 +419,8 @@ public class RegressionTest {
 		// also do a build
 		Shared.waitForAllJobsToFinish(); // for the indexer
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project after open: "+ projectName,Shared.hasBuildErrors(theTestProject));
+		Assert.assertNull("Failed to compile the project after open: " + projectName,
+				Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -623,7 +573,7 @@ public class RegressionTest {
 	}
 
 	public static Stream<Arguments> testDifferentSourceFoldersData() {
-		beforeClass();//This is not always called
+		beforeClass();// This is not always called
 		List<Arguments> ret = new LinkedList<>();
 		OtherDescription otherDesc = new OtherDescription();
 		CompileDescription projCompileDesc = new CompileDescription();
@@ -632,22 +582,22 @@ public class RegressionTest {
 		CodeDescription codeDescriptor1 = CodeDescription.createDefaultCPP();
 		codeDescriptor1.setCodeFolder(null);
 		String projectName1 = Shared.getProjectName(codeDescriptor1, unoboard);
-		ret.add(Arguments.of(projectName1, codeDescriptor1, unoboard,otherDesc,projCompileDesc));
+		ret.add(Arguments.of(projectName1, codeDescriptor1, unoboard, otherDesc, projCompileDesc));
 
 		CodeDescription codeDescriptor2 = CodeDescription.createDefaultCPP();
 		codeDescriptor2.setCodeFolder("src");
 		String projectName2 = Shared.getProjectName(codeDescriptor2, unoboard);
-		ret.add(Arguments.of(projectName2, codeDescriptor2, unoboard,otherDesc,projCompileDesc));
+		ret.add(Arguments.of(projectName2, codeDescriptor2, unoboard, otherDesc, projCompileDesc));
 
 		CodeDescription codeDescriptor3 = CodeDescription.createDefaultCPP();
 		codeDescriptor3.setCodeFolder("SRC");
 		String projectName3 = Shared.getProjectName(codeDescriptor3, unoboard);
-		ret.add(Arguments.of(projectName3, codeDescriptor3, unoboard,otherDesc,projCompileDesc));
+		ret.add(Arguments.of(projectName3, codeDescriptor3, unoboard, otherDesc, projCompileDesc));
 
 		CodeDescription codeDescriptor4 = CodeDescription.createDefaultCPP();
 		codeDescriptor4.setCodeFolder("blabla");
 		String projectName4 = Shared.getProjectName(codeDescriptor4, unoboard);
-		ret.add(Arguments.of(projectName4, codeDescriptor4, unoboard,otherDesc,projCompileDesc));
+		ret.add(Arguments.of(projectName4, codeDescriptor4, unoboard, otherDesc, projCompileDesc));
 
 		return ret.stream();
 
@@ -655,8 +605,8 @@ public class RegressionTest {
 
 	@ParameterizedTest
 	@MethodSource("testDifferentSourceFoldersData")
-	public void testDifferentSourceFolders(String projectName, CodeDescription codeDescriptor, MCUBoard board,OtherDescription otherDesc,CompileDescription proj1CompileDesc) throws CoreException {
-
+	public void testDifferentSourceFolders(String projectName, CodeDescription codeDescriptor, MCUBoard board,
+			OtherDescription otherDesc, CompileDescription proj1CompileDesc) throws CoreException {
 
 		BoardDescription proj1BoardDesc = board.getBoardDescriptor();
 		IProject project = SloeberProject.createArduinoProject(projectName, null, proj1BoardDesc, codeDescriptor,
@@ -665,44 +615,43 @@ public class RegressionTest {
 		Shared.waitForAllJobsToFinish(); // for the indexer
 
 		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-        assertNull("Failed to compile "+projectName,Shared.hasBuildErrors(project));
+		assertNull("Failed to compile " + projectName, Shared.hasBuildErrors(project));
 
-        String srcFolder=codeDescriptor.getCodeFolder();
-        IFile cppFile=null;
-		if(srcFolder==null) {
-			cppFile=project.getFile(projectName+".cpp");
-		}else {
-			cppFile=project.getFolder(srcFolder).getFile(projectName+".cpp");
+		String srcFolder = codeDescriptor.getCodeFolder();
+		IFile cppFile = null;
+		if (srcFolder == null) {
+			cppFile = project.getFile(projectName + ".cpp");
+		} else {
+			cppFile = project.getFolder(srcFolder).getFile(projectName + ".cpp");
 		}
-		assertTrue("Source File not in right location "+projectName, cppFile.exists());
+		assertTrue("Source File not in right location " + projectName, cppFile.exists());
 	}
-
 
 	/**
 	 * Test wether a platform json redirect is handled properly
 	 * https://github.com/jantje/arduino-eclipse-plugin/issues/393
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void redirectedJson() throws Exception {
-		//this board references to arduino avr so install that one to
-	    Arduino.installLatestAVRBoards();
-        BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
+		// this board references to arduino avr so install that one to
+		Arduino.installLatestAVRBoards();
+		BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
 		BoardDescription boardid = BoardsManager.getBoardDescription("package_talk2.wisen.com_index.json", "Talk2",
-                "avr", "whispernode", options);
+				"avr", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");
 			return;
 		}
 		Assert.assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
-                new CompileDescription()));
+				new CompileDescription()));
 	}
 
-
-    static Stream<Arguments> openAndClosePreservesSettingsValueCmd() {
-    	beforeClass();//This is not always called
+	static Stream<Arguments> openAndClosePreservesSettingsValueCmd() {
+		beforeClass();// This is not always called
 		CodeDescription codeDescriptordefaultCPPRoot = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPPSrc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPXX = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
@@ -711,52 +660,50 @@ public class RegressionTest {
 		codeDescriptordefaultCPPSrc.setCodeFolder("src");
 		codeDescriptordefaultCPXX.setCodeFolder("XX");
 
-        List<Arguments> ret = new LinkedList<>();
-        ret.add(Arguments.of(Shared.getCounterName("openAndCloseRoot"),codeDescriptordefaultCPPRoot));
-        ret.add(Arguments.of(Shared.getCounterName("openAndCloseSrc"),codeDescriptordefaultCPPSrc));
-        ret.add(Arguments.of(Shared.getCounterName("openAndCloseXX"),codeDescriptordefaultCPXX));
+		List<Arguments> ret = new LinkedList<>();
+		ret.add(Arguments.of(Shared.getCounterName("openAndCloseRoot"), codeDescriptordefaultCPPRoot));
+		ret.add(Arguments.of(Shared.getCounterName("openAndCloseSrc"), codeDescriptordefaultCPPSrc));
+		ret.add(Arguments.of(Shared.getCounterName("openAndCloseXX"), codeDescriptordefaultCPXX));
 
-        return ret.stream();
-    }
-
-
-    public static Stream<Arguments>  NightlyBoardPatronTestData() {
-    	beforeClass();//This is not always called
-        Preferences.setUseArduinoToolSelection(true);
-        CompileDescription compileOptions = new CompileDescription();
-        MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
-
-        List<Arguments> ret = new LinkedList<>();
-        TreeMap<String, IExample> examples = LibraryManager.getExamplesLibrary(null);
-        for (Map.Entry<String, IExample> curexample : examples.entrySet()) {
-            String fqn = curexample.getKey().trim();
-            IExample example= curexample.getValue();
-            IPath examplePath = example.getCodeLocation();
-            if (fqn.contains("RTCZero")) {
-                Example SloeberExample = new Example(fqn,  examplePath);
-
-                ret.add(Arguments.of(Shared.getCounterName( SloeberExample.getLibName() + ":" + example.getName()),
-                        zeroBoard, SloeberExample ,compileOptions));
-            }
-        }
 		return ret.stream();
-    }
+	}
 
+	public static Stream<Arguments> NightlyBoardPatronTestData() throws Exception {
+		beforeClass();// This is not always called
+		Preferences.setUseArduinoToolSelection(true);
+		CompileDescription compileOptions = new CompileDescription();
+		MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 
+		List<Arguments> ret = new LinkedList<>();
+		TreeMap<String, IExample> examples = LibraryManager.getExamplesLibrary(null);
+		for (Map.Entry<String, IExample> curexample : examples.entrySet()) {
+			String fqn = curexample.getKey().trim();
+			IExample example = curexample.getValue();
+			IPath examplePath = example.getCodeLocation();
+			if (fqn.contains("RTCZero")) {
+				Example SloeberExample = new Example(fqn, examplePath);
+
+				ret.add(Arguments.of(Shared.getCounterName(SloeberExample.getLibName() + ":" + example.getName()),
+						zeroBoard, SloeberExample, compileOptions));
+			}
+		}
+		return ret.stream();
+	}
 
 	@ParameterizedTest
 	@MethodSource("NightlyBoardPatronTestData")
-    public void NightlyBoardPatron( String name, MCUBoard boardID, Example example,CompileDescription compileOptions) throws Exception {
+	public void NightlyBoardPatron(String name, MCUBoard boardID, Example example, CompileDescription compileOptions)
+			throws Exception {
 
-        Set<IExample> examples = new HashSet<>();
-        examples.add(example);
-        CodeDescription codeDescriptor = CodeDescription.createExample(false, examples);
+		Set<IExample> examples = new HashSet<>();
+		examples.add(example);
+		CodeDescription codeDescriptor = CodeDescription.createExample(false, examples);
 
-        BoardDescription boardDescriptor = boardID.getBoardDescriptor();
-        boardDescriptor.setOptions(boardID.getBoardOptions(example));
-        Assert.assertNull(Shared.buildAndVerifyAllBuilders(name,boardID.getBoardDescriptor(), codeDescriptor, compileOptions));
+		BoardDescription boardDescriptor = boardID.getBoardDescriptor();
+		boardDescriptor.setOptions(boardID.getBoardOptions(example));
+		Assert.assertNull(
+				Shared.buildAndVerifyAllBuilders(name, boardID.getBoardDescriptor(), codeDescriptor, compileOptions));
 
-    }
-
+	}
 
 }

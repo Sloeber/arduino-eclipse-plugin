@@ -39,7 +39,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     private static int mySkipAtStart = 0;
 
 
-    public static Stream<Arguments>  avrHardwareData() {
+    public static Stream<Arguments>  avrHardwareData() throws Exception {
         Shared.waitForAllJobsToFinish();
         Preferences.setUseBonjour(false);
 

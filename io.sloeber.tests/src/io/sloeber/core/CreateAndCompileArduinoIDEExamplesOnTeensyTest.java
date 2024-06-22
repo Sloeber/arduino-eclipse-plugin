@@ -45,7 +45,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
     private static int mySkipAtStart = 0;
 
 
-    public static Stream<Arguments> teensyHardwareData() {
+    public static Stream<Arguments> teensyHardwareData() throws Exception {
         installAdditionalBoards();
 
         Shared.waitForAllJobsToFinish();

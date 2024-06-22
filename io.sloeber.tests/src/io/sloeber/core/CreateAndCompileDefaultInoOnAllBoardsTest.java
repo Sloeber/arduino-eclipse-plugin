@@ -259,7 +259,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 	};
 
-	public static Stream<Arguments> allBoards() {
+	public static Stream<Arguments> allBoards() throws Exception {
 		Shared.setCloseFailedProjects(closeFailedProjects);
 		// make sure all plugin installation is done
 		Shared.waitForAllJobsToFinish();
@@ -301,7 +301,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	 * This method will take a long time "Don't panic before 60 minutes are over".
 	 * You can check the [eclipseInstall]/arduinoPlugin/packages folder for progress
 	 */
-	public static void installAdditionalBoards() {
+	public static void installAdditionalBoards() throws Exception {
 		if (removeAllinstallationInfoAtStartup) {
 			BoardsManager.removeAllInstalledPlatforms();
 			LibraryManager.unInstallAllLibs();
