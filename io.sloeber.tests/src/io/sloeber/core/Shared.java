@@ -100,7 +100,7 @@ public class Shared {
 			// If you do not get out of this loop it probably means you are
 			// runnning the test in the gui thread
 			if(count%10==0) {
-				System.out.println("Waiting for waitForBoardsManager");
+				System.out.println("Waiting for BoardsManager");
 			}
 		}
 	}
