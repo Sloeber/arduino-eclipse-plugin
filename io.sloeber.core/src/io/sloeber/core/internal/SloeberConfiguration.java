@@ -136,14 +136,11 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, KeyValueTree keyValues) {
 		setAutoBuildDescription(autoCfgDescription);
 		Map<String, String> envVars =keyValues.toKeyValues(false);
-//		for (Entry<String, KeyValueTree> curChild : keyValues.getChildren().entrySet()) {
-//			envVars.put(curChild.getKey(), curChild.getValue().getValue());
-//		}
 		myBoardDescription = new BoardDescription(envVars);
 		myOtherDesc = new OtherDescription(envVars);
 		myCompileDescription = new CompileDescription(envVars);
 		myMemoryIsDirty = true;
-		// configure(); Seems I can not dpo the config here
+		// configure(); Seems I can not do the config here
 	}
 
 	@Override
