@@ -95,7 +95,7 @@ public class RegressionTest {
 	 * @throws CoreException
 	 */
 	@Test
-	public void issue555() throws CoreException {
+	public void issue555() throws Exception {
 		BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 		BoardDescription teensyBoardid = Teensy.Teensy3_1().getBoardDescriptor();
 
@@ -105,7 +105,7 @@ public class RegressionTest {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), monitor);
-
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
@@ -142,6 +142,7 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -156,6 +157,7 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createDefaultCPP();
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
@@ -171,6 +173,7 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -218,6 +221,7 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				compileOptions, new NullProgressMonitor());
 
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -241,6 +245,7 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
 
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 	}
@@ -264,6 +269,7 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
 
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
 
@@ -287,6 +293,7 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				new CompileDescription(), new NullProgressMonitor());
 
+		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		Assert.assertNull("Failed to compile the project before config rename", Shared.hasBuildErrors(theTestProject));
 
@@ -360,6 +367,7 @@ public class RegressionTest {
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
 				inCompileDescription, new NullProgressMonitor());
 
+		Shared.waitForIndexer(theTestProject);
 		// also do a build
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		Assert.assertNull("Failed to compile the project before close: " + projectName,
@@ -378,6 +386,7 @@ public class RegressionTest {
 		// just wait a while
 		Thread.sleep(1000);
 		theTestProject.open(null);
+		Shared.waitForIndexer(theTestProject);
 
 		// read the data we want to test
 		sloeberConf = ISloeberConfiguration.getActiveConfig(theTestProject);
@@ -458,7 +467,7 @@ public class RegressionTest {
 
 		// reopen the project
 		proj2.open(null);
-		Thread.sleep(1000);
+		Shared.waitForIndexer(proj2);
 
 		// reread project 2
 		ISloeberConfiguration sloebercfg2 = ISloeberConfiguration.getActiveConfig(proj2);
@@ -505,14 +514,15 @@ public class RegressionTest {
 		IPath projectFolder = workspace.getRoot().getLocation().removeLastSegments(1).append(codeFolderName);
 		URI uri = projectFolder.toFile().toURI();
 		// workspace.getRoot().getFolder(Path.fromOSString(codeFolderName)).getLocationURI();
-		IProject proj = SloeberProject.createArduinoProject(proj1Name, uri, proj1BoardDesc, codeDesc, proj1CompileDesc,
+		IProject theTestProject = SloeberProject.createArduinoProject(proj1Name, uri, proj1BoardDesc, codeDesc, proj1CompileDesc,
 				otherDesc, new NullProgressMonitor());
 
-		proj.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project: " + Shared.hasBuildErrors(proj), Shared.hasBuildErrors(proj));
+		Shared.waitForIndexer(theTestProject);
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+		Assert.assertNull("Failed to compile the project: " + Shared.hasBuildErrors(theTestProject), Shared.hasBuildErrors(theTestProject));
 		String fileLocation = projectFolder.append("src").append(proj1Name + ".cpp").toString();
 
-		IFile cppFile = proj.getFolder("src").getFile(proj1Name + ".cpp");
+		IFile cppFile = theTestProject.getFolder("src").getFile(proj1Name + ".cpp");
 		Assert.assertTrue("File not in correct location", cppFile.exists());
 		Assert.assertEquals("File not in correct location", cppFile.getLocation().toString(), fileLocation);
 
@@ -586,21 +596,23 @@ public class RegressionTest {
 	@ParameterizedTest
 	@MethodSource("testDifferentSourceFoldersData")
 	public void testDifferentSourceFolders(String projectName, CodeDescription codeDescriptor, MCUBoard board,
-			OtherDescription otherDesc, CompileDescription proj1CompileDesc) throws CoreException {
+			OtherDescription otherDesc, CompileDescription proj1CompileDesc) throws Exception {
 
 		BoardDescription proj1BoardDesc = board.getBoardDescriptor();
-		IProject project = SloeberProject.createArduinoProject(projectName, null, proj1BoardDesc, codeDescriptor,
+		IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, proj1BoardDesc, codeDescriptor,
 				proj1CompileDesc, otherDesc, new NullProgressMonitor());
 
-		project.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		assertNull("Failed to compile " + projectName, Shared.hasBuildErrors(project));
+
+		Shared.waitForIndexer(theTestProject);
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+		assertNull("Failed to compile " + projectName, Shared.hasBuildErrors(theTestProject));
 
 		String srcFolder = codeDescriptor.getCodeFolder();
 		IFile cppFile = null;
 		if (srcFolder == null) {
-			cppFile = project.getFile(projectName + ".cpp");
+			cppFile = theTestProject.getFile(projectName + ".cpp");
 		} else {
-			cppFile = project.getFolder(srcFolder).getFile(projectName + ".cpp");
+			cppFile = theTestProject.getFolder(srcFolder).getFile(projectName + ".cpp");
 		}
 		assertTrue("Source File not in right location " + projectName, cppFile.exists());
 	}

@@ -15,8 +15,11 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICModelMarker;
+import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -104,6 +107,21 @@ public class Shared {
 			}
 		}
 	}
+	public static void waitForIndexer(IProject iProject) throws Exception {
+		int count=0;
+		ICProject icProject = CoreModel.getDefault().create(iProject);
+		IIndex index = CCorePlugin.getIndexManager().getIndex(icProject);
+		while (!(index.isFullyInitialized())) {
+			count++;
+			Thread.sleep(500);
+			// If you do not get out of this loop it probably means you are
+			// runnning the test in the gui thread
+			if(count%10==0) {
+				System.out.println("Waiting for indexer");
+			}
+		}
+	}
+
 
 	public static void waitForAllJobsToFinish() {
 //		try {
@@ -209,7 +227,7 @@ public class Shared {
 				compileOptions.setEnableParallelBuild(true);
 				theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor, codeDescriptor,
 						compileOptions, curBuilder, monitor);
-				waitForAllJobsToFinish(); // for the indexer
+				waitForIndexer(theTestProject);
 			}
 			// do not set the build tool when the project is freshly created because then
 			// the default case would never be tested
