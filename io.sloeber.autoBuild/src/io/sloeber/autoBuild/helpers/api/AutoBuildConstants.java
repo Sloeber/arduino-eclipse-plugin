@@ -1,6 +1,7 @@
 package io.sloeber.autoBuild.helpers.api;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -20,6 +21,7 @@ public class AutoBuildConstants {
     public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
     public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
     public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
+    public static final Charset AUTOBUILD_CONFIG_FILE_CHARSET = Charset.forName("UTF-8");
 
     public static final int PARRALLEL_BUILD_UNLIMITED_JOBS = -1;
     public static final int PARRALLEL_BUILD_OPTIMAL_JOBS = -2;

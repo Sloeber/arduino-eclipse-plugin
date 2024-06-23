@@ -5,7 +5,6 @@ import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -212,7 +211,7 @@ public class KeyValueTree {
 			return;
 		}
 
-		String curConfigsText = FileUtils.readFileToString(boardsFileName, Charset.defaultCharset());
+		String curConfigsText = FileUtils.readFileToString(boardsFileName, AUTOBUILD_CONFIG_FILE_CHARSET);
 		String[] lines = curConfigsText.split(NEWLINE);
 		for (String line : lines) {
 			if ((line.length() == 0) || (line.charAt(0) == '#'))

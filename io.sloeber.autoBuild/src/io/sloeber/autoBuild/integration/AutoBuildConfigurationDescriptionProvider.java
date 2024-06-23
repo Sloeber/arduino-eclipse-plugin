@@ -15,6 +15,7 @@
 package io.sloeber.autoBuild.integration;
 
 
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -41,6 +42,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 	public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".ConfigurationDataProvider"; //$NON-NLS-1$
 	private static final String AUTO_BUILD_PROJECT_FILE = ".autoBuildProject"; //$NON-NLS-1$
 	private static final String AUTO_BUILD_TEAM_FILE = "autoBuildProject.cfg"; //$NON-NLS-1$
+
 
 
 //	public class KeyValuePairs{
@@ -151,7 +153,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			boolean needsWriting = true;
 			String  configText= keyValuePairs.dump();
 			if (projectFile.exists()) {
-				String curConfigsText = FileUtils.readFileToString(projectFile, Charset.defaultCharset());
+				String curConfigsText = FileUtils.readFileToString(projectFile, AUTOBUILD_CONFIG_FILE_CHARSET);
 				needsWriting = !curConfigsText.equals(configText);
 			}
 			if (needsWriting) {
