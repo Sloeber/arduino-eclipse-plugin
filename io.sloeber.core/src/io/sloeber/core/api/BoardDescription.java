@@ -697,7 +697,7 @@ public class BoardDescription {
                 myBoardID = value;
                 break;
             case KEY_SLOEBER_BOARD_TXT:
-                myUserSelectedBoardsTxtFile = new File(value);
+                myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(value));
                 mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
                 break;
             case KEY_SLOEBER_UPLOAD_PORT:
@@ -822,7 +822,7 @@ public class BoardDescription {
         }
         allVars.put(ENV_KEY_SOFTWARE,VENDOR_ARDUINO);
         allVars.put(ENV_KEY_ID,getBoardID());
-        
+
 
 
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());

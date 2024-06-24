@@ -228,16 +228,15 @@ public class Common {
      * Check whether the string starts with the SLOEBER_HOME path If it does replace
      * with environment variable This keeps things more compatible over environments
      *
-     * @param path
+     * @param file
      *            string to check
      * @return modified string or the original
      */
-    public static String makePathEnvironmentString(IPath path) {
-        return path.toOSString().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
-    }
-
     public static String makePathVersionString(File file) {
-        return file.getPath().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
+    	if(sloeberHomePath.isPrefixOf(IPath.fromFile(file))) {
+    		return SLOEBER_HOME_VAR+SLACH+IPath.fromFile(file) .makeRelativeTo(sloeberHomePath).toString();
+    	}
+        return file.toString();
     }
 
     /**
@@ -247,7 +246,13 @@ public class Common {
      * @return
      */
     public static File resolvePathEnvironmentString(File file) {
-        String retString = file.getPath().replace(SLOEBER_HOME_VAR, sloeberHomePathToString);
+
+        String retString = file.getPath();
+        if (retString.startsWith(SLOEBER_HOME_VAR)) {
+        	retString=retString.replace(SLOEBER_HOME_VAR, EMPTY_STRING);
+        	return sloeberHomePath.append(retString).toFile();
+        	//.replace(SLOEBER_HOME_VAR, sloeberHomePathToString);
+        }
         return new File(retString);
     }
 
