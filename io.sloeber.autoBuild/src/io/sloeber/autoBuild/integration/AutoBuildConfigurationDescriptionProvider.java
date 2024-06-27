@@ -147,8 +147,8 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 
 		//StringBuffer
 
-		File projectFile = getStorageFile(iProject);
-		File teamFile = getTeamFile(iProject); // TODO add config saving
+		File projectFile = getStorageFile(iProject).getLocation().toFile();
+		IFile teamFile = getTeamFile(iProject); // TODO add config saving
 		try {
 			boolean needsWriting = true;
 			String  configText= keyValuePairs.dump();
@@ -176,16 +176,17 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			needsWriting = true;
 			String teamText= keyValuePairs.dump();
 			if(teamText.length()<2) {
-				teamFile.delete();
+				teamFile.delete(true,monitor);
 				needsWriting=false;
 			}
+			File teamFile2=teamFile.getLocation().toFile();
 			if (teamFile.exists()) {
-				String curTeamText = FileUtils.readFileToString(teamFile, Charset.defaultCharset());
+				String curTeamText = FileUtils.readFileToString(teamFile2, Charset.defaultCharset());
 				needsWriting = !curTeamText.equals(teamText.toString());
 
 			}
 			if (needsWriting) {
-					FileUtils.write(teamFile, teamText, Charset.defaultCharset());
+					FileUtils.write(teamFile2, teamText, Charset.defaultCharset());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -209,14 +210,14 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			throws CoreException {
 
 		IProject iProject = cfgDescription.getProjectDescription().getProject();
-		File projectFile = getStorageFile(iProject);
-		File teamFile = getTeamFile(iProject);
+		File projectFile = getStorageFile(iProject).getLocation().toFile();
+		IFile teamFile = getTeamFile(iProject);
 		try {
 			if (projectFile.exists()) {
 				KeyValueTree keyValues =KeyValueTree.createRoot();
 				keyValues.mergeFile(projectFile);
 				if (teamFile.exists()) {
-					keyValues.mergeFile(teamFile);
+					keyValues.mergeFile(teamFile.getLocation().toFile());
 				}
 				return new AutoBuildConfigurationDescription(cfgDescription, keyValues.getChild( cfgDescription.getName()));
 			}
@@ -265,13 +266,11 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 	}
 
 
-	private static File getStorageFile(IProject iProject) {
-		IFile project = iProject.getFile(AUTO_BUILD_PROJECT_FILE);
-		return project.getLocation().toFile();
+	public static IFile getStorageFile(IProject iProject) {
+		return iProject.getFile(AUTO_BUILD_PROJECT_FILE);
 	}
 
-	private static File getTeamFile(IProject iProject) {
-		IFile project = iProject.getFile(AUTO_BUILD_TEAM_FILE);
-		return project.getLocation().toFile();
+	public	static IFile getTeamFile(IProject iProject) {
+		return iProject.getFile(AUTO_BUILD_TEAM_FILE);
 	}
 }

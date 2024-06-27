@@ -10,8 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -39,7 +37,6 @@ import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.IndexerListener;
-import io.sloeber.core.listeners.resourceChangeListener;
 import io.sloeber.core.tools.PackageManager;
 
 /**
@@ -64,7 +61,6 @@ public class Activator extends Plugin {
             '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u',
             'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 
-    private static IResourceChangeListener myResourceChangelistener = new resourceChangeListener();
     private static IndexerListener myindexerListener = new IndexerListener();
 
     @Override
@@ -183,8 +179,7 @@ public class Activator extends Plugin {
         CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
 
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener,
-                IResourceChangeEvent.POST_CHANGE);
+
 
     }
 
@@ -192,7 +187,7 @@ public class Activator extends Plugin {
         CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
 
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(myResourceChangelistener);
+
 
     }
 

@@ -1,9 +1,9 @@
-package io.sloeber.core.listeners;
+package io.sloeber.autoBuild.internal;
 
-import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -15,37 +15,39 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
-import io.sloeber.core.api.Common;
+import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescriptionProvider;
 
-public class resourceChangeListener implements IResourceChangeListener {
+
+public class AutobuilResourceChangeListener implements IResourceChangeListener {
 
     @Override
     public void resourceChanged(IResourceChangeEvent event) {
         // we are only interested in POST_CHANGE events
         if (event.getType() != IResourceChangeEvent.POST_CHANGE)
             return;
-        final ArrayList<IProject> changedSloeberCfgFiles = new ArrayList<>();
+        final ArrayList<IProject> changedCfgFiles = new ArrayList<>();
         IResourceDelta rootDelta = event.getDelta();
-        for (IResourceDelta projectDelta : rootDelta.getAffectedChildren()) {
-            IResourceDelta sloeberCfgDelta = projectDelta.findMember(new Path(SLOEBER_CFG));
-            if (sloeberCfgDelta != null) {
-                if (sloeberCfgDelta.getKind() != IResourceDelta.REMOVED) {
-                    //the sloeber.cfg file has been added or changed
-                    IProject iProject = sloeberCfgDelta.getResource().getProject();
-                    changedSloeberCfgFiles.add(iProject);
+        for (IResourceDelta resourceDelta : rootDelta.getAffectedChildren()) {
+        	IProject iProject= resourceDelta.getResource().getProject();
+        	IFile cfgFile=AutoBuildConfigurationDescriptionProvider.getTeamFile(iProject);
+            IResourceDelta cfgDelta = resourceDelta.findMember(cfgFile.getProjectRelativePath());
+            if (cfgDelta != null) {
+                if (cfgDelta.getKind() != IResourceDelta.REMOVED) {
+                    //the autobuild.cfg file has been added or changed
+                    changedCfgFiles.add(iProject);
                 }
             }
         }
 
-        // ignore when no sloeber.cfg files have been modified
-        if (changedSloeberCfgFiles.size() == 0)
+        // ignore when no autoBuild.cfg files have been modified
+        if (changedCfgFiles.size() == 0)
             return;
 
-        Job job = new Job("Sloeber.cfg modification processor") { //$NON-NLS-1$
+        Job job = new Job("autobuild.cfg modification processor") { //$NON-NLS-1$
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -54,7 +56,7 @@ public class resourceChangeListener implements IResourceChangeListener {
 
                     @Override
                     public void run(IProgressMonitor monitor2) throws CoreException {
-                        for (IProject curProject : changedSloeberCfgFiles) {
+                        for (IProject curProject : changedCfgFiles) {
                         	curProject.close(monitor2);
                         	curProject.open(monitor2);
                         }
@@ -64,8 +66,8 @@ public class resourceChangeListener implements IResourceChangeListener {
                 try {
                     workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, null);
                 } catch (Exception e) {
-                    Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                            "failed to start sloeber.cfg updater", e)); //$NON-NLS-1$
+                    Activator.log(new Status(IStatus.INFO, Activator.getId(),
+                            "failed to start autobuild.cfg updater", e)); //$NON-NLS-1$
                 }
 
                 return Status.OK_STATUS;

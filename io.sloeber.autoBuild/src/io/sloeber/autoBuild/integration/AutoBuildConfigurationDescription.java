@@ -924,6 +924,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		KeyValueTree optionsKeyValue = keyValuePairs.addChild(OPTION);
 		for (Entry<IResource, Map<IOption, String>> curOption : mySelectedOptions.entrySet()) {
 			IResource resource = curOption.getKey();
+			if(resource==null) {
+				continue;
+			}
 			String resourceID = resource.getProjectRelativePath().toString();
 			KeyValueTree curResourceKeyValue = optionsKeyValue.addChild(String.valueOf(counter));
 			curResourceKeyValue.addValue(KEY_RESOURCE, resourceID);
@@ -939,8 +942,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			counter++;
 			int counter2 = counterStart;
 			for (Entry<IOption, String> resourceOptions : curOption.getValue().entrySet()) {
+				IOption key =resourceOptions.getKey();
+				if(key==null) {
+					continue;
+				}
 				KeyValueTree curOptionKeyValue = curResourceKeyValue.addChild(String.valueOf(counter2));
-				curOptionKeyValue.addValue(KEY, resourceOptions.getKey().getId());
+				curOptionKeyValue.addValue(KEY, key.getId());
 				curOptionKeyValue.addValue(KEY_VALUE, resourceOptions.getValue());
 				counter2++;
 			}
