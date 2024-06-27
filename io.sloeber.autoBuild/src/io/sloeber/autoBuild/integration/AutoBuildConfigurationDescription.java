@@ -341,8 +341,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myParallelizationNum = Integer.parseInt(keyValues.getValue(KEY_NUM_PARRALEL_BUILDS));
 
 		String providerID = buildToolsKeyValues.getValue(KEY_PROVIDER_ID);
-		String selectionID = buildToolsKeyValues.getValue(KEY_PROVIDER_ID);
-		myBuildTools = IBuildToolsManager.getDefault().getBuildTools(providerID, selectionID);
+		String selectionID = buildToolsKeyValues.getValue(KEY_SELECTION_ID);
+
 
 		extensionPointID = projectTypeKeyValues.getValue(KEY_EXTENSION_POINT_ID);
 		extensionID = projectTypeKeyValues.getValue(KEY_EXTENSION_ID);
@@ -350,6 +350,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		confName = configKeyValues.getValue(NAME);
 
 		myProjectType = AutoBuildManager.getProjectType(extensionPointID, extensionID, projectTypeID, true);
+		myBuildTools = IBuildToolsManager.getDefault().getBuildTools(providerID, selectionID);
 		if (myBuildTools == null) {
 			// TODO add real error warning
 			System.err.println("unable to identify build Tools "); //$NON-NLS-1$
