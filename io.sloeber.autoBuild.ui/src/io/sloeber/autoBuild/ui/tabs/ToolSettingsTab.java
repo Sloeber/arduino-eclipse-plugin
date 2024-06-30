@@ -304,7 +304,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         for (IOption curOption : options) {
             if (forceDefaultValues) {
                 String defaultValue = curOption.getDefaultValue(mySelectedResource, tool, myAutoConfDesc);
-                myAutoConfDesc.setOptionValue(mySelectedResource, tool, curOption, defaultValue);
+                myAutoConfDesc.setOptionValue(mySelectedResource,  curOption, defaultValue);
             }
             final String nameStr = curOption.getName();
             String tipStr = curOption.getToolTip();
@@ -527,7 +527,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                             BuildOptionComboFieldEditor comboClass = (BuildOptionComboFieldEditor) event.getSource();
                             newValue = comboClass.getSelectionAsID();
                         }
-                        myAutoConfDesc.setOptionValue(mySelectedResource, tool, curOption, newValue);
+                        myAutoConfDesc.setOptionValue(mySelectedResource,  curOption, newValue);
                     }
                 });
 

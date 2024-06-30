@@ -49,14 +49,8 @@ public interface IAutoBuildConfigurationDescription {
         	return null;
         }
         AutoBuildConfigurationDescription ret = (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
-        ret.setWritable(true);
+       // ret.setWritable(!confDesc.isReadOnly());
         return ret;
-        //      Note:
-        //      The code above always returns a readable configdesc
-        //        eventhough the method below exists it is not defined in ICConfigurationDescription
-        //        and as sutch not usable
-        //        boolean writable =!confDesc.isReadOnly();
-        //        return (AutoBuildConfigurationDescription) confDesc.getConfigurationData(writable);
 
     }
 
@@ -316,7 +310,7 @@ public interface IAutoBuildConfigurationDescription {
 
     public String getToolPattern(ITool tool, IResource resource);
 
-    public void setOptionValue(IResource resource, ITool tool, IOption option, String valueID);
+    public void setOptionValue(IResource resource, IOption option, String valueID);
 
     /**
      * return the value of the option for this option for this tool
@@ -434,6 +428,7 @@ public interface IAutoBuildConfigurationDescription {
 
 	public Map<String, String> getEnvironmentVariableMap();
 
+	public boolean equals(IAutoBuildConfigurationDescription other);
 
 
 }

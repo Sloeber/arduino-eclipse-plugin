@@ -264,4 +264,48 @@ public class AutoBuildConstants {
 	public static final String  PROJECT_TYPE_ID_STATIC_LIB="io.sloeber.autoBuild.projectType.static.lib";
 	public static final String  PROJECT_TYPE_ID_COMPOUND_EXE="io.sloeber.autoBuild.projectType.compound.exe";
 	public static final String  PROJECT_TYPE_ID_EXE="io.sloeber.autoBuild.projectType.exe";
+
+
+
+
+	public static final String KEY_MODEL = "Model"; //$NON-NLS-1$
+	public static final String KEY_CONFIGURATION = "configuration"; //$NON-NLS-1$
+	public static final String KEY_TEAM = "team"; //$NON-NLS-1$
+	public static final String KEY_IS_SHARED = "is shared"; //$NON-NLS-1$
+	public static final String KEY_PROJECT_TYPE = "projectType"; //$NON-NLS-1$
+	public static final String KEY_EXTENSION_ID = "extensionID"; //$NON-NLS-1$
+	public static final String KEY_EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$
+	public static final String KEY_PROPERTY = "property"; //$NON-NLS-1$
+	public static final String KEY_BUILDFOLDER = "buildFolder"; //$NON-NLS-1$
+	public static final String KEY_USE_DEFAULT_BUILD_COMMAND = "useDefaultBuildCommand"; //$NON-NLS-1$
+	public static final String KEY_GENERATE_MAKE_FILES_AUTOMATICALLY = "generateBuildFilesAutomatically"; //$NON-NLS-1$
+	public static final String KEY_USE_STANDARD_BUILD_ARGUMENTS = "useStandardBuildArguments"; //$NON-NLS-1$
+	public static final String KEY_IS_PARRALLEL_BUILD = "isParralelBuild"; //$NON-NLS-1$
+	public static final String KEY_IS_CLEAN_BUILD_ENABLED = "isCleanEnabled"; //$NON-NLS-1$
+	public static final String KEY_NUM_PARRALEL_BUILDS = "numberOfParralelBuilds"; //$NON-NLS-1$
+	public static final String KEY_CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
+	public static final String KEY_STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
+	public static final String KEY_IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
+	public static final String KEY_IS_AUTO_BUILD_ENABLED = "isAutoBuildEnabled";//$NON-NLS-1$
+	public static final String KEY = "key"; //$NON-NLS-1$
+	public static final String KEY_VALUE = "value"; //$NON-NLS-1$
+	public static final String KEY_RESOURCE = "resource";//$NON-NLS-1$
+	public static final String KEY_RESOURCE_TYPE = "resource type";//$NON-NLS-1$
+	public static final String KEY_FOLDER = "folder";//$NON-NLS-1$
+	public static final String KEY_FILE = "file";//$NON-NLS-1$
+	public static final String KEY_PROJECT = "project";//$NON-NLS-1$
+	public static final String KEY_BUILDER_ID = "builderID";//$NON-NLS-1$
+	public static final String KEY_AUTO_MAKE_TARGET = "make.target.auto";//$NON-NLS-1$
+	public static final String KEY_INCREMENTAL_MAKE_TARGET = "make.target.incremental";//$NON-NLS-1$
+	public static final String KEY_CLEAN_MAKE_TARGET = "make.target.clean";//$NON-NLS-1$
+	public static final String KEY_EXTENSION = "extension"; //$NON-NLS-1$
+	public static final String KEY_PRE_BUILD_STEP = "Build pre step"; //$NON-NLS-1$
+	public static final String KEY_PRE_BUILD_ANNOUNCEMENT = "Build pre announcement"; //$NON-NLS-1$
+	public static final String KEY_POST_BUILD_STEP = "Build post step"; //$NON-NLS-1$
+	public static final String KEY_POST_BUILD_ANNOUNCEMENT = "Build post announcement"; //$NON-NLS-1$
+	public static final String KEY_AUTOBUILD_EXTENSION_CLASS = "Extension class name"; //$NON-NLS-1$
+	public static final String KEY_AUTOBUILD_EXTENSION_BUNDEL = "Extension bundel name"; //$NON-NLS-1$
+	public static final String KEY_PROVIDER_ID = "provider ID"; //$NON-NLS-1$
+	public static final String KEY_SELECTION_ID = "Selection"; //$NON-NLS-1$
+	public static final int counterStart = 0;
 }
