@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.core.resources.IFile;
@@ -64,32 +65,51 @@ public class AutoBuildRegression {
      * clean it
      * close it
      * open it
+     * check wether the configuration is equal
      * build it
      *
      */
     @ParameterizedTest
     @MethodSource("OpenCloseValueCmd")
-    public void createCloseOpenProject(String projectName,ICodeProvider codeProvider) throws Exception {
+    public void createCloseOpenProject(String projectName,ICodeProvider codeProvider,String optionID,String optionValue) throws Exception {
 
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,
         		codeProvider, buildTools, false, null);
+        IAutoBuildConfigurationDescription beforeChange= IAutoBuildConfigurationDescription.getActiveConfig( testProject,false);
+        CoreModel coreModel = CoreModel.getDefault();
+        ICProjectDescription projectDescription = coreModel.getProjectDescription(testProject, true);
+        ICConfigurationDescription cdtConfig =projectDescription.getActiveConfiguration();
+        IAutoBuildConfigurationDescription origConfig= IAutoBuildConfigurationDescription.getConfig(cdtConfig);
+
+
+        ITool tool = origConfig.getProjectType().getToolChain().getToolFromOptionID(optionID);
+        IOption iOption = tool.getOption(optionID);
+        origConfig.setOptionValue(testProject,  iOption, optionValue);
+        coreModel.setProjectDescription(testProject, projectDescription);
+
+
+        IAutoBuildConfigurationDescription beforeClose= IAutoBuildConfigurationDescription.getActiveConfig( testProject,false);
+        assertFalse("Changed configuration matches unchanged",beforeClose.equals(beforeChange));
 
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
         //clean all configurations and verify clean has been done properly
         Shared.cleanProject(testProject);
 
+
         //close the project
         testProject.close(new NullProgressMonitor());
         //wait a while
-        Thread.sleep(5000);
+        Thread.sleep(2000);
         //open the project
         testProject.open(new NullProgressMonitor());
+        IAutoBuildConfigurationDescription afterClose= IAutoBuildConfigurationDescription.getActiveConfig( testProject,false);
         //Build all the configurations and verify proper building
         Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
+        assertTrue("loaded configuration does not match stored",beforeClose.equals(afterClose));
     }
 
     /*
@@ -186,7 +206,7 @@ public class AutoBuildRegression {
                 .getActiveConfig(projectDescription);
 
         //get the tool and option
-        ITool tool = autoConf.getProjectType().getToolChain().getTools().get(0);
+        ITool tool = autoConf.getProjectType().getToolChain().getToolFromOptionID(optionID);
         IOption iOption = tool.getOption(optionID);
 
         //If the statics are null initialize them
@@ -201,7 +221,7 @@ public class AutoBuildRegression {
             savepreviousOptionID = optionID;
         }
 
-        autoConf.setOptionValue(testProject, tool, iOption, optionValue);
+        autoConf.setOptionValue(testProject,  iOption, optionValue);
         coreModel.setProjectDescription(testProject, projectDescription);
 
         String CurrentCommand = getTheCompileCommand(autoConf, tool).trim();
@@ -379,9 +399,9 @@ public class AutoBuildRegression {
     	cpp_exeCodeProvider_inxxFolder.setCodeFolder("xx");
     	cpp_exeCodeProvider_srcFolder.setCodeFolder("src");
         List<Arguments> ret = new LinkedList<>();
-        ret.add(Arguments.of("createCloseOpenProjectRoot",cpp_exeCodeProvider_inRoot));
-        ret.add(Arguments.of("createCloseOpenProjectXX",cpp_exeCodeProvider_inxxFolder));
-        ret.add(Arguments.of("createCloseOpenProjectSrc",cpp_exeCodeProvider_srcFolder));
+        ret.add(Arguments.of("createCloseOpenProjectRoot",cpp_exeCodeProvider_inRoot,"gnu.c.compiler.option.warnings.extrawarn", "true"));
+        ret.add(Arguments.of("createCloseOpenProjectXX",cpp_exeCodeProvider_inxxFolder,"gnu.cpp.compiler.option.other.pic", "true"));
+        ret.add(Arguments.of("createCloseOpenProjectSrc",cpp_exeCodeProvider_srcFolder,"gnu.cpp.compiler.option.other.verbose", "true"));
 
         return ret.stream();
     }
