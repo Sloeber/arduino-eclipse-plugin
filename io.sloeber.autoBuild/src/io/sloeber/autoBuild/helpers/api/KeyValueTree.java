@@ -11,6 +11,10 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 
 public class KeyValueTree {
 
@@ -46,7 +50,7 @@ public class KeyValueTree {
 	}
 
 	public KeyValueTree addChild(String newKey) {
-		return addChild(newKey, null);
+		return addChild(newKey,(String) null);
 	}
 
 	public String getKey() {
@@ -245,4 +249,36 @@ public class KeyValueTree {
 		parentKeyTree.myChildren.remove(foundKeyTree.getKey());
 	}
 
+	public IResource getResource(IProject project) {
+		String resourceID = getValue(KEY_RESOURCE);
+		String resourceType = getValue(KEY_RESOURCE_TYPE);
+		switch (resourceType) {
+		case KEY_FILE:
+			return project.getFile(resourceID);
+		case KEY_FOLDER:
+			return project.getFolder(resourceID);
+		default:
+		case KEY_PROJECT:
+			return project;
+		}
+	}
+
+	public KeyValueTree addChild(String key, IResource resource) {
+		if(resource==null) {
+			return null;
+		}
+		String resourceID = resource.getProjectRelativePath().toString();
+		KeyValueTree ret = addChild(String.valueOf(key));
+		ret.addValue(KEY_RESOURCE, resourceID);
+		if (resource instanceof IFolder) {
+			ret.addValue(KEY_RESOURCE_TYPE, KEY_FOLDER);
+		}
+		if (resource instanceof IFile) {
+			ret.addValue(KEY_RESOURCE_TYPE, KEY_FILE);
+		}
+		if (resource instanceof IProject) {
+			ret.addValue(KEY_RESOURCE_TYPE, KEY_PROJECT);
+		}
+		return ret;
+	}
 }
