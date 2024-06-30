@@ -203,7 +203,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		TreeMap<IOption, String> options = autoConf.getSelectedOptions(rc);
 		for (Entry<IOption, String> curOption : options.entrySet()) {
 			IOption option = curOption.getKey();
-			if (!option.isForLanguage(languageId)) {
+			if (option==null || (!option.isForLanguage(languageId))) {
 				continue;
 			}
 			String optionValue = curOption.getValue();
