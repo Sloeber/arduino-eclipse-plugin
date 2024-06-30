@@ -177,4 +177,7 @@ public interface IToolChain extends ISchemaObject {
 
 	public IOption getOption(String optionID);
 
+
+	ITool getToolFromOptionID(String optionID);
+
 }

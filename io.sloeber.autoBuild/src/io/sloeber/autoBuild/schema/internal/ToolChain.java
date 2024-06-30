@@ -190,7 +190,7 @@ public class ToolChain extends SchemaObject implements IToolChain {
         return ret;
     }
 
-    // 
+    //
     @Override
     public Set<String> getErrorParserList() {
         return myErrorParsersIDs;
@@ -262,6 +262,17 @@ public class ToolChain extends SchemaObject implements IToolChain {
 			IOption option = curTool.getOption(optionID);
 			if (option!=null){
 				return option;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ITool getToolFromOptionID(String optionID) {
+		for(Tool curTool:myToolMap.values()) {
+			IOption option = curTool.getOption(optionID);
+			if (option!=null){
+				return curTool;
 			}
 		}
 		return null;
