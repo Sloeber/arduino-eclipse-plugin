@@ -129,5 +129,6 @@ public interface IProjectType extends ISchemaObject {
 	public IBuilder getdefaultBuilder();
 
 	public IOption getOption(String optionID);
+	public boolean equals(IProjectType base);
 
 }

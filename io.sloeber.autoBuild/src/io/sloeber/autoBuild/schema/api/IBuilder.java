@@ -105,5 +105,6 @@ public interface IBuilder extends ISchemaObject {
     String getAutoBuildTarget();
 
     boolean supportsBuild(boolean managed);
+    boolean equals(IBuilder other);
 
 }

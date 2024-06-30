@@ -299,6 +299,8 @@ public class ProjectType extends SchemaObject implements IProjectType {
 		return mySupportedToolProviders.contains(buildToolsProvider.getID());
 	}
 
-
-
+	@Override
+    public boolean equals (IProjectType other) {
+    	return myID.equals(((ProjectType)other).myID);
+    }
 }

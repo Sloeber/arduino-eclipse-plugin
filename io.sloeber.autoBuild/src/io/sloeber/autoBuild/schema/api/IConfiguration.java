@@ -60,8 +60,8 @@ public interface IConfiguration extends ISchemaObject {
     public String getDescription();
 
     /**
-     * 
-     * 
+     *
+     *
      * /**
      * Returns the extension that should be applied to build artifacts created by
      * this configuration.
@@ -81,7 +81,7 @@ public interface IConfiguration extends ISchemaObject {
     /**
      * Returns default language settings providers IDs specified for the
      * configuration.
-     * 
+     *
      * @return default language settings providers IDs or {@code null}.
      *
      * @since 8.1
@@ -119,4 +119,5 @@ public interface IConfiguration extends ISchemaObject {
 
     Map<String, Set<IInputType>> getLanguageIDs(AutoBuildConfigurationDescription autoBuildConfData);
 
+    public boolean equals(IConfiguration other);
 }

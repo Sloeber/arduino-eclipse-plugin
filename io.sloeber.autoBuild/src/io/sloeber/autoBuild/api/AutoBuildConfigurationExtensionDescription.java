@@ -110,4 +110,6 @@ public abstract class AutoBuildConfigurationExtensionDescription {
 
 	public abstract Set<String> getTeamDefaultExclusionKeys(String name);
 
+	public abstract boolean equals(AutoBuildConfigurationExtensionDescription base);
+
 }

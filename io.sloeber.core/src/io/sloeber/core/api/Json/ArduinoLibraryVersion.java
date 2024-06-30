@@ -209,4 +209,9 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 	public IPath getFQN() {
 		return myFQN;
 	}
+
+	@Override
+	public boolean equals(IArduinoLibraryVersion other) {
+		return myFQN.equals(other.getFQN());
+	}
 }

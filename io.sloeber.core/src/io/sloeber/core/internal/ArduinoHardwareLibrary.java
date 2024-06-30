@@ -75,4 +75,9 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 		return myFQN;
 	}
 
+	@Override
+	public boolean equals(IArduinoLibraryVersion other) {
+		return myFQN.equals(other.getFQN());
+	}
+
 }

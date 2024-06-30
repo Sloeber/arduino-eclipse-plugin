@@ -194,7 +194,7 @@ public class Configuration extends SchemaObject implements IConfiguration {
         //                        return parent.getSourceEntries();
         //                    return new ICSourceEntry[] {
         //                            new CSourceEntry(Path.EMPTY, null, ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED) };
-        //        
+        //
         //                }
         //                return sourceEntries.clone();
     }
@@ -267,6 +267,12 @@ public class Configuration extends SchemaObject implements IConfiguration {
         }
         return ret;
     }
+
+	@Override
+	public boolean equals(IConfiguration other) {
+	    	return myID.equals(((Configuration)other).myID);
+
+	}
 
 
 }

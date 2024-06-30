@@ -178,6 +178,11 @@ public class Builder extends SchemaObject implements IBuilder {
         return fBuildRunner;
     }
 
+	@Override
+	public boolean equals(IBuilder other) {
+		return myID.equals(((Builder)other).myID);
+	}
+
 
 }
 

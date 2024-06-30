@@ -532,4 +532,27 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return ret;
 	}
 
+	@Override
+	public boolean equals(AutoBuildConfigurationExtensionDescription base) {
+		if(!(base instanceof SloeberConfiguration)) {
+			return false;
+		}
+		SloeberConfiguration other=(SloeberConfiguration)base;
+		if( myBoardDescription.equals(other.myBoardDescription) &&
+				myOtherDesc.equals(other.myOtherDesc) &&
+				myCompileDescription.equals(other.myCompileDescription) &&
+				myLibraries.size()==other.myLibraries.size()) {
+			for(Entry<String, IArduinoLibraryVersion> curLib:myLibraries.entrySet()) {
+				String key=curLib.getKey();
+				IArduinoLibraryVersion localValue=curLib.getValue();
+				IArduinoLibraryVersion otherValue=other.myLibraries.get(key);
+				if(!localValue.equals(otherValue)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 }

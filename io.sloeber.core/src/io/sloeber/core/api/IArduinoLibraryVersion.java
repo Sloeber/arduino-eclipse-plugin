@@ -37,5 +37,7 @@ public interface IArduinoLibraryVersion {
 	 */
 	IPath getFQN();
 
+	public boolean equals(IArduinoLibraryVersion other);
+
 
 }
