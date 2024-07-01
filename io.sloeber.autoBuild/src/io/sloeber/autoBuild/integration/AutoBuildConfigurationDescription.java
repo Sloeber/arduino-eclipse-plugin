@@ -278,7 +278,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myIsParallelBuild = Boolean.parseBoolean(keyValues.getValue(KEY_IS_PARRALLEL_BUILD));
 		myIsCleanBuildEnabled = Boolean.parseBoolean(keyValues.getValue(KEY_IS_CLEAN_BUILD_ENABLED));
 		myIsIncrementalBuildEnabled = Boolean.parseBoolean(keyValues.getValue(KEY_IS_INCREMENTAL_BUILD_ENABLED));
-		myIsAutoBuildEnabled = Boolean.parseBoolean(keyValues.getValue(KEY_IS_AUTO_BUILD_ENABLED));
 		myParallelizationNum = Integer.parseInt(keyValues.getValue(KEY_NUM_PARRALEL_BUILDS));
 
 		String providerID = buildToolsKeyValues.getValue(KEY_PROVIDER_ID);
@@ -302,6 +301,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				myBuilder = buildRunner;
 			}
 		}
+		myIsAutoBuildEnabled = myBuilder.getBuildRunner().supportsAutoBuild();
 		myTargetPlatformData = new BuildTargetPlatformData();
 		myBuildBuildData = new BuildBuildData(this);
 		myRequiredErrorParserList = myAutoBuildConfiguration.getErrorParserList();
@@ -1246,11 +1246,15 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public boolean equals(IAutoBuildConfigurationDescription other) {
 		AutoBuildConfigurationDescription localOther = (AutoBuildConfigurationDescription) other;
-		if (myOptions.equals(localOther.myOptions) && myBuildTools.equals(localOther.myBuildTools)
+		if (myOptions.equals(localOther.myOptions)
+				&& myBuildTools.equals(localOther.myBuildTools)
 				&& myAutoBuildConfiguration.equals(localOther.myAutoBuildConfiguration)
-				&& myProjectType.equals(localOther.myProjectType) && myBuilder.equals(localOther.myBuilder)
-				&& myBuildBuildData.equals(localOther.myBuildBuildData) && myName.equals(localOther.myName)
-				&& myDescription.equals(localOther.myDescription) && myIsValid == localOther.myIsValid
+				&& myProjectType.equals(localOther.myProjectType)
+				&& myBuilder.equals(localOther.myBuilder)
+				&& myBuildBuildData.equals(localOther.myBuildBuildData)
+				&& myName.equals(localOther.myName)
+				&& myDescription.equals(localOther.myDescription)
+				//&& myIsValid == localOther.myIsValid
 				&& myIsTeamShared == localOther.myIsTeamShared
 				&& myGenerateMakeFilesAUtomatically == localOther.myGenerateMakeFilesAUtomatically
 				&& myStopOnFirstBuildError == localOther.myStopOnFirstBuildError
@@ -1272,10 +1276,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				&& myPreBuildAnnouncement.equals(localOther.myPreBuildAnnouncement)
 				&& myPostBuildStep.equals(localOther.myPostBuildStep)
 				&& myPostBuildStepAnouncement.equals(localOther.myPostBuildStepAnouncement)
-				&& myAutoBuildCfgExtDes != null && myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes)
 				&& myCustomToolCommands.equals(localOther.myCustomToolCommands)
 				&& myCustomToolPattern.equals(localOther.myCustomToolPattern)
 				&& myProperties.equals(localOther.myProperties)) {
+			if(myAutoBuildCfgExtDes != null) {
+				return myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes);
+			}
 			return true;
 		}
 		return false;
