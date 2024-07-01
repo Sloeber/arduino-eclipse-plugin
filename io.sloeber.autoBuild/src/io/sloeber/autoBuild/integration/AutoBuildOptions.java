@@ -57,16 +57,19 @@ public class AutoBuildOptions {
         IProject project =autoDesc.getProject();
         IProjectType projectType=autoDesc.getProjectType();
         KeyValueTree optionsKeyValue = keyValues.getChild(OPTION);
-        for (KeyValueTree curResourceProp : optionsKeyValue.getChildren().values()) {
-            IResource resource = curResourceProp.getResource(project);
+        for (KeyValueTree curResourceKeyValue : optionsKeyValue.getChildren().values()) {
+            IResource curResource = curResourceKeyValue.getResource(project);
             Map<IOption, String> resourceOptions = new HashMap<>();
-            for (KeyValueTree curOption : curResourceProp.getChildren().values()) {
+            for (KeyValueTree curOption : curResourceKeyValue.getChildren().values()) {
                 String value = curOption.getValue(KEY_VALUE);
                 IOption option = projectType.getOption(curOption.getValue(KEY));
-                resourceOptions.put(option, value);
+                if(value!=null && option!=null) {
+                	resourceOptions.put(option, value);
+                }
             }
-            mySelectedOptions.put(resource, resourceOptions);
+            mySelectedOptions.put(curResource, resourceOptions);
         }
+        return;
     }
 
 
