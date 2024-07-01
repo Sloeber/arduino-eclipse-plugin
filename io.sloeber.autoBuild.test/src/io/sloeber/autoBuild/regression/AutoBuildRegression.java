@@ -95,7 +95,7 @@ public class AutoBuildRegression {
         assertFalse("Changed configuration matches unchanged",beforeClose.equals(beforeChange));
 
         //Build all the configurations and verify proper building
-        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
+        Shared.BuildAndVerifyActiveConfig(testProject);
         //clean all configurations and verify clean has been done properly
         Shared.cleanProject(testProject);
 
@@ -107,9 +107,9 @@ public class AutoBuildRegression {
         //open the project
         testProject.open(new NullProgressMonitor());
         IAutoBuildConfigurationDescription afterClose= IAutoBuildConfigurationDescription.getActiveConfig( testProject,false);
-        //Build all the configurations and verify proper building
-        Shared.buildAndVerifyProjectUsingActivConfig(testProject, null);
         assertTrue("loaded configuration does not match stored",beforeClose.equals(afterClose));
+        //Build all the configurations and verify proper building
+        Shared.BuildAndVerifyActiveConfig(testProject);
     }
 
     /*
