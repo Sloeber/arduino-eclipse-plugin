@@ -286,7 +286,6 @@ public class AutoBuildConstants {
 	public static final String KEY_CUSTOM_BUILD_COMMAND = "customBuildCommand"; //$NON-NLS-1$
 	public static final String KEY_STOP_ON_FIRST_ERROR = "stopOnFirstError"; //$NON-NLS-1$
 	public static final String KEY_IS_INCREMENTAL_BUILD_ENABLED = "isIncrementalBuildEnabled"; //$NON-NLS-1$
-	public static final String KEY_IS_AUTO_BUILD_ENABLED = "isAutoBuildEnabled";//$NON-NLS-1$
 	public static final String KEY = "key"; //$NON-NLS-1$
 	public static final String KEY_VALUE = "value"; //$NON-NLS-1$
 	public static final String KEY_RESOURCE = "resource";//$NON-NLS-1$
