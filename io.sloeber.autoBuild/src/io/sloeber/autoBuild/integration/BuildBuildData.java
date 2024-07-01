@@ -115,7 +115,7 @@ public class BuildBuildData extends CBuildData {
     }
 
     boolean equals(BuildBuildData base) {
-    	return false;
+    	return fBuilder.getId().equals(base.fBuilder.getId());
     }
 
 }
