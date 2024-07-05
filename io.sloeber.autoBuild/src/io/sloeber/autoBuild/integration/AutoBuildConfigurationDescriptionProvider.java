@@ -14,7 +14,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.integration;
 
-
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +41,6 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 	public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".ConfigurationDataProvider"; //$NON-NLS-1$
 	private static final String AUTO_BUILD_PROJECT_FILE = ".autoBuildProject"; //$NON-NLS-1$
 	private static final String AUTO_BUILD_TEAM_FILE = "autoBuildProject.cfg"; //$NON-NLS-1$
-
-
 
 //	public class KeyValuePairs{
 //		private String myLinePrefix;
@@ -115,8 +112,6 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 //
 //	}
 
-
-
 	public AutoBuildConfigurationDescriptionProvider() {
 	}
 
@@ -128,30 +123,25 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 		ICProjectDescription projDesc = cfgDescription.getProjectDescription();
 		IProject iProject = projDesc.getProject();
 
-
-
-		KeyValueTree keyValuePairs=KeyValueTree.createRoot();
-		//Map<ICConfigurationDescription,KeyValuePairs> keyValues=new TreeMap<>();
+		// Get the tree value pairs
+		KeyValueTree keyValuePairs = KeyValueTree.createRoot();
 		for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
 			AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
 					.getConfigurationData();
 
-			KeyValueTree cfgkeyValuePairs=keyValuePairs.addChild(curConfDesc.getName());
+			KeyValueTree cfgkeyValuePairs = keyValuePairs.addChild(curConfDesc.getName());
 
 			autoBuildConfigBase.serialize(cfgkeyValuePairs);
-//			configText.append(keyValuePairs.getBuffer());
-//			if (autoBuildConfigBase.isTeamShared()) {
-//				teamText.append(keyValuePairs.getBuffer(excludedKeys));
-//			}
 		}
 
-		//StringBuffer
-
-		File projectFile = getStorageFile(iProject).getLocation().toFile();
-		IFile teamFile = getTeamFile(iProject); // TODO add config saving
+		// Save the autobuild project file and the team file (if needed)
 		try {
+			File projectFile = getStorageFile(iProject).getLocation().toFile();
+			IFile teamFile = getTeamFile(iProject);
+
+			// save the project file if needed
 			boolean needsWriting = true;
-			String  configText= keyValuePairs.dump();
+			String configText = keyValuePairs.dump();
 			if (projectFile.exists()) {
 				String curConfigsText = FileUtils.readFileToString(projectFile, AUTOBUILD_CONFIG_FILE_CHARSET);
 				needsWriting = !curConfigsText.equals(configText);
@@ -159,34 +149,33 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			if (needsWriting) {
 				FileUtils.write(projectFile, configText, Charset.defaultCharset());
 			}
+
+			// Remove the keys that the user does not want in the team file
 			for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
 				AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
 						.getConfigurationData();
 
-				if(!autoBuildConfigBase.isTeamShared()) {
-					keyValuePairs.removeChild(curConfDesc.getName());
-				}
-				else {
-					Set<String> excludedKeys=autoBuildConfigBase.getTeamExclusionKeys();
-					for(String curKey:excludedKeys) {
-						keyValuePairs.removeKey(curKey);
-					}
+				Set<String> excludedKeys = autoBuildConfigBase.getTeamExclusionKeys();
+				for (String curKey : excludedKeys) {
+					keyValuePairs.removeKey(curKey);
 				}
 			}
+
+			// save the team file if needed
 			needsWriting = true;
-			String teamText= keyValuePairs.dump();
-			if(teamText.length()<2) {
-				teamFile.delete(true,monitor);
-				needsWriting=false;
+			String teamText = keyValuePairs.dump();
+			if (teamText.length() < 2) {
+				teamFile.delete(true, monitor);
+				needsWriting = false;
 			}
-			File teamFile2=teamFile.getLocation().toFile();
+			File teamFile2 = teamFile.getLocation().toFile();
 			if (teamFile.exists()) {
 				String curTeamText = FileUtils.readFileToString(teamFile2, Charset.defaultCharset());
 				needsWriting = !curTeamText.equals(teamText.toString());
 
 			}
 			if (needsWriting) {
-					FileUtils.write(teamFile2, teamText, Charset.defaultCharset());
+				FileUtils.write(teamFile2, teamText, Charset.defaultCharset());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -214,12 +203,13 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 		IFile teamFile = getTeamFile(iProject);
 		try {
 			if (projectFile.exists()) {
-				KeyValueTree keyValues =KeyValueTree.createRoot();
+				KeyValueTree keyValues = KeyValueTree.createRoot();
 				keyValues.mergeFile(projectFile);
 				if (teamFile.exists()) {
 					keyValues.mergeFile(teamFile.getLocation().toFile());
 				}
-				return new AutoBuildConfigurationDescription(cfgDescription, keyValues.getChild( cfgDescription.getName()));
+				return new AutoBuildConfigurationDescription(cfgDescription,
+						keyValues.getChild(cfgDescription.getName()));
 			}
 			// This Should not happen
 			throw new CoreException(null);
@@ -265,12 +255,11 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 		return;
 	}
 
-
 	public static IFile getStorageFile(IProject iProject) {
 		return iProject.getFile(AUTO_BUILD_PROJECT_FILE);
 	}
 
-	public	static IFile getTeamFile(IProject iProject) {
+	public static IFile getTeamFile(IProject iProject) {
 		return iProject.getFile(AUTO_BUILD_TEAM_FILE);
 	}
 }
