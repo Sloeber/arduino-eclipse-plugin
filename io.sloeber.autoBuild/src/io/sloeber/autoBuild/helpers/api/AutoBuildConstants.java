@@ -272,6 +272,7 @@ public class AutoBuildConstants {
 	public static final String KEY_CONFIGURATION = "configuration"; //$NON-NLS-1$
 	public static final String KEY_TEAM = "team"; //$NON-NLS-1$
 	public static final String KEY_IS_SHARED = "is shared"; //$NON-NLS-1$
+	public static final String KEY_EXCLUSIONS = "exclusions";
 	public static final String KEY_PROJECT_TYPE = "projectType"; //$NON-NLS-1$
 	public static final String KEY_EXTENSION_ID = "extensionID"; //$NON-NLS-1$
 	public static final String KEY_EXTENSION_POINT_ID = "extensionPointID"; //$NON-NLS-1$

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariablesContributor;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
@@ -96,6 +99,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private Map<ITool, Map<IResource, String>> myCustomToolCommands = new HashMap<>();
 	private Map<ITool, Map<IResource, String>> myCustomToolPattern = new HashMap<>();
 	private AutoBuildConfigurationExtensionDescription myAutoBuildCfgExtDes = null;
+	private Set<String> myTeamExclusionKeys=null;
 	// End of fields that need to be copied/made persistent
 
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
@@ -169,6 +173,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myAutoMakeTarget = base.myAutoMakeTarget;
 		myIncrementalMakeTarget = base.myIncrementalMakeTarget;
 		myCleanMakeTarget = base.myCleanMakeTarget;
+		myTeamExclusionKeys = base.myTeamExclusionKeys;
 
 		myPreBuildStep = base.myPreBuildStep;
 		myPreBuildAnnouncement = base.myPreBuildAnnouncement;
@@ -254,6 +259,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		KeyValueTree configKeyValues = modelKeyValues.getChild(KEY_CONFIGURATION);
 		KeyValueTree teamKeyValues = keyValues.getChild(KEY_TEAM);
 		myIsTeamShared = Boolean.parseBoolean(teamKeyValues.getValue(KEY_IS_SHARED));
+		String teamExclusionKeys = teamKeyValues.getValue(KEY_EXCLUSIONS);
+		if (teamExclusionKeys.isBlank()) {
+			myTeamExclusionKeys = null;
+		} else {
+			myTeamExclusionKeys = new HashSet<>(Arrays.asList(teamExclusionKeys.split(SEMICOLON)));
+		}
 
 		myName = keyValues.getValue(NAME);
 		myDescription = keyValues.getValue(DESCRIPTION);
@@ -669,6 +680,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 		KeyValueTree teamKeyValues = keyValuePairs.addChild(KEY_TEAM);
 		teamKeyValues.addValue(KEY_IS_SHARED, String.valueOf(myIsTeamShared));
+		if(myTeamExclusionKeys!=null) {
+			teamKeyValues.addValue(KEY_EXCLUSIONS, String.join(SEMICOLON, myTeamExclusionKeys));
+		}
 
 		projectTypeKeyValue.addValue(KEY_EXTENSION_POINT_ID, getExtensionPointID());
 		projectTypeKeyValue.addValue(KEY_EXTENSION_ID, getExtensionID());
@@ -703,6 +717,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		keyValuePairs.addValue(KEY_PRE_BUILD_ANNOUNCEMENT, myPreBuildAnnouncement);
 		keyValuePairs.addValue(KEY_POST_BUILD_STEP, myPostBuildStep);
 		keyValuePairs.addValue(KEY_POST_BUILD_ANNOUNCEMENT, myPostBuildStepAnouncement);
+
 
 		KeyValueTree propertiesKeyValue = keyValuePairs.addChild(KEY_PROPERTY);
 		for (Entry<String, String> curProp : myProperties.entrySet()) {
@@ -1232,16 +1247,46 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public Set<String> getTeamExclusionKeys() {
-		Set<String> ret = new HashSet<>();
 		if (!myIsTeamShared) {
+			Set<String> ret = new TreeSet<>();
 			ret.add(getName());
-		} else {
-			ret.add(getName() + DOT + KEY_TEAM + DOT + KEY_IS_SHARED);
-			if (myAutoBuildCfgExtDes != null) {
-				ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(getName() + DOT + KEY_EXTENSION));
-			}
+			return ret;
+		}
+		if (myTeamExclusionKeys != null) {
+			return new TreeSet<>(myTeamExclusionKeys);
+		}
+		return getDefaultTeamExclusionKeys();
+	}
+
+	@Override
+	public Set<String> getDefaultTeamExclusionKeys() {
+		Set<String> ret = new TreeSet<>();
+		ret.add(getName() + DOT + KEY_TEAM + DOT + KEY_IS_SHARED);
+		ret.add(getName() + DOT + KEY_TEAM + DOT + KEY_EXCLUSIONS);
+		if (myAutoBuildCfgExtDes != null) {
+			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(getName() + DOT + KEY_EXTENSION));
 		}
 		return ret;
+	}
+
+	@Override
+	public Set<String> getCustomTeamExclusionKeys() {
+		if (myTeamExclusionKeys == null) {
+			return null;
+		}
+			return new TreeSet<>(myTeamExclusionKeys);
+	}
+	@Override
+	public void setCustomTeamExclusionKeys(Set<String> newExclusionKeys) {
+		if (newExclusionKeys == null) {
+			myTeamExclusionKeys = null;
+			return;
+		}
+		if(newExclusionKeys.equals(myTeamExclusionKeys)) {
+			myTeamExclusionKeys = null;
+			return;
+		}
+		myTeamExclusionKeys = new TreeSet<>(newExclusionKeys);
 	}
 
 	@Override
@@ -1280,10 +1325,14 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				&& myCustomToolCommands.equals(localOther.myCustomToolCommands)
 				&& myCustomToolPattern.equals(localOther.myCustomToolPattern)
 				&& myProperties.equals(localOther.myProperties)) {
+			boolean ret=true;
 			if (myAutoBuildCfgExtDes != null) {
-				return myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes);
+				ret=ret && myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes);
 			}
-			return true;
+			if(myTeamExclusionKeys!=null) {
+				ret=ret && myTeamExclusionKeys.equals(localOther.myTeamExclusionKeys);
+			}
+			return ret;
 		}
 		return false;
 	}

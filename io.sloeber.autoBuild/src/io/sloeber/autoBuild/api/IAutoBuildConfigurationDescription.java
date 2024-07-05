@@ -430,5 +430,11 @@ public interface IAutoBuildConfigurationDescription {
 
 	public boolean equals(IAutoBuildConfigurationDescription other);
 
+	Set<String> getDefaultTeamExclusionKeys();
+
+	Set<String> getCustomTeamExclusionKeys();
+
+	void setCustomTeamExclusionKeys(Set<String> newExclusionKeys);
+
 
 }
