@@ -1236,6 +1236,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (!myIsTeamShared) {
 			ret.add(getName());
 		} else {
+			ret.add(getName() + DOT + KEY_TEAM + DOT + KEY_IS_SHARED);
 			if (myAutoBuildCfgExtDes != null) {
 				ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(getName() + DOT + KEY_EXTENSION));
 			}
@@ -1254,7 +1255,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				&& myBuildBuildData.equals(localOther.myBuildBuildData)
 				&& myName.equals(localOther.myName)
 				&& myDescription.equals(localOther.myDescription)
-				//&& myIsValid == localOther.myIsValid
+				// && myIsValid == localOther.myIsValid
 				&& myIsTeamShared == localOther.myIsTeamShared
 				&& myGenerateMakeFilesAUtomatically == localOther.myGenerateMakeFilesAUtomatically
 				&& myStopOnFirstBuildError == localOther.myStopOnFirstBuildError
@@ -1279,7 +1280,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				&& myCustomToolCommands.equals(localOther.myCustomToolCommands)
 				&& myCustomToolPattern.equals(localOther.myCustomToolPattern)
 				&& myProperties.equals(localOther.myProperties)) {
-			if(myAutoBuildCfgExtDes != null) {
+			if (myAutoBuildCfgExtDes != null) {
 				return myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes);
 			}
 			return true;
