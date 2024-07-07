@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.api;
 
-import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.CONFIG_NAME_VARIABLE;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -435,6 +435,8 @@ public interface IAutoBuildConfigurationDescription {
 	Set<String> getCustomTeamExclusionKeys();
 
 	void setCustomTeamExclusionKeys(Set<String> newExclusionKeys);
+
+	public String getName();
 
 
 }
