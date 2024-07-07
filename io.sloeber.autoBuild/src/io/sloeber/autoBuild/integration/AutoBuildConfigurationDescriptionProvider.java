@@ -154,10 +154,14 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 			for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
 				AutoBuildConfigurationDescription autoBuildConfigBase = (AutoBuildConfigurationDescription) curConfDesc
 						.getConfigurationData();
+				String prefix=curConfDesc.getName()+DOT;
 
 				Set<String> excludedKeys = autoBuildConfigBase.getTeamExclusionKeys();
+				if(!autoBuildConfigBase.isTeamShared()) {
+					keyValuePairs.removeKey(curConfDesc.getName());
+				}
 				for (String curKey : excludedKeys) {
-					keyValuePairs.removeKey(curKey);
+					keyValuePairs.removeKey(prefix+curKey);
 				}
 			}
 

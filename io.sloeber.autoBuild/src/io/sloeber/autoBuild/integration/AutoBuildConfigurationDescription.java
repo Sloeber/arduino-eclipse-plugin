@@ -173,7 +173,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myAutoMakeTarget = base.myAutoMakeTarget;
 		myIncrementalMakeTarget = base.myIncrementalMakeTarget;
 		myCleanMakeTarget = base.myCleanMakeTarget;
-		myTeamExclusionKeys = base.myTeamExclusionKeys;
+		if( base.myTeamExclusionKeys==null) {
+			myTeamExclusionKeys =null;
+		}else  {
+			myTeamExclusionKeys =new TreeSet<>( base.myTeamExclusionKeys);
+		}
 
 		myPreBuildStep = base.myPreBuildStep;
 		myPreBuildAnnouncement = base.myPreBuildAnnouncement;
@@ -263,7 +267,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (teamExclusionKeys.isBlank()) {
 			myTeamExclusionKeys = null;
 		} else {
-			myTeamExclusionKeys = new HashSet<>(Arrays.asList(teamExclusionKeys.split(SEMICOLON)));
+			myTeamExclusionKeys = new TreeSet<>(Arrays.asList(teamExclusionKeys.split(SEMICOLON)));
 		}
 
 		myName = keyValues.getValue(NAME);
@@ -1261,10 +1265,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public Set<String> getDefaultTeamExclusionKeys() {
 		Set<String> ret = new TreeSet<>();
-		ret.add(getName() + DOT + KEY_TEAM + DOT + KEY_IS_SHARED);
-		ret.add(getName() + DOT + KEY_TEAM + DOT + KEY_EXCLUSIONS);
+		ret.add( KEY_TEAM + DOT + KEY_IS_SHARED);
+		//ret.add( KEY_TEAM + DOT + KEY_EXCLUSIONS);
 		if (myAutoBuildCfgExtDes != null) {
-			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(getName() + DOT + KEY_EXTENSION));
+			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys( KEY_EXTENSION));
 		}
 		return ret;
 	}
