@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "io.sloeber.autoBuild.ui.internal.messages"; //$NON-NLS-1$
 
+
+
 	public static String ShareConfigTitle ;
 
     public static String NewAutoMakeProjectWizard_WindowTitle;
@@ -313,6 +315,9 @@ public class Messages extends NLS {
     public static String TemplateWizard_InternalError;
 
 	public static String shareConfigButton;
+	public static String addExclusion;
+	public static String removeExclusion;
+	public static String ProvideExclusionKey ;
 
     static {
         // initialize resource bundle
