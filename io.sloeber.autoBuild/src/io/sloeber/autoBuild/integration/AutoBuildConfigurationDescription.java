@@ -99,7 +99,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private Map<ITool, Map<IResource, String>> myCustomToolCommands = new HashMap<>();
 	private Map<ITool, Map<IResource, String>> myCustomToolPattern = new HashMap<>();
 	private AutoBuildConfigurationExtensionDescription myAutoBuildCfgExtDes = null;
-	private Set<String> myTeamExclusionKeys=null;
+	private Set<String> myTeamExclusionKeys = null;
 	// End of fields that need to be copied/made persistent
 
 	private String myId = CDataUtil.genId("io.sloeber.autoBuild.configurationDescription"); //$NON-NLS-1$
@@ -173,10 +173,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myAutoMakeTarget = base.myAutoMakeTarget;
 		myIncrementalMakeTarget = base.myIncrementalMakeTarget;
 		myCleanMakeTarget = base.myCleanMakeTarget;
-		if( base.myTeamExclusionKeys==null) {
-			myTeamExclusionKeys =null;
-		}else  {
-			myTeamExclusionKeys =new TreeSet<>( base.myTeamExclusionKeys);
+		if (base.myTeamExclusionKeys == null) {
+			myTeamExclusionKeys = null;
+		} else {
+			myTeamExclusionKeys = new TreeSet<>(base.myTeamExclusionKeys);
 		}
 
 		myPreBuildStep = base.myPreBuildStep;
@@ -684,7 +684,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 		KeyValueTree teamKeyValues = keyValuePairs.addChild(KEY_TEAM);
 		teamKeyValues.addValue(KEY_IS_SHARED, String.valueOf(myIsTeamShared));
-		if(myTeamExclusionKeys!=null) {
+		if (myTeamExclusionKeys != null) {
 			teamKeyValues.addValue(KEY_EXCLUSIONS, String.join(SEMICOLON, myTeamExclusionKeys));
 		}
 
@@ -721,7 +721,6 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		keyValuePairs.addValue(KEY_PRE_BUILD_ANNOUNCEMENT, myPreBuildAnnouncement);
 		keyValuePairs.addValue(KEY_POST_BUILD_STEP, myPostBuildStep);
 		keyValuePairs.addValue(KEY_POST_BUILD_ANNOUNCEMENT, myPostBuildStepAnouncement);
-
 
 		KeyValueTree propertiesKeyValue = keyValuePairs.addChild(KEY_PROPERTY);
 		for (Entry<String, String> curProp : myProperties.entrySet()) {
@@ -1265,10 +1264,11 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public Set<String> getDefaultTeamExclusionKeys() {
 		Set<String> ret = new TreeSet<>();
-		ret.add( KEY_TEAM + DOT + KEY_IS_SHARED);
-		//ret.add( KEY_TEAM + DOT + KEY_EXCLUSIONS);
+		ret.add(KEY_TEAM + DOT + KEY_IS_SHARED);
+		ret.add(KEY_NUM_PARRALEL_BUILDS);
+		ret.add(KEY_STOP_ON_FIRST_ERROR);
 		if (myAutoBuildCfgExtDes != null) {
-			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys( KEY_EXTENSION));
+			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(KEY_EXTENSION));
 		}
 		return ret;
 	}
@@ -1278,15 +1278,16 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		if (myTeamExclusionKeys == null) {
 			return null;
 		}
-			return new TreeSet<>(myTeamExclusionKeys);
+		return new TreeSet<>(myTeamExclusionKeys);
 	}
+
 	@Override
 	public void setCustomTeamExclusionKeys(Set<String> newExclusionKeys) {
 		if (newExclusionKeys == null) {
 			myTeamExclusionKeys = null;
 			return;
 		}
-		if(newExclusionKeys.equals(myTeamExclusionKeys)) {
+		if (newExclusionKeys.equals(myTeamExclusionKeys)) {
 			myTeamExclusionKeys = null;
 			return;
 		}
@@ -1329,12 +1330,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 				&& myCustomToolCommands.equals(localOther.myCustomToolCommands)
 				&& myCustomToolPattern.equals(localOther.myCustomToolPattern)
 				&& myProperties.equals(localOther.myProperties)) {
-			boolean ret=true;
+			boolean ret = true;
 			if (myAutoBuildCfgExtDes != null) {
-				ret=ret && myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes);
+				ret = ret && myAutoBuildCfgExtDes.equals(localOther.myAutoBuildCfgExtDes);
 			}
-			if(myTeamExclusionKeys!=null) {
-				ret=ret && myTeamExclusionKeys.equals(localOther.myTeamExclusionKeys);
+			if (myTeamExclusionKeys != null) {
+				ret = ret && myTeamExclusionKeys.equals(localOther.myTeamExclusionKeys);
 			}
 			return ret;
 		}
