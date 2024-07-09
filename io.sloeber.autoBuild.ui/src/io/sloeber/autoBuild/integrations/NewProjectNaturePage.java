@@ -11,13 +11,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
+import io.sloeber.autoBuild.ui.internal.Messages;
+
 public class NewProjectNaturePage extends WizardPage{
 	private String myNatureId=CCProjectNature.CC_NATURE_ID;
 
 	protected NewProjectNaturePage(String pageName) {
 		super(pageName);
-		setTitle("Only C or C and CPP files?");
-		setDescription("Select wether you want to only have C files in your project or a mix of C and cpp files");
+		setTitle(Messages.NewProjectNaturePage_SelectNaturesTitle);
+		setDescription(Messages.NewProjectNaturePage_SelectNaturesDescription);
 	}
 
 	@Override
@@ -29,39 +31,39 @@ public class NewProjectNaturePage extends WizardPage{
 
 
 		Button cppNatureButton = new Button(natureGroup, SWT.RADIO);
-		cppNatureButton.setText("My project may contain both C and C++ files");
+		cppNatureButton.setText(Messages.NewProjectNaturePage_CPPNature);
 		cppNatureButton.setSelection(true);
 		cppNatureButton.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				myNatureId=CCProjectNature.CC_NATURE_ID;
-				
+
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		Button cNatureButton = new Button(natureGroup, SWT.RADIO);
-		cNatureButton.setText("My project must only handle C files");
+		cNatureButton.setText(Messages.NewProjectNaturePage_CNature);
 		cNatureButton.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				myNatureId=CProjectNature.C_NATURE_ID;
-				
+
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 		setControl(natureGroup);
 	}
 

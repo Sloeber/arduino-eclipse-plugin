@@ -16,9 +16,11 @@ import org.eclipse.swt.widgets.Label;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsProvider;
+import io.sloeber.autoBuild.ui.internal.Messages;
 
 public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 	private static final String NEWLINE = "\n"; //$NON-NLS-1$
+	private static final String EQUAL = "="; //$NON-NLS-1$
 	private IBuildToolsManager buildToolManager = IBuildToolsManager.getDefault();
 	private boolean myIsUpdating = true;
 	private Combo myToolProviderCombo;
@@ -51,17 +53,17 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 		comp.setLayout(gridlayout);
 
 		Label label = new Label(comp, labelSyle);
-		label.setText("Reread from disk");
+		label.setText(Messages.BuildToolManagerTab_readFromDisk);
 		myRefreshButton=new Button(comp, buttonStyle);
-		myRefreshButton.setText("Refresh the toolchains");
+		myRefreshButton.setText(Messages.BuildToolManagerTab_refreshTheToolChains);
 
 
 		label = new Label(comp, labelSyle);
-		label.setText("Tool providers");
+		label.setText(Messages.BuildToolManagerTab_ToolProviders);
 		myToolProviderCombo = new Combo(comp, comboStyle);
 
 		label = new Label(comp, labelSyle);
-		label.setText("Build tools");
+		label.setText(Messages.BuildToolManagerTab_BuildTools);
 		myBuildToolCombo = new Combo(comp, comboStyle);
 
 		GridData labelGridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
@@ -168,28 +170,28 @@ public class BuildToolManagerTab extends AbstractAutoBuildPropertyTab {
 	private void setLabelText() {
 		IBuildTools buildTools=getSelecteddBuildTool();
 		if (buildTools == null) {
-			myLabel.setText("No build tool selected");
+			myLabel.setText(Messages.BuildToolManagerTab_NoBuildToolSelected);
 			return;
 		}
-		String description = "provider ID " + buildTools.getProviderID() + NEWLINE;
-		description = description + "my ID " + buildTools.getSelectionID() + NEWLINE;
-		description = description + "Path " + buildTools.getToolLocation() + NEWLINE;
-		description = description + "Tool flavour " + buildTools.getToolFlavour().toString() + NEWLINE;
+		String description = Messages.BuildToolManagerTab_ProviderID + buildTools.getProviderID() + NEWLINE;
+		description = description + Messages.BuildToolManagerTab_MyID + buildTools.getSelectionID() + NEWLINE;
+		description = description + Messages.BuildToolManagerTab_Path + buildTools.getToolLocation() + NEWLINE;
+		description = description + Messages.BuildToolManagerTab_ToolFlavour + buildTools.getToolFlavour().toString() + NEWLINE;
 		if (buildTools.getToolVariables() == null) {
-			description = description + NEWLINE + "No Tool Vars provided" + NEWLINE;
+			description = description + NEWLINE + Messages.BuildToolManagerTab_NoToolVarsProvided + NEWLINE;
 		} else {
-			description = description + NEWLINE + "Tool Vars: " + NEWLINE;
+			description = description + NEWLINE + Messages.BuildToolManagerTab_ToolVars + NEWLINE;
 			for (Entry<String, String> var : buildTools.getToolVariables().entrySet()) {
-				description = description + var.getKey() + "=" + var.getValue() + NEWLINE;
+				description = description + var.getKey() + EQUAL + var.getValue() + NEWLINE;
 			}
 		}
 
 		if (buildTools.getEnvironmentVariables() == null) {
-			description = description + NEWLINE + "No environment Vars provided" + NEWLINE;
+			description = description + NEWLINE + Messages.BuildToolManagerTab_NoEnvironmentVarsProvided + NEWLINE;
 		} else {
-			description = description + NEWLINE + "Environment Vars: " + NEWLINE;
+			description = description + NEWLINE + Messages.BuildToolManagerTab_EnvironmentVars + NEWLINE;
 			for (Entry<String, String> var : buildTools.getEnvironmentVariables().entrySet()) {
-				description = description + var.getKey() + "=" + var.getValue() + NEWLINE;
+				description = description + var.getKey() + EQUAL + var.getValue() + NEWLINE;
 			}
 		}
 		myLabel.setText(description);

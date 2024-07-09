@@ -7,6 +7,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
+import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.autoBuild.ui.tabs.BuildToolManagerTab;
 import io.sloeber.autoBuild.ui.tabs.DialogCompleteEvent;
 
@@ -18,8 +19,8 @@ public class NewProjectBuildToolsPage extends  WizardPage {
 	protected NewProjectBuildToolsPage(String pageName) {
 		super(pageName);
 		myBuildToolsManagerTab =new BuildToolManagerTab();
-		setTitle("Select the tools that will be used to build your project.");
-		setDescription("CDT needs tools (like a compiler) to build your projects. If no tools are found install a tool stack and press: refresh the toolchains ");
+		setTitle(Messages.NewProjectBuildToolsPage_title);
+		setDescription(Messages.NewProjectBuildToolsPage_description);
 		setPageComplete(false);
 	}
 

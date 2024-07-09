@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 
+import io.sloeber.autoBuild.ui.internal.Messages;
+
 public class NewProjectSourceLocationPage extends WizardPage {
 	Button RootFolderButton ;
 	Button srcFolderButton;
@@ -20,50 +22,50 @@ public class NewProjectSourceLocationPage extends WizardPage {
 
 	protected NewProjectSourceLocationPage(String pageName) {
 		super(pageName);
-		setTitle("select the location of the source code in the project.");
-		setDescription("You can seperate the source code from the rest of the project content by putting it in a source folder.");
+		setTitle(Messages.NewProjectSourceLocationPage_SelectLocation);
+		setDescription(Messages.NewProjectSourceLocationPage_SeperateSourceCodeFromTheRest);
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		
+
 		Group usercomp = new Group(parent, SWT.NONE);
 		setControl(usercomp);
 		usercomp.setLayout(new RowLayout(SWT.VERTICAL));
-		
-		
+
+
 		SelectionListener selectionListener=new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				customFolderText.setEditable(false);
 				setErrorMessage(null);
 				setPageComplete(true);
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				//not needed
 			}
 		};
-		
+
 		RootFolderButton = new Button(usercomp, SWT.RADIO);
-		RootFolderButton.setText("Put Code in the root of the project");
+		RootFolderButton.setText(Messages.NewProjectSourceLocationPage_PutCodeInRootOfProject);
 		RootFolderButton.addSelectionListener(selectionListener);
 
 		srcFolderButton = new Button(usercomp, SWT.RADIO);
-		srcFolderButton.setText("put code in the src folder");
+		srcFolderButton.setText(Messages.NewProjectSourceLocationPage_PutCodeInSrcFolder);
 		srcFolderButton.setSelection(true);
 		srcFolderButton.addSelectionListener(selectionListener);
-		
+
 		customFolderButton = new Button(usercomp, SWT.RADIO);
-		customFolderButton.setText("put code in a custom folder");
+		customFolderButton.setText(Messages.NewProjectSourceLocationPage_PutCodeInSelectedFolder);
 		customFolderButton.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				customFolderText.setEditable(true);
 				if(customFolderText.getText().isBlank()) {
-					setErrorMessage("You must provide a text in the text field that matches a valid folder name");
+					setErrorMessage(Messages.NewProjectSourceLocationPage_YouMustProvideText);
 					setPageComplete(false);
 				}
 			}
@@ -75,11 +77,11 @@ public class NewProjectSourceLocationPage extends WizardPage {
 		customFolderText = new Text(usercomp, SWT.SINGLE);
 		customFolderText.setEditable(false);
 		customFolderText.addModifyListener(new ModifyListener() {
-			
+
 			@Override
 			public void modifyText(ModifyEvent e) {
 				if(customFolderText.getText().isBlank()) {
-					setErrorMessage("You must provide a text in the text field that matches a valid folder name");
+					setErrorMessage(Messages.NewProjectSourceLocationPage_YouMustProvideText);
 					setPageComplete(false);
 				}else {
 					setErrorMessage(null);
@@ -95,10 +97,10 @@ public class NewProjectSourceLocationPage extends WizardPage {
 			return null;
 		}
 		if(srcFolderButton.getSelection()) {
-			return "src";
+			return "src"; //$NON-NLS-1$
 		}
 		return customFolderText.getText();
-		
+
 	}
 
 }

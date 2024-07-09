@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.ui.internal.Messages;
 
 /**
  * Project Settings Tab in project properties Build Settings This allows to
@@ -35,8 +36,8 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 	private DialogCompleteEvent myParentListener = null;
 	private IProjectType myProjectType;
 
-	public void internalCreateControls(Composite comp,DialogCompleteEvent parentListener) {
-		myParentListener=parentListener;
+	public void internalCreateControls(Composite comp, DialogCompleteEvent parentListener) {
+		myParentListener = parentListener;
 		int comboStyle = SWT.LEAD | SWT.READ_ONLY | SWT.DROP_DOWN | SWT.BORDER;
 		int labelSyle = SWT.LEAD;
 		GridData controlGridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -48,19 +49,19 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 		comp.setLayout(gridlayout);
 
 		Label label = new Label(comp, labelSyle);
-		label.setText("Extension point ID");
+		label.setText(Messages.extensionPointID);
 		myExtentionPointIDCombo = new Combo(comp, comboStyle);
 
 		label = new Label(comp, labelSyle);
-		label.setText("Extension ID");
+		label.setText(Messages.extensionID);
 		myExtentionIDCombo = new Combo(comp, comboStyle);
 
 		label = new Label(comp, labelSyle);
-		label.setText("Project");
+		label.setText(Messages.projectType);
 		myProjectsCombo = new Combo(comp, comboStyle);
 
 		label = new Label(comp, labelSyle);
-		label.setText("Configuration");
+		label.setText(Messages.configuration);
 		myConfigurationsCombo = new Combo(comp, comboStyle);
 
 		myExtentionPointIDCombo.setLayoutData(controlGridData);
@@ -71,7 +72,6 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 		for (String extensionPointID : AutoBuildManager.supportedExtensionPointIDs()) {
 			myExtentionPointIDCombo.add(extensionPointID);
 		}
-
 
 		myExtentionPointIDCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -103,10 +103,10 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 				setValues();
 			}
 		});
-		if(myParentListener!=null) {
+		if (myParentListener != null) {
 			setValues();
 		}
-		isUpdating=false;
+		isUpdating = false;
 	}
 
 	@Override
@@ -125,8 +125,8 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 	}
 
 	private String getComboValue(Combo combo, String preferredValue) {
-		if(preferredValue!=null) {
-		combo.setText(preferredValue);
+		if (preferredValue != null) {
+			combo.setText(preferredValue);
 		}
 		String ret = combo.getText();
 		if (ret.isBlank() && (combo.getItemCount() > 0)) {
@@ -186,9 +186,9 @@ public class ProjectSettingsTab extends AbstractAutoBuildPropertyTab {
 					myAutoConfDesc.setModelConfiguration(configuration);
 				}
 			}
-			
-			if(myParentListener!=null) {
-				//we are in project creation. Tell the parent we have a project selected
+
+			if (myParentListener != null) {
+				// we are in project creation. Tell the parent we have a project selected
 				myParentListener.completeEvent(!myAutoBuildConfiguration.isBlank());
 			}
 

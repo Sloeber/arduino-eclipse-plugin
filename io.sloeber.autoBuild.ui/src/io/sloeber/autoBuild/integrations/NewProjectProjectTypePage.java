@@ -7,6 +7,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import io.sloeber.autoBuild.schema.api.IProjectType;
+import io.sloeber.autoBuild.ui.internal.Messages;
 import io.sloeber.autoBuild.ui.tabs.DialogCompleteEvent;
 import io.sloeber.autoBuild.ui.tabs.ProjectSettingsTab;
 
@@ -16,8 +17,8 @@ public class NewProjectProjectTypePage extends WizardPage {
 	protected NewProjectProjectTypePage(String pageName) {
 		super(pageName);
 		myProjectSettingsTab=new ProjectSettingsTab();
-		setTitle("select the type of project you want");
-		setDescription("The type of project decides on what the target of the project is and how it will be build.");
+		setTitle(Messages.NewProjectProjectTypePage_SelectProjectType);
+		setDescription(Messages.NewProjectProjectTypePage_SelectProjectTypeDescription);
 		setPageComplete(false);
 	}
 
@@ -34,7 +35,7 @@ public class NewProjectProjectTypePage extends WizardPage {
 			}
 		});
 	}
-	
+
 
 	public IProjectType getProjectType() {
 		return myProjectSettingsTab.getProjectType();

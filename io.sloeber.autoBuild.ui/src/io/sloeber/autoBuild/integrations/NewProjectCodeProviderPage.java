@@ -18,8 +18,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import io.sloeber.autoBuild.api.AutoBuildNewProjectCodeManager;
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.autoBuild.ui.internal.Messages;
 
 public class NewProjectCodeProviderPage extends WizardPage {
+	private static final String EMPTY=""; //$NON-NLS-1$
 	private Group myButtonComp;
 	private Button myNoCodeButton;
 	private List<Button> myToolProviderButtons = new ArrayList<>();
@@ -31,6 +33,7 @@ public class NewProjectCodeProviderPage extends WizardPage {
 	private ICodeProvider myCodeProvider = null;
 	private Label myDescriptionText;
 
+
 	@Override
 	public void setVisible(boolean visible) {
 		showCorrectCodeProviderButtons();
@@ -40,8 +43,8 @@ public class NewProjectCodeProviderPage extends WizardPage {
 
 	protected NewProjectCodeProviderPage(String pageName) {
 		super(pageName);
-		setTitle("select the source code you want to be in the project to start from.");
-		setDescription("This is just a conveniance to get you started quicker.");
+		setTitle(Messages.NewProjectCodeProviderPage_title);
+		setDescription(Messages.NewProjectCodeProviderPage_description);
 	}
 
 	@Override
@@ -63,10 +66,10 @@ public class NewProjectCodeProviderPage extends WizardPage {
 				setPageComplete(true);
 				Button button = (Button) e.getSource();
 				ICodeProvider codeProvider = (ICodeProvider) button.getData();
-				String description = "";
+				String description = EMPTY;
 				if (codeProvider == null) {
 					if (button.equals(myNoCodeButton)) {
-						description = "Create a project without files.";
+						description = Messages.NewProjectCodeProviderPage_noFilesDescription;
 					}
 				} else {
 					description = codeProvider.getDescription();
@@ -87,7 +90,7 @@ public class NewProjectCodeProviderPage extends WizardPage {
 		myButtonComp.setLayoutData(buttonGridData);
 
 		myNoCodeButton = new Button(myButtonComp, SWT.RADIO);
-		myNoCodeButton.setText("Empty project");
+		myNoCodeButton.setText(Messages.NewProjectCodeProviderPage_noFilesName);
 		myNoCodeButton.addSelectionListener(selectionListener);
 
 		GridData labelGridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
@@ -111,7 +114,7 @@ public class NewProjectCodeProviderPage extends WizardPage {
 			mySelectedNatureID = newProjectWizard.getSelectedNatureID();
 		}
 		for (Button curButton : myToolProviderButtons) {
-			curButton.setText("");
+			curButton.setText(EMPTY);
 			curButton.setVisible(false);
 		}
 		int curButtonCounter = 0;

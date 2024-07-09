@@ -5,10 +5,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "io.sloeber.autoBuild.ui.internal.messages"; //$NON-NLS-1$
 
-
-
 	public static String ShareConfigTitle ;
-
     public static String NewAutoMakeProjectWizard_WindowTitle;
     public static String NewAutoMakeProjectWizard_Description;
     public static String NewAutoMakeProjectWizard_PageTitle;
@@ -53,7 +50,20 @@ public class Messages extends NLS {
     public static String BuildStepsTab_4;
     public static String BuildStepsTab_5;
     public static String BuildStepsTab_6;
-    public static String BuildToolSettingsPage_alloptions;
+    public static String BuildToolManagerTab_BuildTools;
+	public static String BuildToolManagerTab_EnvironmentVars;
+	public static String BuildToolManagerTab_MyID;
+	public static String BuildToolManagerTab_NoBuildToolSelected;
+	public static String BuildToolManagerTab_NoEnvironmentVarsProvided;
+	public static String BuildToolManagerTab_NoToolVarsProvided;
+	public static String BuildToolManagerTab_Path;
+	public static String BuildToolManagerTab_ProviderID;
+	public static String BuildToolManagerTab_readFromDisk;
+	public static String BuildToolManagerTab_refreshTheToolChains;
+	public static String BuildToolManagerTab_ToolFlavour;
+	public static String BuildToolManagerTab_ToolProviders;
+	public static String BuildToolManagerTab_ToolVars;
+	public static String BuildToolSettingsPage_alloptions;
     public static String BuildToolSettingsPage_tool_advancedSettings;
     public static String BuildToolSettingsPage_tool_command;
     public static String BuildToolSettingsPage_tool_commandLinePattern;
@@ -283,7 +293,6 @@ public class Messages extends NLS {
     public static String BuilderSettingsTab_24;
     public static String BuilderSettingsTab_25;
     public static String BuilderSettingsTab_26;
-
     public static String CDTCommonProjectWizard_creatingProject;
     public static String CDTCommonProjectWizard_0;
     public static String CDTCommonProjectWizard_1;
@@ -304,20 +313,45 @@ public class Messages extends NLS {
     public static String CCProjectWizard_0;
     public static String NewModelProjectWizard_4;
     public static String NewModelProjectWizard_5;
-    public static String CProjectWizard_0;
-
+    public static String NewProjectWizard_BasicNewProjectPage;
+	public static String NewProjectWizard_BuildToolsPage;
+	public static String NewProjectWizard_CodeLocationPage;
+	public static String NewProjectWizard_CodeProviderPage;
+	public static String NewProjectWizard_ProjectTypePage;
+	public static String NewProjectWizard_SelectNaturePage;
+	public static String CProjectWizard_0;
     public static String ProjectImportConfigurator_Checking;
-
     public static String TemplateWizard_CannotBeCreated;
     public static String TemplateWizard_ErrorCreating;
     public static String TemplateWizard_FailedToOpen;
     public static String TemplateWizard_Generating;
     public static String TemplateWizard_InternalError;
-
 	public static String shareConfigButton;
 	public static String addExclusion;
 	public static String removeExclusion;
 	public static String ProvideExclusionKey ;
+	public static String extensionPointID;
+	public static String extensionID;
+	public static String projectType;
+	public static String configuration;
+	public static String NewProjectBuildToolsPage_description;
+	public static String NewProjectBuildToolsPage_title;
+	public static String NewProjectCodeProviderPage_description;
+	public static String NewProjectCodeProviderPage_noFilesDescription;
+	public static String NewProjectCodeProviderPage_noFilesName;
+	public static String NewProjectCodeProviderPage_title;
+	public static String NewProjectNaturePage_CNature;
+	public static String NewProjectNaturePage_CPPNature;
+	public static String NewProjectNaturePage_SelectNaturesDescription;
+	public static String NewProjectNaturePage_SelectNaturesTitle;
+	public static String NewProjectProjectTypePage_SelectProjectType;
+	public static String NewProjectProjectTypePage_SelectProjectTypeDescription;
+	public static String NewProjectSourceLocationPage_PutCodeInRootOfProject;
+	public static String NewProjectSourceLocationPage_PutCodeInSelectedFolder;
+	public static String NewProjectSourceLocationPage_PutCodeInSrcFolder;
+	public static String NewProjectSourceLocationPage_SelectLocation;
+	public static String NewProjectSourceLocationPage_SeperateSourceCodeFromTheRest;
+	public static String NewProjectSourceLocationPage_YouMustProvideText;
 
     static {
         // initialize resource bundle
