@@ -44,7 +44,7 @@ public class NewProjectWizard extends TemplateWizard {
 		try {
 			String projectName = myMainPage.getProjectName();
 			URI projectURI=myMainPage.getLocationURI();
-			IProjectType projectType = myProjectTypePage.getProjectType();
+			IProjectType iProjectType = myProjectTypePage.getProjectType();
 			String natureID = myNaturePage.getNatureID();
 			ICodeProvider codeProvider = myCodeProviderPage.getCodeProvider();
 			codeProvider.setCodeFolder(mySourceLocationPage.getSourceCodeLocation());
@@ -55,7 +55,7 @@ public class NewProjectWizard extends TemplateWizard {
 						throws CoreException, InvocationTargetException, InterruptedException {
 					SubMonitor sub = SubMonitor.convert(monitor, Messages.TemplateWizard_Generating, 1);
 
-					AutoBuildProject.createProject(projectName, projectURI,projectType, natureID, codeProvider,
+					AutoBuildProject.createProject(projectName, projectURI,iProjectType, natureID, codeProvider,
 							buildTools, false, sub);
 					sub.done();
 				}
@@ -80,7 +80,7 @@ public class NewProjectWizard extends TemplateWizard {
 
 	@Override
 	public void addPages() {
-		myMainPage = new WizardNewProjectCreationPage("basicNewProjectPage") { //$NON-NLS-1$
+		myMainPage = new WizardNewProjectCreationPage(Messages.NewProjectWizard_BasicNewProjectPage) {
 			@Override
 			public void createControl(Composite parent) {
 				super.createControl(parent);
@@ -91,11 +91,11 @@ public class NewProjectWizard extends TemplateWizard {
 		};
 		myMainPage.setTitle(NewAutoMakeProjectWizard_PageTitle);
 		myMainPage.setDescription(NewAutoMakeProjectWizard_Description);
-		myNaturePage = new NewProjectNaturePage("Select Nature Page");
-		myBuildToolsPage = new NewProjectBuildToolsPage("Build tools Page");
-		myProjectTypePage = new NewProjectProjectTypePage("Select project type page");
-		mySourceLocationPage = new NewProjectSourceLocationPage("code location page");
-		myCodeProviderPage = new NewProjectCodeProviderPage("code provider page");
+		myNaturePage = new NewProjectNaturePage(Messages.NewProjectWizard_SelectNaturePage);
+		myBuildToolsPage = new NewProjectBuildToolsPage(Messages.NewProjectWizard_BuildToolsPage);
+		myProjectTypePage = new NewProjectProjectTypePage(Messages.NewProjectWizard_ProjectTypePage);
+		mySourceLocationPage = new NewProjectSourceLocationPage(Messages.NewProjectWizard_CodeLocationPage);
+		myCodeProviderPage = new NewProjectCodeProviderPage(Messages.NewProjectWizard_CodeProviderPage);
 
 		addPage(myMainPage);
 		addPage(myNaturePage);
