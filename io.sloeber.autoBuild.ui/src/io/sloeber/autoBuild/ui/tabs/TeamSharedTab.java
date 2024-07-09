@@ -22,11 +22,10 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -35,6 +34,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.autoBuild.ui.internal.Messages;
 
@@ -48,6 +48,7 @@ public class TeamSharedTab extends AbstractAutoBuildPropertyTab {
 	private List myExclusions;
 	private Button myAddExclusionButton;
 	private Button myRemoveExclusionButton;
+	private Text myText;
 
 	@Override
 	public void createControls(Composite parent) {
@@ -64,9 +65,25 @@ public class TeamSharedTab extends AbstractAutoBuildPropertyTab {
 		myExclusions.setLayoutData(gridData);
 		Group g4 = setupGroup(g1, EMPTY_STR, 1, GridData.VERTICAL_ALIGN_BEGINNING);
 
-		int mode = GridData.BEGINNING | GridData.VERTICAL_ALIGN_BEGINNING;
+		int mode = GridData.FILL_HORIZONTAL ;
+		myText = setupText(g4, 1, mode);
 		myAddExclusionButton = setupButton(g4, Messages.addExclusion, 1, mode);
 		myRemoveExclusionButton = setupButton(g4, Messages.removeExclusion, 1, mode);
+
+		myText.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				myAddExclusionButton.setEnabled(!myText.getText().isBlank());
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// Nothing to do here
+
+			}
+		});
+
 		myExclusions.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -119,19 +136,16 @@ public class TeamSharedTab extends AbstractAutoBuildPropertyTab {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				JFrame frame = new JFrame();
-				String text = JOptionPane.showInputDialog(frame, Messages.ProvideExclusionKey);
-				if (text != null) {
-					Set<String> exclusiosn = getCustomTeamExclusionKeys();
-					exclusiosn.add(text);
-					myAutoConfDesc.setCustomTeamExclusionKeys(exclusiosn);
-					updateDisplayedData();
-				}
+				Set<String> exclusiosn = getCustomTeamExclusionKeys();
+				exclusiosn.add(myText.getText());
+				myAutoConfDesc.setCustomTeamExclusionKeys(exclusiosn);
+				myText.setText(EMPTY_STRING);
+				updateDisplayedData();
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// nothing to do her
+				// nothing to do here
 			}
 		});
 	}
@@ -141,12 +155,13 @@ public class TeamSharedTab extends AbstractAutoBuildPropertyTab {
 		myShareConfigButton.setSelection(isShared);
 		myAddExclusionButton.setEnabled(isShared);
 		myExclusions.setEnabled(isShared);
+		myAddExclusionButton.setEnabled(!myText.getText().isBlank());
 		myExclusions.removeAll();
 		if (isShared) {
-			String prefix=myAutoConfDesc.getCdtConfigurationDescription().getName()+DOT;
+			String prefix = myAutoConfDesc.getCdtConfigurationDescription().getName() + DOT;
 			Set<String> exclusions = getCustomTeamExclusionKeys();
 			for (String curExclusion : exclusions) {
-				myExclusions.add(prefix+curExclusion);
+				myExclusions.add(prefix + curExclusion);
 			}
 			myRemoveExclusionButton.setEnabled(myExclusions.getSelectionCount() > 0);
 		} else {
