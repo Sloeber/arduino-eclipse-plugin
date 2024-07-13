@@ -74,6 +74,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICustomBuildOptionEditor;
 import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.integrations.ToolListLabelProvider;
@@ -656,6 +657,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         super.setVisible(visible);
     }
 
+    private IAutoBuildConfigurationDescription myLastUsedAutoConfDesc = null;
     protected void setValues() {
         if (myAutoConfDesc == null) {
             return;
@@ -670,16 +672,22 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
          *   - When the user changes the configuration selection
          *   - When the user changes the "exclude" setting for a resource
          */
-
+        if(myLastUsedAutoConfDesc==myAutoConfDesc) {
+        	return;
+        }
+        myLastUsedAutoConfDesc=myAutoConfDesc;
         //  Create the Tree Viewer content provider if first time
         if (listprovider == null) {
             listprovider = new ToolListContentProvider(mySelectedResource, myAutoConfDesc);
             optionList.setContentProvider(listprovider);
+        }else {
+        	listprovider.SetAutoBuildConfigurationDescription(myAutoConfDesc);
         }
 
         optionList.setInput(myAutoConfDesc);
         //                newElements = (ToolListElement[]) listprovider.getElements(fInfo);
         optionList.expandAll();
+        handleOptionSelection(false);
 
     }
 

@@ -46,6 +46,10 @@ public class ToolListContentProvider implements ITreeContentProvider {
         //Nothing to do here
     }
 
+    public void SetAutoBuildConfigurationDescription (IAutoBuildConfigurationDescription autoBuildConf) {
+    	myAutoBuildConf=autoBuildConf;
+    }
+
     public ToolListContentProvider(IResource resource, IAutoBuildConfigurationDescription myAutoConfDesc) {
         myResource = resource;
         myAutoBuildConf = myAutoConfDesc;
@@ -82,7 +86,7 @@ public class ToolListContentProvider implements ITreeContentProvider {
                     enabledTools.add(curTool);
                 }
             }
-            //Sort the tools alphabetically 
+            //Sort the tools alphabetically
             enabledTools.sort(new Comparator<ITool>() {
                 @Override
                 public int compare(ITool o1, ITool o2) {
