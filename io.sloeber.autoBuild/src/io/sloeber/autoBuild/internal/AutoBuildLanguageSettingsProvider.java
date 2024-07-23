@@ -486,6 +486,8 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 					case END_OF_INCLUDES:
 						inIncludes = false;
 						return true;
+					case UNDEF:
+						return true;
 					default:
 						break;
 					}
@@ -516,7 +518,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 	}
 
 	private enum outputTypes {
-		INCLUDE1, INCLUDE2, FRAMEWORK, DEFINE1, DEFINE2, END_OF_INCLUDES
+		INCLUDE1, INCLUDE2, FRAMEWORK, DEFINE1, DEFINE2, UNDEF, END_OF_INCLUDES
 	}
 
 	private static Map<Pattern, outputTypes> outputMatchers = new HashMap<>() {
@@ -526,6 +528,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 			put(Pattern.compile("#framework <(\\S.*)>"), outputTypes.FRAMEWORK); //$NON-NLS-1$
 			put(Pattern.compile("#define\\s+(\\S*\\(.*?\\))\\s*(.*)"), outputTypes.DEFINE1); //$NON-NLS-1$
 			put(Pattern.compile("#define\\s+(\\S*)\\s*(.*)"), outputTypes.DEFINE2); //$NON-NLS-1$
+			put(Pattern.compile("#undef\\s+(\\S*)\\s*(.*)"), outputTypes.UNDEF); //$NON-NLS-1$
 			put(Pattern.compile("End of search list\\."), outputTypes.END_OF_INCLUDES); //$NON-NLS-1$
 		}
 	};
