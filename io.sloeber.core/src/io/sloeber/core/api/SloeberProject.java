@@ -260,9 +260,12 @@ public class SloeberProject extends Common {
 					excludes[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
 					excludes[7] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
 
-					// IPath arduinoRoot =
-					// IPath.fromOSString(SLOEBER_ARDUINO_FOLDER_NAME).append(CONFIG_NAME_VARIABLE);
-					IPath arduinoRoot = newProjectHandle.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath().append(CONFIG_NAME_VARIABLE);
+					/*
+					 * CDT currently causes issues with ${ConfigName]
+					 * https://github.com/eclipse-cdt/cdt/issues/870
+					 * IPath arduinoRoot = newProjectHandle.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath().append(CONFIG_NAME_VARIABLE);
+					*/
+					IPath arduinoRoot = newProjectHandle.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath().append(curConfig.getName());
 					newSourceEntries[1] = new CSourceEntry(arduinoRoot, excludes, ICSettingEntry.NONE);
 					curConfig.setSourceEntries(newSourceEntries);
 					IAutoBuildConfigurationDescription iAutoBuildConfig = IAutoBuildConfigurationDescription
