@@ -425,7 +425,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	public Set<IFolder> getIncludeFolders() {
 		Set<IFolder> ret = new HashSet<>();
 		ret.add(getArduinoCoreFolder());
-		ret.add(getArduinoVariantFolder());
+        if (myBoardDescription.getActualVariantPath() != null) {
+        	ret.add(getArduinoVariantFolder());
+        }
 		try {
 			if (getArduinoLibraryFolder().exists()) {
 				for (IResource curMember : getArduinoLibraryFolder().members()) {
