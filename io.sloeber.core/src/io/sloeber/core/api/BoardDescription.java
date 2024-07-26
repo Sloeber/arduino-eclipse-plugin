@@ -513,7 +513,7 @@ public class BoardDescription {
     public IPath getActualVariantPath() {
         updateWhenDirty();
         String boardVariant = getBoardVariant();
-        if (boardVariant == null) {
+        if (boardVariant == null || boardVariant.isBlank()) {
             return null;
         }
         if (myReferencedPlatformVariant == null) {
