@@ -23,6 +23,7 @@ import org.eclipse.cdt.core.index.IIndexerStateEvent;
 import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -97,7 +98,14 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
 
 		//The line below is for cases where libs have been excluded from the build
-		UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs.keySet());
+		for(String curLib:alreadyAddedLibs.keySet()) {
+			IFolder libFolder =SloeberCfg.getArduinoLibraryFolder().getFolder(curLib);
+			if(libFolder.exists()) {
+				UnresolvedIncludedHeaders.remove(curLib);
+			}else {
+				UnresolvedIncludedHeaders.add(curLib);
+			}
+		}
 
 		if (UnresolvedIncludedHeaders.isEmpty()) {
 			return;
