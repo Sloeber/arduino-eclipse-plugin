@@ -185,28 +185,30 @@ public class SloeberProject extends Common {
 	public static IProject createArduinoProject(String projectName, URI projectURI, BoardDescription boardDescriptor,
 			CodeDescription codeDesc, CompileDescription compileDescriptor, IProgressMonitor monitor) {
 		return createArduinoProject(projectName, projectURI, boardDescriptor, codeDesc, compileDescriptor,
-				new OtherDescription(),AutoBuildProject.INTERNAL_BUILDER_ID, monitor);
+				null,null, monitor);
 	}
 
 	public static IProject createArduinoProject(String projectName, URI projectURI,  BoardDescription boardDescriptor,
 			CodeDescription codeDesc, CompileDescription compileDescriptor,String builderName,
 			IProgressMonitor monitor) {
 		return createArduinoProject(projectName, projectURI, boardDescriptor, codeDesc, compileDescriptor,
-				new OtherDescription(),builderName, monitor);
+				null,builderName, monitor);
 	}
 	public static IProject createArduinoProject(String projectName, URI projectURI,  BoardDescription boardDescriptor,
 			CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,
 			IProgressMonitor monitor) {
 		return createArduinoProject(projectName, projectURI, boardDescriptor, codeDesc, compileDescriptor,
-				otherDesc,AutoBuildProject.INTERNAL_BUILDER_ID, monitor);
+				otherDesc,null, monitor);
 	}
 
 	/*
 	 * Method to create a project based on the board
 	 */
 	public static IProject createArduinoProject(String projectName, URI projectURI,  BoardDescription boardDescriptor,
-			CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription otherDesc,String builderName,
+			CodeDescription codeDesc, CompileDescription compileDescriptor, OtherDescription inOtherDesc,String inBuilderName,
 			IProgressMonitor monitor) {
+		OtherDescription otherDesc=inOtherDesc==null?new OtherDescription():inOtherDesc;
+		String builderName=inBuilderName==null?AutoBuildProject.INTERNAL_BUILDER_ID:inBuilderName;
 
 		String realProjectName = makeNameCompileSafe(projectName);
 

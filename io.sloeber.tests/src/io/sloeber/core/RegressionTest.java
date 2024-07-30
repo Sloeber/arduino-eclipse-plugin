@@ -32,6 +32,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
@@ -39,6 +40,7 @@ import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
+import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.OtherDescription;
@@ -54,6 +56,7 @@ import io.sloeber.providers.Teensy;
 public class RegressionTest {
 	private static final boolean reinstall_boards_and_libraries = false;
 	private final static String AUTOBUILD_CFG = ".autoBuildProject";
+	private static final String HIDlibName = "HID-Project";
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
@@ -63,9 +66,15 @@ public class RegressionTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		Shared.waitForBoardsManager();
-		Shared.setDeleteProjects(false);
+		Shared.setDeleteProjects(true);
 		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
+		installAdditionalLibs();
+	}
+
+	private static void installAdditionalLibs() {
+		LibraryManager.installLibrary(HIDlibName);
+
 	}
 
 	public static void installAdditionalBoards() throws Exception {
@@ -514,12 +523,13 @@ public class RegressionTest {
 		IPath projectFolder = workspace.getRoot().getLocation().removeLastSegments(1).append(codeFolderName);
 		URI uri = projectFolder.toFile().toURI();
 		// workspace.getRoot().getFolder(Path.fromOSString(codeFolderName)).getLocationURI();
-		IProject theTestProject = SloeberProject.createArduinoProject(proj1Name, uri, proj1BoardDesc, codeDesc, proj1CompileDesc,
-				otherDesc, new NullProgressMonitor());
+		IProject theTestProject = SloeberProject.createArduinoProject(proj1Name, uri, proj1BoardDesc, codeDesc,
+				proj1CompileDesc, otherDesc, new NullProgressMonitor());
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project: " + Shared.hasBuildErrors(theTestProject), Shared.hasBuildErrors(theTestProject));
+		Assert.assertNull("Failed to compile the project: " + Shared.hasBuildErrors(theTestProject),
+				Shared.hasBuildErrors(theTestProject));
 		String fileLocation = projectFolder.append("src").append(proj1Name + ".cpp").toString();
 
 		IFile cppFile = theTestProject.getFolder("src").getFile(proj1Name + ".cpp");
@@ -602,7 +612,6 @@ public class RegressionTest {
 		IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, proj1BoardDesc, codeDescriptor,
 				proj1CompileDesc, otherDesc, new NullProgressMonitor());
 
-
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
 		assertNull("Failed to compile " + projectName, Shared.hasBuildErrors(theTestProject));
@@ -638,6 +647,45 @@ public class RegressionTest {
 		}
 		Assert.assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
 				new CompileDescription()));
+	}
+
+	@Test
+	public void issue1126LibArchiver() throws Exception {
+
+
+		MCUBoard leonardoBoard = Arduino.leonardo();
+		Map<String, IExample> examples = LibraryManager.getExamplesAll(null);
+		CompileDescription compileDesc = new CompileDescription();
+		compileDesc.setEnableParallelBuild(true);
+		IArduinoLibraryVersion lib = null;
+		IExample example = null;
+		for (IExample curExample : examples.values()) {
+			IArduinoLibraryVersion curLib = curExample.getArduinoLibrary();
+			if (curLib == null) {
+				continue;
+			}
+			if (curLib.getName().equals(HIDlibName)) {
+				example = curExample;
+				lib=curLib;
+				break;
+			}
+		}
+		assertNotNull("HID Lib \"" + HIDlibName + "\" Not found", lib);
+
+		Set<IExample> testExamples = new HashSet<>();
+		testExamples.add(example);
+		CodeDescription codeDescriptor = CodeDescription.createExample(false, testExamples);
+		NullProgressMonitor monitor = new NullProgressMonitor();
+
+		IProject theTestProject = SloeberProject.createArduinoProject("issue1126LibArchiver", null,
+				leonardoBoard.getBoardDescriptor(), codeDescriptor, compileDesc, null, null, monitor);
+		Shared.waitForIndexer(theTestProject);
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		IAutoBuildConfigurationDescription autoDesc = IAutoBuildConfigurationDescription.getActiveConfig(theTestProject,
+				false);
+		IFile libArchive = autoDesc.getBuildFolder().getFile(HIDlibName + ".ar");
+		assertTrue("Archive " + libArchive.toString() + " does not exists", libArchive.exists());
+
 	}
 
 	static Stream<Arguments> openAndClosePreservesSettingsValueCmd() throws Exception {
