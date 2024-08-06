@@ -5,31 +5,38 @@ import org.eclipse.core.runtime.Path;
 
 import static io.sloeber.core.api.Const.*;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IExample;
 
 public class Example implements IExample {
-	private IArduinoLibraryVersion myLib;
-	private IPath myExampleLocation;
-	private IPath myFQN;
-	private String myName;
+	protected IPath myFQN;
+	protected Map<String, IArduinoLibraryVersion> myLibs=new HashMap<>();
+	protected IPath myExampleLocation;
 
 	@Override
 	public String toSaveString() {
 		return String.join(SEMI_COLON, getBreadCrumbs());
 	}
 
+	protected Example() {
+
+	}
 	public Example(IArduinoLibraryVersion lib, Path path) {
-		myLib = lib;
+		if (lib != null) {
+			myLibs.put(lib.getFQN().toString(), lib);
+		}
 		myExampleLocation = path;
-		myName = path.lastSegment();
 		calculateFQN();
 	}
 
 	private void calculateFQN() {
-		if (myLib == null) {
-			myFQN = Path.fromPortableString(EXAMPLES_FOLDER );
+		if (myLibs.size() == 0) {
+			myFQN = Path.fromPortableString(EXAMPLES_FOLDER);
 			IPath exampleFolder = ConfigurationPreferences.getInstallationPathExamples();
 			if (exampleFolder.isPrefixOf(myExampleLocation)) {
 				myFQN = myFQN.append(myExampleLocation.makeRelativeTo(exampleFolder));
@@ -37,13 +44,15 @@ public class Example implements IExample {
 				myFQN = myFQN.append(myExampleLocation);
 			}
 		} else {
-			myFQN = myLib.getFQN().append(myName);
+			for (IArduinoLibraryVersion myLib : myLibs.values()) {
+				myFQN = myLib.getFQN().append(getName());
+			}
 		}
 	}
 
 	@Override
-	public IArduinoLibraryVersion getArduinoLibrary() {
-		return myLib;
+	public Collection<IArduinoLibraryVersion> getArduinoLibraries() {
+		return myLibs.values();
 	}
 
 	@Override
@@ -53,7 +62,7 @@ public class Example implements IExample {
 
 	@Override
 	public String getName() {
-		return myName;
+		return myExampleLocation.lastSegment();
 	}
 
 	@Override
@@ -64,7 +73,6 @@ public class Example implements IExample {
 	@Override
 	public String[] getBreadCrumbs() {
 		return myFQN.segments();
-
 	}
 
 }

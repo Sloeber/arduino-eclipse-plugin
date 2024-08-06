@@ -59,7 +59,7 @@ public class CreateAndCompileLibraryExamplesTest {
             MCUBoard curBoard = Example.pickBestBoard(example, myBoards);
 
             if (curBoard != null) {
-            	ret.add(Arguments.of( example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
+            	ret.add(Arguments.of(fqn + ":" + curBoard.getID(), curBoard,
                         example ));
             }
         }

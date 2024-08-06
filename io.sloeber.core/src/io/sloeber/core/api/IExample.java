@@ -1,9 +1,11 @@
 package io.sloeber.core.api;
 
+import java.util.Collection;
+
 import org.eclipse.core.runtime.IPath;
 
 public interface IExample  {
-	public IArduinoLibraryVersion getArduinoLibrary();
+	public Collection<IArduinoLibraryVersion> getArduinoLibraries();
 	public IPath getCodeLocation();
 	public String getName();
 	public String getID();

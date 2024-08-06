@@ -2,58 +2,62 @@ package io.sloeber.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
-import io.sloeber.core.api.IArduinoLibraryVersion;
-import io.sloeber.core.api.IExample;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.providers.ESP32;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings("nls")
-public class Example implements IExample{
-    private String myFQN;
-    private String myLibName;
-    private IPath myPath;
+@SuppressWarnings({ "nls" })
+public class Example extends io.sloeber.core.internal.Example{
     private AttributesCode myRequiredBoardAttributes;
     private static int noBoardFoundCount = 0;
+
 
     public AttributesCode getRequiredBoardAttributes() {
         return myRequiredBoardAttributes;
     }
 
     public Example(String fqn, IPath path) throws Exception {
-        myFQN = fqn;
-        myPath = path;
-        calcLibName();
+        myFQN =  Path.fromPortableString(fqn);
+        myExampleLocation = path;
+        String libName=calcLibName();
+        if(libName!=null &&(!libName.isBlank())) {
+        	Set<String>libNames=new HashSet<>();
+        	libNames.add(libName);
+        	myLibs=LibraryManager.getLatestInstallableLibraries(libNames);
+        }
         myRequiredBoardAttributes = new AttributesCode(fqn);
-        myRequiredBoardAttributes.serial = examplesUsingSerial().contains(myFQN);
-        myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(myFQN);
-        myRequiredBoardAttributes.serialUSB = examplesUsingSerialUSB().contains(myFQN);
-        myRequiredBoardAttributes.keyboard = examplesUsingKeyboard().contains(myFQN);
-        myRequiredBoardAttributes.flightSim = examplesUsingFlightSim().contains(myFQN);
-        myRequiredBoardAttributes.joyStick = examplesUsingJoyStick().contains(myFQN);
-        myRequiredBoardAttributes.mouse = examplesUsingMouse().contains(myFQN);
-        myRequiredBoardAttributes.tone = examplesUsingTone().contains(myFQN);
-        myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(myFQN);
-        myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink")||examplesUsingBuildInLed().contains(myFQN);
-        myRequiredBoardAttributes.midi = examplesUsingMidi().contains(myFQN) || myFQN.contains("USB_MIDI");
-        //        myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
-        myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(myFQN);
-        myRequiredBoardAttributes.myCompatibleBoardIDs.add( getRequiredBoardID(myFQN));
+        myRequiredBoardAttributes.serial = examplesUsingSerial().contains(fqn);
+        myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(fqn);
+        myRequiredBoardAttributes.serialUSB = examplesUsingSerialUSB().contains(fqn);
+        myRequiredBoardAttributes.keyboard = examplesUsingKeyboard().contains(fqn);
+        myRequiredBoardAttributes.flightSim = examplesUsingFlightSim().contains(fqn);
+        myRequiredBoardAttributes.joyStick = examplesUsingJoyStick().contains(fqn);
+        myRequiredBoardAttributes.mouse = examplesUsingMouse().contains(fqn);
+        myRequiredBoardAttributes.tone = examplesUsingTone().contains(fqn);
+        myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(fqn);
+        myRequiredBoardAttributes.buildInLed = fqn.contains("Blink")||examplesUsingBuildInLed().contains(fqn);
+        myRequiredBoardAttributes.midi = examplesUsingMidi().contains(fqn) || fqn.contains("USB_MIDI");
+        //        myRequiredBoardAttributes.teensy = fqn.startsWith("Example/Teensy");
+        myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(fqn);
+        myRequiredBoardAttributes.myCompatibleBoardIDs.add( getRequiredBoardID(fqn));
         //        myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
-        myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
+        myRequiredBoardAttributes.rawHID = fqn.contains("USB_RawHID");
 
-        myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
-        myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
+        myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(fqn);
+        myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(fqn);
 
         myRequiredBoardAttributes.myCompatibleBoardIDs.remove(null);
-        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getCodeAttributes(myPath));
+        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getCodeAttributes(myExampleLocation));
     }
 
 
@@ -71,27 +75,19 @@ public class Example implements IExample{
         }
     }
 
-    private void calcLibName() {
-        myLibName = new String();
-        String[] splits = myFQN.split("/");
-        if (splits.length == 4) {
-            if ("Library".equals(splits[0])) {
-                myLibName = splits[2];
+    String calcLibName() {
+        if (myFQN.segmentCount() == 4) {
+            if ("Library".equals(myFQN.segment(0))) {
+                return myFQN.segment(2);
             }
         }
+        return null;
     }
 
 
-    public String getLibName() {
-        return myLibName;
-    }
 
     public String getFQN() {
-        return myFQN;
-    }
-
-    public String getInoName() {
-        return myPath.lastSegment();
+        return myFQN.toString();
     }
 
     private static LinkedList<String> examplesUsingMidi() {
@@ -455,7 +451,7 @@ public class Example implements IExample{
      * empty returns the best known boarddescriptor to run this example
      */
     public static MCUBoard pickBestBoard(Example example, MCUBoard myBoards[]) {
-        String libName = example.getLibName();
+        String libName = example.calcLibName();
         String fqn = example.getFQN();
         if (myBoards.length == 0) {
             //No boards =>no match
@@ -594,41 +590,6 @@ public class Example implements IExample{
 
     }
 
-	@Override
-	public IArduinoLibraryVersion getArduinoLibrary() {
-		// as these are examples (not from libs but ide examples
-		//the lib is null
-		//I may fake a lib in the future
-		return null;
-	}
-
-	@Override
-	public IPath getCodeLocation() {
-		return myPath;
-	}
-
-	@Override
-	public String getName() {
-		return getInoName();
-	}
-
-	@Override
-	public String getID() {
-		return "example "+getName();
-	}
-
-	@Override
-	public String[] getBreadCrumbs() {
-		// Not needed for test as this is only used in the ui
-		return null;
-	}
-
-	@Override
-	public String toSaveString() {
-		// Not needed for test as this is only used in the ui
-		return null;
-	}
-
 	public boolean worksOnBoard(MCUBoard board) {
 	        if (board.getBoardDescriptor() == null) {
 	            return false;
@@ -648,7 +609,7 @@ public class Example implements IExample{
 	        /*
 	         * the servo lib does not work on gemma
 	         */
-	        if ("Servo".equalsIgnoreCase(getLibName())) {
+	        if ("Servo".equalsIgnoreCase(calcLibName())) {
 	                if ("gemma".equals( board.getBoardDescriptor().getBoardID()) ) {
 	                    return false;
 	            }

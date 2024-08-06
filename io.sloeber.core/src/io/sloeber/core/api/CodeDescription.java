@@ -149,7 +149,7 @@ public class CodeDescription implements ICodeProvider {
 
 		if (myCodeType == CodeTypes.sample) {
 			for (IExample curExample : myExamples) {
-				libraries.add(curExample.getArduinoLibrary());
+				libraries.addAll(curExample.getArduinoLibraries());
 			}
 		}
 		libraries.remove(null);
@@ -231,7 +231,10 @@ public class CodeDescription implements ICodeProvider {
 		switch (myCodeType) {
 		case sample:
 			IExample example=myExamples.iterator().next();
-			return example.getArduinoLibrary().getName();
+			for(IArduinoLibraryVersion curLib:example.getArduinoLibraries()) {
+				return curLib.getName();
+			}
+			break;
 		default:
 			break;
 		}
