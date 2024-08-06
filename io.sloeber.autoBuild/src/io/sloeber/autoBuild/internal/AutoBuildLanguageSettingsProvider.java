@@ -48,18 +48,15 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-import org.eclipse.cdt.utils.CommandLineUtil;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
@@ -68,6 +65,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.AutoBuildCommon;
+import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
 import io.sloeber.autoBuild.schema.api.IOption;
 
 /**
@@ -84,7 +82,6 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 	private static final int MONITOR_SCALE = 100;
 	private static final int TICKS_OUTPUT_PARSING = 1 * MONITOR_SCALE;
-	private static final int TICKS_EXECUTE_COMMAND = 1 * MONITOR_SCALE;
 
 	private Map<String, List<ICLanguageSettingEntry>> myDiscoveryCache = new HashMap<>();
 	private SDMarkerGenerator markerGenerator = new SDMarkerGenerator();
@@ -158,28 +155,6 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 			markerJob.setRule(problemMarkerInfo.file);
 			markerJob.schedule();
-		}
-
-		/**
-		 * Delete markers previously set by this provider for the resource.
-		 *
-		 * @param rc - resource to check markers.
-		 */
-		public void deleteMarkers(IResource rc) {
-			if (!rc.isAccessible()) {
-				return; // resource might be read-only or project might be closed
-			}
-			String providerId = getId();
-			try {
-				IMarker[] markers = rc.findMarkers(SCANNER_DISCOVERY_PROBLEM_MARKER, false, IResource.DEPTH_ZERO);
-				for (IMarker marker : markers) {
-					if (providerId.equals(marker.getAttribute(ATTR_PROVIDER))) {
-						marker.delete();
-					}
-				}
-			} catch (CoreException e) {
-				Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error deleting markers.", e)); //$NON-NLS-1$
-			}
 		}
 
 	}
@@ -344,18 +319,6 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 					.getCommandLauncher(autoConf.getCdtConfigurationDescription());
 			launcher.setProject(currentProject);
 
-			IPath program = new Path(""); //$NON-NLS-1$
-			String[] args = new String[0];
-			String[] cmdArray = CommandLineUtil.argumentsToArray(currentCommandResolved);
-			if (cmdArray != null && cmdArray.length > 0) {
-				program = new Path(cmdArray[0]);
-				if (cmdArray.length > 1) {
-					args = new String[cmdArray.length - 1];
-					System.arraycopy(cmdArray, 1, args, 0, args.length);
-				}
-			}
-
-			String[] envp = autoConf.getEnvironmentVariables();
 			IFolder buildFolder = autoConf.getBuildFolder();
 			AutoBuildCommon.createFolder(buildFolder);
 
@@ -367,7 +330,6 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 				List<IConsoleParser> parsers = new ArrayList<>();
 				parsers.add(consoleParser);
 
-				buildRunnerHelper.setLaunchParameters(launcher, program, args, buildFolder.getLocationURI(), envp);
 				buildRunnerHelper.prepareStreams(epm, parsers, console, subMonitor.split(TICKS_OUTPUT_PARSING));
 
 				buildRunnerHelper.greeting(// ManagedMakeMessages
@@ -375,8 +337,8 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 						"AbstractBuiltinSpecsDetector.RunningScannerDiscovery"//$NON-NLS-1$
 				// , getName())
 				);
-
-				buildRunnerHelper.build(subMonitor.split(TICKS_EXECUTE_COMMAND));
+				InternalBuildRunner.launchCommand(currentCommandResolved, autoConf,
+						 monitor,  buildRunnerHelper);
 
 				epm.close();
 				buildRunnerHelper.close();

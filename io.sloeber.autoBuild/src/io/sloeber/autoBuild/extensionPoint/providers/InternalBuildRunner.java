@@ -42,6 +42,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -85,8 +86,12 @@ public class InternalBuildRunner implements IBuildRunner {
 	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
 			IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
-		buildRoot.delete(true, monitor);
-		buildRoot.create(true, true, monitor);
+		//Do not delete the build folder as it may be in use with other processes (like discovery)
+		for(IResource curMember:buildRoot.members()) {
+			curMember.delete(true, monitor);
+		}
+//		buildRoot.delete(true, monitor);
+//		buildRoot.create(true, true, monitor);
 		return false;
 	}
 
@@ -287,11 +292,14 @@ public class InternalBuildRunner implements IBuildRunner {
 		myHasBuildError = true;
 	}
 
-	private static int launchCommand(String curRecipe, AutoBuildConfigurationDescription autoData,
+	public static int launchCommand(String curRecipe, IAutoBuildConfigurationDescription autoData,
 			IProgressMonitor monitor, AutoBuildRunnerHelper buildRunnerHelper) throws IOException {
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(false);
 		String[] args = argumentsToArray(curRecipe);
+		if(isWindows) {
+			args=argumentsToArray("cmd /d /q");
+		}
 		IPath commandPath = new Path(args[0]);
 		String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
 
@@ -301,6 +309,14 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				fProcess = launcher.execute(commandPath, onlyArgs, autoData.getEnvironmentVariables(),
 						autoData.getBuildFolder().getLocation(), monitor);
+				if(isWindows) {
+					try(OutputStream outputStream=fProcess.getOutputStream()){
+						outputStream.write(curRecipe.getBytes());
+						outputStream.flush();
+						outputStream.write("\n\rexit\n\r".getBytes());
+						outputStream.close();
+					}
+				}
 			} catch ( CoreException e1) {
 				e1.printStackTrace();
 				// ignore and handle null case
@@ -378,9 +394,9 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	public static String[] argumentsToArray(String line) {
-		if (isWindows) {
-			return argumentsToArrayWindowsStyle(line);
-		}
+//		if (isWindows) {
+//			return argumentsToArrayWindowsStyle(line);
+//		}
 		return argumentsToArrayUnixStyle(line);
 	}
 
