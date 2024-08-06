@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -184,8 +185,8 @@ public class Shared {
 		String projectName = getCounterName(boardDescriptor.getBoardID());
 		IExample example = codeDescriptor.getLinkedExample();
 		if (example != null) {
-			IArduinoLibraryVersion lib = example.getArduinoLibrary();
-			if (lib != null) {
+			Collection<IArduinoLibraryVersion> lib = example.getArduinoLibraries();
+			if (lib.size()>0) {
 				projectName = getCounterName("%05d_Library_%s_%s", codeDescriptor.getExampleName());
 			} else {
 				projectName = getCounterName(codeDescriptor.getExampleName());
@@ -333,7 +334,9 @@ public class Shared {
 	}
 
 	public static String getLastFailMessage() {
-		return myLastFailMessage;
+		String ret =myLastFailMessage;
+		myLastFailMessage = new String();
+		return ret;
 	}
 
 	// copied from

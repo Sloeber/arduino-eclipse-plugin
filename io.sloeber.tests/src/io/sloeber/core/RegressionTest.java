@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,10 +15,14 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 import java.net.URI;
 import org.junit.Assert;
+import org.junit.Before;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.internal.core.pdom.indexer.IndexerPreferences;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -52,7 +57,7 @@ import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings({ "nls", "static-method", "null" })
+@SuppressWarnings({ "nls", "static-method", "null", "restriction" })
 public class RegressionTest {
 	private static final boolean reinstall_boards_and_libraries = false;
 	private final static String AUTOBUILD_CFG = ".autoBuildProject";
@@ -66,10 +71,16 @@ public class RegressionTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		Shared.waitForBoardsManager();
-		Shared.setDeleteProjects(true);
+		Shared.setDeleteProjects(false);
 		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
 		installAdditionalLibs();
+	}
+
+	@Before
+	public void beforeTest() {
+		//make sure the fail message is cleaned before the tests is started
+		Shared.getLastFailMessage();
 	}
 
 	private static void installAdditionalLibs() {
@@ -652,7 +663,6 @@ public class RegressionTest {
 	@Test
 	public void issue1126LibArchiver() throws Exception {
 
-
 		MCUBoard leonardoBoard = Arduino.leonardo();
 		Map<String, IExample> examples = LibraryManager.getExamplesAll(null);
 		CompileDescription compileDesc = new CompileDescription();
@@ -660,14 +670,16 @@ public class RegressionTest {
 		IArduinoLibraryVersion lib = null;
 		IExample example = null;
 		for (IExample curExample : examples.values()) {
-			IArduinoLibraryVersion curLib = curExample.getArduinoLibrary();
-			if (curLib == null) {
+			Collection<IArduinoLibraryVersion> curLibs = curExample.getArduinoLibraries();
+			if (curLibs.size() == 0) {
 				continue;
 			}
-			if (curLib.getName().equals(HIDlibName)) {
-				example = curExample;
-				lib=curLib;
-				break;
+			for (IArduinoLibraryVersion curLib : curLibs) {
+				if (curLib.getName().equals(HIDlibName)) {
+					example = curExample;
+					lib = curLib;
+					break;
+				}
 			}
 		}
 		assertNotNull("HID Lib \"" + HIDlibName + "\" Not found", lib);
@@ -679,11 +691,23 @@ public class RegressionTest {
 
 		IProject theTestProject = SloeberProject.createArduinoProject("issue1126LibArchiver", null,
 				leonardoBoard.getBoardDescriptor(), codeDescriptor, compileDesc, null, null, monitor);
+
+		IndexerPreferences.setScope(theTestProject, IndexerPreferences.SCOPE_PROJECT_PRIVATE);
+		IndexerPreferences.set(theTestProject, IndexerPreferences.KEY_INCLUDE_HEURISTICS, Boolean.FALSE.toString());
+		ICProject icProject = CoreModel.getDefault().create(theTestProject);
+		CCorePlugin.getIndexManager().reindex(icProject);
+
 		Shared.waitForIndexer(theTestProject);
+		Thread.sleep(1000);//just make sure the libs can get added
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		IAutoBuildConfigurationDescription autoDesc = IAutoBuildConfigurationDescription.getActiveConfig(theTestProject,
 				false);
 		IFile libArchive = autoDesc.getBuildFolder().getFile(HIDlibName + ".ar");
+		if(!libArchive.exists()) {
+			Thread.sleep(1000);//just make sure the libs can get added
+			Shared.waitForIndexer(theTestProject);
+			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		}
 		assertTrue("Archive " + libArchive.toString() + " does not exists", libArchive.exists());
 
 	}
@@ -721,7 +745,7 @@ public class RegressionTest {
 			if (fqn.contains("RTCZero")) {
 				Example SloeberExample = new Example(fqn, examplePath);
 
-				ret.add(Arguments.of(Shared.getCounterName(SloeberExample.getLibName() + ":" + example.getName()),
+				ret.add(Arguments.of(Shared.getCounterName(SloeberExample.calcLibName() + ":" + example.getName()),
 						zeroBoard, SloeberExample, compileOptions));
 			}
 		}
