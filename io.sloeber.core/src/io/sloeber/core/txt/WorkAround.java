@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 22 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 23 ";
 
 	private static Map<String, String> USB_replacers;
 
@@ -169,10 +169,8 @@ public class WorkAround {
 		boardsTXT = boardsTXT.replaceAll(" ['\\\"]?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+?)\\\\?\\\"[\"']? ",
 				" \\\"$1=\\\\\\\"$2\\\\\\\"\\\" ");
 
-		if (isWindows) {
-			for(Entry<String, String> curEntry:USB_replacers.entrySet()) {
-				boardsTXT = boardsTXT.replace(curEntry.getKey(), curEntry.getValue());
-			}
+		for (Entry<String, String> curEntry : USB_replacers.entrySet()) {
+			boardsTXT = boardsTXT.replace(curEntry.getKey(), curEntry.getValue());
 		}
 		boardsTXT = boardsTXT.replace("{", "${");
 		return boardsTXT;
@@ -476,10 +474,8 @@ public class WorkAround {
 		// "-DUSB_PRODUCT=\"{build.usb_product}\""
 		// platformTXT = platformTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'",
 		// "\"-D$1=\\\\\"{$2}\\\\\"\"");
-		if (isWindows) {
-			for(Entry<String, String> curEntry:USB_replacers.entrySet()) {
-				platformTXT = platformTXT.replace(curEntry.getKey(), curEntry.getValue());
-			}
+		for (Entry<String, String> curEntry : USB_replacers.entrySet()) {
+			platformTXT = platformTXT.replace(curEntry.getKey(), curEntry.getValue());
 		}
 
 		// quoting fixes for embedutils
