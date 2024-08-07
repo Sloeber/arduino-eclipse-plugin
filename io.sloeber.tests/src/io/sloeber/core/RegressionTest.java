@@ -756,7 +756,7 @@ public class RegressionTest {
 	@MethodSource("NightlyBoardPatronTestData")
 	public void NightlyBoardPatron(String name, MCUBoard boardID, Example example, CompileDescription compileOptions)
 			throws Exception {
-
+		Shared.getLastFailMessage();
 		Set<IExample> examples = new HashSet<>();
 		examples.add(example);
 		CodeDescription codeDescriptor = CodeDescription.createExample(false, examples);
