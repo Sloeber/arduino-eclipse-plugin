@@ -498,7 +498,9 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 					String headerName = curLine.substring(0, curLine.length() - 1).replace(BACKSLACH + BLANK, BLANK);
 					Path headerFile = Path.of(headerName);
 					if (!headerFile.isAbsolute()) {
-						headerName = buildPath.getFile(headerName).getLocation().toString();
+						//The line below does not work for URI based projects
+						//headerName = buildPath.getFile(headerName).getLocation().toString();
+						headerName = buildPath.getLocation().append(headerName).toString();
 						headerFile = Path.of(headerName);
 					}
 					BasicFileAttributes attr = Files.readAttributes(headerFile, BasicFileAttributes.class);
