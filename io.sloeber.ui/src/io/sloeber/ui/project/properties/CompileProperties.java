@@ -2,7 +2,7 @@ package io.sloeber.ui.project.properties;
 
 import java.util.Arrays;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -33,6 +33,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 	private Text myArchiveCommand;
 	private Text myAssemblyCommand;
 	private Text myLinkCommand;
+	private CompileDescription myCompDesc = new CompileDescription();
 
 	private boolean disableListeners = false;
 
@@ -42,9 +43,8 @@ public class CompileProperties extends SloeberCpropertyTab {
 			if (disableListeners)
 				return;
 			getFromScreen();
-			CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
-			myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
-			myCustomSizeCommand.setEnabled(compDesc.getSizeCommand() == SizeCommands.CUSTOM);
+			myCustomWarningLevel.setEnabled(myCompDesc.getWarningLevel() == WarningLevels.CUSTOM);
+			myCustomSizeCommand.setEnabled(myCompDesc.getSizeCommand() == SizeCommands.CUSTOM);
 		}
 	};
 	private FocusListener foucusListener = new FocusListener() {
@@ -130,77 +130,66 @@ public class CompileProperties extends SloeberCpropertyTab {
 		this.myLinkCommand = makeOptionField(Messages.ui_append_link, Messages.ui_append_link_text);
 		this.myAllCommand = makeOptionField(Messages.ui_append_all, Messages.ui_append_all_text);
 
-		updateScreen();
+		updateScreen(false);
 	}
 
 	@Override
-	protected String getQualifierString() {
-		return "SloeberCompileProperties"; //$NON-NLS-1$
-	}
-
-	@Override
-	protected void updateScreen() {
+	protected void updateScreen(boolean updateData) {
+		if (mySloeberCfg!=null) {
+			myCompDesc = mySloeberCfg.getCompileDescription();
+		}
 		disableListeners = true;
-		CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
-		myWarningLevel.setText(compDesc.getWarningLevel().toString());
-		myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
-		myCustomWarningLevel.setText(compDesc.getWarningLevel().getCustomWarningLevel());
+		myWarningLevel.setText(myCompDesc.getWarningLevel().toString());
+		myCustomWarningLevel.setEnabled(myCompDesc.getWarningLevel() == WarningLevels.CUSTOM);
+		myCustomWarningLevel.setText(myCompDesc.getWarningLevel().getCustomWarningLevel());
 
-		mySizeCommand.setText(compDesc.getSizeCommand().toString());
-		myCustomSizeCommand.setEnabled(compDesc.getSizeCommand() == SizeCommands.CUSTOM);
-		myCustomSizeCommand.setText(compDesc.getSizeCommand().getCustomSizeCommand());
+		mySizeCommand.setText(myCompDesc.getSizeCommand().toString());
+		myCustomSizeCommand.setEnabled(myCompDesc.getSizeCommand() == SizeCommands.CUSTOM);
+		myCustomSizeCommand.setText(myCompDesc.getSizeCommand().getCustomSizeCommand());
 
-		myCAndCppCommand.setText(compDesc.get_C_andCPP_CompileOptions());
-		myCCommand.setText(compDesc.get_C_CompileOptions());
-		myCppCommand.setText(compDesc.get_CPP_CompileOptions());
-		myAllCommand.setText(compDesc.get_All_CompileOptions());
-		myArchiveCommand.setText(compDesc.get_Archive_CompileOptions());
-		myAssemblyCommand.setText(compDesc.get_Assembly_CompileOptions());
-		myLinkCommand.setText(compDesc.get_Link_CompileOptions());
+		myCAndCppCommand.setText(myCompDesc.get_C_andCPP_CompileOptions());
+		myCCommand.setText(myCompDesc.get_C_CompileOptions());
+		myCppCommand.setText(myCompDesc.get_CPP_CompileOptions());
+		myAllCommand.setText(myCompDesc.get_All_CompileOptions());
+		myArchiveCommand.setText(myCompDesc.get_Archive_CompileOptions());
+		myAssemblyCommand.setText(myCompDesc.get_Assembly_CompileOptions());
+		myLinkCommand.setText(myCompDesc.get_Link_CompileOptions());
 		disableListeners = false;
 	}
 
-	@Override
-	protected Object getFromScreen() {
-		CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
+	private void getFromScreen() {
+
 		WarningLevels warningLevel = WarningLevels.valueOf(myWarningLevel.getText());
 		warningLevel.setCustomWarningLevel(myCustomWarningLevel.getText());
 
 		SizeCommands sizeCommand = SizeCommands.valueOf(mySizeCommand.getText());
 		sizeCommand.setCustomSizeCommand(myCustomSizeCommand.getText());
 
-		compDesc.setWarningLevel(warningLevel);
-		compDesc.setSizeCommand(sizeCommand);
-		compDesc.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
-		compDesc.set_C_CompileOptions(this.myCCommand.getText());
-		compDesc.set_CPP_CompileOptions(this.myCppCommand.getText());
-		compDesc.set_All_CompileOptions(this.myAllCommand.getText());
-		compDesc.set_Archive_CompileOptions(this.myArchiveCommand.getText());
-		compDesc.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
-		compDesc.set_Link_CompileOptions(this.myLinkCommand.getText());
+		myCompDesc.setWarningLevel(warningLevel);
+		myCompDesc.setSizeCommand(sizeCommand);
+		myCompDesc.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
+		myCompDesc.set_C_CompileOptions(this.myCCommand.getText());
+		myCompDesc.set_CPP_CompileOptions(this.myCppCommand.getText());
+		myCompDesc.set_All_CompileOptions(this.myAllCommand.getText());
+		myCompDesc.set_Archive_CompileOptions(this.myArchiveCommand.getText());
+		myCompDesc.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
+		myCompDesc.set_Link_CompileOptions(this.myLinkCommand.getText());
+		if(mySloeberCfg!=null) {
+			mySloeberCfg.setCompileDescription(myCompDesc);
+		}
 
-		return compDesc;
 	}
 
 	@Override
-	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
-		return mySloeberProject.getCompileDescription(confDesc.getName(), true);
+	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	protected Object makeCopy(Object srcObject) {
-		return new CompileDescription((CompileDescription) srcObject);
-	}
+	protected void performDefaults() {
+		// TODO Auto-generated method stub
 
-	@Override
-	protected void updateSloeber(ICConfigurationDescription confDesc) {
-		CompileDescription theObjectToStore = (CompileDescription) getDescription(confDesc);
-		mySloeberProject.setCompileDescription(confDesc.getName(), theObjectToStore);
-	}
-
-	@Override
-	protected Object getnewDefaultObject() {
-		return new CompileDescription();
 	}
 
 }

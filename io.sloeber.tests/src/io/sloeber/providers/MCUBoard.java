@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.BoardAttributes;
+import io.sloeber.core.AttributesBoard;
 import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
@@ -17,7 +17,7 @@ import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 public abstract class MCUBoard {
 
     protected BoardDescription myBoardDescriptor = null;
-    public BoardAttributes myAttributes = new BoardAttributes();
+    public AttributesBoard myAttributes = new AttributesBoard();
     public String mySerialPort = "Serial";
 
     public abstract MCUBoard createMCUBoard(BoardDescription boardDesc);
@@ -25,9 +25,33 @@ public abstract class MCUBoard {
     protected abstract void setAttributes();
 
     public static List<MCUBoard> getAllBoards(String provider, MCUBoard board) {
+    	return getAllBoards( provider, null ,board) ;
+//        List<MCUBoard> ret = new LinkedList<>();
+//        ret.add(board);//make the board provided the first in the list
+//        ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
+//        for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+//            ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
+//            if (curPlatformVersion != null) {
+//                List<BoardDescription> boardDescriptions = BoardDescription
+//                        .makeBoardDescriptors(curPlatformVersion.getBoardsFile());
+//                for (BoardDescription curBoardDesc : boardDescriptions) {
+//                    MCUBoard curBoard = board.createMCUBoard(curBoardDesc);
+//                    curBoard.myAttributes.boardID = curBoardDesc.getBoardID();
+//                    ret.add(curBoard);
+//                }
+//            }
+//        }
+//        return ret;
+    }
+
+    public static List<MCUBoard> getAllBoards(String provider, String architecture, MCUBoard board) {
         List<MCUBoard> ret = new LinkedList<>();
+        ret.add(board);//make the board provided the first in the list
         ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
         for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+        	if(architecture!=null && !architecture.equals( curPlatform.getArchitecture())) {
+        		continue;
+        	}
             ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
             if (curPlatformVersion != null) {
                 List<BoardDescription> boardDescriptions = BoardDescription
@@ -46,28 +70,11 @@ public abstract class MCUBoard {
         return myBoardDescriptor;
     }
 
-    public boolean isExampleSupported(Example example) {
-        if (myBoardDescriptor == null) {
-            return false;
-        }
-        /*
-         * There is one know Teensy example that does not
-         * run on all teensy boards
-         */
-        if ("Teensy".equalsIgnoreCase(getID())) {
-            if (example.getFQN().contains("Teensy/USB_Mouse/Buttons")) {
-                String boardID = myBoardDescriptor.getBoardID();
-                if ("teensypp2".equals(boardID) || "teensy2".equals(boardID)) {
-                    return false;
-                }
-            }
-        }
-        return myAttributes.compatibleWithExampleRequirements(example.getRequiredBoardAttributes());
-    }
+
 
     /**
      * give the name of the board as it appears in boards.txt
-     * 
+     *
      * @return the name of the board as shown in the gui
      */
     public String getID() {
@@ -77,6 +84,9 @@ public abstract class MCUBoard {
         return myBoardDescriptor.getBoardID();
     }
 
+    /**
+	 * @param example not used here but used in overloaded methods
+	 */
     @SuppressWarnings({ "static-method" })
     public Map<String, String> getBoardOptions(Example example) {
         Map<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -85,7 +95,7 @@ public abstract class MCUBoard {
 
     /**
      * give the name of the board as it appears in boards.txt
-     * 
+     *
      * @return the name of the board as shown in the gui or null
      */
     public String getName() {

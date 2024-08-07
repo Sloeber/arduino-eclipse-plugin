@@ -1,24 +1,16 @@
 package io.sloeber.ui;
 
-import static io.sloeber.ui.Activator.*;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -29,8 +21,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-import io.sloeber.core.api.Sketch;
-import io.sloeber.core.common.Const;
+import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.core.api.ISloeberConfiguration;
+import io.sloeber.core.api.LibraryManager;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {
 
@@ -71,9 +64,46 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		setControl(composite);
 	}
 
+	class ItemSorter {
+		public static ISloeberConfiguration sloeberCfg;
+		public TreeMap<String, ItemSorter> myItems = new TreeMap<>();
+		public IArduinoLibraryVersion myLib = null;
+
+		ItemSorter() {
+		}
+
+		public void createChildren(TreeItem curItem) {
+			for (Entry<String, ItemSorter> curentry : myItems.entrySet()) {
+				String key = curentry.getKey();
+				ItemSorter curSorter = curentry.getValue();
+				TreeItem newItem = new TreeItem(curItem, SWT.NONE);
+				newItem.setText(key);
+				curSorter.createChildren(newItem);
+			}
+			if (myLib == null) {
+				curItem.setGrayed(true);
+			}else {
+				boolean isSelected = sloeberCfg.getUsedLibraries().get(myLib.getName()) != null;
+				curItem.setChecked(isSelected);
+				curItem.setData(myLib);
+				if (isSelected) {
+					// expand all parents
+					TreeItem parentTreeItem = curItem;
+					while (parentTreeItem != null) {
+						parentTreeItem.setExpanded(true);
+						parentTreeItem.setChecked(true);
+						parentTreeItem.setGrayed(true);
+						parentTreeItem = parentTreeItem.getParentItem();
+					}
+				}
+			}
+
+		}
+	}
+
 	@Override
 	protected void createSourceGroup(Composite parent) {
-		if (this.myProject == null)
+		if (myProject == null)
 			return;
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout theGridLayout = new GridLayout();
@@ -84,32 +114,48 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 
 		GridData theGriddata;
 
-		this.myLibrarySelector = new Tree(composite, SWT.CHECK | SWT.BORDER);
+		myLibrarySelector = new Tree(composite, SWT.CHECK | SWT.BORDER);
 		theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 		theGriddata.horizontalSpan = 1;
-		this.myLibrarySelector.setLayoutData(theGriddata);
+		myLibrarySelector.setLayoutData(theGriddata);
+		myLibrarySelector.setSortDirection(SWT.UP);
 
+		ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getActiveConfig(myProject);
 		// find the items to add to the list
-		Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(myProject);
-		if (prjDesc != null) {
-			ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
-			allLibraries = Sketch.getAllAvailableLibraries(confDesc);
-		}
+		Map<String, IArduinoLibraryVersion> allLibraries = LibraryManager
+				.getLibrariesAll(sloeberCfg.getBoardDescription());
 
-		// Get the data in the tree
-		Set<String> allLibrariesAlreadyUsed = Sketch.getAllImportedLibraries(this.myProject);
-		this.myLibrarySelector.setRedraw(false);
-		for (Entry<String, IPath> curlib : allLibraries.entrySet()) {
-			TreeItem child = new TreeItem(this.myLibrarySelector, SWT.NONE);
-			child.setText(curlib.getKey());
-			if (allLibrariesAlreadyUsed.contains(curlib.getKey()))
-				child.setChecked(true);
-		}
+		// sort the items
+		ItemSorter sortedItems = new ItemSorter();
+		ItemSorter.sloeberCfg = sloeberCfg;
 
-		this.myLibrarySelector.setRedraw(true);
+		for (IArduinoLibraryVersion curlib : allLibraries.values()) {
+			String keys[] = curlib.getBreadCrumbs();
+			ItemSorter curParent = sortedItems;
+			for (String curKey : keys) {
+				ItemSorter curSorter = curParent.myItems.get(curKey);
+				if (curSorter == null) {
+					curSorter = new ItemSorter();
+					curParent.myItems.put(curKey, curSorter);
+				}
+				curParent = curSorter;
+			}
+			curParent.myLib = curlib;
+		}
+		myLibrarySelector.setRedraw(false);
+
+		for (Entry<String, ItemSorter> curentry : sortedItems.myItems.entrySet()) {
+			String key = curentry.getKey();
+			ItemSorter curSorter = curentry.getValue();
+
+			TreeItem curItem = new TreeItem(myLibrarySelector, SWT.NONE);
+			curItem.setText(key);
+			curSorter.createChildren(curItem);
+		}
+		myLibrarySelector.setRedraw(true);
 
 	}
+
 
 	@Override
 	protected ITreeContentProvider getFileProvider() {
@@ -121,47 +167,37 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		return null;
 	}
 
-	@SuppressWarnings("restriction")
 	public boolean PerformFinish() {
-		// check if there is a incompatibility in the library folder name
-		// windows only
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			IFolder folder = this.myProject.getFolder(Const.LIBRARY_PATH_SUFFIX);
-			if (!folder.exists()) {
-				try {
-					folder.create(false, true, null);
-				} catch (CoreException e) {
-					log(new Status(IStatus.ERROR, PLUGIN_ID,
-							"Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity problem", //$NON-NLS-1$
-							e));
-					return true;
-				}
-
-			}
-		}
-		TreeItem selectedTreeItems[] = this.myLibrarySelector.getItems();
-		Set<String> selectedLibraries = new TreeSet<>();
-		Set<String> unselectedLibraries = new TreeSet<>();
-		for (TreeItem CurItem : selectedTreeItems) {
-			if (CurItem.getChecked())
-				selectedLibraries.add(CurItem.getText());
-			else
-				unselectedLibraries.add(CurItem.getText());
-		}
-		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-		ICProjectDescription projDesc = mngr.getProjectDescription(myProject, true);
-		ICConfigurationDescription activeConfDesc = projDesc.getActiveConfiguration();
-		boolean descNeedsSaving1 = Sketch.removeLibrariesFromProject(myProject, projDesc, unselectedLibraries);
-		boolean descNeedsSaving2 = Sketch.addLibrariesToProject(myProject, activeConfDesc, selectedLibraries);
-		if (descNeedsSaving1 || descNeedsSaving2) {
-			try {
-
-				mngr.setProjectDescription(myProject, projDesc, true, null);
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
+		Set<IArduinoLibraryVersion> selectedLibraries = getSelectedLibraries();
+		CoreModel coreModel = CoreModel.getDefault();
+		ICProjectDescription projDesc = coreModel.getProjectDescription(myProject, true);
+		ISloeberConfiguration sloeberCfg = ISloeberConfiguration.getActiveConfig(projDesc);
+		sloeberCfg.setLibraries(selectedLibraries);
+		try {
+			coreModel.setProjectDescription(myProject, projDesc, true, null);
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
 		return true;
+	}
+
+	public Set<IArduinoLibraryVersion> getSelectedLibraries() {
+		Set<IArduinoLibraryVersion> ret = new HashSet<>();
+		for (TreeItem curTreeItem : myLibrarySelector.getItems()) {
+			ret.addAll(internalGetSelectedLibraries(curTreeItem));
+		}
+		return ret;
+	}
+
+	private List<IArduinoLibraryVersion> internalGetSelectedLibraries(TreeItem TreeItem) {
+		List<IArduinoLibraryVersion> ret = new ArrayList<>();
+		for (TreeItem curchildTreeItem : TreeItem.getItems()) {
+			if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+				ret.add((IArduinoLibraryVersion) curchildTreeItem.getData());
+			}
+			ret.addAll(internalGetSelectedLibraries(curchildTreeItem));
+		}
+		return ret;
 	}
 
 }

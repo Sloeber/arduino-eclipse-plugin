@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: io.sloeber.core;singleton:=true
 Bundle-Version: 4.4.3.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.core.Activator
@@ -11,7 +11,7 @@ Bundle-ClassPath: .,
  lib/jsch-0.1.55.jar,
  lib/jssc-2.9.4.jar,
  lib/jmdns-3.5.7.jar
-Require-Bundle: org.eclipse.cdt.managedbuilder.core,
+Require-Bundle: 
  org.eclipse.core.filesystem,
  org.eclipse.cdt.core,
  com.google.gson,
@@ -23,13 +23,12 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.core.variables,
  org.apache.commons.commons-io,
  org.apache.commons.commons-compress,
- com.github.luben.zstd-jni,
- slf4j.api,
+ com.github.luben.zstd-jni;bundle-version="1.5.5",
+ slf4j.api;bundle-version="2.0.9",
  org.eclipse.ui.intro,
- org.eclipse.jgit.pgm,
- org.eclipse.jetty.http,
- org.eclipse.jetty.io,
- org.eclipse.jetty.util
+ io.sloeber.autoBuild,
+ org.eclipse.cdt.make.core,
+ org.apache.commons.lang3;bundle-version="3.14.0"
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,
@@ -55,6 +54,7 @@ Export-Package: cc.arduino.packages;x-internal:=true,
  io.sloeber.core.communication;x-internal:=true,
  io.sloeber.core.core;x-internal:=true,
  io.sloeber.core.eclipseIntegrations;uses:="org.eclipse.core.variables",
+ io.sloeber.core.internal;x-friends:="io.sloeber.tests",
  io.sloeber.core.listeners;x-internal:=true,
  io.sloeber.core.managers;x-internal:=true,
  io.sloeber.core.natures;x-internal:=true,
@@ -62,38 +62,8 @@ Export-Package: cc.arduino.packages;x-internal:=true,
  io.sloeber.core.toolchain;x-internal:=true,
  io.sloeber.core.tools;x-friends:="io.sloeber.tests",
  io.sloeber.core.tools.uploaders;x-internal:=true,
- io.sloeber.core.txt;x-friends:="io.sloeber.tests",
- javax.jmdns,
- javax.jmdns.impl;
-  uses:="javax.jmdns.impl.tasks,
-   javax.jmdns.impl.constants,
-   org.slf4j,
-   javax.jmdns",
- javax.jmdns.impl.constants,
- javax.jmdns.impl.tasks;uses:="org.slf4j,javax.jmdns.impl",
- javax.jmdns.impl.tasks.resolver;uses:="javax.jmdns.impl.tasks,javax.jmdns.impl",
- javax.jmdns.impl.tasks.state;
-  uses:="javax.jmdns.impl.constants,
-   javax.jmdns.impl.tasks,
-   org.slf4j,
-   javax.jmdns.impl",
- javax.jmdns.impl.util,
- jssc;uses:="org.scijava.nativelib",
- natives.linux_32,
- natives.linux_64,
- natives.linux_arm,
- natives.linux_arm64,
- natives.linux_ppc,
- natives.osx_64,
- natives.osx_arm64,
- natives.sunos_32,
- natives.sunos_64,
- natives.windows_32,
- natives.windows_64,
- natives.windows_arm64,
- org.scijava.nativelib,
- org.slf4j;uses:="new org.slf4j,org.slf4j.spi,org.slf4j.helpers",
- org.slf4j.event;uses:="org.slf4j,org.slf4j.helpers",
- org.slf4j.helpers;uses:="org.slf4j,org.slf4j.spi,org.slf4j.event",
- org.slf4j.spi;uses:="org.slf4j"
+ io.sloeber.core.txt;x-friends:="io.sloeber.tests"
+Import-Package: io.sloeber.autoBuild.schema.api,
+ org.apache.commons.io;version="2.13.0",
+ org.eclipse.cdt.make.core
 Automatic-Module-Name: io.sloeber.core

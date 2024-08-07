@@ -47,7 +47,7 @@ public class ESP32 extends MCUBoard {
 
     @Override
     protected void setAttributes() {
-        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
+        myAttributes.myArchitecture=myBoardDescriptor.getArchitecture();
         // nothing to set
 
     }

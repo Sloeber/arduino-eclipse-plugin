@@ -28,7 +28,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       <vmArgs>-Dorg.eclipse.update.reconcile=false
 -Dlog4j.configuration=log4j/log4j.xml
 -Xms256m
--Xmx1024m
+-Xmx2048m
 --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -43,10 +43,10 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
    <launcher name="sloeber-sdk">
-      <linux icon="launch/icon.xpm"/>
-      <macosx icon="launch/icon.icns"/>
+      <linux icon="/io.sloeber.core/launch/icon.xpm"/>
+      <macosx icon="/io.sloeber.core/launch/icon.icns"/>
       <win useIco="true">
-         <ico path="launch/icons.ico"/>
+         <ico path="/io.sloeber.core/launch/icons.ico"/>
          <bmp/>
       </win>
    </launcher>

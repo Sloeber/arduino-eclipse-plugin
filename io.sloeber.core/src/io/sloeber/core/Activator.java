@@ -1,9 +1,7 @@
 package io.sloeber.core;
 
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
-import static org.eclipse.core.resources.IResource.*;
-
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,14 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -41,12 +33,10 @@ import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
-import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
-import io.sloeber.core.listeners.resourceChangeListener;
 import io.sloeber.core.tools.PackageManager;
 
 /**
@@ -71,7 +61,7 @@ public class Activator extends Plugin {
             '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u',
             'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 
-    private static IResourceChangeListener myResourceChangelistener = new resourceChangeListener();
+    private static IndexerListener myindexerListener = new IndexerListener();
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -88,7 +78,7 @@ public class Activator extends Plugin {
 
         // add required properties for Arduino serial port on linux, if not
         // defined
-        if (Common.isLinux && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
+        if (isLinux && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
             System.setProperty(ENV_KEY_GNU_SERIAL_PORTS, ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
         }
 
@@ -179,22 +169,25 @@ public class Activator extends Plugin {
      */
     private static boolean isInstallPathToLong() {
         IPath installPath = ConfigurationPreferences.getInstallationPath();
-        if (Common.isWindows) {
+        if (isWindows) {
             return installPath.toString().length() > 40;
         }
         return false;
     }
 
     private static void registerListeners() {
-        IndexerListener myindexerListener = new IndexerListener();
         CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
-        CoreModel singCoreModel = CoreModel.getDefault();
-        singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
-                CProjectDescriptionEvent.ABOUT_TO_APPLY);
 
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener,
-                IResourceChangeEvent.POST_CHANGE);
+
+
+    }
+
+    private static void unRegisterListeners() {
+        CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
+        CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
+
+
 
     }
 
@@ -226,7 +219,7 @@ public class Activator extends Plugin {
                     myScope.putInt(FLAG_START, curFsiStatus);
                     URL pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
                     pluginStartInitiator.getContent();
-                } catch (Exception e) {
+                } catch (@SuppressWarnings("unused") Exception e) {
                     // if this happens there is no real harm or functionality
                     // lost
                 }
@@ -258,18 +251,6 @@ public class Activator extends Plugin {
                 }
                 registerListeners();
 
-                // This is not install job but to migrate 4.3 to 4.4
-                // A refresh seems to trigger the code at a convenient time
-                final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-                for (IProject curProject : workspaceRoot.getProjects()) {
-                    if (curProject.isOpen()) {
-                        try {
-                            curProject.refreshLocal(DEPTH_INFINITE, monitor);
-                        } catch (@SuppressWarnings("unused") CoreException e) {
-                            // ignore
-                        }
-                    }
-                }
                 return Status.OK_STATUS;
             }
 
@@ -287,7 +268,7 @@ public class Activator extends Plugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(myResourceChangelistener);
+        unRegisterListeners();
         instance = null;
         super.stop(context);
     }

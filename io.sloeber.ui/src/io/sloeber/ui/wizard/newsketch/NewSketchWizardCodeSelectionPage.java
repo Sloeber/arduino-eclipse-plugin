@@ -1,7 +1,7 @@
 package io.sloeber.ui.wizard.newsketch;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Listener;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CodeDescription.CodeTypes;
+import io.sloeber.core.api.IExample;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 
@@ -30,7 +31,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	protected SampleSelector myExampleEditor = null;
 	protected Button myCheckBoxUseCurrentLinkSample;
 	private BoardDescription myCurrentBoardDesc = null;
-	private CodeDescription myCodedescriptor = CodeDescription.createLastUsed();
+	private CodeDescription myCodedescriptor = null;
 	private NewSketchWizardBoardPage myArduinoPage;
 
 	@Override
@@ -165,7 +166,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			BoardDescription mySelectedBoardDesc = myArduinoPage.getBoardDescriptor();
 			if (!mySelectedBoardDesc.equals(myCurrentBoardDesc)) {
 				myCurrentBoardDesc = new BoardDescription(mySelectedBoardDesc);
-				myExampleEditor.AddAllExamples(myCurrentBoardDesc, myCodedescriptor.getExamples());
+				myCodedescriptor=null;
+				myExampleEditor.AddAllExamples(myCurrentBoardDesc, getCodeDescr().getExamples());
 
 			}
 			setPageComplete(myExampleEditor.isSampleSelected());
@@ -187,8 +189,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		// settings are saved when the files are created and the use this as
 		// default flag is set
 		//
-		myTemplateFolderEditor.setStringValue(myCodedescriptor.getTemPlateFoldername().toString());
-		myCodeSourceOptionsCombo.select(myCodedescriptor.getCodeType().ordinal());
+		myTemplateFolderEditor.setStringValue(getCodeDescr().getTemPlateFoldername().toString());
+		myCodeSourceOptionsCombo.select(getCodeDescr().getCodeType().ordinal());
 	}
 
 	public CodeDescription getCodeDescription() {
@@ -203,7 +205,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		case CustomTemplate:
 			return CodeDescription.createCustomTemplate(new Path(myTemplateFolderEditor.getStringValue()));
 		case sample:
-			ArrayList<IPath> sampleFolders = myExampleEditor.GetSampleFolders();
+			Set<IExample> sampleFolders = myExampleEditor.GetSampleFolders();
 			boolean link = myCheckBoxUseCurrentLinkSample.getSelection();
 			return CodeDescription.createExample(link, sampleFolders);
 		default:
@@ -249,6 +251,13 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	public void setSketchWizardPage(NewSketchWizardBoardPage arduinoPage) {
 		myArduinoPage = arduinoPage;
 
+	}
+
+	private CodeDescription getCodeDescr() {
+		if(myCodedescriptor==null) {
+			myCodedescriptor=CodeDescription.createLastUsed(myArduinoPage.getBoardDescriptor());
+		}
+		return myCodedescriptor;
 	}
 
 }

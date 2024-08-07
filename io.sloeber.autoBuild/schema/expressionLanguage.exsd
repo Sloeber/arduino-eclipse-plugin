@@ -1,0 +1,947 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.core.expressions" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.core.expressions" id="commonExpression" name="Common Expressions"/>
+      </appinfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <element name="enablement">
+      <annotation>
+         <documentation>
+            Contains boolean expression that specifies option applicability
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="and" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="or" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="not" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkOption" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkString" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkToolFlavour" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="false" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkHolder" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkBuildProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="hasNature" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="instanceof" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="test" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="systemTest" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="equals" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="count" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="with" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="resolve" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="adapt" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="iterate" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="type" type="string" use="default" value="ALL">
+            <annotation>
+               <documentation>
+                  Represents the applicability type for this enablement.
+      Can contain the following values:
+      UI_VISIBILITY - the given enablement expression
+      specifies whether the option is to be visible in UI,
+      UI_ENABLEMENT - the given enablement expression
+      specifies the enable state of the controls that
+      represent the option in UI,
+      CMD_USAGE - the given enablement expression specifies
+      whether the option is to be used in command line
+      CONTAINER_ATTRIBUTE - the given enablement expressions
+      specifies thecontainer attribute value
+      ALL - this value means the combination of all the above
+      values.
+
+      Several types could be specified simultaneously using
+      the &quot;|&quot; as a delimiter, e.g.:
+      type=&quot;UI_VISIBILITY|CMD_USAGE&quot;
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="attribute">
+            <annotation>
+               <documentation>
+                  This attribute should be used only for the
+      CONTAINER_ATTRIBUTE enablement to specify the name of
+      the attribute for which this enablement applies.
+      Currently the following option attributes are supported:
+      &quot;command&quot;
+      &quot;commandFalse&quot;
+      &quot;defaultValue&quot;
+      &quot;value&quot;
+      &quot;artifactExtension&quot;
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="command">
+                  </enumeration>
+                  <enumeration value="commandFalse">
+                  </enumeration>
+                  <enumeration value="defaultValue">
+                  </enumeration>
+                  <enumeration value="value">
+                  </enumeration>
+                  <enumeration value="artifactExtension">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  This attribute should be used only for the
+      CONTAINER_ATTRIBUTE enablement to specify the value of
+      the attribute specified in the &quot;attribute&quot; for
+      which this enablement applies
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="extensionAdjustment" type="boolean">
+            <annotation>
+               <documentation>
+                  The attribute is valid for the CONTAINER_ATTRIBUTE
+      enablement type.
+      true specifies that the enablement is defined for
+      adjusting extension elements (extension elements are
+      adjusted on tool-chain definition load)
+      false specifies that the enablement is defined for
+      non-extension elements adjustment. This adjustment is
+      performed, e.g. when the Build properties set is chenged
+      for configuration
+      Default value is true.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="and">
+      <annotation>
+         <documentation>
+            Represents boolean &quot;and&quot; operation
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="and" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="or" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="not" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkOption" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkString" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkToolFlavour" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkHolder" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkBuildProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="instanceof" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="test" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="systemTest" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="equals" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="count" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="with" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="resolve" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="adapt" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="iterate" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="or">
+      <annotation>
+         <documentation>
+            Represents boolean &quot;or&quot; operation
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="and" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="or" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="not" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkOption" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkString" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkToolFlavour" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkHolder" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkBuildProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="instanceof" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="test" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="systemTest" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="equals" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="count" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="with" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="resolve" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="adapt" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="iterate" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="not">
+      <annotation>
+         <documentation>
+            Represents boolean &quot;not&quot; operation
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="and" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="or" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="not" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkOption" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkString" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkToolFlavour" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkHolder" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="checkBuildProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="instanceof" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="test" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="systemTest" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="equals" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="count" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="with" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="resolve" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="adapt" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="iterate" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="reference" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <element name="checkOption">
+      <annotation>
+         <documentation>
+            Performs an option value check. The option value can be checked
+    either agains some pre-defined value or against the value of
+    another option
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="optionId" type="string">
+            <annotation>
+               <documentation>
+                  The option id. The default is the id of the option that
+      holds this expression. When searching for the option to
+      be checked, MBS will examine all the options the holder
+      contains along with all superclasses of each option to
+      find the option with the specified id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="holderId" type="string">
+            <annotation>
+               <documentation>
+                  The option holder id that holds the option. The default
+      is the id of the holder that holds the container of this
+      expression. When searching for the needed holder, MBS
+      will examine all the holders the current configuration
+      contains along with all superclasses of each holder in
+      order to find the holder with the specified id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the expected value. If the current option
+      value matches the value specified in this attribute, the
+      checkOption element is treated as true, otherwise - as
+      false.
+      The expected value could be specified either as a string
+      that may contain build macros or as a regular
+      expression. During the comparison, the build macros are
+      resolved and the option value is checked to match the
+      resulting string or regular expression. The way the
+      expected value is specified and treated depends on the
+      value of the isRegex attribute
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="isRegex" type="string" use="default" value="false">
+            <annotation>
+               <documentation>
+                  Specifies whether the string specified in the
+      &quot;value&quot; attribute should be treated as a
+      regular eexpression. The default is false
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="otherOptionId" type="string">
+            <annotation>
+               <documentation>
+                  The id of the option which is to be compared with the
+      option specified with the &quot;optionId&quot;
+      attribute. The default is the id of the option that
+      holds this expression. If the &quot;value&quot;
+      attribute is specified, both the
+      &quot;otherOptionId&quot; and the
+      &quot;otherHolderId&quot; attributes are ignored. When
+      searching for the option to be checked, MBS will examine
+      all the options the holder contains along with all
+      superclasses of each option to find the option with the
+      specified id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="otherHolderId" type="string">
+            <annotation>
+               <documentation>
+                  The option holder id that holds the option specified
+      with the &quot;otherOptionId&quot; attribute. The
+      default is the id of the holder that holds the container
+      of this expression. If the &quot;value&quot; attribute
+      is specified, both the &quot;otherOptionId&quot; and the
+      &quot;otherHolderId&quot; attributes are ingnored. When
+      searching for the needed holder, MBS will examine all
+      the holders the current configuration contains along
+      with all superclasses of each holder in order to find
+      the holder with the specified id.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="hasNature">
+      <annotation>
+         <documentation>
+            Checks whether the project containing the resource has a given
+    nature
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="natureId" type="string">
+            <annotation>
+               <documentation>
+                  The id of the nature
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="checkString">
+      <annotation>
+         <documentation>
+            Performs a string check.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="string" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Represents the string to be checked. The string will
+      typically contain the build macros.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Specifies the expected value. If the current string
+      specified in the &quot;string&quot; attribute matches
+      the value specified in this attribute, the checkString
+      element is treated as true, otherwise - as false.
+      The expected value could be specified either as a string
+      that might contain the build macros or as a regular
+      expression.
+      The way the value is specified and treated depends on
+      the value of the isRegex attribute.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="isRegex" type="string" use="default" value="false">
+            <annotation>
+               <documentation>
+                  Specifies whether the string specified in the
+      &quot;value&quot; attribute should be treated as a
+      regular eexpression. The default is false
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="false" type="string">
+      <annotation>
+         <documentation>
+            Represents the &quot;false&quot; value. This element can be used
+    as a direct child of the &quot;enablement&quot; element to
+    represent that the given option applicability is disabled. E.g.
+    to specify that the option is never displayed in UI or never
+    used in the command line.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="checkHolder">
+      <annotation>
+         <documentation>
+            Performs the holder check.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="holderId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Specifies the holder id to be checked. The checkHolder
+      is treated as true if the id specified in this attribute
+      matches with the option&apos;s holder id or the id of
+      some holder&apos;s super-class. Otherwise the
+      checkHolder is treated as false.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="checkBuildProperty">
+      <annotation>
+         <documentation>
+            Performs the Build Property check
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="property" type="string">
+            <annotation>
+               <documentation>
+                  specifies the id of the Build Property to be checked
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the Build Property Value id to be checked
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="value">
+      <annotation>
+         <documentation>
+            represents the property value
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  represents the property value id
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="instanceof">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="value"/>
+         </appinfo>
+         <documentation>
+            This element is used to perform an instanceof check of the
+    object in focus. The expression returns
+    EvaluationResult.TRUE if the object&apos;s type is a sub type of
+    the type specified by the attribute value.
+    Otherwise EvaluationResult.FALSE is returned.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  a fully qualified name of a class or interface.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="java.lang.Object"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="test">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="property"/>
+         </appinfo>
+         <documentation>
+            This element is used to evaluate the property state of the
+    object in focus. The set of testable properties can be extended
+    using the
+    &lt;b&gt;org.eclipse.core.expressions.propertyTesters&lt;/b&gt;
+    extension point. The test expression returns
+    EvaluationResult.NOT_LOADED if the property tester doing the
+    actual testing isn&apos;t loaded yet and the attribute
+    forcePluginActivation is set to false. If forcePluginActivation
+    is set to true and the evaluation context used to evaluate this
+    expression support plug-in activation then evaluating the
+    property will result in activating the plug-in defining the
+    tester.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="property" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the name of an object&apos;s property to test.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="args" type="string">
+            <annotation>
+               <documentation>
+                  additional arguments passed to the property tester.
+      Multiple arguments are separated
+      by commas. Each individual argument is converted into a
+      Java base type using the same
+      rules as defined for the value attribute of the test
+      expression.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  the expected value of the property. Can be omitted if
+      the property
+      is a boolean property (value will be Boolean.TRUE). The
+      test expression is supposed to return
+      EvaluationResult.TRUE if the property matches the value
+      and EvaluationResult.FALSE
+      otherwise. The value attribute is converted into a Java
+      base type using the following
+      rules:
+      &lt;ul&gt;
+      &lt;li&gt;the string &amp;quot;true&amp;quot; is
+      converted into Boolean.TRUE&lt;/li&gt;
+      &lt;li&gt;the string &amp;quot;false&amp;quot; is
+      converted into Boolean.FALSE&lt;/li&gt;
+      &lt;li&gt;if the string contains a dot then the
+      interpreter tries to convert
+      the value into a Float object. If this fails the string
+      is treated as a
+      java.lang.String&lt;/li&gt;
+      &lt;li&gt;if the string only consists of numbers then
+      the interpreter
+      converts the value into an Integer object.&lt;/li&gt;
+      &lt;li&gt;in all other cases the string is treated as a
+      java.lang.String&lt;/li&gt;
+      &lt;li&gt;the conversion of the string into a Boolean,
+      Float, or Integer can
+      be suppressed by surrounding the string with single
+      quotes. For
+      example, the attribute
+      value=&amp;quot;&apos;true&apos;&amp;quot; is converted
+      into the
+      string &amp;quot;true&amp;quot;&lt;/li&gt;
+      &lt;/ul&gt;
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="forcePluginActivation" type="boolean">
+            <annotation>
+               <documentation>
+                  a flag indicating whether the plug-in contributing the
+      property tester
+      should be loaded if necessary. As such, this flag should
+      be used judiciously,
+      in order to avoid unnecessary plug-in activations. Most
+      clients should avoid
+      setting this flag to true. This flag is only honored if
+      the evaluation context
+      used to evaluate this expression allows plug-in
+      activation. Otherwise the flag
+      is ignored and no plug-in loading takes place.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="systemTest">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="value"/>
+         </appinfo>
+         <documentation>
+            Tests a system property by calling the System.getProperty method
+    and compares the result
+    with the value specified through the value attribute.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="property" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the name of an system property to test.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the expected value of the property. The value is
+      interpreted as a string value.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="equals">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="value"/>
+         </appinfo>
+         <documentation>
+            This element is used to perform an equals check of the object in
+    focus. The expression returns
+    EvaluationResult.TRUE if the object is equal to the value
+    provided by the attribute value. Otherwise
+    EvaluationResult.FALSE is returned.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the expected value. The value provided as a string is
+      converted into
+      a Java base type using the same rules as for the value
+      attribute of the test expression.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="count">
+      <annotation>
+         <documentation>
+            This element is used to test the number of elements in a
+    collection.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  an expression to specify the number of elements in a
+      list. Following wildcard
+      characters can be used:
+      &lt;dl&gt;
+      &lt;dt&gt;*&lt;/dt&gt; &lt;dd&gt;any number of
+      elements&lt;/dd&gt;
+      &lt;dt&gt;?&lt;/dt&gt; &lt;dd&gt;no elements or one
+      element&lt;/dd&gt;
+      &lt;dt&gt;+&lt;/dt&gt; &lt;dd&gt;one or more
+      elements&lt;/dd&gt;
+      &lt;dt&gt;!&lt;/dt&gt; &lt;dd&gt;no elements&lt;/dd&gt;
+      &lt;dt&gt;-&lt;i&gt;N&lt;/i&gt;)&lt;/dt&gt;
+      &lt;dd&gt;less than &lt;i&gt;N&lt;/i&gt;
+      elements&lt;/dd&gt;
+      &lt;dt&gt;(&lt;i&gt;N&lt;/i&gt;-&lt;/dt&gt;
+      &lt;dd&gt;greater than &lt;i&gt;N&lt;/i&gt;
+      elements&lt;/dd&gt;
+      &lt;dt&gt;integer value&lt;/dt&gt; &lt;dd&gt;the list
+      must contain the exact number of elements&lt;/dd&gt;
+      &lt;/dl&gt;
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="with">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="variable"/>
+         </appinfo>
+         <documentation>
+            This element changes the object to be inspected for all its
+    child element to the object
+    referenced by the given variable. If the variable can not be
+    resolved then the expression
+    will throw an ExpressionException when evaluating it. The
+    children of a with expression
+    are combined using the &quot;and&quot; operator.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="instanceof"/>
+            <element ref="test"/>
+            <element ref="systemTest"/>
+            <element ref="equals"/>
+            <element ref="count"/>
+            <element ref="with"/>
+            <element ref="resolve"/>
+            <element ref="adapt"/>
+            <element ref="iterate"/>
+            <element ref="reference"/>
+         </sequence>
+         <attribute name="variable" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the name of the variable to be used for further
+      inspection. It is up to the evaluator
+      of an extension point to provide the variable in the
+      variable pool.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="resolve">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="variable"/>
+         </appinfo>
+         <documentation>
+            This element changes the object to be inspected for all its
+    child element to the object
+    referenced by the given variable. If the variable can not be
+    resolved then the expression
+    will throw an ExpressionException when evaluating it. The
+    children of a resolve expression
+    are combined using the &quot;and&quot; operator.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="instanceof"/>
+            <element ref="test"/>
+            <element ref="systemTest"/>
+            <element ref="equals"/>
+            <element ref="count"/>
+            <element ref="with"/>
+            <element ref="resolve"/>
+            <element ref="adapt"/>
+            <element ref="iterate"/>
+            <element ref="reference"/>
+         </sequence>
+         <attribute name="variable" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the name of the variable to be resolved. This variable
+      is then used as the object in focus
+      for child element evaluation. It is up to the evaluator
+      of an extension point to provide a
+      corresponding variable resolver (see IVariableResolver)
+      through the evaluation context passed
+      to the root expression element when evaluating the
+      expression.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="args" type="string">
+            <annotation>
+               <documentation>
+                  additional arguments passed to the variable resolver.
+      Multiple arguments are separated
+      by commas. Each individual argument is converted into a
+      Java base type using the same
+      rules as defined for the value attribute of the test
+      expression.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="adapt">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="type"/>
+         </appinfo>
+         <documentation>
+            This element is used to adapt the object in focus to the type
+    specified by the attribute
+    type. The expression returns EvaluationResult.NOT_LOADED if
+    either the adapter or the type referenced isn&apos;t
+    loaded yet. It throws an ExpressionException during evaluation
+    if the type name doesn&apos;t exist
+    at all. The children of an adapt expression are combined using
+    the &quot;and&quot; operator.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="instanceof"/>
+            <element ref="test"/>
+            <element ref="systemTest"/>
+            <element ref="equals"/>
+            <element ref="count"/>
+            <element ref="with"/>
+            <element ref="resolve"/>
+            <element ref="adapt"/>
+            <element ref="iterate"/>
+            <element ref="reference"/>
+         </sequence>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the type to which the object in focus is to be adapted.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="java.lang.Object"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="iterate">
+      <annotation>
+         <documentation>
+            This element is used to iterate over a variable that is of type
+    java.util.Collection, or a variable that
+    adapts to org.eclipse.core.expressions.IIterable. If the object
+    in focus is not one of the above then a
+    CoreException with an ExpressionStatus will be thrown while
+    evaluating the expression.
+    The child expressions of an iterate expression are combined
+    using the &quot;and&quot; operator.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="instanceof"/>
+            <element ref="test"/>
+            <element ref="systemTest"/>
+            <element ref="equals"/>
+            <element ref="count"/>
+            <element ref="with"/>
+            <element ref="resolve"/>
+            <element ref="adapt"/>
+            <element ref="iterate"/>
+            <element ref="reference"/>
+         </sequence>
+         <attribute name="operator">
+            <annotation>
+               <documentation>
+                  either &quot;and&quot; or &quot;or&quot;. The operator
+      defines how the results of all the child expressions
+      applied to each child of the Collection or IIterable
+      will be combined and what (if any) short circuit
+      evaluation will be used. If not specified,
+      &quot;and&quot; will be used.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="or">
+                  </enumeration>
+                  <enumeration value="and">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="ifEmpty" type="boolean">
+            <annotation>
+               <documentation>
+                  the value returned from the &quot;iterate&quot;
+      expression if the collection is empty. If
+      not specified then EvaluationResult.TRUE is returned
+      when the operator equals &quot;and&quot;
+      and EvaluationResult.FALSE is returned if the operator
+      equals &quot;or&quot;.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="reference">
+      <annotation>
+         <appinfo>
+            <meta.element labelAttribute="definitionId"/>
+         </appinfo>
+         <documentation>
+            This element is used to reference an expression from the
+    &lt;b&gt;org.eclipse.core.expressions.definitions&lt;/b&gt;
+    extension point. The expression definition will be evaluated
+    within the current expression element using the current
+    evaluation context.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="definitionId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The unique id of an expression from
+      &lt;b&gt;org.eclipse.core.expressions.definitions&lt;/b&gt;.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.core.expressions.definitions/definition/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="checkToolFlavour">
+      <complexType>
+         <attribute name="ToolFlavour" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="GNU">
+                  </enumeration>
+                  <enumeration value="CYGWIN">
+                  </enumeration>
+                  <enumeration value="MINGW">
+                  </enumeration>
+                  <enumeration value="MVC">
+                  </enumeration>
+                  <enumeration value="MAC_OS">
+                  </enumeration>
+                  <enumeration value="GCC">
+                  </enumeration>
+                  <enumeration value="LLVM">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         Release 3.0
+      </documentation>
+   </annotation>
+
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2001, 2013 IBM Corporation and others.&lt;br&gt;
+
+   This program and the accompanying materials are made available under
+   the terms of the Eclipse Public License 2.0 which accompanies this
+   distribution, and is available at &lt;a
+   href=&quot;https://www.eclipse.org/legal/epl-2.0&quot;&gt;https://www.eclipse.org/legal/epl-v20.html&lt;/a&gt;/
+   SPDX-License-Identifier: EPL-2.0
+      </documentation>
+   </annotation>
+
+</schema>

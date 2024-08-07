@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.BoardAttributes;
+import io.sloeber.core.AttributesCode;
 import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
@@ -95,7 +95,7 @@ public class Teensy extends MCUBoard {
             ret.put("usb", "everything");
             break;
         default:
-            BoardAttributes attribs = example.getRequiredBoardAttributes();
+            AttributesCode attribs = example.getRequiredBoardAttributes();
             if (attribs.flightSim) {
                 ret.put("usb", "flightsim");
             }
@@ -136,7 +136,7 @@ public class Teensy extends MCUBoard {
         myAttributes.serial = true;
         myAttributes.serial1 = true;
         myAttributes.wire1 = true;
-        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
+        myAttributes.myArchitecture=myBoardDescriptor.getArchitecture();
     }
 
 	public static void installLatest() {

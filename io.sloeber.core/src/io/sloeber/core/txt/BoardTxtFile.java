@@ -1,16 +1,18 @@
 package io.sloeber.core.txt;
 
 import static io.sloeber.core.Messages.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
+
 import java.util.Set;
 
 public class BoardTxtFile extends TxtFile {
@@ -53,7 +55,7 @@ public class BoardTxtFile extends TxtFile {
      * @return The nice names that are the possible selections
      */
     public String[] getMenuItemNamesFromMenuID(String menuID, String boardID) {
-        HashSet<String> ret = new HashSet<>();
+        List<String> ret = new LinkedList<>();
 
         KeyValueTree boardMenuInfo = myData.getChild(boardID + DOT + MENU + DOT + menuID);
         for (KeyValueTree menuData : boardMenuInfo.getChildren().values()) {
@@ -67,7 +69,7 @@ public class BoardTxtFile extends TxtFile {
     /**
      * Get all the acceptable values for a option for a board The outcome of this
      * method can be used to fill the menu options combobox
-     * 
+     *
      * The result is ordered because the first item is the default
      *
      * @param menu
@@ -174,7 +176,7 @@ public class BoardTxtFile extends TxtFile {
      */
     public String[] getAllSectionNames(String[] toaddNames) {
 
-        HashSet<String> allNames = new HashSet<>();
+        LinkedList<String> allNames = new LinkedList<>();
         for (String curName : toaddNames) {
             allNames.add(curName);
         }
@@ -186,10 +188,7 @@ public class BoardTxtFile extends TxtFile {
                 }
             }
         }
-        String[] sBoards = new String[allNames.size()];
-        allNames.toArray(sBoards);
-        Arrays.sort(sBoards);
-        return sBoards;
+        return allNames.toArray( new String[allNames.size()]);
     }
 
     public List<String> getAllBoardIDs() {
@@ -208,13 +207,29 @@ public class BoardTxtFile extends TxtFile {
     /**
      * Get all the key value pairs that need to be added to the environment
      * variables for the given boardID
-     * 
+     *
      * The boardID prefix is removed from the result so uno.cpu.freq=9600 will
      * result in key value <"cpu.freq","9600">
-     * 
+     *
      */
     public Map<String, String> getBoardEnvironVars(String boardID) {
         return myData.getChild(boardID).toKeyValues(EMPTY, false);
     }
+
+	public String getDefaultValueIDFromMenu(String boardID ,String menuID) {
+        KeyValueTree boardMenuInfo = myData.getChild(boardID + DOT + MENU + DOT + menuID);
+        for (KeyValueTree menuData : boardMenuInfo.getChildren().values()) {
+            return menuData.getKey();
+        }
+        return null;
+	}
+
+	public String getDefaultValueNameFromMenu(String boardID, String menuID) {
+        KeyValueTree boardMenuInfo = myData.getChild(boardID + DOT + MENU + DOT + menuID);
+        for (KeyValueTree menuData : boardMenuInfo.getChildren().values()) {
+            return menuData.getValue();
+        }
+        return null;
+	}
 
 }

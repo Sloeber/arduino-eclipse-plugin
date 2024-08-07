@@ -1,9 +1,9 @@
 #this file contains default/fallback/rescue values
 software=ARDUINO
-recipe.objcopy.hex.pattern=${recipe.objcopy.bin.pattern}
 archive_file=arduino.ar
 archive_file_path=${build.path}/${archive_file}
-runtime.ide.version=10812
+ide_version=20302
+
 serial.port=${com_port}
 build.project_name=${ProjName}
 

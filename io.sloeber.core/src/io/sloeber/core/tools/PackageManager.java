@@ -1,7 +1,8 @@
 package io.sloeber.core.tools;
 
+import static io.sloeber.core.api.Const.*;
+import static io.sloeber.core.api.Common.*;
 import static java.nio.file.StandardCopyOption.*;
-import static io.sloeber.core.common.Common.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,9 +31,9 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Json.ArduinoInstallable;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 public class PackageManager {
     private static final String FILE = Messages.FILE_TAG;
@@ -298,7 +299,7 @@ public class PackageManager {
     }
 
     private static void symlink(String from, File to) throws IOException, InterruptedException {
-        if (Common.isWindows) {
+        if (isWindows) {
             // needs special rights only one board seems to fail due to this
             // Process process = Runtime.getRuntime().exec(new String[] {
             // "mklink", from, to.getAbsolutePath() }, //$NON-NLS-1$
@@ -329,7 +330,7 @@ public class PackageManager {
 
     private static void chmod(File file, int mode) throws IOException, InterruptedException {
         String octal = Integer.toOctalString(mode);
-        if (Common.isWindows) {
+        if (isWindows) {
             boolean ownerExecute = (((mode / (8 * 8)) & 1) == 1);
             boolean ownerRead = (((mode / (8 * 8)) & 4) == 4);
             boolean ownerWrite = (((mode / (8 * 8)) & 2) == 2);

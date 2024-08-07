@@ -3,95 +3,78 @@ package io.sloeber.core;
  * This test compiles all examples on all Teensy hardware
  * For this test to be able to run you need to specify the
  * Teensy install folder of your system in MySystem.java
- * 
+ *
  * Warning!! new teensy boards must be added manually!!!
- * 
- * At the time of writing no examples are excluded 
- * At the time of writing 1798 examples are compiled 
+ *
+ * At the time of writing no examples are excluded
+ * At the time of writing 1798 examples are compiled
  * 2 internal segmentation faults and 1 lto wrapper error
  * only the private static method skipExample allows to skip examples
  */
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
 import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.IExample;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
 @SuppressWarnings({ "nls" })
-@RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
-    private CodeDescription myCodeDescriptor;
-
-    private String myTestName;
-    private BoardDescription myBoardDescriptor;
-    private static int myBuildCounter = 0;
-    private static int myTotalFails = 0;
+    private int myBuildCounter = 0;
+    private int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
 
-    public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String testName, CodeDescription codeDescriptor,
-            BoardDescription board) {
 
-        myCodeDescriptor = codeDescriptor;
-        myTestName = testName;
-        myBoardDescriptor = board;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Parameters(name = "{0}")
-    public static Collection examples() {
+    public static Stream<Arguments> teensyHardwareData() throws Exception {
         installAdditionalBoards();
 
         Shared.waitForAllJobsToFinish();
         Preferences.setUseBonjour(false);
-        LinkedList<Object[]> examples = new LinkedList<>();
+        List<Arguments> ret = new LinkedList<>();
         List<MCUBoard> allBoards = Teensy.getAllBoards();
 
-        TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
-        for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
+        for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
-            IPath examplePath = curexample.getValue();
+            IPath examplePath = curexample.getValue().getCodeLocation();
             Example example = new Example(fqn, examplePath);
             if (!skipExample(example)) {
-                ArrayList<IPath> paths = new ArrayList<>();
-                paths.add(examplePath);
+                Set<IExample> paths = new HashSet<>();
+                paths.add(curexample.getValue());
                 CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
                 for (MCUBoard curBoard : allBoards) {
-                    if (curBoard.isExampleSupported(example)) {
-                        String projectName = Shared.getProjectName(codeDescriptor, example, curBoard);
+                    if (example.worksOnBoard(curBoard)) {
+                        String projectName = Shared.getProjectName(codeDescriptor,  curBoard);
                         Map<String, String> boardOptions = curBoard.getBoardOptions(example);
                         BoardDescription boardDescriptor = curBoard.getBoardDescriptor();
                         boardDescriptor.setOptions(boardOptions);
-                        Object[] theData = new Object[] { projectName, codeDescriptor, boardDescriptor };
-                        examples.add(theData);
+                        ret.add(Arguments.of( projectName, codeDescriptor, boardDescriptor));
                     }
                 }
             }
         }
-
-        return examples;
-
+		return ret.stream();
     }
 
     @SuppressWarnings("unused")
@@ -104,14 +87,15 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
     	Teensy.installLatest();
     }
 
-    @Test
-    public void testArduinoIDEExamplesOnTeensy() {
+	@ParameterizedTest
+	@MethodSource("teensyHardwareData")
+    public void testArduinoIDEExamplesOnTeensy(String testName, CodeDescription codeDescriptor,
+            BoardDescription board) throws Exception {
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileDescription())) {
-            myTotalFails++;
-            fail(Shared.getLastFailMessage());
-        }
+        myTotalFails++;
+        assertNull (Shared.buildAndVerify(testName, board, codeDescriptor, new CompileDescription()));
+        myTotalFails--;
     }
 
 }

@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber product
 Bundle-SymbolicName: io.sloeber.product;singleton:=true
 Bundle-Version: 4.4.3.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: io.sloeber.ui;bundle-version="4.4.3"
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: baeyens.it
 Automatic-Module-Name: io.sloeber.product

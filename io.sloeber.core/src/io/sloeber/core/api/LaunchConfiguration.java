@@ -61,7 +61,8 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 
         if (this.project != null) {
             // Delegate launching the project
-            Sketch.syncUpload(this.project);
+            ISloeberConfiguration sloeberConf = ISloeberConfiguration.getActiveConfig(project);
+            sloeberConf.upload();
         }
     }
 
@@ -70,13 +71,14 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
             String projectName = this.config.getAttribute(ATTR_PROJECT, ""); //$NON-NLS-1$
             this.project = findProject(projectName);
         } catch (CoreException e) {
+        	e.printStackTrace();
             // Stupid exception...
         }
     }
 
     /**
      * Searches for a project with the given name.
-     * 
+     *
      * @param name
      * @return the project handle if a project was found
      */

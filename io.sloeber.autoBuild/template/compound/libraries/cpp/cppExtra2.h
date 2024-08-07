@@ -1,0 +1,1 @@
+void cppExtra2Method();

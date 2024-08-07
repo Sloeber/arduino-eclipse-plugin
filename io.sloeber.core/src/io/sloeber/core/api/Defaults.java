@@ -1,7 +1,7 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Common.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Common.*;
+import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -35,7 +35,7 @@ public class Defaults {
         if (isMac || isWindows) {
             homPath = homPath.append("Documents");
         }
-        return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString();
+        return homPath.append("Arduino").append(ARDUINO_LIBRARY_FOLDER_NAME).toString();
     }
 
     public static String getPrivateHardwarePath() {

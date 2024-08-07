@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>4.0.4</tycho.version>
+		<tycho.version>4.0.8</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 		<!-- maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target -->
@@ -52,9 +52,9 @@
 				<configuration>
 					<dependency-resolution>
 					 	<profileProperties>
-					 		<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime> 
+					 		<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
 						</profileProperties>
-					</dependency-resolution> 
+					</dependency-resolution>
 					<target>
 						<file>../io.sloeber.product/sloeber.target</file>
 					</target>
@@ -133,6 +133,9 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
+				<module>../io.sloeber.autoBuild</module>
+				<module>../io.sloeber.autoBuild.ui</module>
+				<module>../io.sloeber.autoBuild.test</module>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
 				<module>../io.sloeber.core.nl1</module>
@@ -186,7 +189,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -227,7 +230,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -252,7 +255,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -277,7 +280,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -303,7 +306,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<!-- Mac aarch64 -->
@@ -379,7 +382,7 @@
 		<repository>
 			<id>justj</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/justj/jres/17/updates/release/latest/</url>
+			<url>https://download.eclipse.org/justj/jres/21/updates/release/latest/</url>
 		</repository>
 
 	</repositories>

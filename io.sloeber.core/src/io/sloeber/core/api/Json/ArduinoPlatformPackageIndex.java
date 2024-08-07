@@ -33,7 +33,7 @@ public class ArduinoPlatformPackageIndex extends Node
 
     public ArduinoPackage getPackage(String packageName) {
         for (ArduinoPackage pkg : myPackages) {
-            if (pkg.getName().equals(packageName)) {
+            if (pkg.getNodeName().equals(packageName)) {
                 return pkg;
             }
         }
@@ -50,10 +50,11 @@ public class ArduinoPlatformPackageIndex extends Node
 
     /**
      * provide a identifier that uniquely identifies this package
-     * 
+     *
      * @return A ID that you can uses to identify this package
      */
-    public String getID() {
+    @Override
+	public String getID() {
         return myJsonFile.getPath();
     }
 
@@ -68,7 +69,7 @@ public class ArduinoPlatformPackageIndex extends Node
                 myPackages.add(new ArduinoPackage(curElement, this));
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse PackageIndex json  " + e.getMessage());
+            throw new JsonParseException("failed to parse PackageIndex json  " + e.getMessage(),e);
         }
 
         return this;
@@ -95,7 +96,7 @@ public class ArduinoPlatformPackageIndex extends Node
     }
 
     @Override
-    public String getName() {
+    public String getNodeName() {
         return myJsonFile.getName();
     }
 

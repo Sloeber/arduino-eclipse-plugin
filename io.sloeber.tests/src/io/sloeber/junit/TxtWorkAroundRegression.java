@@ -1,15 +1,14 @@
 
 package io.sloeber.junit;
 
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import static io.sloeber.core.txt.WorkAround.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedList;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.Path;
 import org.junit.Test;
@@ -82,9 +81,9 @@ public class TxtWorkAroundRegression {
             System.out.println("file does not exists " + expectedFile);
             assumeFalse(true);// skip the test
         }
-        String input = FileUtils.readFileToString(inputFile, Charset.defaultCharset());
+        String input = FileUtils.readFileToString(inputFile, AUTOBUILD_CONFIG_FILE_CHARSET);
         input = input.replace("\r\n", "\n");
-        String expected = FileUtils.readFileToString(expectedFile, Charset.defaultCharset());
+        String expected = FileUtils.readFileToString(expectedFile, AUTOBUILD_CONFIG_FILE_CHARSET);
         String actual = boardsApplyWorkArounds(input);
         String cleanedExpected = clean(expected);
         String cleanedActual = clean(actual);
@@ -109,7 +108,7 @@ public class TxtWorkAroundRegression {
             System.out.println("file does not exists " + inputFile);
             assumeFalse(true);// skip the test
         }
-        String input = FileUtils.readFileToString(inputFile, Charset.defaultCharset());
+        String input = FileUtils.readFileToString(inputFile, AUTOBUILD_CONFIG_FILE_CHARSET);
         input = input.replace("\r\n", "\n");
         String currentWorkAround = platformApplyWorkArounds(input, inputFile);
         String cleanedCurrentWorkAround = clean(currentWorkAround);
@@ -120,7 +119,7 @@ public class TxtWorkAroundRegression {
             assumeFalse(true);// skip the test
         }
 
-        String expected = FileUtils.readFileToString(expectedFile, Charset.defaultCharset());
+        String expected = FileUtils.readFileToString(expectedFile, AUTOBUILD_CONFIG_FILE_CHARSET);
         String cleanedExpected = clean(expected);
 
         if (!cleanedExpected.equals(cleanedCurrentWorkAround)) {
@@ -147,9 +146,9 @@ public class TxtWorkAroundRegression {
             System.out.println("file does not exists " + expectedFile);
             return;
         }
-        String input = FileUtils.readFileToString(inputFile, Charset.defaultCharset());
+        String input = FileUtils.readFileToString(inputFile, AUTOBUILD_CONFIG_FILE_CHARSET);
         input = input.replace("\r\n", "\n");
-        String expected = FileUtils.readFileToString(expectedFile, Charset.defaultCharset());
+        String expected = FileUtils.readFileToString(expectedFile,AUTOBUILD_CONFIG_FILE_CHARSET);
         String actual = programmersApplyWorkArounds(input);
         String cleanedExpected = clean(expected);
         String cleanedActual = clean(actual);

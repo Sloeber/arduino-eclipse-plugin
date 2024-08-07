@@ -2,11 +2,9 @@ package io.sloeber.core.api;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-
-import io.sloeber.core.common.Const;
-import io.sloeber.core.txt.KeyValueTree;
+import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
 public class OtherDescription {
@@ -18,7 +16,7 @@ public class OtherDescription {
 
         KeyValueTree tree = configFile.getData();
         KeyValueTree section = tree.getChild(prefix);
-        myIsVersionControlled = Const.TRUE.equalsIgnoreCase(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
+        myIsVersionControlled = Boolean.parseBoolean(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
     }
 
     public OtherDescription() {
@@ -29,28 +27,42 @@ public class OtherDescription {
         myIsVersionControlled = srcObject.myIsVersionControlled;
     }
 
-    public Map<String, String> getEnvVars() {
+    @SuppressWarnings("static-method")
+	public Map<String, String> getEnvVars() {
         Map<String, String> allVars = new TreeMap<>();
         // Nothing needs to be put in the environment variables
         return allVars;
     }
 
-    public Map<String, String> getEnvVarsConfig(String prefix) {
+    public Map<String, String> getEnvVarsConfig() {
         Map<String, String> allVars = new TreeMap<>();
 
-        allVars.put(prefix + KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
+        allVars.put(KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
 
         return allVars;
     }
 
-    public Map<String, String> getEnvVarsVersion(String prefix) {
-        return getEnvVarsConfig(prefix);
+    /**
+     * recreate the config based on the configuration environment variables
+     *
+     * @param envVars
+     */
+    public OtherDescription(Map<String, String> envVars) {
+        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+            String key = curEnvVar.getKey();
+            String value = curEnvVar.getValue();
+            switch (key) {
+            case KEY_SLOEBER_IS_VERSION_CONTROLLED:
+                myIsVersionControlled = Boolean.parseBoolean(value);
+                break;
+			default:
+				break;
+            }
+        }
     }
 
-    public static OtherDescription getFromCDT(ICConfigurationDescription confDesc) {
-        OtherDescription ret = new OtherDescription();
-        ret.myIsVersionControlled = false;
-        return ret;
+    public Map<String, String> getEnvVarsVersion() {
+        return getEnvVarsConfig();
     }
 
     public boolean IsVersionControlled() {
@@ -60,4 +72,10 @@ public class OtherDescription {
     public void setVersionControlled(boolean myIsVersionControlled) {
         this.myIsVersionControlled = myIsVersionControlled;
     }
+
+	@SuppressWarnings({ "static-method", "unused" })
+	public boolean needsRebuild(OtherDescription newOtherDesc) {
+		return false;
+	}
+
 }

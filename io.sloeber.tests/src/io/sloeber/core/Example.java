@@ -2,58 +2,64 @@ package io.sloeber.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.providers.ESP32;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings("nls")
-public class Example {
-    private String myFQN;
-    private String myLibName;
-    private IPath myPath;
-    private BoardAttributes myRequiredBoardAttributes;
+@SuppressWarnings({ "nls" })
+public class Example extends io.sloeber.core.internal.Example{
+    private AttributesCode myRequiredBoardAttributes;
     private static int noBoardFoundCount = 0;
 
-    public BoardAttributes getRequiredBoardAttributes() {
+
+    public AttributesCode getRequiredBoardAttributes() {
         return myRequiredBoardAttributes;
     }
 
-    public Example(String fqn, IPath path) {
-        myFQN = fqn;
-        myPath = path;
-        getLibNameFromPath();
-        myRequiredBoardAttributes = new BoardAttributes();
-        myRequiredBoardAttributes.serial = examplesUsingSerial().contains(myFQN);
-        myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(myFQN);
-        myRequiredBoardAttributes.serialUSB = examplesUsingSerialUSB().contains(myFQN);
-        myRequiredBoardAttributes.keyboard = examplesUsingKeyboard().contains(myFQN);
-        myRequiredBoardAttributes.flightSim = examplesUsingFlightSim().contains(myFQN);
-        myRequiredBoardAttributes.joyStick = examplesUsingJoyStick().contains(myFQN);
-        myRequiredBoardAttributes.mouse = examplesUsingMouse().contains(myFQN);
-        myRequiredBoardAttributes.tone = examplesUsingTone().contains(myFQN);
-        myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(myFQN);
-        myRequiredBoardAttributes.midi = examplesUsingMidi().contains(myFQN) || myFQN.contains("USB_MIDI");
-        //        myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
-        myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(myFQN);
-        myRequiredBoardAttributes.boardID = getRequiredBoardID(myFQN);
+    public Example(String fqn, IPath path) throws Exception {
+        myFQN =  Path.fromPortableString(fqn);
+        myExampleLocation = path;
+        String libName=calcLibName();
+        if(libName!=null &&(!libName.isBlank())) {
+        	Set<String>libNames=new HashSet<>();
+        	libNames.add(libName);
+        	myLibs=LibraryManager.getLatestInstallableLibraries(libNames);
+        }
+        myRequiredBoardAttributes = new AttributesCode(fqn);
+        myRequiredBoardAttributes.serial = examplesUsingSerial().contains(fqn);
+        myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(fqn);
+        myRequiredBoardAttributes.serialUSB = examplesUsingSerialUSB().contains(fqn);
+        myRequiredBoardAttributes.keyboard = examplesUsingKeyboard().contains(fqn);
+        myRequiredBoardAttributes.flightSim = examplesUsingFlightSim().contains(fqn);
+        myRequiredBoardAttributes.joyStick = examplesUsingJoyStick().contains(fqn);
+        myRequiredBoardAttributes.mouse = examplesUsingMouse().contains(fqn);
+        myRequiredBoardAttributes.tone = examplesUsingTone().contains(fqn);
+        myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(fqn);
+        myRequiredBoardAttributes.buildInLed = fqn.contains("Blink")||examplesUsingBuildInLed().contains(fqn);
+        myRequiredBoardAttributes.midi = examplesUsingMidi().contains(fqn) || fqn.contains("USB_MIDI");
+        //        myRequiredBoardAttributes.teensy = fqn.startsWith("Example/Teensy");
+        myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(fqn);
+        myRequiredBoardAttributes.myCompatibleBoardIDs.add( getRequiredBoardID(fqn));
         //        myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
-        myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
-        myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink");
-        myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
-        myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
+        myRequiredBoardAttributes.rawHID = fqn.contains("USB_RawHID");
 
-        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibFolder()));
+        myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(fqn);
+        myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(fqn);
+
+        myRequiredBoardAttributes.myCompatibleBoardIDs.remove(null);
+        myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getCodeAttributes(myExampleLocation));
     }
 
-    private IPath getLibFolder() {//Need to remove the examples folder and the example folder
-        return myPath.removeLastSegments(2);
-    }
 
     private static int getNumADCUsedInExample(String myFQN2) {
         switch (myFQN2) {
@@ -69,30 +75,19 @@ public class Example {
         }
     }
 
-    private void getLibNameFromPath() {
-        myLibName = new String();
-        String[] splits = myFQN.split("/");
-        if (splits.length >= 2) {
-            if ("Library".equals(splits[0])) {
-                myLibName = splits[1];
+    String calcLibName() {
+        if (myFQN.segmentCount() == 4) {
+            if ("Library".equals(myFQN.segment(0))) {
+                return myFQN.segment(2);
             }
         }
+        return null;
     }
 
-    public IPath getPath() {
-        return myPath;
-    }
 
-    public String getLibName() {
-        return myLibName;
-    }
 
     public String getFQN() {
-        return myFQN;
-    }
-
-    public String getInoName() {
-        return myPath.lastSegment();
+        return myFQN.toString();
     }
 
     private static LinkedList<String> examplesUsingMidi() {
@@ -199,6 +194,9 @@ public class Example {
         ret.add("Example/Teensy/Tutorial4/TemperatureNumberOnly");
         ret.add("Example/Teensy/Tutorial4/TemperatureScaled");
         ret.add("Example/Teensy/Tutorial4/TemperatureScaledMulti");
+
+
+        ret.add("Library/Managed/LiquidCrystal/SerialDisplay");
         return ret;
     }
 
@@ -236,8 +234,14 @@ public class Example {
         ret.add("Example/Teensy/USB_Joystick/Buttons");
         ret.add("Example/Teensy/USB_Joystick/Complete");
         ret.add("Example/Teensy/USB_RawHID/Basic");
-        ret.add("Library/Adafruit_BME280_Library/advancedsettings");
-        ret.add("Library/AS3935MI/AS3935MI_LightningDetector_otherInterfaces");
+        ret.add("Library/Managed/Adafruit_BME280_Library/advancedsettings");
+        ret.add("Library/Managed/AS3935MI/AS3935MI_LightningDetector_otherInterfaces");
+        return ret;
+    }
+
+    private static LinkedList<String> examplesUsingBuildInLed() {
+        LinkedList<String> ret = new LinkedList<>();
+        ret.add("Library/Managed/SD/NonBlockingWrite");
         return ret;
     }
 
@@ -252,182 +256,190 @@ public class Example {
          * generate a error because the enum is not defined. The examples below fail due
          * to this
          */
-        ret.add("Library/_2020Bot_Library/_2020Bot_Demo");
+        ret.add("Library/Managed/_2020Bot_Library/_2020Bot_Demo");
         // These examples are the processing part and are not a deal of sloeber
-        ret.add("Library/Adafruit_BNO055/bunny/processing/cuberotate");
+        ret.add("Library/Managed/Adafruit_BNO055/bunny/processing/cuberotate");
         // manual action is needed for following examples
-        ret.add("Library/AbsoluteMouse/DevKit");
-        ret.add("Library/Accessories/CANCommander");
-        ret.add("Library/Accessories/Demo");
-        ret.add("Library/Accessories/Full");
-        ret.add("Library/Accessories/Group");
-        ret.add("Library/Accessories/LightFading");
-        ret.add("Library/Accessories/LMD18200");
-        ret.add("Library/Accessories/Servos");
-        ret.add("Library/Accessories/SignalFrench");
-        ret.add("Library/Accessories/Signals4x3");
-        ret.add("Library/Accessories/SimpleLed");
-        ret.add("Library/Accessories/SimpleLedMulti");
-        ret.add("Library/Accessories/Stepper");
-        ret.add("Library/Accessory/Shield/OLED/example/Adafruit");
-        ret.add("Library/Accessory/Shield/temp/humidity/oled");
+        ret.add("Library/Managed/AbsoluteMouse/DevKit");
+        ret.add("Library/Managed/Accessories/CANCommander");
+        ret.add("Library/Managed/Accessories/Demo");
+        ret.add("Library/Managed/Accessories/Full");
+        ret.add("Library/Managed/Accessories/Group");
+        ret.add("Library/Managed/Accessories/LightFading");
+        ret.add("Library/Managed/Accessories/LMD18200");
+        ret.add("Library/Managed/Accessories/Servos");
+        ret.add("Library/Managed/Accessories/SignalFrench");
+        ret.add("Library/Managed/Accessories/Signals4x3");
+        ret.add("Library/Managed/Accessories/SimpleLed");
+        ret.add("Library/Managed/Accessories/SimpleLedMulti");
+        ret.add("Library/Managed/Accessories/Stepper");
+        ret.add("Library/Managed/Accessory/Shield/OLED/example/Adafruit");
+        ret.add("Library/Managed/Accessory/Shield/temp/humidity/oled");
         // at the time of testing there were case sensetivity issues
-        ret.add("Library/AutoAnalogAudio/SDAudio/SdAudioRecording");
-        ret.add("Library/AutoAnalogAudio/SDAudio/SdAudioWavPlayer");
-        ret.add("Library/AutoAnalogAudio/AudioRadioRelay");
-        ret.add("Library/AutoAnalogAudio/WirelessMicrophone");
-        ret.add("Library/AutoAnalogAudio/WirelessSpeaker");
-        ret.add("Library/AutoAnalogAudio/WirelessTx_RPi");
+        ret.add("Library/Managed/AutoAnalogAudio/SDAudio/SdAudioRecording");
+        ret.add("Library/Managed/AutoAnalogAudio/SDAudio/SdAudioWavPlayer");
+        ret.add("Library/Managed/AutoAnalogAudio/AudioRadioRelay");
+        ret.add("Library/Managed/AutoAnalogAudio/WirelessMicrophone");
+        ret.add("Library/Managed/AutoAnalogAudio/WirelessSpeaker");
+        ret.add("Library/Managed/AutoAnalogAudio/WirelessTx_RPi");
         // needs to get the defines and includes right
-        ret.add("Library/Accessories/Locoduino.org/Programme4");
-        ret.add("Library/Accessories/Locoduino.org/Programme5");
+        ret.add("Library/Managed/Accessories/Locoduino.org/Programme4");
+        ret.add("Library/Managed/Accessories/Locoduino.org/Programme5");
         // Should be build on a stm32 (nucleo as far as I get)
         // but these bards require #927 (and probably more :-(
-        ret.add("Library/ADCTouchSensor/CapacitiveController");
-        ret.add("Library/ADCTouchSensor/CapacitivePiano");
+        ret.add("Library/Managed/ADCTouchSensor/CapacitiveController");
+        ret.add("Library/Managed/ADCTouchSensor/CapacitivePiano");
         // failed in SPI :-(
-        ret.add("Library/Adafruit_TinyFlash/TrinketPlayer");
+        ret.add("Library/Managed/Adafruit_TinyFlash/TrinketPlayer");
         // not sure how this could work
-        ret.add("Library/Adafruit_VS1053_Library/feather_midi");
+        ret.add("Library/Managed/Adafruit_VS1053_Library/feather_midi");
         // all kinds of incompatibility issues I guess
-        ret.add("Library/Andee/Lesson_08_Miscellaneous/Lesson_8b_Use_Bluetooth_Signal_Strength_to_Control_Things");
-        ret.add("Library/Andee/Lesson_08_Miscellaneous/Lesson_8c_Change_Andee_Bluetooth_Device_Name");
-        ret.add("Library/Andee/Lesson_08_Miscellaneous/Lesson_8d_How_to_Read_and_Write_to_SD_Card");
-        ret.add("Library/Andee/Lesson_08_Miscellaneous/Lesson_8f_Using_Andee_IO_Pins_as_OUTPUT_Pins");
-        ret.add("Library/Andee/Lesson_08_Miscellaneous/Lesson_8g_Getting_Inputs_from_Andee_IO_Pins");
-        ret.add("Library/Andee/Lesson_09_SmartDevice_Control/Lesson_9a_Get_Device_Bluetooth_MAC_Address_ANDROID_Only");
-        ret.add("Library/Andee/Lesson_09_SmartDevice_Control/Lesson_9b_Filter_Devices_by_Bluetooth_MAC_Address_ANDROID_Only");
+        ret.add("Library/Managed/Andee/Lesson_08_Miscellaneous/Lesson_8b_Use_Bluetooth_Signal_Strength_to_Control_Things");
+        ret.add("Library/Managed/Andee/Lesson_08_Miscellaneous/Lesson_8c_Change_Andee_Bluetooth_Device_Name");
+        ret.add("Library/Managed/Andee/Lesson_08_Miscellaneous/Lesson_8d_How_to_Read_and_Write_to_SD_Card");
+        ret.add("Library/Managed/Andee/Lesson_08_Miscellaneous/Lesson_8f_Using_Andee_IO_Pins_as_OUTPUT_Pins");
+        ret.add("Library/Managed/Andee/Lesson_08_Miscellaneous/Lesson_8g_Getting_Inputs_from_Andee_IO_Pins");
+        ret.add("Library/Managed/Andee/Lesson_09_SmartDevice_Control/Lesson_9a_Get_Device_Bluetooth_MAC_Address_ANDROID_Only");
+        ret.add("Library/Managed/Andee/Lesson_09_SmartDevice_Control/Lesson_9b_Filter_Devices_by_Bluetooth_MAC_Address_ANDROID_Only");
         // doc says not finished
-        ret.add("Library/ANT-Arduino/NativeAnt");
+        ret.add("Library/Managed/ANT-Arduino/NativeAnt");
         // uses missing library MobileBLE
-        ret.add("Library/ArduinoBlue/differentialDriveCar");
+        ret.add("Library/Managed/ArduinoBlue/differentialDriveCar");
         // defining struct/enum in ino file
-        ret.add("Library/ArduinoJson/JsonConfigFile");
-        ret.add("Library/Arduboy2/RGBled");
+        ret.add("Library/Managed/ArduinoJson/JsonConfigFile");
+        ret.add("Library/Managed/Arduboy2/RGBled");
         // error: no matching function for call to 'aREST_UI::addToBuffer(const char
-        ret.add("Library/aREST_UI/ESP8266");
-        ret.add("Library/aREST_UI/WiFi_CC3000");
-        ret.add("Library/aREST_UI/WildFire");
+        ret.add("Library/Managed/aREST_UI/ESP8266");
+        ret.add("Library/Managed/aREST_UI/WiFi_CC3000");
+        ret.add("Library/Managed/aREST_UI/WildFire");
         // uses arduinoWIFI
-        ret.add("Library/Braccio/braccioOfUnoWiFi");
+        ret.add("Library/Managed/Braccio/braccioOfUnoWiFi");
         // uses lib that does not has lib folder= include-.h
-        ret.add("Library/ArduinoCloud/SimpleCloudButtonYun");
+        ret.add("Library/Managed/ArduinoCloud/SimpleCloudButtonYun");
         // usi!ng non exsisting methods
-        ret.add("Library/CAN-BUS_Shield/gpioRead");
-        ret.add("Library/CAN-BUS_Shield/gpioWrite");
+        ret.add("Library/Managed/CAN-BUS_Shield/gpioRead");
+        ret.add("Library/Managed/CAN-BUS_Shield/gpioWrite");
         // using defines inino file to generate functions (not supported in Sloeber)
-        ret.add("Library/Adafruit_VEML6070_Library/unittests");
+        ret.add("Library/Managed/Adafruit_VEML6070_Library/unittests");
         // uses a non existing header
-        ret.add("Library/AESLib/complex");
+        ret.add("Library/Managed/AESLib/complex");
         // using wrong sdfat librarie
-        ret.add("Library/Arduino_OPL2_SimpleTone");
-        ret.add("Library/Arduino_OPL2_Teensy_PlayDRO");
-        ret.add("Library/Arduino_OPL2_Teensy_PlayIMF");
+        ret.add("Library/Managed/Arduino_OPL2_SimpleTone");
+        ret.add("Library/Managed/Arduino_OPL2_Teensy_PlayDRO");
+        ret.add("Library/Managed/Arduino_OPL2_Teensy_PlayIMF");
         // I don't recall why following examples didn't work
-        ret.add("Library/arduino_ess_ess_yun");
-        ret.add("Library/arduino_ess_linkit_one_dweet");
-        ret.add("Library/AD7193/AD7193_VoltageMeasurePsuedoDifferential_Example");
-        ret.add("Library/bunny_cuberotate/cuberotate");
-        ret.add("Library/XPT2046_Touchscreen/ILI9341Test");
-        ret.add("Library/Adafruit_AHRS/ahrs_mahony");
-        ret.add("Library/Adafruit_BLEFirmata/StandardFirmata");
-        ret.add("Library/Adafruit_BNO055/bunny/processing/cuberotate");
-        ret.add("Library/Adafruit_GPS_Library/due_shield_sdlog");
-        ret.add("Library/Adafruit_Graphic_VFD_Display_Library/GraphicVFDtest");
-        ret.add("Library/Adafruit_GPS_Library/locus_erase");
-        ret.add("Library/Adafruit_GPS_Library/shield_sdlog");
-        ret.add("Library/Adafruit_HX8357_Library/breakouttouchpaint");
-        ret.add("Library/Adafruit_ILI9341/breakouttouchpaint");
-        ret.add("Library/Adafruit_ILI9341/onoffbutton_breakout");
-        ret.add("Library/Adafruit_GPS_Library/echo");
-        ret.add("Library/Adafruit_LED_Backpack_Library/wavface");
-        ret.add("Library/Adafruit_SSD1306/ssd1306_128x64_i2c");
-        ret.add("Library/Adafruit_SSD1306/ssd1306_128x64_spi");
-        ret.add("Library/Adafruit_ST7735_Library/soft_spitftbitmap");
-        ret.add("Library/Adafruit_TCS34725/colorview/processing/colorview");
-        ret.add("Library/Adafruit_TinyRGBLCDShield/TinyHelloWorld");
-        ret.add("Library/Akafugu_TWILiquidCrystal_Library/change_address");
-        ret.add("Library/Akafugu_WireRtc_Library/alarm");
-        ret.add("Library/ALA/RgbStripButton");
-        ret.add("Library/APA102/GameOfLife");
-        ret.add("Library/arduino-menusystem/led_matrix");
-        ret.add("Library/arduino-menusystem/led_matrix_animated");
-        ret.add("Library/Arduino_Low_Power/TianStandby");
-        ret.add("Library/aREST/BLE");
-        ret.add("Library/aREST/ESP32");
-        ret.add("Library/aREST/ESP32_cloud");
-        ret.add("Library/ArduinoHttpClient/DweetGet");
-        ret.add("Library/ArduinoMenu_library/adafruitGfx/lcdMono/lcdMono");
-        ret.add("Library/ArduinoMenu_library/adafruitGfx/tft/tft");
-        ret.add("Library/ArdVoice/Sample2-Complex");
-        ret.add("Library/Aspen_SIM800/Access_HTTP");
-        ret.add("Library/Awesome/advanced/how_fast");
-        ret.add("Library/Awesome/advanced/lie_detector");
-        ret.add("Library/AzureIoTUtility/simplesample_http");
-        ret.add("Library/BLEPeripheral/ir_bridge");
-        ret.add("Library/BLEPeripheral/temp_sensor");
-        ret.add("Library/Brasilino/Basicos/controleGradual");
-        ret.add("Library/ClosedCube_HDC1010/hdc1010demo");
-        ret.add("Library/Chrono/Resolutions");
-        ret.add("Library/Chrono/StopResume");
-        ret.add("Library/ConfigurableFirmata/ConfigurableFirmataWiFi");
-        ret.add("Library/ControleForno/configuravel");
-        ret.add("Library/CopyThreads/c");
-        ret.add("Library/ArduinoCloud/SimpleCloudButtoBrzo_I2C");
-        ret.add("Library/CopyThreads/FromReadme");
-        ret.add("Library/DallasTemperature/Multibus_simple");
-        ret.add("Library/DecodeIR/InfraredDecode");
-        ret.add("Library/AutoAnalogAudio/SimpleSine");
-        ret.add("Library/DimSwitch/DimSwitchTester-ESP-MQTT");
-        ret.add("Library/DS3231/echo_time");
-        ret.add("Library/Easy_NeoPixels");
-        ret.add("Library/DallasTemperature/AlarmHandler");
-        ret.add("Library/AmazonDRS/amazonDashNfc");
-        ret.add("Library/Andee/Lesson_02_Buttons/Lesson_2h_Using_Buttons_to_Control_Servos");
-        ret.add("Library/Andee/Project_Christmas_Lights_and_Annoying_Music");
-        ret.add("Library/Andee/Project_Rubber_Band_Launcher");
-        ret.add("Library/Andee/Project_Time_Automated_Data_Logger");
-        ret.add("Library/ANT-Arduino_library/NativeAnt");
-        ret.add("Library/arduino-fsm/timed_switchoff");
-        ret.add("Library/BME280/BME_280_BRZO_I2C_Test");
-        ret.add("Library/Adafruit_seesaw_Library/DAP");
+        ret.add("Library/Managed/arduino_ess_ess_yun");
+        ret.add("Library/Managed/arduino_ess_linkit_one_dweet");
+        ret.add("Library/Managed/AD7193/AD7193_VoltageMeasurePsuedoDifferential_Example");
+        ret.add("Library/Managed/bunny_cuberotate/cuberotate");
+        ret.add("Library/Managed/XPT2046_Touchscreen/ILI9341Test");
+        ret.add("Library/Managed/Adafruit_AHRS/ahrs_mahony");
+        ret.add("Library/Managed/Adafruit_BLEFirmata/StandardFirmata");
+        ret.add("Library/Managed/Adafruit_BNO055/bunny/processing/cuberotate");
+        ret.add("Library/Managed/Adafruit_GPS_Library/due_shield_sdlog");
+        ret.add("Library/Managed/Adafruit_Graphic_VFD_Display_Library/GraphicVFDtest");
+        ret.add("Library/Managed/Adafruit_GPS_Library/locus_erase");
+        ret.add("Library/Managed/Adafruit_GPS_Library/shield_sdlog");
+        ret.add("Library/Managed/Adafruit_HX8357_Library/breakouttouchpaint");
+        ret.add("Library/Managed/Adafruit_ILI9341/breakouttouchpaint");
+        ret.add("Library/Managed/Adafruit_ILI9341/onoffbutton_breakout");
+        ret.add("Library/Managed/Adafruit_GPS_Library/echo");
+        ret.add("Library/Managed/Adafruit_LED_Backpack_Library/wavface");
+        ret.add("Library/Managed/Adafruit_SSD1306/ssd1306_128x64_i2c");
+        ret.add("Library/Managed/Adafruit_SSD1306/ssd1306_128x64_spi");
+        ret.add("Library/Managed/Adafruit_ST7735_Library/soft_spitftbitmap");
+        ret.add("Library/Managed/Adafruit_TCS34725/colorview/processing/colorview");
+        ret.add("Library/Managed/Adafruit_TinyRGBLCDShield/TinyHelloWorld");
+        ret.add("Library/Managed/Akafugu_TWILiquidCrystal_Library/change_address");
+        ret.add("Library/Managed/Akafugu_WireRtc_Library/alarm");
+        ret.add("Library/Managed/ALA/RgbStripButton");
+        ret.add("Library/Managed/APA102/GameOfLife");
+        ret.add("Library/Managed/arduino-menusystem/led_matrix");
+        ret.add("Library/Managed/arduino-menusystem/led_matrix_animated");
+        ret.add("Library/Managed/Arduino_Low_Power/TianStandby");
+        ret.add("Library/Managed/aREST/BLE");
+        ret.add("Library/Managed/aREST/ESP32");
+        ret.add("Library/Managed/aREST/ESP32_cloud");
+        ret.add("Library/Managed/ArduinoHttpClient/DweetGet");
+        ret.add("Library/Managed/ArduinoMenu_library/adafruitGfx/lcdMono/lcdMono");
+        ret.add("Library/Managed/ArduinoMenu_library/adafruitGfx/tft/tft");
+        ret.add("Library/Managed/ArdVoice/Sample2-Complex");
+        ret.add("Library/Managed/Aspen_SIM800/Access_HTTP");
+        ret.add("Library/Managed/Awesome/advanced/how_fast");
+        ret.add("Library/Managed/Awesome/advanced/lie_detector");
+        ret.add("Library/Managed/AzureIoTUtility/simplesample_http");
+        ret.add("Library/Managed/BLEPeripheral/ir_bridge");
+        ret.add("Library/Managed/BLEPeripheral/temp_sensor");
+        ret.add("Library/Managed/Brasilino/Basicos/controleGradual");
+        ret.add("Library/Managed/ClosedCube_HDC1010/hdc1010demo");
+        ret.add("Library/Managed/Chrono/Resolutions");
+        ret.add("Library/Managed/Chrono/StopResume");
+        ret.add("Library/Managed/ConfigurableFirmata/ConfigurableFirmataWiFi");
+        ret.add("Library/Managed/ControleForno/configuravel");
+        ret.add("Library/Managed/CopyThreads/c");
+        ret.add("Library/Managed/ArduinoCloud/SimpleCloudButtoBrzo_I2C");
+        ret.add("Library/Managed/CopyThreads/FromReadme");
+        ret.add("Library/Managed/DallasTemperature/Multibus_simple");
+        ret.add("Library/Managed/DecodeIR/InfraredDecode");
+        ret.add("Library/Managed/AutoAnalogAudio/SimpleSine");
+        ret.add("Library/Managed/DimSwitch/DimSwitchTester-ESP-MQTT");
+        ret.add("Library/Managed/DS3231/echo_time");
+        ret.add("Library/Managed/Easy_NeoPixels");
+        ret.add("Library/Managed/DallasTemperature/AlarmHandler");
+        ret.add("Library/Managed/AmazonDRS/amazonDashNfc");
+        ret.add("Library/Managed/Andee/Lesson_02_Buttons/Lesson_2h_Using_Buttons_to_Control_Servos");
+        ret.add("Library/Managed/Andee/Project_Christmas_Lights_and_Annoying_Music");
+        ret.add("Library/Managed/Andee/Project_Rubber_Band_Launcher");
+        ret.add("Library/Managed/Andee/Project_Time_Automated_Data_Logger");
+        ret.add("Library/Managed/ANT-Arduino_library/NativeAnt");
+        ret.add("Library/Managed/arduino-fsm/timed_switchoff");
+        ret.add("Library/Managed/BME280/BME_280_BRZO_I2C_Test");
+        ret.add("Library/Managed/Adafruit_seesaw_Library/DAP");
         // uses unknown NO_ERROR
-        ret.add("Library/ClosedCube_TCA9546A/tca9546a_sht31d");
+        ret.add("Library/Managed/ClosedCube_TCA9546A/tca9546a_sht31d");
         // uses dht.h from dht_sensor_lib
-        ret.add("Library/CMMC_MQTT_Connector/basic_dht");
-        ret.add("Library/ArduinoLearningKitStarter/boardTest");
+        ret.add("Library/Managed/CMMC_MQTT_Connector/basic_dht");
+        ret.add("Library/Managed/ArduinoLearningKitStarter/boardTest");
         // uses altsoftserial and then Serial2????
-        ret.add("Library/CMMC_NB-IoT/example1");
+        ret.add("Library/Managed/CMMC_NB-IoT/example1");
         // some bu!g I guess
-        ret.add("Library/CopyThreads/ExamplesFromReadme");
-        ret.add("Library/CRC_Simula_Arduino_IDE_Library/Simula_BehaviorTree");
+        ret.add("Library/Managed/CopyThreads/ExamplesFromReadme");
+        ret.add("Library/Managed/CRC_Simula_Arduino_IDE_Library/Simula_BehaviorTree");
         // empty sketch??
-        ret.add("Library/DFW/ProvisionController");
+        ret.add("Library/Managed/DFW/ProvisionController");
         // error: 'mapSensor' was not declared in this scope
-        ret.add("Library/AD_Sensors/ConstrainAnalogSensor");
+        ret.add("Library/Managed/AD_Sensors/ConstrainAnalogSensor");
         // error: 'sensor' was not declared in this scope
-        ret.add("Library/AD_Sensors/MapAndConstrainAnalogSensor");
+        ret.add("Library/Managed/AD_Sensors/MapAndConstrainAnalogSensor");
         // ess-yun.ino:17:12: error: no matching function for call to
         // 'HttpClient::HttpClient()'
-        ret.add("Library/arduino-ess/ess-yun");
+        ret.add("Library/Managed/arduino-ess/ess-yun");
         // I have no linket board in test setup
-        ret.add("Library/arduino-ess/linkit-one-dweet");
-        //cores\arduino/WString.h:38:74: error: statement-expressions 
-        ret.add("Library/ArduinoTrace/TraceFromGlobalScope");
+        ret.add("Library/Managed/arduino-ess/linkit-one-dweet");
+        //cores\arduino/WString.h:38:74: error: statement-expressions
+        ret.add("Library/Managed/ArduinoTrace/TraceFromGlobalScope");
         // no matching function for call to 'aREST::handle(EthernetClient&)'
-        ret.add("Library/aREST/Ethernet");
+        ret.add("Library/Managed/aREST/Ethernet");
         // AsciiMassage_servos.ino:75:37: error: no matching function for call to
         // 'AsciiMassagePacker::streamEmpty(const char [6])'
-        ret.add("Library/AsciiMassage/AsciiMassage_servos");
+        ret.add("Library/Managed/AsciiMassage/AsciiMassage_servos");
         // \BH1750FVI_Simple.ino:33:10: error: 'class Serial_' has no member named
         // 'printf'
-        ret.add("Library/BH1750FVI/BH1750FVI_Simple");
+        ret.add("Library/Managed/BH1750FVI/BH1750FVI_Simple");
         // * This example not complete at all.
-        ret.add("Library/Blinker/Blinker_AUTO/AUTO_MQTT");
+        ret.add("Library/Managed/Blinker/Blinker_AUTO/AUTO_MQTT");
         // 3: error: 'StaticJsonBuffer' was not declared in this scope
-        ret.add("Library/Boodskap_Message_library/SimpleMessageUsage");
+        ret.add("Library/Managed/Boodskap_Message_library/SimpleMessageUsage");
         //uses #include <ArduinoDebug.hpp>
-        ret.add("Library/107-Arduino-BoostUnits/Basic");
+        ret.add("Library/Managed/107-Arduino-BoostUnits/Basic");
+     // needs web lib
+        ret.add("Library/Managed/FreeRTOS/GoldilocksAnalogueTestSuite");
+        // needs config
+        ret.add("Library/Managed/Firmata/StandardFirmataWiFi");
+        // needs web lib
+        ret.add("Library/Managed/Firmata/StandardFirmataBLE");
+
+
         return ret;
     }
 
@@ -439,7 +451,7 @@ public class Example {
      * empty returns the best known boarddescriptor to run this example
      */
     public static MCUBoard pickBestBoard(Example example, MCUBoard myBoards[]) {
-        String libName = example.getLibName();
+        String libName = example.calcLibName();
         String fqn = example.getFQN();
         if (myBoards.length == 0) {
             //No boards =>no match
@@ -458,15 +470,15 @@ public class Example {
         }
 
         // if example states which board it wants use that board
-        if (example.getRequiredBoardAttributes().boardID != null) {
-            String wantedBoardName = example.getRequiredBoardAttributes().boardID;
+        if (example.getRequiredBoardAttributes().myCompatibleBoardIDs.size() >0) {
+            Set<String> compatibleBoardName = example.getRequiredBoardAttributes().myCompatibleBoardIDs;
             for (MCUBoard curBoard : myBoards) {
-                if (curBoard.getID().equals(wantedBoardName)) {
+                if (compatibleBoardName.contains( curBoard.getID())) {
                     return curBoard;
                 }
             }
             System.out.println(
-                    "Example " + example.getFQN() + " requires board " + wantedBoardName + " that is not listed");
+                    "Example " + example.getFQN() + " requires boards " + compatibleBoardName + " that is not listed");
             return null;
         }
 
@@ -476,7 +488,7 @@ public class Example {
             List<String> curBoardExampleNames = getSlangNames(curBoardName);
             for (String curBoardExampleName : curBoardExampleNames) {
                 if (libName.toLowerCase().contains(curBoardName) || fqn.toLowerCase().contains(curBoardExampleName)) {
-                    if (curBoard.isExampleSupported(example)) {
+                    if (example.worksOnBoard(curBoard)) {
                         return curBoard;
                     }
                 }
@@ -487,7 +499,7 @@ public class Example {
             String curArchitectureName = curBoard.getBoardDescriptor().getArchitecture().toLowerCase();
             if (libName.toLowerCase().contains(curArchitectureName)
                     || fqn.toLowerCase().contains(curArchitectureName)) {
-                if (curBoard.isExampleSupported(example)) {
+                if (example.worksOnBoard(curBoard)) {
                     return curBoard;
                 }
             }
@@ -520,12 +532,12 @@ public class Example {
 
         // Out of guesses based on the name. Take the first ok one
         for (MCUBoard curBoard : myBoards) {
-            if (curBoard.isExampleSupported(example)) {
+            if (example.worksOnBoard(curBoard)) {
                 return curBoard;
             }
         }
         System.out.println(
-                "No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getPath().toOSString());
+                "No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getCodeLocation().toOSString());
         return null;
     }
 
@@ -553,28 +565,56 @@ public class Example {
 
     private static String getRequiredBoardID(String fqn) {
         switch (fqn) {
-        case "Library/Accessory_Shield/OLED_example_Adafruit":
-        case "Library/Accessory_Shield/temp_humidity_oled":
+        case "Library/Managed/Accessory_Shield/OLED_example_Adafruit":
+        case "Library/Managed/Accessory_Shield/temp_humidity_oled":
             return "uno";
-        case "Library/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_NeoPixel":
-        case "Library/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Read":
-        case "Library/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Record":
-        case "Library/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Send":
-        case "Library/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Testpattern":
-        case "Library/Adafruit_Zero_FFT_Library/CircuitPlayground":
+        case "Library/Managed/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_NeoPixel":
+        case "Library/Managed/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Read":
+        case "Library/Managed/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Record":
+        case "Library/Managed/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Send":
+        case "Library/Managed/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Testpattern":
+        case "Library/Managed/Adafruit_Zero_FFT_Library/CircuitPlayground":
             return "adafruit_circuitplayground_m0";
-        case "Library/Adafruit_MiniMLX90614/templight":
+        case "Library/Managed/Adafruit_MiniMLX90614/templight":
             return "gemma";
-        case "Library/ArduinoThread/SensorThread":
+        case "Library/Managed/ArduinoThread/SensorThread":
             return "due";
-        case "Library/AudioFrequencyMeter/SimpleAudioFrequencyMeter":
-        case "Library/Adafruit_NeoPXL8/strandtest":
+        case "Library/Managed/AudioFrequencyMeter/SimpleAudioFrequencyMeter":
+        case "Library/Managed/Adafruit_NeoPXL8/strandtest":
             return "zero";
-        case "Library/BLEPeripheral/iBeacon":
+        case "Library/Managed/BLEPeripheral/iBeacon":
             return "feather52";
         default:
             return null;
         }
 
     }
+
+	public boolean worksOnBoard(MCUBoard board) {
+	        if (board.getBoardDescriptor() == null) {
+	            return false;
+	        }
+	        /*
+	         * There is one know Teensy example that does not
+	         * run on all teensy boards
+	         */
+	        if ("Teensy".equalsIgnoreCase(getID())) {
+	            if (getFQN().contains("Teensy/USB_Mouse/Buttons")) {
+	                String boardID = board.getBoardDescriptor().getBoardID();
+	                if ("teensypp2".equals(boardID) || "teensy2".equals(boardID)) {
+	                    return false;
+	                }
+	            }
+	        }
+	        /*
+	         * the servo lib does not work on gemma
+	         */
+	        if ("Servo".equalsIgnoreCase(calcLibName())) {
+	                if ("gemma".equals( board.getBoardDescriptor().getBoardID()) ) {
+	                    return false;
+	            }
+	        }
+
+	        return getRequiredBoardAttributes().compatibleWithBoardAttributes(board.myAttributes);
+	}
 }

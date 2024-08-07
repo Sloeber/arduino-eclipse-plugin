@@ -13,8 +13,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 /**
  * This class represents an entry ina a library json file
@@ -39,7 +39,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
             name = getSafeString(jsonObject, "name");
             addVersion(json);
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse json  " + e.getMessage());
+            throw new JsonParseException("failed to parse json  " + e.getMessage(),e);
         }
 
     }
@@ -92,7 +92,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
 
     /**
      * Get the newest version of this library
-     * 
+     *
      * @return the newest version of this library
      */
     public ArduinoLibraryVersion getNewestVersion() {
@@ -102,7 +102,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
     /**
      * Get the version that is installed
      * If no version is installed return NULL
-     * 
+     *
      * @return
      */
     public ArduinoLibraryVersion getInstalledVersion() {
@@ -130,7 +130,7 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
 
     //Below are the Node overrides
     @Override
-    public String getName() {
+    public String getNodeName() {
         return name;
     }
 

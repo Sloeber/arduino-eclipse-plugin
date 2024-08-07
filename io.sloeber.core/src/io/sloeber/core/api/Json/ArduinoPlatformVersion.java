@@ -8,6 +8,7 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.api.VersionNumber;
-import static io.sloeber.core.common.Const.*;
 
 public class ArduinoPlatformVersion extends ArduinoInstallable implements Comparable<ArduinoPlatformVersion> {
 
@@ -57,7 +57,7 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
                 }
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage());
+            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage(),e);
         }
     }
 
@@ -101,7 +101,7 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
     public List<IPath> getIncludePath() {
         IPath installPath = getInstallPath();
         return Arrays.asList(installPath.append("cores/{build.core}"), //$NON-NLS-1$
-                installPath.append(VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
+                installPath.append(ARDUINO_VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
     }
 
     @Override

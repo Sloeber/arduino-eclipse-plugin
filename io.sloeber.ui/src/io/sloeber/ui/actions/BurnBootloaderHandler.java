@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.SloeberProject;
+import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
 
@@ -31,9 +31,9 @@ public class BurnBootloaderHandler extends AbstractHandler {
 		}
 		IProject selectedProject = ProjectExplorerListener.getSelectedProject();
 		if (selectedProject != null) {
-			SloeberProject sProject = SloeberProject.getSloeberProject(selectedProject);
-			if (sProject != null) {
-				sProject.burnBootloader();
+			ISloeberConfiguration sloeberConfig = ISloeberConfiguration.getActiveConfig(selectedProject);
+			if (sloeberConfig != null) {
+				sloeberConfig.burnBootloader();
 			}
 		}
 		return null;

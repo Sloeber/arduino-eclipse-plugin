@@ -1,6 +1,6 @@
 package io.sloeber.core.common;
 
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 
@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Defaults;
 
 /**
@@ -60,8 +61,7 @@ public class InstancePreferences {
 			myScope.flush();
 		} catch (BackingStoreException e) {
             Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
-					"failed to set global variable of type string " + key)); //$NON-NLS-1$
-			e.printStackTrace();
+					"failed to set global variable of type string " + key,e)); //$NON-NLS-1$
 		}
 	}
 
@@ -74,8 +74,7 @@ public class InstancePreferences {
 			myScope.flush();
 		} catch (BackingStoreException e) {
             Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
-					"failed to set global variable of type boolean " + key)); //$NON-NLS-1$
-			e.printStackTrace();
+					"failed to set global variable of type boolean " + key,e)); //$NON-NLS-1$
 		}
 	}
 
@@ -123,12 +122,12 @@ public class InstancePreferences {
 	/**
 	 * Setting to see wether user wants bonjour service to be run on
 	 * its's system.
-	 * Bonjour is a mac protocol that allows you to do network discovery 
+	 * Bonjour is a mac protocol that allows you to do network discovery
 	 * for yun, esp8266 and some other boards
 	 * If not enabled you will need another way to identify the boards
 	 * Note that this service doesn't work properly on window 10
 	 * default is enabled
-	 * 
+	 *
 	 * @return true if network search for bonjour is requested by the user
 	 */
 	public static boolean useBonjour() {

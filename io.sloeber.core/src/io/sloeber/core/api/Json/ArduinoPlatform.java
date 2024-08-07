@@ -8,7 +8,7 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
-import static io.sloeber.core.common.Const.*;
+import static io.sloeber.core.api.Const.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,8 +20,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.core.api.Const;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.Const;
 
 public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
 
@@ -41,7 +41,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
             architecture = getSafeString(jsonObject, "architecture");
             addVersion(json);
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage());
+            throw new JsonParseException("failed to parse ArduinoPlatform json  " + e.getMessage(),e);
         }
     }
 
@@ -86,7 +86,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
 
     /**
      * Get the newest version of this platform
-     * 
+     *
      * @return the newest version of this platform
      */
     public ArduinoPlatformVersion getNewestVersion() {
@@ -104,7 +104,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
     /**
      * return the installed version with the newest version number
      * Null if no version is installed
-     * 
+     *
      * @return
      */
     public ArduinoPlatformVersion getNewestInstalled() {

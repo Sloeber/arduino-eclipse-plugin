@@ -1,6 +1,6 @@
 package io.sloeber.ui.project.properties;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -16,6 +16,7 @@ import io.sloeber.ui.Messages;
 public class OtherProperties extends SloeberCpropertyTab {
 
 	private Button myOtherProperties;
+	private OtherDescription myOtherDesc = new OtherDescription();
 
 	private Listener buttonListener = new Listener() {
 		@Override
@@ -24,10 +25,11 @@ public class OtherProperties extends SloeberCpropertyTab {
 			case SWT.Selection:
 				getFromScreen();
 				break;
+			default:
+				break;
 			}
 		}
 	};
-
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -46,49 +48,33 @@ public class OtherProperties extends SloeberCpropertyTab {
 		theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
-		updateScreen();
+		updateScreen(false);
 	}
 
 	@Override
-	protected String getQualifierString() {
-		return "SloeberOtherDescription"; //$NON-NLS-1$
+	protected void updateScreen(boolean updateData) {
+		if (mySloeberCfg!=null) {
+			myOtherDesc = mySloeberCfg.getOtherDescription();
+		}
+		myOtherProperties.setSelection(myOtherDesc.IsVersionControlled());
+	}
+
+	private void getFromScreen() {
+		myOtherDesc.setVersionControlled(myOtherProperties.getSelection());
+		if (mySloeberCfg!=null) {
+			mySloeberCfg.setOtherDescription(myOtherDesc);
+		}
 	}
 
 	@Override
-	protected void updateScreen() {
-		OtherDescription otherDesc = (OtherDescription) getDescription(getConfdesc());
-		myOtherProperties.setSelection(otherDesc.IsVersionControlled());
+	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
+		getFromScreen();
 	}
 
 	@Override
-	protected Object getFromScreen() {
-		OtherDescription otherDesc = (OtherDescription) getDescription(getConfdesc());
-		otherDesc.setVersionControlled(myOtherProperties.getSelection());
-		return otherDesc;
-	}
-
-	@Override
-	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
-		return mySloeberProject.getOtherDescription(confDesc.getName(), true);
+	protected void performDefaults() {
+		myOtherDesc.setVersionControlled(false);
 
 	}
-
-	@Override
-	protected Object makeCopy(Object srcObject) {
-		return new OtherDescription((OtherDescription) srcObject);
-	}
-
-	@Override
-	protected void updateSloeber(ICConfigurationDescription confDesc) {
-		OtherDescription theObjectToStore = (OtherDescription) getDescription(confDesc);
-		mySloeberProject.setOtherDescription(confDesc.getName(), theObjectToStore);
-
-	}
-
-	@Override
-	protected Object getnewDefaultObject() {
-		return new OtherDescription();
-	}
-
 
 }

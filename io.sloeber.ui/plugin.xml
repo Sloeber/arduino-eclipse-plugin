@@ -769,19 +769,6 @@
          </view>
       </perspectiveExtension>
    </extension>
-           <extension
-                 id="io.sloeber.application"
-                 name="sloeber application"
-                 point="org.eclipse.core.runtime.applications">
-              <application
-                    cardinality="singleton-global"
-                    thread="main"
-                    visible="true">
-                 <run
-                       class="io.sloeber.ui.core.Application">
-                 </run>
-              </application>
-           </extension>
    <extension
          id="io.sloeber.ui.project.properties.Sloeber"
          name="Sloeber"

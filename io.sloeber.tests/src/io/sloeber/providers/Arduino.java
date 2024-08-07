@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.BoardAttributes;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Json.ArduinoPackage;
@@ -29,6 +28,7 @@ public class Arduino extends MCUBoard {
 
     public static final String circuitplay32ID = "circuitplay32u4cat";
     public static final String unoID = "uno";
+    public static final String robotControlID ="robotControl";
     public static final String ethernetID = "ethernet";
     public static final List<String> mbedBoards = getAllmBedBoardNames();
 
@@ -102,6 +102,10 @@ public class Arduino extends MCUBoard {
         return new Arduino(providerArduino, AVRArchitectureName, unoID);
     }
 
+    public static MCUBoard robotControl() {
+        return new Arduino(providerArduino, AVRArchitectureName, robotControlID);
+    }
+
     public static MCUBoard ethernet() {
         return new Arduino(providerArduino, AVRArchitectureName, ethernetID);
     }
@@ -135,30 +139,22 @@ public class Arduino extends MCUBoard {
     @Override
     protected void setAttributes() {
         String boardID = myBoardDescriptor.getBoardID();
-        sharedsetAttributes(boardID, myAttributes);
-        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
-        //        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
-        //        myAttributes.serial1 = supportSerial1List().contains(boardID);
-        //        myAttributes.keyboard = supportKeyboardList().contains(boardID);
-        //        myAttributes.wire1 = supportWire1List().contains(boardID);
-        //        myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
-        //        myAttributes.tone = !doesNotSupportTone().contains(boardID);
-        //        myAttributes.myNumAD = getNumADCsAvailable(boardID);
-        //        myAttributes.directMode = !doesNotSupportDirectModeList().contains(boardID);
-        //        myAttributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
+        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
+        myAttributes.SD=!doesNotSupportSD().contains(boardID);
+        myAttributes.serial1 = supportSerial1List().contains(boardID);
+        myAttributes.keyboard = supportKeyboardList().contains(boardID);
+        myAttributes.wire1 = supportWire1List().contains(boardID);
+        myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
+        myAttributes.tone = !doesNotSupportTone().contains(boardID);
+        myAttributes.myNumAD = getNumADCsAvailable(boardID, myAttributes.myNumAD);
+        myAttributes.directMode = !doesNotSupportDirectModeList().contains(boardID);
+        myAttributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
+        myAttributes.digitalPinToPCICR =!doesNotSupportDigitalPinToPCICR().contains(boardID);
+        myAttributes.RX_TX_PIN =!doesNotSupportRX_TX_Pin().contains(boardID);
+
+        myAttributes.myArchitecture=myBoardDescriptor.getArchitecture();
     }
 
-    static protected void sharedsetAttributes(String boardID, BoardAttributes attributes) {
-        attributes.serial = !doesNotSupportSerialList().contains(boardID);
-        attributes.serial1 = supportSerial1List().contains(boardID);
-        attributes.keyboard = supportKeyboardList().contains(boardID);
-        attributes.wire1 = supportWire1List().contains(boardID);
-        attributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
-        attributes.tone = !doesNotSupportTone().contains(boardID);
-        attributes.myNumAD = getNumADCsAvailable(boardID, attributes.myNumAD);
-        attributes.directMode = !doesNotSupportDirectModeList().contains(boardID);
-        attributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
-    }
 
     private static int getNumADCsAvailable(String boardID, int standard) {
         switch (boardID) {
@@ -188,7 +184,21 @@ public class Arduino extends MCUBoard {
         return ret;
     }
 
-    protected static List<String> supportSerial1List() {
+    private static List<String> doesNotSupportDigitalPinToPCICR() {
+        List<String> ret = new LinkedList<>();
+        ret.add("robotControl");
+        ret.add("robotMotor");
+        ret.add("gemma");
+        return ret;
+    }
+
+    private static List<String> doesNotSupportRX_TX_Pin() {
+        List<String> ret = new LinkedList<>();
+        ret.add("atmegang");
+        return ret;
+    }
+
+    private static List<String> supportSerial1List() {
         List<String> ret = new LinkedList<>();
         ret.add("circuitplay32u4cat");
         ret.add("LilyPadUSB");
@@ -208,13 +218,19 @@ public class Arduino extends MCUBoard {
         return ret;
     }
 
-    protected static List<String> doesNotSupportSerialList() {
+    private static List<String> doesNotSupportSerialList() {
         List<String> ret = new LinkedList<>();
         ret.add("gemma");
         return ret;
     }
 
-    protected static List<String> doesNotSupportSerialUSBList() {
+    private static List<String> doesNotSupportSD() {
+        List<String> ret = new LinkedList<>();
+        ret.add("gemma");
+        return ret;
+    }
+
+    private static List<String> doesNotSupportSerialUSBList() {
         List<String> ret = new LinkedList<>();
         ret.addAll(mbedBoards);
         return ret;
@@ -230,7 +246,6 @@ public class Arduino extends MCUBoard {
         List<String> ret = new LinkedList<>();
         ret.add("arduino_due_x");
         ret.add("arduino_due_x_dbg");
-
         return ret;
     }
 
@@ -267,6 +282,10 @@ public class Arduino extends MCUBoard {
         return getAllBoards(providerArduino, uno());
     }
 
+    public static List<MCUBoard> getAllAvrBoards() {
+        return getAllBoards(providerArduino,AVRArchitectureName, uno());
+    }
+
     private static List<String> getAllmBedBoardNames() {
         List<String> ret = new LinkedList<>();
         ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(providerArduino);
@@ -284,5 +303,4 @@ public class Arduino extends MCUBoard {
         }
         return ret;
     }
-
 }

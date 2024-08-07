@@ -21,8 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.ConfigurationPreferences;
 
 public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
 
@@ -71,7 +71,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
                 }
             }
         } catch (Exception e) {
-            throw new JsonParseException("failed to parse Package json  " + e.getMessage());
+            throw new JsonParseException("failed to parse Package json  " + e.getMessage(),e);
         }
     }
 
@@ -80,7 +80,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     }
 
     @Override
-    public String getName() {
+    public String getNodeName() {
         return name;
     }
 
@@ -125,7 +125,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     /**
      * get tyhe platform based on the platform ID
      * The platform ID is the architecture
-     * 
+     *
      * @param platformID
      * @return return the platfiorm or null if not found
      */
@@ -160,7 +160,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ArduinoPackage) {
-            return ((ArduinoPackage) obj).getName().equals(this.name);
+            return ((ArduinoPackage) obj).getNodeName().equals(this.name);
         }
         return super.equals(obj);
     }
@@ -205,7 +205,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
 
     /**
      * Is any version of the platform installed
-     * 
+     *
      * @param platformName
      * @return if a platform with this name is installed
      */

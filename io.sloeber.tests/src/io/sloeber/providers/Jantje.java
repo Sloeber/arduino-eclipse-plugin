@@ -2,12 +2,10 @@ package io.sloeber.providers;
 
 import static org.junit.Assert.*;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 
@@ -21,22 +19,6 @@ public class Jantje extends MCUBoard {
     // the below json url is need as esp8266 is a referenced platform
     public static final String additionalJsonURL = "https://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
-    @Override
-    public boolean isExampleSupported(Example example) {
-        LinkedList<String> notSupportedExamples = new LinkedList<>();
-        notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardLogout");
-        notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardMessage");
-        notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardReprogram");
-        notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardSerial");
-        notSupportedExamples.add("Example/09.USB/KeyboardAndMouseControl");
-        notSupportedExamples.add("Example/09.USB/Mouse/ButtonMouseControl");
-        notSupportedExamples.add("Example/09.USB/Mouse/JoystickMouseControl");
-        notSupportedExamples.add("Example/10.StarterKit_BasicKit/p13_TouchSensorLamp");
-        if (notSupportedExamples.contains(example.getFQN())) {
-            return false;
-        }
-        return super.isExampleSupported(example);
-    }
 
     public static  List<MCUBoard> getAllBoards() {
         return getAllBoards(provider, uno());
@@ -52,7 +34,7 @@ public class Jantje extends MCUBoard {
         myBoardDescriptor = boardDesc;
         setAttributes();
     }
-    
+
     public static MCUBoard uno() {
         return new Jantje( Arduino.unoID);
     }
@@ -74,10 +56,10 @@ public class Jantje extends MCUBoard {
 
     @Override
     protected void setAttributes() {
-        String boardID = myBoardDescriptor.getBoardID();
-        Arduino.sharedsetAttributes(boardID, myAttributes);
+       // boardID = myBoardDescriptor.getBoardID();
+        //Arduino.sharedsetAttributes(boardID, myAttributes);
         setUploadPort("none");
-        myAttributes.myArchitectures.add(myBoardDescriptor.getArchitecture());
+        myAttributes.myArchitecture=myBoardDescriptor.getArchitecture();
 
     }
 
