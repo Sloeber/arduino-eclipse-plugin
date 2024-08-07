@@ -34,8 +34,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 import static io.sloeber.core.api.Const.*;
+import static org.junit.Assert.fail;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -125,19 +128,19 @@ public class Shared {
 
 
 	public static void waitForAllJobsToFinish() {
-//		try {
-//			Thread.sleep(1000);
-//			IJobManager jobMan = Job.getJobManager();
-//			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
-//				Thread.sleep(500);
-//				// If you do not get out of this loop it probably means you are
-//				// runnning the test in the gui thread
-//			}
-//			// As nothing is running now we can start installing
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//			fail("can not find installerjob");
-//		}
+		try {
+			//Thread.sleep(1000);
+			IJobManager jobMan = Job.getJobManager();
+			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
+				Thread.sleep(500);
+				// If you do not get out of this loop it probably means you are
+				// runnning the test in the gui thread
+			}
+			// As nothing is running now we can start installing
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("can not find installerjob");
+		}
 	}
 
 	public static IPath getTemplateFolder(String templateName) throws Exception {
