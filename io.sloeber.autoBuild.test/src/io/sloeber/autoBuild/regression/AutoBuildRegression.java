@@ -134,6 +134,7 @@ public class AutoBuildRegression {
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
+        assertNotNull("no build tools found on the system", buildTools);
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,
         		cpp_exeCodeProvider, buildTools, false, null);
 

@@ -20,6 +20,8 @@ public class ToolFlavourExpression extends Expression {
     @Override
     public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
         AutoBuildConfigurationDescription autoData = (AutoBuildConfigurationDescription) context.getDefaultVariable();
+        if (autoData == null)
+            return EvaluationResult.FALSE;
         String str = autoData.getBuildToolsFlavour().toString();
         if (str == null)
             return EvaluationResult.FALSE;
