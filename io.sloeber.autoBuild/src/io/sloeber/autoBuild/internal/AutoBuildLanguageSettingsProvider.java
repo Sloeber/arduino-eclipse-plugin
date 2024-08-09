@@ -85,7 +85,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 	private Map<String, List<ICLanguageSettingEntry>> myDiscoveryCache = new HashMap<>();
 	private SDMarkerGenerator markerGenerator = new SDMarkerGenerator();
-	private boolean isConsoleEnabled = false;
+	private boolean isConsoleEnabled = true;
 
 	private class SDMarkerGenerator implements IMarkerGenerator {
 		// Reuse scanner discovery markers defined in
