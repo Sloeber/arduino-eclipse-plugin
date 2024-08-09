@@ -297,7 +297,8 @@ public class InternalBuildRunner implements IBuildRunner {
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(false);
 		String[] args = argumentsToArray(curRecipe);
-		if(isWindows) {
+		boolean useCMD=false;
+		if(useCMD) {
 			args=argumentsToArray("cmd /d /q");
 		}
 		IPath commandPath = new Path(args[0]);
@@ -309,7 +310,7 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				fProcess = launcher.execute(commandPath, onlyArgs, autoData.getEnvironmentVariables(),
 						autoData.getBuildFolder().getLocation(), monitor);
-				if(isWindows) {
+				if(useCMD) {
 					try(OutputStream outputStream=fProcess.getOutputStream()){
 						outputStream.write(curRecipe.getBytes());
 						outputStream.flush();
@@ -394,9 +395,9 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	public static String[] argumentsToArray(String line) {
-//		if (isWindows) {
-//			return argumentsToArrayWindowsStyle(line);
-//		}
+		if (isWindows) {
+			return argumentsToArrayWindowsStyle(line);
+		}
 		return argumentsToArrayUnixStyle(line);
 	}
 
@@ -533,98 +534,89 @@ public class InternalBuildRunner implements IBuildRunner {
 	 */
 	@SuppressWarnings("incomplete-switch")
 	public static String[] argumentsToArrayWindowsStyle(String line) {
-		final int INITIAL = 0;
+		final int OUTSIDE_ARGS = 0;
 		final int IN_DOUBLE_QUOTES = 1;
-		final int IN_DOUBLE_QUOTES_ESCAPED = 2;
-		final int ESCAPED = 3;
+		final int IN_SINGLE_QUOTES =3;
 		final int IN_ARG = 5;
+		boolean ESCAPED = false;
 
-		if (line == null) {
+		if (line == null || line.isBlank()) {
 			return new String[0];
 		}
 
-		char[] array = line.trim().toCharArray();
-		ArrayList<String> aList = new ArrayList<>();
+		ArrayList<String> retList = new ArrayList<>();
 		StringBuilder buffer = new StringBuilder();
-		int state = INITIAL;
-		for (int i = 0; i < array.length; i++) {
-			char c = array[i];
-
+		int state = OUTSIDE_ARGS;
+		for (char curChar:  line.trim().toCharArray()) {
+			if(ESCAPED) {
+				ESCAPED=false;
+				buffer.append(curChar);
+				continue;
+			}
 			switch (state) {
 			case IN_ARG:
 				// fall through
-			case INITIAL:
-				if (Character.isWhitespace(c)) {
-					if (state == INITIAL)
+			case OUTSIDE_ARGS:
+				if (Character.isWhitespace(curChar)) {
+					if (state == OUTSIDE_ARGS)
 						break; // ignore extra spaces
 					// add argument
-					state = INITIAL;
-					String arg = buffer.toString();
+					state = OUTSIDE_ARGS;
+					retList.add(buffer.toString());
 					buffer = new StringBuilder();
-					aList.add(arg);
 				} else {
-					switch (c) {
+					state = IN_ARG;
+					switch (curChar) {
 					case '\\':
-						state = ESCAPED;
+						buffer.append(curChar);
+						 ESCAPED=true;
 						break;
 					case '\"':
 						state = IN_DOUBLE_QUOTES;
+						buffer.append(curChar);
+						break;
+					case '\'':
+						state = IN_SINGLE_QUOTES;
 						break;
 					default:
-						state = IN_ARG;
-						buffer.append(c);
+						buffer.append(curChar);
 						break;
 					}
 				}
 				break;
 			case IN_DOUBLE_QUOTES:
-				switch (c) {
+				switch (curChar) {
 				case '\\':
-					state = IN_DOUBLE_QUOTES_ESCAPED;
+					ESCAPED=true;
+					buffer.append(curChar);
 					break;
 				case '\"':
+					buffer.append(curChar);
 					state = IN_ARG;
 					break;
 				default:
-					buffer.append(c);
+					buffer.append(curChar);
 					break;
 				}
 				break;
-			case IN_DOUBLE_QUOTES_ESCAPED:
-//				switch (c) {
-//				case '\"':
-//					buffer.append(c);
-//					break;
-//				default:
-//					buffer.append('\\');
-//					buffer.append(c);
-//					break;
-//				}
-				buffer.append('\\');
-				buffer.append(c);
-				state = IN_DOUBLE_QUOTES;
-				break;
-			case ESCAPED:
-				state = IN_ARG;
-//				switch (c) {
-//				case ' ':
-//				case '\"':
-//					buffer.append(c);
-//					break;
-//				default:
-				buffer.append('\\');
-				buffer.append(c);
-//					break;
-//				}
+			case IN_SINGLE_QUOTES:
+				switch (curChar) {
+				case '\'':
+					state = IN_ARG;
+					break;
+				default:
+					buffer.append(curChar);
+					break;
+				}
 				break;
 			}
 		}
 
-		if (state != INITIAL) { // this allow to process empty string as an
+		if (state != OUTSIDE_ARGS) { // this allow to process empty string as an
 								// argument
-			aList.add(buffer.toString());
+			retList.add(buffer.toString());
 		}
-		return aList.toArray(new String[aList.size()]);
+		return retList.toArray(new String[retList.size()]);
 	}
 
 }
