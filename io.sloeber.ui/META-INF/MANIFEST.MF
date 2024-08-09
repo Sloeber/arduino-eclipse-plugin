@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber user interface
 Bundle-SymbolicName: io.sloeber.ui;singleton:=true
-Bundle-Version: 4.4.3.qualifier
+Bundle-Version: 5.0.0.qualifier
 Bundle-Activator: io.sloeber.ui.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,10 +14,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.debug.ui,
  org.apache.commons.commons-io,
- io.sloeber.autoBuild;bundle-version="4.4.3",
+ io.sloeber.autoBuild,
  org.eclipse.jface,
- io.sloeber.autoBuild.ui;bundle-version="4.4.3"
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+ io.sloeber.autoBuild.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Sloeber.io
 Export-Package: io.sloeber.ui.monitor;x-friends:="io.sloeber.tests",
