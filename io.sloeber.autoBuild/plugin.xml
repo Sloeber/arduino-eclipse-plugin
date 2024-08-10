@@ -309,7 +309,7 @@
      </tool>
      <tool
            command="gcc"
-           dependencyGenerationFlag="-MMD -MP -MF&quot;${%.d}&quot; -MT&quot;$@&quot; "
+           dependencyGenerationFlag="-MMD -MP &quot;-MF${%.d}&quot; &quot;-MT$@&quot; "
            dependencyOutputPattern="%.d"
            errorParsers="org.eclipse.cdt.core.GCCErrorParser"
            id="cdt.autobuild.tool.c.compiler"
@@ -850,7 +850,7 @@
      </tool>
      <tool
            command="g++"
-           dependencyGenerationFlag="-MMD -MP -MF&quot;${%.d}&quot; -MT&quot;$@&quot; "
+           dependencyGenerationFlag="-MMD -MP &quot;-MF${%.d}&quot; &quot;-MT$@&quot; "
            dependencyOutputPattern="%.d"
            errorParsers="org.eclipse.cdt.core.GCCErrorParser"
            id="cdt.autobuild.tool.cpp.compiler"
