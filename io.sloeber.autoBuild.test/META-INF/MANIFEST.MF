@@ -4,7 +4,6 @@ Bundle-Name: Test
 Bundle-SymbolicName: io.sloeber.autoBuild.test;singleton:=true
 Bundle-Version: 5.0.0.qualifier
 Require-Bundle: io.sloeber.autoBuild,
- org.junit,
  junit-jupiter-api;bundle-version="5.0.0",
  junit-jupiter-params;bundle-version="5.0.0",
  org.eclipse.core.resources,
@@ -17,6 +16,10 @@ Require-Bundle: io.sloeber.autoBuild,
  org.eclipse.cdt.core.native,
  org.eclipse.equinox.registry,
  org.eclipse.ui.workbench,
- io.sloeber.autoBuild.ui;bundle-version="4.4.3"
+ io.sloeber.autoBuild.ui,
+ junit-platform-suite-engine;bundle-version="1.10.2",
+ junit-platform-commons;bundle-version="1.10.2",
+ junit-platform-engine;bundle-version="1.10.2",
+ junit-platform-suite-api;bundle-version="1.10.2"
 Automatic-Module-Name: io.sloeber.autoBuild.test
 Bundle-RequiredExecutionEnvironment: JavaSE-17
