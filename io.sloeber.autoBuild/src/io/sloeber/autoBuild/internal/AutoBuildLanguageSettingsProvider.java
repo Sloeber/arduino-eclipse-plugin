@@ -74,7 +74,6 @@ import io.sloeber.autoBuild.schema.api.IOption;
 public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensionBase
 		implements ILanguageSettingsBroadcastingProvider {
 
-	private static final String CDT_MANAGEDBUILDER_UI_PLUGIN_ID = "org.eclipse.cdt.managedbuilder.ui"; //$NON-NLS-1$
 	private static final String SCANNER_DISCOVERY_CONSOLE = "org.eclipse.cdt.managedbuilder.ScannerDiscoveryConsole"; //$NON-NLS-1$
 	private static final String SCANNER_DISCOVERY_GLOBAL_CONSOLE = "org.eclipse.cdt.managedbuilder.ScannerDiscoveryGlobalConsole"; //$NON-NLS-1$
 	private static final String DEFAULT_CONSOLE_ICON = "icons/obj16/inspect_sys.gif"; //$NON-NLS-1$
@@ -122,7 +121,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 							}
 						}
 					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error checking markers.", //$NON-NLS-1$
+						return new Status(IStatus.ERROR, Activator.getId(), "Error checking markers.", //$NON-NLS-1$
 								e);
 					}
 
@@ -145,7 +144,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 							marker.setAttribute(IMarker.LOCATION, msgProperties);
 						}
 					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error adding markers.", //$NON-NLS-1$
+						return new Status(IStatus.ERROR, Activator.getId(), "Error adding markers.", //$NON-NLS-1$
 								e);
 					}
 
@@ -311,7 +310,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 				// that looks in extension points registry and won't find the id, this console
 				// is not shown
 				console = CCorePlugin.getDefault()
-						.getConsole(Activator.PLUGIN_ID + DOT + currentLanguageId + ".console.hidden"); //$NON-NLS-1$
+						.getConsole(Activator.getId() + DOT + currentLanguageId + ".console.hidden"); //$NON-NLS-1$
 			}
 			console.start(currentProject);
 
@@ -349,7 +348,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 		} catch (Exception e) {
 			Activator.log(new CoreException(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error running Builtin Specs Detector", e))); //$NON-NLS-1$
+					new Status(IStatus.ERROR, Activator.getId(), "Error running Builtin Specs Detector", e))); //$NON-NLS-1$
 		} finally {
 			monitor.done();
 		}
@@ -373,14 +372,14 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 			}
 			ILanguage ld = LanguageManager.getInstance().getLanguage(currentLanguageId);
 			if (ld != null) {
-				String consoleId = Activator.PLUGIN_ID + '.' + getId() + '.' + currentLanguageId;
+				String consoleId = Activator.getId() + '.' + getId() + '.' + currentLanguageId;
 				String consoleName = getName() + ", " + ld.getName(); //$NON-NLS-1$
-				URL defaultIcon = Platform.getBundle(CDT_MANAGEDBUILDER_UI_PLUGIN_ID).getEntry(DEFAULT_CONSOLE_ICON);
+				URL defaultIcon = Platform.getBundle(Activator.getId()).getEntry(DEFAULT_CONSOLE_ICON);
 				if (defaultIcon == null) {
 					@SuppressWarnings("nls")
 					String msg = "Unable to find icon " + DEFAULT_CONSOLE_ICON + " in plugin "
-							+ CDT_MANAGEDBUILDER_UI_PLUGIN_ID;
-					Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, msg));
+							+ Activator.getId();
+					Activator.log(new Status(IStatus.ERROR, Activator.getId(), msg));
 				}
 
 				console = CCorePlugin.getDefault().getConsole(extConsoleId, consoleId, consoleName, defaultIcon);
@@ -390,7 +389,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		if (console == null) {
 			// that looks in extension points registry and won't find the id, this console
 			// is not shown
-			console = CCorePlugin.getDefault().getConsole(Activator.PLUGIN_ID + ".console.hidden"); //$NON-NLS-1$
+			console = CCorePlugin.getDefault().getConsole(Activator.getId() + ".console.hidden"); //$NON-NLS-1$
 		}
 
 		return console;
