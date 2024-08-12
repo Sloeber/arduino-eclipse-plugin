@@ -1,5 +1,8 @@
 package io.sloeber.core;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 /*
  * This test compiles all examples on all Arduino avr hardware
  * That is "compatible hardware as not all examples can be compiled for all hardware
@@ -9,7 +12,6 @@ package io.sloeber.core;
  * At the time of writing 560 examples are compiled
  *
  */
-import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,7 +22,6 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
-import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -92,8 +93,8 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     public void testExample(String projectName, CodeDescription codeDescriptor,
             MCUBoard board) throws Exception {
 
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        assumeTrue( Shared.buildCounter++ >= mySkipAtStart,"Skipping first " + mySkipAtStart + " tests");
+        assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
 
         myTotalFails++;
         assertNull (Shared.buildAndVerify(projectName, board.getBoardDescriptor(), codeDescriptor,

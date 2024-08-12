@@ -1,14 +1,14 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.*;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SloeberProject;
@@ -31,8 +31,8 @@ public class UpgradeTest {
      *
      * @throws Exception
      */
-    @Before
-    public void setup() {
+    @BeforeAll
+    public static void setup() {
         // stop bonjour as it clutters the console log
         Preferences.setUseBonjour(false);
         Shared.waitForAllJobsToFinish();
@@ -58,16 +58,12 @@ public class UpgradeTest {
         theTestProject.open(null);
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-        if (Shared.hasBuildErrors(theTestProject)==null) {
-            fail("The project has been automagically upgraded:" + projectName);
-        }
+        assertNotNull("The project has been automagically upgraded:" + projectName, Shared.hasBuildErrors(theTestProject));
         //try to convert the project
         SloeberProject.convertToArduinoProject(theTestProject, null);
         Shared.waitForAllJobsToFinish(); // for the indexer
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-        if (Shared.hasBuildErrors(theTestProject)!=null) {
-            fail("Failed to compile the upgraded project:" + Shared.hasBuildErrors(theTestProject));
-        }
+        assertNull("Failed to compile the upgraded project:" + projectName, Shared.hasBuildErrors(theTestProject));
     }
 
     /**

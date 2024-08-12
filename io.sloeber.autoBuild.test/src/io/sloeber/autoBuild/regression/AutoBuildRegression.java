@@ -1,7 +1,12 @@
 package io.sloeber.autoBuild.regression;
 
-import static org.junit.Assert.*;
 import static io.sloeber.autoBuild.helpers.Defaults.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,11 +26,7 @@ import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -92,7 +93,7 @@ public class AutoBuildRegression {
 
 
         IAutoBuildConfigurationDescription beforeClose= IAutoBuildConfigurationDescription.getActiveConfig( testProject,false);
-        assertFalse("Changed configuration matches unchanged",beforeClose.equals(beforeChange));
+        assertFalse(beforeClose.equals(beforeChange),"Changed configuration matches unchanged");
 
         //Build all the configurations and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
@@ -107,7 +108,7 @@ public class AutoBuildRegression {
         //open the project
         testProject.open(new NullProgressMonitor());
         IAutoBuildConfigurationDescription afterClose= IAutoBuildConfigurationDescription.getActiveConfig( testProject,false);
-        assertTrue("loaded configuration does not match stored",beforeClose.equals(afterClose));
+        assertTrue(beforeClose.equals(afterClose),"loaded configuration does not match stored");
         //Build all the configurations and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
     }
@@ -129,12 +130,11 @@ public class AutoBuildRegression {
 
     @Test
     public void setBuilder() throws Exception {
-        beforeAll();// for one reason or another the before all is not called
         String projectName = "setBuilder";
 
         IProjectType projectType= AutoBuildManager.getProjectType( extensionPointID, defaultExtensionID, defaultProjectTypeID, true);
         IBuildTools buildTools = IBuildToolsManager.getDefault().getAnyInstalledBuildTools(projectType);
-        assertNotNull("no build tools found on the system", buildTools);
+        assertNotNull( buildTools,"no build tools found on the system");
         IProject testProject = AutoBuildProject.createProject(projectName, projectType, CCProjectNature.CC_NATURE_ID,
         		cpp_exeCodeProvider, buildTools, false, null);
 
@@ -163,13 +163,13 @@ public class AutoBuildRegression {
         //Build all the configurations and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
 
-        assertNotEquals("Builder changes have not been taken into account", makeFile.exists(), hasMakefile);
+        assertNotEquals( makeFile.exists(), hasMakefile,"Builder changes have not been taken into account");
 
         //clean activeConfig and verify clean has been done properly
         Shared.cleanConfiguration(activeConfig);
         activeConfig.getBuildFolder().delete(true, new NullProgressMonitor());
 
-        assertFalse("Clean did not remove makefile", makeFile.exists());
+        assertFalse( makeFile.exists(),"Clean did not remove makefile");
 
         //close the project
         testProject.close(new NullProgressMonitor());
@@ -180,7 +180,7 @@ public class AutoBuildRegression {
         //Build all the configurations and verify proper building
         Shared.BuildAndVerifyActiveConfig(testProject);
 
-        assertNotEquals("Builder changes have been lost in open close projects", makeFile.exists(), hasMakefile);
+        assertNotEquals( makeFile.exists(), hasMakefile,"Builder changes have been lost in open close projects");
     }
 
     static String savePreviousCommand = null;
@@ -232,15 +232,15 @@ public class AutoBuildRegression {
             if (previousCommand.equals(CurrentCommand) == false) {
                 getTheCompileCommand(autoConf, tool);
             }
-            assertTrue("option is not consistent " + CurrentCommand + " " + previousCommand,
-                    previousCommand.equals(CurrentCommand));
+            assertTrue(previousCommand.equals(CurrentCommand),
+            		"option is not consistent " + CurrentCommand + " " + previousCommand);
         } else {
             String[] parts = CurrentCommand.split(Pattern.quote(" " + commandContribution + " "));
             if (parts.length != 2) {
                 getTheCompileCommand(autoConf, tool);
             }
-            assertTrue("option contribution did not appear " + CurrentCommand, parts.length == 2);
-            assertTrue("option contribution appeard multiple times in command " + CurrentCommand, parts.length < 3);
+            assertTrue( parts.length == 2,"option contribution did not appear " + CurrentCommand);
+            assertTrue( parts.length < 3,"option contribution appeard multiple times in command " + CurrentCommand);
             String reGlued = parts[0] + " " + parts[1];
             if (!previousCommand.equals(reGlued)) {
                 fail("option is not consistent " + CurrentCommand + " " + previousCommand);

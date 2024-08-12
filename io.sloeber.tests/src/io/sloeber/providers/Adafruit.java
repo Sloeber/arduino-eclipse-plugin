@@ -1,6 +1,7 @@
 package io.sloeber.providers;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;

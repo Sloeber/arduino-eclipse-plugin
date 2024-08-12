@@ -1,6 +1,8 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
-import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -97,8 +98,8 @@ public class CreateAndCompileLibraryExamplesTest {
 	@MethodSource("CreateAndCompileLibraryExamplesTestData")
     public void testExamples(String name, MCUBoard boardID, Example example) throws Exception {
 
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        assumeTrue( Shared.buildCounter++ >= mySkipAtStart,"Skipping first " + mySkipAtStart + " tests");
+        assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
         if (! example.worksOnBoard(boardID)) {
             fail("Trying to run a test on unsoprted board");
             myTotalFails++;

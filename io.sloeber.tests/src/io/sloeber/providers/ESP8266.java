@@ -1,6 +1,7 @@
 package io.sloeber.providers;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Map;
 import java.util.TreeMap;

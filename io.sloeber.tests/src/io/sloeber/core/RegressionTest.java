@@ -1,6 +1,7 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.*;
+
+
 
 import java.io.File;
 import java.util.Arrays;
@@ -14,9 +15,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 import java.net.URI;
-import org.junit.Assert;
-import org.junit.Before;
+
 import org.apache.commons.io.FileUtils;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
@@ -31,11 +32,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.BoardDescription;
@@ -68,7 +71,7 @@ public class RegressionTest {
 	 * installer job will trigger downloads These must have finished before we can
 	 * start testing
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() throws Exception {
 		Shared.waitForBoardsManager();
 		Shared.setDeleteProjects(false);
@@ -77,7 +80,7 @@ public class RegressionTest {
 		installAdditionalLibs();
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeTest() {
 		//make sure the fail message is cleaned before the tests is started
 		Shared.getLastFailMessage();
@@ -127,7 +130,7 @@ public class RegressionTest {
 				new CompileDescription(), monitor);
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 
 		CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 		ICProjectDescription cProjectDescription = cCorePlugin.getProjectDescription(theTestProject);
@@ -143,7 +146,7 @@ public class RegressionTest {
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		if (Shared.hasBuildErrors(theTestProject) != null) {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+			assertNull(Shared.hasBuildErrors(theTestProject));
 		}
 	}
 
@@ -164,7 +167,7 @@ public class RegressionTest {
 				new CompileDescription(), new NullProgressMonitor());
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	@Test
@@ -179,7 +182,7 @@ public class RegressionTest {
 				new CompileDescription(), new NullProgressMonitor());
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -195,7 +198,7 @@ public class RegressionTest {
 				new CompileDescription(), new NullProgressMonitor());
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	/**
@@ -213,7 +216,7 @@ public class RegressionTest {
 		IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoard.getBoardDescriptor(),
 				codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -243,7 +246,7 @@ public class RegressionTest {
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	/**
@@ -267,7 +270,7 @@ public class RegressionTest {
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
 	/**
@@ -291,7 +294,7 @@ public class RegressionTest {
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull(Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject));
 
 	}
 
@@ -315,7 +318,7 @@ public class RegressionTest {
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull("Failed to compile the project before config rename", Shared.hasBuildErrors(theTestProject));
+		assertNull( Shared.hasBuildErrors(theTestProject),"Failed to compile the project before config rename");
 
 		CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 		ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(theTestProject);
@@ -324,7 +327,7 @@ public class RegressionTest {
 		cCorePlugin.setProjectDescription(theTestProject, prjCDesc);
 
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		Assert.assertNull("Failed to compile the project after config rename", Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject),"Failed to compile the project after config rename" );
 	}
 
 	// /**
@@ -390,8 +393,7 @@ public class RegressionTest {
 		Shared.waitForIndexer(theTestProject);
 		// also do a build
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project before close: " + projectName,
-				Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject),"Failed to compile the project before close: " + projectName);
 
 		// also do a clean
 		theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, null);
@@ -431,8 +433,7 @@ public class RegressionTest {
 
 		// also do a build
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project after open: " + projectName,
-				Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject),"Failed to compile the project after open: " + projectName);
 
 	}
 
@@ -539,13 +540,13 @@ public class RegressionTest {
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		Assert.assertNull("Failed to compile the project: " + Shared.hasBuildErrors(theTestProject),
-				Shared.hasBuildErrors(theTestProject));
+		assertNull(Shared.hasBuildErrors(theTestProject),
+				"Failed to compile the project: " + Shared.hasBuildErrors(theTestProject));
 		String fileLocation = projectFolder.append("src").append(proj1Name + ".cpp").toString();
 
 		IFile cppFile = theTestProject.getFolder("src").getFile(proj1Name + ".cpp");
-		Assert.assertTrue("File not in correct location", cppFile.exists());
-		Assert.assertEquals("File not in correct location", cppFile.getLocation().toString(), fileLocation);
+		assertTrue( cppFile.exists(),"File not in correct location");
+		assertEquals( cppFile.getLocation().toString(), fileLocation,"File not in correct location");
 
 	}
 
@@ -575,16 +576,15 @@ public class RegressionTest {
 	public void uploadPattern() throws Exception {
 		BoardDescription boardDescriptor = Arduino.uno().getBoardDescriptor();
 		String recipeKey = boardDescriptor.getUploadPatternKey();
-		assertEquals("uno upload recipe key is wrong", "tools.avrdude.upload.pattern", recipeKey);
+		assertEquals( "tools.avrdude.upload.pattern", recipeKey,"uno upload recipe key is wrong");
 		boardDescriptor = ESP32.esp32().getBoardDescriptor();
 		boardDescriptor.setUploadPort("host 10.10.10.10");
 		recipeKey = boardDescriptor.getUploadPatternKey();
-		assertEquals("ESP OTA upload recipe key is wrong", "tools.esptool_py.upload.network_pattern", recipeKey);
+		assertEquals( "tools.esptool_py.upload.network_pattern", recipeKey,"ESP OTA upload recipe key is wrong");
 
 	}
 
 	public static Stream<Arguments> testDifferentSourceFoldersData() throws Exception {
-		beforeClass();// This is not always called
 		List<Arguments> ret = new LinkedList<>();
 		OtherDescription otherDesc = new OtherDescription();
 		CompileDescription projCompileDesc = new CompileDescription();
@@ -625,7 +625,7 @@ public class RegressionTest {
 
 		Shared.waitForIndexer(theTestProject);
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
-		assertNull("Failed to compile " + projectName, Shared.hasBuildErrors(theTestProject));
+		assertNull( Shared.hasBuildErrors(theTestProject),"Failed to compile " + projectName);
 
 		String srcFolder = codeDescriptor.getCodeFolder();
 		IFile cppFile = null;
@@ -634,7 +634,7 @@ public class RegressionTest {
 		} else {
 			cppFile = theTestProject.getFolder(srcFolder).getFile(projectName + ".cpp");
 		}
-		assertTrue("Source File not in right location " + projectName, cppFile.exists());
+		assertTrue( cppFile.exists(),"Source File not in right location " + projectName);
 	}
 
 	/**
@@ -656,7 +656,7 @@ public class RegressionTest {
 			fail("redirect Json ");
 			return;
 		}
-		Assert.assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
+		assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
 				new CompileDescription()));
 	}
 
@@ -682,7 +682,7 @@ public class RegressionTest {
 				}
 			}
 		}
-		assertNotNull("HID Lib \"" + HIDlibName + "\" Not found", lib);
+		assertNotNull( lib,"HID Lib \"" + HIDlibName + "\" Not found");
 
 		Set<IExample> testExamples = new HashSet<>();
 		testExamples.add(example);
@@ -708,12 +708,11 @@ public class RegressionTest {
 			Shared.waitForIndexer(theTestProject);
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		}
-		assertTrue("Archive " + libArchive.toString() + " does not exists", libArchive.exists());
+		assertTrue( libArchive.exists(),"Archive " + libArchive.toString() + " does not exists");
 
 	}
 
 	static Stream<Arguments> openAndClosePreservesSettingsValueCmd() throws Exception {
-		beforeClass();// This is not always called
 		CodeDescription codeDescriptordefaultCPPRoot = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPPSrc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
 		CodeDescription codeDescriptordefaultCPXX = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
@@ -731,7 +730,6 @@ public class RegressionTest {
 	}
 
 	public static Stream<Arguments> NightlyBoardPatronTestData() throws Exception {
-		beforeClass();// This is not always called
 		Preferences.setUseArduinoToolSelection(true);
 		CompileDescription compileOptions = new CompileDescription();
 		MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
@@ -763,7 +761,7 @@ public class RegressionTest {
 
 		BoardDescription boardDescriptor = boardID.getBoardDescriptor();
 		boardDescriptor.setOptions(boardID.getBoardOptions(example));
-		Assert.assertNull(
+		assertNull(
 				Shared.buildAndVerifyAllBuilders(name, boardID.getBoardDescriptor(), codeDescriptor, compileOptions));
 
 	}

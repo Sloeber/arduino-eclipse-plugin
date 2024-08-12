@@ -1,6 +1,8 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,7 +12,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -109,8 +110,8 @@ public class CreateAndCompileExamplesTest {
         // There are only a number of issues you can handle
         // best is to focus on the first ones and then rerun starting with the
         // failures
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", Shared.buildCounter++ >= mySkipAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        assumeTrue( Shared.buildCounter++ >= mySkipAtStart,"Skipping first " + mySkipAtStart + " tests");
+        assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
 
         Shared.buildCounter++;
         myTotalFails++;

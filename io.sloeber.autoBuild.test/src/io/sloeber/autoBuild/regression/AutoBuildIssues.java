@@ -1,7 +1,7 @@
 package io.sloeber.autoBuild.regression;
 
 import static io.sloeber.autoBuild.helpers.Defaults.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
@@ -90,7 +90,6 @@ public class AutoBuildIssues {
 
     @Test
     public void setDescriptionDoesNotSetDescription() throws Exception {
-        beforeAll();// for one reason or another the beforeall is not called
         String projectName = "setDescription";
         CoreModel coreModel = CoreModel.getDefault();
 

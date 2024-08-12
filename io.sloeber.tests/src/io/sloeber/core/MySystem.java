@@ -1,7 +1,7 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.*;
 import static io.sloeber.core.api.Const.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;

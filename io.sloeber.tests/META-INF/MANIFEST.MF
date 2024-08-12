@@ -12,10 +12,11 @@ Require-Bundle: io.sloeber.core,
  org.eclipse.core.resources,
  junit-jupiter-params;bundle-version="5.10.2",
  junit-jupiter-api;bundle-version="5.10.2",
- org.junit;bundle-version="4.13.2",
  org.apache.log4j,
  org.eclipse.swt,
- io.sloeber.autoBuild
+ io.sloeber.autoBuild,
+ org.opentest4j,
+ junit-platform-suite-api
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor,

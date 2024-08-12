@@ -1,7 +1,8 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.*;
 import static io.sloeber.core.api.Const.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
-import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -337,8 +337,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	@MethodSource("allBoards")
 	public void testBoard(BoardDescription board) throws Exception {
 		Shared.buildCounter++;
-		Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", Shared.buildCounter >= mySkipTestsAtStart);
-		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+		assumeTrue( Shared.buildCounter >= mySkipTestsAtStart,"Skipping first " + mySkipTestsAtStart + " tests");
+		assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
 
 		IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
 		myTotalFails++;

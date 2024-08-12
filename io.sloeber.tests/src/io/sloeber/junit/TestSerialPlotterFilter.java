@@ -1,13 +1,15 @@
 package io.sloeber.junit;
 
-import static org.junit.Assert.assertEquals;
 import static io.sloeber.core.api.Const.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+
 
 import io.sloeber.ui.monitor.internal.SerialListener;
 

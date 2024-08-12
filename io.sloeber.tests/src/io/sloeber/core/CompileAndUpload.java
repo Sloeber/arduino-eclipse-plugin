@@ -1,7 +1,8 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileInputStream;

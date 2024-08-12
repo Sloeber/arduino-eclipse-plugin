@@ -1,9 +1,10 @@
 package io.sloeber.junit;
 
 import static io.sloeber.core.txt.WorkAround.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 @SuppressWarnings({ "nls", "static-method" })
 public class TestWorkAround {
@@ -16,7 +17,7 @@ public class TestWorkAround {
                 + "blabla${path}moreBla${jar_file}extraBla${upload.params}endBla\n";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("Add Curly Braces", expectedResult, result);
+        assertEquals( expectedResult, result,"Add Curly Braces");
     }
 
 
@@ -27,7 +28,7 @@ public class TestWorkAround {
         String expectedResult = "tools.something.upload.verify=dummy\n" + "tools.something.else=${upload.verify}";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("upload.verify should not be expanded", expectedResult, result);
+        assertEquals( expectedResult, result,"upload.verify should not be expanded");
     }
 
     @Test
@@ -36,7 +37,7 @@ public class TestWorkAround {
         String expectedResult = "tools.something.program.verify=dummy\n" + "tools.something.else=${program.verify}";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("upload.verify should not be expanded", expectedResult, result);
+        assertEquals( expectedResult, result,"upload.verify should not be expanded");
     }
 
     // "cmd", "path", "cmd.path", "config.path");
@@ -46,7 +47,7 @@ public class TestWorkAround {
         String expectedResult = "tools.something.else=${tools.something.cmd}";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("cmd should always be expanded", expectedResult, result);
+        assertEquals( expectedResult, result,"cmd should always be expanded");
     }
 
     @Test
@@ -55,7 +56,7 @@ public class TestWorkAround {
         String expectedResult = "tools.something.else=${tools.something.path}";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("path should always be expanded", expectedResult, result);
+        assertEquals( expectedResult, result,"path should always be expanded");
     }
 
     @Test
@@ -64,7 +65,7 @@ public class TestWorkAround {
         String expectedResult = "tools.something.else=${tools.something.cmd.path}";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("cmd should always be expanded", expectedResult, result);
+        assertEquals( expectedResult, result,"cmd should always be expanded");
     }
 
     @Test
@@ -73,7 +74,7 @@ public class TestWorkAround {
         String expectedResult = "tools.something.else=${tools.something.config.path}";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("path should always be expanded", expectedResult, result);
+        assertEquals( expectedResult, result,"path should always be expanded");
     }
     @Test
     public void HandleSpaceBeforeEqual() {
@@ -96,7 +97,7 @@ public class TestWorkAround {
                 + "";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("Handle space before =", expectedResult, result);
+        assertEquals( expectedResult, result,"Handle space before =");
     }
 
     @Test
@@ -107,6 +108,6 @@ public class TestWorkAround {
                 + "tools.xmcprog.upload.pattern=java -jar \"${tools.xmcprog.path}/${jar_file}\" ${upload.params}\n";
         String result = platformApplyWorkArounds(input, null);
 
-        assertEquals("Handle space before =", expectedResult, result);
+        assertEquals( expectedResult, result,"Handle space before =");
     }
 }

@@ -1,6 +1,7 @@
 package io.sloeber.autoBuild.helpers;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -181,7 +182,7 @@ public class Shared {
 		iProject.build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor());
 		if (buildRoot.exists()) {
 			int membersAfterClean = buildRoot.members().length;
-			assertTrue("clean did not remove files", membersAfterClean <= membersBeforeClean);
+			assertTrue( membersAfterClean <= membersBeforeClean,"clean did not remove files");
 		}
 	}
 

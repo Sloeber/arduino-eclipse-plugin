@@ -12,7 +12,9 @@ package io.sloeber.core;
  * only the private static method skipExample allows to skip examples
  */
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,7 +25,6 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
-import org.junit.Assume;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -91,8 +92,8 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@MethodSource("teensyHardwareData")
     public void testArduinoIDEExamplesOnTeensy(String testName, CodeDescription codeDescriptor,
             BoardDescription board) throws Exception {
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        assumeTrue( myBuildCounter++ >= mySkipAtStart,"Skipping first " + mySkipAtStart + " tests");
+        assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
         myTotalFails++;
         assertNull (Shared.buildAndVerify(testName, board, codeDescriptor, new CompileDescription()));
         myTotalFails--;
