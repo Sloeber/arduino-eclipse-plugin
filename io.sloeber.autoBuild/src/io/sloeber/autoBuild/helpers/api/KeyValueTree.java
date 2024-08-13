@@ -24,7 +24,7 @@ public class KeyValueTree {
 	private KeyValueTree myParent;
 
 	public static KeyValueTree createRoot() {
-		return new KeyValueTree(null, null);
+		return new KeyValueTree((String)null,(String) null);
 	}
 
 	private KeyValueTree(String newKey, String newValue) {
@@ -32,6 +32,33 @@ public class KeyValueTree {
 		myKey = newKey;
 		myValue = newValue;
 		myParent = null;
+	}
+
+	/**
+	 * Copy constructor from this location (parent of source is ignored
+	 * Note this copy constructor assumes the strings themselves are not changed.
+	 *
+	 * @param source
+	 */
+	public KeyValueTree(KeyValueTree source) {
+		this( source, null);
+	}
+
+	private KeyValueTree(KeyValueTree source, KeyValueTree parent) {
+		myChildren = new TreeMap<>();
+		myKey = source.myKey;
+		myValue = source.myValue;
+		myParent = parent;
+		copyChildren(source.myChildren);
+	}
+
+	private void copyChildren(Map<String, KeyValueTree> children) {
+		if(children==null) {
+			return;
+		}
+		for(Entry<String, KeyValueTree> curChild:children.entrySet()) {
+			myChildren.put(curChild.getKey(),new KeyValueTree(curChild.getValue(),this));
+		}
 	}
 
 	public KeyValueTree getParent() {
@@ -94,12 +121,8 @@ public class KeyValueTree {
 		return toKeyValues(EMPTY_STRING, theRoot);
 	}
 
-	public Map<String, String> toKeyValues(String prefix, boolean addParents) {
-		KeyValueTree theRoot = this;
-		if (addParents) {
-			theRoot = null;
-		}
-		return toKeyValues(prefix, theRoot);
+	public Map<String, String> toKeyValues(String prefix) {
+		return toKeyValues(prefix, this);
 	}
 
 	public String dump() {
