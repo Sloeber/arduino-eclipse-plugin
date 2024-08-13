@@ -6,6 +6,7 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -16,14 +17,16 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.osgi.framework.Bundle;
 
 import io.sloeber.autoBuild.api.ICodeProvider;
+import io.sloeber.core.Activator;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.internal.Example;
 import io.sloeber.core.tools.FileModifiers;
@@ -290,20 +293,33 @@ public class CodeDescription implements ICodeProvider {
 				replacers.putAll(myReplacers);
 			}
 
+			Bundle bundle = Activator.getBundleContext().getBundle();
+			Path templatePath = new Path("/src/io/sloeber/core/templates/");
+
 			switch (myCodeType) {
 			case None:
 				break;
 			case defaultIno:
+				URL inoFileURL = FileLocator.find(bundle, templatePath.append(DEFAULT_SKETCH_INO), null);
+				URL inoResolvedFileURL = FileLocator.toFileURL(inoFileURL);
+				String inoFileLoc= new Path(inoResolvedFileURL.toURI().getPath()).toOSString();
 				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString( project.getName() + ".ino")),
-						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false, replacers),
+						Stream.openContentStream(inoFileLoc, true, replacers),
 						monitor, false);
 				break;
 			case defaultCPP:
+				URL cppFileURL = FileLocator.find(bundle, templatePath.append(DEFAULT_SKETCH_CPP), null);
+				URL cppResolvedFileURL = FileLocator.toFileURL(cppFileURL);
+				String cppFileLoc=  new Path(cppResolvedFileURL.toURI().getPath()).toOSString();
+				URL hFileURL = FileLocator.find(bundle, templatePath.append(DEFAULT_SKETCH_H), null);
+				URL hResolvedFileURL = FileLocator.toFileURL(hFileURL);
+				String hFileLoc=  new Path(hResolvedFileURL.toURI().getPath()).toOSString();
+
 				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(project.getName() + ".cpp")),
-						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_CPP, false, replacers),
+						Stream.openContentStream(cppFileLoc, true, replacers),
 						monitor, false);
 				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(project.getName() + ".h")),
-						Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_H, false, replacers),
+						Stream.openContentStream(hFileLoc, true, replacers),
 						monitor, false);
 				break;
 			case CustomTemplate:
@@ -360,7 +376,7 @@ public class CodeDescription implements ICodeProvider {
 				break;
 			}
 
-		} catch (CoreException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}

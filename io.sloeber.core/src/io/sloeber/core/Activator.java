@@ -63,8 +63,15 @@ public class Activator extends Plugin {
 
     private static IndexerListener myindexerListener = new IndexerListener();
 
+    private static BundleContext myBundleContext = null;
+
+    public static BundleContext getBundleContext() {
+        return myBundleContext;
+    }
+
     @Override
     public void start(BundleContext context) throws Exception {
+    	myBundleContext=context;
         instance = this;
         IPath installPath = ConfigurationPreferences.getInstallationPath();
         installPath.toFile().mkdirs();
@@ -271,6 +278,7 @@ public class Activator extends Plugin {
         unRegisterListeners();
         instance = null;
         super.stop(context);
+        myBundleContext=null;
     }
 
     /**
