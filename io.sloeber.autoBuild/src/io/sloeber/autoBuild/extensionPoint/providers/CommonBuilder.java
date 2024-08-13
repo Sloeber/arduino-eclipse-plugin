@@ -43,10 +43,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 

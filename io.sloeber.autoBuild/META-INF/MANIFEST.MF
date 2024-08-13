@@ -37,7 +37,6 @@ Export-Package: io.sloeber.autoBuild.api;
    io.sloeber.buildTool.api",
  io.sloeber.autoBuild.buildTools.api;uses:="org.eclipse.core.runtime",
  io.sloeber.autoBuild.buildTools.internal;x-friends:="io.sloeber.autoBuild.test",
- io.sloeber.autoBuild.core;uses:="org.osgi.framework,org.eclipse.core.runtime,org.eclipse.osgi.util",
  io.sloeber.autoBuild.extensionPoint;
   uses:="org.eclipse.cdt.core.cdtvariables,
    org.eclipse.core.runtime,

@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 

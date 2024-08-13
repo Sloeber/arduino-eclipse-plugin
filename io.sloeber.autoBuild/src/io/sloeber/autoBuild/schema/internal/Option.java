@@ -31,7 +31,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.schema.internal;
 
-import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 

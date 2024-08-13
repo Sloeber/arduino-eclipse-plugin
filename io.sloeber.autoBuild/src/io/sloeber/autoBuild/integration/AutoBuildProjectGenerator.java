@@ -29,11 +29,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.tools.templates.core.IGenerator;
 
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.schema.internal.Configuration;

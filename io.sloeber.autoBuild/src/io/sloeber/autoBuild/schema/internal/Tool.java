@@ -1,6 +1,6 @@
 package io.sloeber.autoBuild.schema.internal;
 
-import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
@@ -31,11 +31,11 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRule;
 import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRules;

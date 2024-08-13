@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.core;
+package io.sloeber.autoBuild.api;
 
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import static java.io.File.pathSeparator;
@@ -39,7 +39,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.ITool;
 

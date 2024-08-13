@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.AutoBuildConfigurationExtensionDescription;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IBuildRunner;
@@ -43,7 +44,6 @@ import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.autoBuild.schema.api.IConfiguration;

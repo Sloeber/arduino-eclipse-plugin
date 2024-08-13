@@ -14,7 +14,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.schema.internal;
 
-import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import org.eclipse.core.resources.IFile;
@@ -25,8 +25,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
-import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 import io.sloeber.autoBuild.schema.api.IInputType;
 import io.sloeber.autoBuild.schema.api.IOutputType;

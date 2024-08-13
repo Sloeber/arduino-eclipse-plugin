@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolType;
-import io.sloeber.autoBuild.core.AutoBuildCommon;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 
 public class PathBuildTools implements IBuildTools {
