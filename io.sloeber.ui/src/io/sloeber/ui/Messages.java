@@ -15,6 +15,8 @@ public class Messages extends NLS {
     public static final String EMAIL = "{EMAIL}"; //$NON-NLS-1$
     public static final String URL = "{URL}"; //$NON-NLS-1$
 
+	public static String ui_select_debug_level;
+
 	public static String Build_Error_Before_Upload;
     public static String Invalid_Private_Hardware_folder;
     public static String Invalid_Private_Library_folder;
@@ -174,6 +176,7 @@ public class Messages extends NLS {
 	public static String ui_new_sketch_sketch_source_folder;
 
     public static String yes;
+
 
     static {
         // initialize resource bundle

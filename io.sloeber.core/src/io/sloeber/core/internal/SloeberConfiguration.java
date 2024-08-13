@@ -9,6 +9,7 @@ import java.util.Set;
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -238,11 +239,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 * @return true when data was missing
 	 */
 	private boolean getEnvVarsNonExpanding() {
-			IProject project = getProject();
-
 			myEnvironmentVariables.clear();
 
-			myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
+			myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH,getCodeLocation().toOSString());
 //			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
 //					getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
 
@@ -275,6 +274,22 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 						+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
 			}
 			return (myBoardDescription == null) || (myCompileDescription == null)|| (myOtherDesc == null);
+	}
+
+	private IPath getCodeLocation() {
+		IProject project = getProject();
+		IPath arduinoPath=project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath();
+		ICSourceEntry[] sourceEntries = getAutoBuildDesc().getCdtConfigurationDescription().getSourceEntries();
+		for (ICSourceEntry curEntry : sourceEntries) {
+			IPath entryPath=curEntry.getFullPath();
+			if (arduinoPath.isPrefixOf( entryPath)) {
+				//this is the arduino code folder: ignore
+				continue;
+			}
+			//Just pick the first none arduino one as there should only be one
+			return curEntry.getLocation();
+		}
+		return project.getLocation();
 	}
 
 	/**

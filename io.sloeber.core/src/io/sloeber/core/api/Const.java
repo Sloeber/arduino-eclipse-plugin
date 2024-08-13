@@ -60,6 +60,7 @@ public class Const extends AutoBuildConstants {
     public static final String IDE="ide";
     public static final String VERSION="version";
     public static final String PROTOCOL = "protocol";
+    public static final String VENDOR = "VENDOR";
     public static final String VENDOR_ARDUINO = ARDUINO;
 
     // arduino txt pre and suffix
@@ -164,6 +165,7 @@ public class Const extends AutoBuildConstants {
     public static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
     public static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
     public static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
+    public static final String ENV_KEY_BUILD_FQBN = BUILD + DOT + "fqbn";
 
     public static final String ENV_KEY_RUNTIME_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
     public static final String ENV_KEY_RUNTIME_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;

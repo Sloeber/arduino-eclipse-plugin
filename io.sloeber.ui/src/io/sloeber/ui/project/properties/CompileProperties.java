@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.CompileDescription.DebugLevels;
 import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.ui.LabelCombo;
@@ -24,6 +25,8 @@ import io.sloeber.ui.Messages;
 public class CompileProperties extends SloeberCpropertyTab {
 	private LabelCombo myWarningLevel;
 	private Text myCustomWarningLevel;
+	private LabelCombo myDebugLevel;
+	private Text myCustomDebugLevel;
 	private LabelCombo mySizeCommand;
 	private Text myCustomSizeCommand;
 	private Text myCAndCppCommand;
@@ -45,6 +48,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 			getFromScreen();
 			myCustomWarningLevel.setEnabled(myCompDesc.getWarningLevel() == WarningLevels.CUSTOM);
 			myCustomSizeCommand.setEnabled(myCompDesc.getSizeCommand() == SizeCommands.CUSTOM);
+			myCustomDebugLevel.setEnabled(myCompDesc.getDebugLevel() == DebugLevels.CUSTOM);
 		}
 	};
 	private FocusListener foucusListener = new FocusListener() {
@@ -89,7 +93,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 	// From
 	// https://stackoverflow.com/questions/13783295/getting-all-names-in-an-enum-as-a-string#13783744
 	private static String[] getNames(Class<? extends Enum<?>> e) {
-		return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
+		return Arrays.stream(e.getEnumConstants()).map(Enum::toString).toArray(String[]::new);
 	}
 
 	@Override
@@ -110,6 +114,15 @@ public class CompileProperties extends SloeberCpropertyTab {
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		myCustomWarningLevel.setLayoutData(gridData);
 		myCustomWarningLevel.addFocusListener(foucusListener);
+
+		myDebugLevel = new LabelCombo(usercomp, Messages.ui_select_debug_level, 1, true);
+		myDebugLevel.setItems(getNames(DebugLevels.class));
+		myDebugLevel.addListener(myLabelComboListener);
+
+		myCustomDebugLevel = new Text(usercomp, SWT.BORDER | SWT.LEFT);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		myCustomDebugLevel.setLayoutData(gridData);
+		myCustomDebugLevel.addFocusListener(foucusListener);
 
 		// checkbox show alternative size
 		mySizeCommand = new LabelCombo(usercomp, Messages.ui_Alternative_size, 1, true);
@@ -143,6 +156,10 @@ public class CompileProperties extends SloeberCpropertyTab {
 		myCustomWarningLevel.setEnabled(myCompDesc.getWarningLevel() == WarningLevels.CUSTOM);
 		myCustomWarningLevel.setText(myCompDesc.getWarningLevel().getCustomWarningLevel());
 
+		myDebugLevel.setText(myCompDesc.getDebugLevel().toString());
+		myCustomDebugLevel.setEnabled(myCompDesc.getDebugLevel() == DebugLevels.CUSTOM);
+		myCustomDebugLevel.setText(myCompDesc.getDebugLevel().getCustomDebugLevel());
+
 		mySizeCommand.setText(myCompDesc.getSizeCommand().toString());
 		myCustomSizeCommand.setEnabled(myCompDesc.getSizeCommand() == SizeCommands.CUSTOM);
 		myCustomSizeCommand.setText(myCompDesc.getSizeCommand().getCustomSizeCommand());
@@ -154,18 +171,47 @@ public class CompileProperties extends SloeberCpropertyTab {
 		myArchiveCommand.setText(myCompDesc.get_Archive_CompileOptions());
 		myAssemblyCommand.setText(myCompDesc.get_Assembly_CompileOptions());
 		myLinkCommand.setText(myCompDesc.get_Link_CompileOptions());
+
+
+		if (myCompDesc.getWarningLevel() != WarningLevels.CUSTOM) {
+			myCustomWarningLevel.setText(myCompDesc.getWarningLevel().getEnvValue());
+		}
+		if (myCompDesc.getDebugLevel() != DebugLevels.CUSTOM) {
+			myCustomDebugLevel.setText(myCompDesc.getDebugLevel().getEnvValue());
+		}
+		if (myCompDesc.getSizeCommand() != SizeCommands.CUSTOM) {
+			myCustomSizeCommand.setText(myCompDesc.getSizeCommand().getEnvValue());
+		}
+
+
 		disableListeners = false;
 	}
 
 	private void getFromScreen() {
 
-		WarningLevels warningLevel = WarningLevels.valueOf(myWarningLevel.getText());
+		WarningLevels warningLevel = WarningLevels.values()[myWarningLevel.getSelectionIndex()];
 		warningLevel.setCustomWarningLevel(myCustomWarningLevel.getText());
 
-		SizeCommands sizeCommand = SizeCommands.valueOf(mySizeCommand.getText());
+		DebugLevels debugLevel = DebugLevels.values()[myDebugLevel.getSelectionIndex()];
+		debugLevel.setCustomDebugLevel(myCustomDebugLevel.getText());
+
+		SizeCommands sizeCommand = SizeCommands.values()[mySizeCommand.getSelectionIndex()];
 		sizeCommand.setCustomSizeCommand(myCustomSizeCommand.getText());
 
+		if(warningLevel!=WarningLevels.CUSTOM) {
+		myCustomWarningLevel.setText(warningLevel.getEnvValue());
+		}
+		if(debugLevel!=DebugLevels.CUSTOM) {
+			myCustomDebugLevel.setText(debugLevel.getEnvValue());
+		}
+		if(sizeCommand!=SizeCommands.CUSTOM) {
+			myCustomSizeCommand.setText(sizeCommand.getEnvValue());
+		}
+
+
+
 		myCompDesc.setWarningLevel(warningLevel);
+		myCompDesc.setDebugLevel(debugLevel);
 		myCompDesc.setSizeCommand(sizeCommand);
 		myCompDesc.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
 		myCompDesc.set_C_CompileOptions(this.myCCommand.getText());

@@ -70,7 +70,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			if (disableListeners) {
 				return;
 			}
-			getBoardFromScreen();
+			getBoardFromScreen(false);
 
 			/*
 			 * Change the list of available boards
@@ -84,9 +84,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myControlUploadProtocol.setItems(myBoardDesc.getUploadProtocols());
 			myControlUploadProtocol.setText(myBoardDesc.getProgrammer());
 
-			
-			genericListenerEnd();
+			genericListenerEnd(false);
 			setTheLabelCombos(true);
+			genericListenerEnd(true);
 		}
 
 	};
@@ -97,9 +97,11 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			if (disableListeners) {
 				return;
 			}
-			
-			genericListenerEnd();
+
+			genericListenerEnd(false);
 			setTheLabelCombos(true);
+			genericListenerEnd(true);
+
 		}
 	};
 	protected Listener myChangeListener = new Listener() {
@@ -108,7 +110,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			if (disableListeners) {
 				return;
 			}
-			genericListenerEnd();
+			genericListenerEnd(true);
 		}
 	};
 
@@ -194,8 +196,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		myControlBoardsTxtFile.addListener(SWT.Modify, myBoardFileModifyListener);
 		myControlUploadProtocol.addListener(myChangeListener);
 		myControlUploadPort.addListener(myChangeListener);
-		genericListenerEnd();
-		setTheLabelCombos(true); 
+		genericListenerEnd(false);
+		setTheLabelCombos(true);
+		genericListenerEnd(true);
 
 	}
 
@@ -215,9 +218,9 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	 * This method should be called after each listener. It saves the current
 	 * settings validates the page for completeness reports back to the listener
 	 */
-	private void genericListenerEnd() {
+	private void genericListenerEnd(boolean ignoreOptions) {
 
-		getBoardFromScreen();
+		getBoardFromScreen(ignoreOptions);
 		boolean ret = true;
 		int selectedBoardFile = myControlBoardsTxtFile.getSelectionIndex();
 		if (selectedBoardFile == -1)
@@ -243,7 +246,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	/**
 	 * Get the options from screen you need the boarddescriptor to convert the menu
 	 * item name to menu item id
-	 * 
+	 *
 	 * @param boardDesc
 	 * @return a map containing menuid, menuitemid mapping with what is shown on
 	 *         screen
@@ -255,7 +258,8 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		Map<String, String> options = new HashMap<>();
 		for (Entry<String, LabelCombo> curOption : myBoardOptionCombos.entrySet()) {
 			String MenuID = curOption.getKey();
-			String menuItemName = curOption.getValue().getText();
+			LabelCombo combo = curOption.getValue();
+			String menuItemName = combo.getText();
 			String menuItemID = myBoardDesc.getMenuItemIDFromMenuItemName(menuItemName, MenuID);
 			options.put(MenuID, menuItemID);
 		}
@@ -264,14 +268,14 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateScreen(boolean updateData) {
-		if (mySloeberCfg!=null) {
+		if (mySloeberCfg != null) {
 			myBoardDesc = mySloeberCfg.getBoardDescription();
 		}
 		disableListeners = true;
-		
-		String nexBoardsFileText=tidyUpLength(myBoardDesc.getReferencingBoardsFile().toString());
-		boolean boardsFileChanged =myControlBoardsTxtFile.getText().equals(nexBoardsFileText);
-		boolean boardIDChanged=mycontrolBoardName.getText().equals(myBoardDesc.getBoardName());
+
+		String nexBoardsFileText = tidyUpLength(myBoardDesc.getReferencingBoardsFile().toString());
+		boolean boardsFileChanged = myControlBoardsTxtFile.getText().equals(nexBoardsFileText);
+		boolean boardIDChanged = mycontrolBoardName.getText().equals(myBoardDesc.getBoardName());
 
 		myControlBoardsTxtFile.setText(nexBoardsFileText);
 		mycontrolBoardName.setItems(myBoardDesc.getCompatibleBoards());
@@ -285,18 +289,20 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 
 		myControlUploadPort.setText(myBoardDesc.getUploadPort());
-		setTheLabelCombos(	 boardsFileChanged || boardIDChanged);
+		setTheLabelCombos(boardsFileChanged || boardIDChanged);
 		disableListeners = false;
 	}
 
-	private void getBoardFromScreen() {
+	private void getBoardFromScreen(boolean ignoreOptions) {
 		String selectedText = myControlBoardsTxtFile.getText().trim();
 		myBoardDesc.setreferencingBoardsFile(myAllBoardsFiles.get(selectedText));
 		myBoardDesc.setUploadPort(myControlUploadPort.getText());
 		myBoardDesc.setProgrammer(myControlUploadProtocol.getText());
 		myBoardDesc.setBoardName(mycontrolBoardName.getText());
+		if (!ignoreOptions)
+			return;
 		myBoardDesc.setOptions(getOptions());
-		if(mySloeberCfg != null) {
+		if (mySloeberCfg != null) {
 			mySloeberCfg.setBoardDescription(myBoardDesc);
 		}
 	}
@@ -371,7 +377,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	/**
 	 * save the options as they are selected so the user does not have to reenter
 	 * them next time they come to the old selection
-	 * 
+	 *
 	 * This does not work across opening of the dialog
 	 */
 	private void saveUsedOptionValues() {

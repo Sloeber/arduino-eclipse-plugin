@@ -138,6 +138,25 @@ public class TxtFile {
         return architecture;
     }
 
+    /*
+     * Returns the architecture based on the platform file name Caters for the
+     * packages (with version number and for the old way if the boards file does not
+     * exists returns avr
+     */
+    public String getVendor() {
+
+        IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
+        String vendor = platformFile.removeLastSegments(2).lastSegment();
+        if (vendor == null) {// for error conditions
+            vendor = "NotFound"; //$NON-NLS-1$
+        }
+        if (vendor.contains(DOT)) { // This is a version number so
+            // package
+            vendor = platformFile.removeLastSegments(3).lastSegment();
+        }
+        return vendor;
+    }
+
     /**
      * Given a nice name look for the ID The assumption is that the txt file
      * contains a line like ID.name=[nice name] Given this this method returns ID

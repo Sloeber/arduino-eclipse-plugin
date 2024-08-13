@@ -368,6 +368,10 @@ public class BoardDescription {
         return mySloeberBoardTxtFile.getArchitecture();
     }
 
+    public String getVendor() {
+        return mySloeberBoardTxtFile.getVendor();
+    }
+
     public File getReferencingBoardsFile() {
         return myUserSelectedBoardsTxtFile;
     }
@@ -450,7 +454,8 @@ public class BoardDescription {
         if (options == null) {
             return;
         }
-        this.myOptions.putAll(options);
+        myOptions.clear();
+        myOptions.putAll(options);
         setDirty();
     }
 
@@ -820,10 +825,8 @@ public class BoardDescription {
         if(isMac) {
         	allVars.put(ENV_KEY_RUNTIME_OS, "macosx"); //$NON-NLS-1$
         }
-        allVars.put(ENV_KEY_SOFTWARE,VENDOR_ARDUINO);
         allVars.put(ENV_KEY_ID,getBoardID());
-
-
+        allVars.put(ENV_KEY_BUILD_FQBN,getBoardFQBN());
 
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
         allVars.put(ENV_KEY_SERIAL_DOT_PORT, getActualUploadPort());
@@ -887,7 +890,18 @@ public class BoardDescription {
 
     }
 
-    private Map<String, String> getEnVarPlatformInfo() {
+    private String getBoardFQBN() {
+    	String fqbn=getVendor()+COLON+getArchitecture()+COLON+getBoardID();
+    	String options=EMPTY_STRING;
+    	String prefix=COLON;
+    	for(Entry<String, String> curOption:myOptions.entrySet()){
+    		options=options+prefix+curOption.getKey()+EQUAL+curOption.getValue();
+    		prefix=COMMA;
+    	}
+		return fqbn+options;
+	}
+
+	private Map<String, String> getEnVarPlatformInfo() {
         Map<String, String> ret = new HashMap<>();
 
         if (myReferencedPlatformUpload != null) {

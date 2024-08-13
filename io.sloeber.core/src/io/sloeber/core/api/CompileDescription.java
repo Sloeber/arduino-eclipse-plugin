@@ -5,15 +5,109 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
+import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.txt.TxtFile;
 
 public class CompileDescription {
+
+    public enum DebugLevels {
+		OPTIMIZED_FOR_DEBUG, OPTIMIZED_FOR_RELEASE, CUSTOM;
+
+        @Override
+		public String toString() {
+            switch (this) {
+            case OPTIMIZED_FOR_DEBUG:
+                return Messages.CompileDescription_OptimizedForDebug;
+            case OPTIMIZED_FOR_RELEASE:
+                return Messages.CompileDescription_OptimizedForRelease;
+            case CUSTOM:
+            	return Messages.CompileDescription_CustomDebugLevel;
+			default:
+				break;
+        }
+			return super.toString();
+		}
+        private String myCustomDebugLevel = EMPTY;
+
+        /**
+         * Set the custom command but only if the warning level is CUSTOM
+         *
+         * @param customCommand
+         *            the command that needs to be used
+         */
+        public void setCustomDebugLevel(String customDebugLevel) {
+            if (this == CUSTOM) {
+                myCustomDebugLevel = customDebugLevel;
+            }
+        }
+
+        public void setCustomDebugLevel(String customDebugLevel, boolean force) {
+            if (force) {
+            	myCustomDebugLevel = customDebugLevel;
+            } else {
+            	setCustomDebugLevel(customDebugLevel);
+            }
+
+        }
+
+        public String getCustomDebugLevel() {
+            return myCustomDebugLevel;
+        }
+
+        /**
+         * Get the string that should be put in the environment variable that places the
+         * warning part in the command string This is a non expanded string for Arduino
+         * IDE supported options This is what the user typed in the GUI in the CUSTOM
+         * case
+         *
+         * @return
+         */
+        public String getEnvValue() {
+            switch (this) {
+            case OPTIMIZED_FOR_DEBUG:
+                return "${compiler.optimization_flags.debug}"; //$NON-NLS-1$
+            case OPTIMIZED_FOR_RELEASE:
+                return "${compiler.optimization_flags.release}"; //$NON-NLS-1$
+            case CUSTOM:
+                return myCustomDebugLevel;
+			default:
+				return "${compiler.optimization_flags.release}"; //$NON-NLS-1$
+            }
+
+        }
+
+    }
+
+
     public enum WarningLevels {
+		@SuppressWarnings("hiding")
+		ALL, MORE, DEFAULT, NONE, CUSTOM;
 
-        NONE, MORE, ALL, CUSTOM;
+        @Override
+		public String toString() {
+            switch (this) {
+            case MORE:
+                return Messages.CompileDescription_WarningsMore;
+            case ALL:
+                return Messages.CompileDescription_WarningsAll;
+            case CUSTOM:
+                return Messages.CompileDescription_WarningsCustom;
+            case DEFAULT:
+            	return Messages.CompileDescription_WarningsDefault;
+            case NONE:
+                return Messages.CompileDescription_WarningsNone;
+			default:
+				break;
+            }
+			return super.toString();
+		}
 
-        private String myCustomWarningLevel = EMPTY;
+		private String myCustomWarningLevel = EMPTY;
 
         /**
          * Set the custom command but only if the warning level is CUSTOM
@@ -56,12 +150,14 @@ public class CompileDescription {
                 return "${compiler.warning_flags.all}"; //$NON-NLS-1$
             case CUSTOM:
                 return myCustomWarningLevel;
+            case DEFAULT:
+            	return "${compiler.warning_flags.default}";//$NON-NLS-1$
             case NONE:
-                // this is default
+                return "${compiler.warning_flags.none}"; //$NON-NLS-1$
 			default:
 				break;
             }
-            return "${compiler.warning_flags.none}"; //$NON-NLS-1$
+            return "${compiler.warning_flags.all}"; //$NON-NLS-1$
         }
 
     }
@@ -70,7 +166,24 @@ public class CompileDescription {
 
         ARDUINO_WAY, AVR_ALTERNATIVE, RAW_RESULT, CUSTOM;
 
-        private String myCustomSizeCommand = EMPTY;
+        @Override
+		public String toString() {
+            switch (this) {
+            case ARDUINO_WAY:
+            	return Messages.CompileDescription_SizeArduinoWay;
+            case AVR_ALTERNATIVE:
+                return Messages.CompileDescription_SizeAVRAlternative;
+            case RAW_RESULT:
+                return Messages.CompileDescription_SizeRawResult;
+            case CUSTOM:
+                return Messages.CompileDescription_SizeCustom;
+			default:
+				break;
+            }
+			return super.toString();
+		}
+
+		private String myCustomSizeCommand = EMPTY;
 
         /**
          * Set the custom command but only if the warning level is CUSTOM
@@ -125,8 +238,9 @@ public class CompileDescription {
         }
     }
 
-    private WarningLevels myWarningLevel = WarningLevels.NONE;
+    private WarningLevels myWarningLevel = WarningLevels.ALL;
     private SizeCommands mySizeCommand = SizeCommands.RAW_RESULT;
+    private DebugLevels myDebugLevel = DebugLevels.OPTIMIZED_FOR_RELEASE;
 
     private boolean myEnableParallelBuild = false;
     private String my_CPP_CompileOptions = new String();
@@ -138,6 +252,8 @@ public class CompileDescription {
     private String my_All_CompileOptions = new String();
 
     private static final String ENV_KEY_WARNING_LEVEL = "compiler.warning_flags"; //$NON-NLS-1$
+    private static final String ENV_KEY_DEBUG_LEVEL = "compiler.optimization_flags"; //$NON-NLS-1$
+
 
     private static final String SLOEBER_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.compile"; //$NON-NLS-1$
     private static final String SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.c.compile"; //$NON-NLS-1$
@@ -147,6 +263,9 @@ public class CompileDescription {
     private static final String SLOEBER_SIZE_CUSTOM = ENV_KEY_SLOEBER_START + "size.custom"; //$NON-NLS-1$
 
     private static final String SLOEBER_WARNING_LEVEL_CUSTOM = SLOEBER_WARNING_LEVEL + DOT + "custom"; //$NON-NLS-1$
+    private static final String SLOEBER_DEBUG_LEVEL = ENV_KEY_SLOEBER_START + "debug_level"; //$NON-NLS-1$
+    private static final String SLOEBER_DEBUG_LEVEL_CUSTOM = SLOEBER_DEBUG_LEVEL + DOT + "custom"; //$NON-NLS-1$
+
     // private static final String SLOEBER_SIZE_COMMAND = ENV_KEY_SLOEBER_START +
     // "alt_size_command"; //$NON-NLS-1$
     private static final String SLOEBER_SIZE_SWITCH = ENV_KEY_SLOEBER_START + "size.switch"; //$NON-NLS-1$
@@ -156,12 +275,21 @@ public class CompileDescription {
     private static final String SLOEBER_ALL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.all"; //$NON-NLS-1$
 
     public WarningLevels getWarningLevel() {
-        return this.myWarningLevel;
+        return myWarningLevel;
     }
 
-    public void setWarningLevel(WarningLevels myWarningLevel) {
-        this.myWarningLevel = myWarningLevel;
+    public void setWarningLevel(WarningLevels warningLevel) {
+        myWarningLevel = warningLevel;
     }
+
+    public DebugLevels getDebugLevel() {
+        return myDebugLevel;
+    }
+
+    public void setDebugLevel(DebugLevels debugLevel) {
+    	myDebugLevel = debugLevel;
+    }
+
 
     public boolean isParallelBuildEnabled() {
         return myEnableParallelBuild;
@@ -251,6 +379,7 @@ public class CompileDescription {
         ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
         ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
         ret.put(ENV_KEY_WARNING_LEVEL, myWarningLevel.getEnvValue());
+        ret.put(ENV_KEY_DEBUG_LEVEL, myDebugLevel.getEnvValue());
         ret.put(SLOEBER_SIZE_SWITCH, mySizeCommand.getEnvValue());
 
         return ret;
@@ -260,17 +389,21 @@ public class CompileDescription {
      * Given the compile options you currently have and the ones provided Is a
      * rebuild needed if you switch from one to another
      *
-     * @param curOptions
+     * @param otherOptions
      * @return true if a rebuild is needed otherwise false
      */
 
-    public boolean needsRebuild(CompileDescription curOptions) {
-        // ignore myWarningLevel
-        // ignore myAlternativeSizeCommand
-        if (curOptions == null) {
+    public boolean needsRebuild(CompileDescription otherOptions) {
+        // ignore myWarningLevel (as changing the warning level does not hurt
+        // ignore myAlternativeSizeCommand (as this is run anyways)
+        if (otherOptions == null) {
             return true;
         }
-        return !equalCompileOptions(curOptions);
+        //When the debuglevel is changed it is best to do a full rebuild
+        if(!myDebugLevel.getEnvValue().equals(otherOptions.myDebugLevel.getEnvValue())) {
+        	return true;
+        }
+        return !equalCompileOptions(otherOptions);
     }
 
     /**
@@ -290,9 +423,11 @@ public class CompileDescription {
         ret.put(SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
         ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
         ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-        ret.put(SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
+        ret.put(SLOEBER_WARNING_LEVEL, myWarningLevel.name());
         ret.put(SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
-        ret.put(SLOEBER_SIZE_TYPE, mySizeCommand.toString());
+        ret.put(SLOEBER_DEBUG_LEVEL, myDebugLevel.name());
+        ret.put(SLOEBER_DEBUG_LEVEL_CUSTOM, myDebugLevel.myCustomDebugLevel);
+        ret.put(SLOEBER_SIZE_TYPE, mySizeCommand.name());
         ret.put(SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
 
         return ret;
@@ -305,8 +440,10 @@ public class CompileDescription {
      * @param envVars
      */
     public CompileDescription(Map<String, String> envVars) {
-        String warningLevel = WarningLevels.NONE.toString();
+        String warningLevel = WarningLevels.ALL.name();
         String customWarningLevel = EMPTY;
+        String debugLevel = DebugLevels.OPTIMIZED_FOR_RELEASE.name();
+        String customDebugLevel = EMPTY;
         String sizeCommand = SizeCommands.RAW_RESULT.toString();
         String customSizeCommand = EMPTY;
         for (Entry<String, String> curEnvVar : envVars.entrySet()) {
@@ -337,9 +474,14 @@ public class CompileDescription {
             case SLOEBER_WARNING_LEVEL:
                 warningLevel = value;
                 break;
-
             case SLOEBER_WARNING_LEVEL_CUSTOM:
                 customWarningLevel = value;
+                break;
+            case SLOEBER_DEBUG_LEVEL:
+                debugLevel = value;
+                break;
+            case SLOEBER_DEBUG_LEVEL_CUSTOM:
+                customDebugLevel = value;
                 break;
             case SLOEBER_SIZE_TYPE:
                 sizeCommand = value;
@@ -350,12 +492,19 @@ public class CompileDescription {
 			default:
 				break;
             }
-            myWarningLevel = WarningLevels.valueOf(warningLevel);
-            myWarningLevel.setCustomWarningLevel(customWarningLevel, true);
+		}
+		try {
+			myWarningLevel = WarningLevels.valueOf(warningLevel);
+			myWarningLevel.setCustomWarningLevel(customWarningLevel, true);
 
-            mySizeCommand = SizeCommands.valueOf(sizeCommand);
-            mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
-        }
+			myDebugLevel = DebugLevels.valueOf(debugLevel);
+			myDebugLevel.setCustomDebugLevel(customDebugLevel, true);
+
+			mySizeCommand = SizeCommands.valueOf(sizeCommand);
+			mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Deserialisation error", e)); //$NON-NLS-1$
+		}
     }
 
     public Map<String, String> getEnvVarsVersion() {
@@ -382,6 +531,12 @@ public class CompileDescription {
             // ignore as this will be default
         }
         try {
+            myDebugLevel = DebugLevels.valueOf(section.getValue(SLOEBER_DEBUG_LEVEL));
+            myDebugLevel.setCustomDebugLevel(section.getValue(SLOEBER_DEBUG_LEVEL_CUSTOM));
+        } catch (@SuppressWarnings("unused") Exception e) {
+            // ignore as this will be default
+        }
+        try {
             mySizeCommand = SizeCommands.valueOf(section.getValue(SLOEBER_SIZE_TYPE));
             mySizeCommand.setCustomSizeCommand(section.getValue(SLOEBER_SIZE_CUSTOM));
         } catch (@SuppressWarnings("unused") Exception e) {
@@ -399,6 +554,7 @@ public class CompileDescription {
 
     public CompileDescription(CompileDescription compileDescription) {
         myWarningLevel = compileDescription.myWarningLevel;
+        myDebugLevel = compileDescription.myDebugLevel;
         mySizeCommand = compileDescription.mySizeCommand;
         myEnableParallelBuild = compileDescription.myEnableParallelBuild;
         my_CPP_CompileOptions = compileDescription.my_CPP_CompileOptions;
@@ -417,7 +573,9 @@ public class CompileDescription {
      * @return true if the 2 are equal else false
      */
     public boolean equals(CompileDescription other) {
-        return (myWarningLevel == other.myWarningLevel) && (mySizeCommand == other.mySizeCommand)
+        return myWarningLevel.getEnvValue().equals(other.myWarningLevel.getEnvValue())
+        		&& myDebugLevel.getEnvValue().equals(other.myDebugLevel.getEnvValue())
+        		&& mySizeCommand.getEnvValue().equals(other.mySizeCommand.getEnvValue())
                 && equalCompileOptions(other);
     }
 
