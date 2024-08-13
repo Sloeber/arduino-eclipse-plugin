@@ -27,7 +27,7 @@ public class NewProjectSourceLocationPage extends WizardPage {
 		super(pageName);
 		setTitle(Messages.ui_new_sketch_sketch_source_folder);
 		setDescription(
-				"You can seperate the source code from the rest of the project content by putting it in a source folder.");
+				Messages.NewProjectSourceLocationPage_ExplainText);
 	}
 
 	@Override
@@ -52,22 +52,22 @@ public class NewProjectSourceLocationPage extends WizardPage {
 			}
 		};
 
-		RootFolderButton = new Button(usercomp, SWT.RADIO);
-		RootFolderButton.setText("Put Code in the root of the project");
-		RootFolderButton.addSelectionListener(selectionListener);
-
 		srcFolderButton = new Button(usercomp, SWT.RADIO);
-		srcFolderButton.setText("put code in the src folder");
+		srcFolderButton.setText(Messages.NewProjectSourceLocationPage_CodeInSrcFolder);
 		srcFolderButton.addSelectionListener(selectionListener);
 
+		RootFolderButton = new Button(usercomp, SWT.RADIO);
+		RootFolderButton.setText(Messages.NewProjectSourceLocationPage_CodeInRootFolder);
+		RootFolderButton.addSelectionListener(selectionListener);
+
 		customFolderButton = new Button(usercomp, SWT.RADIO);
-		customFolderButton.setText("put code in a custom folder");
+		customFolderButton.setText(Messages.NewProjectSourceLocationPage_CodeInCustomFolder);
 		customFolderButton.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				customFolderText.setEditable(true);
 				if (customFolderText.getText().isBlank()) {
-					setErrorMessage("You must provide a text in the text field that matches a valid folder name");
+					setErrorMessage(Messages.NewProjectSourceLocationPage_CustomSourceTextFieldError);
 					setPageComplete(false);
 				}
 			}
@@ -84,7 +84,7 @@ public class NewProjectSourceLocationPage extends WizardPage {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				if (customFolderText.getText().isBlank()) {
-					setErrorMessage("You must provide a text in the text field that matches a valid folder name");
+					setErrorMessage(Messages.NewProjectSourceLocationPage_CustomSourceTextFieldError);
 					setPageComplete(false);
 				} else {
 					setErrorMessage(null);
@@ -93,7 +93,7 @@ public class NewProjectSourceLocationPage extends WizardPage {
 			}
 		});
 
-		String storedValue = ConfigurationPreferences.getString(LAST_USED_SOURCE_LOCATION, null);
+		String storedValue = ConfigurationPreferences.getString(LAST_USED_SOURCE_LOCATION, DEFAULT_FOLDER);
 		if (DEFAULT_FOLDER.equals(storedValue)) {
 			srcFolderButton.setSelection(true);
 		} else {

@@ -161,6 +161,16 @@ public class Messages extends NLS {
 	public static String ui_put_in_version_control;
 	public static String target_maintain;
 	public static String Add_Targets_To_force_serial_disconnect_when_run;
+	public static String NewProjectSourceLocationPage_CodeInCustomFolder;
+
+	public static String NewProjectSourceLocationPage_CodeInRootFolder;
+
+	public static String NewProjectSourceLocationPage_CodeInSrcFolder;
+
+	public static String NewProjectSourceLocationPage_CustomSourceTextFieldError;
+
+	public static String NewProjectSourceLocationPage_ExplainText;
+
 	public static String ui_new_sketch_sketch_source_folder;
 
     public static String yes;
