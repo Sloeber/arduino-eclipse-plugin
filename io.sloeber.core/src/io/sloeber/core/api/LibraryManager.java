@@ -304,13 +304,19 @@ public class LibraryManager {
 	 * @param boardDescriptor
 	 * @return
 	 */
-	public static Map<String, IExample> getExamplesAll(BoardDescription boardDescriptor) {
-		Map<String, IExample> examples = new HashMap<>();
+	public static TreeMap<String, IExample> getExamplesAll(BoardDescription boardDescriptor) {
+		// Get the examples arduinoPlugin/examples
+		TreeMap<String, IExample> examples =getExamplesFromIDE();
+		// get the examples related to libraries and boards
+		examples.putAll(getExamplesLibrary(boardDescriptor));
+		return examples;
+	}
+
+	public static TreeMap<String, IExample> getExamplesFromIDE() {
+		TreeMap<String, IExample> examples = new TreeMap<>();
 		// Get the examples arduinoPlugin/examples
 		IPath exampleFolder = ConfigurationPreferences.getInstallationPathExamples();
 		examples.putAll(getExamplesFromFolder(null, exampleFolder.toFile(), 5));
-		// get the examples related to libraries
-		examples.putAll(getExamplesLibrary(boardDescriptor));
 		return examples;
 	}
 
@@ -334,8 +340,8 @@ public class LibraryManager {
 	 * @param confDesc can be null
 	 * @return
 	 */
-	public static Map<String, IArduinoLibraryVersion> getLibrariesAll(BoardDescription boardDescriptor) {
-		Map<String, IArduinoLibraryVersion> libraries = new HashMap<>();
+	public static TreeMap<String, IArduinoLibraryVersion> getLibrariesAll(BoardDescription boardDescriptor) {
+		TreeMap<String, IArduinoLibraryVersion> libraries = new TreeMap<>();
 		libraries.putAll(getLibrariesdManaged());
 		libraries.putAll(getLibrariesPrivate());
 		if (boardDescriptor != null) {
