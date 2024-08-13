@@ -157,12 +157,14 @@ public class TxtFile {
 
     /**
      * Get all the key value pairs that need to be added to the environment
-     * variables
+     * variables excluding the menu. key
      *
      * prefix something to add at the beginning of each key name
      */
     public Map<String, String> getAllEnvironVars(String prefix) {
-        return myData.toKeyValues(prefix, true);
+    	KeyValueTree retKeyValue= new KeyValueTree(myData);
+    	retKeyValue.removeChild(MENU);
+        return retKeyValue.toKeyValues(prefix);
     }
 
     public KeyValueTree getData() {

@@ -668,7 +668,7 @@ public class BoardDescription {
         String board_txt = section.getValue(KEY_SLOEBER_BOARD_TXT);
         myUploadPort = section.getValue(KEY_SLOEBER_UPLOAD_PORT);
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
-        Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
+        Map<String, String> options = optionsTree.toKeyValues(EMPTY);
 
         myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(board_txt));
         mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
@@ -864,7 +864,7 @@ public class BoardDescription {
             String menuID = curOption.getKey();
             String SelectedMenuItemID = curOption.getValue();
             KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
-            allVars.putAll(curSelectedMenuItem.toKeyValues(EMPTY, false));
+            allVars.putAll(curSelectedMenuItem.toKeyValues(EMPTY));
         }
 
         //This moved last. See github issue 1410

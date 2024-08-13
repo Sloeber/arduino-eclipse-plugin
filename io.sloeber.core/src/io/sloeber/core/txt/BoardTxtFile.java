@@ -213,7 +213,9 @@ public class BoardTxtFile extends TxtFile {
      *
      */
     public Map<String, String> getBoardEnvironVars(String boardID) {
-        return myData.getChild(boardID).toKeyValues(EMPTY, false);
+    	KeyValueTree boardTree= new KeyValueTree(myData.getChild(boardID));
+    	boardTree.removeChild(MENU);
+        return boardTree.toKeyValues(EMPTY);
     }
 
 	public String getDefaultValueIDFromMenu(String boardID ,String menuID) {
