@@ -13,9 +13,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
@@ -31,19 +33,25 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
     private static int myTotalFails = 0;
     private static int maxFails = 200;
     private static int mySkipAtStart = 0;
-
-
-    public static Stream<Arguments> jantjesHardwareData() throws Exception {
+    @BeforeAll
+    public static void setup() throws Exception {
         Preferences.setUseBonjour(false);
+        Shared.waitForAllJobsToFinish();
         String[] packageUrlsToAdd = { Jantje.additionalJsonURL };
         BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
         Jantje.installLatestLocalDebugBoards();
         Shared.waitForAllJobsToFinish();
 
+    	Shared.setUseParralBuildProjects(Boolean.TRUE);
+    	//Shared.setDefaultBuilder(AutoBuildProject.MAKE_BUILDER_ID);
+    }
+
+
+    public static Stream<Arguments> jantjesHardwareData() throws Exception {
         List<MCUBoard> allBoards = Jantje.getAllBoards();
         List<Arguments> ret = new LinkedList<>();
 
-        Map<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
+        Map<String, IExample> exampleFolders = LibraryManager.getExamplesFromIDE();
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();

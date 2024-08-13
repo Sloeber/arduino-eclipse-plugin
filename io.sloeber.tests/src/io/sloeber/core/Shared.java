@@ -55,22 +55,31 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings("nls")
 public class Shared {
 	public static int buildCounter = 0;
-	private static boolean deleteProjects = true;
-
-	public static void setDeleteProjects(boolean deleteProjects) {
-		Shared.deleteProjects = deleteProjects;
-	}
+	private static boolean myDeleteProjectsSetting = true;
 
 	private static int myTestCounter;
 	private static String myLastFailMessage = new String();
-	private static boolean closeFailedProjects = false;
+	private static boolean myCloseFailedProjectsSetting = false;
+	private static Boolean myUseParralBuildProjects = null;
+	private static String myDefaultBuilder = AutoBuildProject.INTERNAL_BUILDER_ID;
 
+	public static void setDefaultBuilder(String builderID) {
+		myDefaultBuilder = builderID;
+	}
+
+	public static void setDeleteProjects(boolean deleteProjects) {
+		myDeleteProjectsSetting = deleteProjects;
+	}
+
+	public static void setUseParralBuildProjects(Boolean isParrallel) {
+		myUseParralBuildProjects=isParrallel;
+	}
 	public static boolean isCloseFailedProjects() {
-		return closeFailedProjects;
+		return myCloseFailedProjectsSetting;
 	}
 
 	public static void setCloseFailedProjects(boolean closeFailedProjects) {
-		Shared.closeFailedProjects = closeFailedProjects;
+		myCloseFailedProjectsSetting = closeFailedProjects;
 	}
 
 	public static String hasBuildErrors(IProject project) throws CoreException {
@@ -129,12 +138,15 @@ public class Shared {
 
 	public static void waitForAllJobsToFinish() {
 		try {
-			//Thread.sleep(1000);
+			int count=0;
+			Thread.sleep(1000);
 			IJobManager jobMan = Job.getJobManager();
 			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
 				Thread.sleep(500);
-				// If you do not get out of this loop it probably means you are
-				// runnning the test in the gui thread
+				count++;
+				if(count%10==0) {
+					System.out.println("Waiting for all jobs");
+				}
 			}
 			// As nothing is running now we can start installing
 		} catch (InterruptedException e) {
@@ -206,7 +218,7 @@ public class Shared {
 	public static String buildAndVerify(String projectName, BoardDescription boardDescriptor,
 			CodeDescription codeDescriptor, CompileDescription compileOptions) throws Exception {
 		Set<String> builders = new HashSet<>();
-		builders.add(AutoBuildProject.INTERNAL_BUILDER_ID);
+		builders.add(myDefaultBuilder);
 		return buildAndVerifyGivenBuilders(projectName, boardDescriptor, codeDescriptor, compileOptions, builders);
 	}
 
@@ -228,10 +240,12 @@ public class Shared {
 
 		for (String curBuilder : builders) {
 			if (theTestProject == null) {
-				compileOptions.setEnableParallelBuild(true);
+				if(myUseParralBuildProjects!=null) {
+					compileOptions.setEnableParallelBuild(myUseParralBuildProjects.booleanValue());
+				}
 				theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor, codeDescriptor,
 						compileOptions, curBuilder, monitor);
-				waitForIndexer(theTestProject);
+				waitForAllJobsToFinish();
 			}
 			// do not set the build tool when the project is freshly created because then
 			// the default case would never be tested
@@ -248,11 +262,11 @@ public class Shared {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
 			if (hasBuildErrors(theTestProject)!=null) {
-				waitForAllJobsToFinish(); // for the indexer
+				Shared.waitForAllJobsToFinish();
 				Thread.sleep(2000);
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (hasBuildErrors(theTestProject)!=null) {
-					waitForAllJobsToFinish(); // for the indexer
+					Shared.waitForAllJobsToFinish();
 					Thread.sleep(2000);
 					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 					String buildError=hasBuildErrors(theTestProject);
@@ -266,14 +280,14 @@ public class Shared {
 			theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
 		}
 		if (!myLastFailMessage.isBlank()) {
-			if (closeFailedProjects && theTestProject!=null) {
+			if (myCloseFailedProjectsSetting && theTestProject!=null) {
 				theTestProject.close(null);
 			}
 			return myLastFailMessage;
 		}
 
 		if (theTestProject != null) {
-			if (deleteProjects) {
+			if (myDeleteProjectsSetting) {
 				theTestProject.delete(true, true, null);
 			} else {
 				theTestProject.close(null);

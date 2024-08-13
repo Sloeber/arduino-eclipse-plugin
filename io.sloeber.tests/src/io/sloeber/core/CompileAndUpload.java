@@ -57,7 +57,9 @@ public class CompileAndUpload {
 	private static String interval = "1500";// change between 1500 and 100
 
 	static Stream<Arguments> uploadBourds() throws Exception {
-		WaitForInstallerToFinish();
+		installAdditionalBoards();
+
+		Shared.waitForAllJobsToFinish();
 
 		File file = ConfigurationPreferences.getInstallationPath().append("test.properties").toFile();
 		if (!file.exists()) {
@@ -94,18 +96,6 @@ public class CompileAndUpload {
 
 	}
 
-	/*
-	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we can
-	 * start testing
-	 */
-
-	public static void WaitForInstallerToFinish() {
-
-		installAdditionalBoards();
-
-		Shared.waitForAllJobsToFinish();
-	}
 
 	public static void installAdditionalBoards() {
 		Preferences.setUseBonjour(false);
@@ -152,12 +142,12 @@ public class CompileAndUpload {
 		String projectName = String.format("%05d_%s", Integer.valueOf(Shared.buildCounter++), myName);
 		theTestProject = SloeberProject.createArduinoProject(projectName, null, myBoard.getBoardDescriptor(),
 				codeDescriptor, compileOptions, monitor);
-		Shared.waitForAllJobsToFinish(); // for the indexer
+		Shared.waitForIndexer(theTestProject);
 
 		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 		if (Shared.hasBuildErrors(theTestProject) != null) {
 			// try again because the libraries may not yet been added
-			Shared.waitForAllJobsToFinish(); // for the indexer
+			Shared.waitForIndexer(theTestProject);
 			Thread.sleep(3000);// seen sometimes the libs were still not
 								// added
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);

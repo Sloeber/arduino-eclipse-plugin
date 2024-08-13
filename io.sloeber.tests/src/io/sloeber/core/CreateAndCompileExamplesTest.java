@@ -36,7 +36,8 @@ public class CreateAndCompileExamplesTest {
 
 
     public static Stream<Arguments> examples() throws Exception {
-		WaitForInstallerToFinish();
+		installAdditionalBoards();
+		Shared.waitForAllJobsToFinish();
 		Preferences.setUseBonjour(false);
 
 		MCUBoard myBoards[] = { Arduino.leonardo(),
@@ -76,18 +77,6 @@ public class CreateAndCompileExamplesTest {
 
 	}
 
-	/*
-	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we
-	 * can start testing
-	 */
-
-	public static void WaitForInstallerToFinish() {
-
-		installAdditionalBoards();
-
-		Shared.waitForAllJobsToFinish();
-	}
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL };

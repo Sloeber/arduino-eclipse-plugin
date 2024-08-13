@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,16 +46,25 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
 
+    @BeforeAll
+    public static void setup() throws Exception {
+    	Shared.waitForBoardsManager();
+    	Teensy.installLatest();
 
-    public static Stream<Arguments> teensyHardwareData() throws Exception {
-        installAdditionalBoards();
+    	Shared.setUseParralBuildProjects(Boolean.TRUE);
 
+    	//Shared.setDefaultBuilder(AutoBuildProject.MAKE_BUILDER_ID);
         Shared.waitForAllJobsToFinish();
         Preferences.setUseBonjour(false);
+    }
+
+
+    public static Stream<Arguments> teensyHardwareData() throws Exception {
+
         List<Arguments> ret = new LinkedList<>();
         List<MCUBoard> allBoards = Teensy.getAllBoards();
 
-        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesFromIDE();
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();
@@ -84,9 +94,6 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
         return false;
     }
 
-    public static void installAdditionalBoards() {
-    	Teensy.installLatest();
-    }
 
 	@ParameterizedTest
 	@MethodSource("teensyHardwareData")
