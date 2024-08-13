@@ -40,3 +40,5 @@ serial.port.file=${serial.port}
 upload.altID=no_altID
 upload.usbID=no_altID
 
+#workaround and default value for issue #1625
+compiler.optimization_flags=${compiler.optimization_flags.release}
