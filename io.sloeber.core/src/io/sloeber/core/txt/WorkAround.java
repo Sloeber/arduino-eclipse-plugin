@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 23 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 24 ";
 
 	private static Map<String, String> USB_replacers;
 
@@ -282,6 +282,9 @@ public class WorkAround {
 		platformTXT = platformTXT.replace(" -DBOARD_NAME=\"{build.board}\"", " \"-DBOARD_NAME=\\\"{build.board}\\\"\"");
 		platformTXT = platformTXT.replace(" -DVARIANT_H=\"{build.variant_h}\"",
 				" \"-DVARIANT_H=\\\"{build.variant_h}\\\"\"");
+		//Why would you do this?
+		platformTXT = platformTXT.replace("compiler.optimization_flags={compiler.optimization_flags}","");
+
 
 		// for ESP32 remove the build options fix for arduino ide #1390
 		platformTXT = platformTXT.replace(" \"@{build.opt.path}\" ", " ");
