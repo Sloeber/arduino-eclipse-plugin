@@ -202,11 +202,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		}
 		IFolder arduinoVariantFolder = getArduinoVariantFolder();
 		IPath variantPath = myBoardDescription.getActualVariantPath();
-		if(variantPath==null && arduinoVariantFolder==null) {
-			return false; 
-		}
-		if(variantPath==null || arduinoVariantFolder==null) {
-			return true;
+		if(variantPath==null) {
+			return arduinoVariantFolder.exists();
 		}
 		if ((!variantPath.toFile().exists()) && (arduinoVariantFolder.exists())) {
 //        	System.out.println("projectNeedsUpdate variant Folder exists but sdhould not");
