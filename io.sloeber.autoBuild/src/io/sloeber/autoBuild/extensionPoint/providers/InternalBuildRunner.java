@@ -16,7 +16,7 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.core.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
@@ -165,9 +165,7 @@ public class InternalBuildRunner implements IBuildRunner {
 					if (parrallelNum > 1) {
 						executor = Executors.newFixedThreadPool(parrallelNum);
 					}
-//					else {
-//						executor=Executors.newSingleThreadExecutor();
-//					}
+
 					for (IAutoBuildMakeRule curRule : myMakeRules) {
 						if (curRule.getSequenceGroupID() != sequenceID) {
 							continue;
@@ -297,10 +295,6 @@ public class InternalBuildRunner implements IBuildRunner {
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(false);
 		String[] args = argumentsToArray(curRecipe);
-		boolean useCMD=false;
-		if(useCMD) {
-			args=argumentsToArray("cmd /d /q");
-		}
 		IPath commandPath = new Path(args[0]);
 		String[] onlyArgs = Arrays.copyOfRange(args, 1, args.length);
 
@@ -310,14 +304,6 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				fProcess = launcher.execute(commandPath, onlyArgs, autoData.getEnvironmentVariables(),
 						autoData.getBuildFolder().getLocation(), monitor);
-				if(useCMD) {
-					try(OutputStream outputStream=fProcess.getOutputStream()){
-						outputStream.write(curRecipe.getBytes());
-						outputStream.flush();
-						outputStream.write("\n\rexit\n\r".getBytes());
-						outputStream.close();
-					}
-				}
 			} catch ( CoreException e1) {
 				e1.printStackTrace();
 				// ignore and handle null case
