@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
@@ -323,7 +324,7 @@ public class BoardDescription {
         myUploadPort = srcObject.myUploadPort;
         myProgrammer = srcObject.myProgrammer;
         myUploadTool = srcObject.myUploadTool;
-        myOptions = new TreeMap<>(srcObject.myOptions);
+        myOptions.putAll( new TreeMap<>(srcObject.myOptions));
 
     }
 
@@ -352,6 +353,17 @@ public class BoardDescription {
                     this.myOptions.put(curMenuID.getKey(), menuOptions.get(0));
                 }
             }
+        }
+    }
+
+    private void removeInvalidMenuIDs() {
+        Set<String> allMenuIDs = this.mySloeberBoardTxtFile.getMenus().keySet();
+        Set<String> optionKey=myOptions.keySet();
+
+        for ( String curOptionKey : optionKey) {
+        	if(!allMenuIDs.contains(curOptionKey)) {
+        		myOptions.remove(curOptionKey);
+        	}
         }
     }
 
@@ -452,13 +464,18 @@ public class BoardDescription {
         mySloeberBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(myUserSelectedBoardsTxtFile));
 
     }
-
+    /**
+     * seOptions add the options to the already existing options and removes the options
+     * with an invalid menuID
+     * The enuitemID is not verified and assumed correct.
+     *
+     */
     public void setOptions(Map<String, String> options) {
-        if (options == null) {
+        if (options == null || options.size()==0) {
             return;
         }
-        myOptions.clear();
         myOptions.putAll(options);
+        removeInvalidMenuIDs();
         setDirty();
     }
 

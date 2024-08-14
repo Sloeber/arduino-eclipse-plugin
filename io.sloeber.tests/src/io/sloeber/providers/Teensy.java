@@ -52,13 +52,13 @@ public class Teensy extends MCUBoard {
         return new Teensy(Teensy_2_ID);
     }
 
-    private Teensy(String boardName) {
+    private Teensy(String boardID) {
         Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         options.put("usb", "serialhid");
         options.put("speed", "48");
         options.put("opt", "o2std");
         options.put("keys", "en-us");
-        switch (boardName) {
+        switch (boardID) {
         case Teensy_PP2_ID:
             options.put("speed", "8");
             break;
@@ -71,7 +71,7 @@ public class Teensy extends MCUBoard {
         default:
             break;
         }
-        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, TEENSY_PROVIDER, TEENSY_PLATFORM_ID,boardName,options);
+        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, TEENSY_PROVIDER, TEENSY_PLATFORM_ID,boardID,options);
 
         setUploadPort("none");
         setAttributes();
@@ -115,7 +115,7 @@ public class Teensy extends MCUBoard {
 
     @Override
     public MCUBoard createMCUBoard(BoardDescription boardDescriptor) {
-        return new Teensy(boardDescriptor);
+        return new Teensy(boardDescriptor.getBoardID());
 
     }
 
