@@ -53,35 +53,33 @@ public class AutoBuildMakeRules implements IAutoBuildMakeRules {
 
     @Override
 	public void addRule(IAutoBuildMakeRule newMakeRule) {
-        if (newMakeRule.isSimpleRule()) {
-            Map<IOutputType, Set<IFile>> targets = newMakeRule.getTargets();
+		Map<IOutputType, Set<IFile>> targets = newMakeRule.getTargets();
 
-            IOutputType outputType = null;
-            IFile correctOutputPath = null;
-            for (Entry<IOutputType, Set<IFile>> curTarget : targets.entrySet()) {
-                outputType = curTarget.getKey();
-                correctOutputPath = curTarget.getValue().toArray(new IFile[1])[0];
-            }
-            AutoBuildMakeRule makerule = (AutoBuildMakeRule)findTarget(outputType, correctOutputPath);
-            if (makerule != null) {
-                Map<IInputType, Set<IFile>> prerequisites = newMakeRule.getPrerequisites();
+		IOutputType outputType = null;
+		IFile correctOutputPath = null;
+		for (Entry<IOutputType, Set<IFile>> curTarget : targets.entrySet()) {
+			outputType = curTarget.getKey();
+			correctOutputPath = curTarget.getValue().toArray(new IFile[1])[0];
+		}
+		AutoBuildMakeRule makerule = (AutoBuildMakeRule) findTarget(outputType, correctOutputPath);
+		if (makerule != null) {
+			Map<IInputType, Set<IFile>> prerequisites = newMakeRule.getPrerequisites();
 
-                IInputType inputType = null;
-                Set<IFile> files = null;
+			IInputType inputType = null;
+			Set<IFile> files = null;
 
-                for (Entry<IInputType, Set<IFile>> curTarget : prerequisites.entrySet()) {
-                    inputType = curTarget.getKey();
-                    files = curTarget.getValue();
-                    makerule.addPrerequisites(inputType, files);
-                }
+			for (Entry<IInputType, Set<IFile>> curTarget : prerequisites.entrySet()) {
+				inputType = curTarget.getKey();
+				files = curTarget.getValue();
+				makerule.addPrerequisites(inputType, files);
+			}
 
-                makerule.setSequenceGroupID(newMakeRule.getSequenceGroupID());
-            } else {
-                myMakeRules.add(newMakeRule);
-            }
-        }
+			makerule.setSequenceGroupID(newMakeRule.getSequenceGroupID());
+		} else {
+			myMakeRules.add(newMakeRule);
+		}
 
-    }
+	}
 
     public IAutoBuildMakeRule findTarget(IOutputType outputType, IFile correctOutputPath) {
         for (IAutoBuildMakeRule makeRule : myMakeRules) {

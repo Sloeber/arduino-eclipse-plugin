@@ -373,21 +373,6 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 		}
 	}
 
-	/**
-	 * A simple rule is a rule that takes exactly 1 input type and exactly 1 output
-	 * type containing exactly 1 file
-	 *
-	 * @return true if this rule is a simple rule otherwise false
-	 */
-
-	@Override
-	public boolean isSimpleRule() {
-		if ((myTargets.size() != 1) || (myPrerequisites.size() != 1)) {
-			return false;
-		}
-		return true;
-
-	}
 
 	@Override
 	public boolean isTool(ITool tool) {

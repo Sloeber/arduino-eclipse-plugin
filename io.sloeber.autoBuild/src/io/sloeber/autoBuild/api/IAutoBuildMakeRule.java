@@ -36,7 +36,6 @@ public interface IAutoBuildMakeRule {
 	 *         otherwise false
 	 */
 
-	boolean isSimpleRule();
 
 	int getSequenceGroupID();
 
