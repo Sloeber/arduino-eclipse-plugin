@@ -382,22 +382,9 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 
 	@Override
 	public boolean isSimpleRule() {
-		// TOFIX 2 times the same test with an or???
-		if ((myTargets.size() != 1) || (myTargets.size() != 1)) {
+		if ((myTargets.size() != 1) || (myPrerequisites.size() != 1)) {
 			return false;
 		}
-		// int counter = 0;
-		// for (Set<IFile> files : myTargets.values()) {
-		// if ((++counter > 1) || (files.size() != 1)) {
-		// return false;
-		// }
-		// }
-		// counter = 0;
-		// for (Set<IFile> files : myPrerequisites.values()) {
-		// if ((++counter > 1)) {
-		// return false;
-		// }
-		// }
 		return true;
 
 	}
@@ -508,7 +495,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 				}
 			}
 			reader.close();
-		} catch (@SuppressWarnings("unused") IOException e) {
+		} catch ( IOException e) {
 			e.printStackTrace();
 			return Long.MAX_VALUE;
 		}
