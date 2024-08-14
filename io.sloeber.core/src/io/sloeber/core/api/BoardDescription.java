@@ -3,8 +3,10 @@ package io.sloeber.core.api;
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.api.Json.ArduinoPlatform;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
@@ -1013,18 +1016,6 @@ public class BoardDescription {
         Collections.sort(objcopyCommand);
         extraVars.put(SLOEBER_OBJCOPY, StringUtil.join(objcopyCommand, NEWLINE));
 
-        // handle the hooks
-        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.pre.link", //$NON-NLS-1$
-                "recipe.hooks.linking.prelink.XX.pattern", false)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.post.link", //$NON-NLS-1$
-                "recipe.hooks.linking.postlink.XX.pattern", true)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.prebuild", "recipe.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
-                false));
-        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.sketch.prebuild", //$NON-NLS-1$
-                "recipe.hooks.sketch.prebuild.XX.pattern", false)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.sketch.postbuild", //$NON-NLS-1$
-                "recipe.hooks.sketch.postbuild.XX.pattern", false)); //$NON-NLS-1$
-
         // add -relax for mega boards; the arduino ide way
         String buildMCU = vars.get(ENV_KEY_BUILD_MCU);
         if ("atmega2560".equalsIgnoreCase(buildMCU)) { //$NON-NLS-1$
@@ -1034,33 +1025,48 @@ public class BoardDescription {
         return extraVars;
     }
 
-    private static Map<String, String> getEnvVarsHookBuild(Map<String, String> vars, String varName, String hookName,
-            boolean post) {
-        Map<String, String> extraVars = new HashMap<>();
-        String envVarString = new String();
-        String searchString = "XX"; //$NON-NLS-1$
-        String postSeparator = VARIABLE_SUFFIX+NEWLINE;
-        String preSeparator = VARIABLE_PREFIX;
-        if (post) {
-            postSeparator =VARIABLE_PREFIX;
-            preSeparator = VARIABLE_SUFFIX+NEWLINE;
-        }
-        for (int numDigits = 1; numDigits <= 2; numDigits++) {
-            String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
-            int max = 10;
-            for (int counter = 1; counter < max; counter++) {
-                String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
-                if (null != vars.get(hookVarName)) { // $NON-NLS-1$
-                    envVarString = envVarString + preSeparator + hookVarName + postSeparator;
-                }
-            }
-            max = 100;
-        }
-        if (!envVarString.isEmpty()) {
-            extraVars.put(varName, envVarString);
-        }
-        return extraVars;
-    }
+	public TreeMap<String, String> getHookSteps(String hookName,IAutoBuildConfigurationDescription autoData) {
+		TreeMap<String, String> hookSteps = new TreeMap<>();
+		KeyValueTree keyValueTree = KeyValueTree.createRoot();
+
+		PlatformTxtFile referencedPlatfromFile = getreferencedCorePlatformFile();
+		// process the platform file referenced by the boards.txt
+		if (referencedPlatfromFile != null) {
+			try {
+				keyValueTree.mergeFile(referencedPlatfromFile.getLoadedFile());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		PlatformTxtFile referencingPlatfromFile = getReferencingPlatformFile();
+		// process the platform file next to the selected boards.txt
+		if (referencingPlatfromFile != null) {
+			try {
+				keyValueTree.mergeFile(referencingPlatfromFile.getLoadedFile());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		KeyValueTree hooks = keyValueTree.getChild(RECIPE).getChild(HOOKS).getChild(hookName);
+
+		// Try to find the nums from 1 to 10 in order
+		// that is 01 1 02 2
+		for (int hoookNum = 1; hoookNum < 10; hoookNum++) {
+			for (int numDigits = 1; numDigits <= 2; numDigits++) {
+				String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
+				String curKey = String.format(formatter, Integer.valueOf(hoookNum));
+				KeyValueTree curHook = hooks.getChild(curKey).getChild(PATTERN);
+				if (curHook.getValue() != null) {
+					String cmd=resolve(curHook.getValue(), EMPTY_STRING, WHITESPACE, autoData);
+					hookSteps.put(curKey, cmd);
+				}
+			}
+		}
+		return hookSteps;
+	}
 
     public boolean isValid() {
         if (!myUserSelectedBoardsTxtFile.exists()) {

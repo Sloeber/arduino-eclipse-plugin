@@ -438,5 +438,20 @@ public interface IAutoBuildConfigurationDescription {
 
 	public String getName();
 
+    /**
+     * Give all the commands that need to be called before the build
+     * This is different from getPrebuildStep
+     * getPrebuildStep provides the command as provided by the user in the project properties
+     * getPrebuildSteps returns getPrebuildStep and possibly more commands provided by extensions
+     * @return
+     */
+    public TreeMap<String,String> getPrebuildSteps();
+
+    /**
+     * Same thing as getPrebuildSteps but for post Build
+     * @return
+     */
+    public 	TreeMap<String, String> getPostbuildSteps();
+
 
 }

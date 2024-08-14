@@ -26,7 +26,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -142,20 +144,22 @@ public class InternalBuildRunner implements IBuildRunner {
 				boolean lastSequenceID = true;
 
 				// Run preBuildStep if existing
-				String preBuildStep = autoData.getPrebuildStep();
-				preBuildStep = resolve(preBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-				if (!preBuildStep.isEmpty()) {
-					String announcement = autoData.getPreBuildAnouncement();
+				TreeMap<String,String> preBuildSteps = autoData.getPrebuildSteps();
+				for (Entry<String, String> preBuildStep:preBuildSteps.entrySet()) {
+					String announcement = preBuildStep.getKey();
+					String command = preBuildStep.getValue();
+
 					if (!announcement.isEmpty()) {
 						buildRunnerHelper.toConsole(announcement);
 					}
-					buildRunnerHelper.toConsole(preBuildStep);
-					if (launchCommand(preBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+					buildRunnerHelper.toConsole(command);
+					if (launchCommand(command, autoData, monitor, buildRunnerHelper) != 0) {
 						if (autoData.stopOnFirstBuildError()) {
 							return false;
 						}
 					}
 				}
+
 				myHasBuildError = false;
 				do {
 					sequenceID++;
@@ -176,7 +180,7 @@ public class InternalBuildRunner implements IBuildRunner {
 						lastSequenceID = false;
 						//buildRunnerHelper.toConsole("Adding to executor " + curRule.getAnnouncement());
 						if (!curRule.needsExecuting(buildRoot)) {
-							buildRunnerHelper.toConsole("No need to run " + curRule.getAnnouncement());
+							buildRunnerHelper.toConsole(Messages.InternalBuildRunner_NoNeedToRun + curRule.getAnnouncement());
 							continue;
 						}
 
@@ -222,6 +226,24 @@ public class InternalBuildRunner implements IBuildRunner {
 					}
 				} while (!(lastSequenceID || myHasBuildError));
 				// Run postBuildStep if existing
+
+				TreeMap<String,String> postBuildSteps = autoData.getPostbuildSteps();
+				for (Entry<String, String> step:postBuildSteps.entrySet()) {
+					String announcement = step.getKey();
+					String command = step.getValue();
+
+					if (!announcement.isEmpty()) {
+						buildRunnerHelper.toConsole(announcement);
+					}
+					buildRunnerHelper.toConsole(command);
+					if (launchCommand(command, autoData, monitor, buildRunnerHelper) != 0) {
+						if (autoData.stopOnFirstBuildError()) {
+							return false;
+						}
+					}
+				}
+
+
 				String postBuildStep = autoData.getPostbuildStep();
 				postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
 				if (!postBuildStep.isEmpty()) {

@@ -1,6 +1,7 @@
 package io.sloeber.autoBuild.api;
 
 import java.util.Set;
+import java.util.TreeMap;
 
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 
@@ -111,5 +112,9 @@ public abstract class AutoBuildConfigurationExtensionDescription {
 	public abstract Set<String> getTeamDefaultExclusionKeys(String name);
 
 	public abstract boolean equals(AutoBuildConfigurationExtensionDescription base);
+
+	public abstract TreeMap< String,  String> getPrebuildSteps();
+
+	public abstract TreeMap<String, String> getPostbuildSteps() ;
 
 }

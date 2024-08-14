@@ -150,6 +150,8 @@ public class Messages extends NLS {
     public static String AbstractBuiltinSpecsDetector_SerializingResults;
     public static String ExternalBuilderName;
     public static String InternalBuilderName;
+
+	public static String InternalBuildRunner_NoNeedToRun;
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

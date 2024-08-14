@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
@@ -573,6 +575,20 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public TreeMap<String, String> getPrebuildSteps() {
+		TreeMap<String, String> ret=new TreeMap<>();
+		ret.putAll(myBoardDescription.getHookSteps("prebuild",getAutoBuildDescription())); //$NON-NLS-1$
+		return ret;
+	}
+
+	@Override
+	public TreeMap<String, String> getPostbuildSteps() {
+		TreeMap<String, String> ret=new TreeMap<>();
+		ret.putAll(myBoardDescription.getHookSteps("postbuild",getAutoBuildDescription())); //$NON-NLS-1$
+		return ret;
 	}
 
 }

@@ -1,6 +1,7 @@
 package io.sloeber.autoBuild.integration;
 
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
+import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -1340,5 +1341,36 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 			return ret;
 		}
 		return false;
+	}
+
+	@Override
+	public TreeMap<String, String> getPrebuildSteps() {
+		TreeMap<String, String> ret=new TreeMap<>();
+
+		String preBuildStep = resolve(getPrebuildStep(), EMPTY_STRING, WHITESPACE, this);
+		if (!preBuildStep.isEmpty()) {
+			String announcement = getPreBuildAnouncement();
+			ret.put(announcement,preBuildStep);
+		}
+		if(myAutoBuildCfgExtDes!=null) {
+			ret.putAll(myAutoBuildCfgExtDes.getPrebuildSteps());
+		}
+		return ret;
+	}
+
+	@Override
+	public TreeMap<String, String> getPostbuildSteps() {
+		TreeMap<String, String> ret=new TreeMap<>();
+
+		if(myAutoBuildCfgExtDes!=null) {
+			ret.putAll(myAutoBuildCfgExtDes.getPostbuildSteps());
+		}
+
+		String postBuildStep = resolve(getPostbuildStep(), EMPTY_STRING, WHITESPACE, this);
+		if (!postBuildStep.isEmpty()) {
+			String announcement = getPostBuildAnouncement();
+			ret.put(announcement,postBuildStep);
+		}
+		return ret;
 	}
 }
