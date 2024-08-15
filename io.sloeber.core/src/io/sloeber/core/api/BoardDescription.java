@@ -1071,7 +1071,9 @@ public class BoardDescription {
 
 		// Try to find the nums from 1 to 10 in order
 		// that is 01 1 02 2
+		 
 		for (int hoookNum = 1; hoookNum < 10; hoookNum++) {
+			boolean exists=false;
 			for (int numDigits = 1; numDigits <= 2; numDigits++) {
 				String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
 				String curKey = String.format(formatter, Integer.valueOf(hoookNum));
@@ -1079,7 +1081,11 @@ public class BoardDescription {
 				if (curHook.getValue() != null) {
 					String cmd=resolve(curHook.getValue(), EMPTY_STRING, WHITESPACE, autoData);
 					hookSteps.put(curKey, cmd);
+					exists=true;
 				}
+			}
+			if(!exists) {
+				break;
 			}
 		}
 		return hookSteps;
