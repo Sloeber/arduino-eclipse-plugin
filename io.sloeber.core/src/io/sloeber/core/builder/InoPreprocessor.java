@@ -130,11 +130,11 @@ public class InoPreprocessor {
 					if (curResource.getName().equals(projectNameDot + curResource.getFileExtension())) {
 						// This is the ino file with the same name as the project
 						// so put it first and generate the generate file name
-						includeInoPart = getIncludedInoPartForFile(curFile) + includeInoPart;
+						includeInoPart = getIncludedInoPartForFile(curFile) +NEWLINE+ includeInoPart;
 						methodDeclarations = getdMethodDeclarationsForFile(index, tu) + methodDeclarations;
 						header = getExternCMethodDeclarations(index, tu) + header;
 					} else {
-						includeInoPart = includeInoPart + getIncludedInoPartForFile(curFile);
+						includeInoPart = includeInoPart +NEWLINE+ getIncludedInoPartForFile(curFile);
 						methodDeclarations = methodDeclarations + getdMethodDeclarationsForFile(index, tu);
 						header = header + getExternCMethodDeclarations(index, tu);
 					}
