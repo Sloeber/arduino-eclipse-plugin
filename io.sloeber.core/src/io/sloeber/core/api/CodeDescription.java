@@ -46,9 +46,11 @@ public class CodeDescription implements ICodeProvider {
 	}
 
 	static private final String DEFAULT_SKETCH_BASE = "sketch"; //$NON-NLS-1$
-	public static final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + ".ino"; //$NON-NLS-1$
-	public static final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + ".cpp"; //$NON-NLS-1$
-	public static final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + ".h"; //$NON-NLS-1$
+	public static final String INO= "ino"; //$NON-NLS-1$
+	public static final String CPP= "cpp"; //$NON-NLS-1$
+	public static final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + DOT+INO; 
+	public static final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + DOT+CPP; 
+	public static final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + DOT+'h';
 	//
 	// template Sketch information
 
@@ -303,7 +305,7 @@ public class CodeDescription implements ICodeProvider {
 				URL inoFileURL = FileLocator.find(bundle, templatePath.append(DEFAULT_SKETCH_INO), null);
 				URL inoResolvedFileURL = FileLocator.toFileURL(inoFileURL);
 				String inoFileLoc= new Path(inoResolvedFileURL.toURI().getPath()).toOSString();
-				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString( project.getName() + ".ino")),
+				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString( project.getName() + DOT+INO)),
 						Stream.openContentStream(inoFileLoc, true, replacers),
 						monitor, false);
 				break;
@@ -332,9 +334,17 @@ public class CodeDescription implements ICodeProvider {
 					for (String file : files) {
 						if (!(file.equals(".") || file.equals(".."))) {
 							File sourceFile = folderName.append(file).toFile();
+							if(sourceFile.isDirectory()) {
+								//create the folder and copy all sub files/folders recursively
+								FileUtils.copyDirectory(sourceFile, scrContainer.getLocation().append(file).toFile());
+								continue;
+							}
 							String renamedFile = file;
 							if (DEFAULT_SKETCH_INO.equalsIgnoreCase(file)) {
-								renamedFile = project.getName() + ".ino";
+								renamedFile = project.getName() +DOT+INO;
+							}
+							if (DEFAULT_SKETCH_CPP.equalsIgnoreCase(file)) {
+								renamedFile = project.getName() +DOT+CPP;
 							}
 							try (InputStream theFileStream = Stream.openContentStream(sourceFile.toString(), true,
 									replacers);) {
