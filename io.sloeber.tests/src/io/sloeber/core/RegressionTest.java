@@ -170,6 +170,30 @@ public class RegressionTest {
 		assertNull(Shared.hasBuildErrors(theTestProject));
 	}
 
+	
+	
+	/**
+	 * Test multiple ino's
+	 */
+	@Test
+	public void multipleINOs() throws Exception {
+		BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+
+		IProject theTestProject = null;
+		String projectName = "multipleInos";
+		IPath templateFolder = Shared.getTemplateFolder(projectName);
+		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+		theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+				new CompileDescription(), new NullProgressMonitor());
+		Shared.waitForIndexer(theTestProject);
+		theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+		assertNull(Shared.hasBuildErrors(theTestProject));
+	}
+
+	
+	
+	
+	
 	@Test
 	public void create_CPP_based_Sloeber_Project() throws Exception {
 		BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
