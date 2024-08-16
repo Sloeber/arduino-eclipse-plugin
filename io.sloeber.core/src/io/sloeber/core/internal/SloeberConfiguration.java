@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
@@ -54,7 +55,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	// derived data
 	private Map<String, String> myEnvironmentVariables = new HashMap<>();
-
+	public static SloeberConfiguration getFromAutoBuildConfDesc(IAutoBuildConfigurationDescription autoBuildConfData) {
+		return (SloeberConfiguration) autoBuildConfData.getAutoBuildConfigurationExtensionDescription();
+	}
+			
+	
+	
 	/**
 	 * copy constructor This constructor must be implemented for each derived class
 	 * of AutoBuildConfigurationExtensionDescription or you will get run time errors
@@ -580,14 +586,18 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	@Override
 	public TreeMap<String, String> getPrebuildSteps() {
 		TreeMap<String, String> ret=new TreeMap<>();
-		ret.putAll(myBoardDescription.getHookSteps("prebuild",getAutoBuildDescription())); //$NON-NLS-1$
+		TreeSet <String> hookNamess=new TreeSet<>();
+		hookNamess.add("prebuild");
+		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription())); //$NON-NLS-1$
 		return ret;
 	}
 
 	@Override
 	public TreeMap<String, String> getPostbuildSteps() {
 		TreeMap<String, String> ret=new TreeMap<>();
-		ret.putAll(myBoardDescription.getHookSteps("postbuild",getAutoBuildDescription())); //$NON-NLS-1$
+		TreeSet <String> hookNamess=new TreeSet<>();
+		hookNamess.add("postbuild");
+		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription())); //$NON-NLS-1$
 		return ret;
 	}
 

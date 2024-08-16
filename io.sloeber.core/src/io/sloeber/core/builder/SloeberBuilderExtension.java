@@ -6,6 +6,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.IMarkerGenerator;
@@ -17,15 +20,49 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRules;
+import io.sloeber.autoBuild.extensionPoint.providers.AutoBuildMakeRule;
 import io.sloeber.autoBuild.helpers.api.AutoBuildConstants;
+import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ISloeberConfiguration;
+import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.tools.Helpers;
 
 public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
+
+	@Override
+	public String[] modifyRecipes(AutoBuildConfigurationDescription autoBuildConfData,IAutoBuildMakeRule autoBuildMakeRule, String[] buildRecipes) {
+		switch (autoBuildMakeRule.getTool().getId()) {
+
+			default:
+				return super.modifyRecipes(autoBuildConfData,autoBuildMakeRule,buildRecipes);
+			case "io.sloeber.tool.combine":
+				SloeberConfiguration confDesc = SloeberConfiguration.getFromAutoBuildConfDesc(autoBuildConfData);
+				BoardDescription boardDescription=confDesc.getBoardDescription();
+				TreeSet<String> recipes=new TreeSet<String>();
+				TreeMap<String, String> pre=new TreeMap<>();
+				TreeSet <String> preHooks=new TreeSet<>();
+				preHooks.add("linking");
+				preHooks.add("prelink");
+				TreeSet <String> postHooks=new TreeSet<>();
+				postHooks.add("linking");
+				postHooks.add("postlink");
+				pre.putAll(boardDescription.getHookSteps(preHooks,autoBuildConfData)); //$NON-NLS-1$
+				TreeMap<String, String> post=new TreeMap<>();
+				post.putAll(boardDescription.getHookSteps(postHooks,autoBuildConfData)); //$NON-NLS-1$
+				recipes.addAll(pre.values());
+				recipes.addAll(Arrays.asList(buildRecipes));
+				recipes.addAll(post.values());
+				return super.modifyRecipes(autoBuildConfData,autoBuildMakeRule, recipes.toArray(new String[recipes.size()]));
+		}
+
+	}
+	
 
 	@Override
 	public void beforeAddingSourceRules(IAutoBuildMakeRules makeRules,
@@ -91,8 +128,7 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 	@SuppressWarnings("nls")
 	private static void generateAwkFile(IAutoBuildConfigurationDescription autoBuildConfData) {
 		IFile sizeAwkFile1 = autoBuildConfData.getBuildFolder().getFile("size.awk");
-		ISloeberConfiguration confDesc = (ISloeberConfiguration) autoBuildConfData
-				.getAutoBuildConfigurationExtensionDescription();
+		SloeberConfiguration confDesc = SloeberConfiguration.getFromAutoBuildConfDesc(autoBuildConfData);
 
 		File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
 		String regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex", EMPTY);

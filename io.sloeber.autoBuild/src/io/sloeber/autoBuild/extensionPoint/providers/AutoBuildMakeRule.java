@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -346,6 +347,10 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 		String buildRecipes[] = myTool.getRecipes(autoBuildConfData, buildFolder, inputFiles, toolCommandVars,
 				targetFile);
 
+		AutoBuildBuilderExtension builderExt =autoBuildConfData.getProjectType().getBuilderExtension();
+		if(builderExt!=null) {
+		 buildRecipes = builderExt.modifyRecipes( autoBuildConfData,this,buildRecipes);
+		}
 		// expand the recipes
 		ArrayList<String> ret = new ArrayList<>();
 		for (String curRecipe : buildRecipes) {

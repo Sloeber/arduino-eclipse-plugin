@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
@@ -1042,7 +1043,7 @@ public class BoardDescription {
         return extraVars;
     }
 
-	public TreeMap<String, String> getHookSteps(String hookName,IAutoBuildConfigurationDescription autoData) {
+	public TreeMap<String, String> getHookSteps(TreeSet<String> hookNames,IAutoBuildConfigurationDescription autoData) {
 		TreeMap<String, String> hookSteps = new TreeMap<>();
 		KeyValueTree keyValueTree = KeyValueTree.createRoot();
 
@@ -1067,7 +1068,10 @@ public class BoardDescription {
 			}
 		}
 
-		KeyValueTree hooks = keyValueTree.getChild(RECIPE).getChild(HOOKS).getChild(hookName);
+		KeyValueTree hooks = keyValueTree.getChild(RECIPE).getChild(HOOKS);
+		for(String hookName:hookNames) {
+			hooks=hooks.getChild(hookName);
+		}
 
 		// Try to find the nums from 1 to 10 in order
 		// that is 01 1 02 2
