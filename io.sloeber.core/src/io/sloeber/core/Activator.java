@@ -10,6 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -36,6 +38,7 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.tools.PackageManager;
 
@@ -64,6 +67,7 @@ public class Activator extends Plugin {
     private static IndexerListener myindexerListener = new IndexerListener();
 
     private static BundleContext myBundleContext = null;
+    private static ConfigurationChangeListener myConfigurationChangeListener=new ConfigurationChangeListener();
 
     public static BundleContext getBundleContext() {
         return myBundleContext;
@@ -185,6 +189,9 @@ public class Activator extends Plugin {
     private static void registerListeners() {
         CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
+        CoreModel singCoreModel = CoreModel.getDefault();
+
+        singCoreModel.addCProjectDescriptionListener(myConfigurationChangeListener,CProjectDescriptionEvent.ABOUT_TO_APPLY);
 
 
 
@@ -193,6 +200,8 @@ public class Activator extends Plugin {
     private static void unRegisterListeners() {
         CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
+        CoreModel singCoreModel = CoreModel.getDefault();
+        singCoreModel.removeCProjectDescriptionListener(myConfigurationChangeListener);
 
 
 
