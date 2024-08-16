@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -545,6 +546,9 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public String getBuildFolderString() {
+		if (myBuildFolderString.isBlank()) {
+			return myCdtConfigurationDescription.getName();
+		}
 		return myBuildFolderString;
 	}
 
@@ -1344,8 +1348,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	@Override
-	public TreeMap<String, String> getPrebuildSteps() {
-		TreeMap<String, String> ret=new TreeMap<>();
+	public LinkedHashMap<String, String> getPrebuildSteps() {
+		LinkedHashMap<String, String> ret=new LinkedHashMap<>();
 
 		String preBuildStep = resolve(getPrebuildStep(), EMPTY_STRING, WHITESPACE, this);
 		if (!preBuildStep.isEmpty()) {
@@ -1359,8 +1363,8 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	}
 
 	@Override
-	public TreeMap<String, String> getPostbuildSteps() {
-		TreeMap<String, String> ret=new TreeMap<>();
+	public LinkedHashMap<String, String> getPostbuildSteps() {
+		LinkedHashMap<String, String> ret=new LinkedHashMap<>();
 
 		if(myAutoBuildCfgExtDes!=null) {
 			ret.putAll(myAutoBuildCfgExtDes.getPostbuildSteps());

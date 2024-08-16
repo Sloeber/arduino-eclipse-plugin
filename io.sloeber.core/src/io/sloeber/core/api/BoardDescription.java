@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -1019,7 +1019,7 @@ public class BoardDescription {
      * @param confDesc
      * @param boardsDescriptor
      */
-    private Map<String, String> getEnvVarsPostProcessing(Map<String, String> vars) {
+    private static Map<String, String> getEnvVarsPostProcessing(Map<String, String> vars) {
 
         Map<String, String> extraVars = new HashMap<>();
 
@@ -1043,8 +1043,8 @@ public class BoardDescription {
         return extraVars;
     }
 
-	public TreeMap<String, String> getHookSteps(TreeSet<String> hookNames,IAutoBuildConfigurationDescription autoData) {
-		TreeMap<String, String> hookSteps = new TreeMap<>();
+	public LinkedHashMap<String, String> getHookSteps(LinkedHashSet<String> hookNames,IAutoBuildConfigurationDescription autoData) {
+		LinkedHashMap<String, String> hookSteps = new LinkedHashMap<>();
 		KeyValueTree keyValueTree = KeyValueTree.createRoot();
 
 		PlatformTxtFile referencedPlatfromFile = getreferencedCorePlatformFile();
@@ -1075,7 +1075,7 @@ public class BoardDescription {
 
 		// Try to find the nums from 1 to 10 in order
 		// that is 01 1 02 2
-		 
+
 		for (int hoookNum = 1; hoookNum < 10; hoookNum++) {
 			boolean exists=false;
 			for (int numDigits = 1; numDigits <= 2; numDigits++) {

@@ -3,6 +3,7 @@ package io.sloeber.autoBuild.api;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,6 @@ import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -445,13 +445,13 @@ public interface IAutoBuildConfigurationDescription {
      * getPrebuildSteps returns getPrebuildStep and possibly more commands provided by extensions
      * @return
      */
-    public TreeMap<String,String> getPrebuildSteps();
+    public LinkedHashMap<String,String> getPrebuildSteps();
 
     /**
      * Same thing as getPrebuildSteps but for post Build
      * @return
      */
-    public 	TreeMap<String, String> getPostbuildSteps();
+    public 	LinkedHashMap<String, String> getPostbuildSteps();
 
 
 }

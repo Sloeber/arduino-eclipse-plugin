@@ -1,7 +1,7 @@
 package io.sloeber.autoBuild.api;
 
+import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.TreeMap;
 
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 
@@ -113,8 +113,8 @@ public abstract class AutoBuildConfigurationExtensionDescription {
 
 	public abstract boolean equals(AutoBuildConfigurationExtensionDescription base);
 
-	public abstract TreeMap< String,  String> getPrebuildSteps();
+	public abstract LinkedHashMap< String,  String> getPrebuildSteps();
 
-	public abstract TreeMap<String, String> getPostbuildSteps() ;
+	public abstract LinkedHashMap<String, String> getPostbuildSteps() ;
 
 }

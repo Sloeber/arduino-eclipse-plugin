@@ -25,10 +25,10 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +53,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.IAutoBuildMakeRule;
 import io.sloeber.autoBuild.api.IBuildRunner;
@@ -144,7 +143,7 @@ public class InternalBuildRunner implements IBuildRunner {
 				boolean lastSequenceID = true;
 
 				// Run preBuildStep if existing
-				TreeMap<String,String> preBuildSteps = autoData.getPrebuildSteps();
+				LinkedHashMap<String,String> preBuildSteps = autoData.getPrebuildSteps();
 				for (Entry<String, String> preBuildStep:preBuildSteps.entrySet()) {
 					String announcement = preBuildStep.getKey();
 					String command = preBuildStep.getValue();
@@ -227,7 +226,7 @@ public class InternalBuildRunner implements IBuildRunner {
 				} while (!(lastSequenceID || myHasBuildError));
 				// Run postBuildStep if existing
 
-				TreeMap<String,String> postBuildSteps = autoData.getPostbuildSteps();
+				LinkedHashMap<String,String> postBuildSteps = autoData.getPostbuildSteps();
 				for (Entry<String, String> step:postBuildSteps.entrySet()) {
 					String announcement = step.getKey();
 					String command = step.getValue();

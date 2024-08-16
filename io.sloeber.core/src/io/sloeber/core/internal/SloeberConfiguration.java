@@ -3,16 +3,17 @@ package io.sloeber.core.internal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -58,9 +59,17 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	public static SloeberConfiguration getFromAutoBuildConfDesc(IAutoBuildConfigurationDescription autoBuildConfData) {
 		return (SloeberConfiguration) autoBuildConfData.getAutoBuildConfigurationExtensionDescription();
 	}
-			
-	
-	
+
+	public static SloeberConfiguration getConfig(ICConfigurationDescription cConfigDesc) {
+		CConfigurationData confData=cConfigDesc.getConfigurationData();
+		if(confData instanceof IAutoBuildConfigurationDescription) {
+		return (SloeberConfiguration) ((IAutoBuildConfigurationDescription)confData).getAutoBuildConfigurationExtensionDescription();
+		}
+		return null;
+	}
+
+
+
 	/**
 	 * copy constructor This constructor must be implemented for each derived class
 	 * of AutoBuildConfigurationExtensionDescription or you will get run time errors
@@ -139,7 +148,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		for (Entry<String, String> curEnvVar : envVars.entrySet()) {
 			keyValuePairs.addValue(  curEnvVar.getKey() , curEnvVar.getValue() );
 		}
-		configureIfDirty();
+		configureWhenDirty();
 	}
 
 	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, KeyValueTree keyValues) {
@@ -181,23 +190,25 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public Map<String, String> getEnvironmentVariables() {
-		configureIfDirty();
+		configureWhenDirty();
 
 		return myEnvironmentVariables;
 	}
 
-	private void configureIfDirty() {
+	private void configureWhenDirty() {
 		if (myMemoryIsDirty) {
 			myMemoryIsDirty = getEnvVarsNonExpanding();
-			getEnvVarsExpanding();
 		}
+
+	}
+
+	private void LinkToCore() {
 		if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
 			if (projectNeedsUpdate()) {
 				updateArduinoCodeLinks();
 			}
 		}
 	}
-
 
 
 	private boolean projectNeedsUpdate() {
@@ -228,19 +239,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return false;
 	}
 
-	/**
-	 * Get the environment variables that need environment variables to know the value
-	 * For instance the build path is typically related to the configuration name as sutch
-	 * uses the environment variable ${confname}
-	 * Because resolving the environment variables requires the environmentvarioblas of sloeber
-	 * we get a reentrnacy problem
-	 * By seperating the variables that need expansion (Because I assume the expanding variables
-	 * do not rely on expanding variables) I can cope wiith the reentrancy
-	 */
-	private void getEnvVarsExpanding() {
-		myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
-				getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
-	}
+
 
 	/**
 	 * get the environment variables that do not reliy on variable expansion to get the value.
@@ -248,6 +247,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 */
 	private boolean getEnvVarsNonExpanding() {
 			myEnvironmentVariables.clear();
+
+			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
+					getProject().getFolder(getAutoBuildDescription().getBuildFolderString()).getLocation().toOSString());
 
 			myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH,getCodeLocation().toOSString());
 //			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
@@ -584,21 +586,26 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	}
 
 	@Override
-	public TreeMap<String, String> getPrebuildSteps() {
-		TreeMap<String, String> ret=new TreeMap<>();
-		TreeSet <String> hookNamess=new TreeSet<>();
-		hookNamess.add("prebuild");
-		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription())); //$NON-NLS-1$
+	public LinkedHashMap<String, String> getPrebuildSteps() {
+		LinkedHashMap<String, String> ret=new LinkedHashMap<>();
+		LinkedHashSet <String> hookNamess=new LinkedHashSet<>();
+		hookNamess.add("prebuild"); //$NON-NLS-1$
+		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription()));
 		return ret;
 	}
 
 	@Override
-	public TreeMap<String, String> getPostbuildSteps() {
-		TreeMap<String, String> ret=new TreeMap<>();
-		TreeSet <String> hookNamess=new TreeSet<>();
-		hookNamess.add("postbuild");
-		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription())); //$NON-NLS-1$
+	public LinkedHashMap<String, String> getPostbuildSteps() {
+		LinkedHashMap<String, String> ret=new LinkedHashMap<>();
+		LinkedHashSet <String> hookNamess=new LinkedHashSet<>();
+		hookNamess.add("postbuild"); //$NON-NLS-1$
+		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription()));
 		return ret;
+	}
+
+	public void apply() {
+		configureWhenDirty() ;
+		LinkToCore();
 	}
 
 }
