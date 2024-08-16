@@ -267,7 +267,7 @@ public class Helpers {
                     .convertToRelative(URIUtil.toURI(linklocation), false, null);
             newFolder.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
         } else {
-            newFolder.create(0, true, null);
+            newFolder.create(0, false, null);
         }
 
     }
