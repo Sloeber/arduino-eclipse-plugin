@@ -16,7 +16,7 @@
         <setEntry value="io.sloeber.product.sdk"/>
     </setAttribute>
     <booleanAttribute key="includeOptional" value="true"/>
-    <stringAttribute key="location" value="C:\buildSloeber"/>
+    <stringAttribute key="location" value="R:\buildSloeber"/>
     <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
         <listEntry value="/io.sloeber.tests/src/io/sloeber/core/BuildTests.java"/>
@@ -25,7 +25,7 @@
         <listEntry value="1"/>
     </listAttribute>
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-        <mapEntry key="SLOEBER_HOME" value="c:\"/>
+        <mapEntry key="SLOEBER_HOME" value="D:\"/>
     </mapAttribute>
     <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="true"/>
