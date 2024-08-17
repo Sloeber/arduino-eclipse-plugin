@@ -63,12 +63,12 @@ public class Example extends io.sloeber.core.internal.Example{
 
     private static int getNumADCUsedInExample(String myFQN2) {
         switch (myFQN2) {
-        case "Example/04.Communication/VirtualColorMixer":
-        case "Example/10.StarterKit_BasicKit/p04_ColorMixingLamp":
+        case "Examples/04.Communication/VirtualColorMixer":
+        case "Examples/10.StarterKit_BasicKit/p04_ColorMixingLamp":
             return 3;
-        case "Example/06.Sensors/ADXL3xx":
+        case "Examples/06.Sensors/ADXL3xx":
             return 4;
-        case "Example/08.Strings/StringComparisonOperators":
+        case "Examples/08.Strings/StringComparisonOperators":
             return 6;
         default:
             return 0;
@@ -98,102 +98,102 @@ public class Example extends io.sloeber.core.internal.Example{
 
     private static LinkedList<String> examplesUsingFlightSim() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/Teensy/USB_FlightSim/BlinkTransponder");
-        ret.add("Example/Teensy/USB_FlightSim/FrameRateDisplay");
-        ret.add("Example/Teensy/USB_FlightSim/NavFrequency");
-        ret.add("Example/Teensy/USB_FlightSim/ThrottleServo");
+        ret.add("Examples/Teensy/USB_FlightSim/BlinkTransponder");
+        ret.add("Examples/Teensy/USB_FlightSim/FrameRateDisplay");
+        ret.add("Examples/Teensy/USB_FlightSim/NavFrequency");
+        ret.add("Examples/Teensy/USB_FlightSim/ThrottleServo");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingSerial1() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/04.Communication/MultiSerial");
-        ret.add("Example/04.Communication/SerialPassthrough");
-        ret.add("Example/Teensy/Serial/EchoBoth");
+        ret.add("Examples/04.Communication/MultiSerial");
+        ret.add("Examples/04.Communication/SerialPassthrough");
+        ret.add("Examples/Teensy/Serial/EchoBoth");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingSerialUSB() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/11.ArduinoISP/ArduinoISP");
+        ret.add("Examples/11.ArduinoISP/ArduinoISP");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingDirectMode() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/10.StarterKit_BasicKit/p13_TouchSensorLamp");
+        ret.add("Examples/10.StarterKit_BasicKit/p13_TouchSensorLamp");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingKeyboard() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/09.USB/Keyboard/KeyboardLogout");
-        ret.add("Example/09.USB/Keyboard/KeyboardMessage");
-        ret.add("Example/09.USB/Keyboard/KeyboardReprogram");
-        ret.add("Example/09.USB/Keyboard/KeyboardSerial");
-        ret.add("Example/09.USB/Mouse/ButtonMouseControl");
-        ret.add("Example/09.USB/Mouse/JoystickMouseControl");
-        ret.add("Example/09.USB/KeyboardAndMouseControl");
+        ret.add("Examples/09.USB/Keyboard/KeyboardLogout");
+        ret.add("Examples/09.USB/Keyboard/KeyboardMessage");
+        ret.add("Examples/09.USB/Keyboard/KeyboardReprogram");
+        ret.add("Examples/09.USB/Keyboard/KeyboardSerial");
+        ret.add("Examples/09.USB/Mouse/ButtonMouseControl");
+        ret.add("Examples/09.USB/Mouse/JoystickMouseControl");
+        ret.add("Examples/09.USB/KeyboardAndMouseControl");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingSerial() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/01.Basics/AnalogReadSerial");
-        ret.add("Example/01.Basics/DigitalReadSerial");
-        ret.add("Example/01.Basics/ReadAnalogVoltage");
-        ret.add("Example/02.Digital/DigitalInputPullup");
-        ret.add("Example/02.Digital/StateChangeDetection");
-        ret.add("Example/02.Digital/tonePitchFollower");
-        ret.add("Example/03.Analog/AnalogInOutSerial");
-        ret.add("Example/03.Analog/Smoothing");
-        ret.add("Example/04.Communication/ASCIITable");
-        ret.add("Example/04.Communication/Dimmer");
-        ret.add("Example/04.Communication/Graph");
-        ret.add("Example/04.Communication/Midi");
-        ret.add("Example/04.Communication/PhysicalPixel");
-        ret.add("Example/04.Communication/ReadASCIIString");
-        ret.add("Example/04.Communication/SerialCallResponse");
-        ret.add("Example/04.Communication/SerialCallResponseASCII");
-        ret.add("Example/04.Communication/SerialEvent");
-        ret.add("Example/04.Communication/VirtualColorMixer");
-        ret.add("Example/05.Control/IfStatementConditional");
-        ret.add("Example/05.Control/switchCase");
-        ret.add("Example/05.Control/switchCase2");
-        ret.add("Example/06.Sensors/ADXL3xx");
-        ret.add("Example/06.Sensors/Knock");
-        ret.add("Example/06.Sensors/Memsic2125");
-        ret.add("Example/06.Sensors/Ping");
-        ret.add("Example/08.Strings/CharacterAnalysis");
-        ret.add("Example/08.Strings/StringAdditionOperator");
-        ret.add("Example/08.Strings/StringAppendOperator");
-        ret.add("Example/08.Strings/StringCaseChanges");
-        ret.add("Example/08.Strings/StringCharacters");
-        ret.add("Example/08.Strings/StringComparisonOperators");
-        ret.add("Example/08.Strings/StringConstructors");
-        ret.add("Example/08.Strings/StringIndexOf");
-        ret.add("Example/08.Strings/StringLength");
-        ret.add("Example/08.Strings/StringLengthTrim");
-        ret.add("Example/08.Strings/StringReplace");
-        ret.add("Example/08.Strings/StringStartsWithEndsWith");
-        ret.add("Example/08.Strings/StringSubstring");
-        ret.add("Example/08.Strings/StringToInt");
-        ret.add("Example/10.StarterKit_BasicKit/p03_LoveOMeter");
-        ret.add("Example/10.StarterKit_BasicKit/p04_ColorMixingLamp");
-        ret.add("Example/10.StarterKit_BasicKit/p05_ServoMoodIndicator");
-        ret.add("Example/10.StarterKit_BasicKit/p07_Keyboard");
-        ret.add("Example/10.StarterKit_BasicKit/p12_KnockLock");
-        ret.add("Example/10.StarterKit_BasicKit/p13_TouchSensorLamp");
-        ret.add("Example/10.StarterKit_BasicKit/p14_TweakTheArduinoLogo");
-        ret.add("Example/11.ArduinoISP/ArduinoISP");
-        ret.add("Example/Teensy/Tutorial3/HelloSerialMonitor");
-        ret.add("Example/Teensy/Tutorial3/Pushbutton");
-        ret.add("Example/Teensy/Tutorial3/PushbuttonPullup");
-        ret.add("Example/Teensy/Tutorial3/PushbuttonRGBcolor");
-        ret.add("Example/Teensy/Tutorial4/AnalogInput");
-        ret.add("Example/Teensy/Tutorial4/TemperatureNumberOnly");
-        ret.add("Example/Teensy/Tutorial4/TemperatureScaled");
-        ret.add("Example/Teensy/Tutorial4/TemperatureScaledMulti");
+        ret.add("Examples/01.Basics/AnalogReadSerial");
+        ret.add("Examples/01.Basics/DigitalReadSerial");
+        ret.add("Examples/01.Basics/ReadAnalogVoltage");
+        ret.add("Examples/02.Digital/DigitalInputPullup");
+        ret.add("Examples/02.Digital/StateChangeDetection");
+        ret.add("Examples/02.Digital/tonePitchFollower");
+        ret.add("Examples/03.Analog/AnalogInOutSerial");
+        ret.add("Examples/03.Analog/Smoothing");
+        ret.add("Examples/04.Communication/ASCIITable");
+        ret.add("Examples/04.Communication/Dimmer");
+        ret.add("Examples/04.Communication/Graph");
+        ret.add("Examples/04.Communication/Midi");
+        ret.add("Examples/04.Communication/PhysicalPixel");
+        ret.add("Examples/04.Communication/ReadASCIIString");
+        ret.add("Examples/04.Communication/SerialCallResponse");
+        ret.add("Examples/04.Communication/SerialCallResponseASCII");
+        ret.add("Examples/04.Communication/SerialEvent");
+        ret.add("Examples/04.Communication/VirtualColorMixer");
+        ret.add("Examples/05.Control/IfStatementConditional");
+        ret.add("Examples/05.Control/switchCase");
+        ret.add("Examples/05.Control/switchCase2");
+        ret.add("Examples/06.Sensors/ADXL3xx");
+        ret.add("Examples/06.Sensors/Knock");
+        ret.add("Examples/06.Sensors/Memsic2125");
+        ret.add("Examples/06.Sensors/Ping");
+        ret.add("Examples/08.Strings/CharacterAnalysis");
+        ret.add("Examples/08.Strings/StringAdditionOperator");
+        ret.add("Examples/08.Strings/StringAppendOperator");
+        ret.add("Examples/08.Strings/StringCaseChanges");
+        ret.add("Examples/08.Strings/StringCharacters");
+        ret.add("Examples/08.Strings/StringComparisonOperators");
+        ret.add("Examples/08.Strings/StringConstructors");
+        ret.add("Examples/08.Strings/StringIndexOf");
+        ret.add("Examples/08.Strings/StringLength");
+        ret.add("Examples/08.Strings/StringLengthTrim");
+        ret.add("Examples/08.Strings/StringReplace");
+        ret.add("Examples/08.Strings/StringStartsWithEndsWith");
+        ret.add("Examples/08.Strings/StringSubstring");
+        ret.add("Examples/08.Strings/StringToInt");
+        ret.add("Examples/10.StarterKit_BasicKit/p03_LoveOMeter");
+        ret.add("Examples/10.StarterKit_BasicKit/p04_ColorMixingLamp");
+        ret.add("Examples/10.StarterKit_BasicKit/p05_ServoMoodIndicator");
+        ret.add("Examples/10.StarterKit_BasicKit/p07_Keyboard");
+        ret.add("Examples/10.StarterKit_BasicKit/p12_KnockLock");
+        ret.add("Examples/10.StarterKit_BasicKit/p13_TouchSensorLamp");
+        ret.add("Examples/10.StarterKit_BasicKit/p14_TweakTheArduinoLogo");
+        ret.add("Examples/11.ArduinoISP/ArduinoISP");
+        ret.add("Examples/Teensy/Tutorial3/HelloSerialMonitor");
+        ret.add("Examples/Teensy/Tutorial3/Pushbutton");
+        ret.add("Examples/Teensy/Tutorial3/PushbuttonPullup");
+        ret.add("Examples/Teensy/Tutorial3/PushbuttonRGBcolor");
+        ret.add("Examples/Teensy/Tutorial4/AnalogInput");
+        ret.add("Examples/Teensy/Tutorial4/TemperatureNumberOnly");
+        ret.add("Examples/Teensy/Tutorial4/TemperatureScaled");
+        ret.add("Examples/Teensy/Tutorial4/TemperatureScaledMulti");
 
 
         ret.add("Library/Managed/LiquidCrystal/SerialDisplay");
@@ -202,38 +202,38 @@ public class Example extends io.sloeber.core.internal.Example{
 
     private static LinkedList<String> examplesUsingJoyStick() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/Teensy/USB_Joystick/Basic");
-        ret.add("Example/Teensy/USB_Joystick/Buttons");
-        ret.add("Example/Teensy/USB_Joystick/Complete");
+        ret.add("Examples/Teensy/USB_Joystick/Basic");
+        ret.add("Examples/Teensy/USB_Joystick/Buttons");
+        ret.add("Examples/Teensy/USB_Joystick/Complete");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingMouse() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/Teensy/USB_Joystick/Basic");
-        ret.add("Example/Teensy/USB_Joystick/Buttons");
-        ret.add("Example/Teensy/USB_Joystick/Complete");
-        ret.add("Example/Teensy/USB_RawHID/Basic");
+        ret.add("Examples/Teensy/USB_Joystick/Basic");
+        ret.add("Examples/Teensy/USB_Joystick/Buttons");
+        ret.add("Examples/Teensy/USB_Joystick/Complete");
+        ret.add("Examples/Teensy/USB_RawHID/Basic");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingTone() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/10.StarterKit_BasicKit/p06_LightTheremin");
-        ret.add("Example/02.Digital/toneMultiple");
-        ret.add("Example/02.Digital/toneMelody");
-        ret.add("Example/02.Digital/toneKeyboard");
-        ret.add("Example/02.Digital/tonePitchFollower");
-        ret.add("Example/10.StarterKit_BasicKit/p07_Keyboard");
+        ret.add("Examples/10.StarterKit_BasicKit/p06_LightTheremin");
+        ret.add("Examples/02.Digital/toneMultiple");
+        ret.add("Examples/02.Digital/toneMelody");
+        ret.add("Examples/02.Digital/toneKeyboard");
+        ret.add("Examples/02.Digital/tonePitchFollower");
+        ret.add("Examples/10.StarterKit_BasicKit/p07_Keyboard");
         return ret;
     }
 
     private static LinkedList<String> examplesUsingWire1() {
         LinkedList<String> ret = new LinkedList<>();
-        ret.add("Example/Teensy/USB_Joystick/Basic");
-        ret.add("Example/Teensy/USB_Joystick/Buttons");
-        ret.add("Example/Teensy/USB_Joystick/Complete");
-        ret.add("Example/Teensy/USB_RawHID/Basic");
+        ret.add("Examples/Teensy/USB_Joystick/Basic");
+        ret.add("Examples/Teensy/USB_Joystick/Buttons");
+        ret.add("Examples/Teensy/USB_Joystick/Complete");
+        ret.add("Examples/Teensy/USB_RawHID/Basic");
         ret.add("Library/Managed/Adafruit_BME280_Library/advancedsettings");
         ret.add("Library/Managed/AS3935MI/AS3935MI_LightningDetector_otherInterfaces");
         return ret;

@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,20 +40,20 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
 
-
-    public static Stream<Arguments>  avrHardwareData() throws Exception {
+    @BeforeAll
+    public static void setup() throws Exception {
+    	Shared.waitForBoardsManager();
+    	Shared.setUseParralBuildProjects(Boolean.TRUE);
         Shared.waitForAllJobsToFinish();
         Preferences.setUseBonjour(false);
+    }
 
 
-//        Example testExample = new Example("Firmata:AllInputsFirmata", new Path("C:/Users/jan/Documents/Arduino/libraries/Firmata/examples/AllInputsFirmata"));
-//        MCUBoard robotControler= Arduino.robotControl();
-//        boolean ret=testExample.worksOnBoard(robotControler);
-
+    public static Stream<Arguments>  avrHardwareData() throws Exception {
 
 		List<Arguments> ret = new LinkedList<>();
         List<MCUBoard> allBoards = Arduino.getAllAvrBoards();
-        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesLibrary(null);
+        TreeMap<String, IExample> exampleFolders = LibraryManager.getExamplesFromIDE();
         for (Map.Entry<String, IExample> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue().getCodeLocation();
@@ -95,11 +96,11 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 
         assumeTrue( Shared.buildCounter++ >= mySkipAtStart,"Skipping first " + mySkipAtStart + " tests");
         assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
-
+        Shared.getLastFailMessage();
         myTotalFails++;
         assertNull (Shared.buildAndVerify(projectName, board.getBoardDescriptor(), codeDescriptor,
                 new CompileDescription())) ;
-         myTotalFails++;
+         myTotalFails--;
     }
 
 }
