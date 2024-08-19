@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -359,7 +360,7 @@ public class BoardDescription {
 
     private void removeInvalidMenuIDs() {
         Set<String> allMenuIDs = this.mySloeberBoardTxtFile.getMenus().keySet();
-        Set<String> optionKey=myOptions.keySet();
+        Set<String> optionKey=new HashSet<>(myOptions.keySet());
 
         for ( String curOptionKey : optionKey) {
         	if(!allMenuIDs.contains(curOptionKey)) {

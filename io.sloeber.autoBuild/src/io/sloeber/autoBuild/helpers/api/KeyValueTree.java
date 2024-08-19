@@ -20,7 +20,7 @@ public class KeyValueTree {
 
 	private String myValue;
 	private String myKey;
-	private Map<String, KeyValueTree> myChildren;
+	private LinkedHashMap<String, KeyValueTree> myChildren =null;
 	private KeyValueTree myParent;
 
 	public static KeyValueTree createRoot() {
@@ -28,7 +28,7 @@ public class KeyValueTree {
 	}
 
 	private KeyValueTree(String newKey, String newValue) {
-		myChildren = new TreeMap<>();
+		myChildren = new  LinkedHashMap<>();
 		myKey = newKey;
 		myValue = newValue;
 		myParent = null;
@@ -45,7 +45,7 @@ public class KeyValueTree {
 	}
 
 	private KeyValueTree(KeyValueTree source, KeyValueTree parent) {
-		myChildren = new TreeMap<>();
+		myChildren = new LinkedHashMap<>();
 		myKey = source.myKey;
 		myValue = source.myValue;
 		myParent = parent;
