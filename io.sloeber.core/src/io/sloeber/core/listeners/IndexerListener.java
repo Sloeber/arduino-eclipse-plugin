@@ -96,6 +96,9 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(SloeberCfg.getProject());
 		// remove pgmspace as it gives a problem
 		UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
+		if("esp32".equals(SloeberCfg.getBoardDescription().getArchitecture())) { //$NON-NLS-1$
+			UnresolvedIncludedHeaders.remove("FreeRTOS"); //$NON-NLS-1$
+		}
 
 		//The line below is for cases where libs have been excluded from the build
 		for(String curLib:alreadyAddedLibs.keySet()) {
