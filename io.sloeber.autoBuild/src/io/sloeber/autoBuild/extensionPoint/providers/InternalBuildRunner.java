@@ -84,16 +84,19 @@ public class InternalBuildRunner implements IBuildRunner {
 	}
 
 	@Override
-	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
+	public void invokeClean(int kind, IAutoBuildConfigurationDescription autoData, IMarkerGenerator markerGenerator,
 			IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
+		if(!buildRoot.exists()) {
+			return ;
+		}
 		//Do not delete the build folder as it may be in use with other processes (like discovery)
 		for(IResource curMember:buildRoot.members()) {
 			curMember.delete(true, monitor);
 		}
 //		buildRoot.delete(true, monitor);
 //		buildRoot.create(true, true, monitor);
-		return false;
+		return ;
 	}
 
 	@Override

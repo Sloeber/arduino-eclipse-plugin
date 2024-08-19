@@ -62,15 +62,17 @@ import io.sloeber.autoBuild.schema.api.IConfiguration;
 public class BuildRunnerForMake implements IBuildRunner {
 
 	@Override
-	public boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
+	public void invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		IFolder buildRoot = autoData.getBuildFolder();
+		if(!buildRoot.exists()) {
+			return ;
+		}
 		//Do not delete the build folder as it may be in use with other processes (like discovery)
 		for(IResource curMember:buildRoot.members()) {
 			curMember.delete(true, monitor);
 		}
 		//buildRoot.create(true, true, monitor);
-		return false;
 //		for now I do not run make clean due to the fact rm -f is probably not on the system path
 		//return invokeBuild(IncrementalProjectBuilder.CLEAN_BUILD, envp, autoData, markerGenerator, console, monitor);
 	}

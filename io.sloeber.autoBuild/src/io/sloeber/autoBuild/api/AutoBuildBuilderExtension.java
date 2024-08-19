@@ -20,10 +20,10 @@ public class AutoBuildBuilderExtension {
 		return builder.getBuildRunner().invokeBuild(kind,targetName, autoData, markerGenerator,  console, monitor);
 	}
 
-    public  boolean invokeClean(IBuilder builder,int kind, IAutoBuildConfigurationDescription autoData,
+    public  void invokeClean(IBuilder builder,int kind, IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException{
-    	return builder.getBuildRunner().invokeClean(kind, autoData, markerGenerator,  console,
+    	builder.getBuildRunner().invokeClean(kind, autoData, markerGenerator,  console,
                 monitor);
     }
 

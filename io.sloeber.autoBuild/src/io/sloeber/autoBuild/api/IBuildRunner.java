@@ -54,7 +54,7 @@ public interface IBuildRunner {
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 
-    public  boolean invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
+    public  void invokeClean(int kind, IAutoBuildConfigurationDescription autoData,
             IMarkerGenerator markerGenerator,  IConsole console,
             IProgressMonitor monitor) throws CoreException;
 

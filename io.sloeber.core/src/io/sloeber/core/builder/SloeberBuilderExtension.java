@@ -108,14 +108,14 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 	}
 
 	@Override
-	public boolean invokeClean(IBuilder builder, int kind, IAutoBuildConfigurationDescription autoData,
+	public void invokeClean(IBuilder builder, int kind, IAutoBuildConfigurationDescription autoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
 		InoPreprocessor.deleteSloeberInoCPPFile(autoData, monitor);
 		IFile file = autoData.getBuildFolder().getFile(AutoBuildConstants.MAKE_FILE_EXTENSION);
 		if (file.exists()) {
 			file.delete(true, monitor);
 		}
-		return super.invokeClean(builder, kind, autoData, markerGenerator, console, monitor);
+		super.invokeClean(builder, kind, autoData, markerGenerator, console, monitor);
 	}
 
 	public SloeberBuilderExtension() {
