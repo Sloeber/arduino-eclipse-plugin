@@ -236,7 +236,6 @@ public class Shared {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		Shared.buildCounter++;
-		boolean projectFreshlyCreated = true;
 
 		for (String curBuilder : builders) {
 			if (theTestProject == null) {
@@ -247,18 +246,17 @@ public class Shared {
 						compileOptions, curBuilder, monitor);
 				waitForAllJobsToFinish();
 			}
-			// do not set the build tool when the project is freshly created because then
-			// the default case would never be tested
-			if (!projectFreshlyCreated) {
-				// set the builder
-				CoreModel coreModel = CoreModel.getDefault();
-				ICProjectDescription projectDescription = coreModel.getProjectDescription(theTestProject, true);
-				IAutoBuildConfigurationDescription autoDesc = IAutoBuildConfigurationDescription
-						.getActiveConfig(projectDescription);
-				autoDesc.setBuilder(curBuilder);
-				coreModel.setProjectDescription(theTestProject, projectDescription);
-			}
-			projectFreshlyCreated = false;
+			// clean so we will get a full build for this buider
+			theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+			
+			// set the builder
+			CoreModel coreModel = CoreModel.getDefault();
+			ICProjectDescription projectDescription = coreModel.getProjectDescription(theTestProject, true);
+			IAutoBuildConfigurationDescription autoDesc = IAutoBuildConfigurationDescription
+					.getActiveConfig(projectDescription);
+			autoDesc.setBuilder(curBuilder);
+			coreModel.setProjectDescription(theTestProject, projectDescription);
+				
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
 			if (hasBuildErrors(theTestProject)!=null) {
@@ -276,8 +274,7 @@ public class Shared {
 					}
 				}
 			}
-			// clean so we will get a full build at the next build
-			theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+
 		}
 		if (!myLastFailMessage.isBlank()) {
 			if (myCloseFailedProjectsSetting && theTestProject!=null) {
