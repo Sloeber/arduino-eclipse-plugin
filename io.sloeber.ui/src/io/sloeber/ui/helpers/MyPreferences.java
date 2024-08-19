@@ -272,7 +272,7 @@ public class MyPreferences {
 	}
 
 	public static boolean getHideJson() {
-		return getGlobalBoolean(KEY_HIDE_JSON_FILES, true);
+		return getGlobalBoolean(KEY_HIDE_JSON_FILES, false);
 	}
 
 	public static void setHideJson(boolean state) {
