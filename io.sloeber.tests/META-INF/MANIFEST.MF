@@ -16,8 +16,7 @@ Require-Bundle: io.sloeber.core,
  org.eclipse.swt,
  io.sloeber.autoBuild,
  org.opentest4j,
- junit-platform-suite-api,
- io.sloeber.product;bundle-version="5.0.0"
+ junit-platform-suite-api
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor,
