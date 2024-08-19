@@ -12,7 +12,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 
 @SuiteDisplayName("Sloeber Nightly suite")
 @SelectClasses ({
-	RegressionTest.class,
+	BuildTests.class,
     //UpgradeTest.class, TODO JABA:Need to decide what to do sith these tests as 1 fails and they are kind of obsolete
     CompileAndUpload.class,
     CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest.class,
