@@ -23,7 +23,7 @@ import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","static-method"})
 public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 	// use the boolean below to avoid downloading and installation
@@ -32,7 +32,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	private static final boolean apply_known_work_Arounds = true;
 	private static final boolean closeFailedProjects = false;
 
-	private int myTotalFails = 0;
+	private static int myTotalFails = 0;
 	private static int maxFails = 50;
 	private static int mySkipTestsAtStart = 0;
 
@@ -68,6 +68,15 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 			// confirmed 2020 03 09 version 25 12 17
 			"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
+
+			//no longer supported causes issues with USB_MANUFACTOR
+			"https://raw.githubusercontent.com/mikaelpatel/Cosa/master/package_cosa_index.json",
+
+			//Seems no longer supported json file download fails
+			"https://raw.githubusercontent.com/MaximIntegratedMicros/arduino-collateral/master/package_maxim_index.json",
+			
+			//another fail to download json
+			"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 
 			// uses busybox on windows so command line issues and on Linux the all in one
 			// archive build fails
@@ -117,6 +126,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 			"Maple (RET6)", // confirmed failing in arduino IDE 2020 05 30
 			"Generic STM32F103Z series",// confirmed failing in arduino IDE 2020 05 30
+
+			"Arduino Nano ESP32",// requires recipe.hooks.core.prebuild and recipe.hooks.core.postbuild
 
 	};
 	private static final String[] boardsToIgnoreOnWindows = {
@@ -333,6 +344,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		Shared.waitForAllJobsToFinish();
 	}
 
+
 	@ParameterizedTest
 	@MethodSource("allBoards")
 	public void testBoard(BoardDescription board) throws Exception {
@@ -340,6 +352,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		assumeTrue( Shared.buildCounter >= mySkipTestsAtStart,"Skipping first " + mySkipTestsAtStart + " tests");
 		assumeTrue( myTotalFails < maxFails,"To many fails. Stopping test");
 
+		Shared.getLastFailMessage(); //eraze error buffer
 		IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
 		myTotalFails++;
 		assertNull(Shared.buildAndVerify(board, CodeDescription.createCustomTemplate(templateFolder), null));
