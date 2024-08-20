@@ -10,10 +10,12 @@ import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 
+import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.api.ISloeberConfiguration;
 
 public class ArduinoLanguageProvider implements ILanguageSettingsProvider {
@@ -35,10 +37,17 @@ public class ArduinoLanguageProvider implements ILanguageSettingsProvider {
             return null;
         }
         List<ICLanguageSettingEntry> ret = new LinkedList<>();
-        ISloeberConfiguration autoConfDesc= ISloeberConfiguration.getConfig(cfgDescription);
+        IAutoBuildConfigurationDescription autoBuildConfData=IAutoBuildConfigurationDescription.getConfig(cfgDescription);
+        ISloeberConfiguration autoConfDesc= ISloeberConfiguration.getConfig(autoBuildConfData);
+        ICSourceEntry[] mySrcEntries = IAutoBuildConfigurationDescription.getResolvedSourceEntries(autoBuildConfData);
         Set<IFolder> includeFolders = autoConfDesc.getIncludeFolders();
         int flags = ICSettingEntry.READONLY | ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED;
         for(IFolder curFolder:includeFolders) {
+            boolean isExcluded = mySrcEntries == null ? false
+                    : CDataUtil.isExcluded(curFolder.getProjectRelativePath(), mySrcEntries);
+            if (isExcluded) {
+                 continue;
+            }
         	ret.add(CDataUtil.getPooledEntry(new CIncludePathEntry(curFolder, flags)));
         }
         return LanguageSettingsStorage.getPooledList(ret);

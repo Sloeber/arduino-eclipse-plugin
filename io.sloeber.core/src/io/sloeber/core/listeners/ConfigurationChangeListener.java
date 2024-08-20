@@ -13,22 +13,33 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 
         switch (event.getEventType()) {
         case CProjectDescriptionEvent.ABOUT_TO_APPLY: {
+            	ICProjectDescription newProjDesc = event.getNewCProjectDescription();
+            	for(ICConfigurationDescription curConfig:newProjDesc.getConfigurations()) {
+            		SloeberConfiguration sloeberConfig=SloeberConfiguration.getConfig(curConfig);
+            		if(sloeberConfig==null) {
+            			return;
+            		}
+            		sloeberConfig.aboutToApplyConfigChange();
+            	}
+            	break;
+        	}
+        case CProjectDescriptionEvent.APPLIED: {
         	ICProjectDescription newProjDesc = event.getNewCProjectDescription();
         	for(ICConfigurationDescription curConfig:newProjDesc.getConfigurations()) {
         		SloeberConfiguration sloeberConfig=SloeberConfiguration.getConfig(curConfig);
         		if(sloeberConfig==null) {
         			return;
         		}
-        		sloeberConfig.apply();
+        		sloeberConfig.appliedConfigChange();
         	}
-
-            break;
-        }
+        	break;
+    	}
 
         default: {
             // should not happen
         }
         }
     }
+
 
 }

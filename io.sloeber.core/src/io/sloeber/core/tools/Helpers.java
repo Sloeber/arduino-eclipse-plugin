@@ -265,7 +265,7 @@ public class Helpers {
         if (linklocation != null) {
             URI relativeLinklocation = newFolder.getProject().getPathVariableManager()
                     .convertToRelative(URIUtil.toURI(linklocation), false, null);
-            newFolder.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
+            newFolder.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL |IResource.BACKGROUND_REFRESH , null);
         } else {
             newFolder.create(0, false, null);
         }

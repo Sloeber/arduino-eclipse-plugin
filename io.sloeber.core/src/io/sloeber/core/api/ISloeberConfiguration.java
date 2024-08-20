@@ -58,7 +58,7 @@ public interface ISloeberConfiguration {
         return (ISloeberConfiguration) autoBuildConfig.getAutoBuildConfigurationExtensionDescription();
     }
 
-    IFolder getArduinoCodeFolder();
+    IFolder getArduinoConfigurationFolder();
 
     IFolder getArduinoCoreFolder();
 
@@ -120,5 +120,6 @@ public interface ISloeberConfiguration {
 
 	Map<String, IArduinoLibraryVersion> getUsedLibraries();
 	void setLibraries(Set<IArduinoLibraryVersion> selectedLibraries);
+	IFolder getArduinoRootFolder();
 
 }

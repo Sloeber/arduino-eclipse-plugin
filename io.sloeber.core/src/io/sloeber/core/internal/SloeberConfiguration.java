@@ -11,6 +11,7 @@ import java.util.Set;
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
@@ -36,6 +37,7 @@ import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
@@ -167,25 +169,30 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	}
 
 	@Override
-	public IFolder getArduinoCodeFolder() {
-		String cdtConfDescName = getAutoBuildDescription().getCdtConfigurationDescription().getName();
+	public IFolder getArduinoRootFolder() {
 		IProject project = getProject();
-		return project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFolder(cdtConfDescName);
+		return project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME);
+	}
+
+	@Override
+	public IFolder getArduinoConfigurationFolder() {
+		String cdtConfDescName = getCDTConfName();
+		return getArduinoRootFolder().getFolder(cdtConfDescName);
 	}
 
 	@Override
 	public IFolder getArduinoCoreFolder() {
-		return getArduinoCodeFolder().getFolder(SLOEBER_CODE_FOLDER_NAME);
+		return getArduinoConfigurationFolder().getFolder(SLOEBER_CODE_FOLDER_NAME);
 	}
 
 	@Override
 	public IFolder getArduinoVariantFolder() {
-		return getArduinoCodeFolder().getFolder(SLOEBER_VARIANT_FOLDER_NAME);
+		return getArduinoConfigurationFolder().getFolder(SLOEBER_VARIANT_FOLDER_NAME);
 	}
 
 	@Override
 	public IFolder getArduinoLibraryFolder() {
-		return getArduinoCodeFolder().getFolder(SLOEBER_LIBRARY_FOLDER_NAME);
+		return getArduinoConfigurationFolder().getFolder(SLOEBER_LIBRARY_FOLDER_NAME);
 	}
 
 	@Override
@@ -202,12 +209,17 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	}
 
-	private void LinkToCore() {
+	/* Update the links to the Arduino stuff
+	 * Return true if the project needs a refresh
+	 */
+	private boolean LinkToCore() {
 		if (!ResourcesPlugin.getWorkspace().isTreeLocked()) {
 			if (projectNeedsUpdate()) {
 				updateArduinoCodeLinks();
+				return true;
 			}
 		}
+		return false;
 	}
 
 
@@ -288,7 +300,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	private IPath getCodeLocation() {
 		IProject project = getProject();
-		IPath arduinoPath=project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath();
+		IPath arduinoPath=getArduinoRootFolder().getFullPath();
 		ICSourceEntry[] sourceEntries = getAutoBuildDesc().getCdtConfigurationDescription().getSourceEntries();
 		for (ICSourceEntry curEntry : sourceEntries) {
 			IPath entryPath=curEntry.getFullPath();
@@ -435,17 +447,24 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 *
 	 */
 	private void updateArduinoCodeLinks() {
-		IPath corePath = myBoardDescription.getActualCoreCodePath();
+
 		IFolder arduinoVariantFolder = getArduinoVariantFolder();
+		IFolder arduinoCodeFolder = getArduinoCoreFolder();
+		NullProgressMonitor monitor=new NullProgressMonitor();
+		try {
+			arduinoVariantFolder.delete(true, monitor);
+			arduinoCodeFolder.delete(true, monitor);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		IPath corePath = myBoardDescription.getActualCoreCodePath();
 		if (corePath != null) {
-			Helpers.LinkFolderToFolder(corePath, getArduinoCoreFolder());
-			IPath variantPath = myBoardDescription.getActualVariantPath();
-			if ((variantPath == null) || (!variantPath.toFile().exists())) {
-				// remove the existing link
-				Helpers.removeCodeFolder(arduinoVariantFolder);
-			} else {
-				Helpers.LinkFolderToFolder(variantPath, arduinoVariantFolder);
-			}
+			Helpers.LinkFolderToFolder(corePath, arduinoCodeFolder);
+		}
+		IPath variantPath = myBoardDescription.getActualVariantPath();
+		if (variantPath != null) {
+			Helpers.LinkFolderToFolder(variantPath, arduinoVariantFolder);
 		}
 	}
 
@@ -603,9 +622,80 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return ret;
 	}
 
-	public void apply() {
+	/**
+	 * Because SloeberConfiguration are copied and can be changed at all times
+	 * but there is only 1 disk representation we can not update the disk
+	 * at the time the SloeberConfiguration is changed
+	 *
+	 *  When a configuration becomes "the active" configuration this method will
+	 *  create the necessary resources on disk.
+	 *  This apply is when this configuration is new.
+	 */
+	public void aboutToApplyConfigChange() {
+		updateSourceEntries();
 		configureWhenDirty() ;
+
+	}
+
+	public void appliedConfigChange() {
 		LinkToCore();
 	}
+
+	/**
+	 * Look at the source entries to see whether this is a rename
+	 * If it is a rename update the source entries and update the arduino/[configName]
+	 */
+	private void updateSourceEntries() {
+
+			IFolder curArduinoConfigurationfolder=getArduinoConfigurationFolder();
+			IFolder oldArduinoConfigurationfolder=null;
+
+			//update the source entries
+
+			ICSourceEntry[] orgSourceEntries = getAutoBuildDesc().getCdtConfigurationDescription().getSourceEntries();
+			ICSourceEntry[] newSourceEntries=new ICSourceEntry[orgSourceEntries.length];
+			for ( int curItem=0; curItem <orgSourceEntries.length;curItem++) {
+				ICSourceEntry curEntry=orgSourceEntries[curItem];
+				if (curArduinoConfigurationfolder.getFullPath().equals( curEntry.getFullPath())) {
+					newSourceEntries[curItem]=orgSourceEntries[curItem];
+					continue;
+				}
+				if (getArduinoRootFolder().getFullPath().isPrefixOf( curEntry.getFullPath())) {
+					oldArduinoConfigurationfolder=getProject().getFolder( curEntry.getFullPath().removeFirstSegments(1));
+					newSourceEntries[curItem]=new CSourceEntry(curArduinoConfigurationfolder, curEntry.getExclusionPatterns(), curEntry.getFlags());
+				}else {
+					newSourceEntries[curItem]=orgSourceEntries[curItem];
+				}
+			}
+			if(oldArduinoConfigurationfolder!=null) {
+				try {
+					if(oldArduinoConfigurationfolder.exists()) {
+						NullProgressMonitor monitor= new NullProgressMonitor();
+						IFolder deleteFolder=oldArduinoConfigurationfolder.getFolder(SLOEBER_VARIANT_FOLDER_NAME);
+						if(deleteFolder.exists()) {
+							deleteFolder.delete(true, monitor);
+						}
+						deleteFolder=oldArduinoConfigurationfolder.getFolder(SLOEBER_CODE_FOLDER_NAME);
+						if(deleteFolder.exists()) {
+							deleteFolder.delete(true, monitor );
+						}
+						if(oldArduinoConfigurationfolder.exists()) {
+							oldArduinoConfigurationfolder.delete(true, monitor );
+						}
+					}
+					getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
+
+				} catch (Exception e) {
+					Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,"Failed to modify configuration for rename",e));
+				}
+			}
+
+	}
+
+	private String getCDTConfName() {
+		return  getAutoBuildDescription().getCdtConfigurationDescription().getName();
+	}
+
+
 
 }
