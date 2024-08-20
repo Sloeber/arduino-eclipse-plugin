@@ -240,7 +240,6 @@
                  name="%tool.archiver.name"
                  toolType="o-&gt;ar">
               <outputType
-                    buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.archiver.name"
                     nameProvider="io.sloeber.core.builder.ArchiveOutputNameProvider"
@@ -275,6 +274,7 @@
                                   outputTypeIDs="io.sloeber.compiler.c.link.output,io.sloeber.compiler.cpp.sketch.link.output,io.sloeber.compiler.S.sketch.link.output">
               </inputType>
               <inputType
+                    assignToCommandVarriable="ARCHIVES"
                     id="io.sloeber.tool.combiner.ar.input"
                     name="Build Archives"
                     outputTypeIDs="io.sloeber.tool.archiver.output">
