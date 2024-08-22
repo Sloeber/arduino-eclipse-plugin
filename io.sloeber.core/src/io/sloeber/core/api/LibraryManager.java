@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -448,6 +449,22 @@ public class LibraryManager {
 			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate()));
 		}
 		return ret;
+	}
+
+	public static IArduinoLibraryVersion getLibraryVersionFromLocation(IFolder libFolder,BoardDescription boardDescriptor) {
+		// TODO Auto-generated method stub
+
+		if (boardDescriptor != null) {
+			if(boardDescriptor.getReferencedCoreLibraryPath().isPrefixOf(libFolder.getLocation())) {
+				return getLibrariesHarware(boardDescriptor).get(libFolder.getName());
+			}
+		}
+
+		if(ConfigurationPreferences.getInstallationPathLibraries().isPrefixOf(libFolder.getLocation())) {
+			return getLibrariesdManaged().get(libFolder.getName());
+		}
+
+		return getLibrariesPrivate().get(libFolder.getName());
 	}
 
 }

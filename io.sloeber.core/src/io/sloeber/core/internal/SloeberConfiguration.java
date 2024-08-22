@@ -42,6 +42,7 @@ import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ISloeberConfiguration;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
@@ -495,6 +496,70 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return ret;
 	}
 
+	/**
+	 * Get all the libraries that are linked to on disk
+	 *
+	 * @return
+	 * @throws CoreException
+	 */
+	private Map<String,IArduinoLibraryVersion> getLibrariesFromLinks() throws CoreException {
+		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
+		IFolder libFolder = getArduinoLibraryFolder();
+		for (IResource curResource : libFolder.members()) {
+			if (curResource instanceof IFolder) {
+				IFolder curFolder = (IFolder) curResource;
+				IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
+				if (curLib != null){
+					//We knbow the lib so it is ok
+					ret.put(curLib.getName(),curLib);
+					continue;
+				}
+
+				curLib=LibraryManager.getLibraryVersionFromLocation(curFolder,getBoardDescription());
+				if (curLib != null){
+					ret.put(curLib.getName(),curLib);
+				}
+			}
+		}
+		return ret;
+	}
+
+
+	/**
+	 * remove the links from the libraries on disk
+	 *
+	 */
+	private void removeLibraryLinks() {
+		IProgressMonitor monitor = new NullProgressMonitor();
+		IFolder libFolder = getArduinoLibraryFolder();
+		for (String curLib : myLibraries.keySet()) {
+			IFolder curLibFolder=libFolder.getFolder(curLib);
+			if (curLibFolder.exists()) {
+				try {
+					curLibFolder.delete(true, monitor);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * remove the links from the libraries on disk
+	 *
+	 */
+	private void linkLibrariesToFolder() {
+		IFolder libFolder = getArduinoLibraryFolder();
+		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
+			IFolder curLibFolder=libFolder.getFolder(curLib.getName());
+			Helpers.linkDirectory(curLib.getInstallPath(), curLibFolder);
+		}
+	}
+
+
+
+
 	@Override
 	public void reAttachLibraries() {
 		IProgressMonitor monitor = new NullProgressMonitor();
@@ -632,20 +697,33 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 *  This apply is when this configuration is new.
 	 */
 	public void aboutToApplyConfigChange() {
-		updateSourceEntries();
+		try {
+			myLibraries =getLibrariesFromLinks();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(updateSourceEntries()) {
+			//the config hasbeen renamed;
+			// remove the library links
+			removeLibraryLinks();
+		}
 		configureWhenDirty() ;
 
 	}
 
 	public void appliedConfigChange() {
 		LinkToCore();
+		linkLibrariesToFolder();
 	}
 
 	/**
 	 * Look at the source entries to see whether this is a rename
 	 * If it is a rename update the source entries and update the arduino/[configName]
+	 *
+	 * return true if the config has been renamed otherwise false
 	 */
-	private void updateSourceEntries() {
+	private boolean updateSourceEntries() {
 
 			IFolder curArduinoConfigurationfolder=getArduinoConfigurationFolder();
 			IFolder oldArduinoConfigurationfolder=null;
@@ -667,30 +745,31 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 					newSourceEntries[curItem]=orgSourceEntries[curItem];
 				}
 			}
-			if(oldArduinoConfigurationfolder!=null) {
-				try {
-					if(oldArduinoConfigurationfolder.exists()) {
-						NullProgressMonitor monitor= new NullProgressMonitor();
-						IFolder deleteFolder=oldArduinoConfigurationfolder.getFolder(SLOEBER_VARIANT_FOLDER_NAME);
-						if(deleteFolder.exists()) {
-							deleteFolder.delete(true, monitor);
-						}
-						deleteFolder=oldArduinoConfigurationfolder.getFolder(SLOEBER_CODE_FOLDER_NAME);
-						if(deleteFolder.exists()) {
-							deleteFolder.delete(true, monitor );
-						}
-						if(oldArduinoConfigurationfolder.exists()) {
-							oldArduinoConfigurationfolder.delete(true, monitor );
-						}
-					}
-					getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
-
-				} catch (Exception e) {
-					Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,"Failed to modify configuration for rename",e));
-				}
+			if (oldArduinoConfigurationfolder == null) {
+				return false;
 			}
+			try {
+				if (oldArduinoConfigurationfolder.exists()) {
+					NullProgressMonitor monitor = new NullProgressMonitor();
+					IFolder deleteFolder = oldArduinoConfigurationfolder.getFolder(SLOEBER_VARIANT_FOLDER_NAME);
+					if (deleteFolder.exists()) {
+						deleteFolder.delete(true, monitor);
+					}
+					deleteFolder = oldArduinoConfigurationfolder.getFolder(SLOEBER_CODE_FOLDER_NAME);
+					if (deleteFolder.exists()) {
+						deleteFolder.delete(true, monitor);
+					}
+					if (oldArduinoConfigurationfolder.exists()) {
+						oldArduinoConfigurationfolder.delete(true, monitor);
+					}
+				}
+				getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
 
-	}
+			} catch (Exception e) {
+				Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, "Failed to modify configuration for rename", e));
+			}
+			return true;
+		}
 
 	private String getCDTConfName() {
 		return  getAutoBuildDescription().getCdtConfigurationDescription().getName();
