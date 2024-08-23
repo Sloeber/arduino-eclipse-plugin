@@ -6,6 +6,7 @@ import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -309,29 +310,7 @@ public class MakefileGenerator  {
 		return (buffer.append(NEWLINE));
 	}
 
-	protected String topMakeGetPreBuildStep() {
-		String prebuildStep = myAutoBuildConfData.getPrebuildStep();
-		// JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt
-		// prebuild command if needed
-		// ICConfigurationDescription confDesc =
-		// ManagedBuildManager.getDescriptionForConfiguration(config);
-		// String sketchPrebuild =
-		// io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-		// "sloeber.prebuild",
-		// new String(), false);
-		String sketchPrebuild = getVariableValue("sloeber.prebuild", EMPTY_STRING, true, myAutoBuildConfData); //$NON-NLS-1$
-		if (!sketchPrebuild.isEmpty()) {
-			if (!prebuildStep.isEmpty()) {
-				prebuildStep = prebuildStep + NEWLINE+TAB + sketchPrebuild;
-			} else {
-				prebuildStep = sketchPrebuild;
-			}
-		}
-		// end off JABA issue927
-		// try to resolve the build macros in the prebuild step
-		prebuildStep = resolve(prebuildStep, EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
-		return prebuildStep.trim();
-	}
+
 
 	protected StringBuffer topMakeGetIncludeDependencies() {
 		StringBuffer buffer = new StringBuffer();
@@ -339,22 +318,32 @@ public class MakefileGenerator  {
 		// Add the comment for the "All" target
 		buffer.append(COMMENT_START).append(MakefileGenerator_comment_build_alltarget).append(NEWLINE);
 
-		String prebuildStep = topMakeGetPreBuildStep();
-		String postbuildStep = resolve(myAutoBuildConfData.getPostbuildStep(), EMPTY_STRING, WHITESPACE,
-				myAutoBuildConfData);
-		if (prebuildStep.isBlank() && postbuildStep.isBlank()) {
+		LinkedHashMap<String,String> prebuildSteps = myAutoBuildConfData.getPrebuildSteps();
+		LinkedHashMap<String,String> postbuildSteps = myAutoBuildConfData.getPostbuildSteps();
+		if (prebuildSteps.size()== 0 && postbuildSteps.size()==0) {
 			buffer.append(TARGET_ALL).append(COLON).append(WHITESPACE).append(MAINBUILD).append(NEWLINE);
 		} else {
-			buffer.append(TARGET_ALL).append(COLON).append(NEWLINE);
-			if (!prebuildStep.isBlank()) {
-				buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE)
-						.append(PREBUILD).append(NEWLINE);
+			// add prebuild announce data
+			String preannouncebuildStep = myAutoBuildConfData.getPreBuildAnouncement();
+			if (preannouncebuildStep.length() > 0) {
+				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(preannouncebuildStep));
 			}
+			// Add the prebuild recipes
+			buffer.append(TARGET_ALL).append(COLON).append(NEWLINE);
+			for (String curRecipe : prebuildSteps.values()) {
+				buffer.append(TAB).append(WHITESPACE).append(curRecipe).append(NEWLINE);
+			}
+			// Add the make all command
 			buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE).append(MAINBUILD)
 					.append(NEWLINE);
-			if (!postbuildStep.isBlank()) {
-				buffer.append(TAB).append(MAKE).append(WHITESPACE).append(NO_PRINT_DIR).append(WHITESPACE)
-						.append(POSTBUILD).append(NEWLINE);
+			// add postbuild announce data
+			String postannouncebuildStep = myAutoBuildConfData.getPostBuildAnouncement();
+			if (postannouncebuildStep.length() > 0) {
+				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(postannouncebuildStep));
+			}
+			// Add the postbuild recipes
+			for (String curRecipe : postbuildSteps.values()) {
+				buffer.append(TAB).append(WHITESPACE).append(curRecipe).append(NEWLINE);
 			}
 
 		}
@@ -396,31 +385,31 @@ public class MakefileGenerator  {
 		}
 		buffer.append(NEWLINE).append(NEWLINE);
 
-		String prebuildStep = topMakeGetPreBuildStep();
-		if (prebuildStep.length() > 0) {
+//		String prebuildStep = topMakeGetPreBuildStep();
+//		if (prebuildStep.length() > 0) {
+//
+//			String preannouncebuildStep = myAutoBuildConfData.getPreBuildAnouncement();
+//			buffer.append(PREBUILD).append(COLON).append(NEWLINE);
+//			if (preannouncebuildStep.length() > 0) {
+//				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(preannouncebuildStep));
+//			}
+//			buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
+//			buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
+//		}
 
-			String preannouncebuildStep = myAutoBuildConfData.getPreBuildAnouncement();
-			buffer.append(PREBUILD).append(COLON).append(NEWLINE);
-			if (preannouncebuildStep.length() > 0) {
-				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(preannouncebuildStep));
-			}
-			buffer.append(TAB).append(DASH).append(prebuildStep).append(NEWLINE);
-			buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
-		}
-
-		String postbuildStep = myAutoBuildConfData.getPostbuildStep();
-		postbuildStep = resolve(postbuildStep, EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
-		postbuildStep = postbuildStep.trim();
-		// Add the postbuild step, if specified
-		if (postbuildStep.length() > 0) {
-			String postannouncebuildStep = myAutoBuildConfData.getPostBuildAnouncement();
-			buffer.append(POSTBUILD).append(COLON).append(NEWLINE);
-			if (postannouncebuildStep.length() > 0) {
-				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(postannouncebuildStep));
-			}
-			buffer.append(TAB).append(DASH).append(postbuildStep).append(NEWLINE);
-			buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
-		}
+//		String postbuildStep = myAutoBuildConfData.getPostbuildStep();
+//		postbuildStep = resolve(postbuildStep, EMPTY_STRING, WHITESPACE, myAutoBuildConfData);
+//		postbuildStep = postbuildStep.trim();
+//		// Add the postbuild step, if specified
+//		if (postbuildStep.length() > 0) {
+//			String postannouncebuildStep = myAutoBuildConfData.getPostBuildAnouncement();
+//			buffer.append(POSTBUILD).append(COLON).append(NEWLINE);
+//			if (postannouncebuildStep.length() > 0) {
+//				buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(escapedEcho(postannouncebuildStep));
+//			}
+//			buffer.append(TAB).append(DASH).append(postbuildStep).append(NEWLINE);
+//			buffer.append(TAB).append(DASH).append(AT_SYMBOL).append(ECHO_BLANK_LINE).append(NEWLINE);
+//		}
 
 		return buffer;
 	}
@@ -562,34 +551,10 @@ public class MakefileGenerator  {
 				.append(escapedEcho(MakefileGenerator_message_start_file + WHITESPACE + OUT_MACRO));
 		buffer.append(TAB).append(AT_SYMBOL).append(escapedEcho(tool.getAnnouncement()));
 
-		// // JABA add sketch.prebuild and postbuild if needed
-		// //TOFIX this should not be here
-		// if ("sloeber.ino".equals(fileName)) { //$NON-NLS-1$
-		//
-		// // String sketchPrebuild =
-		// io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-		// // "sloeber.sketch.prebuild", new String(), true); //$NON-NLS-1$
-		// // String sketchPostBuild =
-		// io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-		// // "sloeber.sketch.postbuild", new String(), true); //$NON-NLS-1$
-		// String sketchPrebuild = resolve("sloeber.sketch.prebuild", EMPTY_STRING,
-		// WHITESPACE, autoBuildConfData);
-		// String sketchPostBuild = resolve("sloeber.sketch.postbuild", EMPTY_STRING,
-		// WHITESPACE,autoBuildConfData);
-		// if (!sketchPrebuild.isEmpty()) {
-		// buffer.append(TAB).append(sketchPrebuild);
-		// }
-		// buffer.append(TAB).append(buildCmd).append(NEWLINE);
-		// if (!sketchPostBuild.isEmpty()) {
-		// buffer.append(TAB).append(sketchPostBuild);
-		// }
-		// } else {
 		for (String resolvedCommand : makeRule.getRecipes(myBuildRoot, myAutoBuildConfData)) {
 			buffer.append(TAB).append(resolvedCommand);
 			buffer.append(NEWLINE);
 		}
-		// }
-		// // end JABA add sketch.prebuild and postbuild if needed
 
 		buffer.append(NEWLINE);
 		buffer.append(TAB).append(AT_SYMBOL)
