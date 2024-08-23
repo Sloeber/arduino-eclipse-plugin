@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 24 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 28 ";
 
 	private static Map<String, String> USB_replacers;
 
@@ -403,7 +403,7 @@ public class WorkAround {
 			// the fix below seems no longer needed but is still on august 2021
 			// Arduino treats core differently so we need to change the location of directly
 			// referenced files this manifests only in the combine recipe
-			String changed = origRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys") + " ";
+			String changed = origRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/"+SLOEBER_ARDUINO_FOLDER_NAME+SLACH+"{ConfigName}/core/sys") + " ";
 
 			changed = changed.replace(" \"{build.path}/{archive_file}\" ", " {ARCHIVES} ");
 			changed = changed.replace(" \"{archive_file_path}\" ", " {ARCHIVES} ");
