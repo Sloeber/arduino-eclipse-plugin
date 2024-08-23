@@ -12,7 +12,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.dom.IPDOMManager;
 import org.eclipse.core.runtime.IPath;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,10 +36,30 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	private static final boolean closeFailedProjects = false;
 
 	private static int myTotalFails = 0;
-	private static int maxFails = 50;
-	private static int mySkipTestsAtStart = 0;
+	private static final int maxFails = 50;
+	private static final int mySkipTestsAtStart = 0;
+
+	@BeforeAll
+	static public void beforeAll() throws Exception {
+		Shared.setCloseFailedProjects(closeFailedProjects);
+		// make sure all plugin installation is done
+		Shared.waitForAllJobsToFinish();
+		Shared.setUseParralBuildProjects(Boolean.TRUE);
+		CCorePlugin.getIndexManager().setDefaultIndexerId( IPDOMManager.ID_NO_INDEXER );
+		// build the Arduino way
+		Preferences.setUseArduinoToolSelection(true);
+		Preferences.setUseBonjour(false);
+		installAdditionalBoards();
+	}
 
 	private static final String[] packageUrlsToIgnoreonAllOSes = {
+
+			//This package contains an additional avr folder for the tiny.
+			//This should work. Bug=Sloeber starts from disk not from boardsmanager
+			//therefore doesn't find the json file
+			//this test excludes the other hardwares but I can't be bothered
+			"http://www.leonardomiliani.com/repository/package_leonardomiliani.com_index.json",
+
 			// There is a newer version
 			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
 			// Third party url implies this is outdated (it also doesn't work)
@@ -69,14 +92,19 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			// confirmed 2020 03 09 version 25 12 17
 			"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
 
-			//no longer supported causes issues with USB_MANUFACTOR
+			//no longer supported
 			"https://raw.githubusercontent.com/mikaelpatel/Cosa/master/package_cosa_index.json",
+			"https://engimusing.github.io/arduinoIDE/package_engimusing_modules_index.json",
 
 			//Seems no longer supported json file download fails
 			"https://raw.githubusercontent.com/MaximIntegratedMicros/arduino-collateral/master/package_maxim_index.json",
-			
+
 			//another fail to download json
 			"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
+
+			//malformed json file (confirmed by arduino IDE
+			"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json",
+			"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json",
 
 			// uses busybox on windows so command line issues and on Linux the all in one
 			// archive build fails
@@ -107,8 +135,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			// confirmed 2020 03 09 version 4.0.0
 			"SmartEverything Bee (Native USB Port)",
 
-			// issue #1152 (confirmed 2020 03 07 )
-			"Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
+			// confirmed 2024 08 23 not to work in arduino IDE
+			"Kitten Syringe nRF52833 (NSFW)",
 
 			"D-duino-32", // confirmed 2020 03 09
 			"SparkFun Blynk Board", // (confirmed 2020 03 07 )
@@ -271,13 +299,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	};
 
 	public static Stream<Arguments> allBoards() throws Exception {
-		Shared.setCloseFailedProjects(closeFailedProjects);
-		// make sure all plugin installation is done
-		Shared.waitForAllJobsToFinish();
-		// build the Arduino way
-		Preferences.setUseArduinoToolSelection(true);
-		Preferences.setUseBonjour(false);
-		installAdditionalBoards();
+
 
 		List<BoardDescription> boards = new ArrayList<>();
 		for (File curBoardFile : BoardsManager.getAllBoardsFiles()) {
