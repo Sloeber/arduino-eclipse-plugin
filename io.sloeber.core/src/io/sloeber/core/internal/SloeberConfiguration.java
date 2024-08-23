@@ -505,6 +505,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private Map<String,IArduinoLibraryVersion> getLibrariesFromLinks() throws CoreException {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		IFolder libFolder = getArduinoLibraryFolder();
+		if(!libFolder.exists()) {
+			return ret;
+		}
 		for (IResource curResource : libFolder.members()) {
 			if (curResource instanceof IFolder) {
 				IFolder curFolder = (IFolder) curResource;
