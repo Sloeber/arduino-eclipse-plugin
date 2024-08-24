@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 28 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 25 ";
 
 	private static Map<String, String> USB_replacers;
 
@@ -351,9 +351,9 @@ public class WorkAround {
 			changed = changed + "{sloeber.extra.compile} {sloeber.extra.c.compile} {sloeber.extra.all}";
 			String codan = changed.replace(RECIPE_C_to_O, RECIPE_C_O_CODAN);
 			codan = codan.replace(" -o ", " ");
-			codan = codan.replace(" {FLAGS} ", " ");
+			//codan = codan.replace(" {FLAGS} ", " ");
 			codan = codan.replace(" {OUTPUT} ", " ");
-			codan = codan.replace(" {compiler.cpreprocessor.flags} ", " ");
+			//codan = codan.replace(" {compiler.cpreprocessor.flags} ", " ");
 			codan = codan.replace(" {INPUTS} ", DISCOVERY_PARAMETERS.replace("${", "{") + BLANK);
 
 			platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
@@ -368,9 +368,9 @@ public class WorkAround {
 			changed = changed + "{sloeber.extra.compile} {sloeber.extra.cpp.compile} {sloeber.extra.all}";
 			String codan = changed.replace(RECIPE_CPP_to_O, RECIPE_CPP_O_CODAN);
 			codan = codan.replace(" -o ", " ");
-			codan = codan.replace(" {FLAGS} ", " ");
+			//codan = codan.replace(" {FLAGS} ", " ");
 			codan = codan.replace(" {OUTPUT} ", " ");
-			codan = codan.replace(" {compiler.cpreprocessor.flags} ", " ");
+			//codan = codan.replace(" {compiler.cpreprocessor.flags} ", " ");
 			codan = codan.replace(" {INPUTS} ", DISCOVERY_PARAMETERS.replace("${", "{") + BLANK);
 
 			platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
