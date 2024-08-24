@@ -455,7 +455,8 @@ public class LibraryManager {
 		// TODO Auto-generated method stub
 
 		if (boardDescriptor != null) {
-			if(boardDescriptor.getReferencedCoreLibraryPath().isPrefixOf(libFolder.getLocation())) {
+			IPath libPath=boardDescriptor.getReferencedCoreLibraryPath();
+			if(libPath!=null && libPath.isPrefixOf(libFolder.getLocation())) {
 				return getLibrariesHarware(boardDescriptor).get(libFolder.getName());
 			}
 		}
