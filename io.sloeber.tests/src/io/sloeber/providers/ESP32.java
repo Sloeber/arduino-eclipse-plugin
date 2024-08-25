@@ -14,7 +14,7 @@ public class ESP32 extends MCUBoard {
     private static final String provider = "esp32";
     private static final String architectureName = "esp32";
     private static final String jsonFileName = "package_esp32_index.json";
-    public static final String packageURL = "https://dl.espressif.com/dl/package_esp32_index.json";
+    public static final String packageURL = "https://espressif.github.io/arduino-esp32/package_esp32_index.json";
     public static final String esp32ID = "esp32";
 
     public static MCUBoard esp32() {
