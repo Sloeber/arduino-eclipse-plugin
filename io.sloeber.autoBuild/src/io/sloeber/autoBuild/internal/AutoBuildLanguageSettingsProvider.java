@@ -19,6 +19,7 @@ import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,6 +66,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.core.Messages;
 import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
 import io.sloeber.autoBuild.schema.api.IOption;
 
@@ -74,8 +76,8 @@ import io.sloeber.autoBuild.schema.api.IOption;
 public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensionBase
 		implements ILanguageSettingsBroadcastingProvider {
 
-	private static final String SCANNER_DISCOVERY_CONSOLE = "org.eclipse.cdt.managedbuilder.ScannerDiscoveryConsole"; //$NON-NLS-1$
-	private static final String SCANNER_DISCOVERY_GLOBAL_CONSOLE = "org.eclipse.cdt.managedbuilder.ScannerDiscoveryGlobalConsole"; //$NON-NLS-1$
+	private static final String SCANNER_DISCOVERY_CONSOLE = "io.Sloeber.autoBuild.ScannerDiscoveryConsole"; //$NON-NLS-1$
+	private static final String SCANNER_DISCOVERY_GLOBAL_CONSOLE = "io.Sloeber.autoBuild.ScannerDiscoveryGlobalConsole"; //$NON-NLS-1$
 	private static final String DEFAULT_CONSOLE_ICON = "icons/obj16/inspect_sys.gif"; //$NON-NLS-1$
 	private static final String GMAKE_ERROR_PARSER_ID = "org.eclipse.cdt.core.GmakeErrorParser"; //$NON-NLS-1$
 
@@ -101,10 +103,10 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		@Override
 		public void addMarker(final ProblemMarkerInfo problemMarkerInfo) {
 			final String providerId = getId();
+			final String providerName=getName();
 			// Add markers in a job to avoid deadlocks
 			Job markerJob = new Job(
-					// ManagedMakeMessages.getResourceString(
-					"AbstractBuiltinSpecsDetector.AddScannerDiscoveryMarkers") { //$NON-NLS-1$
+							Messages.AddScannerDiscoveryMarkers) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					// Avoid duplicates as different languages can generate identical errors
@@ -133,14 +135,12 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 						marker.setAttribute(SDMarkerGenerator.ATTR_PROVIDER, providerId);
 
 						if (problemMarkerInfo.file instanceof IWorkspaceRoot) {
-							String msgPreferences = // ManagedMakeMessages.getFormattedString(
-									"AbstractBuiltinSpecsDetector.ScannerDiscoveryMarkerLocationPreferences";
-							// , //$NON-NLS-1$ providerName);
+							String msgPreferences = MessageFormat.format(
+									Messages.ScannerDiscoveryMarkerLocationPreferences, providerName);
 							marker.setAttribute(IMarker.LOCATION, msgPreferences);
 						} else {
-							String msgProperties = // ManagedMakeMessages.getFormattedString(
-									"AbstractBuiltinSpecsDetector.ScannerDiscoveryMarkerLocationProperties";
-							// //$NON-NLS-1$ providerName);
+							String msgProperties = MessageFormat.format(
+									Messages.ScannerDiscoveryMarkerLocationProperties, providerName);
 							marker.setAttribute(IMarker.LOCATION, msgProperties);
 						}
 					} catch (CoreException e) {
@@ -298,10 +298,8 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 		try (AutoBuildRunnerHelper buildRunnerHelper = new AutoBuildRunnerHelper(currentProject);) {
 			SubMonitor subMonitor = SubMonitor.convert(monitor,
-					// ManagedMakeMessages.getFormattedString(
-					"AbstractBuiltinSpecsDetector.RunningScannerDiscovery", //$NON-NLS-1$
-					// getName()),
-					100);
+					MessageFormat.format(
+							Messages.RunningScannerDiscovery,  getName()),			100);
 
 			IConsole console;
 			if (isConsoleEnabled) {
@@ -331,11 +329,11 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 				buildRunnerHelper.prepareStreams(epm, parsers, console, subMonitor.split(TICKS_OUTPUT_PARSING));
 
-				buildRunnerHelper.greeting(// ManagedMakeMessages
-						// .getFormattedString(
-						"AbstractBuiltinSpecsDetector.RunningScannerDiscovery"//$NON-NLS-1$
-				// , getName())
+				buildRunnerHelper.greeting(MessageFormat.format(
+						Messages.RunningScannerDiscovery , getName())
 				);
+
+				System.out.println(currentCommandResolved);
 				InternalBuildRunner.launchCommand(currentCommandResolved, autoConf,
 						 monitor,  buildRunnerHelper);
 
@@ -412,7 +410,7 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 		@Override
 		public boolean processLine(String line) {
-			// System.out.println(line);
+			System.out.println(line);
 
 			for (Entry<Pattern, outputTypes> curMatcher : outputMatchers.entrySet()) {
 				Pattern pat = curMatcher.getKey();

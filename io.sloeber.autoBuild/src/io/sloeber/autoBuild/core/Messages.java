@@ -20,7 +20,6 @@ public class Messages extends NLS {
     public static String ManagedMakeBuilder_message_no_build;
     public static String ManagedMakeBuilder_message_error;
     public static String ManagedMakeBuilder_message_error_build;
-    //   public static String ManagedMakeBuilder_message_error_refresh;
     public static String ManagedMakeBuilder_message_undefined_build_command;
     public static String ManagedMakeBuilder_message_finished;
     public static String ManagedMakeBuilder_message_cancelled;
@@ -122,7 +121,6 @@ public class Messages extends NLS {
     public static String GeneratedMakefileBuilder_cleanSelectedFiles;
     public static String FolderInfo_4;
     public static String GnuLinkOutputNameProvider_0;
-    public static String CommonBuilder_1;
     public static String CommonBuilder_2;
     public static String CommonBuilder_6;
     public static String CommonBuilder_7;
@@ -140,18 +138,22 @@ public class Messages extends NLS {
     public static String ResourceChangeHandler2_0;
     public static String ToolInfo_0;
     public static String ToolInfo_1;
-    public static String AbstractBuiltinSpecsDetector_AddScannerDiscoveryMarkers;
     public static String AbstractBuiltinSpecsDetector_ClearingMarkers;
     public static String AbstractBuiltinSpecsDetector_DiscoverBuiltInSettingsJobName;
-    public static String AbstractBuiltinSpecsDetector_RunningScannerDiscovery;
-    public static String AbstractBuiltinSpecsDetector_ScannerDiscoveryMarkerLocationPreferences;
-    public static String AbstractBuiltinSpecsDetector_ScannerDiscoveryMarkerLocationProperties;
     public static String AbstractBuiltinSpecsDetector_ScannerDiscoveryTaskTitle;
     public static String AbstractBuiltinSpecsDetector_SerializingResults;
     public static String ExternalBuilderName;
     public static String InternalBuilderName;
 
 	public static String InternalBuildRunner_NoNeedToRun;
+
+	public static String ScannerDiscoveryMarkerLocationPreferences;
+
+	public static String ScannerDiscoveryMarkerLocationProperties;
+
+	public static String AddScannerDiscoveryMarkers;
+
+	public static String RunningScannerDiscovery;
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
