@@ -4,31 +4,31 @@ import org.eclipse.core.runtime.IPath;
 
 public abstract class ArduinoInstallable {
 
-    protected String archiveFileName;
-    protected String url;
-    protected String checksum;
-    protected String size;
-    protected String name;
+    protected String myArchiveFileName;
+    protected String myURL;
+    protected String myChecksum;
+    protected String mySize;
+    protected String myName;
 
     abstract public IPath getInstallPath();
 
     public String getArchiveFileName() {
-        return archiveFileName;
+        return myArchiveFileName;
     }
 
     public String getUrl() {
-        return url;
+        return myURL;
     }
 
     public String getChecksum() {
-        return checksum;
+        return myChecksum;
     }
 
     public String getSize() {
-        return size;
+        return mySize;
     }
 
     public String getName() {
-        return name;
+        return myName;
     }
 }
