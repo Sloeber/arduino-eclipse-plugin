@@ -221,7 +221,6 @@ public class Activator extends Plugin {
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
         InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
         InstancePreferences.setAutomaticallyImportLibraries(InstancePreferences.getAutomaticallyImportLibraries());
-        BoardsManager.setJsonURLs(BoardsManager.getJsonURLs());
     }
 
     private void runPluginCoreStartInstantiatorJob() {

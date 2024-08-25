@@ -79,6 +79,7 @@ public class Const extends AutoBuildConstants {
     public static final String LOCAL = "local";
 
     // Folder and file Information
+    public static final String SLOEBER_HOME_SUB_FOLDER ="arduinoPlugin";
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = HARDWARE;
     public static final String ARDUINO_CODE_FOLDER_NAME = CORE;
     public static final String ARDUINO_VARIANTS_FOLDER_NAME = VARIANTS;

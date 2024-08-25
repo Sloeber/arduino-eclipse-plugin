@@ -71,7 +71,7 @@ public class ConfigurationPreferences {
 	}
 
 	public static IPath getInstallationPath() {
-		return Common.sloeberHomePath.append("arduinoPlugin"); //$NON-NLS-1$
+		return Common.sloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER);
 	}
 
 	public static IPath getInstallationPathLibraries() {

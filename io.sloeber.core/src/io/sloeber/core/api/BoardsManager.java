@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -22,11 +24,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -62,16 +62,13 @@ import io.sloeber.core.txt.WorkAround;
  *
  */
 public class BoardsManager {
-    private static String stringSplitter = "\n";//$NON-NLS-1$
-    private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
-    private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "https://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
-    private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
-    private static final String DEFAULT_JSON_URLS = "https://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
-            + "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
-            + "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
-            + "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
-            + "https://www.pjrc.com/teensy/package_teensy_index.json\n" //$NON-NLS-1$
-            + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
+	private static final String THIRD_PARTY_URL_FILE="sloeber_third_party_url.txt"; //$NON-NLS-1$
+    private static final String[] DEFAULT_JSON_URLS = {"https://downloads.arduino.cc/packages/package_index.json", //$NON-NLS-1$
+             "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json", //$NON-NLS-1$
+             "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json", //$NON-NLS-1$
+             "https://arduino.esp8266.com/stable/package_esp8266com_index.json", //$NON-NLS-1$
+             "https://www.pjrc.com/teensy/package_teensy_index.json", //$NON-NLS-1$
+             "https://downloads.arduino.cc/libraries/library_index.json"};//$NON-NLS-1$
 
     protected static List<ArduinoPlatformPackageIndex> packageIndices;
     private static boolean myHasbeenLogged = false;
@@ -131,7 +128,11 @@ public class BoardsManager {
         return boardid;
     }
 
-    public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
+    public static void addPackageURLs(Collection<String> packageUrlsToAdd, boolean forceDownload) {
+        if (!isReady()) {
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            return;
+        }
         HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(getJsonURLList()));
         packageUrlsToAdd.addAll(originalJsonUrls);
 
@@ -139,9 +140,9 @@ public class BoardsManager {
         loadJsons(forceDownload);
     }
 
-    public static void setPackageURLs(HashSet<String> packageUrls, boolean forceDownload) {
+    public static void setPackageURLs(Collection<String> packageUrls, boolean forceDownload) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         setJsonURLs(packageUrls);
@@ -152,7 +153,7 @@ public class BoardsManager {
      * installs a subset of the latest platforms It skips the first <fromIndex>
      * platforms And stops at <toIndex> platforms. To install the 5 first latest
      * platforms installsubsetOfLatestPlatforms(0,5)
-     * 
+     *
      * @param fromIndex
      *            the platforms at the start to skip
      * @param toIndex
@@ -161,7 +162,7 @@ public class BoardsManager {
     public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
         String DEPRECATED = "DEPRECATED"; //$NON-NLS-1$
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         envVarsNeedUpdating = true;
@@ -199,7 +200,7 @@ public class BoardsManager {
 
     public static void installLatestPlatform(String JasonName, String packageName, String architectureName) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         envVarsNeedUpdating = true;
@@ -215,7 +216,7 @@ public class BoardsManager {
                 }
             }
         }
-        Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+        Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
@@ -276,7 +277,7 @@ public class BoardsManager {
 
         WorkAround.applyKnownWorkArounds(platformVersion);
 
-        System.out.println("done installing platform " + platformVersion.toString()); //$NON-NLS-1$ 
+        System.out.println("done installing platform " + platformVersion.toString()); //$NON-NLS-1$
         return mstatus;
     }
 
@@ -308,10 +309,10 @@ public class BoardsManager {
 
         TreeSet<File> boardFiles = new TreeSet<>();
         for (String CurFolder : hardwareFolders) {
-            searchFiles(new File(CurFolder), boardFiles, Const.BOARDS_FILE_NAME, 6);
+            searchFiles(new File(CurFolder), boardFiles, BOARDS_FILE_NAME, 6);
         }
         if (boardFiles.size() == 0) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     Helpers_No_boards_txt_found.replace(FILE_TAG, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
             return null;
         }
@@ -323,7 +324,7 @@ public class BoardsManager {
             File[] a = folder.listFiles();
             if (a == null) {
                 if (!myHasbeenLogged) {
-                    Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
                             Helpers_Error_The_folder_is_empty.replace(FOLDER_TAG, folder.toString()), null));
                     myHasbeenLogged = true;
                 }
@@ -331,7 +332,10 @@ public class BoardsManager {
             }
             for (File f : a) {
                 if (f.isDirectory()) {
-                    searchFiles(f, Hardwarelists, Filename, depth - 1);
+                	//ignore folders named tools
+                	if(!f.getName().equals(TOOLS)) {
+                		searchFiles(f, Hardwarelists, Filename, depth - 1);
+                	}
                 } else if (f.getName().equals(Filename)) {
                     Hardwarelists.add(f);
                 }
@@ -352,7 +356,7 @@ public class BoardsManager {
     public static IStatus updatePlatforms(List<ArduinoPlatformVersion> platformsToInstall,
             List<ArduinoPlatformVersion> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
         if (!isReady()) {
-            status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
+            status.add(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
             return status;
         }
         //TODO updating the jsons after selecting what to install seems dangerous to me; check to delete
@@ -405,7 +409,7 @@ public class BoardsManager {
 
     public static void setPrivateHardwarePaths(String[] hardWarePaths) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         InstancePreferences.setPrivateHardwarePaths(hardWarePaths);
@@ -509,91 +513,55 @@ public class BoardsManager {
         return packagePath.toFile();
     }
 
-    public static String getDefaultJsonURLs() {
+    public static String[] getDefaultJsonURLs() {
         return DEFAULT_JSON_URLS;
     }
 
-    public static String getJsonUrlsKey() {
-        return KEY_MANAGER_JSON_URLS;
-    }
 
-    public static void setJsonURLs(String urls) {
-        setString(KEY_MANAGER_JSON_URLS, urls);
-    }
-
-    private static void saveJsonURLs(String urls[]) {
-        setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
-    }
-
-    public static void setJsonURLs(HashSet<String> urls) {
-        setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
+    private static void setJsonURLs(Collection<String> urls) {
+    	IPath myThirdPartyURLStoragePath=getThirdPartyURLStoragePath();
+    	try {
+    		if(myThirdPartyURLStoragePath!=null ) {
+    			Files.write(myThirdPartyURLStoragePath.toPath(),urls, Charset.forName(StandardCharsets.UTF_8.name()));
+    		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public static String[] getJsonURLList() {
-        return getJsonURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
+    	IPath myThirdPartyURLStoragePath=getThirdPartyURLStoragePath();
+    	try {
+    		if(myThirdPartyURLStoragePath!=null && myThirdPartyURLStoragePath.toFile().exists()) {
+    			List<String>thirdPartyURLs = Files.readAllLines(myThirdPartyURLStoragePath.toPath(), Charset.forName(StandardCharsets.UTF_8.name()));
+    			if(thirdPartyURLs.size()>0) {
+    				return thirdPartyURLs.toArray(new String[thirdPartyURLs.size()]);
+    			}
+    		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	//The new way of storing the thirdparty urls's failed
+    	//try the Sloeber V3 way for downwards compatibility
+    	String[] sloeberV4Storage= getString("Manager jsons", EMPTY_STRING).replace("\r", new String()).split("\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    	if(sloeberV4Storage.length>3) {
+    		return sloeberV4Storage;
+    	}
+    	//Everything failed; This is probably a new install; return the defaults;
+    	return DEFAULT_JSON_URLS;
+
     }
 
-    public static String getJsonURLs() {
-        // I added some code here to get easier from V3 to V4
-        // the library json url is now managed as the boards url's so it also
-        // needs to be added to the json url's
-        // this is doen in the default but people who have installed other
-        // boards or do not move to the default (which is by default)
-        // wil not see libraries
-        // to fix this I changed the storage name and if the new storage name is
-        // empty I read the ol one and add the lib
-        String ret = getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
-        if (DEFAULT_JSON_URLS.equals(ret)) {
-            ret = getString(KEY_MANAGER_JSON_URLS_V3, DEFAULT_JSON_URLS);
-            if (!DEFAULT_JSON_URLS.equals(ret)) {
-                ret += System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
-                setString(KEY_MANAGER_JSON_URLS, ret);
-                removeKey(KEY_MANAGER_JSON_URLS_V3);
-            }
-        }
-        return ret;
+    private static IPath getThirdPartyURLStoragePath() {
+    	return sloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).append(THIRD_PARTY_URL_FILE);
     }
 
-    /**
-     * Completely replace the list with jsons with a new list
-     *
-     * @param newJsonUrls
-     */
-    public static void setJsonURLs(String[] newJsonUrls) {
-        if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
-            return;
-        }
-
-        String curJsons[] = getJsonURLList();
-        HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
-        HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newJsonUrls));
-        origJsons.removeAll(currentSelectedJsons);
-        // remove the files from disk which were in the old lst but not in the
-        // new one
-        for (String curJson : origJsons) {
-            try {
-                File localFile = getLocalFileName(curJson, false);
-                if (localFile.exists()) {
-                    localFile.delete();
-                }
-            } catch (@SuppressWarnings("unused") Exception e) {
-                // ignore
-            }
-        }
-        // save to configurationsettings before calling LoadIndices
-        saveJsonURLs(newJsonUrls);
-        // reload the indices (this will remove all potential remaining
-        // references
-        // existing files do not need to be refreshed as they have been
-        // refreshed at startup
-        // new files will be added
-        loadJsons(false);
-    }
 
     public static void removeAllInstalledPlatforms() {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         try {
@@ -617,9 +585,9 @@ public class BoardsManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.AVR);
-        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.SAMD);
-        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.VENDOR_ARDUINO, Const.SAM);
+        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, SAMD);
+        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, SAM);
 
         if (latestSamdPlatform != null) {
             myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamdPlatform));
@@ -651,7 +619,7 @@ public class BoardsManager {
     /**
      * given a vendor and a architecture provide the newest installed platform
      * version
-     * 
+     *
      * @param vendor
      * @param architecture
      * @return the found platformVersion or null if none found
@@ -827,48 +795,13 @@ public class BoardsManager {
         return null;
     }
 
-    /**
-     * This method removes the json files from disk and removes memory references to
-     * these files or their content
-     *
-     * @param packageUrlsToRemove
-     */
-    public static void removePackageURLs(Set<String> packageUrlsToRemove) {
-        if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
-            return;
-        }
-        // remove the files from memory
-        Set<String> activeUrls = new HashSet<>(Arrays.asList(getJsonURLList()));
-
-        activeUrls.removeAll(packageUrlsToRemove);
-
-        setJsonURLs(activeUrls.toArray((String[]) null));
-
-        // remove the files from disk
-        for (String curJson : packageUrlsToRemove) {
-            File localFile = getLocalFileName(curJson, true);
-            if (localFile != null) {
-                if (localFile.exists()) {
-                    localFile.delete();
-                }
-            }
-        }
-
-        // reload the indices (this will remove all potential remaining
-        // references
-        // existing files do not need to be refreshed as they have been
-        // refreshed at startup
-        loadJsons(false);
-
-    }
 
     /**
      * Remove all packages that have a more recent version
      */
     public static void onlyKeepLatestPlatforms() {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         List<ArduinoPackage> allPackages = getPackages();

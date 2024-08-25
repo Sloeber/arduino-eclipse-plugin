@@ -3,6 +3,9 @@ package io.sloeber.ui.preferences;
 
 import static io.sloeber.ui.Activator.*;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -40,15 +43,18 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 
 	@Override
 	public boolean performOk() {
-		BoardsManager.setJsonURLs(this.urlsText.getText().split(System.lineSeparator()));
-		Preferences.setUpdateJsonFiles(this.upDateJsons.getBooleanValue());
+		boolean updateFiles=this.upDateJsons.getBooleanValue();
+		Preferences.setUpdateJsonFiles(updateFiles);
+		HashSet<String> toSetList = new HashSet<>(Arrays.asList(urlsText.getText().split(System.lineSeparator())));
+		BoardsManager.setPackageURLs(toSetList,updateFiles);
+
 		return super.performOk();
 	}
 
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		this.urlsText.setText(BoardsManager.getDefaultJsonURLs());
+		this.urlsText.setText(String.join(System.lineSeparator(), BoardsManager.getDefaultJsonURLs()));
 	}
 
 	@Override
