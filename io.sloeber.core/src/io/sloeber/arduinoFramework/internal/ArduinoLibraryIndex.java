@@ -21,6 +21,7 @@ import com.google.gson.annotations.JsonAdapter;
 import io.sloeber.arduinoFramework.api.IArduinoLibrary;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryIndex;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.Node;
 
 /**
  * This class represents a json file that references libraries

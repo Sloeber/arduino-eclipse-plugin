@@ -16,6 +16,7 @@ import com.google.gson.JsonParseException;
 
 import io.sloeber.arduinoFramework.api.IArduinoLibrary;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.Node;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
 
@@ -26,7 +27,7 @@ import io.sloeber.core.api.VersionNumber;
  *
  */
 
-public class ArduinoLibrary extends Node  implements IArduinoLibrary {
+public class ArduinoLibrary   extends IArduinoLibrary {
 
     private String name;
     private TreeMap<VersionNumber, ArduinoLibraryVersion> versions = new TreeMap<>(Collections.reverseOrder());

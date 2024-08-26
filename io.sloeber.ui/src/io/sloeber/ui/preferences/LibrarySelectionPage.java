@@ -45,7 +45,7 @@ import io.sloeber.arduinoFramework.api.IArduinoLibrary;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryIndex;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.arduinoFramework.api.LibraryManager;
-import io.sloeber.arduinoFramework.internal.Node;
+import io.sloeber.arduinoFramework.api.Node;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.preferences.LibrarySelectionPage.LibraryTree.Category;

@@ -22,6 +22,7 @@ import com.google.gson.annotations.JsonAdapter;
 
 import io.sloeber.arduinoFramework.api.IArduinoPackage;
 import io.sloeber.arduinoFramework.api.IArduinoPlatformPackageIndex;
+import io.sloeber.arduinoFramework.api.Node;
 
 @JsonAdapter(ArduinoPlatformPackageIndex.class)
 public class ArduinoPlatformPackageIndex extends Node

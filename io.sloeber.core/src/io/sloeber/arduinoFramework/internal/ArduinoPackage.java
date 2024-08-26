@@ -24,6 +24,7 @@ import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.IArduinoPackage;
 import io.sloeber.arduinoFramework.api.IArduinoPlatform;
 import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
+import io.sloeber.arduinoFramework.api.Node;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
 

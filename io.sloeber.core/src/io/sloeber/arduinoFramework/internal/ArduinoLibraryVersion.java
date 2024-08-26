@@ -15,6 +15,7 @@ import com.google.gson.JsonParseException;
 
 import io.sloeber.arduinoFramework.api.IArduinoLibrary;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.Node;
 import io.sloeber.core.api.VersionNumber;
 
 /**

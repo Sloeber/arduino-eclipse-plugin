@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.Node;
 import io.sloeber.core.api.VersionNumber;
 
 public class ArduinoPlatformTool extends Node {
