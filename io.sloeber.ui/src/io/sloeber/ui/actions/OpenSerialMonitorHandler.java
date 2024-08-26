@@ -9,7 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.core.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.ui.helpers.MyPreferences;

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.core.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardDescription;
 
 public class Programmers extends BoardTxtFile {
 	private static final String programmersFileName1 = "programmers.txt";//$NON-NLS-1$

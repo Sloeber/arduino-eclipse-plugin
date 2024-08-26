@@ -5,15 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 
 import org.eclipse.core.runtime.IPath;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+
+import io.sloeber.arduinoFramework.api.ArduinoInstallable;
 
 public class ArduinpPlatformToolSystem extends ArduinoInstallable {
 

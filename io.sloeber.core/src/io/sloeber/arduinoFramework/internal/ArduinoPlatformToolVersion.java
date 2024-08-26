@@ -5,9 +5,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
@@ -20,6 +20,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.ArduinoInstallable;
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.IArduinoPlatform;
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.api.VersionNumber;
 
 public class ArduinoPlatformToolVersion extends Node {
@@ -82,9 +86,9 @@ public class ArduinoPlatformToolVersion extends Node {
         if (myInstallPath != null) {
             return myInstallPath;
         }
-        ArduinoPackage pkg = myParentTool.getPackage();
-        for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
-            for (ArduinoPlatformVersion curplatformVersion : curPlatform.getVersions()) {
+        IArduinoPackage pkg = myParentTool.getPackage();
+        for (IArduinoPlatform curPlatform : pkg.getPlatforms()) {
+            for (IArduinoPlatformVersion curplatformVersion : curPlatform.getVersions()) {
                 for (ArduinoPlatformTooldDependency curTooldependency : curplatformVersion.getToolsDependencies()) {
                     if (curTooldependency.getName().equals(myParentTool.getNodeName())
                             && curTooldependency.getVersion().compareTo(myVersion) == 0) {

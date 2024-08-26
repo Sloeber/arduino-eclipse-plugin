@@ -3,8 +3,8 @@ package io.sloeber.providers;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Adafruit extends MCUBoard {

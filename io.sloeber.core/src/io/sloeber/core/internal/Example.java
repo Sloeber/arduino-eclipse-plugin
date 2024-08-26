@@ -9,9 +9,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.core.api.ConfigurationPreferences;
-import io.sloeber.core.api.IArduinoLibraryVersion;
-import io.sloeber.core.api.IExample;
 
 public class Example implements IExample {
 	protected IPath myFQN;

@@ -5,13 +5,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -20,14 +21,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.IArduinoPlatform;
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.api.Const;
 import io.sloeber.core.api.VersionNumber;
 
-public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
+public class ArduinoPlatform implements IArduinoPlatform {
 
     private String name;
     private String architecture;
-    private TreeMap<VersionNumber, ArduinoPlatformVersion> myVersions = new TreeMap<>(Collections.reverseOrder());
+    private TreeMap<VersionNumber, IArduinoPlatformVersion> myVersions = new TreeMap<>(Collections.reverseOrder());
 
     private ArduinoPackage myParent;
 
@@ -50,20 +54,24 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         myVersions.put(version.getVersion(), version);
     }
 
-    public ArduinoPackage getParent() {
+    @Override
+	public IArduinoPackage getParent() {
         return this.myParent;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
         return this.name;
     }
 
-    public String getArchitecture() {
+    @Override
+	public String getArchitecture() {
         return architecture;
     }
 
-    public boolean isInstalled() {
-        for (ArduinoPlatformVersion curPlatformVersion : myVersions.values()) {
+    @Override
+	public boolean isInstalled() {
+        for (IArduinoPlatformVersion curPlatformVersion : myVersions.values()) {
             if (curPlatformVersion.isInstalled()) {
                 return true;
             }
@@ -71,16 +79,18 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         return false;
     }
 
-    public IPath getInstallPath() {
+    @Override
+	public IPath getInstallPath() {
         return myParent.getInstallPath().append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(getID());
     }
 
-    public String getID() {
+    @Override
+	public String getID() {
         return architecture;
     }
 
     @Override
-    public int compareTo(ArduinoPlatform o) {
+    public int compareTo(IArduinoPlatform o) {
         return name.compareTo(o.getName());
     }
 
@@ -89,15 +99,18 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
      *
      * @return the newest version of this platform
      */
-    public ArduinoPlatformVersion getNewestVersion() {
+    @Override
+	public IArduinoPlatformVersion getNewestVersion() {
         return myVersions.firstEntry().getValue();
     }
 
-    public Collection<ArduinoPlatformVersion> getVersions() {
-        return myVersions.values();
+    @Override
+	public Collection<IArduinoPlatformVersion> getVersions() {
+        return new LinkedList<>(myVersions.values());
     }
 
-    public ArduinoPlatformVersion getVersion(VersionNumber refVersion) {
+    @Override
+	public IArduinoPlatformVersion getVersion(VersionNumber refVersion) {
         return myVersions.get(refVersion);
     }
 
@@ -107,8 +120,9 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
      *
      * @return
      */
-    public ArduinoPlatformVersion getNewestInstalled() {
-        for (ArduinoPlatformVersion curVersion : myVersions.values()) {
+    @Override
+	public IArduinoPlatformVersion getNewestInstalled() {
+        for (IArduinoPlatformVersion curVersion : myVersions.values()) {
             if (curVersion.isInstalled()) {
                 return curVersion;
             }

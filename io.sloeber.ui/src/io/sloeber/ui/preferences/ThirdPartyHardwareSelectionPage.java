@@ -25,7 +25,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;

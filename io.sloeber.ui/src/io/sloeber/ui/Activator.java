@@ -9,7 +9,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
 
-import io.sloeber.core.api.LibraryManager;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.listeners.MyLibraryInstallHandler;
 import io.sloeber.ui.listeners.ProjectExplorerListener;

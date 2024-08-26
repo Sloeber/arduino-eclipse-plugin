@@ -1,4 +1,4 @@
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
 public abstract class Node {
     public boolean hasChildren() {

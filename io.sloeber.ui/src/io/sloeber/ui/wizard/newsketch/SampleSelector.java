@@ -16,9 +16,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.IExample;
-import io.sloeber.core.api.LibraryManager;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.IExample;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.ui.Messages;
 
 public class SampleSelector {

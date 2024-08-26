@@ -2,6 +2,8 @@ package io.sloeber.core.api;
 
 import java.util.Map;
 
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+
 /**
  * this interface is to allow the ui to handle the automatic installation
  * of libraries.

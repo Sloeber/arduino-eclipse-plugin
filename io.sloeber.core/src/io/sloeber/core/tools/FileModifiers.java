@@ -37,12 +37,12 @@ public class FileModifiers {
         try {
         String fileString = Files.readString(pathFile,StandardCharsets.UTF_8) + addString;
         Files.write(pathFile, fileString.getBytes(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-        }catch(IOException e) {
-            String fileString = Files.readString(pathFile,Charset.forName("Cp1252")) + addString;
+        }catch(@SuppressWarnings("unused") IOException e) {
+            String fileString = Files.readString(pathFile,Charset.forName("Cp1252")) + addString; //$NON-NLS-1$
             Files.write(pathFile, fileString.getBytes(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-        	
+
         }
-        
+
     }
 
     /**

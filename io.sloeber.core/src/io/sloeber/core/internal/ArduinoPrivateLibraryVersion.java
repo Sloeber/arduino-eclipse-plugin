@@ -2,10 +2,14 @@ package io.sloeber.core.internal;
 
 import static io.sloeber.core.api.Const.*;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IArduinoLibrary;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.InstancePreferences;
 
 public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
@@ -81,6 +85,51 @@ public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 	@Override
 	public boolean equals(IArduinoLibraryVersion other) {
 		return myFQN.equals(other.getFQN());
+	}
+
+	@Override
+	public int compareTo(IArduinoLibraryVersion o) {
+		return 0;
+	}
+
+	@Override
+	public IArduinoLibrary getLibrary() {
+		return null;
+	}
+
+	@Override
+	public VersionNumber getVersion() {
+		return null;
+	}
+
+	@Override
+	public boolean isInstalled() {
+		return true;
+	}
+
+	@Override
+	public List<String> getArchitectures() {
+		return null;
+	}
+
+	@Override
+	public String getParagraph() {
+		return EMPTY_STRING;
+	}
+
+	@Override
+	public String getSentence() {
+		return EMPTY_STRING;
+	}
+
+	@Override
+	public String getMaintainer() {
+		return "unknown maintainer (private lib)"; //$NON-NLS-1$
+	}
+
+	@Override
+	public String getAuthor() {
+		return "unknown author (private lib)"; //$NON-NLS-1$
 	}
 
 }

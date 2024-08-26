@@ -20,10 +20,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.tools.FileModifiers;
 
 /**
@@ -77,7 +77,7 @@ public class WorkAround {
 	 *
 	 * @param arduinoPlatformVersion
 	 */
-	static public void applyKnownWorkArounds(ArduinoPlatformVersion arduinoPlatformVersion) {
+	static public void applyKnownWorkArounds(IArduinoPlatformVersion arduinoPlatformVersion) {
 
 		/*
 		 * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h remove the

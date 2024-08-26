@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.IArduinoPlatform;
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.AttributesBoard;
 import io.sloeber.core.Example;
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.Json.ArduinoPackage;
-import io.sloeber.core.api.Json.ArduinoPlatform;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 
 @SuppressWarnings("nls")
 public abstract class MCUBoard {
@@ -47,12 +47,12 @@ public abstract class MCUBoard {
     public static List<MCUBoard> getAllBoards(String provider, String architecture, MCUBoard board) {
         List<MCUBoard> ret = new LinkedList<>();
         ret.add(board);//make the board provided the first in the list
-        ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
-        for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+        IArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(provider);
+        for (IArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
         	if(architecture!=null && !architecture.equals( curPlatform.getArchitecture())) {
         		continue;
         	}
-            ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
+            IArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
             if (curPlatformVersion != null) {
                 List<BoardDescription> boardDescriptions = BoardDescription
                         .makeBoardDescriptors(curPlatformVersion.getBoardsFile());

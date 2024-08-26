@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.Json.ArduinoPackage;
-import io.sloeber.core.api.Json.ArduinoPlatform;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.IArduinoPlatform;
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 
 @SuppressWarnings("nls")
 public class Arduino extends MCUBoard {
@@ -289,10 +289,10 @@ public class Arduino extends MCUBoard {
 
     private static List<String> getAllmBedBoardNames() {
         List<String> ret = new LinkedList<>();
-        ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(providerArduino);
-        for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+        IArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(providerArduino);
+        for (IArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
             if (curPlatform.getArchitecture().equals(MBEDArchitectureName)) {
-                ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
+                IArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
                 if (curPlatformVersion != null) {
                     List<BoardDescription> boardDescriptions = BoardDescription
                             .makeBoardDescriptors(curPlatformVersion.getBoardsFile());

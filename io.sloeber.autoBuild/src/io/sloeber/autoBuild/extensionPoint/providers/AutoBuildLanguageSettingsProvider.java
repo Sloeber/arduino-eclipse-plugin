@@ -12,7 +12,7 @@
  *     Andrew Gvozdev - initial API and implementation
  *******************************************************************************/
 
-package io.sloeber.autoBuild.internal;
+package io.sloeber.autoBuild.extensionPoint.providers;
 
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
@@ -67,7 +67,7 @@ import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.core.Messages;
-import io.sloeber.autoBuild.extensionPoint.providers.InternalBuildRunner;
+import io.sloeber.autoBuild.internal.AutoBuildRunnerHelper;
 import io.sloeber.autoBuild.schema.api.IOption;
 
 /**
@@ -75,6 +75,7 @@ import io.sloeber.autoBuild.schema.api.IOption;
  */
 public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensionBase
 		implements ILanguageSettingsBroadcastingProvider {
+	private static final boolean LOG_TO_STD_OUT =false;
 
 	private static final String SCANNER_DISCOVERY_CONSOLE = "io.Sloeber.autoBuild.ScannerDiscoveryConsole"; //$NON-NLS-1$
 	private static final String SCANNER_DISCOVERY_GLOBAL_CONSOLE = "io.Sloeber.autoBuild.ScannerDiscoveryGlobalConsole"; //$NON-NLS-1$
@@ -332,8 +333,9 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 				buildRunnerHelper.greeting(MessageFormat.format(
 						Messages.RunningScannerDiscovery , getName())
 				);
-
-				System.out.println(currentCommandResolved);
+				if(LOG_TO_STD_OUT) {
+					System.out.println(currentCommandResolved);
+				}
 				InternalBuildRunner.launchCommand(currentCommandResolved, autoConf,
 						 monitor,  buildRunnerHelper);
 
@@ -410,7 +412,9 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 
 		@Override
 		public boolean processLine(String line) {
-			System.out.println(line);
+			if(LOG_TO_STD_OUT) {
+				System.out.println(line);
+			}
 
 			for (Entry<Pattern, outputTypes> curMatcher : outputMatchers.entrySet()) {
 				Pattern pat = curMatcher.getKey();

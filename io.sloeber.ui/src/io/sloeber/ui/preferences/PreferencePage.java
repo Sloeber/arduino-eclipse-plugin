@@ -23,9 +23,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.Defaults;
-import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;

@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;

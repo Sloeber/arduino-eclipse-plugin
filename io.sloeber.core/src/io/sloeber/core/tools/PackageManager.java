@@ -1,7 +1,6 @@
 package io.sloeber.core.tools;
 
 import static io.sloeber.core.api.Const.*;
-import static io.sloeber.core.api.Common.*;
 import static java.nio.file.StandardCopyOption.*;
 
 import java.io.File;
@@ -29,11 +28,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.arduinoFramework.api.ArduinoInstallable;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
-import io.sloeber.core.api.Json.ArduinoInstallable;
 
 public class PackageManager {
     private static final String FILE = Messages.FILE_TAG;

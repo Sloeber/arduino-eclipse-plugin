@@ -1,4 +1,4 @@
-package io.sloeber.core.Gson;
+package io.sloeber.arduinoFramework.internal;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

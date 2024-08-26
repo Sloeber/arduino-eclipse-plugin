@@ -30,11 +30,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.sloeber.core.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.IExample;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.IExample;
-import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;

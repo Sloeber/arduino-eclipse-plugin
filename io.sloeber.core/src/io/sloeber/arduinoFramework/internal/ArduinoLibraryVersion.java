@@ -1,6 +1,6 @@
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.ArrayList;
@@ -13,7 +13,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IArduinoLibrary;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.VersionNumber;
 
 /**
@@ -23,7 +24,7 @@ import io.sloeber.core.api.VersionNumber;
  *
  */
 
-public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersion, Comparable<ArduinoLibraryVersion> {
+public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersion {
 
 	private String name;
 	private VersionNumber version;
@@ -72,22 +73,27 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 
 	}
 
+	@Override
 	public VersionNumber getVersion() {
 		return version;
 	}
 
+	@Override
 	public String getAuthor() {
 		return author;
 	}
 
+	@Override
 	public String getMaintainer() {
 		return maintainer;
 	}
 
+	@Override
 	public String getSentence() {
 		return sentence;
 	}
 
+	@Override
 	public String getParagraph() {
 		return paragraph;
 	}
@@ -100,6 +106,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 		return category;
 	}
 
+	@Override
 	public List<String> getArchitectures() {
 		return architectures;
 	}
@@ -124,12 +131,13 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 		return checksum;
 	}
 
+	@Override
 	public boolean isInstalled() {
 		return getInstallPath().toFile().exists();
 	}
 
 	@Override
-	public int compareTo(ArduinoLibraryVersion other) {
+	public int compareTo(IArduinoLibraryVersion other) {
 		if (other == null) {
 			return 1;
 		}
@@ -142,7 +150,8 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 		return version.toString().compareTo(other.getVersion().toString());
 	}
 
-	public ArduinoLibrary getLibrary() {
+	@Override
+	public IArduinoLibrary getLibrary() {
 		return myParent;
 	}
 

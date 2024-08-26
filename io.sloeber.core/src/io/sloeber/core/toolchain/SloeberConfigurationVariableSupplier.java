@@ -7,8 +7,9 @@ import java.util.Map.Entry;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.ISloeberConfiguration;
 
 public class SloeberConfigurationVariableSupplier implements IEnvironmentVariableProvider {

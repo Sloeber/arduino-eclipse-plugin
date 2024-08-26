@@ -1,9 +1,10 @@
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -13,6 +14,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.IArduinoLibrary;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
 
@@ -23,7 +26,7 @@ import io.sloeber.core.api.VersionNumber;
  *
  */
 
-public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
+public class ArduinoLibrary extends Node  implements IArduinoLibrary {
 
     private String name;
     private TreeMap<VersionNumber, ArduinoLibraryVersion> versions = new TreeMap<>(Collections.reverseOrder());
@@ -50,15 +53,18 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
         versions.put(versionNumber, new ArduinoLibraryVersion(jsonObject, this));
     }
 
-    public Collection<ArduinoLibraryVersion> getVersions() {
-        return versions.values();
+    @Override
+	public Collection<IArduinoLibraryVersion> getVersions() {
+        return new LinkedList<>(versions.values());
     }
 
-    public String getAuthor() {
+    @Override
+	public String getAuthor() {
         return getNewestVersion().getAuthor();
     }
 
-    public String getMaintainer() {
+    @Override
+	public String getMaintainer() {
         return getNewestVersion().getMaintainer();
     }
 
@@ -70,19 +76,23 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
         return getNewestVersion().getParagraph();
     }
 
-    public String getWebsite() {
+    @Override
+	public String getWebsite() {
         return getNewestVersion().getWebsite();
     }
 
-    public String getCategory() {
+    @Override
+	public String getCategory() {
         return getNewestVersion().getCategory();
     }
 
-    public List<String> getArchitectures() {
+    @Override
+	public List<String> getArchitectures() {
         return getNewestVersion().getArchitectures();
     }
 
-    public List<String> getTypes() {
+    @Override
+	public List<String> getTypes() {
         return getNewestVersion().getTypes();
     }
 
@@ -95,7 +105,8 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
      *
      * @return the newest version of this library
      */
-    public ArduinoLibraryVersion getNewestVersion() {
+    @Override
+	public ArduinoLibraryVersion getNewestVersion() {
         return versions.firstEntry().getValue();
     }
 
@@ -105,7 +116,8 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
      *
      * @return
      */
-    public ArduinoLibraryVersion getInstalledVersion() {
+    @Override
+	public ArduinoLibraryVersion getInstalledVersion() {
         for (ArduinoLibraryVersion curVersion : versions.values()) {
             if (curVersion.isInstalled()) {
                 return curVersion;
@@ -119,12 +131,13 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
      *
      * @return true if a version is installed. false in case no version is installed
      */
-    public boolean isInstalled() {
+    @Override
+	public boolean isInstalled() {
         return getInstalledVersion() != null;
     }
 
     @Override
-    public int compareTo(ArduinoLibrary other) {
+    public int compareTo(IArduinoLibrary other) {
         return getID().compareTo(other.getID());
     }
 
@@ -149,11 +162,13 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
         return name;
     }
 
-    public IPath getInstallPath() {
+    @Override
+	public IPath getInstallPath() {
         return ConfigurationPreferences.getInstallationPathLibraries().append(this.name.replace(' ', '_'));
     }
 
-    public ArduinoLibraryVersion getVersion(VersionNumber versionNumber) {
+    @Override
+	public ArduinoLibraryVersion getVersion(VersionNumber versionNumber) {
         return versions.get(versionNumber);
     }
 

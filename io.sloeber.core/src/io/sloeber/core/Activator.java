@@ -34,7 +34,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;

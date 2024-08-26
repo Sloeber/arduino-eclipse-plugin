@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.AttributesCode;
 import io.sloeber.core.Example;
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Teensy extends MCUBoard {

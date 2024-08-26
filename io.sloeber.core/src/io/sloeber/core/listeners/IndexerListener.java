@@ -31,14 +31,14 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Const;
-import io.sloeber.core.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.ISloeberConfiguration;
-import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.common.InstancePreferences;
 
 public class IndexerListener implements IIndexChangeListener, IIndexerStateListener {

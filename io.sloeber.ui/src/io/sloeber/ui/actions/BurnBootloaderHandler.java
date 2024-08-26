@@ -9,7 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.listeners.ProjectExplorerListener;

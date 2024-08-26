@@ -21,9 +21,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.ISloeberConfiguration;
-import io.sloeber.core.api.LibraryManager;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {
 

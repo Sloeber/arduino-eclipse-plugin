@@ -5,9 +5,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.util.Collection;
@@ -21,6 +21,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
 import io.sloeber.core.api.VersionNumber;
 
 public class ArduinoPlatformTool extends Node {
@@ -48,7 +49,7 @@ public class ArduinoPlatformTool extends Node {
         myVersions.put(version.getVersion(), version);
     }
 
-    public ArduinoPackage getPackage() {
+    public IArduinoPackage getPackage() {
         return myParentPackage;
     }
 

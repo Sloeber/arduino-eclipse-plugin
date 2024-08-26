@@ -1,11 +1,12 @@
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -17,6 +18,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
 
+import io.sloeber.arduinoFramework.api.IArduinoLibrary;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryIndex;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+
 /**
  * This class represents a json file that references libraries
  *
@@ -25,7 +30,7 @@ import com.google.gson.annotations.JsonAdapter;
  */
 @JsonAdapter(ArduinoLibraryIndex.class)
 public class ArduinoLibraryIndex extends Node
-        implements Comparable<ArduinoLibraryIndex>, JsonDeserializer<ArduinoLibraryIndex> {
+        implements  JsonDeserializer<ArduinoLibraryIndex>, IArduinoLibraryIndex {
     private TreeMap<String, ArduinoLibrary> libraries = new TreeMap<>();
     private transient File jsonFile;
 
@@ -35,11 +40,12 @@ public class ArduinoLibraryIndex extends Node
 
     /**
      * given a library name provide the library
-     * 
+     *
      * @param libraryName
      * @return the library or null if not found
      */
-    public ArduinoLibrary getLibrary(String libraryName) {
+    @Override
+	public IArduinoLibrary getLibrary(String libraryName) {
         return libraries.get(libraryName);
     }
 
@@ -50,12 +56,13 @@ public class ArduinoLibraryIndex extends Node
      *
      * @return
      */
-    public Map<String, ArduinoLibraryVersion> getLatestInstallableLibraries(Set<String> libNames) {
-        Map<String, ArduinoLibraryVersion> ret = new HashMap<>();
+    @Override
+	public Map<String, IArduinoLibraryVersion> getLatestInstallableLibraries(Set<String> libNames) {
+        Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
         if (libNames.isEmpty()) {
             return ret;
         }
-        for (ArduinoLibrary curLibrary : libraries.values()) {
+        for (IArduinoLibrary curLibrary : libraries.values()) {
             if (libNames.contains(curLibrary.getNodeName())) {
                 if (!curLibrary.isInstalled()) {
                     ret.put(curLibrary.getNodeName(), curLibrary.getNewestVersion());
@@ -111,12 +118,13 @@ public class ArduinoLibraryIndex extends Node
     }
 
     @Override
-    public int compareTo(ArduinoLibraryIndex o) {
+    public int compareTo(IArduinoLibraryIndex o) {
         return getID().compareTo(o.getID());
     }
 
-    public Collection<ArduinoLibrary> getLibraries() {
-        return libraries.values();
+    @Override
+	public Collection<IArduinoLibrary> getLibraries() {
+        return new LinkedList<> (libraries.values());
     }
 
 }

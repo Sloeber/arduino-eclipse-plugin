@@ -5,9 +5,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
@@ -20,9 +20,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.api.VersionNumber;
 
-public class ArduinoPlatformVersion extends ArduinoInstallable implements Comparable<ArduinoPlatformVersion> {
+public class ArduinoPlatformVersion  extends IArduinoPlatformVersion {
 
     private String myArchitecture;
     private VersionNumber myVersion;
@@ -60,35 +61,43 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
         }
     }
 
-    public ArduinoPlatform getParent() {
+    @Override
+	public ArduinoPlatform getParent() {
         return myParent;
     }
 
-    public String getArchitecture() {
+    @Override
+	public String getArchitecture() {
         return myArchitecture;
     }
 
-    public VersionNumber getVersion() {
+    @Override
+	public VersionNumber getVersion() {
         return myVersion;
     }
 
-    public String getCategory() {
+    @Override
+	public String getCategory() {
         return myCategory;
     }
 
-    public List<ArduinoPlatformTooldDependency> getToolsDependencies() {
+    @Override
+	public List<ArduinoPlatformTooldDependency> getToolsDependencies() {
         return myToolDependencies;
     }
 
-    public boolean isInstalled() {
+    @Override
+	public boolean isInstalled() {
         return getBoardsFile().exists();
     }
 
-    public File getBoardsFile() {
+    @Override
+	public File getBoardsFile() {
         return getInstallPath().append(BOARDS_FILE_NAME).toFile();
     }
 
-    public File getPlatformFile() {
+    @Override
+	public File getPlatformFile() {
         return getInstallPath().append(PLATFORM_FILE_NAME).toFile();
     }
 
@@ -135,20 +144,23 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
         return true;
     }
 
-    public List<String> getBoardNames() {
+    @Override
+	public List<String> getBoardNames() {
         return myBoards;
     }
 
-    public String getID() {
+    @Override
+	public String getID() {
         return myVersion.toString();
     }
 
-    public String getConcattenatedBoardNames() {
+    @Override
+	public String getConcattenatedBoardNames() {
         return String.join("\n", getBoardNames()); //$NON-NLS-1$
     }
 
     @Override
-    public int compareTo(ArduinoPlatformVersion o) {
+    public int compareTo(IArduinoPlatformVersion o) {
         return myName.compareTo(o.getName());
     }
 

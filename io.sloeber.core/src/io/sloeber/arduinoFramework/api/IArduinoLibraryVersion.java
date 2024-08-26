@@ -1,8 +1,12 @@
-package io.sloeber.core.api;
+package io.sloeber.arduinoFramework.api;
+
+import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 
-public interface IArduinoLibraryVersion {
+import io.sloeber.core.api.VersionNumber;
+
+public interface IArduinoLibraryVersion extends  Comparable<IArduinoLibraryVersion>{
 
 	String getName();
 
@@ -38,6 +42,22 @@ public interface IArduinoLibraryVersion {
 	IPath getFQN();
 
 	public boolean equals(IArduinoLibraryVersion other);
+
+	IArduinoLibrary getLibrary();
+
+	VersionNumber getVersion();
+
+	boolean isInstalled();
+
+	List<String> getArchitectures();
+
+	String getParagraph();
+
+	String getSentence();
+
+	String getMaintainer();
+
+	String getAuthor();
 
 
 }

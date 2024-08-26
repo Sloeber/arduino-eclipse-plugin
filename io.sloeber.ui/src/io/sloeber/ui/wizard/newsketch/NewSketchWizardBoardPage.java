@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import io.sloeber.core.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.ui.project.properties.BoardSelectionPage;
 
 /**

@@ -20,10 +20,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
-import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings({"nls","static-method"})

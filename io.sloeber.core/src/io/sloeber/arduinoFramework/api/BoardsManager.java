@@ -1,4 +1,4 @@
-package io.sloeber.core.api;
+package io.sloeber.arduinoFramework.api;
 
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.api.Common.*;
@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,16 +38,17 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.gson.Gson;
 
+import io.sloeber.arduinoFramework.internal.ArduinoPlatformPackageIndex;
+import io.sloeber.arduinoFramework.internal.ArduinoPlatformTool;
+import io.sloeber.arduinoFramework.internal.ArduinoPlatformToolVersion;
+import io.sloeber.arduinoFramework.internal.ArduinoPlatformTooldDependency;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Json.ArduinoInstallable;
-import io.sloeber.core.api.Json.ArduinoPackage;
-import io.sloeber.core.api.Json.ArduinoPlatform;
-import io.sloeber.core.api.Json.ArduinoPlatformPackageIndex;
-import io.sloeber.core.api.Json.ArduinoPlatformTool;
-import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
-import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.ConfigurationPreferences;
+import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.SloeberProject;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.InstallProgress;
 import io.sloeber.core.tools.MyMultiStatus;
@@ -111,17 +113,17 @@ public class BoardsManager {
     static private BoardDescription getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
             String architectureID, String boardID, Map<String, String> options) {
 
-        ArduinoPackage thePackage = getPackage(jsonFileName, packageName);
+        IArduinoPackage thePackage = getPackage(jsonFileName, packageName);
         if (thePackage == null) {
             System.err.println("failed to find package:" + packageName); //$NON-NLS-1$
             return null;
         }
-        ArduinoPlatform platform = thePackage.getPlatform(architectureID);
+        IArduinoPlatform platform = thePackage.getPlatform(architectureID);
         if (platform == null) {
             System.err.println("failed to find architecture ID " + architectureID + " in package:" + packageName); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
-        ArduinoPlatformVersion platformVersion = platform.getNewestVersion();
+        IArduinoPlatformVersion platformVersion = platform.getNewestVersion();
         java.io.File boardsFile = platformVersion.getBoardsFile();
         BoardDescription boardid = new BoardDescription(boardsFile, boardID, options);
 
@@ -168,13 +170,13 @@ public class BoardsManager {
         envVarsNeedUpdating = true;
         int currPlatformIndex = 1;
         NullProgressMonitor monitor = new NullProgressMonitor();
-        List<ArduinoPackage> allPackages = getPackages();
-        for (ArduinoPackage curPackage : allPackages) {
-            Collection<ArduinoPlatform> latestPlatforms = curPackage.getPlatforms();
-            for (ArduinoPlatform curPlatform : latestPlatforms) {
+        List<IArduinoPackage> allPackages = getPackages();
+        for (IArduinoPackage curPackage : allPackages) {
+            Collection<IArduinoPlatform> latestPlatforms = curPackage.getPlatforms();
+            for (IArduinoPlatform curPlatform : latestPlatforms) {
                 if (!curPlatform.getName().toUpperCase().contains(DEPRECATED)) {
                     if (currPlatformIndex > fromIndex) {
-                        ArduinoPlatformVersion latestPlatformVersion = curPlatform.getNewestVersion();
+                        IArduinoPlatformVersion latestPlatformVersion = curPlatform.getNewestVersion();
                         if (!latestPlatformVersion.getName().toUpperCase().contains(DEPRECATED)) {
                             install(latestPlatformVersion, monitor);
                         } else {
@@ -204,11 +206,11 @@ public class BoardsManager {
             return;
         }
         envVarsNeedUpdating = true;
-        ArduinoPackage curPackage = getPackage(JasonName, packageName);
+        IArduinoPackage curPackage = getPackage(JasonName, packageName);
         if (curPackage != null) {
-            ArduinoPlatform curPlatform = curPackage.getPlatform(architectureName);
+            IArduinoPlatform curPlatform = curPackage.getPlatform(architectureName);
             if (curPlatform != null) {
-                ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestVersion();
+                IArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestVersion();
                 if (curPlatformVersion != null) {
                     NullProgressMonitor monitor = new NullProgressMonitor();
                     install(curPlatformVersion, monitor);
@@ -220,7 +222,7 @@ public class BoardsManager {
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    private static IStatus install(ArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
+    private static IStatus install(IArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
         boolean forceDownload = false;
         //        String name = platformVersion.getName();
         //        String architecture = platformVersion.getArchitecture();
@@ -250,7 +252,7 @@ public class BoardsManager {
             e.printStackTrace();
         }
 
-        ArduinoPackage referencingPkg = platformVersion.getParent().getParent();
+        IArduinoPackage referencingPkg = platformVersion.getParent().getParent();
         for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
             ArduinoPlatformToolVersion tool = referencingPkg.getTool(toolDependency.getName(),
                     toolDependency.getVersion());
@@ -258,7 +260,7 @@ public class BoardsManager {
                 //this is a tool provided by another platform
                 //and the referencing platform does not specify the installable info
                 //This means the package file of the referencing platform needs to be provided
-                ArduinoPackage pkg = getPackageByProvider(toolDependency.getPackager());
+                IArduinoPackage pkg = getPackageByProvider(toolDependency.getPackager());
                 if (pkg != null) {
                     tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
                 }
@@ -353,8 +355,8 @@ public class BoardsManager {
                 + ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
     }
 
-    public static IStatus updatePlatforms(List<ArduinoPlatformVersion> platformsToInstall,
-            List<ArduinoPlatformVersion> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
+    public static IStatus updatePlatforms(List<IArduinoPlatformVersion> platformsToInstall,
+            List<IArduinoPlatformVersion> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
         if (!isReady()) {
             status.add(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
             return status;
@@ -366,10 +368,10 @@ public class BoardsManager {
         envVarsNeedUpdating = true;
         try {
             myIsReady = false;
-            for (ArduinoPlatformVersion curPlatform : platformsToRemove) {
+            for (IArduinoPlatformVersion curPlatform : platformsToRemove) {
                 status.add(uninstall(curPlatform, monitor));
             }
-            for (ArduinoPlatformVersion curPlatform : platformsToInstall) {
+            for (IArduinoPlatformVersion curPlatform : platformsToInstall) {
                 status.add(install(curPlatform, monitor));
             }
 
@@ -381,7 +383,7 @@ public class BoardsManager {
         return status;
     }
 
-    public static IStatus uninstall(ArduinoPlatformVersion curPlatform, IProgressMonitor monitor) {
+    public static IStatus uninstall(IArduinoPlatformVersion curPlatform, IProgressMonitor monitor) {
         if (!curPlatform.isInstalled()) {
             return Status.OK_STATUS;
         }
@@ -585,9 +587,9 @@ public class BoardsManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
-        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, SAMD);
-        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, SAM);
+        IArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+        IArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, SAMD);
+        IArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(VENDOR_ARDUINO, SAM);
 
         if (latestSamdPlatform != null) {
             myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamdPlatform));
@@ -602,9 +604,9 @@ public class BoardsManager {
         return myWorkbenchEnvironmentVariables;
     }
 
-    private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
+    private static Map<String, String> getEnvVarPlatformFileTools(IArduinoPlatformVersion platformVersion) {
         HashMap<String, String> vars = new HashMap<>();
-        ArduinoPackage pkg = platformVersion.getParent().getParent();
+        IArduinoPackage pkg = platformVersion.getParent().getParent();
         for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
             ArduinoPlatformTool theTool = pkg.getTool(tool.getName());
             if (theTool == null) {
@@ -624,8 +626,8 @@ public class BoardsManager {
      * @param architecture
      * @return the found platformVersion or null if none found
      */
-    public static ArduinoPlatformVersion getNewestInstalledPlatform(String vendor, String architecture) {
-        ArduinoPlatform platform = getPlatform(vendor, architecture);
+    public static IArduinoPlatformVersion getNewestInstalledPlatform(String vendor, String architecture) {
+        IArduinoPlatform platform = getPlatform(vendor, architecture);
         if (platform == null) {
             return null;
         }
@@ -663,7 +665,7 @@ public class BoardsManager {
             IStatus status = null;
 
             // if successfully installed the examples: add the boards
-            ArduinoPlatform platform = getPlatform(Defaults.DEFAULT_INSTALL_MAINTAINER,
+            IArduinoPlatform platform = getPlatform(Defaults.DEFAULT_INSTALL_MAINTAINER,
                     Defaults.DEFAULT_INSTALL_ARCHITECTURE);
             //we failed to find arduino avr platform. Take the fiorst one
             if (platform == null) {
@@ -689,29 +691,29 @@ public class BoardsManager {
 
     }
 
-    synchronized static public List<ArduinoPlatformPackageIndex> getPackageIndices() {
+    synchronized static public List<IArduinoPlatformPackageIndex> getPackageIndices() {
         if (packageIndices == null) {
             loadJsons(false);
         }
-        return packageIndices;
+        return new LinkedList<>(packageIndices);
     }
 
-    public static List<ArduinoPlatform> getPlatforms() {
-        List<ArduinoPlatform> platforms = new ArrayList<>();
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
+    public static List<IArduinoPlatform> getPlatforms() {
+        List<IArduinoPlatform> platforms = new ArrayList<>();
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (IArduinoPackage pkg : index.getPackages()) {
                 platforms.addAll(pkg.getPlatforms());
             }
         }
         return platforms;
     }
 
-    public static ArduinoPlatform getPlatform(String vendor, String architecture) {
+    public static IArduinoPlatform getPlatform(String vendor, String architecture) {
 
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            ArduinoPackage pkg = index.getPackage(vendor);
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            IArduinoPackage pkg = index.getPackage(vendor);
             if (pkg != null) {
-                ArduinoPlatform platform = pkg.getPlatform(architecture);
+                IArduinoPlatform platform = pkg.getPlatform(architecture);
                 if (platform != null) {
                     return platform;
                 }
@@ -726,14 +728,14 @@ public class BoardsManager {
      * @param platformTxt
      * @return the found platform otherwise null
      */
-    public static ArduinoPlatformVersion getPlatform(IPath platformPath) {
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
-                for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
+    public static IArduinoPlatformVersion getPlatform(IPath platformPath) {
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (IArduinoPackage pkg : index.getPackages()) {
+                for (IArduinoPlatform curPlatform : pkg.getPlatforms()) {
                     if (platformPath
                             .matchingFirstSegments(curPlatform.getInstallPath()) > (platformPath.segmentCount() - 2))
 
-                        for (ArduinoPlatformVersion curPlatformVersion : curPlatform.getVersions()) {
+                        for (IArduinoPlatformVersion curPlatformVersion : curPlatform.getVersions()) {
                             if (curPlatformVersion.getInstallPath().equals(platformPath)) {
                                 return curPlatformVersion;
                             }
@@ -744,10 +746,10 @@ public class BoardsManager {
         return null;
     }
 
-    static public List<ArduinoPlatformVersion> getInstalledPlatforms() {
-        List<ArduinoPlatformVersion> platforms = new ArrayList<>();
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
+    static public List<IArduinoPlatformVersion> getInstalledPlatforms() {
+        List<IArduinoPlatformVersion> platforms = new ArrayList<>();
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (IArduinoPackage pkg : index.getPackages()) {
 
                 platforms.addAll(pkg.getInstalledPlatforms());
 
@@ -757,8 +759,8 @@ public class BoardsManager {
     }
 
     static public boolean areThereInstalledBoards() {
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (IArduinoPackage pkg : index.getPackages()) {
                 if (pkg.isInstalled()) {
                     return true;
                 }
@@ -767,17 +769,17 @@ public class BoardsManager {
         return false;
     }
 
-    static public List<ArduinoPackage> getPackages() {
-        List<ArduinoPackage> packages = new ArrayList<>();
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+    static public List<IArduinoPackage> getPackages() {
+        List<IArduinoPackage> packages = new ArrayList<>();
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
             packages.addAll(index.getPackages());
         }
 
         return packages;
     }
 
-    static public ArduinoPackage getPackage(String JasonName, String packageName) {
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+    static public IArduinoPackage getPackage(String JasonName, String packageName) {
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
             if (index.getJsonFile().getName().equals(JasonName)) {
                 return index.getPackage(packageName);
             }
@@ -785,9 +787,9 @@ public class BoardsManager {
         return null;
     }
 
-    static public ArduinoPackage getPackage(String packageName) {
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            ArduinoPackage pkg = index.getPackage(packageName);
+    static public IArduinoPackage getPackage(String packageName) {
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            IArduinoPackage pkg = index.getPackage(packageName);
             if (pkg != null) {
                 return pkg;
             }
@@ -804,23 +806,23 @@ public class BoardsManager {
             Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
-        List<ArduinoPackage> allPackages = getPackages();
-        for (ArduinoPackage curPackage : allPackages) {
+        List<IArduinoPackage> allPackages = getPackages();
+        for (IArduinoPackage curPackage : allPackages) {
             curPackage.onlyKeepLatestPlatforms();
         }
     }
 
-    public static ArduinoPlatformVersion getPlatform(String vendor, String architecture, VersionNumber refVersion) {
-        ArduinoPlatform platform = getPlatform(vendor, architecture);
+    public static IArduinoPlatformVersion getPlatform(String vendor, String architecture, VersionNumber refVersion) {
+        IArduinoPlatform platform = getPlatform(vendor, architecture);
         if (platform != null) {
             return platform.getVersion(refVersion);
         }
         return null;
     }
 
-    public static ArduinoPackage getPackageByProvider(String packager) {
-        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
+    public static IArduinoPackage getPackageByProvider(String packager) {
+        for (IArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (IArduinoPackage pkg : index.getPackages()) {
                 if (packager.equals(pkg.getID())) {
                     return pkg;
                 }

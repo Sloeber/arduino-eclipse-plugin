@@ -5,11 +5,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
@@ -19,19 +20,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
 
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.IArduinoPlatformPackageIndex;
+
 @JsonAdapter(ArduinoPlatformPackageIndex.class)
 public class ArduinoPlatformPackageIndex extends Node
-        implements Comparable<ArduinoPlatformPackageIndex>, JsonDeserializer<ArduinoPlatformPackageIndex> {
+        implements Comparable<ArduinoPlatformPackageIndex>, JsonDeserializer<ArduinoPlatformPackageIndex>, IArduinoPlatformPackageIndex {
 
     private List<ArduinoPackage> myPackages = new ArrayList<>();
 
     private transient File myJsonFile;
 
-    public List<ArduinoPackage> getPackages() {
-        return myPackages;
+    @Override
+	public List<IArduinoPackage> getPackages() {
+        return new LinkedList<>(myPackages);
     }
 
-    public ArduinoPackage getPackage(String packageName) {
+    @Override
+	public IArduinoPackage getPackage(String packageName) {
         for (ArduinoPackage pkg : myPackages) {
             if (pkg.getNodeName().equals(packageName)) {
                 return pkg;
@@ -44,7 +50,8 @@ public class ArduinoPlatformPackageIndex extends Node
         myJsonFile = packageFile;
     }
 
-    public File getJsonFile() {
+    @Override
+	public File getJsonFile() {
         return myJsonFile;
     }
 
@@ -76,8 +83,9 @@ public class ArduinoPlatformPackageIndex extends Node
 
     }
 
-    public boolean isInstalled() {
-        for (ArduinoPackage pkg : myPackages) {
+    @Override
+	public boolean isInstalled() {
+        for (IArduinoPackage pkg : myPackages) {
             if (pkg.isInstalled()) {
                 return true;
             }
@@ -104,5 +112,10 @@ public class ArduinoPlatformPackageIndex extends Node
     public int compareTo(ArduinoPlatformPackageIndex o) {
         return getID().compareTo(o.getID());
     }
+
+	@Override
+	public String getName() {
+		return getNodeName();
+	}
 
 }

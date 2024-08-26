@@ -11,7 +11,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.core.api.LibraryManager;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.providers.ESP32;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;

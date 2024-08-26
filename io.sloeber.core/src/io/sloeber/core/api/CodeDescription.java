@@ -25,6 +25,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IExample;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.InstancePreferences;

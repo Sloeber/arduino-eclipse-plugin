@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Jantje extends MCUBoard {

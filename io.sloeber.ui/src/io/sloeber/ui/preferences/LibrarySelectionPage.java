@@ -41,12 +41,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 
-import io.sloeber.core.api.LibraryManager;
+import io.sloeber.arduinoFramework.api.IArduinoLibrary;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryIndex;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.LibraryManager;
+import io.sloeber.arduinoFramework.internal.Node;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.api.Json.ArduinoLibrary;
-import io.sloeber.core.api.Json.ArduinoLibraryIndex;
-import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.api.Json.Node;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.preferences.LibrarySelectionPage.LibraryTree.Category;
 import io.sloeber.ui.preferences.LibrarySelectionPage.LibraryTree.Library;
@@ -60,7 +60,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	protected LibraryTree libs = new LibraryTree();
 	final static String emptyString = ""; //$NON-NLS-1$
 	final static String blankLine = "\n\n";//$NON-NLS-1$
-	final static String canUpdateLabel = " (can update)";
+	final static String canUpdateLabel = " (can update)"; //$NON-NLS-1$
 
 	public static class LibraryTree extends Node {
 
@@ -110,23 +110,23 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		}
 
 		public class Library extends Node implements Comparable<Library> {
-			private ArduinoLibrary myLib;
+			private IArduinoLibrary myLib;
 			private Category myParent;
-			protected ArduinoLibraryVersion myToInstallVersion;
-			protected ArduinoLibraryVersion myInstalledVersion;
+			protected IArduinoLibraryVersion myToInstallVersion;
+			protected IArduinoLibraryVersion myInstalledVersion;
 
-			public Library(Category category, ArduinoLibrary lib) {
+			public Library(Category category, IArduinoLibrary lib) {
 				myParent = category;
 				myLib = lib;
 				myInstalledVersion = myLib.getInstalledVersion();
 				myToInstallVersion = myInstalledVersion;
 			}
 
-			public ArduinoLibraryVersion getInstalledVersion() {
+			public IArduinoLibraryVersion getInstalledVersion() {
 				return myInstalledVersion;
 			}
 
-			public Collection<ArduinoLibraryVersion> getVersions() {
+			public Collection<IArduinoLibraryVersion> getVersions() {
 				return myLib.getVersions();
 			}
 
@@ -146,24 +146,23 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 			public String getTooltip() {
 				if (myTooltip == null) {
-					ArduinoLibraryVersion libVers = getLatest();
+					IArduinoLibraryVersion libVers = getLatest();
 					myTooltip = "Architectures:" + libVers.getArchitectures().toString() + blankLine
 							+ libVers.getSentence() + blankLine + libVers.getParagraph() + blankLine + "Author: "
-							+ libVers.getAuthor() + blankLine + "Maintainer: " + libVers.getMaintainer() + blankLine
-							+ "provided by: " + libVers.getParent().getParent().getNodeName();
+							+ libVers.getAuthor() + blankLine + "Maintainer: " + libVers.getMaintainer() ;
 				}
 				return myTooltip;
 			}
 
-			public ArduinoLibraryVersion getLatest() {
+			public IArduinoLibraryVersion getLatest() {
 				return myLib.getNewestVersion();
 			}
 
-			public ArduinoLibraryVersion getVersion() {
+			public IArduinoLibraryVersion getVersion() {
 				return myToInstallVersion;
 			}
 
-			public void setVersion(ArduinoLibraryVersion version) {
+			public void setVersion(IArduinoLibraryVersion version) {
 				myToInstallVersion = version;
 			}
 
@@ -179,7 +178,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 				return myLib.compareTo(other.getArduinoLibrary());
 			}
 
-			private ArduinoLibrary getArduinoLibrary() {
+			private IArduinoLibrary getArduinoLibrary() {
 				return myLib;
 			}
 
@@ -213,8 +212,8 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		}
 
 		public LibraryTree() {
-			for (ArduinoLibraryIndex libraryIndex : LibraryManager.getLibraryIndices()) {
-				for (ArduinoLibrary arduinoLibrary : libraryIndex.getLibraries()) {
+			for (IArduinoLibraryIndex libraryIndex : LibraryManager.getLibraryIndices()) {
+				for (IArduinoLibrary arduinoLibrary : libraryIndex.getLibraries()) {
 					String categoryName = arduinoLibrary.getCategory();
 					Category category = this.categories.get(categoryName);
 					if (category == null) {
@@ -288,12 +287,12 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				MultiStatus status = new MultiStatus(PLUGIN_ID, 0, Messages.ui_installing_arduino_libraries, null);
-				Set<ArduinoLibraryVersion> toRemoveLibs = new HashSet<>();
-				Set<ArduinoLibraryVersion> toInstallLibs = new HashSet<>();
+				Set<IArduinoLibraryVersion> toRemoveLibs = new HashSet<>();
+				Set<IArduinoLibraryVersion> toInstallLibs = new HashSet<>();
 				for (Category category : libs.categories.values()) {
 					for (Library library : category.libraries.values()) {
-						ArduinoLibraryVersion installedVersion = library.getInstalledVersion();
-						ArduinoLibraryVersion toInstalVersion = library.getVersion();
+						IArduinoLibraryVersion installedVersion = library.getInstalledVersion();
+						IArduinoLibraryVersion toInstalVersion = library.getVersion();
 						if ((installedVersion != null) && (installedVersion.compareTo(toInstalVersion) != 0)) {
 							toRemoveLibs.add(installedVersion);
 						}
@@ -383,7 +382,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 							if (item.getChecked()) {
 								child.setVersion(child.getLatest());
 							} else {
-								child.setVersion((ArduinoLibraryVersion) null);
+								child.setVersion((IArduinoLibraryVersion) null);
 							}
 						}
 						for (TreeItem child : item.getItems()) {
@@ -396,7 +395,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 							if (item.getChecked()) {
 								lib.setVersion(lib.getLatest());
 							} else {
-								lib.setVersion((ArduinoLibraryVersion) null);
+								lib.setVersion((IArduinoLibraryVersion) null);
 
 							}
 							item.setText(0, lib.getNodeName());
@@ -409,11 +408,11 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					// Create the dropdown and add data to it
 					final CCombo combo = new CCombo(LibrarySelectionPage.this.viewer.getTree(), SWT.READ_ONLY);
 					Library selectedLib = ((LibraryTree.Library) item.getData());
-					for (ArduinoLibraryVersion version1 : selectedLib.getVersions()) {
+					for (IArduinoLibraryVersion version1 : selectedLib.getVersions()) {
 						combo.add(version1.getVersion().toString());
 					}
 
-					ArduinoLibraryVersion displayVersion = selectedLib.getVersion();
+					IArduinoLibraryVersion displayVersion = selectedLib.getVersion();
 					if (displayVersion == null) {
 						displayVersion = selectedLib.getLatest();
 						selectedLib.setVersion(displayVersion);

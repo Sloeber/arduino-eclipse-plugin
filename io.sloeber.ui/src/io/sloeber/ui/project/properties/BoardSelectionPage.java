@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
-import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.LabelCombo;

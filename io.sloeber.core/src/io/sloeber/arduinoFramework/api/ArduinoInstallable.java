@@ -1,4 +1,4 @@
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.api;
 
 import org.eclipse.core.runtime.IPath;
 

@@ -1,4 +1,4 @@
-package io.sloeber.core.api;
+package io.sloeber.arduinoFramework.api;
 
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.api.Common.*;
@@ -26,11 +26,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
+import io.sloeber.arduinoFramework.internal.ArduinoPlatformTooldDependency;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
-import io.sloeber.core.api.Json.ArduinoPlatform;
-import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
+import io.sloeber.core.api.Common;
+import io.sloeber.core.api.ConfigurationPreferences;
+import io.sloeber.core.api.Const;
+import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.PlatformTxtFile;
@@ -54,9 +57,9 @@ public class BoardDescription {
     private String myBoardsVariant = null;
     private String myUploadTool = null;
 
-    private ArduinoPlatformVersion myReferencedPlatformVariant = null;
-    private ArduinoPlatformVersion myReferencedPlatformCore = null;
-    private ArduinoPlatformVersion myReferencedPlatformUpload = null;
+    private IArduinoPlatformVersion myReferencedPlatformVariant = null;
+    private IArduinoPlatformVersion myReferencedPlatformCore = null;
+    private IArduinoPlatformVersion myReferencedPlatformUpload = null;
 
     private boolean isDirty = true;
 
@@ -281,7 +284,7 @@ public class BoardDescription {
      * @param options
      *            if null default options are taken
      */
-    BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
+    public BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
         myBoardID = boardID;
         myUserSelectedBoardsTxtFile = boardsFile;
         mySloeberBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(myUserSelectedBoardsTxtFile));
@@ -295,9 +298,9 @@ public class BoardDescription {
         myUserSelectedBoardsTxtFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
         if (!myUserSelectedBoardsTxtFile.exists()) {
 
-            ArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+            IArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
             if (platform == null) {
-                List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
+                List<IArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
                 //If you crash on the next line no platform have been installed
                 platform = platforms.get(0);
             }
@@ -644,11 +647,11 @@ public class BoardDescription {
      */
     public IPath getArduinoPlatformPath() {
         updateWhenDirty();
-        ArduinoPlatform platform = BoardsManager.getPlatform(VENDOR_ARDUINO, getArchitecture());
+        IArduinoPlatform platform = BoardsManager.getPlatform(VENDOR_ARDUINO, getArchitecture());
         if (platform == null) {
             return null;
         }
-        ArduinoPlatformVersion platformVersion = platform.getNewestInstalled();
+        IArduinoPlatformVersion platformVersion = platform.getNewestInstalled();
         if (platformVersion == null) {
             return null;
         }
@@ -938,14 +941,14 @@ public class BoardDescription {
         }
 
         IPath referencingPlatformPath = getreferencingPlatformPath();
-        ArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
+        IArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
 
         if (referencingPlatform == null) {
             // This is the case for private hardware
             //there is no need to specify tool path as they do not use them
             return ret;
         }
-        ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
+        IArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
                 referencingPlatform.getArchitecture());
         if (latestArduinoPlatform != null) {
             ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
@@ -978,7 +981,7 @@ public class BoardDescription {
      * @param platformVersion
      * @return environment variables pointing to the tools used by the platform
      */
-    private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
+    private static Map<String, String> getEnvVarPlatformFileTools(IArduinoPlatformVersion platformVersion) {
         HashMap<String, String> vars = new HashMap<>();
         for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
             IPath installPath = tool.getInstallPath();

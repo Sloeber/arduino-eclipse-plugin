@@ -1,6 +1,6 @@
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.core.runtime.IPath;
@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
 
@@ -18,10 +19,10 @@ public class ArduinoPlatformTooldDependency {
     private String myPackager;
     private VersionNumber myVersion;
 
-    private transient ArduinoPlatformVersion myParentPlatform;
+    private transient IArduinoPlatformVersion myParentPlatform;
 
     @SuppressWarnings("nls")
-    public ArduinoPlatformTooldDependency(JsonElement json, ArduinoPlatformVersion arduinoPlatformVersion) {
+    public ArduinoPlatformTooldDependency(JsonElement json, IArduinoPlatformVersion arduinoPlatformVersion) {
         myParentPlatform = arduinoPlatformVersion;
         JsonObject jsonObject = json.getAsJsonObject();
         try {

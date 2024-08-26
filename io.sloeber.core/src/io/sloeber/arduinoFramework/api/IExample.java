@@ -1,4 +1,4 @@
-package io.sloeber.core.api;
+package io.sloeber.arduinoFramework.api;
 
 import java.util.Collection;
 

@@ -5,9 +5,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json;
+package io.sloeber.arduinoFramework.internal;
 
-import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -20,11 +20,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.IArduinoPackage;
+import io.sloeber.arduinoFramework.api.IArduinoPlatform;
+import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
 
-public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
+public class ArduinoPackage extends Node implements  IArduinoPackage {
 
     private String name;
     private String maintainer;
@@ -75,7 +78,8 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
         }
     }
 
-    public ArduinoPlatformPackageIndex getPackageIndex() {
+    @Override
+	public ArduinoPlatformPackageIndex getPackageIndex() {
         return myParent;
     }
 
@@ -84,24 +88,29 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
         return name;
     }
 
-    public String getMaintainer() {
+    @Override
+	public String getMaintainer() {
         return maintainer;
     }
 
-    public String getWebsiteURL() {
+    @Override
+	public String getWebsiteURL() {
         return websiteURL;
     }
 
-    public String getEmail() {
+    @Override
+	public String getEmail() {
         return email;
     }
 
-    public String getHelp() {
+    @Override
+	public String getHelp() {
         return helpOnline;
     }
 
-    public Collection<ArduinoPlatform> getPlatforms() {
-        return platforms.values();
+    @Override
+	public Collection<IArduinoPlatform> getPlatforms() {
+        return new LinkedList<>( platforms.values());
     }
 
     /**
@@ -110,10 +119,11 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
      *
      * @return all the installed platforms
      */
-    public List<ArduinoPlatformVersion> getInstalledPlatforms() {
-        List<ArduinoPlatformVersion> platformMap = new LinkedList<>();
+    @Override
+	public List<IArduinoPlatformVersion> getInstalledPlatforms() {
+        List<IArduinoPlatformVersion> platformMap = new LinkedList<>();
         for (ArduinoPlatform platform : platforms.values()) {
-            for (ArduinoPlatformVersion platformVersion : platform.getVersions()) {
+            for (IArduinoPlatformVersion platformVersion : platform.getVersions()) {
                 if (platformVersion.isInstalled()) {
                     platformMap.add(platformVersion);
                 }
@@ -129,15 +139,18 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
      * @param platformID
      * @return return the platfiorm or null if not found
      */
-    public ArduinoPlatform getPlatform(String platformID) {
+    @Override
+	public IArduinoPlatform getPlatform(String platformID) {
         return platforms.get(platformID);
     }
 
-    public Collection<ArduinoPlatformTool> getTools() {
+    @Override
+	public Collection<ArduinoPlatformTool> getTools() {
         return tools.values();
     }
 
-    public ArduinoPlatformToolVersion getTool(String toolName, VersionNumber version) {
+    @Override
+	public ArduinoPlatformToolVersion getTool(String toolName, VersionNumber version) {
         ArduinoPlatformTool tool = tools.get(toolName);
         if (tool == null) {
             return null;
@@ -145,11 +158,13 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
         return tool.getVersion(version);
     }
 
-    public ArduinoPlatformTool getTool(String toolName) {
+    @Override
+	public ArduinoPlatformTool getTool(String toolName) {
         return tools.get(toolName);
     }
 
-    public ArduinoPlatformToolVersion getNewestInstalled(String toolName) {
+    @Override
+	public ArduinoPlatformToolVersion getNewestInstalled(String toolName) {
         ArduinoPlatformTool tool = tools.get(toolName);
         if (tool == null) {
             return null;
@@ -171,14 +186,15 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     }
 
     @Override
-    public int compareTo(ArduinoPackage other) {
-        return this.name.compareTo(other.name);
+    public int compareTo(IArduinoPackage other) {
+        return this.name.compareTo(other.getName());
     }
 
-    public void onlyKeepLatestPlatforms() {
-        for (ArduinoPlatform curplatform : platforms.values()) {
-            ArduinoPlatformVersion newestVersion = null;
-            for (ArduinoPlatformVersion curVersion : curplatform.getVersions()) {
+    @Override
+	public void onlyKeepLatestPlatforms() {
+        for (IArduinoPlatform curplatform : platforms.values()) {
+            IArduinoPlatformVersion newestVersion = null;
+            for (IArduinoPlatformVersion curVersion : curplatform.getVersions()) {
                 if (curVersion.isInstalled()) {
                     if (newestVersion == null) {
                         newestVersion = curVersion;
@@ -194,8 +210,9 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
         }
     }
 
-    public boolean isInstalled() {
-        for (ArduinoPlatform platform : platforms.values()) {
+    @Override
+	public boolean isInstalled() {
+        for (IArduinoPlatform platform : platforms.values()) {
             if (platform.isInstalled()) {
                 return true;
             }
@@ -209,7 +226,8 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
      * @param platformName
      * @return if a platform with this name is installed
      */
-    public boolean isAVersionOfThisPlatformInstalled(String platformName) {
+    @Override
+	public boolean isAVersionOfThisPlatformInstalled(String platformName) {
         for (ArduinoPlatform platform : this.platforms.values()) {
             if (platform.getName().equals(platformName)) {
                 if (platform.isInstalled()) {
@@ -225,7 +243,8 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
         return name;
     }
 
-    public IPath getInstallPath() {
+    @Override
+	public IPath getInstallPath() {
         return ConfigurationPreferences.getInstallationPathPackages().append(getID());
     }
 
@@ -238,5 +257,10 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     public Node getParent() {
         return myParent;
     }
+
+	@Override
+	public String getName() {
+		return name;
+	}
 
 }

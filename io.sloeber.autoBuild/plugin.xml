@@ -2072,7 +2072,7 @@
       <extension
             point="org.eclipse.cdt.core.LanguageSettingsProvider">
          <provider
-               class="io.sloeber.autoBuild.internal.AutoBuildLanguageSettingsProvider"
+               class="io.sloeber.autoBuild.extensionPoint.providers.AutoBuildLanguageSettingsProvider"
                id="io.sloeber.autoBuild.AutoBuildLanguageSettingsProvider"
                name="%autoBuildLanguageStingsProvider"
                prefer-non-shared="false">

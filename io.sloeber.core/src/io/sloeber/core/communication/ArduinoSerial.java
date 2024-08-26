@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import io.sloeber.core.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Serial;
 

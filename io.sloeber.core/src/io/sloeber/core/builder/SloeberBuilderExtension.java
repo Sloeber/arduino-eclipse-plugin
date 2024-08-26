@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.autoBuild.api.AutoBuildBuilderExtension;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
@@ -25,7 +26,6 @@ import io.sloeber.autoBuild.helpers.api.AutoBuildConstants;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.schema.api.IBuilder;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.tools.Helpers;

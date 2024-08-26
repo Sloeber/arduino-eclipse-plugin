@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
 

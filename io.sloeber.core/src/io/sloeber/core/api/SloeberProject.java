@@ -2,16 +2,8 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -19,7 +11,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -33,6 +24,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
@@ -492,33 +485,33 @@ public class SloeberProject extends Common {
 	//
 	// }
 
-	private static void storeConfigurationFile(IFile file, Map<String, String> vars) throws Exception {
-		String content = EMPTY;
-		for (Entry<String, String> curLine : vars.entrySet()) {
-			content += curLine.getKey() + '=' + curLine.getValue() + '\n';
-		}
-
-		if (file.exists()) {
-			// if the filecontent hasn't changed=>do nothing
-			try (InputStream inputStream = file.getContents();) {
-				String fileContent = new BufferedReader(new InputStreamReader(inputStream)).lines()
-						.collect(Collectors.joining("\n"));
-
-//                Path filePath = Path.of(file.getLocation().toOSString());
-//                String fileContent = Files.readString(filePath);
-				if (content.equals(fileContent)) {
-					return;
-				}
-			}
-			file.delete(true, null);
-		}
-
-		if (!file.exists() && (!content.isBlank())) {
-			ByteArrayInputStream stream = new ByteArrayInputStream(content.getBytes());
-			file.create(stream, true, null);
-		}
-
-	}
+//	private static void storeConfigurationFile(IFile file, Map<String, String> vars) throws Exception {
+//		String content = EMPTY;
+//		for (Entry<String, String> curLine : vars.entrySet()) {
+//			content += curLine.getKey() + '=' + curLine.getValue() + '\n';
+//		}
+//
+//		if (file.exists()) {
+//			// if the filecontent hasn't changed=>do nothing
+//			try (InputStream inputStream = file.getContents();) {
+//				String fileContent = new BufferedReader(new InputStreamReader(inputStream)).lines()
+//						.collect(Collectors.joining("\n")); //$NON-NLS-1$
+//
+////                Path filePath = Path.of(file.getLocation().toOSString());
+////                String fileContent = Files.readString(filePath);
+//				if (content.equals(fileContent)) {
+//					return;
+//				}
+//			}
+//			file.delete(true, null);
+//		}
+//
+//		if (!file.exists() && (!content.isBlank())) {
+//			ByteArrayInputStream stream = new ByteArrayInputStream(content.getBytes());
+//			file.create(stream, true, null);
+//		}
+//
+//	}
 
 	// /**
 	// * get the Arduino project description based on a project description

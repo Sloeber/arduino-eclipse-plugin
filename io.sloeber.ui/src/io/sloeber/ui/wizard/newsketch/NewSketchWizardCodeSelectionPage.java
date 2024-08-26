@@ -15,10 +15,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import io.sloeber.core.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CodeDescription.CodeTypes;
-import io.sloeber.core.api.IExample;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 

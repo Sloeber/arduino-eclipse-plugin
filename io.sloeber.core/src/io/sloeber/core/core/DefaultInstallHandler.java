@@ -2,7 +2,7 @@ package io.sloeber.core.core;
 
 import java.util.Map;
 
-import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IInstallLibraryHandler;
 
 public class DefaultInstallHandler implements IInstallLibraryHandler {

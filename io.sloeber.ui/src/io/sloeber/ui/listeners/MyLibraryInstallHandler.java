@@ -2,7 +2,7 @@ package io.sloeber.ui.listeners;
 
 import java.util.Map;
 
-import io.sloeber.core.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.ui.helpers.MyPreferences;
 

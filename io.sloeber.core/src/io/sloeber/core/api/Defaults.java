@@ -1,6 +1,5 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
 import org.eclipse.core.runtime.IPath;
