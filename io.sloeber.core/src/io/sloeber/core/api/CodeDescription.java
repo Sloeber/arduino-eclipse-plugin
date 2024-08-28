@@ -1,6 +1,5 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
@@ -52,8 +51,8 @@ public class CodeDescription implements ICodeProvider {
 	static private final String DEFAULT_SKETCH_BASE = "sketch"; //$NON-NLS-1$
 	public static final String INO= "ino"; //$NON-NLS-1$
 	public static final String CPP= "cpp"; //$NON-NLS-1$
-	public static final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + DOT+INO; 
-	public static final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + DOT+CPP; 
+	public static final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + DOT+INO;
+	public static final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + DOT+CPP;
 	public static final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + DOT+'h';
 	//
 	// template Sketch information
@@ -332,7 +331,7 @@ public class CodeDescription implements ICodeProvider {
 				IPath folderName = myTemPlateFoldername;
 				String files[] = folderName.toFile().list();
 				if (files == null) {
-					log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "No files found in template folder :" + folderName,
+					Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "No files found in template folder :" + folderName,
 							null));
 				} else {
 					for (String file : files) {
@@ -354,7 +353,7 @@ public class CodeDescription implements ICodeProvider {
 									replacers);) {
 								Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(renamedFile)), theFileStream, monitor, false);
 							} catch (IOException e) {
-								log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+								Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 										"Failed to add template file :" + sourceFile.toString(), e));
 							}
 
@@ -373,7 +372,7 @@ public class CodeDescription implements ICodeProvider {
 							Helpers.linkDirectory( curPath, folder);
 							}
 							else {
-								log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+								Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
 										"Can not create links to project root"));
 							}
 						} else {

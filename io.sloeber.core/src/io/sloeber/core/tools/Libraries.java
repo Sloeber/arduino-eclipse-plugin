@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.api.Common;
+import io.sloeber.core.Activator;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.VersionNumber;
 
@@ -45,7 +45,7 @@ public class Libraries {
                     if (versions != null) {
                         switch (versions.length) {
                         case 0:// A empty lib folder is hanging around
-                            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+                            Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                                     EmptyLibFolder.replace(LIB_TAG, curLib)));
                             Lib_root.toFile().delete();
                             break;
@@ -58,7 +58,7 @@ public class Libraries {
                                 // latest
                             int highestVersion = getHighestVersion(versions);
                             ret.put(curLib, Lib_root.append(versions[highestVersion]));
-                            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+                            Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                                     MultipleVersionsOfLib.replace(LIB_TAG, curLib)));
 
                         }
@@ -109,7 +109,7 @@ public class Libraries {
                 final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
                 folderHandle.delete(true, null);
             } catch (CoreException e) {
-                Common.log(
+                Activator.log(
                         new Status(IStatus.ERROR, CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB_TAG, CurItem), e));
             }
         }

@@ -35,7 +35,6 @@ import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Const;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.ISloeberConfiguration;
@@ -62,7 +61,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 			return;
 		}
 		if (!newChangedProjects.contains(sloeberConfDesc)) {
-			Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+			Activator.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
 					"Index of project changed :" + project.getName())); //$NON-NLS-1$
 			newChangedProjects.add(sloeberConfDesc);
 		}
@@ -78,13 +77,13 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 				for (ISloeberConfiguration sloeberConfDesc : curChangedProjects) {
 					String projectName = sloeberConfDesc.getProject().getName();
 					try {
-						Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+						Activator.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
 								"Looking for libraries for project :" + projectName)); //$NON-NLS-1$
 						checkLibraries(sloeberConfDesc);
 					} catch (Exception e) {
-						Common.log(new Status(IStatus.WARNING, Activator.getId(), Messages.Failed_To_Add_Libraries, e));
+						Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.Failed_To_Add_Libraries, e));
 					}
-					Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+					Activator.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
 							"libraries added for project " + projectName)); //$NON-NLS-1$
 				}
 			}
@@ -162,7 +161,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		}
 		if (!toInstallLibs.isEmpty()) {
 			// there are possible libraries to add
-			Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
+			Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
 					+ SloeberCfg.getProject().getName() + COLON + SPACE
 					+ toInstallLibString));
 			SloeberCfg.addLibraries(toInstallLibs);

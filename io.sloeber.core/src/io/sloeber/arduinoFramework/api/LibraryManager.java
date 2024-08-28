@@ -32,7 +32,6 @@ import com.google.gson.Gson;
 import io.sloeber.arduinoFramework.internal.ArduinoLibraryIndex;
 import io.sloeber.arduinoFramework.internal.ArduinoLibraryVersion;
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.IInstallLibraryHandler;
@@ -120,7 +119,7 @@ public class LibraryManager {
 			((ArduinoLibraryIndex)index).setJsonFile(jsonFile);
 			libraryIndices.add(index);
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
 					Manager_Failed_to_parse.replace(FILE_TAG, jsonFile.getAbsolutePath()), e));
 			jsonFile.delete();// Delete the file so it stops damaging
 		}

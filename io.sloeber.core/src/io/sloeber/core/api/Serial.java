@@ -43,6 +43,7 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 
+import io.sloeber.core.Activator;
 import io.sloeber.core.common.InstancePreferences;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -117,7 +118,7 @@ public class Serial implements SerialPortEventListener {
      * something slightly more intelligent to do.
      */
     public static void errorMessage(String where, Throwable e) {
-        Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
+        Activator.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
 
     }
 
@@ -151,7 +152,7 @@ public class Serial implements SerialPortEventListener {
             }
             return new ArrayList<>(Arrays.asList(portNames));
         } catch (Exception e) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
                     "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
                     e));
             List<String> ret = new ArrayList<>();
@@ -194,16 +195,16 @@ public class Serial implements SerialPortEventListener {
                     // handle exception
                     if (++count == maxTries) {
                         if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
-                            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " + this.portName //$NON-NLS-1$
+                            Activator.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " + this.portName //$NON-NLS-1$
                                     + " already in use. Try quiting any programs that may be using it", //$NON-NLS-1$
                                     e));
                         } else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
-                            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " //$NON-NLS-1$
+                            Activator.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " //$NON-NLS-1$
                                     + this.portName
                                     + " not found. Did you select the right one from the project properties -> Sloeber?", //$NON-NLS-1$
                                     e));
                         } else {
-                            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Activator.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
                                     "Error opening serial port " + this.portName, e)); //$NON-NLS-1$
                         }
                         return;
@@ -211,7 +212,7 @@ public class Serial implements SerialPortEventListener {
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e1) {
-                        Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Sleep failed", e1)); //$NON-NLS-1$
+                        Activator.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Sleep failed", e1)); //$NON-NLS-1$
                     }
                 }
                 // If an exception was thrown, delete port variable

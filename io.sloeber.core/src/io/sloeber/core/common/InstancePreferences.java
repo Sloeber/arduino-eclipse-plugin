@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
-import io.sloeber.core.api.Common;
+import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
 
 /**
@@ -60,7 +60,7 @@ public class InstancePreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 					"failed to set global variable of type string " + key,e)); //$NON-NLS-1$
 		}
 	}
@@ -73,7 +73,7 @@ public class InstancePreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 					"failed to set global variable of type boolean " + key,e)); //$NON-NLS-1$
 		}
 	}

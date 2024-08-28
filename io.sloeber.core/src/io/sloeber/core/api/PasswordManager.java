@@ -6,6 +6,7 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 
 public class PasswordManager {
@@ -56,7 +57,7 @@ public class PasswordManager {
             }
 
         } catch (StorageException e) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
                     "Set a password on the project properties->Sloeber page", e)); //$NON-NLS-1$
         }
 
@@ -94,7 +95,7 @@ public class PasswordManager {
             node.put(Messages.security_password, pwd, false);
         } catch (StorageException e) {
 
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to set login info", e)); //$NON-NLS-1$
+            Activator.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to set login info", e)); //$NON-NLS-1$
         }
 
     }

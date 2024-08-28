@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.common.InstancePreferences;
 
 public class FileModifiers {
@@ -118,7 +117,7 @@ public class FileModifiers {
             Files.write(pathFile, textFromFile.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
                     StandardOpenOption.CREATE);
         } catch (IOException e) {
-            Common.log(new Status(IStatus.WARNING, Activator.getId(),
+            Activator.log(new Status(IStatus.WARNING, Activator.getId(),
                     "Failed to replace " + find + " with " + replace + " in file " + file.toString(), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }

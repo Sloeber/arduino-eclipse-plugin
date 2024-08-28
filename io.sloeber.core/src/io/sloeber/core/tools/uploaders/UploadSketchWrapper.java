@@ -42,6 +42,7 @@ import cc.arduino.packages.ssh.SSHClientSetupChainRing;
 import cc.arduino.packages.ssh.SSHConfigFileSetup;
 import cc.arduino.packages.ssh.SSHPwdSetup;
 import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.PasswordManager;
@@ -169,7 +170,7 @@ public class UploadSketchWrapper {
                     theComPortIsPaused = SerialManager.pauseSerialMonitor(myProvidedUploadPort);
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Upload_Error_com_port, e);
-                    log(ret);
+                    Activator.log(ret);
                 }
 
                 if (!actualUpload(monitor, highLevelStream, outStream, errStream)) {
@@ -180,7 +181,7 @@ public class UploadSketchWrapper {
 
             } catch (Exception e) {
                 String error = Upload_failed_upload_file.replace(FILE_TAG, projectName);
-                log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, error, e));
+                Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, error, e));
             } finally {
                 try {
                     if (theComPortIsPaused) {
@@ -202,7 +203,7 @@ public class UploadSketchWrapper {
                     }
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Messages.Upload_Error_serial_monitor_restart, e);
-                    log(ret);
+                    Activator.log(ret);
                 }
             }
             monitor.done();
@@ -233,7 +234,7 @@ public class UploadSketchWrapper {
 
             String command = getBuildEnvironmentVariable(mySloeberConf, uploadRecipoeKey, EMPTY);
             if (command.isEmpty()) {
-                log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                         uploadRecipoeKey + " : not found in the platform.txt file")); //$NON-NLS-1$
                 highStream.println(uploader_Failed_to_get_upload_recipe);
                 return false;
@@ -252,7 +253,7 @@ public class UploadSketchWrapper {
                     if (cmdLauncher.launch(monitor, highStream, outStream, errStream) < 0)
                         return false;
                 } catch (IOException e) {
-                    log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, Upload_failed, e));
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, Upload_failed, e));
                     return false;
                 }
             }

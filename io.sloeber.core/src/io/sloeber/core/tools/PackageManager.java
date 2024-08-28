@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.arduinoFramework.api.ArduinoInstallable;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 
 public class PackageManager {
@@ -419,14 +418,14 @@ public class PackageManager {
                 return;
             }
             if (report_error) {
-                Common.log(new Status(IStatus.WARNING, Activator.getId(),
+                Activator.log(new Status(IStatus.WARNING, Activator.getId(),
                         "Failed to download url " + url + " error code is: " + status, null));
             }
             throw new IOException("Failed to download url " + url + " error code is: " + status);
 
         } catch (Exception e) {
             if (report_error) {
-                Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+                Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
             }
             throw e;
 

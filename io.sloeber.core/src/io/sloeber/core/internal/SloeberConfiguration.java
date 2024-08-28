@@ -39,7 +39,6 @@ import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.ISloeberConfiguration;
@@ -769,7 +768,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
 
 			} catch (Exception e) {
-				Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, "Failed to modify configuration for rename", e));
+				Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, "Failed to modify configuration for rename", e));
 			}
 			return true;
 		}

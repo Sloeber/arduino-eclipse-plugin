@@ -22,8 +22,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.statushandlers.StatusManager;
-
 import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.core.Activator;
@@ -51,7 +49,7 @@ public class Common {
         } catch (URISyntaxException e) {
             // this should not happen
             // but it seems a space in the path makes it happen
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     "Eclipse fails to provide its own installation folder :-(. \nThis is known to happen when you have a space ! # or other wierd characters in your eclipse installation path", //$NON-NLS-1$
                     e));
         }
@@ -124,29 +122,7 @@ public class Common {
         return ret;
     }
 
-    /**
-     * Logs the status information if status is OK then nothing happens
-     *
-     * @param status
-     *            the status information to log
-     */
-    public static void log(IStatus status) {
-        switch (status.getSeverity()) {
-        case IStatus.OK: {
-            break;
-        }
-        case IStatus.ERROR: {
-            int style = StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK;
-            StatusManager stMan = StatusManager.getManager();
-            stMan.handle(status, style);
-            break;
-        }
-        case SLOEBER_STATUS_DEBUG:
-            // break;//remove break to add debugging
-        default:
-            Activator.getDefault().getLog().log(status);
-        }
-    }
+
 
     /**
      *

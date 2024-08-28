@@ -503,7 +503,7 @@ public class CompileDescription {
 			mySizeCommand = SizeCommands.valueOf(sizeCommand);
 			mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Deserialisation error", e)); //$NON-NLS-1$
+			Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Deserialisation error", e)); //$NON-NLS-1$
 		}
     }
 

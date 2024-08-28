@@ -29,13 +29,13 @@ import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.arduinoFramework.api.BoardsManager;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
@@ -168,7 +168,7 @@ public class Activator extends Plugin {
         if (!errorString.isEmpty()) {
             errorString += "\n\nSloeber might still function but if you get strange results you know where to look.\n";
             errorString += "Do not create an issue if you see this!!!";
-            Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorString));
+            log(new Status(IStatus.ERROR, PLUGIN_ID, errorString));
         }
 
     }
@@ -215,7 +215,7 @@ public class Activator extends Plugin {
         try {
             workspace.setDescription(workspaceDesc);
         } catch (CoreException e) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e));
+            log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e));
         }
         // Make sure some important variables are being initialized
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
@@ -381,7 +381,7 @@ public class Activator extends Plugin {
             ctbin.addFileSpec("ino", IContentTypeSettings.FILE_EXTENSION_SPEC);
             ctbin.addFileSpec("pde", IContentTypeSettings.FILE_EXTENSION_SPEC);
         } catch (CoreException e) {
-            Common.log(new Status(IStatus.WARNING, Activator.getId(),
+            log(new Status(IStatus.WARNING, Activator.getId(),
                     "Failed to add *.ino and *.pde as file extensions.", e));
         }
 
@@ -413,15 +413,40 @@ public class Activator extends Plugin {
             }
             if (!localMakePath.append(MAKE_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                Common.log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));
+                log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));
             }
 
             // Install awk if needed
             IPath localAwkPath = ConfigurationPreferences.getAwkPath();
             if (!localAwkPath.append(AWK_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                Common.log(PackageManager.downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath, false, monitor));
+                log(PackageManager.downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath, false, monitor));
             }
+        }
+    }
+
+
+    /**
+     * Logs the status information if status is OK then nothing happens
+     *
+     * @param status
+     *            the status information to log
+     */
+    public static void log(IStatus status) {
+        switch (status.getSeverity()) {
+        case IStatus.OK: {
+            break;
+        }
+        case IStatus.ERROR: {
+            int style = StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK;
+            StatusManager stMan = StatusManager.getManager();
+            stMan.handle(status, style);
+            break;
+        }
+        case SLOEBER_STATUS_DEBUG:
+            // break;//remove break to add debugging
+        default:
+            Activator.getDefault().getLog().log(status);
         }
     }
 

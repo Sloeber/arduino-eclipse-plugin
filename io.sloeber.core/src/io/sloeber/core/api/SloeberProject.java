@@ -145,7 +145,7 @@ public class SloeberProject extends Common {
 		// cCorePlugin.setProjectDescription(project, prjCDesc, true, null);
 		//
 		// } catch (Exception e) {
-		// Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+		// Activator.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
 		// "Project conversion failed: ", e)); //$NON-NLS-1$
 		// }
 		//
@@ -157,7 +157,7 @@ public class SloeberProject extends Common {
 		// try {
 		// workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
 		// } catch (Exception e) {
-		// Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+		// Activator.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
 		// "Project conversion failed: ", e)); //$NON-NLS-1$
 		// }
 
@@ -267,7 +267,7 @@ public class SloeberProject extends Common {
 							.getConfig(curConfig);
 					if (!(iAutoBuildConfig instanceof AutoBuildConfigurationDescription)) {
 						// this should not happen as we just created a autoBuild project
-						Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
+						Activator.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
 								"\"Auto build created a project that does not seem to be a autobuild project :-s : " //$NON-NLS-1$
 										+ realProjectName));
 						continue;
@@ -287,7 +287,7 @@ public class SloeberProject extends Common {
 				cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true,
 						SubMonitor.convert(internalMonitor, 1));
 
-				Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
+				Activator.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
 						"internal creation of project is done: " + realProjectName)); //$NON-NLS-1$
 				// IndexerController.index(newProjectHandle);
 			}
@@ -298,7 +298,7 @@ public class SloeberProject extends Common {
 		{
 			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+			Activator.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
 					"Project creation failed: " + realProjectName, e)); //$NON-NLS-1$
 		}
 		monitor.done();
@@ -479,7 +479,7 @@ public class SloeberProject extends Common {
 	// storeConfigurationFile(getConfigVersionFile(), versionVars);
 	// storeConfigurationFile(getConfigLocalFile(), configVars);
 	// } catch (Exception e) {
-	// Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
+	// Activator.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
 	// "failed to save the sloeber config files", e)); //$NON-NLS-1$
 	// }
 	//

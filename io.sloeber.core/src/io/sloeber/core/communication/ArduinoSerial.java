@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.arduinoFramework.api.BoardDescription;
+import io.sloeber.core.Activator;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.Serial;
 
@@ -43,7 +44,7 @@ public class ArduinoSerial {
             serialPort.dispose();
             Thread.sleep(openTime);
         } catch (Exception e) {
-            log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                     ArduinoSerial_unable_to_open_serial_port.replace(PORT_TAG, comPort), e));
             return false;
         }

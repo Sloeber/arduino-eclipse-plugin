@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Const;
@@ -120,7 +121,7 @@ public class ExternalCommandLauncher {
             } catch (IOException e) {
                 // This is unlikely to happen, but log it nevertheless
                 IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.command_io, e);
-                Common.log(status);
+                Activator.log(status);
             } finally {
                 try {
                     this.fReader.close();

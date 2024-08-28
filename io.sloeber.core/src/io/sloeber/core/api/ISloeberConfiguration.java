@@ -48,7 +48,7 @@ public interface ISloeberConfiguration {
         CConfigurationData buildSettings = config.getConfigurationData();
         if (!(buildSettings instanceof AutoBuildConfigurationDescription)) {
             //this should not happen as we just created a autoBuild project
-            Common.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
+            Activator.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
                     "\"Auto build created a project that does not seem to be a autobuild project :-s : " //$NON-NLS-1$
                             + config.getProjectDescription().getName()));
             return null;

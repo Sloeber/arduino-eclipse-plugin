@@ -44,7 +44,6 @@ import io.sloeber.arduinoFramework.internal.ArduinoPlatformToolVersion;
 import io.sloeber.arduinoFramework.internal.ArduinoPlatformTooldDependency;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.SloeberProject;
@@ -132,7 +131,7 @@ public class BoardsManager {
 
     public static void addPackageURLs(Collection<String> packageUrlsToAdd, boolean forceDownload) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(getJsonURLList()));
@@ -144,7 +143,7 @@ public class BoardsManager {
 
     public static void setPackageURLs(Collection<String> packageUrls, boolean forceDownload) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         setJsonURLs(packageUrls);
@@ -164,7 +163,7 @@ public class BoardsManager {
     public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
         String DEPRECATED = "DEPRECATED"; //$NON-NLS-1$
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         envVarsNeedUpdating = true;
@@ -202,7 +201,7 @@ public class BoardsManager {
 
     public static void installLatestPlatform(String JasonName, String packageName, String architectureName) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         envVarsNeedUpdating = true;
@@ -218,7 +217,7 @@ public class BoardsManager {
                 }
             }
         }
-        Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+        Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
@@ -314,7 +313,7 @@ public class BoardsManager {
             searchFiles(new File(CurFolder), boardFiles, BOARDS_FILE_NAME, 6);
         }
         if (boardFiles.size() == 0) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     Helpers_No_boards_txt_found.replace(FILE_TAG, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
             return null;
         }
@@ -326,7 +325,7 @@ public class BoardsManager {
             File[] a = folder.listFiles();
             if (a == null) {
                 if (!myHasbeenLogged) {
-                    Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
                             Helpers_Error_The_folder_is_empty.replace(FOLDER_TAG, folder.toString()), null));
                     myHasbeenLogged = true;
                 }
@@ -411,7 +410,7 @@ public class BoardsManager {
 
     public static void setPrivateHardwarePaths(String[] hardWarePaths) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         InstancePreferences.setPrivateHardwarePaths(hardWarePaths);
@@ -454,7 +453,7 @@ public class BoardsManager {
             try {
                 PackageManager.mySafeCopy(new URL(url.trim()), jsonFile, false);
             } catch (IOException e) {
-                Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+                Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
             }
         }
         if (jsonFile.exists()) {
@@ -463,7 +462,7 @@ public class BoardsManager {
             } else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
                 LibraryManager.loadJson(jsonFile);
             } else {
-                Common.log(new Status(IStatus.ERROR, Activator.getId(),
+                Activator.log(new Status(IStatus.ERROR, Activator.getId(),
                         "json files should start with \"package_\" or \"library_\" " + url + " is ignored")); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
@@ -475,7 +474,7 @@ public class BoardsManager {
             index.setPackageFile(jsonFile);
             packageIndices.add(index);
         } catch (Exception e) {
-            Common.log(new Status(IStatus.ERROR, Activator.getId(),
+            Activator.log(new Status(IStatus.ERROR, Activator.getId(),
                     Manager_Failed_to_parse.replace(FILE_TAG, jsonFile.getAbsolutePath()), e));
             jsonFile.delete();// Delete the file so it stops damaging
         }
@@ -497,7 +496,7 @@ public class BoardsManager {
             packageUrl = new URL(url.trim());
         } catch (MalformedURLException e) {
             if (show_error) {
-                Common.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
+                Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
             }
             return null;
         }
@@ -563,7 +562,7 @@ public class BoardsManager {
 
     public static void removeAllInstalledPlatforms() {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         try {
@@ -657,7 +656,7 @@ public class BoardsManager {
         IPath examplesPath = ConfigurationPreferences.getInstallationPathExamples();
         if (!examplesPath.toFile().exists()) {// examples are not installed
             // Download arduino IDE example programs
-            Common.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
+            Activator.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
                     false, monitor));
         }
         if (!areThereInstalledBoards()) {
@@ -803,7 +802,7 @@ public class BoardsManager {
      */
     public static void onlyKeepLatestPlatforms() {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         List<IArduinoPackage> allPackages = getPackages();

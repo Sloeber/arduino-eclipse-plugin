@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.tools.FileModifiers;
 
@@ -122,7 +121,7 @@ public class WorkAround {
 		String inFile = requestedFileToWorkAround.toString();
 		String actualFileToLoad = inFile.replace(BOARDS_FILE_NAME, "boards.sloeber.txt");
 		if (inFile.equals(actualFileToLoad)) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
 					"Boards.txt file is not recognized " + requestedFileToWorkAround.toString()));
 			return requestedFileToWorkAround;
 		}
@@ -144,7 +143,7 @@ public class WorkAround {
 			Files.write(boardsSloeberTXT.toPath(), boardsTXT.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
 					StandardOpenOption.CREATE);
 		} catch (IOException e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),
+			Activator.log(new Status(IStatus.WARNING, Activator.getId(),
 					"Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
 			return requestedFileToWorkAround;
 		}
@@ -196,7 +195,7 @@ public class WorkAround {
 		String inFile = requestedFileToWorkAround.toString();
 		String actualFileToLoad = inFile.replace(PLATFORM_FILE_NAME, "platform.sloeber.txt");
 		if (inFile.equals(actualFileToLoad)) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
 					"platform.txt file is not recognized " + requestedFileToWorkAround.toString()));
 			return requestedFileToWorkAround;
 		}
@@ -219,7 +218,7 @@ public class WorkAround {
 			Files.write(platformSloeberTXT.toPath(), platformTXT.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
 					StandardOpenOption.CREATE);
 		} catch (IOException e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),
+			Activator.log(new Status(IStatus.WARNING, Activator.getId(),
 					"Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
 			return requestedFileToWorkAround;
 		}
@@ -549,7 +548,7 @@ public class WorkAround {
 			Otherosses.add(WINDOWSKEY);
 			Otherosses.add(LINUXKEY);
 		} else {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(), "Failed to recognize the os you are using"));
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Failed to recognize the os you are using"));
 			return inpuText;
 		}
 
@@ -566,7 +565,7 @@ public class WorkAround {
 		while (null != neededOSLine) {
 			int keyIndex = neededOSLine.indexOf(thisOSKey);
 			if (keyIndex < 0) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Error processing txt file: " + neededOSLine));
+				Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Error processing txt file: " + neededOSLine));
 				neededOSLine = null;
 			} else {
 				String genericKey = neededOSLine.substring(0, keyIndex) + EQUAL;
@@ -604,7 +603,7 @@ public class WorkAround {
 		String inFile = requestedFileToWorkAround.toString();
 		String actualFileToLoad = inFile.replace("programmers.txt", "programmers.sloeber.txt");
 		if (inFile.equals(actualFileToLoad)) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
 					"programmers.txt file is not recognized " + requestedFileToWorkAround.toString()));
 			return requestedFileToWorkAround;
 		}
@@ -626,7 +625,7 @@ public class WorkAround {
 			Files.write(actualProgrammersTXT.toPath(), programmersTXT.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
 					StandardOpenOption.CREATE);
 		} catch (IOException e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),
+			Activator.log(new Status(IStatus.WARNING, Activator.getId(),
 					"Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
 			return requestedFileToWorkAround;
 		}

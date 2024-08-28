@@ -1,6 +1,5 @@
 package io.sloeber.core.tools;
 
-import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
@@ -31,6 +30,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 
 /**
@@ -133,7 +133,7 @@ public class Helpers {
                                 || (((CIncludePathEntry) OrgIncludeEntries[curEntry]).isBuiltIn())) {
                             OrgIncludeEntries[copiedEntry++] = OrgIncludeEntries[curEntry];
                         } else {
-                            log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "Removed invalid include path" + cusPath, //$NON-NLS-1$
+                            Activator.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "Removed invalid include path" + cusPath, //$NON-NLS-1$
                                     null));
                         }
                     }
@@ -183,7 +183,7 @@ public class Helpers {
         try {
             createNewFolder(projectFolder, source);
         } catch (CoreException e) {
-            log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     Messages.Helpers_Create_folder_failed.replace(FOLDER, projectFolder.toString()), e));
         }
     }
@@ -290,7 +290,7 @@ public class Helpers {
             try {
                 buildFolder.delete(true, null);
             } catch (CoreException e) {
-                log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                         Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgName), e));
             }
         }
@@ -309,7 +309,7 @@ public class Helpers {
         File[] sourceFiles = source.toFile().listFiles();
         if (sourceFiles == null) {
             if (!myHasBeenLogged) {
-                log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
+                Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
                         Messages.Helpers_error_link_folder_is_empty.replace(FILE, source.toOSString()), null));
                 myHasBeenLogged = true;
             }

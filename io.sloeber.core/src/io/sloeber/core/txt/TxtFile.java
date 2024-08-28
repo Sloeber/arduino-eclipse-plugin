@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
-import io.sloeber.core.api.Common;
+import io.sloeber.core.Activator;
 import io.sloeber.core.api.Const;
 
 /**
@@ -72,7 +72,7 @@ public class TxtFile {
                 }
             }
         } catch (Exception e) {
-            Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+            Activator.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
                     Boards_Failed_to_read_boards.replace(FILE_TAG, boardsFileName.getName()), e));
         }
     }

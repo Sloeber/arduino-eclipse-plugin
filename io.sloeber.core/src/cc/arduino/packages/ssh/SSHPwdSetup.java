@@ -37,8 +37,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import cc.arduino.packages.BoardPort;
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Common;
 import io.sloeber.core.api.Const;
 import io.sloeber.core.api.PasswordManager;
 
@@ -58,7 +58,7 @@ public class SSHPwdSetup implements SSHClientSetupChainRing {
 		} else {
 			// The user should set the password in the project
 			// properties->arduino
-			Common.log(
+			Activator.log(
 					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing.replace(Messages.HOST_TAG,  host)));
 
 			return null;
