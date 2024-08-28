@@ -96,6 +96,7 @@ public class Const extends AutoBuildConstants {
     public static final String SLOEBER_PROJECT = ".sproject";
     public static final String LIBRARY_PROPERTIES = "library.properties";
     public static final String LIBRARY_DOT_A_LINKAGE = "dot_a_linkage";
+    public static final String SLOEBER_TXT_FILE_NAME="sloeber.txt";
 
     // Environment variable stuff
     public static final String ENV_KEY_SLOEBER_START = "sloeber" + DOT;

@@ -5,8 +5,12 @@ import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +33,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import io.sloeber.arduinoFramework.internal.ArduinoPlatformTooldDependency;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
-import io.sloeber.core.api.Common;
+import io.sloeber.core.Activator;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Const;
 import io.sloeber.core.api.Preferences;
@@ -41,6 +45,7 @@ import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
+	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 02 "; //$NON-NLS-1$
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
     /*
@@ -165,7 +170,7 @@ public class BoardDescription {
                 myBoardsCore = valueSplit[1];
                 myReferencedPlatformCore = BoardsManager.getNewestInstalledPlatform(refVendor, architecture);
                 if (myReferencedPlatformCore == null) {
-                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, core)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
                                     .replace(BOARD_TAG, getBoardID())));
@@ -178,7 +183,7 @@ public class BoardDescription {
                 myBoardsCore = valueSplit[3];
                 myReferencedPlatformCore = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
                 if (myReferencedPlatformCore == null) {
-                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, core)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
                                     .replace(BOARD_TAG, getBoardID())));
@@ -195,7 +200,7 @@ public class BoardDescription {
                 myBoardsVariant = valueSplit[1];
                 myReferencedPlatformVariant = BoardsManager.getNewestInstalledPlatform(refVendor, architecture);
                 if (myReferencedPlatformVariant == null) {
-                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, variant)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
                                     .replace(BOARD_TAG, getBoardID())));
@@ -212,7 +217,7 @@ public class BoardDescription {
                     myReferencedPlatformVariant = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
                 }
                 if (myReferencedPlatformVariant == null) {
-                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, variant)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
                                     .replace(BOARD_TAG, getBoardID())));
@@ -229,7 +234,7 @@ public class BoardDescription {
                 myUploadTool = valueSplit[1];
                 myReferencedPlatformUpload = BoardsManager.getNewestInstalledPlatform(refVendor, architecture);
                 if (myReferencedPlatformUpload == null) {
-                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, upload)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
                                     .replace(BOARD_TAG, getBoardID())));
@@ -242,7 +247,7 @@ public class BoardDescription {
                 myUploadTool = valueSplit[3];
                 myReferencedPlatformUpload = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
                 if (this.myReferencedPlatformUpload == null) {
-                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, upload)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
                                     .replace(BOARD_TAG, getBoardID())));
@@ -879,7 +884,12 @@ public class BoardDescription {
         }
 
         // put in the installed tools info
-        allVars.putAll(getEnVarPlatformInfo());
+        try {
+			allVars.putAll(getEnVarPlatformInfo());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,"failed to get platform paths",e));
+		}
 
         // boards settings not coming from menu selections
         allVars.putAll(mySloeberBoardTxtFile.getBoardEnvironVars(getBoardID()));
@@ -926,37 +936,28 @@ public class BoardDescription {
 		return fqbn+options;
 	}
 
-	private Map<String, String> getEnVarPlatformInfo() {
+	private Map<String, String> getEnVarPlatformInfo() throws IOException {
         Map<String, String> ret = new HashMap<>();
 
-        if (myReferencedPlatformUpload != null) {
             ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformUpload));
-        }
-        if (myReferencedPlatformVariant != null) {
             ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformVariant));
-        }
-
-        if (myReferencedPlatformCore != null) {
             ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
-        }
+
+        IArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
+                getArchitecture());
+        ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
 
         IPath referencingPlatformPath = getreferencingPlatformPath();
         IArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
+        if(referencingPlatform==null) {
+        	ret.putAll(getEnvVarPlatformFileTools(referencingPlatformPath.toFile()));
+        }else {
+        	ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
+        }
 
-        if (referencingPlatform == null) {
-            // This is the case for private hardware
-            //there is no need to specify tool path as they do not use them
-            return ret;
-        }
-        IArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
-                referencingPlatform.getArchitecture());
-        if (latestArduinoPlatform != null) {
-            ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
-        }
 
         if (myReferencedPlatformCore == null) {
             //there is no referenced core so no need to do smart stuff
-            ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
             return ret;
         }
 
@@ -967,7 +968,6 @@ public class BoardDescription {
             return ret;
         }
         // standard arduino IDE way
-        ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
         ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
         return ret;
 
@@ -980,23 +980,64 @@ public class BoardDescription {
      *
      * @param platformVersion
      * @return environment variables pointing to the tools used by the platform
+     * @throws IOException
      */
-    private static Map<String, String> getEnvVarPlatformFileTools(IArduinoPlatformVersion platformVersion) {
-        HashMap<String, String> vars = new HashMap<>();
-        for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
-            IPath installPath = tool.getInstallPath();
-            if (installPath.toFile().exists()) {
-                String value = installPath.toOSString();
-                String keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, value);
-                keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, value);
-                keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + DOT_PATH;
-                vars.put(keyString, value);
-            }
-        }
-        return vars;
-    }
+    private static Map<String, String> getEnvVarPlatformFileTools(IArduinoPlatformVersion platformVersion) throws IOException {
+    	if(platformVersion==null) {
+    		return new HashMap<>();
+    	}
+		File sloeberTxtFile = platformVersion.getInstallPath().append(SLOEBER_TXT_FILE_NAME).toFile();
+		deleteIfOutdated (sloeberTxtFile);
+
+		if (!sloeberTxtFile.exists()) {
+
+			String vars = FIRST_SLOEBER_LINE+NEWLINE;
+			for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
+				IPath installPath = tool.getInstallPath();
+				if (installPath.toFile().exists()) {
+					String value = installPath.toOSString();
+					String keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
+					vars=vars+NEWLINE+keyString+EQUAL+ value;
+					keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
+					vars=vars+NEWLINE+keyString+EQUAL+ value;
+					keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + DOT_PATH;
+					vars=vars+NEWLINE+keyString+EQUAL+ value;
+				}
+			}
+			Files.write(sloeberTxtFile.toPath(), vars.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+					StandardOpenOption.CREATE);
+		}
+
+		return  getEnvVarPlatformFileTools(sloeberTxtFile);
+	}
+
+    private static Map<String, String> getEnvVarPlatformFileTools(File sloeberTxtFile)  {
+    	if(sloeberTxtFile==null || (!sloeberTxtFile.exists())) {
+    		return new HashMap<>();
+    	}
+		TxtFile sloeberTxt = new TxtFile(sloeberTxtFile);
+		return sloeberTxt.getAllEnvironVars(EMPTY);
+	}
+
+	/**
+	 * If the sloeber.txt variant exists delete it if it is outdated
+	 *
+	 * @param tmpFile
+	 */
+	private static void deleteIfOutdated(File tmpFile) {
+		if (tmpFile.exists()) {
+			// delete if outdated
+			String firstLine = null;
+			try (BufferedReader Buff = new BufferedReader(new FileReader(tmpFile));) {
+				firstLine = Buff.readLine().trim();
+			} catch (@SuppressWarnings("unused") Exception e) {
+				// ignore and delete the file
+			}
+			if (!FIRST_SLOEBER_LINE.trim().equals(firstLine)) {
+				tmpFile.delete();
+			}
+		}
+	}
 
     /**
      * Following post processing is done
