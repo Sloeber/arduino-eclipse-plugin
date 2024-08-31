@@ -458,7 +458,7 @@ public class BoardsManager {
         }
         if (jsonFile.exists()) {
             if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
-                loadPackage(jsonFile);
+                loadPackage(url,jsonFile);
             } else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
                 LibraryManager.loadJson(jsonFile);
             } else {
@@ -468,10 +468,11 @@ public class BoardsManager {
         }
     }
 
-    static private void loadPackage(File jsonFile) {
+    static private void loadPackage(String url, File jsonFile) {
         try (Reader reader = new FileReader(jsonFile)) {
             ArduinoPlatformPackageIndex index = new Gson().fromJson(reader, ArduinoPlatformPackageIndex.class);
             index.setPackageFile(jsonFile);
+            index.setURL(url);
             packageIndices.add(index);
         } catch (Exception e) {
             Activator.log(new Status(IStatus.ERROR, Activator.getId(),

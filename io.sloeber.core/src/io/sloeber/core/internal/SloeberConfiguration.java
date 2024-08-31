@@ -143,22 +143,18 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	}
 
 	@Override
-	public void serialize(KeyValueTree keyValuePairs) {
-		Map<String, String> envVars = myBoardDescription.getEnvVarsConfig();
-		envVars.putAll(myOtherDesc.getEnvVarsConfig());
-		envVars.putAll(myCompileDescription.getEnvVarsConfig());
-		for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-			keyValuePairs.addValue(  curEnvVar.getKey() , curEnvVar.getValue() );
-		}
+	public void serialize(KeyValueTree serialize) {
+		myBoardDescription.serialize(serialize);
+		myOtherDesc.serialize(serialize);
+		myCompileDescription.serialize(serialize);
 		configureWhenDirty();
 	}
 
 	public SloeberConfiguration(IAutoBuildConfigurationDescription autoCfgDescription, KeyValueTree keyValues) {
 		setAutoBuildDescription(autoCfgDescription);
-		Map<String, String> envVars =keyValues.toKeyValues(false);
-		myBoardDescription = new BoardDescription(envVars);
-		myOtherDesc = new OtherDescription(envVars);
-		myCompileDescription = new CompileDescription(envVars);
+		myBoardDescription = new BoardDescription(keyValues);
+		myOtherDesc = new OtherDescription(keyValues);
+		myCompileDescription = new CompileDescription(keyValues);
 		myMemoryIsDirty = true;
 		// configure(); Seems I can not do the config here
 	}

@@ -32,6 +32,8 @@ public class ArduinoPlatformPackageIndex extends Node
 
     private transient File myJsonFile;
 
+	private String myURL;
+
     @Override
 	public List<IArduinoPackage> getPackages() {
         return new LinkedList<>(myPackages);
@@ -117,6 +119,16 @@ public class ArduinoPlatformPackageIndex extends Node
 	@Override
 	public String getName() {
 		return getNodeName();
+	}
+
+	@Override
+	public String getJsonURL() {
+		return myURL;
+	}
+
+	public void setURL(String url) {
+		myURL=url;
+
 	}
 
 }

@@ -18,4 +18,6 @@ public interface IArduinoPlatformPackageIndex {
 
 	String getName();
 
+	String getJsonURL();
+
 }

@@ -414,7 +414,49 @@ public class CompileDescription {
      *
      * @return the minimum list of environment variables to recreate the project
      */
-    public Map<String, String> getEnvVarsConfig() {
+    public void serialize(KeyValueTree keyValueTree) {
+        Map<String, String> ret = getEnvVarsVersion();
+        for(Entry<String, String> curvalue:ret.entrySet()) {
+        	keyValueTree.addChild(curvalue.getKey(), curvalue.getValue());
+        }
+    }
+
+    /**
+     * Recreate the compile options based on the configuration environment variables
+     * given
+     *
+     * @param envVars
+     */
+    public CompileDescription(KeyValueTree keyValues) {
+        my_C_andCPP_CompileOptions=keyValues.getValue(SLOEBER_ADDITIONAL_COMPILE_OPTIONS);
+        my_CPP_CompileOptions=keyValues.getValue(SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS);
+        my_C_CompileOptions=keyValues.getValue(SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS);
+        my_Assembly_CompileOptions=keyValues.getValue(SLOEBER_ASSEMBLY_COMPILE_OPTIONS);
+        my_Archive_CompileOptions=keyValues.getValue(SLOEBER_ARCHIVE_COMPILE_OPTIONS);
+        my_Link_CompileOptions=keyValues.getValue(SLOEBER_LINK_COMPILE_OPTIONS);
+        my_All_CompileOptions=keyValues.getValue(SLOEBER_ALL_COMPILE_OPTIONS);
+        String warningLevel=keyValues.getValue(SLOEBER_WARNING_LEVEL);
+        String customWarningLevel=keyValues.getValue(SLOEBER_WARNING_LEVEL_CUSTOM);
+        String debugLevel=keyValues.getValue(SLOEBER_DEBUG_LEVEL);
+        String customDebugLevel=keyValues.getValue(SLOEBER_DEBUG_LEVEL_CUSTOM);
+        String sizeCommand=keyValues.getValue(SLOEBER_SIZE_TYPE);
+        String customSizeCommand=keyValues.getValue(SLOEBER_SIZE_CUSTOM);
+
+		try {
+			myWarningLevel = WarningLevels.valueOf(warningLevel);
+			myWarningLevel.setCustomWarningLevel(customWarningLevel, true);
+
+			myDebugLevel = DebugLevels.valueOf(debugLevel);
+			myDebugLevel.setCustomDebugLevel(customDebugLevel, true);
+
+			mySizeCommand = SizeCommands.valueOf(sizeCommand);
+			mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
+		} catch (Exception e) {
+			Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Deserialisation error", e)); //$NON-NLS-1$
+		}
+    }
+
+    public Map<String, String> getEnvVarsVersion() {
         Map<String, String> ret = new HashMap<>();
         ret.put(SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
         ret.put(SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
@@ -431,84 +473,6 @@ public class CompileDescription {
         ret.put(SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
 
         return ret;
-    }
-
-    /**
-     * Recreate the compile options based on the configuration environment variables
-     * given
-     *
-     * @param envVars
-     */
-    public CompileDescription(Map<String, String> envVars) {
-        String warningLevel = WarningLevels.ALL.name();
-        String customWarningLevel = EMPTY;
-        String debugLevel = DebugLevels.OPTIMIZED_FOR_RELEASE.name();
-        String customDebugLevel = EMPTY;
-        String sizeCommand = SizeCommands.RAW_RESULT.toString();
-        String customSizeCommand = EMPTY;
-        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-            String key = curEnvVar.getKey();
-            String value = curEnvVar.getValue();
-            switch (key) {
-            case SLOEBER_ADDITIONAL_COMPILE_OPTIONS:
-                my_C_andCPP_CompileOptions = value;
-                break;
-            case SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS:
-                my_CPP_CompileOptions = value;
-                break;
-            case SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS:
-                my_C_CompileOptions = value;
-                break;
-            case SLOEBER_ASSEMBLY_COMPILE_OPTIONS:
-                my_Assembly_CompileOptions = value;
-                break;
-            case SLOEBER_ARCHIVE_COMPILE_OPTIONS:
-                my_Archive_CompileOptions = value;
-                break;
-            case SLOEBER_LINK_COMPILE_OPTIONS:
-                my_Link_CompileOptions = value;
-                break;
-            case SLOEBER_ALL_COMPILE_OPTIONS:
-                my_All_CompileOptions = value;
-                break;
-            case SLOEBER_WARNING_LEVEL:
-                warningLevel = value;
-                break;
-            case SLOEBER_WARNING_LEVEL_CUSTOM:
-                customWarningLevel = value;
-                break;
-            case SLOEBER_DEBUG_LEVEL:
-                debugLevel = value;
-                break;
-            case SLOEBER_DEBUG_LEVEL_CUSTOM:
-                customDebugLevel = value;
-                break;
-            case SLOEBER_SIZE_TYPE:
-                sizeCommand = value;
-                break;
-            case SLOEBER_SIZE_CUSTOM:
-                customSizeCommand = value;
-                break;
-			default:
-				break;
-            }
-		}
-		try {
-			myWarningLevel = WarningLevels.valueOf(warningLevel);
-			myWarningLevel.setCustomWarningLevel(customWarningLevel, true);
-
-			myDebugLevel = DebugLevels.valueOf(debugLevel);
-			myDebugLevel.setCustomDebugLevel(customDebugLevel, true);
-
-			mySizeCommand = SizeCommands.valueOf(sizeCommand);
-			mySizeCommand.setCustomSizeCommand(customSizeCommand, true);
-		} catch (Exception e) {
-			Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Deserialisation error", e)); //$NON-NLS-1$
-		}
-    }
-
-    public Map<String, String> getEnvVarsVersion() {
-        return getEnvVarsConfig();
     }
 
     public CompileDescription(TxtFile configFile, String prefix) {

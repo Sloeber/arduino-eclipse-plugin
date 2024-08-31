@@ -2,7 +2,6 @@ package io.sloeber.core.api;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
@@ -34,12 +33,8 @@ public class OtherDescription {
         return allVars;
     }
 
-    public Map<String, String> getEnvVarsConfig() {
-        Map<String, String> allVars = new TreeMap<>();
-
-        allVars.put(KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
-
-        return allVars;
+    public void serialize(KeyValueTree keyValueTree) {
+    	keyValueTree.addChild(KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
     }
 
     /**
@@ -47,22 +42,14 @@ public class OtherDescription {
      *
      * @param envVars
      */
-    public OtherDescription(Map<String, String> envVars) {
-        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-            String key = curEnvVar.getKey();
-            String value = curEnvVar.getValue();
-            switch (key) {
-            case KEY_SLOEBER_IS_VERSION_CONTROLLED:
-                myIsVersionControlled = Boolean.parseBoolean(value);
-                break;
-			default:
-				break;
-            }
-        }
+    public OtherDescription(KeyValueTree keyValues) {
+    	myIsVersionControlled = Boolean.parseBoolean(keyValues.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
     }
 
     public Map<String, String> getEnvVarsVersion() {
-        return getEnvVarsConfig();
+    	Map<String, String> allVars = new TreeMap<>();
+        allVars.put(KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
+        return allVars;
     }
 
     public boolean IsVersionControlled() {

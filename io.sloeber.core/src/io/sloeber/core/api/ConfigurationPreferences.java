@@ -28,8 +28,6 @@ public class ConfigurationPreferences {
 
 	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
 
-	// preference nodes
-	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
 	public static void removeKey(String key) {
 		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);

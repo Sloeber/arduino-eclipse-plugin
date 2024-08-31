@@ -4,6 +4,7 @@ import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
 import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.DOT;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,7 +46,7 @@ import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
-	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 02 "; //$NON-NLS-1$
+	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 05 "; //$NON-NLS-1$
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
     /*
@@ -65,8 +66,10 @@ public class BoardDescription {
     private IArduinoPlatformVersion myReferencedPlatformVariant = null;
     private IArduinoPlatformVersion myReferencedPlatformCore = null;
     private IArduinoPlatformVersion myReferencedPlatformUpload = null;
+    private String myJsonFileName=null;
+    private String myJsonURL=null;
 
-    private boolean isDirty = true;
+    private boolean myIsDirty = true;
 
     @Override
     public String toString() {
@@ -290,16 +293,23 @@ public class BoardDescription {
      *            if null default options are taken
      */
     public BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
+    	File expandedBoardsFile=resolvePathEnvironmentString(boardsFile);
+    	if(!expandedBoardsFile.exists()) {
+    		Activator.log(new Status(IStatus.ERROR,Activator.getId(),"BoardsFile " +boardsFile+" does not exist"));  //$NON-NLS-1$//$NON-NLS-2$
+    		return;
+    	}
         myBoardID = boardID;
         myUserSelectedBoardsTxtFile = boardsFile;
-        mySloeberBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(myUserSelectedBoardsTxtFile));
+        mySloeberBoardTxtFile = new BoardTxtFile(expandedBoardsFile);
+        getJSonInfo();
         setDefaultOptions();
         if (options != null) {
             myOptions.putAll(options);
         }
     }
 
-    public BoardDescription() {
+
+	public BoardDescription() {
         myUserSelectedBoardsTxtFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
         if (!myUserSelectedBoardsTxtFile.exists()) {
 
@@ -311,25 +321,55 @@ public class BoardDescription {
             }
             myUserSelectedBoardsTxtFile = platform.getBoardsFile();
             mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+            getJSonInfo(platform);
 
             if (mySloeberBoardTxtFile.getAllBoardIDs().contains(UNO)) {
                 myBoardID = UNO;
             } else {
                 myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
             }
+            setDefaultOptions();
         } else {
             mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
             myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
             myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
             myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
+        	myJsonFileName=myStorageNode.get(KEY_LAST_USED_JSON_FILENAME, EMPTY);
+        	myJsonURL=myStorageNode.get(KEY_LAST_USED_JSON_URL, EMPTY);
             myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
         }
 
     }
 
-    public BoardDescription(BoardDescription srcObject) {
+    private void getJSonInfo(IArduinoPlatformVersion platform) {
+    	IArduinoPlatformPackageIndex packageIndex=platform.getParent().getParent().getPackageIndex();
+    	myJsonFileName=packageIndex.getJsonFile().getName();
+    	myJsonURL=packageIndex.getJsonURL();
+	}
+
+
+	private void getJSonInfo() {
+		IArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(getVendor(), getArchitecture());
+		if (platform == null) {
+			platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+		}
+		if (platform == null) {
+			List<IArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
+			// If you crash on the next line no platform have been installed
+			platform = platforms.get(0);
+		}
+		if (platform != null) {
+			myUserSelectedBoardsTxtFile = platform.getBoardsFile();
+			mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+			getJSonInfo(platform);
+		}
+	}
+
+	public BoardDescription(BoardDescription srcObject) {
         myUserSelectedBoardsTxtFile = srcObject.myUserSelectedBoardsTxtFile;
         mySloeberBoardTxtFile = srcObject.mySloeberBoardTxtFile;
+    	myJsonFileName=srcObject.myJsonFileName;
+    	myJsonURL=srcObject.myJsonURL;
         myBoardID = srcObject.myBoardID;
         myUploadPort = srcObject.myUploadPort;
         myProgrammer = srcObject.myProgrammer;
@@ -382,20 +422,64 @@ public class BoardDescription {
      * project
      */
     public void saveUserSelection() {
-        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getReferencingBoardsFile().toString());
-        myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
-        myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
-        myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
-        myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
+        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, myUserSelectedBoardsTxtFile.toString());
+        myStorageNode.put(KEY_LAST_USED_BOARD, myBoardID);
+        myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, myUploadPort);
+        myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, myProgrammer);
+        myStorageNode.put(KEY_LAST_USED_JSON_FILENAME, myJsonFileName);
+        myStorageNode.put(KEY_LAST_USED_JSON_URL, myJsonURL);
+        myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(myOptions));
     }
 
-    public String getArchitecture() {
-        return mySloeberBoardTxtFile.getArchitecture();
-    }
+    /*
+     * Returns the architecture based on the myUserSelectedBoardsTxtFile file name
+     * Caters for the packages (with version number and for the old way if the boards
+     * file does not exists returns avr
+     */
+	public String getArchitecture() {
+		if (myUserSelectedBoardsTxtFile == null) {
+			return AVR;
+		}
+		IPath platformFile = new Path(myUserSelectedBoardsTxtFile.toString().trim());
+		int index=hardwareSegmentIndex(platformFile);
+		if(index<0){
+			return AVR;
+		}
+		return platformFile.segment(index+3);
+	}
 
-    public String getVendor() {
-        return mySloeberBoardTxtFile.getVendor();
-    }
+    /*
+     * Returns the vendor based on the myUserSelectedBoardsTxtFile file name
+     * Caters for the packages (with version number and for the old way if the boards
+     * file does not exists returns VENDOR_ARDUINO
+     */
+	public String getVendor() {
+		if (myUserSelectedBoardsTxtFile == null) {
+			return VENDOR_ARDUINO;
+		}
+		IPath platformFile = new Path(myUserSelectedBoardsTxtFile.toString().trim());
+		int index=hardwareSegmentIndex(platformFile);
+		if(index<1){
+			return VENDOR_ARDUINO;
+		}
+		return platformFile.segment(index+1);
+	}
+
+	/**
+	 * return the segment that contains the name packages
+	 * or -1 if no such segment is found
+	 * @param platformFile
+	 * @return
+	 */
+	private static int hardwareSegmentIndex(IPath platformFile) {
+		for(int i=0;i<platformFile.segmentCount();i++) {
+			if(PACKAGES_FOLDER_NAME.equals(  platformFile.segment(i))){
+				return i;
+			}
+		}
+		return -1;
+
+	}
 
     public File getReferencingBoardsFile() {
         return myUserSelectedBoardsTxtFile;
@@ -446,7 +530,7 @@ public class BoardDescription {
     }
 
     private void setDirty() {
-        isDirty = true;
+        myIsDirty = true;
 
     }
 
@@ -501,9 +585,9 @@ public class BoardDescription {
     }
 
     private void updateWhenDirty() {
-        if (isDirty) {
+        if (myIsDirty) {
             calculateDerivedFields();
-            isDirty = false;
+            myIsDirty = false;
         }
     }
 
@@ -690,8 +774,8 @@ public class BoardDescription {
         myBoardID = boardID;
         myUserSelectedBoardsTxtFile = boardsFile;
         mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
-        setDefaultOptions();
         calculateDerivedFields();
+        getJSonInfo();
     }
 
     BoardDescription(TxtFile configFile, String prefix) {
@@ -704,6 +788,10 @@ public class BoardDescription {
         myUploadPort = section.getValue(KEY_SLOEBER_UPLOAD_PORT);
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
         Map<String, String> options = optionsTree.toKeyValues(EMPTY);
+
+        KeyValueTree boardSection = tree.getChild(BOARD);
+    	myJsonFileName = boardSection.getValue(JSON_NAME);
+    	myJsonURL = boardSection.getValue(JSON_URL);
 
         myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(board_txt));
         mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
@@ -719,32 +807,52 @@ public class BoardDescription {
      *
      * @param envVars
      */
-    public BoardDescription(Map<String, String> envVars) {
-        int menuKeyLength = KEY_SLOEBER_MENU_SELECTION.length() + DOT.length();
-        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
-            String key = curEnvVar.getKey();
-            String value = curEnvVar.getValue();
-            switch (key) {
-            case KEY_SLOEBER_PROGRAMMER:
-                myProgrammer = value;
-                break;
-            case KEY_SLOEBER_BOARD_ID:
-                myBoardID = value;
-                break;
-            case KEY_SLOEBER_BOARD_TXT:
-                myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(value));
-                mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
-                break;
-            case KEY_SLOEBER_UPLOAD_PORT:
-                myUploadPort = value;
-                break;
-            default:
-                if (key.startsWith(KEY_SLOEBER_MENU_SELECTION + DOT)) {
-                    String cleanKey = key.substring(menuKeyLength);
-                    myOptions.put(cleanKey, value);
-                }
-            }
+    public BoardDescription(KeyValueTree keyValues) {
+    	myProgrammer=keyValues.getValue(KEY_SLOEBER_PROGRAMMER);
+    	myUploadPort=keyValues.getValue(KEY_SLOEBER_UPLOAD_PORT);
+
+    	KeyValueTree boardvalueTree=keyValues.getChild(KEY_BOARD);
+    	myBoardID=boardvalueTree.getValue(KEY_SLOEBER_BOARD_ID);
+    	String txtFile=boardvalueTree.getValue(KEY_SLOEBER_BOARD_TXT);
+
+    	KeyValueTree jSonvalueTree=keyValues.getChild(KEY_JSON);
+    	myJsonFileName=jSonvalueTree.getValue(KEY_JSON_FILENAME);
+    	myJsonURL=jSonvalueTree.getValue(KEY_JSON_URL);
+
+
+    	myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(txtFile));
+        mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+        KeyValueTree options=keyValues.getChild(KEY_SLOEBER_MENU_SELECTION);
+        for(KeyValueTree curOption: options.getChildren().values()) {
+        	myOptions.put(curOption.getKey(), curOption.getValue());
         }
+
+
+//        int menuKeyLength = KEY_SLOEBER_MENU_SELECTION.length() + DOT.length();
+//        for (Entry<String, String> curEnvVar : envVars.entrySet()) {
+//            String key = curEnvVar.getKey();
+//            String value = curEnvVar.getValue();
+//            switch (key) {
+//            case KEY_SLOEBER_PROGRAMMER:
+//                myProgrammer = value;
+//                break;
+//            case KEY_SLOEBER_BOARD_ID:
+//                myBoardID = value;
+//                break;
+//            case KEY_SLOEBER_BOARD_TXT:
+//                myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(value));
+//                mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+//                break;
+//            case KEY_SLOEBER_UPLOAD_PORT:
+//                myUploadPort = value;
+//                break;
+//            default:
+//                if (key.startsWith(KEY_SLOEBER_MENU_SELECTION + DOT)) {
+//                    String cleanKey = key.substring(menuKeyLength);
+//                    myOptions.put(cleanKey, value);
+//                }
+//            }
+//        }
     }
 
     /**
@@ -755,19 +863,37 @@ public class BoardDescription {
      *
      * @return the minimum list of environment variables to recreate the project
      */
-    public Map<String, String> getEnvVarsConfig() {
-        Map<String, String> allVars = new TreeMap<>();
+    public void serialize(KeyValueTree keyValueTree) {
         String board_txt = makePathVersionString(getReferencingBoardsFile());
+        keyValueTree.addChild(KEY_SLOEBER_PROGRAMMER, myProgrammer);
+        keyValueTree.addChild(KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
 
-        allVars.put(KEY_SLOEBER_PROGRAMMER, myProgrammer);
-        allVars.put(KEY_SLOEBER_BOARD_ID, myBoardID);
-        allVars.put(KEY_SLOEBER_BOARD_TXT, board_txt);
-        allVars.put(KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
+        KeyValueTree boardvalueTree=keyValueTree.addChild(KEY_BOARD);
+        boardvalueTree.addChild(KEY_SLOEBER_BOARD_ID, myBoardID);
+        boardvalueTree.addChild(KEY_SLOEBER_BOARD_TXT, board_txt);
 
+        KeyValueTree jSonvalueTree=keyValueTree.addChild(KEY_JSON);
+        jSonvalueTree.addChild(KEY_JSON_FILENAME, myJsonFileName);
+        jSonvalueTree.addChild(KEY_JSON_URL, myJsonURL);
+
+
+        KeyValueTree menuvalueTree=keyValueTree.addChild(KEY_SLOEBER_MENU_SELECTION);
         for (Entry<String, String> curOption : myOptions.entrySet()) {
-            allVars.put(KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+        	menuvalueTree.addValue( curOption.getKey(), curOption.getValue());
         }
-        return allVars;
+
+//        allVars.put(KEY_SLOEBER_PROGRAMMER, myProgrammer);
+//        allVars.put(KEY_SLOEBER_BOARD_ID, myBoardID);
+//        allVars.put(KEY_SLOEBER_BOARD_TXT, board_txt);
+//        allVars.put(KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
+//
+//        allVars.put(KEY_JSON_FILENAME, myJsonFileName);
+//        allVars.put(KEY_JSON_URL, myJsonURL);
+//
+//        for (Entry<String, String> curOption : myOptions.entrySet()) {
+//            allVars.put(KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+//        }
+//        return allVars;
     }
 
     private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
@@ -982,9 +1108,11 @@ public class BoardDescription {
      * @return environment variables pointing to the tools used by the platform
      * @throws IOException
      */
-    private static Map<String, String> getEnvVarPlatformFileTools(IArduinoPlatformVersion platformVersion) throws IOException {
+    private Map<String, String> getEnvVarPlatformFileTools(IArduinoPlatformVersion platformVersion) throws IOException {
     	if(platformVersion==null) {
-    		return new HashMap<>();
+    		Path path=new Path(myUserSelectedBoardsTxtFile.toString());
+    		File sloeberTxtFile= path.removeLastSegments(1).append(SLOEBER_TXT_FILE_NAME).toFile();
+    		return  getEnvVarPlatformFileTools(sloeberTxtFile);
     	}
 		File sloeberTxtFile = platformVersion.getInstallPath().append(SLOEBER_TXT_FILE_NAME).toFile();
 		deleteIfOutdated (sloeberTxtFile);

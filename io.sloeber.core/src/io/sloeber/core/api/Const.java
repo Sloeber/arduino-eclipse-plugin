@@ -46,6 +46,8 @@ public class Const extends AutoBuildConstants {
     public static final String PRIVATE = "private";
     public static final String MANAGED = "Managed";
     public static final String BOARD = "Board";
+    public static final String JSON_NAME = "json";
+    public static final String JSON_URL = "json_url";
 
 
     public static final String NETWORK = "network";
@@ -64,6 +66,7 @@ public class Const extends AutoBuildConstants {
     public static final String PROTOCOL = "protocol";
     public static final String VENDOR = "VENDOR";
     public static final String VENDOR_ARDUINO = ARDUINO;
+    public static final String PACKAGES_FOLDER_NAME = "packages";
 
     // arduino txt pre and suffix
     public static final String NETWORK_PREFIX = "network_";
@@ -160,6 +163,9 @@ public class Const extends AutoBuildConstants {
     public static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
     public static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
     public static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
+    public static final String KEY_LAST_USED_JSON_FILENAME = "last Used json filename"; //$NON-NLS-1$
+    public static final String KEY_LAST_USED_JSON_URL = "last Used json URL"; //$NON-NLS-1$
+
     public static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
     public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
     public static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
@@ -183,10 +189,16 @@ public class Const extends AutoBuildConstants {
 
     // stuff to store last used board
     public static final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
-    public static final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
-    public static final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
     public static final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
-    public static final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
+    public static final String KEY_BOARD = "BOARD"; //$NON-NLS-1$
+
+    public static final String KEY_SLOEBER_BOARD_TXT = "TXT"; //$NON-NLS-1$
+    public static final String KEY_SLOEBER_BOARD_ID = "ID"; //$NON-NLS-1$
+    public static final String KEY_SLOEBER_MENU_SELECTION = "MENU"; //$NON-NLS-1$
+
+    public static final String KEY_JSON="JSON";//$NON-NLS-1$
+    public static final String KEY_JSON_FILENAME="FILE";//$NON-NLS-1$
+    public static final String KEY_JSON_URL="URL";//$NON-NLS-1$
 
 
     public static final String RELEASE = "Release";
