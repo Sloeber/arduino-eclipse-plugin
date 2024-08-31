@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
@@ -119,43 +117,7 @@ public class TxtFile {
         return myData.getValue(myBoardID + DOT + NAME);
     }
 
-    /*
-     * Returns the architecture based on the platform file name Caters for the
-     * packages (with version number and for the old way if the boards file does not
-     * exists returns avr
-     */
-    public String getArchitecture() {
 
-        IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
-        String architecture = platformFile.removeLastSegments(1).lastSegment();
-        if (architecture == null) {// for error conditions
-            architecture = AVR;
-        }
-        if (architecture.contains(DOT)) { // This is a version number so
-            // package
-            architecture = platformFile.removeLastSegments(2).lastSegment();
-        }
-        return architecture;
-    }
-
-    /*
-     * Returns the architecture based on the platform file name Caters for the
-     * packages (with version number and for the old way if the boards file does not
-     * exists returns avr
-     */
-    public String getVendor() {
-
-        IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
-        String vendor = platformFile.removeLastSegments(2).lastSegment();
-        if (vendor == null) {// for error conditions
-            vendor = "NotFound"; //$NON-NLS-1$
-        }
-        if (vendor.contains(DOT)) { // This is a version number so
-            // package
-            vendor = platformFile.removeLastSegments(3).lastSegment();
-        }
-        return vendor;
-    }
 
     /**
      * Given a nice name look for the ID The assumption is that the txt file
