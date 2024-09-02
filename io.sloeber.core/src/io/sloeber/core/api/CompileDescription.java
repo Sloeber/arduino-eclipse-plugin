@@ -222,7 +222,7 @@ public class CompileDescription {
             switch (this) {
             case ARDUINO_WAY:
             	if(isWindows) {
-                return "wsl -- ${sloeber.size_command.awk}"; //$NON-NLS-1$
+                return "arduino-size.bat"; //$NON-NLS-1$
             	}
             	return "${sloeber.size_command.awk}"; //$NON-NLS-1$
             case AVR_ALTERNATIVE:

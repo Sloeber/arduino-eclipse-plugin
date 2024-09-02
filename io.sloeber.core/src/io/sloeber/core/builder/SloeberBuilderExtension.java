@@ -69,8 +69,13 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 			makeRules.getSourceFilesToBuild().add(sloeberInoCppFile);
 		}
 		generateAwkFile(autoBuildConfData);
+		generateArduinoSizeCommandFile(autoBuildConfData);
+
 		super.beforeAddingSourceRules(makeRules, autoBuildConfData);
 	}
+
+
+
 
 	@Override
 	public boolean invokeBuild(IBuilder builder, int kind, String targetName, IAutoBuildConfigurationDescription autoData,
@@ -122,6 +127,33 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 		// Nothing to do here
 	}
 
+
+	@SuppressWarnings("nls")
+	private static void generateArduinoSizeCommandFile(IAutoBuildConfigurationDescription autoBuildConfData) {
+		if(!isWindows) {
+			return;
+		}
+		IFile sizeCommandIFile = autoBuildConfData.getBuildFolder().getFile("arduino-size.bat");
+		SloeberConfiguration confDesc = SloeberConfiguration.getFromAutoBuildConfDesc(autoBuildConfData);
+
+		File sizeCommandFile = sizeCommandIFile.getLocation().toFile();
+		String content = Common.getBuildEnvironmentVariable(confDesc, "sloeber.size_command.awk", EMPTY);
+
+		try {
+			if (sizeCommandFile.exists()) {
+				String curContent = FileUtils.readFileToString(sizeCommandFile, Charset.defaultCharset());
+				if (!curContent.equals(content)) {
+					sizeCommandFile.delete();
+				}
+			}
+			if (!sizeCommandFile.exists()) {
+				FileUtils.write(sizeCommandFile, content, Charset.defaultCharset());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@SuppressWarnings("nls")
 	private static void generateAwkFile(IAutoBuildConfigurationDescription autoBuildConfData) {
 		IFile sizeAwkFile1 = autoBuildConfData.getBuildFolder().getFile("size.awk");
@@ -144,7 +176,15 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 		awkContent += "\"}";
 
 		try {
-			FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
+			if (sizeAwkFile.exists()) {
+				String curContent = FileUtils.readFileToString(sizeAwkFile, Charset.defaultCharset());
+				if (!curContent.equals(awkContent)) {
+					sizeAwkFile.delete();
+				}
+			}
+			if (!sizeAwkFile.exists()) {
+				FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
