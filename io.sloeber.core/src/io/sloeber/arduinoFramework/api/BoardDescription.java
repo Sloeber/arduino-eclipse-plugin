@@ -46,7 +46,7 @@ import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
-	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 05 "; //$NON-NLS-1$
+	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 06 "; //$NON-NLS-1$
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
     /*
@@ -966,9 +966,9 @@ public class BoardDescription {
         String architecture = getArchitecture();
         IPath coreHardwarePath = getreferencedCoreHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        allVars.put(ENV_KEY_RUNTIME_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toOSString());
-        allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
-        allVars.put(ENV_KEY_RUNTIME_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
+        allVars.put(ENV_KEY_RUNTIME_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toString());
+        allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toString());
+        allVars.put(ENV_KEY_RUNTIME_PLATFORM_PATH, getreferencingPlatformPath().toString());
         //ide_version is defined in pre_processing_platform_default.txt
         allVars.put(ENV_KEY_RUNTIME_IDE_VERSION, makeEnvironmentVar("ide_version")); //$NON-NLS-1$
         allVars.put(ENV_KEY_RUNTIME_IDE_PATH, makeEnvironmentVar(SLOEBER_HOME));
@@ -993,7 +993,7 @@ public class BoardDescription {
         allVars.put(ENV_KEY_BUILD_ACTUAL_CORE_PATH, getActualCoreCodePath().toString());
         IPath variantPath = getActualVariantPath();
         if (variantPath != null) {
-            allVars.put(ENV_KEY_BUILD_VARIANT_PATH, variantPath.toOSString());
+            allVars.put(ENV_KEY_BUILD_VARIANT_PATH, variantPath.toString());
         } else {// teensy does not use variant
             allVars.put(ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
         }
@@ -1123,7 +1123,7 @@ public class BoardDescription {
 			for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
 				IPath installPath = tool.getInstallPath();
 				if (installPath.toFile().exists()) {
-					String value = installPath.toOSString();
+					String value = installPath.toString();
 					String keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
 					vars=vars+NEWLINE+keyString+EQUAL+ value;
 					keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
