@@ -404,6 +404,7 @@ public class Activator extends Plugin {
             if (localMakePath.append(MAKE_EXE).toFile().exists()) {
                 if (!localMakePath.append(SH_EXE).toFile().exists()) {
                     try {
+                    	//Sloeber needs the make that also contains sh.exe
                         deleteDirectory(localMakePath);
                     } catch (IOException e) {
                         // should not happen
