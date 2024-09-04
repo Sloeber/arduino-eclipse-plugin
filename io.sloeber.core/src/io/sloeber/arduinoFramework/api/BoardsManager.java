@@ -46,7 +46,6 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Defaults;
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.InstallProgress;
@@ -378,7 +377,6 @@ public class BoardsManager {
             // do nothing
         }
         myIsReady = true;
-        SloeberProject.reloadTxtFile();
         return status;
     }
 

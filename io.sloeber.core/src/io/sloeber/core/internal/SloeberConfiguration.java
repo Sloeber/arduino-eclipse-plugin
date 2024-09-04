@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -305,11 +306,31 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				continue;
 			}
 			//Just pick the first none arduino one as there should only be one
-			return curEntry.getLocation();
+			return getLocation(curEntry);
 		}
 		return project.getLocation();
 	}
 
+	/**
+	 * workaround code because ICSourceEntry.getLocation returns null if the
+	 * resolved flag is not set moreover the resolved flag is not set when adding a
+	 * source location via the gui Therefore one can not convert from root to src
+	 * based projects because the manually added src is not marked as resolved This
+	 * code is the same as ICSourceEntry.getLocation except for it assumes the
+	 * resolved flag is set
+	 *
+	 * @param entry
+	 * @return
+	 */
+	private static IPath getLocation(ICSourceEntry entry) {
+		if (!entry.isValueWorkspacePath())
+			return new Path(entry.getValue());
+		IPath path = new Path(entry.getValue());
+		IResource rc = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+		if (rc != null)
+			return rc.getLocation();
+		return null;
+	}
 	/**
 	 * get the text for the decorator
 	 *

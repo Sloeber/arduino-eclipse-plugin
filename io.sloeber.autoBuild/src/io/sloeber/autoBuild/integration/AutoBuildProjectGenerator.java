@@ -29,8 +29,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.tools.templates.core.IGenerator;
 
-import io.sloeber.autoBuild.api.AutoBuildCommon;
-import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
@@ -68,6 +66,9 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					description.setLocationURI(myLocationURI);
 				}
 				myProject = root.getProject(myProjectName);
+				if(myProject.exists()) {
+					myProject.delete(false, false, monitor);
+				}
 				myProject.create(description, monitor);
 				myProject.open(monitor);
 				CProjectNature.addCNature(myProject, monitor);
@@ -128,10 +129,11 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					des.setCdtProjectCreated();
 				}
 				mngr.setProjectDescription(myProject, des);
-				for(ICConfigurationDescription curConfig:des.getConfigurations()) {
-					IAutoBuildConfigurationDescription autodesc=IAutoBuildConfigurationDescription.getConfig(curConfig);
-					AutoBuildCommon.createFolder( autodesc.getBuildFolder());
-				}
+
+//				for(ICConfigurationDescription curConfig:des.getConfigurations()) {
+//					IAutoBuildConfigurationDescription autodesc=IAutoBuildConfigurationDescription.getConfig(curConfig);
+//					AutoBuildCommon.createFolder( autodesc.getBuildFolder());
+//				}
 			}
 		};
 		try {

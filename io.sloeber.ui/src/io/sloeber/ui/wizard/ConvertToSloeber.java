@@ -1,6 +1,7 @@
 package io.sloeber.ui.wizard;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
@@ -23,7 +24,7 @@ public class ConvertToSloeber extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
-		SloeberProject.convertToArduinoProject(myProject, null);
+		SloeberProject.convertToArduinoProject(myProject, new NullProgressMonitor( ));
 		return true;
 	}
 

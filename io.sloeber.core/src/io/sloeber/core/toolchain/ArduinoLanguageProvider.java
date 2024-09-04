@@ -38,7 +38,13 @@ public class ArduinoLanguageProvider implements ILanguageSettingsProvider {
         }
         List<ICLanguageSettingEntry> ret = new LinkedList<>();
         IAutoBuildConfigurationDescription autoBuildConfData=IAutoBuildConfigurationDescription.getConfig(cfgDescription);
+        if(autoBuildConfData==null) {
+        	return null;
+        }
         ISloeberConfiguration autoConfDesc= ISloeberConfiguration.getConfig(autoBuildConfData);
+        if(autoConfDesc==null) {
+        	return null;
+        }
         ICSourceEntry[] mySrcEntries = IAutoBuildConfigurationDescription.getResolvedSourceEntries(autoBuildConfData);
         Set<IFolder> includeFolders = autoConfDesc.getIncludeFolders();
         int flags = ICSettingEntry.READONLY | ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.RESOLVED;
