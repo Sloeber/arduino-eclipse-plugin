@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.tools.templates.core.IGenerator;
 
+import io.sloeber.autoBuild.api.AutoBuildCommon;
 import io.sloeber.autoBuild.api.ICodeProvider;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
@@ -124,6 +125,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					if (cdtCfgDes instanceof ILanguageSettingsProvidersKeeper) {
 						languageKeeper.setLanguageSettingProviders(providers);
 					}
+					AutoBuildCommon.createFolder( data.getBuildFolder());
 				}
 				if (!myNeedsMoreWork) {
 					des.setCdtProjectCreated();
