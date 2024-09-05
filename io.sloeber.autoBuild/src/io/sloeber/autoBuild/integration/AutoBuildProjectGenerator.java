@@ -132,10 +132,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				}
 				mngr.setProjectDescription(myProject, des);
 
-//				for(ICConfigurationDescription curConfig:des.getConfigurations()) {
-//					IAutoBuildConfigurationDescription autodesc=IAutoBuildConfigurationDescription.getConfig(curConfig);
-//					AutoBuildCommon.createFolder( autodesc.getBuildFolder());
-//				}
 			}
 		};
 		try {
