@@ -17,6 +17,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -81,6 +82,11 @@ public class SloeberProject extends Common {
 				if(OldCoreFolder.exists()) {
 					OldCoreFolder.delete(true, monitor);
 				}
+
+//				IFile CdtDotFile = project.getFile(".cproject"); //$NON-NLS-1$
+//				if(CdtDotFile.exists()) {
+//					CdtDotFile.delete(true, monitor);
+//				}
 
 				File sloeberDotFile = project.getFile(".sproject").getLocation().toFile(); //$NON-NLS-1$
 				File sloeberCfgFile = project.getFile(SLOEBER_CFG).getLocation().toFile();
@@ -174,7 +180,7 @@ public class SloeberProject extends Common {
 					 * CONFIG_NAME_VARIABLE);
 					 */
 					IPath arduinoRoot = project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath()
-							.append(curConfig.getName());
+							.append(cfgName);
 					newSourceEntries[1] = new CSourceEntry(arduinoRoot, excludes2, ICSettingEntry.NONE);
 					curConfig.setSourceEntries(newSourceEntries);
 
