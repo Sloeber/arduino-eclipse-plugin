@@ -108,7 +108,10 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 			// uses busybox on windows so command line issues and on Linux the all in one
 			// archive build fails
-			"https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json", };
+			"https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
+
+			//moved to diferent place
+			"https://dl.espressif.com/dl/package_esp32_index.json",};
 	private static final String[] packageUrlsToIgnoreonWindows = {
 			// following packages did not work in the arduino ide on windows at last test
 			// confirmed 220 03 09 was version 1.0
