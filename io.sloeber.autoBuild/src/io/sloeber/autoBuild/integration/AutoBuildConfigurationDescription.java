@@ -532,6 +532,10 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 
 	@Override
 	public void setBuildFolderString(String buildFolder) {
+		//TODO is this the correct place to delete the old folder
+		if(buildFolder.equals(myBuildFolderString)) {
+			return;
+		}
 		checkIfWeCanWrite();
 		IFolder oldBuildFolder = getBuildFolder();
 		if (oldBuildFolder != null && oldBuildFolder.exists()) {
