@@ -49,7 +49,6 @@ public interface IAutoBuildConfigurationDescription {
         	return null;
         }
         AutoBuildConfigurationDescription ret = (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
-       // ret.setWritable(!confDesc.isReadOnly());
         return ret;
 
     }
