@@ -67,11 +67,12 @@ public class AutoBuildProjectGenerator implements IGenerator {
 					description.setLocationURI(myLocationURI);
 				}
 				myProject = root.getProject(myProjectName);
-				if(myProject.exists()) {
-					myProject.delete(false, false, monitor);
+				if(!myProject.exists()) {
+					//myProject.delete(false, false, monitor);
+					myProject.create(description, monitor);
+					myProject.open(monitor);
 				}
-				myProject.create(description, monitor);
-				myProject.open(monitor);
+
 				CProjectNature.addCNature(myProject, monitor);
 				if (CCProjectNature.CC_NATURE_ID.equals(myNatureID)) {
 					CCProjectNature.addCCNature(myProject, monitor);
