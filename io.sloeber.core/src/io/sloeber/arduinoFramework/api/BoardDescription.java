@@ -966,9 +966,9 @@ public class BoardDescription {
         String architecture = getArchitecture();
         IPath coreHardwarePath = getreferencedCoreHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        allVars.put(ENV_KEY_RUNTIME_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toString());
-        allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toString());
-        allVars.put(ENV_KEY_RUNTIME_PLATFORM_PATH, getreferencingPlatformPath().toString());
+        allVars.put(ENV_KEY_RUNTIME_HARDWARE_PATH, getreferencingPlatformPath().removeLastSegments(1).toOSString());
+        allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
+        allVars.put(ENV_KEY_RUNTIME_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
         //ide_version is defined in pre_processing_platform_default.txt
         allVars.put(ENV_KEY_RUNTIME_IDE_VERSION, makeEnvironmentVar("ide_version")); //$NON-NLS-1$
         allVars.put(ENV_KEY_RUNTIME_IDE_PATH, makeEnvironmentVar(SLOEBER_HOME));
@@ -990,10 +990,10 @@ public class BoardDescription {
         allVars.put(ENV_KEY_SERIAL_PORT_FILE, getActualUploadPort().replace("/dev/", EMPTY)); //$NON-NLS-1$
         // if actual core path is osstring regression test issue555 willl fail teensy
         // stuff
-        allVars.put(ENV_KEY_BUILD_ACTUAL_CORE_PATH, getActualCoreCodePath().toString());
+        allVars.put(ENV_KEY_BUILD_ACTUAL_CORE_PATH, getActualCoreCodePath().toOSString());
         IPath variantPath = getActualVariantPath();
         if (variantPath != null) {
-            allVars.put(ENV_KEY_BUILD_VARIANT_PATH, variantPath.toString());
+            allVars.put(ENV_KEY_BUILD_VARIANT_PATH, variantPath.toOSString());
         } else {// teensy does not use variant
             allVars.put(ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
         }
