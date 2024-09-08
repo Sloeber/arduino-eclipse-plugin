@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 
@@ -267,6 +268,22 @@ public class SloeberProject extends Common {
 		if(boardsFileString.isBlank() || boardID.isBlank()) {
 			return new BoardDescription();
 		}
+		Path readBoardsFilePath=new Path(boardsFileString);
+		IPath foundBoardsFilePath=null;
+		String[] segments =readBoardsFilePath.segments();
+		for(String curSegment:segments) {
+
+			if(foundBoardsFilePath!=null) {
+				foundBoardsFilePath=foundBoardsFilePath.append(curSegment);
+			}else {
+				if(SLOEBER_HOME_SUB_FOLDER.equals( curSegment)) {
+					foundBoardsFilePath=new Path(sloeberHome).append(curSegment);
+				}
+			}
+		}
+		if (foundBoardsFilePath == null) {
+			return new BoardDescription();
+		}
 
 		KeyValueTree optionsHolder=oldConfig.getChild("board.BOARD.MENU"); //$NON-NLS-1$
 
@@ -274,7 +291,7 @@ public class SloeberProject extends Common {
 		for(KeyValueTree curOption:optionsHolder.getChildren().values()) {
 			options.put(curOption.getKey(), curOption.getValue());
 		}
-		File boardsFile=new File(boardsFileString);
+		File boardsFile=foundBoardsFilePath.toFile();// new File(boardsFileString);
 
 		BoardDescription ret= new BoardDescription( boardsFile,  boardID, options);
 		String uploadPort=oldConfig.getValue("board.UPLOAD.PORT"); //$NON-NLS-1$
