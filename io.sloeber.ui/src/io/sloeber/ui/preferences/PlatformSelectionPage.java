@@ -58,6 +58,10 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		IArduinoPlatformPackageIndex parentIndex = parentPkg.getPackageIndex();
 		InstallableVersion[] inScopeVersions = myShownPlatforms.get(parentIndex.getID()).get(parentPkg.getID())
 				.get(platform.getID());
+		if(inScopeVersions==null) {
+			//in case there are no versions
+			return false;
+		}
 		for (InstallableVersion version : inScopeVersions) {
 			if (version.mustBeInstalled()) {
 				return true;
@@ -69,6 +73,10 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	private boolean mustBeInstalled(IArduinoPlatformPackageIndex packageIndex) {
 		TreeMap<String, TreeMap<String, InstallableVersion[]>> inScopeVersions = myShownPlatforms
 				.get(packageIndex.getID());
+		if(inScopeVersions==null) {
+			//in case there are no versions
+			return false;
+		}
 		for (TreeMap<String, InstallableVersion[]> platform : inScopeVersions.values()) {
 			for (InstallableVersion[] versions : platform.values()) {
 				for (InstallableVersion version : versions) {
@@ -85,6 +93,10 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		IArduinoPlatformPackageIndex parentIndex = pkg.getPackageIndex();
 		TreeMap<String, InstallableVersion[]> inScopeVersions = myShownPlatforms.get(parentIndex.getID())
 				.get(pkg.getID());
+		if(inScopeVersions==null) {
+			//in case there are no versions
+			return false;
+		}
 		for (InstallableVersion[] versions : inScopeVersions.values()) {
 			for (InstallableVersion version : versions) {
 				if (version.mustBeInstalled()) {
