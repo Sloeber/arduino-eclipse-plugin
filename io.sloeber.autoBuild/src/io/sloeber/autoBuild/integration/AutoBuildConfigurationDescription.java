@@ -52,7 +52,6 @@ import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IOption;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.autoBuild.schema.api.ITool;
-import io.sloeber.autoBuild.schema.internal.Configuration;
 
 public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		implements IAutoBuildConfigurationDescription {
@@ -108,7 +107,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	private boolean myIsWritable = false;
 	private boolean myForceCleanBeforeBuild = false;
 
-	public AutoBuildConfigurationDescription(Configuration config, IProject project, IBuildTools buildTools,
+	public AutoBuildConfigurationDescription(IConfiguration config, IProject project, IBuildTools buildTools,
 			String rootCodeFolder) {
 		initializeResourceData(project, rootCodeFolder, myBuildFolderString);
 		myBuildTools = buildTools;
