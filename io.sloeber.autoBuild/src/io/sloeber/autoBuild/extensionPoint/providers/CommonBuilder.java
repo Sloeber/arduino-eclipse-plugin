@@ -311,6 +311,8 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             cfgToBuild.add((AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription
                     .getActiveConfig(project, false));
         }
+        //remove null configurations that may have been added
+        cfgToBuild.remove(null);
         return cfgToBuild;
 
     }
