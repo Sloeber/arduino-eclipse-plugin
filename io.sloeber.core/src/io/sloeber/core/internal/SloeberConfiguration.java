@@ -586,6 +586,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		// Remove all existing lib folders that are not known or are linking to the
 		// wrong lib
 		try {
+			if(!libFolder.exists()) {
+				libFolder.create(true, true, new NullProgressMonitor());
+			}
 			for (IResource curResource : libFolder.members()) {
 				if (curResource instanceof IFolder) {
 					IFolder curFolder = (IFolder) curResource;
