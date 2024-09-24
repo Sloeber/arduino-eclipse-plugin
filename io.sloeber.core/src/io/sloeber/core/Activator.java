@@ -39,6 +39,7 @@ import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
+import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.tools.PackageManager;
 
@@ -190,6 +191,7 @@ public class Activator extends Plugin {
         CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
         CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
         CoreModel singCoreModel = CoreModel.getDefault();
+        IndexerController.registerIndexerController();
 
         singCoreModel.addCProjectDescriptionListener(myConfigurationChangeListener,CProjectDescriptionEvent.ABOUT_TO_APPLY|CProjectDescriptionEvent.APPLIED);
 
@@ -202,6 +204,7 @@ public class Activator extends Plugin {
         CCorePlugin.getIndexManager().removeIndexChangeListener(myindexerListener);
         CoreModel singCoreModel = CoreModel.getDefault();
         singCoreModel.removeCProjectDescriptionListener(myConfigurationChangeListener);
+        IndexerController.unRegisterIndexerController();
 
 
 

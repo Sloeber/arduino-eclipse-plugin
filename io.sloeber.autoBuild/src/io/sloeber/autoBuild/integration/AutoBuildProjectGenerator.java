@@ -2,6 +2,7 @@
 package io.sloeber.autoBuild.integration;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.cdt.core.CCProjectNature;
@@ -35,7 +36,6 @@ import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
-import io.sloeber.autoBuild.schema.internal.Configuration;
 
 public class AutoBuildProjectGenerator implements IGenerator {
 	private URI myLocationURI = null;
@@ -62,16 +62,56 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
 			@Override
 			public void run(IProgressMonitor internalMonitor) throws CoreException {
+
+				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+				IProjectType autoBuildProjType = AutoBuildManager.getProjectType(myProjectType.getExtensionPointID(),
+						myProjectType.getExtensionID(), myProjectType.getId(), true);
+				if (autoBuildProjType == null) {
+					// project type not found can not continue
+					IStatus status = new Status(IStatus.ERROR, Activator.getId(),
+							"Did not find the projectType with " + myProjectType.getId() + " for extension ID " //$NON-NLS-1$ //$NON-NLS-2$
+									+ myProjectType.getExtensionID() + " in extensionpointID " //$NON-NLS-1$
+									+ myProjectType.getExtensionPointID());
+					CoreException exception = new CoreException(status);
+					throw (exception);
+				}
+				HashSet<String> configNames = new HashSet<>();
+				myProject = root.getProject(myProjectName);
+				if (myProject.exists()) {
+					// Update the existing configurations
+					ICProjectDescription orgdesc = mngr.getProjectDescription(myProject, false);
+					for (ICConfigurationDescription curConfig : orgdesc.getConfigurations()) {
+						configNames.add(curConfig.getName());
+					}
+					myLocationURI=myProject.getLocationURI();
+					//CDT reads the .cproject file when setting the configuration for making the delta
+					//and old stuff stays in it causing problems
+					//ICProject cProject = CoreModel.getDefault().getCModel().getCProject(myProject.getName());
+					IFile CdtDotFile = myProject.getFile(".cproject"); //$NON-NLS-1$
+					if(CdtDotFile.exists()) {
+						CdtDotFile.delete(true, monitor);
+					}
+					myProject.close(monitor);
+					myProject.delete(false, true, monitor);
+
+				} else {
+					// Create new configurations based on the model configurations from the
+					// plugin.xml
+					IConfiguration[] modelConfigs = autoBuildProjType.getConfigurations();
+					for (IConfiguration iConfig : modelConfigs) {
+						configNames.add(iConfig.getName());
+					}
+				}
+
+
+
 				IProjectDescription description = workspace.newProjectDescription(myProjectName);
 				if (myLocationURI != null) {
 					description.setLocationURI(myLocationURI);
 				}
-				myProject = root.getProject(myProjectName);
-				if(!myProject.exists()) {
-					//myProject.delete(false, false, monitor);
-					myProject.create(description, monitor);
-					myProject.open(monitor);
-				}
+
+				myProject.create(description, monitor);
+				myProject.open(monitor);
 
 				CProjectNature.addCNature(myProject, monitor);
 				if (CCProjectNature.CC_NATURE_ID.equals(myNatureID)) {
@@ -80,7 +120,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				AutoBuildNature.addNature(myProject, monitor);
 
 				IContainer srcFolder = myProject;
-				if (myCodeRootFolder!=null && !myCodeRootFolder.isBlank()) {
+				if (myCodeRootFolder != null && !myCodeRootFolder.isBlank()) {
 					IFolder actualFolder = myProject.getFolder(myCodeRootFolder);
 					srcFolder = actualFolder;
 					if (!srcFolder.exists()) {
@@ -93,44 +133,40 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
 				myProject = CCorePlugin.getDefault().createCDTProject(description, myProject, monitor);
 
-				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+
 				ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
 
-				IProjectType sloeberProjType = AutoBuildManager.getProjectType(myProjectType.getExtensionPointID(),
-						myProjectType.getExtensionID(), myProjectType.getId(), true);
-				if (sloeberProjType == null) {
-					// project type not found can not continue
-					IStatus status = new Status(IStatus.ERROR, Activator.getId(),
-							"Did not find the projectType with " + myProjectType.getId() + " for extension ID " //$NON-NLS-1$ //$NON-NLS-2$
-									+ myProjectType.getExtensionID() + " in extensionpointID " //$NON-NLS-1$
-									+ myProjectType.getExtensionPointID());
-					CoreException exception = new CoreException(status);
-					throw (exception);
-				}
-				IConfiguration[] modelConfigs = sloeberProjType.getConfigurations();
-				for (IConfiguration iConfig : modelConfigs) {
-					Configuration config = (Configuration) iConfig;
+				IConfiguration defaultConfig = autoBuildProjType.getConfigurations()[0];
+
+				for (String curConfigName : configNames) {
+					IConfiguration config = autoBuildProjType.getConfiguration(curConfigName);
+					if (config == null) {
+						config = defaultConfig;
+					}
 					AutoBuildConfigurationDescription data = new AutoBuildConfigurationDescription(config, myProject,
 							myBuldTools, myCodeRootFolder);
 					assert (data != null);
+					data.setBuilder(data.getBuilder(myBuilderID));
 					ICConfigurationDescription cdtCfgDes = des
 							.createConfiguration(AutoBuildConfigurationDescriptionProvider.CFG_DATA_PROVIDER_ID, data);
+					cdtCfgDes.setName(curConfigName);
 					data.setCdtConfigurationDescription(cdtCfgDes);
-					data.setBuilder(data.getBuilder(myBuilderID));
 
 					// Set the language Settings
-					String[] defaultIds = iConfig.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
+					String[] defaultIds = config.getDefaultLanguageSettingsProviderIds().toArray(new String[0]);
 					List<ILanguageSettingsProvider> providers = LanguageSettingsManager
 							.createLanguageSettingsProviders(defaultIds);
 					ILanguageSettingsProvidersKeeper languageKeeper = (ILanguageSettingsProvidersKeeper) cdtCfgDes;
 					if (cdtCfgDes instanceof ILanguageSettingsProvidersKeeper) {
 						languageKeeper.setLanguageSettingProviders(providers);
 					}
-					AutoBuildCommon.createFolder( data.getBuildFolder());
+					AutoBuildCommon.createFolder(data.getBuildFolder());
 				}
 				if (!myNeedsMoreWork) {
 					des.setCdtProjectCreated();
 				}
+				des.setActiveConfiguration(des.getConfigurations()[0]);
+				des.setDefaultSettingConfiguration(des.getConfigurations()[0]);
 				mngr.setProjectDescription(myProject, des);
 
 			}

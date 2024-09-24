@@ -16,7 +16,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -43,9 +42,11 @@ import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.integration.AutoBuildManager;
+import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.core.Activator;
 import io.sloeber.core.internal.SloeberConfiguration;
+import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.natures.SloeberNature;
 import io.sloeber.core.txt.TxtFile;
 
@@ -84,10 +85,6 @@ public class SloeberProject extends Common {
 					OldCoreFolder.delete(true, monitor);
 				}
 
-//				IFile CdtDotFile = project.getFile(".cproject"); //$NON-NLS-1$
-//				if(CdtDotFile.exists()) {
-//					CdtDotFile.delete(true, monitor);
-//				}
 
 				File sloeberDotFile = project.getFile(".sproject").getLocation().toFile(); //$NON-NLS-1$
 				File sloeberCfgFile = project.getFile(SLOEBER_CFG).getLocation().toFile();
@@ -104,6 +101,22 @@ public class SloeberProject extends Common {
 					}
 				}
 
+				CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+				ICProjectDescription oldPrjCDesc = cCorePlugin.getProjectDescription(project, false);
+				Set <String>cfgNames=new HashSet<>();
+				for (ICConfigurationDescription curConfig : oldPrjCDesc.getConfigurations()) {
+					cfgNames.add( curConfig.getName());
+				}
+
+
+				KeyValueTree oldConfigs=null;
+				if (oldSloeberInfo != null) {
+					oldConfigs = oldSloeberInfo.getData().getChild("Config"); //$NON-NLS-1$
+					for (String curTree : oldConfigs.getChildren().keySet()) {
+						cfgNames.add(curTree);
+					}
+				}
+
 				String builderName = AutoBuildProject.INTERNAL_BUILDER_ID;
 				IBuildTools buildTools = IBuildToolsManager.getDefault().getBuildTools(SLOEBER_BUILD_TOOL_PROVIDER_ID,
 						null);
@@ -114,45 +127,32 @@ public class SloeberProject extends Common {
 						CCProjectNature.CC_NATURE_ID, codeProvider, buildTools, true, internalMonitor);
 
 				SloeberNature.addNature(project, internalMonitor);
-
-				CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 				ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project, true);
 
-				Set <String>cfgNames=new HashSet<>();
-				for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
-					cfgNames.add( curConfig.getName());
-				}
-				KeyValueTree oldConfigs=null;
-				if (oldSloeberInfo != null) {
-					oldConfigs = oldSloeberInfo.getData().getChild("Config"); //$NON-NLS-1$
-					for (String curTree : oldConfigs.getChildren().keySet()) {
-						cfgNames.add(curTree);
-					}
-				}
+
+				IConfiguration defaultConfig = projectType.getConfigurations()[0];
 				for(String cfgName:cfgNames) {
 					KeyValueTree oldConfig=null;
 					if (oldConfigs != null) {
 						oldConfig = oldConfigs.getChild(cfgName);
 					}
-					//get the CDT config and AutoBuildConfigurationDescription (if it does not exist create it)
+
+					IConfiguration config = projectType.getConfiguration(cfgName);
+					if (config == null) {
+						config = defaultConfig;
+					}
 					ICConfigurationDescription curConfig = prjCDesc.getConfigurationByName(cfgName);
-					if(curConfig==null) {
-						//config does not exists so create it
-						String id = CDataUtil.genId(Activator.getId());
-						curConfig = prjCDesc.createConfiguration(id,cfgName,prjCDesc.getActiveConfiguration());
+					AutoBuildConfigurationDescription autoConf=null;
+					if (curConfig == null) {
+						// config does not exists so create it
+						autoConf = new AutoBuildConfigurationDescription(config,
+								project, buildTools, null);
+						autoConf.setName(cfgName);
+						curConfig = prjCDesc.createConfiguration(AutoBuildProject.INTERNAL_BUILDER_ID, autoConf);
+						autoConf.setCdtConfigurationDescription(curConfig);
+					}else {
+						autoConf = (AutoBuildConfigurationDescription) IAutoBuildConfigurationDescription.getConfig(curConfig);
 					}
-					IAutoBuildConfigurationDescription autoConf = IAutoBuildConfigurationDescription
-							.getConfig(curConfig);
-					if (!(autoConf instanceof AutoBuildConfigurationDescription)) {
-						// this should not happen as we just created a autoBuild project
-						Activator.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
-								"\"Auto build created a project that does not seem to be a autobuild project :-s : " //$NON-NLS-1$
-										+ project.getName()));
-						continue;
-					}
-
-
-
 
 					ICSourceEntry newSourceEntries[] = new ICSourceEntry[2];
 					// old Sloeber project so the code is in the root of the project for sure
@@ -201,24 +201,27 @@ public class SloeberProject extends Common {
 				SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
 				project.open(refreshMonitor);
 				project.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
+				prjCDesc.setActiveConfiguration(prjCDesc.getConfigurations()[0]);
 				prjCDesc.setCdtProjectCreated();
+
 				cCorePlugin.setProjectDescription(project, prjCDesc, true, SubMonitor.convert(internalMonitor, 1));
-				project.close(monitor);
-				project.open(monitor);
+//				project.close(monitor);
+//				project.open(monitor);
 
 				Activator.log(new Status(SLOEBER_STATUS_DEBUG, Activator.getId(),
 						"internal creation of project is done: " + project.getName())); //$NON-NLS-1$
-				// IndexerController.index(newProjectHandle);
 			}
 		};
 		try
 
 		{
+			IndexerController.doNotIndex(project);
 			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
 		} catch (Exception e) {
-			Activator.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+			Activator.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
 					"Project creation failed: " + project.getName(), e)); //$NON-NLS-1$
 		}
+		IndexerController.index(project);
 		monitor.done();
 	}
 
@@ -233,10 +236,14 @@ public class SloeberProject extends Common {
 
 	private static CompileDescription getCompileDescription(KeyValueTree oldConfig) {
 		CompileDescription ret = new CompileDescription();
+		if (oldConfig == null) {
+			return ret;
+		}
 		KeyValueTree compileConfig=oldConfig.getChild("compile").getChild("sloeber"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (compileConfig == null) {
 			return ret;
 		}
+
 		KeyValueTree extraConfig=compileConfig.getChild("extra"); //$NON-NLS-1$
 	 	ret.set_All_CompileOptions(extraConfig.getValue("all")); //$NON-NLS-1$
 	 	ret.set_Archive_CompileOptions(extraConfig.getValue("archive")); //$NON-NLS-1$
@@ -281,9 +288,10 @@ public class SloeberProject extends Common {
 				}
 			}
 		}
-		if (foundBoardsFilePath == null) {
+		if (foundBoardsFilePath == null || (!foundBoardsFilePath.toFile().exists()) ) {
 			return new BoardDescription();
 		}
+
 
 		KeyValueTree optionsHolder=oldConfig.getChild("board.BOARD.MENU"); //$NON-NLS-1$
 
