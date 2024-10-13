@@ -13,7 +13,6 @@ import io.sloeber.arduinoFramework.api.BoardsManager;
 public class ESP8266 extends MCUBoard {
     private static final String provider = "esp8266";
     private static final String architectureName = "esp8266";
-    private static final String jsonFileName = "package_esp8266com_index.json";
     public static final String packageURL = "https://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
     public static MCUBoard wemosD1() {
@@ -33,7 +32,7 @@ public class ESP8266 extends MCUBoard {
     }
 
     public ESP8266(String boardName, Map<String, String> options) {
-        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, provider, architectureName, boardName,
+        myBoardDescriptor = BoardsManager.getBoardDescription(packageURL, provider, architectureName, boardName,
                 options);
         if (this.myBoardDescriptor == null) {
             fail(boardName + " Board not found");
@@ -48,7 +47,7 @@ public class ESP8266 extends MCUBoard {
     }
 
     public static void installLatest() {
-        BoardsManager.installLatestPlatform(jsonFileName, provider, architectureName);
+        BoardsManager.installLatestPlatform(packageURL, provider, architectureName);
     }
 
     @Override

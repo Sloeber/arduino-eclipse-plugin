@@ -100,7 +100,7 @@ public class CompileAndUpload {
 	public static void installAdditionalBoards() {
 		Preferences.setUseBonjour(false);
 		String[] packageUrlsToAdd = { ESP32.packageURL, ESP8266.packageURL };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));
 
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.removeAllInstalledPlatforms();

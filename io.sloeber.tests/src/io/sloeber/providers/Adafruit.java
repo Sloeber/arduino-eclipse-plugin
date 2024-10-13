@@ -18,7 +18,7 @@ public class Adafruit extends MCUBoard {
 
     public Adafruit(String architectureID, String boardName) {
 
-        myBoardDescriptor = BoardsManager.getBoardDescription("package_adafruit_index.json", "adafruit", architectureID,
+        myBoardDescriptor = BoardsManager.getBoardDescription(packageURL, "adafruit", architectureID,
                 boardName, null);
         if (myBoardDescriptor == null) {
             fail(boardName + " Board not found");

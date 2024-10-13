@@ -13,10 +13,12 @@ import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.IArduinoPackage;
 import io.sloeber.arduinoFramework.api.IArduinoPlatform;
 import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
+import io.sloeber.core.api.Defaults;
 
 @SuppressWarnings("nls")
 public class Arduino extends MCUBoard {
 
+	private static final String packageURL= Defaults.DEFAULT_INSTALL_JSON;
     private static final String providerArduino = "arduino";
     private static final String providerIntel = "Intel";
     private static final String AVRArchitectureName = "avr";
@@ -25,7 +27,6 @@ public class Arduino extends MCUBoard {
     private static final String NFRArchitectureName = "nrf52";
     private static final String MBEDArchitectureName = "mbed";
     private static final String intelCurieArchitectureName = "arc32";
-    private static final String jsonFileName = "package_index.json";
 
     public static final String circuitplay32ID = "circuitplay32u4cat";
     public static final String unoID = "uno";
@@ -116,7 +117,7 @@ public class Arduino extends MCUBoard {
     }
 
     private Arduino(String providerName, String architectureName, String boardID) {
-        this.myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, providerName, architectureName,
+        this.myBoardDescriptor = BoardsManager.getBoardDescription(packageURL, providerName, architectureName,
                 boardID, null);
         if (this.myBoardDescriptor == null) {
             fail(boardID + " Board not found");
@@ -264,19 +265,19 @@ public class Arduino extends MCUBoard {
     }
 
     public static void installLatestAVRBoards() {
-        BoardsManager.installLatestPlatform(jsonFileName, providerArduino, AVRArchitectureName);
+        BoardsManager.installLatestPlatform(packageURL, providerArduino, AVRArchitectureName);
     }
 
     public static void installLatestSamDBoards() {
-        BoardsManager.installLatestPlatform(jsonFileName, providerArduino, SAMDArchitectureName);
+        BoardsManager.installLatestPlatform(packageURL, providerArduino, SAMDArchitectureName);
     }
 
     public static void installLatestSamBoards() {
-        BoardsManager.installLatestPlatform(jsonFileName, providerArduino, SAMArchitectureName);
+        BoardsManager.installLatestPlatform(packageURL, providerArduino, SAMArchitectureName);
     }
 
     public static void installLatestIntellCurieBoards() {
-        BoardsManager.installLatestPlatform(jsonFileName, providerIntel, intelCurieArchitectureName);
+        BoardsManager.installLatestPlatform(packageURL, providerIntel, intelCurieArchitectureName);
     }
 
     public static List<MCUBoard> getAllBoards() {

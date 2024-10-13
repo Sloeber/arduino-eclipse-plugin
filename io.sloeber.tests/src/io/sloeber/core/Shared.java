@@ -132,6 +132,8 @@ public class Shared {
 			if(count%10==0) {
 				System.out.println("Waiting for indexer");
 			}
+			icProject = CoreModel.getDefault().create(iProject);
+			index = CCorePlugin.getIndexManager().getIndex(icProject);
 		}
 	}
 
@@ -248,7 +250,7 @@ public class Shared {
 			}
 			// clean so we will get a full build for this buider
 			theTestProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-			
+
 			// set the builder
 			CoreModel coreModel = CoreModel.getDefault();
 			ICProjectDescription projectDescription = coreModel.getProjectDescription(theTestProject, true);
@@ -256,7 +258,7 @@ public class Shared {
 					.getActiveConfig(projectDescription);
 			autoDesc.setBuilder(curBuilder);
 			coreModel.setProjectDescription(theTestProject, projectDescription);
-				
+
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
 			if (hasBuildErrors(theTestProject)!=null) {

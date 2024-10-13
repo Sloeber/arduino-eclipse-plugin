@@ -355,7 +355,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		if (isMac) {
 			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
 		}
-		BoardsManager.setPackageURLs(toAddList, true);
+		BoardsManager.addPackageURLs(toAddList);
 
 		if (!skipPlatformInstallation) {
 			BoardsManager.installAllLatestPlatforms();

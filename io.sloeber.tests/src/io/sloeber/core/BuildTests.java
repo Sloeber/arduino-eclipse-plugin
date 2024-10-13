@@ -65,6 +65,7 @@ public class BuildTests {
     private static final boolean reinstall_boards_and_libraries = false;
     private final static String AUTOBUILD_CFG = ".autoBuildProject";
     private static final String HIDlibName = "HID-Project";
+    private static final String  packageURL=    "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json";
 
     /*
      * In new new installations (of the Sloeber development environment) the
@@ -93,9 +94,9 @@ public class BuildTests {
 
     public static void installAdditionalBoards() throws Exception {
 
-        String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL,
-                "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
-        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
+        String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL,packageURL};
+        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));
+        BoardsManager.update(false);
         Shared.waitForBoardsManager();
         if (reinstall_boards_and_libraries) {
             BoardsManager.removeAllInstalledPlatforms();
@@ -671,10 +672,10 @@ public class BuildTests {
     public void redirectedJson() throws Exception {
         // this board references to arduino avr so install that one to
         Arduino.installLatestAVRBoards();
-        BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
+        BoardsManager.installLatestPlatform(packageURL, "Talk2", "avr");
         Map<String, String> options = new HashMap<>();
         options.put("mhz", "16MHz");
-        BoardDescription boardid = BoardsManager.getBoardDescription("package_talk2.wisen.com_index.json", "Talk2",
+        BoardDescription boardid = BoardsManager.getBoardDescription(packageURL, "Talk2",
                 "avr", "whispernode", options);
         if (boardid == null) {
             fail("redirect Json ");

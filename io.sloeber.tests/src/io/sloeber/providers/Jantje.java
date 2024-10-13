@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.core.api.Defaults;
 
 @SuppressWarnings("nls")
 public class Jantje extends MCUBoard {
@@ -16,7 +17,7 @@ public class Jantje extends MCUBoard {
     private static final String provider = "Jantje";
     private static final String packageName = "Jantje";
     private static final String localDebugArchitectureName = "pc";
-    private static final String jsonFileName = "package_jantje_index.json";
+    private static final String packageURL = Defaults.JANTJE_BOARD_JSON_URL;
     // the below json url is need as esp8266 is a referenced platform
     public static final String additionalJsonURL = "https://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
@@ -43,7 +44,7 @@ public class Jantje extends MCUBoard {
     public Jantje(String boardName) {
         Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         options.put("type", "debug");
-        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, packageName, localDebugArchitectureName,
+        myBoardDescriptor = BoardsManager.getBoardDescription(packageURL, packageName, localDebugArchitectureName,
                 boardName, options);
         if (myBoardDescriptor == null) {
             fail(boardName + " Board not found");
@@ -52,7 +53,7 @@ public class Jantje extends MCUBoard {
     }
 
     public static void installLatestLocalDebugBoards() {
-        BoardsManager.installLatestPlatform(jsonFileName, provider, localDebugArchitectureName);
+        BoardsManager.installLatestPlatform(packageURL, provider, localDebugArchitectureName);
     }
 
     @Override

@@ -82,7 +82,7 @@ public class CreateAndCompileLibraryExamplesTest {
 
     public static void installAdditionalBoards() {
         String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL, ESP32.packageURL };
-        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
+        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));
         if (reinstall_boards_and_examples) {
             BoardsManager.installAllLatestPlatforms();
             BoardsManager.onlyKeepLatestPlatforms();

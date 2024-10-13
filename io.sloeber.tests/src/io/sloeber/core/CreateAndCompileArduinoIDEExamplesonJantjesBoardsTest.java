@@ -38,7 +38,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
         Preferences.setUseBonjour(false);
         Shared.waitForAllJobsToFinish();
         String[] packageUrlsToAdd = { Jantje.additionalJsonURL };
-        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+        BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));
         Jantje.installLatestLocalDebugBoards();
         Shared.waitForAllJobsToFinish();
 

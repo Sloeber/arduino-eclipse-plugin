@@ -21,7 +21,6 @@ public class Teensy extends MCUBoard {
     public final static String Teensy_LC_ID = "teensyLC";
     public final static String TEENSY_PLATFORM_ID = "avr";
     public final static String TEENSY_PROVIDER= "teensy";
-	private static final String jsonFileName = "package_teensy_index.json";
 	public static final String packageURL = "https://www.pjrc.com/teensy/package_teensy_index.json";
 
     public static MCUBoard Teensy_LC() {
@@ -71,7 +70,7 @@ public class Teensy extends MCUBoard {
         default:
             break;
         }
-        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, TEENSY_PROVIDER, TEENSY_PLATFORM_ID,boardID,options);
+        myBoardDescriptor = BoardsManager.getBoardDescription(packageURL, TEENSY_PROVIDER, TEENSY_PLATFORM_ID,boardID,options);
 
         setUploadPort("none");
         setAttributes();
@@ -140,7 +139,7 @@ public class Teensy extends MCUBoard {
     }
 
 	public static void installLatest() {
-	        BoardsManager.installLatestPlatform(jsonFileName, TEENSY_PROVIDER, TEENSY_PLATFORM_ID);
+	        BoardsManager.installLatestPlatform(packageURL, TEENSY_PROVIDER, TEENSY_PLATFORM_ID);
 	}
 
 	public static List<MCUBoard> getAllBoards() {
