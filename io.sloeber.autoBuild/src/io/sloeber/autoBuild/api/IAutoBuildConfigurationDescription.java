@@ -13,6 +13,7 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
@@ -31,7 +32,8 @@ public interface IAutoBuildConfigurationDescription {
 
     public static IAutoBuildConfigurationDescription getActiveConfig(IProject project, boolean write) {
         CoreModel coreModel = CoreModel.getDefault();
-        ICProjectDescription projectDescription = coreModel.getProjectDescription(project, write);
+        ICProjectDescription projectDescription =coreModel.getProjectDescriptionManager().getProjectDescription(project, ICProjectDescriptionManager.GET_IF_LOADDED);
+        //ICProjectDescription projectDescription = coreModel.getProjectDescription(project, write);
         return getActiveConfig(projectDescription);
     }
 

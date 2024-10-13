@@ -36,7 +36,9 @@ import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.arduinoFramework.api.BoardsManager;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.ConfigurationPreferences;
+import io.sloeber.core.api.Defaults;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerController;
@@ -261,7 +263,7 @@ public class Activator extends Plugin {
 
                 installOtherStuff();
 
-                BoardsManager.startup_Pluging(monitor);
+                startup_BoardsManager(monitor);
 
                 monitor.setTaskName("Done!");
                 if (InstancePreferences.useBonjour()) {
@@ -453,5 +455,28 @@ public class Activator extends Plugin {
             Activator.getDefault().getLog().log(status);
         }
     }
+
+    /**
+     * Loads all stuff needed and if this is the first time downloads the avr boards
+     * and needed tools
+     *
+     * @param monitor
+     */
+    private static synchronized void startup_BoardsManager(IProgressMonitor monitor) {
+    	BoardsManager.update( ConfigurationPreferences.getUpdateJasonFilesFlag());
+
+        if (!LibraryManager.libsAreInstalled()) {
+            LibraryManager.InstallDefaultLibraries(monitor);
+        }
+        IPath examplesPath = ConfigurationPreferences.getInstallationPathExamples();
+        if (!examplesPath.toFile().exists()) {// examples are not installed
+            // Download arduino IDE example programs
+            Activator.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
+                    false, monitor));
+        }
+
+
+    }
+
 
 }

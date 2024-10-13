@@ -10,9 +10,7 @@ import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -26,14 +24,13 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import io.sloeber.arduinoFramework.api.BoardsManager;
-import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
-	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
+	//private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
 	private Text urlsText;
-	BooleanFieldEditor upDateJsons;
+	//BooleanFieldEditor upDateJsons;
 
 	public ThirdPartyHardwareSelectionPage() {
 		super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -43,10 +40,11 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 
 	@Override
 	public boolean performOk() {
-		boolean updateFiles=this.upDateJsons.getBooleanValue();
-		Preferences.setUpdateJsonFiles(updateFiles);
+//		boolean updateFiles=this.upDateJsons.getBooleanValue();
+//		Preferences.setUpdateJsonFiles(updateFiles);
 		HashSet<String> toSetList = new HashSet<>(Arrays.asList(urlsText.getText().split(System.lineSeparator())));
-		BoardsManager.setPackageURLs(toSetList,updateFiles);
+		BoardsManager.setPackageURLs(toSetList);
+		BoardsManager.update(false);
 
 		return super.performOk();
 	}
@@ -73,12 +71,12 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 		this.urlsText.setLayoutData(gd);
 		this.urlsText.setText(StringUtil.join(selectedJsons, System.lineSeparator()));
 
-		this.upDateJsons = new BooleanFieldEditor(KEY_UPDATE_JASONS, Messages.json_update, BooleanFieldEditor.DEFAULT,
-				parent);
-		addField(this.upDateJsons);
-		IPreferenceStore prefstore = getPreferenceStore();
-		prefstore.setValue(KEY_UPDATE_JASONS, Preferences.getUpdateJsonFiles());
-		prefstore.setDefault(KEY_UPDATE_JASONS, true);
+//		this.upDateJsons = new BooleanFieldEditor(KEY_UPDATE_JASONS, Messages.json_update, BooleanFieldEditor.DEFAULT,
+//				parent);
+//		addField(this.upDateJsons);
+//		IPreferenceStore prefstore = getPreferenceStore();
+//		prefstore.setValue(KEY_UPDATE_JASONS, Preferences.getUpdateJsonFiles());
+//		prefstore.setDefault(KEY_UPDATE_JASONS, true);
 
 		final Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		link.setText(Messages.json_find);

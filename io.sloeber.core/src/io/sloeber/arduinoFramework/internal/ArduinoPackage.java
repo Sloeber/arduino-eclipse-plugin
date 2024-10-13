@@ -20,7 +20,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.IArduinoPackage;
 import io.sloeber.arduinoFramework.api.IArduinoPlatform;
 import io.sloeber.arduinoFramework.api.IArduinoPlatformVersion;
@@ -191,25 +190,7 @@ public class ArduinoPackage extends Node implements  IArduinoPackage {
         return this.name.compareTo(other.getName());
     }
 
-    @Override
-	public void onlyKeepLatestPlatforms() {
-        for (IArduinoPlatform curplatform : platforms.values()) {
-            IArduinoPlatformVersion newestVersion = null;
-            for (IArduinoPlatformVersion curVersion : curplatform.getVersions()) {
-                if (curVersion.isInstalled()) {
-                    if (newestVersion == null) {
-                        newestVersion = curVersion;
-                    } else {
-                        if (newestVersion.getVersion().compareTo(curVersion.getVersion()) > 0) {
-                            BoardsManager.uninstall(curVersion, null);
-                        } else {
-                            BoardsManager.uninstall(newestVersion, null);
-                        }
-                    }
-                }
-            }
-        }
-    }
+
 
     @Override
 	public boolean isInstalled() {

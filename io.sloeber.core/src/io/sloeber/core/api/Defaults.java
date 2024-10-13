@@ -7,12 +7,24 @@ import org.eclipse.core.runtime.Path;
 
 @SuppressWarnings("nls")
 public class Defaults {
+	public static final String DEFAULT_INSTALL_JSON = "https://downloads.arduino.cc/packages/package_index.json";
+	public static final String JANTJE_BOARD_JSON_URL = "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json";
+	public static final String DEFAULT_INSTALL_ARCHITECTURE = "avr";
+    public static final String DEFAULT_INSTALL_MAINTAINER = "arduino";
+	public static final String[] DEFAULT_JSON_URLS = {DEFAULT_INSTALL_JSON,
+			JANTJE_BOARD_JSON_URL,
+            "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json",
+            "https://arduino.esp8266.com/stable/package_esp8266com_index.json",
+            "https://www.pjrc.com/teensy/package_teensy_index.json",
+            "https://downloads.arduino.cc/libraries/library_index.json"};
+
+
+
     public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_8_10.zip";
     public static final String EXAMPLES_URL = "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/"
             + EXAMPLE_PACKAGE;
 
-    public static final String DEFAULT_INSTALL_ARCHITECTURE = "avr";
-    public static final String DEFAULT_INSTALL_MAINTAINER = "arduino";
+
     public static final String[] DEFAULT_INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
             "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
     public static final String DEFAULT = "Default";

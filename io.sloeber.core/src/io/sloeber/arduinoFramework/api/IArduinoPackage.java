@@ -48,8 +48,6 @@ public interface IArduinoPackage extends Comparable<IArduinoPackage>{
 
 	ArduinoPlatformToolVersion getNewestInstalled(String toolName);
 
-	void onlyKeepLatestPlatforms();
-
 	boolean isInstalled();
 
 	/**

@@ -48,13 +48,13 @@ public class Preferences {
 		return InstancePreferences.getUseArduinoToolSelection();
 	}
 
-	public static void setUpdateJsonFiles(boolean flag) {
-		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
-	}
-	public static boolean getUpdateJsonFiles() {
-		return ConfigurationPreferences.getUpdateJasonFilesFlag();
-	}
-	
+//	public static void setUpdateJsonFiles(boolean flag) {
+//		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
+//	}
+//	public static boolean getUpdateJsonFiles() {
+//		return ConfigurationPreferences.getUpdateJasonFilesFlag();
+//	}
+
 	/**
 	 *wrapper for ConfigurationPreferences.useBonjour();
 	 */
