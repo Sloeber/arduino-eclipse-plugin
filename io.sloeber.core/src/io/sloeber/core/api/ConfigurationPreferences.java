@@ -3,6 +3,8 @@ package io.sloeber.core.api;
 import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -26,7 +28,7 @@ public class ConfigurationPreferences {
 	private static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt"; //$NON-NLS-1$
 	private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 
-	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
+	private static final String KEY_LATEST_JSON_UPDATE_TIME ="latest time the json files were updated";//$NON-NLS-1$
 
 
 	public static void removeKey(String key) {
@@ -39,14 +41,19 @@ public class ConfigurationPreferences {
 		return myScope.get(key, defaultValue);
 	}
 
-	private static boolean getBoolean(String key, boolean defaultValue) {
+
+	private static Instant getInstant(String key, Instant defaultValue) {
 		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
-		return myScope.getBoolean(key, defaultValue);
+		long ret = myScope.getLong(key, 0);
+		if(ret==0) {
+			return defaultValue;
+		}
+		return Instant.ofEpochSecond(ret);
 	}
 
-	private static void setBoolean(String key, boolean value) {
+	private static void setInstant(String key, Instant value) {
 		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.putBoolean(key, value);
+		myScope.putLong(key, value.getEpochSecond());
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
@@ -123,12 +130,18 @@ public class ConfigurationPreferences {
 		return new Path(getInstallationPath().append("tools/awk").toString()); //$NON-NLS-1$
 	}
 
-	public static boolean getUpdateJasonFilesFlag() {
-		return getBoolean(KEY_UPDATE_JASONS, Defaults.updateJsonFiles);
+	public static Instant getLatestUpdateTime() {
+		return getInstant(KEY_LATEST_JSON_UPDATE_TIME, Instant.now());
 	}
 
-	public static void setUpdateJasonFilesFlag(boolean newFlag) {
-		setBoolean(KEY_UPDATE_JASONS, newFlag);
+	public static void setLatestUpdateTime(Instant currentTime) {
+		setInstant(KEY_LATEST_JSON_UPDATE_TIME,currentTime);
+
+	}
+
+	public static Duration getUpdateDelay() {
+		// TODO Auto-generated method stub
+		return Duration.ofDays(10);
 	}
 
 }

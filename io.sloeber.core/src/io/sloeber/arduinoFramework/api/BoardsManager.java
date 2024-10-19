@@ -69,12 +69,14 @@ public class BoardsManager {
 
 	private static boolean myIsDirty = true;
 
+	private static boolean myIsUpdating =false;
+
 	static {
 		getPersistentPackageURLList();
 	}
 
 	public static boolean isReady() {
-		return !myIsDirty;
+		return !(myIsDirty || myIsUpdating);
 	}
 
 	/**
@@ -178,7 +180,7 @@ public class BoardsManager {
 	 */
 	public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
 		String DEPRECATED = "DEPRECATED"; //$NON-NLS-1$
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return;
 		}
@@ -218,7 +220,7 @@ public class BoardsManager {
 	}
 
 	public static void installLatestPlatform(String JasonName, String packagerName, String architectureName) {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return;
 		}
@@ -379,7 +381,7 @@ public class BoardsManager {
 
 	public static IStatus updatePlatforms(List<IArduinoPlatformVersion> platformsToInstall,
 			List<IArduinoPlatformVersion> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
-		if (!isReady()) {
+		if (myIsDirty) {
 			status.add(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
 			return status;
 		}
@@ -603,7 +605,7 @@ public class BoardsManager {
 	}
 
 	public static void removeAllInstalledPlatforms() {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return;
 		}
@@ -678,7 +680,7 @@ public class BoardsManager {
 //	}
 
 	public static IArduinoPlatform getPlatform(String vendor, String architecture) {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return null;
 		}
@@ -701,7 +703,7 @@ public class BoardsManager {
 	 * @return the found platform otherwise null
 	 */
 	public static IArduinoPlatformVersion getPlatform(IPath platformPath) {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return null;
 		}
@@ -739,7 +741,7 @@ public class BoardsManager {
 	 * @return a platform or null if no platforms are installed
 	 */
 	static public IArduinoPlatformVersion getAnyInstalledPlatform() {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return null;
 		}
@@ -766,7 +768,7 @@ public class BoardsManager {
 
 	static public List<IArduinoPackage> getPackages() {
 		List<IArduinoPackage> packages = new ArrayList<>();
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return packages;
 		}
@@ -801,7 +803,7 @@ public class BoardsManager {
 	 * Remove all packages that have a more recent version
 	 */
 	public static void onlyKeepLatestPlatforms() {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return;
 		}
@@ -841,7 +843,7 @@ public class BoardsManager {
 	}
 
 	public static IArduinoPackage getPackageByProvider(String packager) {
-		if (!isReady()) {
+		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return null;
 		}
@@ -868,6 +870,7 @@ public class BoardsManager {
 	 */
 	public static void update(boolean reloadFromInternet) {
 		synchronized (packageIndices) {
+			myIsUpdating =true;
 			if (myIsDirty) {
 				downloadJsons(reloadFromInternet);
 				readJsons();
@@ -898,9 +901,8 @@ public class BoardsManager {
 				}
 				envVarsNeedUpdating = false;
 			}
-
 		}
-
+		myIsUpdating=false;
 	}
 
 }

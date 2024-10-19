@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -463,7 +465,23 @@ public class Activator extends Plugin {
      * @param monitor
      */
     private static synchronized void startup_BoardsManager(IProgressMonitor monitor) {
-    	BoardsManager.update( ConfigurationPreferences.getUpdateJasonFilesFlag());
+    	//ConfigurationPreferences.getUpdateJasonFilesFlag();
+    	Instant currentTime=Instant.now();
+    	Instant latestUpdate= ConfigurationPreferences.getLatestUpdateTime();
+    	Duration requestedDelay=ConfigurationPreferences.getUpdateDelay();
+    	Instant nextUpdate=latestUpdate.plus(requestedDelay);
+    	boolean needsUpdate = nextUpdate.isBefore(currentTime);
+
+//    	long latestUpdate= getLatestUpdateTime();
+//    	long requestedDelay=getUpdateDelay();
+//    	long currentTime= System.currentTimeMillis();
+//    	boolean needsUpdate = currentTime>(requestedDelay+latestUpdate);
+    	if(needsUpdate) {
+    		BoardsManager.update(true );
+    		ConfigurationPreferences.setLatestUpdateTime(currentTime);
+    	}else {
+    		BoardsManager.update(false );
+    	}
 
         if (!LibraryManager.libsAreInstalled()) {
             LibraryManager.InstallDefaultLibraries(monitor);
