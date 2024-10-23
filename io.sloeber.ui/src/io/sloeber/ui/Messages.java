@@ -66,7 +66,13 @@ public class Messages extends NLS {
     public static String packageTooltip;
 
     public static String PlatformSelectionPage_hide_third_party_url;
-    public static String platformSelectionTip;
+    public static String PreferencePage_Internal_Behaviour_Group_Title;
+
+	public static String PreferencePage_Network_Group_Title;
+
+	public static String PreferencePage_UI_Behaviour_Group_Title;
+
+	public static String platformSelectionTip;
     public static String pleaseWaitForInstallerJob;
     public static String plotterViewChannel;
     public static String plotterViewConnectedTo;

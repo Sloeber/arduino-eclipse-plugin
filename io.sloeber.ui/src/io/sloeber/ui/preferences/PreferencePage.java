@@ -15,13 +15,20 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.PathEditor;
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.LibraryManager;
@@ -187,63 +194,127 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	 */
 	@Override
 	protected void createFieldEditors() {
-		final Composite parent = getFieldEditorParent();
+		final Composite rootParent = getFieldEditorParent();
+		Dialog.applyDialogFont(rootParent);
+		IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+		ITheme currentTheme = themeManager.getCurrentTheme();
+		FontRegistry fontRegistry = currentTheme.getFontRegistry();
+		Font headerFont =fontRegistry.get(JFaceResources.HEADER_FONT);
 
-		this.arduinoPrivateLibPathPathEditor = new PathEditor(KEY_PRIVATE_LIBRARY_PATHS, Messages.ui_private_lib_path,
-				Messages.ui_private_lib_path_help, parent);
-		addField(this.arduinoPrivateLibPathPathEditor);
+		arduinoPrivateLibPathPathEditor = new PathEditor(KEY_PRIVATE_LIBRARY_PATHS, Messages.ui_private_lib_path,
+				Messages.ui_private_lib_path_help, rootParent);
+		addField(arduinoPrivateLibPathPathEditor);
 
-		this.arduinoPrivateHardwarePathPathEditor = new PathEditor(KEY_PRIVATE_HARDWARE_PATHS, Messages.ui_private_hardware_path,
-				Messages.ui_private_hardware_path_help, parent);
-		addField(this.arduinoPrivateHardwarePathPathEditor);
+		arduinoPrivateHardwarePathPathEditor = new PathEditor(KEY_PRIVATE_HARDWARE_PATHS, Messages.ui_private_hardware_path,
+				Messages.ui_private_hardware_path_help, rootParent);
+		addField(arduinoPrivateHardwarePathPathEditor);
 
-		Dialog.applyDialogFont(parent);
-		createLine(parent, 4);
+
+		Composite parent = new Composite(rootParent, SWT.NONE);
+		GridData gd1=new GridData(SWT.BEGINNING,SWT.CENTER,false,false);
+		//gd1.horizontalSpan=2;
+		parent.setLayoutData(gd1);
+		parent.setLayout(new GridLayout(1,false));
+
+
+		Group UIboxparent= new Group(parent, SWT.BORDER_SOLID );
+		UIboxparent.setText(Messages.PreferencePage_UI_Behaviour_Group_Title);
+		UIboxparent.setFont(headerFont);
+		UIboxparent.setLayout(new GridLayout(2,true));
+		GridData gd11=new GridData(SWT.FILL,SWT.TOP,true,false);
+		//gd11.horizontalSpan=4;
+		UIboxparent.setLayoutData(gd11);
+
+		Composite UIbox = new Composite(UIboxparent, SWT.NONE);
+		GridData gd12=new GridData(SWT.FILL,SWT.TOP,true,false);
+		gd12.horizontalSpan=2;
+		UIbox.setLayoutData(gd12);
+		UIbox.setLayout(new GridLayout(2,false));
+
+
 		String[][] YesNoAskOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
 				{ Messages.yes, TRUE }, { Messages.no, FALSE } };
-		this.buildBeforeUploadOptionEditor = new ComboFieldEditor(MyPreferences.KEY_BUILD_BEFORE_UPLOAD_OPTION,
-				Messages.ui_build_before_upload, YesNoAskOptions, parent);
-		addField(this.buildBeforeUploadOptionEditor);
-		createLine(parent, 4);
+		buildBeforeUploadOptionEditor = new ComboFieldEditor(MyPreferences.KEY_BUILD_BEFORE_UPLOAD_OPTION,
+				Messages.ui_build_before_upload, YesNoAskOptions, UIbox);
+		addField(buildBeforeUploadOptionEditor);
 
-		this.useArduinoToolchainSelectionEditor = new BooleanFieldEditor(KEY_TOOLCHAIN_SELECTION,
-				Messages.ui_use_arduino_toolchain_selection, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.useArduinoToolchainSelectionEditor);
+		Composite UIbox2 = new Composite(UIboxparent, SWT.NONE);
+		GridData gd13 = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd13.horizontalSpan = 2;
+		UIbox2.setLayoutData(gd13);
+		UIbox2.setLayout(new GridLayout(2, false));
+		Dialog.applyDialogFont(UIbox2);
 
-		createLine(parent, 4);
-		this.openSerialMonitorOpensSerialsOptionEditor = new BooleanFieldEditor(MyPreferences.KEY_OPEN_SERIAL_WITH_MONITOR,
-				Messages.ui_open_serial_with_monitor, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.openSerialMonitorOpensSerialsOptionEditor);
-		createLine(parent, 4);
+		openSerialMonitorOpensSerialsOptionEditor = new BooleanFieldEditor(MyPreferences.KEY_OPEN_SERIAL_WITH_MONITOR,
+				Messages.ui_open_serial_with_monitor, BooleanFieldEditor.DEFAULT, UIbox2);
+		addField(openSerialMonitorOpensSerialsOptionEditor);
 
+		automaticallyImportLibrariesOptionEditor = new BooleanFieldEditor(KEY_AUTO_IMPORT_LIBRARIES,
+				Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, UIbox2);
+		addField(automaticallyImportLibrariesOptionEditor);
 
-		this.automaticallyImportLibrariesOptionEditor = new BooleanFieldEditor(KEY_AUTO_IMPORT_LIBRARIES,
-				Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.automaticallyImportLibrariesOptionEditor);
-		this.automaticallyInstallLibrariesOptionEditor = new BooleanFieldEditor(MyPreferences.KEY_AUTO_INSTALL_LIBRARIES,
-				Messages.ui_auto_install_libraries, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.automaticallyInstallLibrariesOptionEditor);
+		cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.KEY_CLEAN_MONITOR_AFTER_UPLOAD,
+				Messages.ui_clean_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, UIbox2);
+		addField(cleanSerialMonitorAfterUploadEditor);
 
-		this.pragmaOnceHeaderOptionEditor = new BooleanFieldEditor(KEY_PRAGMA_ONCE_HEADERS, Messages.ui_pragma_once_headers,
-				BooleanFieldEditor.DEFAULT, parent);
-		addField(this.pragmaOnceHeaderOptionEditor);
-
-		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.KEY_CLEAN_MONITOR_AFTER_UPLOAD,
-				Messages.ui_clean_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.cleanSerialMonitorAfterUploadEditor);
-
-		this.switchToSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.SWITCH_TO_MONITOR_AFTER_UPLOAD,
-				Messages.ui_switch_to_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.switchToSerialMonitorAfterUploadEditor);
-
-		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS,
-				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.enableParallelBuildForNewProjects);
+		switchToSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.SWITCH_TO_MONITOR_AFTER_UPLOAD,
+				Messages.ui_switch_to_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, UIbox2);
+		addField(switchToSerialMonitorAfterUploadEditor);
 
 
-		this.enableBonjour = new BooleanFieldEditor(KEY_USE_BONJOUR,
-				Messages.ui_enable_bonjour, BooleanFieldEditor.DEFAULT, parent);
-		addField(this.enableBonjour);
+		Group internalBehaviourGroup= new Group(parent, SWT.BORDER_SOLID);
+		internalBehaviourGroup.setText(Messages.PreferencePage_Internal_Behaviour_Group_Title);
+		GridData gd2=new GridData(SWT.FILL,SWT.TOP,true,false);
+		//gd2.horizontalSpan=2;
+		internalBehaviourGroup.setLayout(new GridLayout(2,true));
+		internalBehaviourGroup.setLayoutData(gd2);
+		internalBehaviourGroup.setFont(headerFont);
+
+		Composite internalBehaviourbox = new Composite(internalBehaviourGroup, SWT.NONE);
+		GridData gd14 = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd14.horizontalSpan = 2;
+		internalBehaviourbox.setLayoutData(gd14);
+		internalBehaviourbox.setLayout(new GridLayout(2, false));
+		Dialog.applyDialogFont(internalBehaviourbox);
+
+//		internalBehaviourGroup.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+//		internalBehaviourbox.setBackground(display.getSystemColor(SWT.COLOR_RED));
+
+		useArduinoToolchainSelectionEditor = new BooleanFieldEditor(KEY_TOOLCHAIN_SELECTION,
+				Messages.ui_use_arduino_toolchain_selection, BooleanFieldEditor.DEFAULT, internalBehaviourbox);
+		addField(useArduinoToolchainSelectionEditor);
+
+		pragmaOnceHeaderOptionEditor = new BooleanFieldEditor(KEY_PRAGMA_ONCE_HEADERS, Messages.ui_pragma_once_headers,
+				BooleanFieldEditor.DEFAULT, internalBehaviourbox);
+		addField(pragmaOnceHeaderOptionEditor);
+
+		enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS,
+				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, internalBehaviourbox);
+		addField(enableParallelBuildForNewProjects);
+
+		Group netWorkGroup= new Group(parent, SWT.BORDER_SOLID);
+		netWorkGroup.setText(Messages.PreferencePage_Network_Group_Title);
+		GridData gd3=new GridData(SWT.FILL,SWT.TOP,true,false);
+		//gd3.horizontalSpan=2;
+		netWorkGroup.setLayoutData(gd3);
+		netWorkGroup.setFont(headerFont);
+		netWorkGroup.setLayout(new GridLayout(2,true));
+
+		Composite netWorkbox = new Composite(netWorkGroup, SWT.NONE);
+		GridData gd15 = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd15.horizontalSpan = 2;
+		netWorkbox.setLayoutData(gd15);
+		netWorkbox.setLayout(new GridLayout(2, false));
+		Dialog.applyDialogFont(netWorkbox);
+
+		automaticallyInstallLibrariesOptionEditor = new BooleanFieldEditor(MyPreferences.KEY_AUTO_INSTALL_LIBRARIES,
+				Messages.ui_auto_install_libraries, BooleanFieldEditor.DEFAULT, netWorkbox);
+		addField(automaticallyInstallLibrariesOptionEditor);
+
+		enableBonjour = new BooleanFieldEditor(KEY_USE_BONJOUR,
+				Messages.ui_enable_bonjour, BooleanFieldEditor.DEFAULT, netWorkbox);
+		addField(enableBonjour);
+
 	}
 
 	/**
@@ -268,14 +339,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	protected void performApply() {
 		super.performApply();
 	}
-
-	private static void createLine(Composite parent, int ncol) {
-		Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = ncol;
-		line.setLayoutData(gridData);
-	}
-
 
 
 }
