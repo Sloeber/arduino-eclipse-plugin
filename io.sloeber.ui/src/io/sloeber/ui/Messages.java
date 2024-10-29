@@ -66,11 +66,23 @@ public class Messages extends NLS {
     public static String packageTooltip;
 
     public static String PlatformSelectionPage_hide_third_party_url;
-    public static String PreferencePage_Internal_Behaviour_Group_Title;
+    public static String PreferencePage_centuries;
+
+	public static String PreferencePage_days;
+
+	public static String PreferencePage_Internal_Behaviour_Group_Title;
+
+	public static String PreferencePage_months;
 
 	public static String PreferencePage_Network_Group_Title;
 
 	public static String PreferencePage_UI_Behaviour_Group_Title;
+
+	public static String PreferencePage_update_interval;
+
+	public static String PreferencePage_weeks;
+
+	public static String PreferencePage_years;
 
 	public static String platformSelectionTip;
     public static String pleaseWaitForInstallerJob;

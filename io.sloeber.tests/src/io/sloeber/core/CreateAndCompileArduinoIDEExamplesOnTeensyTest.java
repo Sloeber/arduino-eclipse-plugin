@@ -35,7 +35,7 @@ import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
@@ -55,7 +55,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
     	//Shared.setDefaultBuilder(AutoBuildProject.MAKE_BUILDER_ID);
         Shared.waitForAllJobsToFinish();
-        Preferences.setUseBonjour(false);
+        ConfigurationPreferences.setUseBonjour(false);
     }
 
 

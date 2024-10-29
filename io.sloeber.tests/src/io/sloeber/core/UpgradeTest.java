@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
 
@@ -34,7 +34,7 @@ public class UpgradeTest {
     @BeforeAll
     public static void setup() {
         // stop bonjour as it clutters the console log
-        Preferences.setUseBonjour(false);
+    	ConfigurationPreferences.setUseBonjour(false);
         Shared.waitForAllJobsToFinish();
         // TOFIX: this will have to change into a specific version
         // or we will have to add the install based on stored data

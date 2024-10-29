@@ -5,12 +5,17 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashSet;
 
+import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
+
+import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
+import io.sloeber.core.common.InstancePreferences;
 
 /**
  * Items on the Configuration level are linked to the ConfigurationScope
@@ -29,7 +34,85 @@ public class ConfigurationPreferences {
 	private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 
 	private static final String KEY_LATEST_JSON_UPDATE_TIME ="latest time the json files were updated";//$NON-NLS-1$
+	private static final String KEY_JSON_UPDATE_DELAY="Duration between json file updates";//$NON-NLS-1$
 
+    private static String stringSplitter = "\n";//$NON-NLS-1$
+    private static final String KEY_DISCONNECT_SERIAL_TAGETS = "Target names that require serial disconnect to run";//$NON-NLS-1$
+
+	public static void setAutoImportLibraries(boolean booleanValue) {
+		InstancePreferences.setAutomaticallyImportLibraries(booleanValue);
+
+	}
+
+	public static void setPragmaOnceHeaders(boolean booleanValue) {
+		InstancePreferences.setPragmaOnceHeaders(booleanValue);
+
+	}
+
+	public static boolean getPragmaOnceHeaders() {
+		return InstancePreferences.getPragmaOnceHeaders();
+	}
+
+	public static boolean getAutoImportLibraries() {
+		return InstancePreferences.getAutomaticallyImportLibraries();
+	}
+
+	public static void setUseArduinoToolSelection(boolean booleanValue) {
+		InstancePreferences.setUseArduinoToolSelection(booleanValue);
+
+	}
+
+	public static boolean getUseArduinoToolSelection() {
+		return InstancePreferences.getUseArduinoToolSelection();
+	}
+
+//	public static void setUpdateJsonFiles(boolean flag) {
+//		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
+//	}
+//	public static boolean getUpdateJsonFiles() {
+//		return ConfigurationPreferences.getUpdateJasonFilesFlag();
+//	}
+
+	/**
+	 *wrapper for ConfigurationPreferences.useBonjour();
+	 */
+	public static boolean useBonjour() {
+		return InstancePreferences.useBonjour();
+	}
+
+	/**
+	 *wrapper for ConfigurationPreferences.setUseBonjour(newFlag);
+	 */
+	public static void setUseBonjour(boolean newFlag) {
+		InstancePreferences.setUseBonjour(newFlag);
+		if(newFlag) {
+			SloeberNetworkDiscovery.start();
+		}else {
+			SloeberNetworkDiscovery.stop();
+		}
+	}
+
+
+
+    public static String[] getDisconnectSerialTargetsList() {
+        return getDisconnectSerialTargets().split(stringSplitter);
+    }
+
+    public static String getDisconnectSerialTargets() {
+        return getString(KEY_DISCONNECT_SERIAL_TAGETS, Defaults.getDefaultDisconnectSerialTargets()).replace("\r", EMPTY);//$NON-NLS-1$
+    }
+
+    public static void setDisconnectSerialTargets(String targets) {
+        setString(KEY_DISCONNECT_SERIAL_TAGETS, targets);
+    }
+
+    public static void setDisconnectSerialTargets(String targets[]) {
+        setString(KEY_DISCONNECT_SERIAL_TAGETS, StringUtil.join(targets, stringSplitter));
+    }
+
+    public static void setDisconnectSerialTargets(HashSet<String> targets) {
+        setString(KEY_DISCONNECT_SERIAL_TAGETS, StringUtil.join(targets, stringSplitter));
+    }
 
 	public static void removeKey(String key) {
 		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
@@ -130,7 +213,7 @@ public class ConfigurationPreferences {
 		return new Path(getInstallationPath().append("tools/awk").toString()); //$NON-NLS-1$
 	}
 
-	public static Instant getLatestUpdateTime() {
+	public static Instant getLatestJsonUpdateTime() {
 		return getInstant(KEY_LATEST_JSON_UPDATE_TIME, Instant.now());
 	}
 
@@ -139,9 +222,31 @@ public class ConfigurationPreferences {
 
 	}
 
-	public static Duration getUpdateDelay() {
-		// TODO Auto-generated method stub
-		return Duration.ofDays(10);
+	public static Duration getJsonUpdateDelay() {
+		return getDuration(KEY_JSON_UPDATE_DELAY,Defaults.getJsonUpdateDuration());
+	}
+
+	public static void setJsonUpdateDelay(Duration jsunUpdateDuration) {
+		setDuration(KEY_JSON_UPDATE_DELAY,jsunUpdateDuration);
+	}
+
+	private static void setDuration(String key, Duration value) {
+		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
+		myScope.putLong(key, value.toDays());
+		try {
+			myScope.flush();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static Duration getDuration(String key, Duration defaultValue) {
+		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
+		long ret = myScope.getLong(key, 0);
+		if(ret==0) {
+			return defaultValue;
+		}
+		return Duration.ofDays(ret);
 	}
 
 }

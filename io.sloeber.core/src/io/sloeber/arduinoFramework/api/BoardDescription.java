@@ -35,9 +35,9 @@ import io.sloeber.arduinoFramework.internal.ArduinoPlatformTooldDependency;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Const;
-import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
@@ -1005,7 +1005,7 @@ public class BoardDescription {
 			allVars.putAll(getEnVarPlatformInfo());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, "failed to get platform paths", e));
+			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.BoardDescription_0, e));
 		}
 
 		// boards settings not coming from menu selections
@@ -1078,7 +1078,7 @@ public class BoardDescription {
 			return ret;
 		}
 
-		boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
+		boolean jsonBasedPlatformManagement = !ConfigurationPreferences.getUseArduinoToolSelection();
 		if (jsonBasedPlatformManagement) {
 			// overrule the Arduino IDE way of working and use the json refereced tools
 			ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));

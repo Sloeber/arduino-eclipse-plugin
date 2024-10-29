@@ -22,7 +22,7 @@ import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP32;
@@ -39,8 +39,8 @@ public class CreateAndCompileLibraryExamplesTest {
     private int myTotalFails = 0;
 
     public static Stream<Arguments> CreateAndCompileLibraryExamplesTestData() throws Exception {
-        Preferences.setUseBonjour(false);
-        Preferences.setUseArduinoToolSelection(true);
+    	ConfigurationPreferences.setUseBonjour(false);
+    	ConfigurationPreferences.setUseArduinoToolSelection(true);
         Shared.waitForAllJobsToFinish();
         installMyStuff();
 

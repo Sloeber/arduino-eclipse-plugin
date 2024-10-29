@@ -31,7 +31,7 @@ import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.MCUBoard;
 
@@ -46,7 +46,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     	Shared.waitForBoardsManager();
     	Shared.setUseParralBuildProjects(Boolean.TRUE);
         Shared.waitForAllJobsToFinish();
-        Preferences.setUseBonjour(false);
+        ConfigurationPreferences.setUseBonjour(false);
     }
 
 

@@ -52,7 +52,7 @@ import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.api.OtherDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP32;
@@ -76,7 +76,7 @@ public class BuildTests {
     public static void beforeClass() throws Exception {
         Shared.waitForBoardsManager();
         Shared.setDeleteProjects(false);
-        Preferences.setUseBonjour(false);
+        ConfigurationPreferences.setUseBonjour(false);
         installAdditionalBoards();
         installAdditionalLibs();
     }
@@ -754,7 +754,7 @@ public class BuildTests {
     }
 
     public static Stream<Arguments> NightlyBoardPatronTestData() throws Exception {
-        Preferences.setUseArduinoToolSelection(true);
+    	ConfigurationPreferences.setUseArduinoToolSelection(true);
         CompileDescription compileOptions = new CompileDescription();
         MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 

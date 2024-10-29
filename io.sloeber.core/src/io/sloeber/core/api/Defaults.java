@@ -2,6 +2,8 @@ package io.sloeber.core.api;
 
 import static io.sloeber.core.api.Const.*;
 
+import java.time.Duration;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
@@ -11,6 +13,8 @@ public class Defaults {
 	public static final String JANTJE_BOARD_JSON_URL = "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json";
 	public static final String DEFAULT_INSTALL_ARCHITECTURE = "avr";
     public static final String DEFAULT_INSTALL_MAINTAINER = "arduino";
+    private static final String DEFAULT_DISCONNECT_SERIAL_TARGETS = "BurnBootLoader\nuploadWithBuild\nuploadWithoutBuild\nuploadWithProgrammerWithBuild\nuploadWithProgrammerWithoutBuild"; //$NON-NLS-1$
+
 	public static final String[] DEFAULT_JSON_URLS = {DEFAULT_INSTALL_JSON,
 			JANTJE_BOARD_JSON_URL,
             "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json",
@@ -29,7 +33,6 @@ public class Defaults {
             "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
     public static final String DEFAULT = "Default";
 
-    public static final boolean updateJsonFiles = true;
     public static final boolean useBonjour = true;
     public static final boolean autoInstallLibraries = true;
     public static final boolean useArduinoToolSelection = true;
@@ -56,5 +59,13 @@ public class Defaults {
         }
         return homPath.append("Arduino").append(ARDUINO_HARDWARE_FOLDER_NAME).toString();
     }
+
+    public static String getDefaultDisconnectSerialTargets() {
+        return DEFAULT_DISCONNECT_SERIAL_TARGETS;
+    }
+
+	public static Duration getJsonUpdateDuration() {
+		return  Duration.ofDays(7);
+	}
 
 }

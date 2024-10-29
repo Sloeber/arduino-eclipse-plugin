@@ -1,13 +1,14 @@
 package io.sloeber.core;
 
 
-import io.sloeber.core.api.Preferences;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.platform.suite.api.SelectClasses;
 
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
+
+import io.sloeber.core.api.ConfigurationPreferences;
 
 
 @SuiteDisplayName("Sloeber Nightly suite")
@@ -26,7 +27,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 public class releaseTesting_takes_very_long {
     @BeforeAll
     public static void setUp() {
-    	Preferences.setUseBonjour(false);
+    	ConfigurationPreferences.setUseBonjour(false);
         Shared.setDeleteProjects(true);
     }
 }

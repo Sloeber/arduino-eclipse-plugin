@@ -24,7 +24,7 @@ import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 
 @SuppressWarnings({"nls","static-method"})
 public class CreateAndCompileDefaultInoOnAllBoardsTest {
@@ -47,8 +47,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		Shared.setUseParralBuildProjects(Boolean.TRUE);
 		CCorePlugin.getIndexManager().setDefaultIndexerId( IPDOMManager.ID_NO_INDEXER );
 		// build the Arduino way
-		Preferences.setUseArduinoToolSelection(true);
-		Preferences.setUseBonjour(false);
+		ConfigurationPreferences.setUseArduinoToolSelection(true);
+		ConfigurationPreferences.setUseBonjour(false);
 		installAdditionalBoards();
 	}
 

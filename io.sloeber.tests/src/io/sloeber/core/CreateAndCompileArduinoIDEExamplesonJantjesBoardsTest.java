@@ -23,7 +23,7 @@ import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.providers.Jantje;
 import io.sloeber.providers.MCUBoard;
 
@@ -35,7 +35,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
     private static int mySkipAtStart = 0;
     @BeforeAll
     public static void setup() throws Exception {
-        Preferences.setUseBonjour(false);
+    	ConfigurationPreferences.setUseBonjour(false);
         Shared.waitForAllJobsToFinish();
         String[] packageUrlsToAdd = { Jantje.additionalJsonURL };
         BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));

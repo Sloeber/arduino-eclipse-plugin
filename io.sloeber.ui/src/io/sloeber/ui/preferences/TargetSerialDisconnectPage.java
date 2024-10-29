@@ -12,7 +12,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
+import io.sloeber.core.api.Defaults;
 import io.sloeber.ui.Messages;
 
 public class TargetSerialDisconnectPage extends PreferencePage implements IWorkbenchPreferencePage {
@@ -21,21 +22,21 @@ public class TargetSerialDisconnectPage extends PreferencePage implements IWorkb
 
 	@Override
 	public boolean performOk() {
-		Preferences.setDisconnectSerialTargets(targetsText.getText());
+		ConfigurationPreferences.setDisconnectSerialTargets(targetsText.getText());
 		return true;
 	}
 
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		this.targetsText.setText(Preferences.getDefaultDisconnectSerialTargets());
+		this.targetsText.setText(Defaults.getDefaultDisconnectSerialTargets());
 	}
 
 	@Override
 	protected Control createContents(Composite parent) {
 		Composite control = new Composite(parent, SWT.NONE);
 		control.setLayout(new GridLayout());
-		String selectedTargets = Preferences.getDisconnectSerialTargets();
+		String selectedTargets = ConfigurationPreferences.getDisconnectSerialTargets();
 
 		// Composite control = new Composite(parent, SWT.NONE);
 		Label title = new Label(control, SWT.UP);

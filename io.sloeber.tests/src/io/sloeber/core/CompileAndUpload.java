@@ -39,7 +39,7 @@ import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.ISloeberConfiguration;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
@@ -98,7 +98,7 @@ public class CompileAndUpload {
 
 
 	public static void installAdditionalBoards() {
-		Preferences.setUseBonjour(false);
+		ConfigurationPreferences.setUseBonjour(false);
 		String[] packageUrlsToAdd = { ESP32.packageURL, ESP8266.packageURL };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));
 

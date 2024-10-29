@@ -467,8 +467,8 @@ public class Activator extends Plugin {
     private static synchronized void startup_BoardsManager(IProgressMonitor monitor) {
     	//ConfigurationPreferences.getUpdateJasonFilesFlag();
     	Instant currentTime=Instant.now();
-    	Instant latestUpdate= ConfigurationPreferences.getLatestUpdateTime();
-    	Duration requestedDelay=ConfigurationPreferences.getUpdateDelay();
+    	Instant latestUpdate= ConfigurationPreferences.getLatestJsonUpdateTime();
+    	Duration requestedDelay=ConfigurationPreferences.getJsonUpdateDelay();
     	Instant nextUpdate=latestUpdate.plus(requestedDelay);
     	boolean needsUpdate = nextUpdate.isBefore(currentTime);
 

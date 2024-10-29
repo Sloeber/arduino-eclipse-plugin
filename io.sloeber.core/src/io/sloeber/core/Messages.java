@@ -39,7 +39,8 @@ public class Messages extends NLS {
     public static String ArduinoSerial_unable_to_open_serial_port;
     public static String ArduinoSerial_Using_1200bps_touch;
     public static String ArduinoSerial_Using_comport;
-    public static String Boards_Failed_to_read_boards;
+    public static String BoardDescription_0;
+	public static String Boards_Failed_to_read_boards;
     public static String Boards_Get_menu_item_name_from_id_did_not_find;
     public static String Boards_menu_ID_not_found;
     public static String Boards_menu_name_not_found;

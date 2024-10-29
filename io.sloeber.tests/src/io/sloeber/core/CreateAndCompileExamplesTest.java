@@ -22,7 +22,7 @@ import io.sloeber.arduinoFramework.api.IExample;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
@@ -39,7 +39,7 @@ public class CreateAndCompileExamplesTest {
     public static Stream<Arguments> examples() throws Exception {
 		installAdditionalBoards();
 		Shared.waitForAllJobsToFinish();
-		Preferences.setUseBonjour(false);
+		ConfigurationPreferences.setUseBonjour(false);
 
 		MCUBoard myBoards[] = { Arduino.leonardo(),
 				Arduino.uno(),
