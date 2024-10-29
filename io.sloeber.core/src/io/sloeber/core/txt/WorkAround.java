@@ -64,6 +64,12 @@ public class WorkAround {
 		USB_replacers.put(" '-DARDUINO_BOARD=\"{build.board}\"' ", " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
 		USB_replacers.put(" -DARDUINO_BOARD=\"{build.board}\" ", " -DARDUINO_BOARD=\\\"{build.board}\\\" ");
 
+		USB_replacers.put(" -DARDUINO_VARIANT=\"${build.variant}\" ", " -DARDUINO_VARIANT=\\\"${build.variant}\\\" ");
+
+		USB.replacers.put("-DARDUINO_HOST_OS="${runtime.os}"", "-DARDUINO_HOST_OS=\\\"${runtime.os}\\\"");
+
+		USB.replacers.put(" -DARDUINO_FQBN="${build.fqbn}" ", " -DARDUINO_FQBN=\\\"${build.fqbn}\\\" ");
+
 		USB_replacers.put(" '-DUSB_SERIAL=\"{build.usb_serial}\"' ", " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ");
 		USB_replacers.put(" '-DUSB_SERIAL={build.usb_serial}' ", " \"-DUSB_SERIAL={build.usb_serial}\" ");
 
