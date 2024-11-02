@@ -129,6 +129,7 @@ public class ConfigurationPreferences {
 		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
 		long ret = myScope.getLong(key, 0);
 		if(ret==0) {
+			setInstant( key,  defaultValue);
 			return defaultValue;
 		}
 		return Instant.ofEpochSecond(ret);

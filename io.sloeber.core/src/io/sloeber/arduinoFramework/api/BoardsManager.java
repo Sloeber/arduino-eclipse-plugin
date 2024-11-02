@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -871,9 +872,12 @@ public class BoardsManager {
 	public static void update(boolean reloadFromInternet) {
 		synchronized (packageIndices) {
 			myIsUpdating =true;
-			if (myIsDirty) {
+			if (myIsDirty || reloadFromInternet) {
 				downloadJsons(reloadFromInternet);
 				readJsons();
+				if(reloadFromInternet) {
+					ConfigurationPreferences.setLatestUpdateTime(Instant.now());
+				}
 
 			}
 

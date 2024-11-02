@@ -4,6 +4,9 @@ import static io.sloeber.ui.Activator.*;
 
 import java.io.File;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IPath;
@@ -19,6 +22,8 @@ import org.eclipse.jface.preference.PathEditor;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -342,11 +347,44 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		gd17.horizontalSpan=2;
 		nuberLabel.setLayoutData(gd17);
 
+
+		Label lastJsonUpdateTimeLabel = new Label(netWorkbox, SWT.BEGINNING);
+		lastJsonUpdateTimeLabel.setText(Messages.PreferencePage_json_Download_date);
+		GridData gd19 = new GridData(SWT.BEGINNING, SWT.TOP, false, false);
+		gd19.horizontalSpan=2;
+		lastJsonUpdateTimeLabel.setLayoutData(gd19);
+		Label lastJsonUpdateTime = new Label(netWorkbox, SWT.BEGINNING);
+		lastJsonUpdateTime.setText(getLatestJsonUpdateTime());
+		Button updateJsonFileNowButton =new Button(netWorkbox, SWT.PUSH | SWT.LEFT );
+		updateJsonFileNowButton.setText(Messages.PreferencePage_Update_json_files_now);
+		updateJsonFileNowButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				BoardsManager.update(true);
+				lastJsonUpdateTime.setText(getLatestJsonUpdateTime());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+
 		myBonjourCheckBox.setSelection(ConfigurationPreferences.useBonjour());
 		setJsonDurationComposites(ConfigurationPreferences.getJsonUpdateDelay());
 
 	}
 
+	private static String getLatestJsonUpdateTime() {
+		DateTimeFormatter formatter =
+			    DateTimeFormatter.ofPattern( "uuuu-MM-dd HH-mm" ) //$NON-NLS-1$
+			    .withZone(ZoneId.systemDefault());
+		Instant instant =ConfigurationPreferences.getLatestJsonUpdateTime();
+		return formatter.format(instant);
+	}
 	/**
 	 * testStatus test whether the provided information is OK. Here the code
 	 * checks whether there is a hardware\arduino\board.txt file under the

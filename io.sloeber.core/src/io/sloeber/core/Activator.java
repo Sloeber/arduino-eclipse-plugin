@@ -478,7 +478,6 @@ public class Activator extends Plugin {
 //    	boolean needsUpdate = currentTime>(requestedDelay+latestUpdate);
     	if(needsUpdate) {
     		BoardsManager.update(true );
-    		ConfigurationPreferences.setLatestUpdateTime(currentTime);
     	}else {
     		BoardsManager.update(false );
     	}

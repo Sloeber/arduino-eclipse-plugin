@@ -72,11 +72,15 @@ public class Messages extends NLS {
 
 	public static String PreferencePage_Internal_Behaviour_Group_Title;
 
+	public static String PreferencePage_json_Download_date;
+
 	public static String PreferencePage_months;
 
 	public static String PreferencePage_Network_Group_Title;
 
 	public static String PreferencePage_UI_Behaviour_Group_Title;
+
+	public static String PreferencePage_Update_json_files_now;
 
 	public static String PreferencePage_update_interval;
 
