@@ -22,9 +22,9 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
    </configIni>
 
    <launcherArgs>
-      <programArgs>--launcher.defaultAction openFile
+      <programArgs>-perspective (io.sloeber.product.perspective)
+--launcher.defaultAction openFile
 --launcher.appendVmargs
---perspective io.sloeber.product.perspective
       </programArgs>
       <vmArgs>-Dorg.eclipse.update.reconcile=false
 -Dlog4j.configuration=log4j/log4j.xml
