@@ -71,6 +71,10 @@ public class BoardDescription {
 
 	private boolean myIsDirty = true;
 
+	public String jsonURL() {
+		return myJsonURL;
+	}
+
 	@Override
 	public String toString() {
 		return getReferencingBoardsFile() + " \"" + getBoardName() + "\" " + getUploadPort(); //$NON-NLS-1$//$NON-NLS-2$
