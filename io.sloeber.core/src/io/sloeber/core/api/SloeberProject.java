@@ -16,7 +16,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -45,6 +44,7 @@ import io.sloeber.autoBuild.integration.AutoBuildManager;
 import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.natures.SloeberNature;
@@ -60,7 +60,7 @@ public class SloeberProject extends Common {
 	public static void convertToArduinoProject(IProject project, IProgressMonitor monitor) {
 		if (project == null) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					"The provided project is null. Sloeber can not upgrade."));
+					Messages.SloeberProject_Project_is_null));
 			return;
 		}
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();

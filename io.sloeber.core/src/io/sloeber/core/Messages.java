@@ -118,6 +118,7 @@ public class Messages extends NLS {
 	public static String CompileDescription_WarningsDefault;
 	public static String CompileDescription_WarningsMore;
 	public static String CompileDescription_WarningsNone;
+	public static String SloeberProject_Project_is_null;
 
     static {
         // initialize resource bundle
