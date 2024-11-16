@@ -77,7 +77,7 @@ public class BoardsManager {
 	}
 
 	public static boolean isReady() {
-		return !(myIsDirty || myIsUpdating);
+		return !(myIsDirty || myIsUpdating || envVarsNeedUpdating);
 	}
 
 	/**

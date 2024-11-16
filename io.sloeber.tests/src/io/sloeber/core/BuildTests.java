@@ -109,6 +109,8 @@ public class BuildTests {
         Teensy.installLatest();
         Arduino.installLatestSamDBoards();
         LibraryManager.installLibrary("RTCZero");
+        BoardsManager.update(false);
+        Shared.waitForBoardsManager();
 
     }
 
@@ -605,7 +607,7 @@ public class BuildTests {
         boardDescriptor = ESP32.esp32().getBoardDescriptor();
         boardDescriptor.setUploadPort("host 10.10.10.10");
         recipeKey = boardDescriptor.getUploadPatternKey();
-        assertEquals( "tools.esptool_py.upload.network_pattern", recipeKey,"ESP OTA upload recipe key is wrong");
+        assertEquals( "tools.esptool_py.upload.network_pattern", recipeKey,"ESP OTA upload recipe key is wrong "+boardDescriptor.jsonURL());
 
     }
 
