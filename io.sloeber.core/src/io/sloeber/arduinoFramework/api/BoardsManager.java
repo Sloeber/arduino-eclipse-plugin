@@ -103,7 +103,7 @@ public class BoardsManager {
 	static public BoardDescription getBoardDescription(String jsonURL, String packageName, String architectureID,
 			String boardID, Map<String, String> options) {
 		if (LOCAL.equals(jsonURL)) {
-			return new BoardDescription(new File(packageName), boardID, options);
+			return new BoardDescription(jsonURL,new File(packageName), boardID, options);
 		}
 		update(false);
 		return getNewestBoardIDFromBoardsManager(jsonURL, packageName, architectureID, boardID, options);
@@ -124,7 +124,7 @@ public class BoardsManager {
 		}
 		IArduinoPlatformVersion platformVersion = platform.getNewestVersion();
 		java.io.File boardsFile = platformVersion.getBoardsFile();
-		BoardDescription boardid = new BoardDescription(boardsFile, boardID, options);
+		BoardDescription boardid = new BoardDescription(jsonURL,boardsFile, boardID, options);
 
 		return boardid;
 	}
@@ -680,7 +680,7 @@ public class BoardsManager {
 //		return platforms;
 //	}
 
-	public static IArduinoPlatform getPlatform(String vendor, String architecture) {
+	public static IArduinoPlatform getPlatform( String vendor, String architecture) {
 		if (myIsDirty) {
 			Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
 			return null;
@@ -835,7 +835,7 @@ public class BoardsManager {
 		}
 	}
 
-	public static IArduinoPlatformVersion getPlatform(String vendor, String architecture, VersionNumber refVersion) {
+	public static IArduinoPlatformVersion getPlatform( String vendor, String architecture, VersionNumber refVersion) {
 		IArduinoPlatform platform = getPlatform(vendor, architecture);
 		if (platform != null) {
 			return platform.getVersion(refVersion);
@@ -907,6 +907,23 @@ public class BoardsManager {
 			}
 		}
 		myIsUpdating=false;
+	}
+
+	public static String getjsonURLFormBoardsFile(File boardsFile) {
+		File expandedBoardsFile = resolvePathEnvironmentString(boardsFile);
+		String ret=null;
+		for (IArduinoPlatformPackageIndex index : packageIndices) {
+			ret=index.getJsonURL();
+			for (IArduinoPackage pkg : index.getPackages()) {
+				for (IArduinoPlatformVersion platformVersion : pkg.getInstalledPlatforms()) {
+
+					if(platformVersion.getBoardsFile().equals(expandedBoardsFile)) {
+						return ret;
+					}
+				}
+			}
+		}
+		return ret;
 	}
 
 }

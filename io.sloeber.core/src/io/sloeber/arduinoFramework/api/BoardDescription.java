@@ -37,7 +37,6 @@ import io.sloeber.autoBuild.helpers.api.KeyValueTree;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.ConfigurationPreferences;
-import io.sloeber.core.api.Const;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
@@ -66,14 +65,10 @@ public class BoardDescription {
 	private IArduinoPlatformVersion myReferencedPlatformVariant = null;
 	private IArduinoPlatformVersion myReferencedPlatformCore = null;
 	private IArduinoPlatformVersion myReferencedPlatformUpload = null;
-	private String myJsonFileName = null;
 	private String myJsonURL = null;
 
 	private boolean myIsDirty = true;
 
-	public String jsonURL() {
-		return myJsonURL;
-	}
 
 	@Override
 	public String toString() {
@@ -281,7 +276,7 @@ public class BoardDescription {
 			Map<String, String> boardSection = txtFile.getSection(curboardID);
 			if (boardSection != null) {
 				if (!"true".equalsIgnoreCase(boardSection.get("hide"))) { //$NON-NLS-1$ //$NON-NLS-2$
-					boards.add(new BoardDescription(boardFile, curboardID, null));
+					boards.add(new BoardDescription(null,boardFile, curboardID, null));
 				}
 			}
 		}
@@ -296,16 +291,21 @@ public class BoardDescription {
      * @param options
      *            if null default options are taken
 	 */
-	public BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
+	public BoardDescription(String jsonURL,File boardsFile, String boardID, Map<String, String> options) {
+
 		File expandedBoardsFile = resolvePathEnvironmentString(boardsFile);
 		if (!expandedBoardsFile.exists()) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), "BoardsFile " + boardsFile + " does not exist")); //$NON-NLS-1$//$NON-NLS-2$
 			return;
 		}
+		if (jsonURL != null) {
+			myJsonURL = jsonURL;
+		} else {
+			myJsonURL = BoardsManager.getjsonURLFormBoardsFile(expandedBoardsFile);
+		}
 		myBoardID = boardID;
 		myUserSelectedBoardsTxtFile = boardsFile;
 		mySloeberBoardTxtFile = new BoardTxtFile(expandedBoardsFile);
-		getJSonInfo();
 		setDefaultOptions();
 		if (options != null) {
 			myOptions.putAll(options);
@@ -316,13 +316,13 @@ public class BoardDescription {
 		myUserSelectedBoardsTxtFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
 		if (!myUserSelectedBoardsTxtFile.exists()) {
 
-			IArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
+			IArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform( VENDOR_ARDUINO, AVR);
 			if (platform == null) {
 				platform = BoardsManager.getAnyInstalledPlatform();
 			}
 			myUserSelectedBoardsTxtFile = platform.getBoardsFile();
 			mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
-			getJSonInfo(platform);
+			myJsonURL= BoardsManager.getjsonURLFormBoardsFile(myUserSelectedBoardsTxtFile);
 
 			if (mySloeberBoardTxtFile.getAllBoardIDs().contains(UNO)) {
 				myBoardID = UNO;
@@ -335,38 +335,16 @@ public class BoardDescription {
 			myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
 			myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
 			myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
-			myJsonFileName = myStorageNode.get(KEY_LAST_USED_JSON_FILENAME, EMPTY);
 			myJsonURL = myStorageNode.get(KEY_LAST_USED_JSON_URL, EMPTY);
 			myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
 		}
 
 	}
 
-	private void getJSonInfo(IArduinoPlatformVersion platform) {
-		IArduinoPlatformPackageIndex packageIndex = platform.getParent().getParent().getPackageIndex();
-		myJsonFileName = packageIndex.getJsonFile().getName();
-		myJsonURL = packageIndex.getJsonURL();
-	}
-
-	private void getJSonInfo() {
-		IArduinoPlatformVersion platform = BoardsManager.getNewestInstalledPlatform(getVendor(), getArchitecture());
-		if (platform == null) {
-			platform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO, AVR);
-		}
-		if (platform == null) {
-			platform = BoardsManager.getAnyInstalledPlatform();
-		}
-		if (platform != null) {
-			myUserSelectedBoardsTxtFile = platform.getBoardsFile();
-			mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
-			getJSonInfo(platform);
-		}
-	}
 
 	public BoardDescription(BoardDescription srcObject) {
 		myUserSelectedBoardsTxtFile = srcObject.myUserSelectedBoardsTxtFile;
 		mySloeberBoardTxtFile = srcObject.mySloeberBoardTxtFile;
-		myJsonFileName = srcObject.myJsonFileName;
 		myJsonURL = srcObject.myJsonURL;
 		myBoardID = srcObject.myBoardID;
 		myUploadPort = srcObject.myUploadPort;
@@ -424,7 +402,6 @@ public class BoardDescription {
 		myStorageNode.put(KEY_LAST_USED_BOARD, myBoardID);
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, myUploadPort);
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, myProgrammer);
-		myStorageNode.put(KEY_LAST_USED_JSON_FILENAME, myJsonFileName);
 		myStorageNode.put(KEY_LAST_USED_JSON_URL, myJsonURL);
 		myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(myOptions));
 	}
@@ -768,13 +745,6 @@ public class BoardDescription {
 		return getHost() != null;
 	}
 
-	protected BoardDescription(File boardsFile, String boardID) {
-		myBoardID = boardID;
-		myUserSelectedBoardsTxtFile = boardsFile;
-		mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
-		calculateDerivedFields();
-		getJSonInfo();
-	}
 
 	BoardDescription(TxtFile configFile, String prefix) {
 
@@ -788,7 +758,6 @@ public class BoardDescription {
 		Map<String, String> options = optionsTree.toKeyValues(EMPTY);
 
 		KeyValueTree boardSection = tree.getChild(BOARD);
-		myJsonFileName = boardSection.getValue(JSON_NAME);
 		myJsonURL = boardSection.getValue(JSON_URL);
 
 		myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(board_txt));
@@ -814,7 +783,6 @@ public class BoardDescription {
 		String txtFile = boardvalueTree.getValue(KEY_SLOEBER_BOARD_TXT);
 
 		KeyValueTree jSonvalueTree = keyValues.getChild(KEY_JSON);
-		myJsonFileName = jSonvalueTree.getValue(KEY_JSON_FILENAME);
 		myJsonURL = jSonvalueTree.getValue(KEY_JSON_URL);
 
 		myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(txtFile));
@@ -869,26 +837,12 @@ public class BoardDescription {
 		boardvalueTree.addChild(KEY_SLOEBER_BOARD_TXT, board_txt);
 
 		KeyValueTree jSonvalueTree = keyValueTree.addChild(KEY_JSON);
-		jSonvalueTree.addChild(KEY_JSON_FILENAME, myJsonFileName);
 		jSonvalueTree.addChild(KEY_JSON_URL, myJsonURL);
 
 		KeyValueTree menuvalueTree = keyValueTree.addChild(KEY_SLOEBER_MENU_SELECTION);
 		for (Entry<String, String> curOption : myOptions.entrySet()) {
 			menuvalueTree.addValue(curOption.getKey(), curOption.getValue());
 		}
-
-//        allVars.put(KEY_SLOEBER_PROGRAMMER, myProgrammer);
-//        allVars.put(KEY_SLOEBER_BOARD_ID, myBoardID);
-//        allVars.put(KEY_SLOEBER_BOARD_TXT, board_txt);
-//        allVars.put(KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
-//
-//        allVars.put(KEY_JSON_FILENAME, myJsonFileName);
-//        allVars.put(KEY_JSON_URL, myJsonURL);
-//
-//        for (Entry<String, String> curOption : myOptions.entrySet()) {
-//            allVars.put(KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
-//        }
-//        return allVars;
 	}
 
 	private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
@@ -1065,7 +1019,7 @@ public class BoardDescription {
 		ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
 
 		BoardsManager.update(false);// This way we know the boardsmanager is started or we wait for the lock
-		IArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.VENDOR_ARDUINO,
+		IArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(VENDOR_ARDUINO,
 				getArchitecture());
 		ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
 

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -34,6 +36,7 @@ import org.eclipse.core.runtime.SubMonitor;
 
 import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
+import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
@@ -129,6 +132,18 @@ public class SloeberProject extends Common {
 				SloeberNature.addNature(project, internalMonitor);
 				ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project, true);
 
+				// Get the libraries used
+				Set<String> libNames = new HashSet<>();
+				IFolder libFolder = OldCoreFolder.getFolder("libraries"); //$NON-NLS-1$
+				if (libFolder.exists()) {
+					for (IResource curResource : libFolder.members()) {
+						if (curResource instanceof IFolder) {
+							IFolder curFolder = (IFolder) curResource;
+							libNames.add(curFolder.getName());
+						}
+					}
+				}
+
 
 				IConfiguration defaultConfig = projectType.getConfigurations()[0];
 				for(String cfgName:cfgNames) {
@@ -194,6 +209,17 @@ public class SloeberProject extends Common {
 					autoConf.setIsParallelBuild(compileDescriptor.isParallelBuildEnabled());
 					SloeberConfiguration sloeberConfiguration = new SloeberConfiguration(boardDescriptor, otherDesc,
 							compileDescriptor);
+
+					// Add the libraries
+					TreeMap<String, IArduinoLibraryVersion> availableLibs = LibraryManager
+							.getLibrariesAll(boardDescriptor);
+					// find the libs we can add
+					Set<IArduinoLibraryVersion> toInstallLibs = new HashSet<>();
+					for (String curLibName : libNames) {
+						toInstallLibs.add(availableLibs.get(curLibName));
+					}
+					sloeberConfiguration.addLibraries(toInstallLibs);
+
 					//Save the sloeber configuration in the autoBuild configuration
 					autoConf.setAutoBuildConfigurationExtensionDescription(sloeberConfiguration);
 				}
@@ -301,7 +327,7 @@ public class SloeberProject extends Common {
 		}
 		File boardsFile=foundBoardsFilePath.toFile();// new File(boardsFileString);
 
-		BoardDescription ret= new BoardDescription( boardsFile,  boardID, options);
+		BoardDescription ret= new BoardDescription( null,boardsFile,  boardID, options);
 		String uploadPort=oldConfig.getValue("board.UPLOAD.PORT"); //$NON-NLS-1$
 		ret.setUploadPort(uploadPort);
 
