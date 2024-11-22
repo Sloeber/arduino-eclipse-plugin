@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -250,7 +251,9 @@ public class Common {
     }
 
     public static void deleteDirectory(Path directory) throws IOException {
-        Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        try( Stream<Path> stream = Files.walk(directory)){
+        	stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        }
     }
 
     /**
