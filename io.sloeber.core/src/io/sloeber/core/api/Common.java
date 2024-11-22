@@ -114,7 +114,7 @@ public class Common {
      * @return a name safe to create files or folders
      */
     public static String makeNameCompileSafe(String name) {
-        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#' };
+        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#', '"' };
         String ret = name.trim();
         for (char curchar : badChars) {
             ret = ret.replace(curchar, '_');
