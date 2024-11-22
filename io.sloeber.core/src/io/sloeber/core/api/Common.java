@@ -109,12 +109,14 @@ public class Common {
      * allowed in Unix filenames, see Note 1 > greater than used to redirect output,
      * allowed in Unix filenames, see Note 1 . period or dot
      *
+     * Though " and & are allowed they confuse cmd commands
+     *
      * @param name
      *            the string that needs to be checked
      * @return a name safe to create files or folders
      */
     public static String makeNameCompileSafe(String name) {
-        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#', '"' };
+        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#', '"', '&' };
         String ret = name.trim();
         for (char curchar : badChars) {
             ret = ret.replace(curchar, '_');
