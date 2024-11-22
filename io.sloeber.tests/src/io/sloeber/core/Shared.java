@@ -199,7 +199,7 @@ public class Shared {
 	public static String buildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
 			CompileDescription compileOptions) throws Exception {
 
-		String projectName = getCounterName(boardDescriptor.getBoardID());
+		String projectName = getCounterName(boardDescriptor);
 		IExample example = codeDescriptor.getLinkedExample();
 		if (example != null) {
 			Collection<IArduinoLibraryVersion> lib = example.getArduinoLibraries();
@@ -335,6 +335,11 @@ public class Shared {
 	public static String getCounterName(String name) {
 		return getCounterName("%05d_%s", name);
 	}
+
+	public static String getCounterName( BoardDescription boardDescriptor) {
+		return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), boardDescriptor.getVendor(),boardDescriptor.getBoardName());
+	}
+
 
 	public static String getCounterName(String format, String name) {
 		return String.format(format, Integer.valueOf(myTestCounter++), name);
