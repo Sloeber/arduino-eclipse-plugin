@@ -159,6 +159,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			"Generic STM32F103Z series",// confirmed failing in arduino IDE 2020 05 30
 
 			"Arduino Nano ESP32",// requires recipe.hooks.core.prebuild and recipe.hooks.core.postbuild
+			"Snō",//fails in arduino ide 2024 11 22
+			"OpenXLR8 - Snō",//fails in arduino ide 2024 11 22
 
 	};
 	private static final String[] boardsToIgnoreOnWindows = {
@@ -307,7 +309,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		List<BoardDescription> boards = new ArrayList<>();
 		for (File curBoardFile : BoardsManager.getAllBoardsFiles()) {
 			System.out.println("Adding boards of " + curBoardFile.toString());
-			boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile));
+				boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile));
+
 		}
 
 		HashSet<String> boardsToIgnoreList = new HashSet<>(Arrays.asList(boardsToIgnoreOnAllOses));
@@ -356,8 +359,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
 		}
 		BoardsManager.addPackageURLs(toAddList);
-		
-		
+
+
 		if (!skipPlatformInstallation) {
 			BoardsManager.installAllLatestPlatforms();
 			// PackageManager.installsubsetOfLatestPlatforms(0,5);
