@@ -110,18 +110,23 @@ public class Common {
      * allowed in Unix filenames, see Note 1 > greater than used to redirect output,
      * allowed in Unix filenames, see Note 1 . period or dot
      *
-     * Though " and & are allowed they confuse cmd commands
+     *
+     * Though { " & + @ } ; are allowed according to the above info they do confuse cmd
+     * commands so I also remove them
+     *
+     * multiple underscores are also concatenated to 1 underscore
      *
      * @param name
      *            the string that needs to be checked
      * @return a name safe to create files or folders
      */
     public static String makeNameCompileSafe(String name) {
-        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#', '"', '&' };
+        char[] badChars = { ' ', '/', '.', ':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-', '#', '"', '&' ,'+' ,'@', ';' };
         String ret = name.trim();
         for (char curchar : badChars) {
             ret = ret.replace(curchar, '_');
         }
+        ret = ret.replace("__", "_"); //$NON-NLS-1$ //$NON-NLS-2$
         return ret;
     }
 
@@ -176,8 +181,8 @@ public class Common {
     static public String getBuildEnvironmentVariable(ISloeberConfiguration sloeberConf, String envName,
             String defaultvalue, boolean expanded) {
         if (sloeberConf != null) {
-        	IAutoBuildConfigurationDescription autoDesc= sloeberConf.getAutoBuildDesc();
-        	return AutoBuildCommon.getVariableValue(envName, defaultvalue, expanded, autoDesc);
+            IAutoBuildConfigurationDescription autoDesc= sloeberConf.getAutoBuildDesc();
+            return AutoBuildCommon.getVariableValue(envName, defaultvalue, expanded, autoDesc);
 //            IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 //            try {
 //                ICConfigurationDescription configurationDescription = sloeberConf.getAutoBuildDesc()
@@ -212,9 +217,9 @@ public class Common {
      * @return modified string or the original
      */
     public static String makePathVersionString(File file) {
-    	if(sloeberHomePath.isPrefixOf(IPath.fromFile(file))) {
-    		return SLOEBER_HOME_VAR+SLACH+IPath.fromFile(file).makeRelativeTo(sloeberHomePath).toString();
-    	}
+        if(sloeberHomePath.isPrefixOf(IPath.fromFile(file))) {
+            return SLOEBER_HOME_VAR+SLACH+IPath.fromFile(file).makeRelativeTo(sloeberHomePath).toString();
+        }
         return file.toString();
     }
 
@@ -228,9 +233,9 @@ public class Common {
 
         String retString = file.getPath();
         if (retString.startsWith(SLOEBER_HOME_VAR)) {
-        	retString=retString.replace(SLOEBER_HOME_VAR, EMPTY_STRING);
-        	return sloeberHomePath.append(retString).toFile();
-        	//.replace(SLOEBER_HOME_VAR, sloeberHomePathToString);
+            retString=retString.replace(SLOEBER_HOME_VAR, EMPTY_STRING);
+            return sloeberHomePath.append(retString).toFile();
+            //.replace(SLOEBER_HOME_VAR, sloeberHomePathToString);
         }
         return new File(retString);
     }
@@ -252,7 +257,7 @@ public class Common {
 
     public static void deleteDirectory(Path directory) throws IOException {
         try( Stream<Path> stream = Files.walk(directory)){
-        	stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         }
     }
 
