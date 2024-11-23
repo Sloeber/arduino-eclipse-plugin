@@ -45,7 +45,7 @@ import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
-	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 06 "; //$NON-NLS-1$
+	private static final String FIRST_SLOEBER_LINE = "#Sloeber created file please do not modify V1.00.test 07 "; //$NON-NLS-1$
 	private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
 	/*
@@ -1072,7 +1072,7 @@ public class BoardDescription {
 			for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
 				IPath installPath = tool.getInstallPath();
 				if (installPath.toFile().exists()) {
-					String value = installPath.toString();
+					String value = installPath.toOSString();
 					String keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
 					vars = vars + NEWLINE + keyString + EQUAL + value;
 					keyString = ENV_KEY_RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;

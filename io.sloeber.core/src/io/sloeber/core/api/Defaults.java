@@ -49,7 +49,7 @@ public class Defaults {
         if (isMac || isWindows) {
             homPath = homPath.append("Documents");
         }
-        return homPath.append("Arduino").append(ARDUINO_LIBRARY_FOLDER_NAME).toString();
+        return homPath.append("Arduino").append(ARDUINO_LIBRARY_FOLDER_NAME).toOSString();
     }
 
     public static String getPrivateHardwarePath() {
@@ -57,7 +57,7 @@ public class Defaults {
         if (isMac || isWindows) {
             homPath = homPath.append("Documents");
         }
-        return homPath.append("Arduino").append(ARDUINO_HARDWARE_FOLDER_NAME).toString();
+        return homPath.append("Arduino").append(ARDUINO_HARDWARE_FOLDER_NAME).toOSString();
     }
 
     public static String getDefaultDisconnectSerialTargets() {

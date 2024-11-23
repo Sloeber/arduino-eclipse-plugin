@@ -92,7 +92,7 @@ public class MinGWBuildTools implements IBuildTools {
 
 	@Override
 	public String getDiscoveryCommand(ToolType toolType) {
-		return getToolLocation().append( getCommand(toolType)).toString() +DISCOVERY_PARAMETERS;
+		return getToolLocation().append( getCommand(toolType)).toOSString() +DISCOVERY_PARAMETERS;
 	}
 
 	@Override

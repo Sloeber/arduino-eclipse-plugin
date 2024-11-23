@@ -1,7 +1,7 @@
 #this file contains default/fallback/rescue values
 software=ARDUINO
 archive_file=arduino.ar
-archive_file_path=${build.path}/${archive_file}
+archive_file_path=${build.path}${PathDelimiter}${archive_file}
 ide_version=20302
 
 serial.port=${com_port}

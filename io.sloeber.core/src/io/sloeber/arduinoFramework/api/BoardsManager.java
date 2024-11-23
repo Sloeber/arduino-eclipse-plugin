@@ -416,7 +416,7 @@ public class BoardsManager {
 			deleteDirectory(installFolder);
 			envVarsNeedUpdating = true;
 		} catch (IOException e) {
-			return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toString(), //$NON-NLS-1$
+			return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toOSString(), //$NON-NLS-1$
 					e);
 		}
 

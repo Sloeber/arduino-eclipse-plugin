@@ -288,7 +288,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 								IFile file = project.getWorkspace().getRoot()
 										.getFile(IPath.forPosix(curEntry.getValue()));
 								includeFiles = includeFiles + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_INCLUDE_FILE
-										+ file.getLocation().toString() + DOUBLE_QUOTE;
+										+ file.getLocation().toOSString() + DOUBLE_QUOTE;
 								break;
 							}
 							case ICSettingEntry.INCLUDE_PATH: {
@@ -300,7 +300,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 
 								}else {
 								includePath = includePath + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_INCLUDE_FOLDER
-										+ path.toString() + DOUBLE_QUOTE;
+										+ path.toOSString() + DOUBLE_QUOTE;
 								}
 								break;
 							}

@@ -206,12 +206,12 @@ public class ConfigurationPreferences {
 	}
 
 	public static Path getMakePath() {
-		return new Path(getInstallationPath().append("tools/make").toString()); //$NON-NLS-1$
+		return new Path(getInstallationPath().append("tools/make").toOSString()); //$NON-NLS-1$
 
 	}
 
 	public static IPath getAwkPath() {
-		return new Path(getInstallationPath().append("tools/awk").toString()); //$NON-NLS-1$
+		return new Path(getInstallationPath().append("tools/awk").toOSString()); //$NON-NLS-1$
 	}
 
 	public static Instant getLatestJsonUpdateTime() {

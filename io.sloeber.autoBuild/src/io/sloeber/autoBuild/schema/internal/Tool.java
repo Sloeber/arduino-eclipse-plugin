@@ -562,7 +562,7 @@ public class Tool extends SchemaObject implements ITool {
             IPath toolPath = buildTools.getToolLocation();
             if (toolPath != null && !toolPath.toString().isBlank()) {
                 //store the path
-                toolCommandVars.put(CMD_LINE_TOOL_PATH, toolPath.toString().trim() + SLACH);
+                toolCommandVars.put(CMD_LINE_TOOL_PATH, toolPath.toOSString().trim() + PATH_SEPERATOR);
             }
             Map<String, String> toolVariables = buildTools.getToolVariables();
             if (toolVariables != null && toolVariables.size() > 0) {

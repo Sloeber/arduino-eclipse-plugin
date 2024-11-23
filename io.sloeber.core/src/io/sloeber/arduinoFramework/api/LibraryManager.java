@@ -174,7 +174,7 @@ public class LibraryManager {
 			deleteDirectory(lib.getInstallPath().removeLastSegments(1));
 		} catch (IOException e) {
 			return new Status(IStatus.ERROR, Activator.getId(),
-					"Failed to remove folder" + lib.getInstallPath().toString(), //$NON-NLS-1$
+					"Failed to remove folder" + lib.getInstallPath().toOSString(), //$NON-NLS-1$
 					e);
 		}
 

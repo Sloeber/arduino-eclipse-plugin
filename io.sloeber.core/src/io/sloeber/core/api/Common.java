@@ -31,7 +31,7 @@ public class Common {
 
     public final static String sloeberHome = getSloeberHome();
     public final static IPath sloeberHomePath = new org.eclipse.core.runtime.Path(sloeberHome);
-    public final static String sloeberHomePathToString = sloeberHomePath.toString();
+    public final static String sloeberHomePathToString = sloeberHomePath.toOSString();
 
     private static String getSloeberHome() {
 
@@ -213,7 +213,7 @@ public class Common {
      */
     public static String makePathVersionString(File file) {
     	if(sloeberHomePath.isPrefixOf(IPath.fromFile(file))) {
-    		return SLOEBER_HOME_VAR+SLACH+IPath.fromFile(file) .makeRelativeTo(sloeberHomePath).toString();
+    		return SLOEBER_HOME_VAR+SLACH+IPath.fromFile(file).makeRelativeTo(sloeberHomePath).toString();
     	}
         return file.toString();
     }

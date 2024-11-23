@@ -368,7 +368,7 @@ public class AutoBuildCommon {
     static public String GetNiceFileName(IPath buildPath, IPath filePath) {
         String ret;
         if (buildPath.isPrefixOf(filePath) || buildPath.removeLastSegments(3).isPrefixOf(filePath)) {
-            ret = filePath.makeRelativeTo(buildPath).toString();
+            ret = filePath.makeRelativeTo(buildPath).toOSString();
         } else {
             ret = filePath.toString();
         }
