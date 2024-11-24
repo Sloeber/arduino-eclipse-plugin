@@ -35,6 +35,7 @@ import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Const;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.ISloeberConfiguration;
@@ -124,7 +125,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 
 		//Check wether we need to download and install libraries
 		IInstallLibraryHandler installHandler = LibraryManager.getInstallLibraryHandler();
-		if (installHandler.autoInstall()) {
+		if (ConfigurationPreferences.getInstallLibraries() && installHandler.autoInstall()) {
 			// Check if there are libraries that are not found in
 			// the installed libraries
 			Set<String> uninstalledIncludedHeaders = new TreeSet<>(UnresolvedIncludedHeaders);

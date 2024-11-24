@@ -250,4 +250,21 @@ public class ConfigurationPreferences {
 		return Duration.ofDays(ret);
 	}
 
+	/**
+	 * Allow the library manager to download and install libraries based on include directive in the source code.
+	 *
+	 * @param selection true if you want to install libraries based on their usage else false
+	 */
+	public static void setInstallLibraries(boolean selection) {
+		InstancePreferences.setInstallLibraries(selection);
+	}
+
+	/**
+	 *
+	 * @return true when libraries can be downloaded and installed when referenced in the code.
+	 */
+	public static boolean getInstallLibraries() {
+		return  InstancePreferences.getInstallLibraries();
+	}
+
 }

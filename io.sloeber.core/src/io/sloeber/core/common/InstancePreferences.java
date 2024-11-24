@@ -28,6 +28,7 @@ public class InstancePreferences {
 	private static final String KEY_PRAGMA_ONCE_HEADER = "add pragma once to headers"; //$NON-NLS-1$
 	private static final String KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM="Use the algoritm to find the toolchain like Arduino IDE"; //$NON-NLS-1$
 	private static final String KEY_USE_BONJOUR="use bonjour service to find devices"; //$NON-NLS-1$
+	private static final String KEY_INSTALL_LIBRARIES= "download and install libraries on usage"; //$NON-NLS-1$
 
 	/**
 	 * Give back the user option if the libraries need to be added or not
@@ -140,5 +141,13 @@ public class InstancePreferences {
 	 */
 	public static void setUseBonjour(boolean newFlag) {
 		setValue(KEY_USE_BONJOUR, newFlag);
+	}
+
+	public static void setInstallLibraries(boolean selection) {
+		setValue(KEY_INSTALL_LIBRARIES, selection);
+	}
+
+	public static boolean getInstallLibraries() {
+		return getBoolean(KEY_INSTALL_LIBRARIES, Defaults.INSTALL_LIBRARIES);
 	}
 }

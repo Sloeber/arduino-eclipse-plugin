@@ -36,6 +36,7 @@ public class Defaults {
     public static final boolean useBonjour = true;
     public static final boolean autoInstallLibraries = true;
     public static final boolean useArduinoToolSelection = true;
+	public static final boolean INSTALL_LIBRARIES =false; //Install libraries on usage
 
     /**
      * Arduino has the default libraries in the user home directory in subfolder

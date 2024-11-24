@@ -69,23 +69,23 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private static final String KEY_PRIVATE_HARDWARE_PATHS = "Gui entry for private hardware paths"; //$NON-NLS-1$
 	private static final String KEY_PRIVATE_LIBRARY_PATHS = "Gui entry for private library paths"; //$NON-NLS-1$
 	private static final String KEY_TOOLCHAIN_SELECTION = "Gui entry for toolchain selection"; //$NON-NLS-1$
-	//private static final String KEY_USE_BONJOUR = "Gui entry for usage of bonjour"; //$NON-NLS-1$
+
 
 	private PathEditor arduinoPrivateLibPathPathEditor;
 	private PathEditor arduinoPrivateHardwarePathPathEditor;
 	private ComboFieldEditor buildBeforeUploadOptionEditor;
 	private BooleanFieldEditor openSerialMonitorOpensSerialsOptionEditor;
 	private BooleanFieldEditor automaticallyImportLibrariesOptionEditor;
-	//private BooleanFieldEditor automaticallyInstallLibrariesOptionEditor;
 	private BooleanFieldEditor useArduinoToolchainSelectionEditor;
 	private BooleanFieldEditor pragmaOnceHeaderOptionEditor;
 	private BooleanFieldEditor cleanSerialMonitorAfterUploadEditor;
 	private BooleanFieldEditor switchToSerialMonitorAfterUploadEditor;
 	private BooleanFieldEditor enableParallelBuildForNewProjects;
-	//private BooleanFieldEditor enableBonjour;
+
 	private Button myBonjourCheckBox;
 	private Spinner myDelayNumberSpinner;
 	private Combo myDelayUnitCombo;
+	private Button myInstallLibCheckBox;
 
 	private static int[] durationUnits = new int[] { 1, 7, 30, 365, 36500 };
 
@@ -154,6 +154,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
         ConfigurationPreferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());
         ConfigurationPreferences.setPragmaOnceHeaders(this.pragmaOnceHeaderOptionEditor.getBooleanValue());
         ConfigurationPreferences.setUseBonjour(myBonjourCheckBox.getSelection());
+        ConfigurationPreferences.setInstallLibraries(myInstallLibCheckBox.getSelection());
+
         //TOFIX line below
         ConfigurationPreferences.setJsonUpdateDelay(Duration.ofDays(myDelayNumberSpinner.getSelection() * durationUnits[myDelayUnitCombo.getSelectionIndex()]));
 		BoardsManager.setPrivateHardwarePaths(hardWarePaths);
@@ -321,12 +323,12 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Dialog.applyDialogFont(netWorkbox);
 
 		//Currently sloeber does not autoinstall librtaries
-//		Button myInstallLibCheckBox = new Button(netWorkbox, SWT.CHECK | SWT.LEFT);
-//		Label inStallLabel = new Label(netWorkbox, SWT.BEGINNING);
-//		inStallLabel.setText(Messages.ui_auto_install_libraries);
-//		GridData gd16 = new GridData(SWT.BEGINNING, SWT.TOP, true, false);
-//		gd16.horizontalSpan=3;
-//		inStallLabel.setLayoutData(gd16);
+		myInstallLibCheckBox = new Button(netWorkbox, SWT.CHECK | SWT.LEFT);
+		Label inStallLabel = new Label(netWorkbox, SWT.BEGINNING);
+		inStallLabel.setText(Messages.ui_auto_install_libraries);
+		GridData gd16 = new GridData(SWT.BEGINNING, SWT.TOP, true, false);
+		gd16.horizontalSpan=3;
+		inStallLabel.setLayoutData(gd16);
 
 
 		myBonjourCheckBox = new Button(netWorkbox, SWT.CHECK | SWT.LEFT );
@@ -374,6 +376,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
 
 		myBonjourCheckBox.setSelection(ConfigurationPreferences.useBonjour());
+		myInstallLibCheckBox.setSelection(ConfigurationPreferences.getInstallLibraries());
 		setJsonDurationComposites(ConfigurationPreferences.getJsonUpdateDelay());
 
 	}
@@ -412,6 +415,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	protected void performDefaults() {
 		super.performDefaults();
 		myBonjourCheckBox.setSelection( Defaults.useBonjour);
+		myInstallLibCheckBox.setSelection( Defaults.INSTALL_LIBRARIES);
 		setJsonDurationComposites(Defaults.getJsonUpdateDuration());
 
 	}

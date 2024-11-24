@@ -142,6 +142,7 @@ public class LibraryManager {
 		}
 	}
 
+
 	public static IStatus install(IArduinoLibraryVersion inLib, IProgressMonitor monitor) {
 		if (!(inLib instanceof ArduinoLibraryVersion)) {
 			return Status.error("Trying to install a library that is not a installable library" + inLib.getName()); //$NON-NLS-1$
@@ -468,6 +469,24 @@ public class LibraryManager {
 		}
 
 		return getLibrariesPrivate().get(libFolder.getName());
+	}
+
+	/**
+	 * Remove a lib based on the name of the lib
+	 *
+	 * @param libName the name of the lib
+	 * @return true if the lib has been removed or was not found
+	 *          false if the lib was found and the removal failed.
+	 */
+	public static boolean uninstallLibrary(String libName) {
+		Map<String, IArduinoLibraryVersion> installedLibs=getLibrariesAll(null);
+		IPath libFQN=ArduinoLibraryVersion.calculateFQN(libName);
+		IArduinoLibraryVersion libVersion = installedLibs.get(libFQN.toString());
+		if(libVersion==null) {
+			return true;
+
+		}
+		return unInstall(libVersion, new NullProgressMonitor()).isOK();
 	}
 
 }
