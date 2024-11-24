@@ -824,6 +824,7 @@ public class BuildTests {
 		//trigger the indexer
 		ICProject cTestProject = CoreModel.getDefault().getCModel().getCProject(theTestProject.getName());
 		CCorePlugin.getIndexManager().reindex(cTestProject);
+		Thread.sleep(5000);
 		Shared.waitForIndexer(theTestProject);
 
         //build should not fail
