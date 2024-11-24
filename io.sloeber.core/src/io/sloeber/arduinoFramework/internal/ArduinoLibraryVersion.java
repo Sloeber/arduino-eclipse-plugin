@@ -67,7 +67,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 			archiveFileName = getSafeString(jsonObject, "archiveFileName");
 			size = jsonObject.get("size").getAsInt();
 			checksum = getSafeString(jsonObject, "checksum");
-			calculateFQN();
+			myFQN=calculateFQN(getName());
 		} catch (Exception e) {
 			throw new JsonParseException("failed to parse json  " + e.getMessage(),e);
 		}
@@ -205,9 +205,8 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 		return getInstallPath().append(EXAMPLES_FOLDER);
 	}
 
-	private void calculateFQN() {
-		myFQN=  Path.fromPortableString(SLOEBER_LIBRARY_FQN);
-		myFQN=myFQN.append(MANAGED).append(getName());
+	static public IPath calculateFQN(String libName) {
+		return  Path.fromPortableString(SLOEBER_LIBRARY_FQN).append(MANAGED).append(libName);
 	}
 
 	@Override

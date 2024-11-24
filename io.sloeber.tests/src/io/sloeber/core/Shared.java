@@ -31,6 +31,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -259,23 +260,9 @@ public class Shared {
 			autoDesc.setBuilder(curBuilder);
 			coreModel.setProjectDescription(theTestProject, projectDescription);
 
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+			buildAndVerify(theTestProject,3,IncrementalProjectBuilder.FULL_BUILD, monitor);
 
-			if (hasBuildErrors(theTestProject)!=null) {
-				Shared.waitForAllJobsToFinish();
-				Thread.sleep(2000);
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (hasBuildErrors(theTestProject)!=null) {
-					Shared.waitForAllJobsToFinish();
-					Thread.sleep(2000);
-					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-					String buildError=hasBuildErrors(theTestProject);
-					if (buildError!=null) {
-						myLastFailMessage = myLastFailMessage + NEWLINE +buildError+ NEWLINE+ "Failed to compile the project:" + projectName
-								+ " with builder " + curBuilder;
-					}
-				}
-			}
+
 
 		}
 		if (!myLastFailMessage.isBlank()) {
@@ -293,6 +280,26 @@ public class Shared {
 			}
 		}
 		return null;
+	}
+
+	static String buildAndVerify(IProject theTestProject, int maxTries, int buildType, IProgressMonitor monitor) throws Exception {
+		int curTry = 0;
+		String buildError=null;
+		while (curTry++ < maxTries) {
+			theTestProject.build(buildType, monitor);
+			Shared.waitForAllJobsToFinish();
+			Thread.sleep(2000);
+			buildError = hasBuildErrors(theTestProject);
+			if (buildError == null) {
+				return buildError;
+			}
+		}
+		IAutoBuildConfigurationDescription autoDesc = IAutoBuildConfigurationDescription
+				.getActiveConfig(theTestProject,false);
+		String builder=autoDesc.getBuilder().getId();
+		myLastFailMessage = myLastFailMessage + NEWLINE + buildError + NEWLINE + "Failed to compile the project:"
+				+ theTestProject.getName() + " with builder " + builder;
+		return buildError;
 	}
 
 	/*
