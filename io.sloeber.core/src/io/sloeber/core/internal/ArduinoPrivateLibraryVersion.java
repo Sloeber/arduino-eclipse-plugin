@@ -20,13 +20,13 @@ public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 	public ArduinoPrivateLibraryVersion(IPath installPath) {
 		myInstallPath = installPath;
 		myName = myInstallPath.lastSegment();
-		calcFQN();
+		myFQN= calculateFQN(getName());
 	}
 
 	public ArduinoPrivateLibraryVersion(String curSaveString) {
 		String[] parts=curSaveString.split(SEMI_COLON);
 		myName=parts[parts.length-1];
-		calcFQN();
+		myFQN= calculateFQN(getName());
 		String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
 		for (String curLibPath : privateLibPaths) {
 			Path curPrivPath=new Path(curLibPath);
@@ -67,9 +67,8 @@ public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
 		return getInstallPath().append(EXAMPLES_FOLDER);
 	}
 
-	private void calcFQN() {
-		myFQN=  Path.fromPortableString(SLOEBER_LIBRARY_FQN);
-		myFQN= myFQN.append(PRIVATE).append(getName());
+	static public IPath calculateFQN(String libName) {
+		return  Path.fromPortableString(SLOEBER_LIBRARY_FQN).append(PRIVATE).append(libName);
 	}
 
 	@Override

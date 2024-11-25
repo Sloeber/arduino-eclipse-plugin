@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import io.sloeber.arduinoFramework.api.BoardDescription;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.arduinoFramework.api.LibraryManager;
+import io.sloeber.arduinoFramework.internal.ArduinoLibraryVersion;
 import io.sloeber.autoBuild.api.AutoBuildProject;
 import io.sloeber.autoBuild.api.IAutoBuildConfigurationDescription;
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
@@ -48,6 +49,8 @@ import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.internal.ArduinoHardwareLibrary;
+import io.sloeber.core.internal.ArduinoPrivateLibraryVersion;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.natures.SloeberNature;
@@ -134,7 +137,7 @@ public class SloeberProject extends Common {
 
 				// Get the libraries used
 				Set<String> libNames = new HashSet<>();
-				IFolder libFolder = OldCoreFolder.getFolder("libraries"); //$NON-NLS-1$
+				IFolder libFolder = project.getFolder("libraries"); //$NON-NLS-1$
 				if (libFolder.exists()) {
 					for (IResource curResource : libFolder.members()) {
 						if (curResource instanceof IFolder) {
@@ -210,18 +213,41 @@ public class SloeberProject extends Common {
 					SloeberConfiguration sloeberConfiguration = new SloeberConfiguration(boardDescriptor, otherDesc,
 							compileDescriptor);
 
+
+
+					//Save the sloeber configuration in the autoBuild configuration
+					autoConf.setAutoBuildConfigurationExtensionDescription(sloeberConfiguration);
+
 					// Add the libraries
 					TreeMap<String, IArduinoLibraryVersion> availableLibs = LibraryManager
 							.getLibrariesAll(boardDescriptor);
 					// find the libs we can add
 					Set<IArduinoLibraryVersion> toInstallLibs = new HashSet<>();
 					for (String curLibName : libNames) {
-						toInstallLibs.add(availableLibs.get(curLibName));
-					}
-					sloeberConfiguration.addLibraries(toInstallLibs);
+						IPath boardLibFQN = ArduinoHardwareLibrary.calculateFQN(curLibName);
+						IArduinoLibraryVersion foundLib = availableLibs.get(boardLibFQN.toString());
+						if (foundLib != null) {
+							toInstallLibs.add(foundLib);
+							continue;
+						}
 
-					//Save the sloeber configuration in the autoBuild configuration
-					autoConf.setAutoBuildConfigurationExtensionDescription(sloeberConfiguration);
+						IPath managedLibFQN = ArduinoLibraryVersion.calculateFQN(curLibName);
+						foundLib = availableLibs.get(managedLibFQN.toString());
+						if (foundLib != null) {
+							toInstallLibs.add(foundLib);
+							continue;
+						}
+
+						IPath privateLibFQN = ArduinoPrivateLibraryVersion.calculateFQN(curLibName);
+						foundLib = availableLibs.get(privateLibFQN.toString());
+						if (foundLib != null) {
+							toInstallLibs.add(foundLib);
+							continue;
+						}
+
+					}
+					toInstallLibs.remove(null);
+					sloeberConfiguration.addLibraries(toInstallLibs);
 				}
 
 				SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);

@@ -21,7 +21,7 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 	public ArduinoHardwareLibrary(IPath installPath) {
 		myInstallPath = installPath;
 		myName = myInstallPath.lastSegment();
-		calculateFQN();
+		myFQN=calculateFQN(getName());
 	}
 
 	public ArduinoHardwareLibrary(String curSaveString, BoardDescription boardDesc) {
@@ -31,7 +31,7 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 		if(!myInstallPath.toFile().exists()) {
 			myInstallPath=boardDesc.getReferencedCoreLibraryPath().append(myName);
 		}
-		calculateFQN();
+		myFQN=calculateFQN(getName());
 	}
 
 	@Override
@@ -64,9 +64,8 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 	}
 
 
-	private void calculateFQN() {
-		myFQN=  Path.fromPortableString(SLOEBER_LIBRARY_FQN);
-		myFQN= myFQN.append(BOARD).append(getName());
+	public static IPath calculateFQN(String libName) {
+		return  Path.fromPortableString(SLOEBER_LIBRARY_FQN).append(BOARD).append(libName);
 	}
 
 	@Override
