@@ -44,7 +44,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 25 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 26 ";
 
 	private static Map<String, String> USB_replacers;
 
@@ -63,6 +63,12 @@ public class WorkAround {
 		USB_replacers.put(" '-DARDUINO_BOARD={build.board}' ", " \"-DARDUINO_BOARD={build.board}\" ");
 		USB_replacers.put(" '-DARDUINO_BOARD=\"{build.board}\"' ", " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
 		USB_replacers.put(" -DARDUINO_BOARD=\"{build.board}\" ", " -DARDUINO_BOARD=\\\"{build.board}\\\" ");
+
+		USB_replacers.put(" -DARDUINO_VARIANT=\"{build.variant}\" ", " -DARDUINO_VARIANT=\\\"{build.variant}\\\" ");
+
+		USB_replacers.put("-DARDUINO_HOST_OS=\"{runtime.os}\"", "-DARDUINO_HOST_OS=\\\"{runtime.os}\\\"");
+
+		USB_replacers.put(" -DARDUINO_FQBN=\"{build.fqbn}\" ", " -DARDUINO_FQBN=\\\"{build.fqbn}\\\" ");
 
 		USB_replacers.put(" '-DUSB_SERIAL=\"{build.usb_serial}\"' ", " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ");
 		USB_replacers.put(" '-DUSB_SERIAL={build.usb_serial}' ", " \"-DUSB_SERIAL={build.usb_serial}\" ");
