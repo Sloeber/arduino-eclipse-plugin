@@ -5,28 +5,26 @@ Bundle-SymbolicName: io.sloeber.tests;singleton:=true
 Bundle-Version: 5.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
-Require-Bundle: io.sloeber.core,
- io.sloeber.ui,
- org.eclipse.cdt.core,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
- junit-jupiter-params;bundle-version="5.10.2",
- junit-jupiter-api;bundle-version="5.10.2",
- org.apache.log4j,
  org.eclipse.swt,
+ org.eclipse.cdt.core,
  io.sloeber.autoBuild,
- org.opentest4j,
- junit-platform-suite-api
+ io.sloeber.core,
+ io.sloeber.ui,
+ junit-platform-suite-api,
+ junit-jupiter-params,
+ junit-jupiter-api,
+ org.apache.commons.commons-io,
+ org.apache.logging.log4j.api;bundle-version="2.19.0",
+ org.apache.logging.log4j.core;bundle-version="2.19.0"
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor,
  io.sloeber.autoBuild.api,
  org.apache.commons.io
 Automatic-Module-Name: io.sloeber.tests
-Export-Package: io.sloeber.core;x-internal:=true,
- io.sloeber.junit;x-internal:=true,
- io.sloeber.providers;x-internal:=true,
- templates.CreateAndCompileTest;x-internal:=true,
+Export-Package: templates.CreateAndCompileTest;x-internal:=true,
  templates.are_defines_found;x-internal:=true,
  templates.basic.ino;x-internal:=true,
  templates.defines_and_includes;x-internal:=true,

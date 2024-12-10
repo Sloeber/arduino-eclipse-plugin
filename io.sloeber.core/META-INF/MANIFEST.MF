@@ -8,7 +8,6 @@ Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.core.Activator
 Bundle-ClassPath: .,
- lib/jsch-0.1.55.jar,
  lib/jssc-2.9.4.jar,
  lib/jmdns-3.5.7.jar
 Require-Bundle: 
@@ -28,7 +27,8 @@ Require-Bundle:
  org.eclipse.ui.intro,
  io.sloeber.autoBuild,
  org.eclipse.cdt.make.core,
- org.apache.commons.lang3;bundle-version="3.14.0"
+ org.apache.commons.lang3;bundle-version="3.14.0",
+ com.jcraft.jsch
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

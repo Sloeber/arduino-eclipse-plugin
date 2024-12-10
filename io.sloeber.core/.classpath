@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/jmdns-3.5.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jssc-2.9.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" output="bin" path="src">
 		<attributes>
@@ -7,9 +9,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/jsch-0.1.55.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jssc-2.9.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jmdns-3.5.7.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
