@@ -676,7 +676,7 @@ public class BoardDescription {
 	public IPath getReferencedCoreLibraryPath() {
 		updateWhenDirty();
 		if (myReferencedPlatformCore == null) {
-			return null;
+			return getReferencingLibraryPath();
 		}
 		return this.myReferencedPlatformCore.getInstallPath().append(ARDUINO_LIBRARY_FOLDER_NAME);
 	}

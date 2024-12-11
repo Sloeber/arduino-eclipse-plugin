@@ -455,17 +455,17 @@ public class LibraryManager {
 	}
 
 	public static IArduinoLibraryVersion getLibraryVersionFromLocation(IFolder libFolder,BoardDescription boardDescriptor) {
-		// TODO Auto-generated method stub
-
 		if (boardDescriptor != null) {
 			IPath libPath=boardDescriptor.getReferencedCoreLibraryPath();
 			if(libPath!=null && libPath.isPrefixOf(libFolder.getLocation())) {
-				return getLibrariesHarware(boardDescriptor).get(libFolder.getName());
+				String FQNLibName=ArduinoHardwareLibrary.calculateFQN(libFolder.getName()).toString();
+				return getLibrariesHarware(boardDescriptor).get(FQNLibName);
 			}
 		}
 
 		if(ConfigurationPreferences.getInstallationPathLibraries().isPrefixOf(libFolder.getLocation())) {
-			return getLibrariesdManaged().get(libFolder.getName());
+			String FQNLibName= ArduinoLibraryVersion.calculateFQN(libFolder.getName()).toString();
+			return getLibrariesdManaged().get(FQNLibName);
 		}
 
 		return getLibrariesPrivate().get(libFolder.getName());

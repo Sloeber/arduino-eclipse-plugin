@@ -65,11 +65,15 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 	}
 
 	class ItemSorter {
-		public static ISloeberConfiguration sloeberCfg;
-		public TreeMap<String, ItemSorter> myItems = new TreeMap<>();
-		public IArduinoLibraryVersion myLib = null;
+		private TreeMap<String, ItemSorter> myItems = new TreeMap<>();
+		private IArduinoLibraryVersion myLib = null;
+		private static Map<String, IArduinoLibraryVersion> myCurrentInstalledLibs =null;
 
 		ItemSorter() {
+		}
+
+		static void SetSloeberConfiguration(ISloeberConfiguration sloeberCfg) {
+				myCurrentInstalledLibs = sloeberCfg.getUsedLibraries();
 		}
 
 		public void createChildren(TreeItem curItem) {
@@ -83,7 +87,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 			if (myLib == null) {
 				curItem.setGrayed(true);
 			}else {
-				boolean isSelected = sloeberCfg.getUsedLibraries().get(myLib.getName()) != null;
+				boolean isSelected = myCurrentInstalledLibs.get(myLib.getName()) != null;
 				curItem.setChecked(isSelected);
 				curItem.setData(myLib);
 				if (isSelected) {
@@ -127,7 +131,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 
 		// sort the items
 		ItemSorter sortedItems = new ItemSorter();
-		ItemSorter.sloeberCfg = sloeberCfg;
+		ItemSorter.SetSloeberConfiguration(sloeberCfg);
 
 		for (IArduinoLibraryVersion curlib : allLibraries.values()) {
 			String keys[] = curlib.getBreadCrumbs();

@@ -617,6 +617,11 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public Map<String, IArduinoLibraryVersion> getUsedLibraries() {
+		try {
+			myLibraries=getLibrariesFromLinks();
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 		return new HashMap<>(myLibraries);
 	}
 
