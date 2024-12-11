@@ -793,7 +793,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
 
 			} catch (Exception e) {
-				Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, "Failed to modify configuration for rename", e));
+				Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.SloeberConfiguration_Failed_Modify_config_rename, e));
 			}
 			return true;
 		}
