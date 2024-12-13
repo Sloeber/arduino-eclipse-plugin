@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -285,15 +286,7 @@ public class Helpers {
         IAutoBuildConfigurationDescription autoData = IAutoBuildConfigurationDescription
                 .getConfig(cdtConfigurationDescription);
 
-        IFolder buildFolder = autoData.getBuildFolder();
-        if (buildFolder.exists()) {
-            try {
-                buildFolder.delete(true, null);
-            } catch (CoreException e) {
-                Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                        Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgName), e));
-            }
-        }
+        autoData.deleteBuildFolder(new NullProgressMonitor());
     }
 
     /**

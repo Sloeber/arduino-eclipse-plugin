@@ -33,8 +33,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 
 import io.sloeber.autoBuild.api.AutoBuildCommon;
@@ -1128,16 +1130,33 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 		myForceCleanBeforeBuild = true;
 	}
 
-	public void forceFullBuildIfNeeded(IProgressMonitor monitor) throws CoreException {
+	public void forceFullBuildIfNeeded(IProgressMonitor monitor)  {
 		if (myForceCleanBeforeBuild) {
 			myForceCleanBeforeBuild = false;
-			IFolder buildFolder = getBuildFolder();
-			if (buildFolder != null && buildFolder.exists()) {
-				buildFolder.delete(true, monitor);
-			}
-
+			deleteBuildFolder(monitor);
 		}
+	}
 
+	@Override
+	public void deleteBuildFolder(IProgressMonitor monitor) {
+		//Do not delete the build folder as it may be in use with other processes (like discovery)
+
+		IFolder buildFolder = getBuildFolder();
+		if (buildFolder != null && buildFolder.exists()) {
+			try {
+				for(IResource curMember:buildFolder.members()) {
+					try {
+						curMember.delete(true, monitor);
+					} catch (CoreException e) {
+						Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+				                "Failed to delete member "+curMember.getName(), e));
+					}
+
+				}
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static String getSpecFile(String languageId) {

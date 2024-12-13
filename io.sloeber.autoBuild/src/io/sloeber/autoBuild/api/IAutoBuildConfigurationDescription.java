@@ -19,6 +19,8 @@ import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import io.sloeber.autoBuild.buildTools.api.IBuildTools;
 import io.sloeber.autoBuild.buildTools.api.IBuildToolsManager.ToolFlavour;
 import io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription;
@@ -453,6 +455,14 @@ public interface IAutoBuildConfigurationDescription {
      * @return
      */
     public 	LinkedHashMap<String, String> getPostbuildSteps();
+
+    /***
+     * delete the build folder
+     * Not actually deletes the build folder but all the members.
+     *
+     * @param monitor
+     */
+	void deleteBuildFolder(IProgressMonitor monitor);
 
 
 }
