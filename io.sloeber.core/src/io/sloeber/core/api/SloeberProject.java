@@ -447,7 +447,7 @@ public class SloeberProject extends Common {
 						IPath path = newProjectHandle.getFolder(rootCodeFolder).getFullPath();
 						newSourceEntries[0] = new CSourceEntry(path, null, ICSettingEntry.RESOLVED);
 					}
-					IPath excludes[] = new IPath[8];
+					IPath excludes[] = new IPath[9];
 					excludes[0] = IPath.fromOSString("**/*.ino"); //$NON-NLS-1$
 					excludes[1] = IPath.fromOSString("libraries/?*/**/doc*/**"); //$NON-NLS-1$
 					excludes[2] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
@@ -456,6 +456,8 @@ public class SloeberProject extends Common {
 					excludes[5] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
 					excludes[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
 					excludes[7] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
+					excludes[8] = IPath.fromOSString("libraries/?*/Applications/**"); //$NON-NLS-1$
+
 
 					/*
 					 * CDT currently causes issues with ${ConfigName]
