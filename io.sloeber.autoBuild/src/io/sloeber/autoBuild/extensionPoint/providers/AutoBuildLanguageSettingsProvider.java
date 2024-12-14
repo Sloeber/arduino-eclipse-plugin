@@ -253,8 +253,9 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		if (discoveryCommand == null || discoveryCommand.isBlank()) {
 			return LanguageSettingsStorage.getPooledList(list);
 		}
+		discoveryCommand=discoveryCommand.trim();
 		 List<ICLanguageSettingEntry> cachedList=myDiscoveryCache.get(discoveryCommand);
-		if ( cachedList== null || cachedList.size()==0 ) {
+		if ( cachedList== null ) {
 			myDiscoveryCache.put(discoveryCommand, runForLanguage(languageId, discoveryCommand, autoConf,
 					autoConf.getProject(), new NullProgressMonitor()));
 		}
