@@ -135,6 +135,7 @@ public class InternalBuildRunner implements IBuildRunner {
 				epm.deferDeDuplication();
 				int sequenceID = -1;
 				boolean lastSequenceID = true;
+				myHasBuildError = false;
 
 				// Run preBuildStep if existing
 				LinkedHashMap<String,String> preBuildSteps = autoData.getPrebuildSteps();
@@ -147,13 +148,14 @@ public class InternalBuildRunner implements IBuildRunner {
 					}
 					buildRunnerHelper.toConsole(command);
 					if (launchCommand(command, autoData, monitor, buildRunnerHelper) != 0) {
+						myHasBuildError = true;
 						if (autoData.stopOnFirstBuildError()) {
 							return false;
 						}
 					}
 				}
 
-				myHasBuildError = false;
+
 				do {
 					sequenceID++;
 					lastSequenceID = true;
@@ -218,35 +220,36 @@ public class InternalBuildRunner implements IBuildRunner {
 						lastSequenceID = true;
 					}
 				} while (!(lastSequenceID || myHasBuildError));
-				// Run postBuildStep if existing
 
-				LinkedHashMap<String,String> postBuildSteps = autoData.getPostbuildSteps();
-				for (Entry<String, String> step:postBuildSteps.entrySet()) {
-					String announcement = step.getKey();
-					String command = step.getValue();
+				// Run postBuildStep if existing and no error
+				if (!myHasBuildError) {
+					LinkedHashMap<String, String> postBuildSteps = autoData.getPostbuildSteps();
+					for (Entry<String, String> step : postBuildSteps.entrySet()) {
+						String announcement = step.getKey();
+						String command = step.getValue();
 
-					if (!announcement.isEmpty()) {
-						buildRunnerHelper.toConsole(announcement);
-					}
-					buildRunnerHelper.toConsole(command);
-					if (launchCommand(command, autoData, monitor, buildRunnerHelper) != 0) {
-						if (autoData.stopOnFirstBuildError()) {
-							return false;
+						if (!announcement.isEmpty()) {
+							buildRunnerHelper.toConsole(announcement);
+						}
+						buildRunnerHelper.toConsole(command);
+						if (launchCommand(command, autoData, monitor, buildRunnerHelper) != 0) {
+							if (autoData.stopOnFirstBuildError()) {
+								return false;
+							}
 						}
 					}
-				}
 
-
-				String postBuildStep = autoData.getPostbuildStep();
-				postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-				if (!postBuildStep.isEmpty()) {
-					String announcement = autoData.getPostBuildAnouncement();
-					if (!announcement.isEmpty()) {
-						buildRunnerHelper.toConsole(announcement);
-					}
-					buildRunnerHelper.toConsole(postBuildStep);
-					if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
-						return false;
+					String postBuildStep = autoData.getPostbuildStep();
+					postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+					if (!postBuildStep.isEmpty()) {
+						String announcement = autoData.getPostBuildAnouncement();
+						if (!announcement.isEmpty()) {
+							buildRunnerHelper.toConsole(announcement);
+						}
+						buildRunnerHelper.toConsole(postBuildStep);
+						if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+							return false;
+						}
 					}
 				}
 			}
