@@ -265,7 +265,7 @@ public class LibraryManager {
 
 		Map<String, IArduinoLibraryVersion> installedLibs = getLibrariesAll(boardDescriptor);
 		for (IArduinoLibraryVersion curLib : installedLibs.values()) {
-			examples.putAll(getExamplesFromFolder(curLib, curLib.getExamplePath().toFile(), 2));
+			examples.putAll(getExamplesFromFolder(curLib, curLib.getExamplePath().toFile(), 3));
 		}
 
 		return examples;
