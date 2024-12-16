@@ -182,7 +182,7 @@ public class SloeberProject extends Common {
 					excludes[1] = project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getProjectRelativePath()
 							.append(SOURCE_ENTRY_FILTER_ALL);
 					newSourceEntries[0] = new CSourceEntry(project.getFullPath(), excludes, ICSettingEntry.RESOLVED);
-					IPath excludes2[] = new IPath[8];
+					IPath excludes2[] = new IPath[9];
 					excludes2[0] = IPath.fromOSString("**/*.ino"); //$NON-NLS-1$
 					excludes2[1] = IPath.fromOSString("libraries/?*/**/doc*/**"); //$NON-NLS-1$
 					excludes2[2] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
@@ -191,6 +191,7 @@ public class SloeberProject extends Common {
 					excludes2[5] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
 					excludes2[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
 					excludes2[7] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
+					excludes2[8] = IPath.fromOSString("libraries/?*/Applications/**"); //$NON-NLS-1$
 
 					/*
 					 * CDT currently causes issues with ${ConfigName]
