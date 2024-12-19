@@ -708,6 +708,9 @@ public class BuildTests {
                     break;
                 }
             }
+            if(example!=null) {
+            	break;
+            }
         }
         assertNotNull( lib,"HID Lib \"" + HIDlibName + "\" Not found");
 
