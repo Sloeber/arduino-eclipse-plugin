@@ -45,7 +45,7 @@ public class Example implements IExample {
 			}
 		} else {
 			for (IArduinoLibraryVersion myLib : myLibs.values()) {
-				myFQN = myLib.getFQN().append(getName());
+				myFQN = myLib.getFQN().append(  myExampleLocation.makeRelativeTo(myLib.getExamplePath()));
 			}
 		}
 	}
