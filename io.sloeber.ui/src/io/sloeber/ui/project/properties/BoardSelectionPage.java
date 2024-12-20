@@ -289,7 +289,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 
 		myControlUploadPort.setText(myBoardDesc.getUploadPort());
-		setTheLabelCombos(boardsFileChanged || boardIDChanged);
+		setTheLabelCombos(boardsFileChanged || boardIDChanged ||updateData);
 		disableListeners = false;
 	}
 
