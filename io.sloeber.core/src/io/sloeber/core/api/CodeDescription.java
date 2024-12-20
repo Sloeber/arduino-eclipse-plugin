@@ -369,7 +369,7 @@ public class CodeDescription implements ICodeProvider {
 						if (myMakeLinks) {
 							if(scrContainer instanceof IFolder) {
 							IFolder folder=(IFolder)scrContainer;
-							Helpers.linkDirectory( curPath, folder);
+							Helpers.LinkFolderToFolder( curPath, folder);
 							}
 							else {
 								Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,

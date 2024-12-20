@@ -52,6 +52,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private BoardDescription myBoardDescription;
 	private OtherDescription myOtherDesc;
 	private CompileDescription myCompileDescription;
+	//a map of foldername library
 	private Map<String, IArduinoLibraryVersion> myLibraries = new HashMap<>();
 
 	// operational data
@@ -92,7 +93,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		setBoardDescription(src.getBoardDescription());
 		setOtherDescription(src.getOtherDescription());
 		setCompileDescription(src.getCompileDescription());
-		myLibraries = src.myLibraries;
+		myLibraries = src.getLibrariesFromLinks();
 	}
 
 	public SloeberConfiguration(BoardDescription boardDesc, OtherDescription otherDesc,
@@ -518,27 +519,32 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 * @return
 	 * @throws CoreException
 	 */
-	private Map<String,IArduinoLibraryVersion> getLibrariesFromLinks() throws CoreException {
+	private Map<String,IArduinoLibraryVersion> getLibrariesFromLinks()  {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		IFolder libFolder = getArduinoLibraryFolder();
 		if(!libFolder.exists()) {
 			return ret;
 		}
-		for (IResource curResource : libFolder.members()) {
-			if (curResource instanceof IFolder) {
-				IFolder curFolder = (IFolder) curResource;
-				IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
-				if (curLib != null){
-					//We knbow the lib so it is ok
-					ret.put(curLib.getName(),curLib);
-					continue;
-				}
+		try {
+			for (IResource curResource : libFolder.members()) {
+				if (curResource instanceof IFolder) {
+					IFolder curFolder = (IFolder) curResource;
+					IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
+					if (curLib != null){
+						//We knbow the lib so it is ok
+						ret.put(curLib.getName(),curLib);
+						continue;
+					}
 
-				curLib=LibraryManager.getLibraryVersionFromLocation(curFolder,getBoardDescription());
-				if (curLib != null){
-					ret.put(curLib.getName(),curLib);
+					curLib=LibraryManager.getLibraryVersionFromLocation(curFolder,getBoardDescription());
+					if (curLib != null){
+						ret.put(curLib.getName(),curLib);
+					}
 				}
 			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+			ret.putAll(myLibraries);
 		}
 		return ret;
 	}
@@ -572,15 +578,58 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		IFolder libFolder = getArduinoLibraryFolder();
 		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
 			IFolder curLibFolder=libFolder.getFolder(curLib.getName());
-			Helpers.linkDirectory(curLib.getInstallPath(), curLibFolder);
+			Helpers.LinkFolderToFolder(curLib.getInstallPath(), curLibFolder);
+		}
+	}
+
+
+	/**
+	 * For libraries of with FQN Libraries/hardware/X make sure that the location
+	 * point to a valid location of the given boardDescriptor
+	 */
+	private void upDateHardwareLibraries() {
+		//make sure the libraries that link to hardware are the correct ones
+		BoardDescription boardDesc=getBoardDescription();
+		IPath referenceLibPath =boardDesc.getReferencedCoreLibraryPath();
+		IPath referencingLibPath =boardDesc.getReferencingLibraryPath();
+		if(referencingLibPath==null) {
+			referencingLibPath=referenceLibPath;
+		}
+		Set<String> hardwareLibsFQN=new HashSet<>();
+		for(IArduinoLibraryVersion curLib:myLibraries.values()) {
+			if(curLib.isHardwareLib()) {
+				IPath libPath=curLib.getInstallPath();
+				if(referencingLibPath.isPrefixOf(libPath)||referenceLibPath.isPrefixOf(libPath)) {
+					//the hardware lib is ok
+					continue;
+				}
+				// The hardware lib is for a different hardware.
+				//add it to the lists to reattach
+				hardwareLibsFQN.add(curLib.getFQN().toPortableString());
+			}
+		}
+		if(!hardwareLibsFQN.isEmpty()) {
+			Map<String, IArduinoLibraryVersion> boardLibs =LibraryManager.getLibrariesHarware(boardDesc);
+			for(String curReplaceLibFQN: hardwareLibsFQN) {
+				IArduinoLibraryVersion newLib =boardLibs.get(curReplaceLibFQN);
+				if(newLib!=null) {
+					// a library with the same name was found so use this one
+					myLibraries.put(newLib.getName(), newLib);
+				}else {
+					//no new library was found remove the old lib
+					myLibraries.remove(Path.fromPortableString(curReplaceLibFQN).lastSegment());
+				}
+			}
 		}
 	}
 
 
 
-
 	@Override
 	public void reAttachLibraries() {
+		upDateHardwareLibraries();
+
+
 		IProgressMonitor monitor = new NullProgressMonitor();
 		IFolder libFolder = getArduinoLibraryFolder();
 		// Remove all existing lib folders that are not known or are linking to the
@@ -617,11 +666,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public Map<String, IArduinoLibraryVersion> getUsedLibraries() {
-		try {
-			myLibraries=getLibrariesFromLinks();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+		myLibraries=getLibrariesFromLinks();
 		return new HashMap<>(myLibraries);
 	}
 
@@ -716,22 +761,23 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	/**
 	 * Because SloeberConfiguration are copied and can be changed at all times
-	 * but there is only 1 disk representation we can not update the disk
+	 * but there is only 1 disk representation of each config
+	 *  we can not update the disk
 	 * at the time the SloeberConfiguration is changed
 	 *
 	 *  When a configuration becomes "the active" configuration this method will
-	 *  create the necessary resources on disk.
+	 *  create/update the necessary resources on disk.
 	 *  This apply is when this configuration is new.
 	 */
 	public void aboutToApplyConfigChange() {
-		try {
-			myLibraries =getLibrariesFromLinks();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			myLibraries =getLibrariesFromLinks();
+//		} catch (CoreException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		if(updateSourceEntries()) {
-			//the config hasbeen renamed;
+			//the config has been renamed;
 			// remove the library links
 			removeLibraryLinks();
 		}
@@ -741,6 +787,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	public void appliedConfigChange() {
 		LinkToCore();
+		upDateHardwareLibraries();
 		linkLibrariesToFolder();
 	}
 

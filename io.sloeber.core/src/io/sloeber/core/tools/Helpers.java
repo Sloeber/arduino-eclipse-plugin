@@ -289,38 +289,38 @@ public class Helpers {
         autoData.deleteBuildFolder(new NullProgressMonitor());
     }
 
-    /**
-     * creates links to the root files and folders of the source location
-     *
-     * @param source
-     *            the location where the files are that need to be linked to
-     * @param target
-     *            the location where the links are to be created
-     */
-    public static void linkDirectory(IPath source, IFolder target) {
-
-        File[] sourceFiles = source.toFile().listFiles();
-        if (sourceFiles == null) {
-            if (!myHasBeenLogged) {
-                Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
-                        Messages.Helpers_error_link_folder_is_empty.replace(FILE, source.toOSString()), null));
-                myHasBeenLogged = true;
-            }
-            return;
-        }
-        for (File curFile : sourceFiles) {
-            if (curFile.isDirectory()) {
-                LinkFolderToFolder(source.append(curFile.getName()), target.getFolder(curFile.getName()));
-            } else {
-                try {
-                    target.getFile(curFile.getName()).createLink(source.append(curFile.getName()),
-                            IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
-                } catch (CoreException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
+//    /**
+//     * creates links to the root files and folders of the source location
+//     *
+//     * @param source
+//     *            the location where the files are that need to be linked to
+//     * @param target
+//     *            the location where the links are to be created
+//     */
+//    public static void linkDirectory(IPath source, IFolder target) {
+//
+//        File[] sourceFiles = source.toFile().listFiles();
+//        if (sourceFiles == null) {
+//            if (!myHasBeenLogged) {
+//                Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
+//                        Messages.Helpers_error_link_folder_is_empty.replace(FILE, source.toOSString()), null));
+//                myHasBeenLogged = true;
+//            }
+//            return;
+//        }
+//        for (File curFile : sourceFiles) {
+//            if (curFile.isDirectory()) {
+//                LinkFolderToFolder(source.append(curFile.getName()), target.getFolder(curFile.getName()));
+//            } else {
+//                try {
+//                    target.getFile(curFile.getName()).createLink(source.append(curFile.getName()),
+//                            IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
+//                } catch (CoreException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//    }
 
 }
