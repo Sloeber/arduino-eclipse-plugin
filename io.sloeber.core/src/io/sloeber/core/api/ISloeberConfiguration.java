@@ -118,6 +118,14 @@ public interface ISloeberConfiguration {
 	public boolean addLibraries(Collection<IArduinoLibraryVersion> librariesToAdd);
 	public boolean removeLibraries(Collection<IArduinoLibraryVersion> librariesToRemove);
 
+	/**
+	 * Implements the action under Menu->Sloeber->Re attache libraries
+	 * This method validates the attached libraries
+	 * 1) Links to hardware libraries that point to a hardware different than the one used in
+	 * the boardDescription of this configuration are replaced by versions from
+	 * this boardDescription and if none is found are removed.
+	 * 2) Links to non existing libraries are removed
+	 */
 	void reAttachLibraries();
 
 	Map<String, IArduinoLibraryVersion> getUsedLibraries();
