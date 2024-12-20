@@ -439,7 +439,7 @@ public class LibraryManager {
 	 * @param project the project to find all hardware libraries for
 	 * @return all the library folder names. May contain empty values.
 	 */
-	private static Map<String, IArduinoLibraryVersion> getLibrariesHarware(BoardDescription boardDescriptor) {
+	public static Map<String, IArduinoLibraryVersion> getLibrariesHarware(BoardDescription boardDescriptor) {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		// first add the referenced
 		IPath libPath = boardDescriptor.getReferencedCoreLibraryPath();
