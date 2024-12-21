@@ -296,7 +296,7 @@ public class AutoBuildMakeRule implements IAutoBuildMakeRule {
 										.getFolder(IPath.forPosix(curEntry.getValue())).getLocation();
 								if(path==null) {
 									//Log error to allow for investigation
-									Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "No location found for "+curEntry.getValue()));
+									Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "No location found for "+curEntry.getValue())); //$NON-NLS-1$
 
 								}else {
 								includePath = includePath + WHITESPACE + DOUBLE_QUOTE + CMD_LINE_INCLUDE_FOLDER

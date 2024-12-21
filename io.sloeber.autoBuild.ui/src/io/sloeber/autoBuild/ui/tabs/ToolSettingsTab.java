@@ -216,7 +216,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         } else {
             //the line below is only here for development so I know there will only be resources
             //TODO remove the line below after evaluation this never ever happens
-            System.err.println("Element should be resource " + pageElement);
+            System.err.println("Element should be resource " + pageElement); //$NON-NLS-1$
         }
 
         setValues();
@@ -280,17 +280,6 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
         tipText.update();
     }
 
-    /* (non-Javadoc)
-     * Method resetTipText
-     * @since 7.0
-     */
-    private void resetTipText() {
-        if (tipText == null) {
-            return;
-        }
-        tipText.setText(Messages.ToolSettingsTab_0);
-        tipText.update();
-    }
 
     /* (non-Javadoc)
      * Method displayOptionsForCategory
@@ -411,7 +400,7 @@ public class ToolSettingsTab extends AbstractAutoBuildPropertyTab {
                         }
                         }
 
-                        Label label = stringField.getLabelControl(mySettingsPageContainer);
+                        //Label label = stringField.getLabelControl(mySettingsPageContainer);
                         Text text = stringField.getTextControl(mySettingsPageContainer);
                         text.setText(optionValue);
                         //    if(pageHasToolTipBox)

@@ -43,7 +43,7 @@ class BuildJobHandler extends Job {
 		} catch (CoreException e) {
 			return new Status(IStatus.ERROR, NODE_ARDUINO,
 					Messages.buildHandler_build_code_of_project.replace(Messages.PROJECT, myBuildProject.getName())
-							+ " failed",
+							+ " failed", //$NON-NLS-1$
 					e);
 		}
 		return Status.OK_STATUS;

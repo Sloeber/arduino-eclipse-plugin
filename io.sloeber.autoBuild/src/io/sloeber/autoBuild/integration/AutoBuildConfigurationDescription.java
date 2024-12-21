@@ -1149,7 +1149,7 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 						curMember.delete(true, monitor);
 					} catch (CoreException e) {
 						Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-				                "Failed to delete member "+curMember.getName(), e));
+				                "Failed to delete member "+curMember.getName(), e)); //$NON-NLS-1$
 					}
 
 				}

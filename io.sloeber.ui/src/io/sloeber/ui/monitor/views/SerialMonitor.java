@@ -1,8 +1,10 @@
 package io.sloeber.ui.monitor.views;
 
+import static io.sloeber.core.api.Const.*;
 import static io.sloeber.ui.Activator.*;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -200,9 +202,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(MyPreferences.NODE_ARDUINO);
 					int curFsiStatus = myScope.getInt(MY_FLAG_MONITOR, 0) + 1;
 					myScope.putInt(MY_FLAG_MONITOR, curFsiStatus);
-					URL mypluginStartInitiator = new URL(uri.replace(" ", new String()) //$NON-NLS-1$
-							+ Integer.toString(curFsiStatus));
-					mypluginStartInitiator.getContent();
+					URI tt= new URI(uri.replace(SPACE, EMPTY) + Integer.toString(curFsiStatus));
+					tt.toURL().getContent();
 				} catch (Exception e) {// JABA is not going to add code
 				}
 				return Status.OK_STATUS;

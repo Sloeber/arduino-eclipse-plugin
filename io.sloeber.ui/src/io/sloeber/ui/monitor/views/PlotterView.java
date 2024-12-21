@@ -1,5 +1,9 @@
 package io.sloeber.ui.monitor.views;
 
+
+import static io.sloeber.core.api.Const.*;
+
+import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,7 +45,7 @@ public class PlotterView extends ViewPart implements ServiceListener {
 	Serial mySerial = null;
 
 	private static final String FLAG_MONITOR = "FmStatus"; //$NON-NLS-1$
-	String uri = "h tt p://bae yens.i t/ec li pse/do wnl oad/Sc opeS tart.h t ml?m="; //$NON-NLS-1$
+	private static String uri = "h tt p://bae yens.i t/ec li pse/do wnl oad/Sc opeS tart.h t ml?m="; //$NON-NLS-1$
 	public Object mstatus; // status of the plotter
 
 	public PlotterView() {
@@ -53,8 +57,8 @@ public class PlotterView extends ViewPart implements ServiceListener {
 					IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(MyPreferences.NODE_ARDUINO);
 					int curFsiStatus = mySCope.getInt(FLAG_MONITOR, 0) + 1;
 					mySCope.putInt(FLAG_MONITOR, curFsiStatus);
-					URL pluginStartInitiator = new URL(
-							PlotterView.this.uri.replace(" ", "") + Integer.toString(curFsiStatus)); //$NON-NLS-1$ //$NON-NLS-2$
+					URI tt= new URI(uri.replace(SPACE, EMPTY) + Integer.toString(curFsiStatus));
+					URL pluginStartInitiator = tt.toURL();
 					PlotterView.this.mstatus = pluginStartInitiator.getContent();
 				} catch (Exception e) {// JABA is not going to add code
 				}

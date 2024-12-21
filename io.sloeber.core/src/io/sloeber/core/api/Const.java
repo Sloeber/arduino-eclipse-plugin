@@ -73,7 +73,7 @@ public class Const extends AutoBuildConstants {
     public static final String REMOTE_SUFFIX = "_remote";
 
     // General stuff
-    public static final String PLUGIN_ID = "io.sloeber.core";
+    //public static final String PLUGIN_ID = "io.sloeber.core";
     public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
     public static final String SLOEBER_NATURE_ID = "io.sloeber.arduinonature";
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";

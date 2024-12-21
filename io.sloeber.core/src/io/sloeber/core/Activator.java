@@ -173,7 +173,7 @@ public class Activator extends Plugin {
         if (!errorString.isEmpty()) {
             errorString += "\n\nSloeber might still function but if you get strange results you know where to look.\n";
             errorString += "Do not create an issue if you see this!!!";
-            log(new Status(IStatus.ERROR, PLUGIN_ID, errorString));
+            log(new Status(IStatus.ERROR, Activator.getId(), errorString));
         }
 
     }
@@ -301,7 +301,7 @@ public class Activator extends Plugin {
      * the io.sloeber.core.managers and io.sloeber.core.managers.ui to work.
      */
     public static String getId() {
-        return PLUGIN_ID;
+        return "io.sloeber.core";
     }
 
     /**

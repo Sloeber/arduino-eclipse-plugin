@@ -40,7 +40,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 			Messages.ui_new_sketch_arduino_information);
 	protected NewSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(
 			Messages.ui_new_sketch_sketch_template_location);
-	private NewProjectSourceLocationPage mySourceLocationPage= new NewProjectSourceLocationPage("code location page");
+	private NewProjectSourceLocationPage mySourceLocationPage= new NewProjectSourceLocationPage("code location page"); //$NON-NLS-1$
 	private IConfigurationElement mConfig;
 	private IProject mProject;
 

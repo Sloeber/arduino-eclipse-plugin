@@ -147,9 +147,9 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			public String getTooltip() {
 				if (myTooltip == null) {
 					IArduinoLibraryVersion libVers = getLatest();
-					myTooltip = "Architectures:" + libVers.getArchitectures().toString() + blankLine
-							+ libVers.getSentence() + blankLine + libVers.getParagraph() + blankLine + "Author: "
-							+ libVers.getAuthor() + blankLine + "Maintainer: " + libVers.getMaintainer() ;
+					myTooltip = "Architectures:" + libVers.getArchitectures().toString() + blankLine //$NON-NLS-1$
+							+ libVers.getSentence() + blankLine + libVers.getParagraph() + blankLine + "Author: " //$NON-NLS-1$
+							+ libVers.getAuthor() + blankLine + "Maintainer: " + libVers.getMaintainer() ; //$NON-NLS-1$
 				}
 				return myTooltip;
 			}

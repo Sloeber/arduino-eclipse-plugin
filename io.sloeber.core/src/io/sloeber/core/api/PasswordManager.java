@@ -6,6 +6,7 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 
+import io.sloeber.autoBuild.helpers.api.AutoBuildConstants;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 
@@ -113,7 +114,7 @@ public class PasswordManager {
 
     private static String ConvertHostToNodeName(String host) {
 
-        return "ssh/" + host.replace(Const.DOT, Const.SLACH); //$NON-NLS-1$
+        return "ssh/" + host.replace(AutoBuildConstants.DOT, AutoBuildConstants.SLACH); //$NON-NLS-1$
     }
 
 }

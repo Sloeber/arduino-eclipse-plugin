@@ -1,7 +1,5 @@
 package io.sloeber.core.eclipseIntegrations;
 
-import static io.sloeber.core.api.Const.*;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -18,6 +16,7 @@ import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 
+import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 
 public class CDT_EnvironmentVariableResolver implements IDynamicVariableResolver {
@@ -29,7 +28,7 @@ public class CDT_EnvironmentVariableResolver implements IDynamicVariableResolver
             return getBuildEnvironmentVariable(confDesc, varName);
 
         } catch ( Exception e) {
-            Status iStatus = new Status(IStatus.ERROR, PLUGIN_ID, Messages.projectNotFoundInGUI,e);
+            Status iStatus = new Status(IStatus.ERROR, Activator.getId(), Messages.projectNotFoundInGUI,e);
             throw new CoreException(iStatus);
         }
     }

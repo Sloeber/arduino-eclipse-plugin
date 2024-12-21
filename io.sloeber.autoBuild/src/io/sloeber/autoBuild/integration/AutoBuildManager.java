@@ -266,8 +266,8 @@ public class AutoBuildManager extends AbstractCExtension {
 				IProjectType projectType = AutoBuildManager.getProjectType(extensionPointID, extensionID,
 						element.getAttribute(ID), true);
 				if (projectType == null) {
-					System.err.println("project not found: extensionPoint ID " + extensionPointID + " and extension ID "
-							+ extensionID + " and " + ID);
+					System.err.println("project not found: extensionPoint ID " + extensionPointID + " and extension ID " //$NON-NLS-1$ //$NON-NLS-2$
+							+ extensionID + " and " + ID); //$NON-NLS-1$
 				} else {
 					ret.add(projectType);
 				}
