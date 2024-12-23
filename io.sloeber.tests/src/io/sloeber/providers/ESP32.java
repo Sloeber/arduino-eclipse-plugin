@@ -35,6 +35,16 @@ public class ESP32 extends MCUBoard {
         setAttributes();
     }
 
+    private ESP32(String providerName, String architectureName, String boardID) {
+        this.myBoardDescriptor = BoardsManager.getBoardDescription(packageURL, providerName, architectureName,
+                boardID, null);
+        if (this.myBoardDescriptor == null) {
+            fail(boardID + " Board not found");
+        }
+        this.myBoardDescriptor.setUploadPort("none");
+        setAttributes();
+    }
+
     public ESP32(BoardDescription boardDesc) {
         myBoardDescriptor = boardDesc;
         myBoardDescriptor.setUploadPort("none");
@@ -56,5 +66,9 @@ public class ESP32 extends MCUBoard {
     public MCUBoard createMCUBoard(BoardDescription boardDesc) {
         return new ESP32(boardDesc);
     }
+
+	public static Object ESP32S3() {
+		return new ESP32(provider, architectureName, "esp32s3");
+	}
 
 }

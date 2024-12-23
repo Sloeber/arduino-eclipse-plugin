@@ -233,18 +233,24 @@ public class BuildTests {
      *
      * @throws Exception
      */
-    @Test
-    public void issue1047_Board_Names_Can_Be_used_as_Strings() throws Exception {
-        MCUBoard unoBoard = ESP8266.nodeMCU();
+    @ParameterizedTest
+    @MethodSource("issue1047_Board_Names_Can_Be_used_as_StringsData")
+    public void issue1047_Board_Names_Can_Be_used_as_Strings(String projectName, MCUBoard board) throws Exception {
 
-        String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
-        IPath templateFolder = Shared.getTemplateFolder(projectName);
+        IPath templateFolder = Shared.getTemplateFolder("issue1047_Board_Names_Can_Be_used_as_Strings");
         CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
-        IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoard.getBoardDescriptor(),
+        IProject theTestProject = SloeberProject.createArduinoProject(projectName, null, board.getBoardDescriptor(),
                 codeDescriptor, new CompileDescription(), new NullProgressMonitor());
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         assertNull(Shared.hasBuildErrors(theTestProject));
+    }
 
+    public static Stream<Arguments> issue1047_Board_Names_Can_Be_used_as_StringsData() throws Exception {
+        List<Arguments> ret = new LinkedList<>();
+        ret.add(Arguments.of("issue1047_Leonardo_Board_Names_Can_Be_used_as_Strings", Arduino.leonardo()));
+        ret.add(Arguments.of("issue1047_Zero_Board_Names_Can_Be_used_as_Strings", Arduino.zeroNatviePort()));
+        ret.add(Arguments.of("issue1047_ESP32S3_Board_Names_Can_Be_used_as_Strings", ESP32.ESP32S3()));
+        return ret.stream();
     }
 
     /**
