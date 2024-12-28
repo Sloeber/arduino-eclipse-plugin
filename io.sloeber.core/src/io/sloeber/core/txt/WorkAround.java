@@ -44,13 +44,15 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 25 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 34 ";
 
 	private static Map<String, String> USB_replacers;
 
 	static
 	{
 		USB_replacers = new TreeMap<>();
+		
+		if (isWindows) {
 
 		USB_replacers.put(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ",
 				" \"-DUSB_MANUFACTURER={build.usb_manufacturer}\" ");
@@ -66,6 +68,21 @@ public class WorkAround {
 
 		USB_replacers.put(" '-DUSB_SERIAL=\"{build.usb_serial}\"' ", " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ");
 		USB_replacers.put(" '-DUSB_SERIAL={build.usb_serial}' ", " \"-DUSB_SERIAL={build.usb_serial}\" ");
+		}else {
+			USB_replacers.put(" -DUSB_MANUFACTURER=\"{build.usb_manufacturer}\" ",
+					" '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ");
+			USB_replacers.put(" -DUSB_PRODUCT=\"{build.usb_product}\" "," '-DUSB_PRODUCT=\"{build.usb_product}\"' ");
+			USB_replacers.put(" -DARDUINO_BOARD=\"{build.board}\" ", " '-DARDUINO_BOARD=\"{build.board}\"' ");
+			USB_replacers.put(" -DUSB_SERIAL=\"{build.usb_serial}\" ", " '-DUSB_SERIAL=\"{build.usb_serial}\"' ");
+			
+			//esp32 has
+			//extraflags=-DARDUINO_HOST_OS=
+			//so no space in search
+			USB_replacers.put("-DARDUINO_HOST_OS=\"{runtime.os}\" ", "'-DARDUINO_HOST_OS=\"{runtime.os}\"' ");
+			USB_replacers.put(" -DARDUINO_VARIANT=\"{build.variant}\" ", " '-DARDUINO_VARIANT=\"{build.variant}\"' ");
+			USB_replacers.put(" -DARDUINO_FQBN=\"{build.fqbn}\" ", " '-DARDUINO_FQBN=\"{build.fqbn}\"' ");
+			
+		}
 
 	}
 
@@ -158,10 +175,12 @@ public class WorkAround {
 		boardsTXT = boardsTXT.replace("\n", " \n");
 		boardsTXT = solveOSStuff(boardsTXT);
 
-		// replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
-		// with circuitplay32u4cat.build.usb_manufacturer=\"Adafruit\"
-		 boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"",
-		 "$1=\\\\\"$2\\\\\"");
+		if (isWindows) {
+			// replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
+			// with circuitplay32u4cat.build.usb_manufacturer=\"Adafruit\"
+			 boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"",
+			 "$1=\\\\\"$2\\\\\"");
+		}
 
 		// quoting fixes for embedutils
 		// ['\"]?(-DMBEDTLS_\S+)=\\?"(mbedtls\S+?)\\?\"["']? \"$1=\\\"$2\\\"\"
@@ -241,6 +260,7 @@ public class WorkAround {
 		platformTXT = platformTXT.replaceAll("(?m)^(\\S*)\\s*=", "$1=");
 		// remove -MMD (the dependency generation parameter
 		platformTXT = platformTXT.replaceAll(" -MMD ", " ");
+		// add a space at the end of the line
 		platformTXT = platformTXT.replace("\n", " \n");
 
 		platformTXT = solveOSStuff(platformTXT);
