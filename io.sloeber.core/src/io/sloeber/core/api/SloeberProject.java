@@ -182,7 +182,7 @@ public class SloeberProject extends Common {
 					excludes[1] = project.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getProjectRelativePath()
 							.append(SOURCE_ENTRY_FILTER_ALL);
 					newSourceEntries[0] = new CSourceEntry(project.getFullPath(), excludes, ICSettingEntry.RESOLVED);
-					IPath excludes2[] = new IPath[9];
+					IPath excludes2[] = new IPath[10];
 					excludes2[0] = IPath.fromOSString("**/*.ino"); //$NON-NLS-1$
 					excludes2[1] = IPath.fromOSString("libraries/?*/**/doc*/**"); //$NON-NLS-1$
 					excludes2[2] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
@@ -190,8 +190,9 @@ public class SloeberProject extends Common {
 					excludes2[4] = IPath.fromOSString("libraries/?*/**/test*/**"); //$NON-NLS-1$
 					excludes2[5] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
 					excludes2[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
-					excludes2[7] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
-					excludes2[8] = IPath.fromOSString("libraries/?*/Applications/**"); //$NON-NLS-1$
+					excludes2[7] = IPath.fromOSString("libraries/?*/lib/**"); //$NON-NLS-1$
+					excludes2[8] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
+					excludes2[9] = IPath.fromOSString("libraries/?*/Applications/**"); //$NON-NLS-1$
 
 					/*
 					 * CDT currently causes issues with ${ConfigName]
@@ -448,17 +449,17 @@ public class SloeberProject extends Common {
 						IPath path = newProjectHandle.getFolder(rootCodeFolder).getFullPath();
 						newSourceEntries[0] = new CSourceEntry(path, null, ICSettingEntry.RESOLVED);
 					}
-					IPath excludes[] = new IPath[9];
-					excludes[0] = IPath.fromOSString("**/*.ino"); //$NON-NLS-1$
-					excludes[1] = IPath.fromOSString("libraries/?*/**/doc*/**"); //$NON-NLS-1$
-					excludes[2] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
-					excludes[3] = IPath.fromOSString("libraries/?*/**/?xtras/**"); //$NON-NLS-1$
-					excludes[4] = IPath.fromOSString("libraries/?*/**/test*/**"); //$NON-NLS-1$
-					excludes[5] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
-					excludes[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
-					excludes[7] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
-					excludes[8] = IPath.fromOSString("libraries/?*/Applications/**"); //$NON-NLS-1$
-
+					IPath excludes2[] = new IPath[10];
+					excludes2[0] = IPath.fromOSString("**/*.ino"); //$NON-NLS-1$
+					excludes2[1] = IPath.fromOSString("libraries/?*/**/doc*/**"); //$NON-NLS-1$
+					excludes2[2] = IPath.fromOSString("libraries/?*/**/?xamples/**"); //$NON-NLS-1$
+					excludes2[3] = IPath.fromOSString("libraries/?*/**/?xtras/**"); //$NON-NLS-1$
+					excludes2[4] = IPath.fromOSString("libraries/?*/**/test*/**"); //$NON-NLS-1$
+					excludes2[5] = IPath.fromOSString("libraries/?*/**/third-party/**"); //$NON-NLS-1$
+					excludes2[6] = IPath.fromOSString("libraries/**/._*"); //$NON-NLS-1$
+					excludes2[7] = IPath.fromOSString("libraries/?*/lib/**"); //$NON-NLS-1$
+					excludes2[8] = IPath.fromOSString("libraries/?*/utility/*/*"); //$NON-NLS-1$
+					excludes2[9] = IPath.fromOSString("libraries/?*/Applications/**"); //$NON-NLS-1$
 
 					/*
 					 * CDT currently causes issues with ${ConfigName]
@@ -468,7 +469,7 @@ public class SloeberProject extends Common {
 					 */
 					IPath arduinoRoot = newProjectHandle.getFolder(SLOEBER_ARDUINO_FOLDER_NAME).getFullPath()
 							.append(curConfig.getName());
-					newSourceEntries[1] = new CSourceEntry(arduinoRoot, excludes, ICSettingEntry.NONE);
+					newSourceEntries[1] = new CSourceEntry(arduinoRoot, excludes2, ICSettingEntry.NONE);
 					curConfig.setSourceEntries(newSourceEntries);
 					IAutoBuildConfigurationDescription iAutoBuildConfig = IAutoBuildConfigurationDescription
 							.getConfig(curConfig);
