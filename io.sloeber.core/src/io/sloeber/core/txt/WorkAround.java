@@ -44,14 +44,14 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 34 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 38 ";
 
 	private static Map<String, String> USB_replacers;
 
 	static
 	{
 		USB_replacers = new TreeMap<>();
-		
+
 		if (isWindows) {
 
 		USB_replacers.put(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ",
@@ -68,20 +68,24 @@ public class WorkAround {
 
 		USB_replacers.put(" '-DUSB_SERIAL=\"{build.usb_serial}\"' ", " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ");
 		USB_replacers.put(" '-DUSB_SERIAL={build.usb_serial}' ", " \"-DUSB_SERIAL={build.usb_serial}\" ");
+		USB_replacers.put("-DARDUINO_HOST_OS=\"{runtime.os}\" ", "\"-DARDUINO_HOST_OS=\\\"{runtime.os}\\\"\" ");
+		USB_replacers.put(" -DARDUINO_VARIANT=\"{build.variant}\" ", " \"-DARDUINO_VARIANT=\\\"{build.variant}\\\"\" ");
+		USB_replacers.put(" -DARDUINO_FQBN=\"{build.fqbn}\" ", " \"-DARDUINO_FQBN=\\\"{build.fqbn}\\\"\" ");
+
 		}else {
 			USB_replacers.put(" -DUSB_MANUFACTURER=\"{build.usb_manufacturer}\" ",
 					" '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ");
 			USB_replacers.put(" -DUSB_PRODUCT=\"{build.usb_product}\" "," '-DUSB_PRODUCT=\"{build.usb_product}\"' ");
 			USB_replacers.put(" -DARDUINO_BOARD=\"{build.board}\" ", " '-DARDUINO_BOARD=\"{build.board}\"' ");
 			USB_replacers.put(" -DUSB_SERIAL=\"{build.usb_serial}\" ", " '-DUSB_SERIAL=\"{build.usb_serial}\"' ");
-			
+
 			//esp32 has
 			//extraflags=-DARDUINO_HOST_OS=
 			//so no space in search
 			USB_replacers.put("-DARDUINO_HOST_OS=\"{runtime.os}\" ", "'-DARDUINO_HOST_OS=\"{runtime.os}\"' ");
 			USB_replacers.put(" -DARDUINO_VARIANT=\"{build.variant}\" ", " '-DARDUINO_VARIANT=\"{build.variant}\"' ");
 			USB_replacers.put(" -DARDUINO_FQBN=\"{build.fqbn}\" ", " '-DARDUINO_FQBN=\"{build.fqbn}\"' ");
-			
+
 		}
 
 	}
@@ -315,6 +319,11 @@ public class WorkAround {
 		platformTXT = platformTXT.replace("\"@{build.opt.fqfn}\" ", "");
 		platformTXT = platformTXT.replace(" \"@{build.opt.fqfn}\"", "");
 		platformTXT = platformTXT.replace("\"@{build.opt.fqfn}\"", "");
+
+		//for leonardo on windows
+		if(isWindows) {
+			platformTXT = platformTXT.replace("build.usb_manufacturer=\"Unknown\"", "build.usb_manufacturer=\\\"Unknown\\\"");
+		}
 
 		return platformTXT;
 	}
