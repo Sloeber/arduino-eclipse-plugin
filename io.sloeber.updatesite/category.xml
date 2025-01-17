@@ -6,6 +6,12 @@
    <bundle id="io.sloeber.product">
       <category name="product_ide"/>
    </bundle>
+   <bundle id="io.sloeber.autoBuild">
+      <category name="autoBuild"/>
+   </bundle>
+   <bundle id="io.sloeber.autoBuild.ui">
+      <category name="autoBuild"/>
+   </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
@@ -16,7 +22,8 @@
          Only select this if you are upgrading the Sloeber IDE
       </description>
    </category-def>
-   <repository-reference location="https://download.eclipse.org/releases/latest/" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/nebula/releases/latest/" enabled="true" />
+   <category-def name="autoBuild" label="autoBuild"/>
+   <repository-reference location="https://download.eclipse.org/releases/latest/" name="" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/eclipse/updates/latest" name="" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/nebula/releases/latest/" name="" enabled="true" />
 </site>
