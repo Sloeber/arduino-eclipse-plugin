@@ -115,6 +115,14 @@ public interface ISloeberConfiguration {
 
 	public Set<IFolder> getIncludeFolders();
 
+	/**
+	 * Add libraries to the configurations
+	 * Some libraries contain subfolders that need to be ignoreed.
+	 * Therefore the configuration description may change.
+	 * 
+	 * @param librariesToAdd
+	 * @return true if when cCorePlugin.setProjectDescription needs to be called
+	 */
 	public boolean addLibraries(Collection<IArduinoLibraryVersion> librariesToAdd);
 	public boolean removeLibraries(Collection<IArduinoLibraryVersion> librariesToRemove);
 
