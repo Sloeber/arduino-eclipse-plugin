@@ -1,10 +1,13 @@
 package io.sloeber.core.internal;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,6 +18,7 @@ import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -52,7 +56,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private BoardDescription myBoardDescription;
 	private OtherDescription myOtherDesc;
 	private CompileDescription myCompileDescription;
-	//a map of foldername library
+	// a map of foldername library
 	private Map<String, IArduinoLibraryVersion> myLibraries = new HashMap<>();
 
 	// operational data
@@ -60,19 +64,18 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	// derived data
 	private Map<String, String> myEnvironmentVariables = new HashMap<>();
+
 	public static SloeberConfiguration getFromAutoBuildConfDesc(IAutoBuildConfigurationDescription autoBuildConfData) {
 		return (SloeberConfiguration) autoBuildConfData.getAutoBuildConfigurationExtensionDescription();
 	}
 
 	public static SloeberConfiguration getConfig(ICConfigurationDescription cConfigDesc) {
-		CConfigurationData confData=cConfigDesc.getConfigurationData();
-		if(confData instanceof IAutoBuildConfigurationDescription) {
+		CConfigurationData confData = cConfigDesc.getConfigurationData();
+		if (confData instanceof IAutoBuildConfigurationDescription) {
 		return (SloeberConfiguration) ((IAutoBuildConfigurationDescription)confData).getAutoBuildConfigurationExtensionDescription();
 		}
 		return null;
 	}
-
-
 
 	/**
 	 * copy constructor This constructor must be implemented for each derived class
@@ -102,8 +105,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		setOtherDescription(otherDesc);
 		setCompileDescription(compileDescriptor);
 	}
-
-
 
 	@Override
 	public BoardDescription getBoardDescription() {
@@ -220,11 +221,10 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return false;
 	}
 
-
 	private boolean projectNeedsUpdate() {
 		IPath corePath = myBoardDescription.getActualCoreCodePath();
 		IFolder coreFolder = getArduinoCoreFolder();
-		if (! corePath.equals(coreFolder.getLocation())) {
+		if (!corePath.equals(coreFolder.getLocation())) {
 //        	System.out.println("projectNeedsUpdate core Folder mismatch");
 //        	System.out.println("corefolder "+coreFolder.getLocation());
 //        	System.out.println("corePath   "+corePath);
@@ -232,7 +232,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		}
 		IFolder arduinoVariantFolder = getArduinoVariantFolder();
 		IPath variantPath = myBoardDescription.getActualVariantPath();
-		if(variantPath==null) {
+		if (variantPath == null) {
 			return arduinoVariantFolder.exists();
 		}
 		if ((!variantPath.toFile().exists()) && (arduinoVariantFolder.exists())) {
@@ -249,64 +249,62 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return false;
 	}
 
-
-
 	/**
 	 * get the environment variables that do not reliy on variable expansion to get the value.
 	 * @return true when data was missing
 	 */
 	private boolean getEnvVarsNonExpanding() {
-			myEnvironmentVariables.clear();
+		myEnvironmentVariables.clear();
 
-			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
-					getProject().getFolder(getAutoBuildDescription().getBuildFolderString()).getLocation().toOSString());
+		myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
+				getProject().getFolder(getAutoBuildDescription().getBuildFolderString()).getLocation().toOSString());
 
-			myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH,getCodeLocation().toOSString());
+		myEnvironmentVariables.put(ENV_KEY_BUILD_SOURCE_PATH, getCodeLocation().toOSString());
 //			myEnvironmentVariables.put(ENV_KEY_BUILD_PATH,
 //					getAutoBuildDescription().getBuildFolder().getLocation().toOSString());
 
-			if (myBoardDescription != null) {
-				myEnvironmentVariables.putAll(myBoardDescription.getEnvVars());
-			}
-			if (myCompileDescription != null) {
-				myEnvironmentVariables.putAll(myCompileDescription.getEnvVars());
-			}
-			if (myOtherDesc != null) {
-				myEnvironmentVariables.putAll(myOtherDesc.getEnvVars());
-			}
-			// set the paths
-			String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
-			if (isWindows) {
-				myEnvironmentVariables.put(SLOEBER_MAKE_LOCATION,
-						ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
-				myEnvironmentVariables.put(SLOEBER_AWK_LOCATION,
-						ConfigurationPreferences.getAwkPath().addTrailingSeparator().toOSString());
+		if (myBoardDescription != null) {
+			myEnvironmentVariables.putAll(myBoardDescription.getEnvVars());
+		}
+		if (myCompileDescription != null) {
+			myEnvironmentVariables.putAll(myCompileDescription.getEnvVars());
+		}
+		if (myOtherDesc != null) {
+			myEnvironmentVariables.putAll(myOtherDesc.getEnvVars());
+		}
+		// set the paths
+		String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
+		if (isWindows) {
+			myEnvironmentVariables.put(SLOEBER_MAKE_LOCATION,
+					ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
+			myEnvironmentVariables.put(SLOEBER_AWK_LOCATION,
+					ConfigurationPreferences.getAwkPath().addTrailingSeparator().toOSString());
 
-				String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
-				myEnvironmentVariables.put("PATH", //$NON-NLS-1$
-						makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
+			String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
+			myEnvironmentVariables.put("PATH", //$NON-NLS-1$
+					makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
 								+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot
 								+ "\\system32" //$NON-NLS-1$
-								+ pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
-								+ pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
-			} else {
-				myEnvironmentVariables.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
-						+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
-			}
-			return (myBoardDescription == null) || (myCompileDescription == null)|| (myOtherDesc == null);
+							+ pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
+							+ pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
+		} else {
+			myEnvironmentVariables.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
+					+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
+		}
+		return (myBoardDescription == null) || (myCompileDescription == null) || (myOtherDesc == null);
 	}
 
 	private IPath getCodeLocation() {
 		IProject project = getProject();
-		IPath arduinoPath=getArduinoRootFolder().getFullPath();
+		IPath arduinoPath = getArduinoRootFolder().getFullPath();
 		ICSourceEntry[] sourceEntries = getAutoBuildDesc().getCdtConfigurationDescription().getSourceEntries();
 		for (ICSourceEntry curEntry : sourceEntries) {
-			IPath entryPath=curEntry.getFullPath();
-			if (arduinoPath.isPrefixOf( entryPath)) {
-				//this is the arduino code folder: ignore
+			IPath entryPath = curEntry.getFullPath();
+			if (arduinoPath.isPrefixOf(entryPath)) {
+				// this is the arduino code folder: ignore
 				continue;
 			}
-			//Just pick the first none arduino one as there should only be one
+			// Just pick the first none arduino one as there should only be one
 			return getLocation(curEntry);
 		}
 		return project.getLocation();
@@ -332,6 +330,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			return rc.getLocation();
 		return null;
 	}
+
 	/**
 	 * get the text for the decorator
 	 *
@@ -468,12 +467,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 		IFolder arduinoVariantFolder = getArduinoVariantFolder();
 		IFolder arduinoCodeFolder = getArduinoCoreFolder();
-		NullProgressMonitor monitor=new NullProgressMonitor();
+		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
 			arduinoVariantFolder.delete(true, monitor);
 			arduinoCodeFolder.delete(true, monitor);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+			// ignore exception
 			e.printStackTrace();
 		}
 		IPath corePath = myBoardDescription.getActualCoreCodePath();
@@ -490,9 +489,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	public Set<IFolder> getIncludeFolders() {
 		Set<IFolder> ret = new HashSet<>();
 		ret.add(getArduinoCoreFolder());
-        if (myBoardDescription.getActualVariantPath() != null) {
-        	ret.add(getArduinoVariantFolder());
-        }
+		if (myBoardDescription.getActualVariantPath() != null) {
+			ret.add(getArduinoVariantFolder());
+		}
 		try {
 			if (getArduinoLibraryFolder().exists()) {
 				for (IResource curMember : getArduinoLibraryFolder().members()) {
@@ -519,10 +518,10 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 * @return
 	 * @throws CoreException
 	 */
-	private Map<String,IArduinoLibraryVersion> getLibrariesFromLinks()  {
+	private Map<String, IArduinoLibraryVersion> getLibrariesFromLinks() {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		IFolder libFolder = getArduinoLibraryFolder();
-		if(!libFolder.exists()) {
+		if (!libFolder.exists()) {
 			return ret;
 		}
 		try {
@@ -530,15 +529,15 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				if (curResource instanceof IFolder) {
 					IFolder curFolder = (IFolder) curResource;
 					IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
-					if (curLib != null){
-						//We knbow the lib so it is ok
-						ret.put(curLib.getName(),curLib);
+					if (curLib != null) {
+						// We knbow the lib so it is ok
+						ret.put(curLib.getName(), curLib);
 						continue;
 					}
 
-					curLib=LibraryManager.getLibraryVersionFromLocation(curFolder,getBoardDescription());
-					if (curLib != null){
-						ret.put(curLib.getName(),curLib);
+					curLib = LibraryManager.getLibraryVersionFromLocation(curFolder, getBoardDescription());
+					if (curLib != null) {
+						ret.put(curLib.getName(), curLib);
 					}
 				}
 			}
@@ -549,7 +548,6 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		return ret;
 	}
 
-
 	/**
 	 * remove the links from the libraries on disk
 	 *
@@ -558,12 +556,12 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		IProgressMonitor monitor = new NullProgressMonitor();
 		IFolder libFolder = getArduinoLibraryFolder();
 		for (String curLib : myLibraries.keySet()) {
-			IFolder curLibFolder=libFolder.getFolder(curLib);
+			IFolder curLibFolder = libFolder.getFolder(curLib);
 			if (curLibFolder.exists()) {
 				try {
 					curLibFolder.delete(true, monitor);
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
+					// ignore exception
 					e.printStackTrace();
 				}
 			}
@@ -577,65 +575,61 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private void linkLibrariesToFolder() {
 		IFolder libFolder = getArduinoLibraryFolder();
 		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
-			IFolder curLibFolder=libFolder.getFolder(curLib.getName());
+			IFolder curLibFolder = libFolder.getFolder(curLib.getName());
 			Helpers.LinkFolderToFolder(curLib.getInstallPath(), curLibFolder);
 		}
 	}
-
 
 	/**
 	 * For libraries of with FQN Libraries/hardware/X make sure that the location
 	 * point to a valid location of the given boardDescriptor
 	 */
 	private void upDateHardwareLibraries() {
-		//make sure the libraries that link to hardware are the correct ones
-		BoardDescription boardDesc=getBoardDescription();
-		IPath referenceLibPath =boardDesc.getReferencedCoreLibraryPath();
-		IPath referencingLibPath =boardDesc.getReferencingLibraryPath();
-		if(referencingLibPath==null) {
-			referencingLibPath=referenceLibPath;
+		// make sure the libraries that link to hardware are the correct ones
+		BoardDescription boardDesc = getBoardDescription();
+		IPath referenceLibPath = boardDesc.getReferencedCoreLibraryPath();
+		IPath referencingLibPath = boardDesc.getReferencingLibraryPath();
+		if (referencingLibPath == null) {
+			referencingLibPath = referenceLibPath;
 		}
-		Set<String> hardwareLibsFQN=new HashSet<>();
-		for(IArduinoLibraryVersion curLib:myLibraries.values()) {
-			if(curLib.isHardwareLib()) {
-				IPath libPath=curLib.getInstallPath();
-				if(referencingLibPath.isPrefixOf(libPath)||referenceLibPath.isPrefixOf(libPath)) {
-					//the hardware lib is ok
+		Set<String> hardwareLibsFQN = new HashSet<>();
+		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
+			if (curLib.isHardwareLib()) {
+				IPath libPath = curLib.getInstallPath();
+				if (referencingLibPath.isPrefixOf(libPath) || referenceLibPath.isPrefixOf(libPath)) {
+					// the hardware lib is ok
 					continue;
 				}
 				// The hardware lib is for a different hardware.
-				//add it to the lists to reattach
+				// add it to the lists to reattach
 				hardwareLibsFQN.add(curLib.getFQN().toPortableString());
 			}
 		}
-		if(!hardwareLibsFQN.isEmpty()) {
-			Map<String, IArduinoLibraryVersion> boardLibs =LibraryManager.getLibrariesHarware(boardDesc);
-			for(String curReplaceLibFQN: hardwareLibsFQN) {
-				IArduinoLibraryVersion newLib =boardLibs.get(curReplaceLibFQN);
-				if(newLib!=null) {
+		if (!hardwareLibsFQN.isEmpty()) {
+			Map<String, IArduinoLibraryVersion> boardLibs = LibraryManager.getLibrariesHarware(boardDesc);
+			for (String curReplaceLibFQN : hardwareLibsFQN) {
+				IArduinoLibraryVersion newLib = boardLibs.get(curReplaceLibFQN);
+				if (newLib != null) {
 					// a library with the same name was found so use this one
 					myLibraries.put(newLib.getName(), newLib);
-				}else {
-					//no new library was found remove the old lib
+				} else {
+					// no new library was found remove the old lib
 					myLibraries.remove(Path.fromPortableString(curReplaceLibFQN).lastSegment());
 				}
 			}
 		}
 	}
 
-
-
 	@Override
 	public void reAttachLibraries() {
 		upDateHardwareLibraries();
-
 
 		IProgressMonitor monitor = new NullProgressMonitor();
 		IFolder libFolder = getArduinoLibraryFolder();
 		// Remove all existing lib folders that are not known or are linking to the
 		// wrong lib
 		try {
-			if(!libFolder.exists()) {
+			if (!libFolder.exists()) {
 				libFolder.create(true, true, new NullProgressMonitor());
 			}
 			for (IResource curResource : libFolder.members()) {
@@ -666,24 +660,61 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public Map<String, IArduinoLibraryVersion> getUsedLibraries() {
-		myLibraries=getLibrariesFromLinks();
+		myLibraries = getLibrariesFromLinks();
 		return new HashMap<>(myLibraries);
 	}
 
 	@Override
 	public boolean addLibraries(Collection<IArduinoLibraryVersion> librartiesToAdd) {
-		boolean ret = false;
+		if (librartiesToAdd == null || librartiesToAdd.isEmpty()) {
+			return false;
+		}
+		List<IResource> foldersToRemoveFromBuildPath = new LinkedList<>();
 		IFolder libFolder = getArduinoLibraryFolder();
+		ICConfigurationDescription confdesc = getAutoBuildDesc().getCdtConfigurationDescription();
+		ICSourceEntry[] sourceEntries = confdesc.getSourceEntries();
 		for (IArduinoLibraryVersion curLib : librartiesToAdd) {
 			if (curLib == null) {
 				continue;
 			}
-			Helpers.LinkFolderToFolder(curLib.getInstallPath(), libFolder.getFolder(curLib.getName()));
+			IFolder newLibFolder = libFolder.getFolder(curLib.getName());
+			Helpers.LinkFolderToFolder(curLib.getInstallPath(), newLibFolder);
 			myLibraries.put(curLib.getName(), curLib);
-			ret = true;
+
+			// exclude bad folders
+			File[] subFolders;
+			subFolders = curLib.getInstallPath().toFile().listFiles();
+
+			for (File subFolder : subFolders) {
+				if (subFolder.isFile()) {
+					continue;
+				}
+				String curName = subFolder.getName();
+				if ("src".equals(curName)) { //$NON-NLS-1$
+					continue;
+				}
+				IFolder curFolder = newLibFolder.getFolder(curName);
+				if (CDataUtil.isExcluded(curFolder.getFullPath(), sourceEntries)) {
+					continue;
+				}
+				foldersToRemoveFromBuildPath.add(curFolder);
+			}
 		}
-		return ret;
+		if (foldersToRemoveFromBuildPath.isEmpty()) {
+			return false;
+		}
+		try {
+			for (IResource subFolder : foldersToRemoveFromBuildPath) {
+				sourceEntries = CDataUtil.setExcluded(subFolder.getFullPath(), true, true, sourceEntries);
+			}
+			confdesc.setSourceEntries(sourceEntries);
+		} catch (CoreException e) {
+			// ignore error
+			e.printStackTrace();
+		}
+		return true;
 	}
+
 
 	@Override
 	public boolean removeLibraries(Collection<IArduinoLibraryVersion> librariesToRemove) {
@@ -713,26 +744,26 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public Set<String> getTeamDefaultExclusionKeys(String name) {
-		Set<String> ret=new HashSet<>();
-		ret.add(name+DOT+KEY_SLOEBER_UPLOAD_PORT);
+		Set<String> ret = new HashSet<>();
+		ret.add(name + DOT + KEY_SLOEBER_UPLOAD_PORT);
 		return ret;
 	}
 
 	@Override
 	public boolean equals(AutoBuildConfigurationExtensionDescription base) {
-		if(!(base instanceof SloeberConfiguration)) {
+		if (!(base instanceof SloeberConfiguration)) {
 			return false;
 		}
-		SloeberConfiguration other=(SloeberConfiguration)base;
+		SloeberConfiguration other = (SloeberConfiguration) base;
 		if( myBoardDescription.equals(other.myBoardDescription) &&
 				myOtherDesc.equals(other.myOtherDesc) &&
 				myCompileDescription.equals(other.myCompileDescription) &&
 				myLibraries.size()==other.myLibraries.size()) {
-			for(Entry<String, IArduinoLibraryVersion> curLib:myLibraries.entrySet()) {
-				String key=curLib.getKey();
-				IArduinoLibraryVersion localValue=curLib.getValue();
-				IArduinoLibraryVersion otherValue=other.myLibraries.get(key);
-				if(!localValue.equals(otherValue)) {
+			for (Entry<String, IArduinoLibraryVersion> curLib : myLibraries.entrySet()) {
+				String key = curLib.getKey();
+				IArduinoLibraryVersion localValue = curLib.getValue();
+				IArduinoLibraryVersion otherValue = other.myLibraries.get(key);
+				if (!localValue.equals(otherValue)) {
 					return false;
 				}
 			}
@@ -743,19 +774,19 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public LinkedHashMap<String, String> getPrebuildSteps() {
-		LinkedHashMap<String, String> ret=new LinkedHashMap<>();
-		LinkedHashSet <String> hookNamess=new LinkedHashSet<>();
+		LinkedHashMap<String, String> ret = new LinkedHashMap<>();
+		LinkedHashSet<String> hookNamess = new LinkedHashSet<>();
 		hookNamess.add("prebuild"); //$NON-NLS-1$
-		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription()));
+		ret.putAll(myBoardDescription.getHookSteps(hookNamess, getAutoBuildDescription()));
 		return ret;
 	}
 
 	@Override
 	public LinkedHashMap<String, String> getPostbuildSteps() {
-		LinkedHashMap<String, String> ret=new LinkedHashMap<>();
-		LinkedHashSet <String> hookNamess=new LinkedHashSet<>();
+		LinkedHashMap<String, String> ret = new LinkedHashMap<>();
+		LinkedHashSet<String> hookNamess = new LinkedHashSet<>();
 		hookNamess.add("postbuild"); //$NON-NLS-1$
-		ret.putAll(myBoardDescription.getHookSteps(hookNamess,getAutoBuildDescription()));
+		ret.putAll(myBoardDescription.getHookSteps(hookNamess, getAutoBuildDescription()));
 		return ret;
 	}
 
@@ -765,7 +796,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 *  we can not update the disk
 	 * at the time the SloeberConfiguration is changed
 	 *
-	 *  When a configuration becomes "the active" configuration this method will
+	 * When a configuration becomes "the active" configuration this method will
 	 *  create/update the necessary resources on disk.
 	 *  This apply is when this configuration is new.
 	 */
@@ -773,15 +804,15 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 //		try {
 //			myLibraries =getLibrariesFromLinks();
 //		} catch (CoreException e) {
-//			// TODO Auto-generated catch block
+//			// ignore exception
 //			e.printStackTrace();
 //		}
-		if(updateSourceEntries()) {
-			//the config has been renamed;
+		if (updateSourceEntries()) {
+			// the config has been renamed;
 			// remove the library links
 			removeLibraryLinks();
 		}
-		configureWhenDirty() ;
+		configureWhenDirty();
 
 	}
 
@@ -799,56 +830,54 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 */
 	private boolean updateSourceEntries() {
 
-			IFolder curArduinoConfigurationfolder=getArduinoConfigurationFolder();
-			IFolder oldArduinoConfigurationfolder=null;
+		IFolder curArduinoConfigurationfolder = getArduinoConfigurationFolder();
+		IFolder oldArduinoConfigurationfolder = null;
 
-			//update the source entries
+		// update the source entries
 
-			ICSourceEntry[] orgSourceEntries = getAutoBuildDesc().getCdtConfigurationDescription().getSourceEntries();
-			ICSourceEntry[] newSourceEntries=new ICSourceEntry[orgSourceEntries.length];
-			for ( int curItem=0; curItem <orgSourceEntries.length;curItem++) {
-				ICSourceEntry curEntry=orgSourceEntries[curItem];
-				if (curArduinoConfigurationfolder.getFullPath().equals( curEntry.getFullPath())) {
-					newSourceEntries[curItem]=orgSourceEntries[curItem];
-					continue;
-				}
-				if (getArduinoRootFolder().getFullPath().isPrefixOf( curEntry.getFullPath())) {
-					oldArduinoConfigurationfolder=getProject().getFolder( curEntry.getFullPath().removeFirstSegments(1));
+		ICSourceEntry[] orgSourceEntries = getAutoBuildDesc().getCdtConfigurationDescription().getSourceEntries();
+		ICSourceEntry[] newSourceEntries = new ICSourceEntry[orgSourceEntries.length];
+		for (int curItem = 0; curItem < orgSourceEntries.length; curItem++) {
+			ICSourceEntry curEntry = orgSourceEntries[curItem];
+			if (curArduinoConfigurationfolder.getFullPath().equals(curEntry.getFullPath())) {
+				newSourceEntries[curItem] = orgSourceEntries[curItem];
+				continue;
+			}
+			if (getArduinoRootFolder().getFullPath().isPrefixOf(curEntry.getFullPath())) {
+				oldArduinoConfigurationfolder = getProject().getFolder(curEntry.getFullPath().removeFirstSegments(1));
 					newSourceEntries[curItem]=new CSourceEntry(curArduinoConfigurationfolder, curEntry.getExclusionPatterns(), curEntry.getFlags());
-				}else {
-					newSourceEntries[curItem]=orgSourceEntries[curItem];
-				}
+			} else {
+				newSourceEntries[curItem] = orgSourceEntries[curItem];
 			}
-			if (oldArduinoConfigurationfolder == null) {
-				return false;
-			}
-			try {
-				if (oldArduinoConfigurationfolder.exists()) {
-					NullProgressMonitor monitor = new NullProgressMonitor();
-					IFolder deleteFolder = oldArduinoConfigurationfolder.getFolder(SLOEBER_VARIANT_FOLDER_NAME);
-					if (deleteFolder.exists()) {
-						deleteFolder.delete(true, monitor);
-					}
-					deleteFolder = oldArduinoConfigurationfolder.getFolder(SLOEBER_CODE_FOLDER_NAME);
-					if (deleteFolder.exists()) {
-						deleteFolder.delete(true, monitor);
-					}
-					if (oldArduinoConfigurationfolder.exists()) {
-						oldArduinoConfigurationfolder.delete(true, monitor);
-					}
-				}
-				getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
-
-			} catch (Exception e) {
-				Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.SloeberConfiguration_Failed_Modify_config_rename, e));
-			}
-			return true;
 		}
+		if (oldArduinoConfigurationfolder == null) {
+			return false;
+		}
+		try {
+			if (oldArduinoConfigurationfolder.exists()) {
+				NullProgressMonitor monitor = new NullProgressMonitor();
+				IFolder deleteFolder = oldArduinoConfigurationfolder.getFolder(SLOEBER_VARIANT_FOLDER_NAME);
+				if (deleteFolder.exists()) {
+					deleteFolder.delete(true, monitor);
+				}
+				deleteFolder = oldArduinoConfigurationfolder.getFolder(SLOEBER_CODE_FOLDER_NAME);
+				if (deleteFolder.exists()) {
+					deleteFolder.delete(true, monitor);
+				}
+				if (oldArduinoConfigurationfolder.exists()) {
+					oldArduinoConfigurationfolder.delete(true, monitor);
+				}
+			}
+			getAutoBuildDesc().getCdtConfigurationDescription().setSourceEntries(newSourceEntries);
 
-	private String getCDTConfName() {
-		return  getAutoBuildDescription().getCdtConfigurationDescription().getName();
+		} catch (Exception e) {
+				Activator.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.SloeberConfiguration_Failed_Modify_config_rename, e));
+		}
+		return true;
 	}
 
-
+	private String getCDTConfName() {
+		return getAutoBuildDescription().getCdtConfigurationDescription().getName();
+	}
 
 }

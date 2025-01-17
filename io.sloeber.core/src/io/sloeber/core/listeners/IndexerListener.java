@@ -23,6 +23,7 @@ import org.eclipse.cdt.core.index.IIndexerStateEvent;
 import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -42,30 +43,22 @@ import io.sloeber.core.api.ISloeberConfiguration;
 import io.sloeber.core.common.InstancePreferences;
 
 public class IndexerListener implements IIndexChangeListener, IIndexerStateListener {
-	private static Set<ISloeberConfiguration> newChangedProjects = new HashSet<>();
+	private static Set<IProject> newChangedProjects = new HashSet<>();
 
 	private static Map<String, String> myIncludeHeaderReplacement;
 
 	@Override
 	public void indexChanged(IIndexChangeEvent event) {
 		if (!InstancePreferences.getAutomaticallyImportLibraries()) {
+			//The automagically adding of libraries has been disabled
 			newChangedProjects.clear();
 			return;
 		}
 		IProject project = event.getAffectedProject().getProject();
-		ISloeberConfiguration sloeberConfDesc = ISloeberConfiguration.getActiveConfig(project);
-//        if (IndexerController.isPosponed(project)) {
-//            // Do not update libraries if project is in creation
-//            return;
-//        }
-		if (sloeberConfDesc == null) {
-			return;
+		if(project!=null) {
+			newChangedProjects.add(project);
 		}
-		if (!newChangedProjects.contains(sloeberConfDesc)) {
-			Activator.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-					"Index of project changed :" + project.getName())); //$NON-NLS-1$
-			newChangedProjects.add(sloeberConfDesc);
-		}
+
 	}
 
 	@Override
@@ -73,25 +66,33 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 
 		if (event.indexerIsIdle()) {
 			if (!newChangedProjects.isEmpty()) {
-				Set<ISloeberConfiguration> curChangedProjects = new HashSet<>(newChangedProjects);
+				CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+				Set<IProject> curChangedProjects = new HashSet<>(newChangedProjects);
 				newChangedProjects.clear();
-				for (ISloeberConfiguration sloeberConfDesc : curChangedProjects) {
-					String projectName = sloeberConfDesc.getProject().getName();
+				for (IProject curProject : curChangedProjects) {
+			        ICProjectDescription projectDescription =cCorePlugin.getProjectDescription(curProject, true);
+
+					ISloeberConfiguration sloeberConfDesc = ISloeberConfiguration.getActiveConfig(projectDescription);
+					if (sloeberConfDesc == null) {
+						return;
+					}
 					try {
 						Activator.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-								"Looking for libraries for project :" + projectName)); //$NON-NLS-1$
-						checkLibraries(sloeberConfDesc);
+								"Looking for libraries for project :" + curProject.getName())); //$NON-NLS-1$
+						if (checkLibraries(sloeberConfDesc)) {
+							cCorePlugin.setProjectDescription(curProject,projectDescription);
+						}
 					} catch (Exception e) {
 						Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.Failed_To_Add_Libraries, e));
 					}
 					Activator.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-							"libraries added for project " + projectName)); //$NON-NLS-1$
+							"libraries added for project " + curProject.getName())); //$NON-NLS-1$
 				}
 			}
 		}
 	}
 
-	private static void checkLibraries(ISloeberConfiguration SloeberCfg) {
+	private static boolean checkLibraries(ISloeberConfiguration SloeberCfg) {
 		Map<String, IArduinoLibraryVersion> alreadyAddedLibs = SloeberCfg.getUsedLibraries();
 		Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(SloeberCfg.getProject());
 		// remove pgmspace as it gives a problem
@@ -111,7 +112,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		}
 
 		if (UnresolvedIncludedHeaders.isEmpty()) {
-			return;
+			return false;
 		}
 
 		for (Map.Entry<String, String> entry : getIncludeHeaderReplacement().entrySet()) {
@@ -160,13 +161,15 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 				toInstallLibString=toInstallLibString+SPACE+curlib.getFQN();
 			}
 		}
+		boolean ret =false;
 		if (!toInstallLibs.isEmpty()) {
 			// there are possible libraries to add
 			Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
 					+ SloeberCfg.getProject().getName() + COLON + SPACE
 					+ toInstallLibString));
-			SloeberCfg.addLibraries(toInstallLibs);
+			ret=ret||SloeberCfg.addLibraries(toInstallLibs);
 		}
+		return ret;
 	}
 
 	private static Set<String> getUnresolvedProjectIncludes(IProject iProject) {
