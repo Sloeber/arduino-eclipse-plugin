@@ -93,7 +93,6 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 	}
 
 	private static boolean checkLibraries(ISloeberConfiguration SloeberCfg) {
-		Map<String, IArduinoLibraryVersion> alreadyAddedLibs = SloeberCfg.getUsedLibraries();
 		Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(SloeberCfg.getProject());
 		// remove pgmspace as it gives a problem
 		UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
@@ -102,12 +101,12 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		}
 
 		//The line below is for cases where libs have been excluded from the build
-		for(String curLib:alreadyAddedLibs.keySet()) {
-			IFolder libFolder =SloeberCfg.getArduinoLibraryFolder().getFolder(curLib);
+		for(IArduinoLibraryVersion curLib:SloeberCfg.getUsedLibraries().values()) {
+			IFolder libFolder =SloeberCfg.getArduinoLibraryFolder().getFolder(curLib.getName());
 			if(libFolder.exists()) {
-				UnresolvedIncludedHeaders.remove(curLib);
+				UnresolvedIncludedHeaders.remove(curLib.getName());
 			}else {
-				UnresolvedIncludedHeaders.add(curLib);
+				UnresolvedIncludedHeaders.add(curLib.getName());
 			}
 		}
 

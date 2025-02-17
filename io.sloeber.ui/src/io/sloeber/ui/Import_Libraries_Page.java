@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -67,7 +68,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 	class ItemSorter {
 		private TreeMap<String, ItemSorter> myItems = new TreeMap<>();
 		private IArduinoLibraryVersion myLib = null;
-		private static Map<String, IArduinoLibraryVersion> myCurrentInstalledLibs =null;
+		private static Map<IPath, IArduinoLibraryVersion> myCurrentInstalledLibs =null;
 
 		ItemSorter() {
 		}
@@ -87,7 +88,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 			if (myLib == null) {
 				curItem.setGrayed(true);
 			}else {
-				boolean isSelected = myCurrentInstalledLibs.get(myLib.getName()) != null;
+				boolean isSelected = myCurrentInstalledLibs.get(myLib.getFQN()) != null;
 				curItem.setChecked(isSelected);
 				curItem.setData(myLib);
 				if (isSelected) {

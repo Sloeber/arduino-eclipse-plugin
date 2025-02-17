@@ -12,6 +12,7 @@ import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
@@ -119,7 +120,7 @@ public interface ISloeberConfiguration {
 	 * Add libraries to the configurations
 	 * Some libraries contain subfolders that need to be ignoreed.
 	 * Therefore the configuration description may change.
-	 * 
+	 *
 	 * @param librariesToAdd
 	 * @return true if when cCorePlugin.setProjectDescription needs to be called
 	 */
@@ -136,7 +137,7 @@ public interface ISloeberConfiguration {
 	 */
 	void reAttachLibraries();
 
-	Map<String, IArduinoLibraryVersion> getUsedLibraries();
+	Map<IPath, IArduinoLibraryVersion> getUsedLibraries();
 	void setLibraries(Set<IArduinoLibraryVersion> selectedLibraries);
 	IFolder getArduinoRootFolder();
 

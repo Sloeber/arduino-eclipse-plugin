@@ -9,7 +9,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import static io.sloeber.core.api.Common.*;
 import static io.sloeber.core.api.Const.*;
@@ -57,7 +56,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private OtherDescription myOtherDesc;
 	private CompileDescription myCompileDescription;
 	// a map of foldername library
-	private Map<String, IArduinoLibraryVersion> myLibraries = new HashMap<>();
+	private Map<IPath, IArduinoLibraryVersion> myLibraries = new HashMap<>();
 
 	// operational data
 	private boolean myMemoryIsDirty = true;
@@ -518,8 +517,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	 * @return
 	 * @throws CoreException
 	 */
-	private Map<String, IArduinoLibraryVersion> getLibrariesFromLinks() {
-		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
+	private Map<IPath, IArduinoLibraryVersion> getLibrariesFromLinks() {
+		Map<IPath, IArduinoLibraryVersion> ret = new HashMap<>();
 		IFolder libFolder = getArduinoLibraryFolder();
 		if (!libFolder.exists()) {
 			return ret;
@@ -528,16 +527,22 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			for (IResource curResource : libFolder.members()) {
 				if (curResource instanceof IFolder) {
 					IFolder curFolder = (IFolder) curResource;
-					IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
+					IArduinoLibraryVersion curLib=null;
+					for(IArduinoLibraryVersion curknowLib: myLibraries.values()) {
+						if(curknowLib.getName().equals(curFolder.getName())){
+							curLib=curknowLib;
+							continue;
+						}
+					}
 					if (curLib != null) {
-						// We knbow the lib so it is ok
-						ret.put(curLib.getName(), curLib);
+						// We know the lib so it is ok
+						ret.put(curLib.getFQN(), curLib);
 						continue;
 					}
 
 					curLib = LibraryManager.getLibraryVersionFromLocation(curFolder, getBoardDescription());
 					if (curLib != null) {
-						ret.put(curLib.getName(), curLib);
+						ret.put(curLib.getFQN(), curLib);
 					}
 				}
 			}
@@ -555,8 +560,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	private void removeLibraryLinks() {
 		IProgressMonitor monitor = new NullProgressMonitor();
 		IFolder libFolder = getArduinoLibraryFolder();
-		for (String curLib : myLibraries.keySet()) {
-			IFolder curLibFolder = libFolder.getFolder(curLib);
+		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
+			IFolder curLibFolder = libFolder.getFolder(curLib.getName());
 			if (curLibFolder.exists()) {
 				try {
 					curLibFolder.delete(true, monitor);
@@ -592,7 +597,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		if (referencingLibPath == null) {
 			referencingLibPath = referenceLibPath;
 		}
-		Set<String> hardwareLibsFQN = new HashSet<>();
+		Set<IPath> hardwareLibsFQN = new HashSet<>();
 		for (IArduinoLibraryVersion curLib : myLibraries.values()) {
 			if (curLib.isHardwareLib()) {
 				IPath libPath = curLib.getInstallPath();
@@ -602,19 +607,19 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				}
 				// The hardware lib is for a different hardware.
 				// add it to the lists to reattach
-				hardwareLibsFQN.add(curLib.getFQN().toPortableString());
+				hardwareLibsFQN.add(curLib.getFQN());
 			}
 		}
 		if (!hardwareLibsFQN.isEmpty()) {
 			Map<String, IArduinoLibraryVersion> boardLibs = LibraryManager.getLibrariesHarware(boardDesc);
-			for (String curReplaceLibFQN : hardwareLibsFQN) {
-				IArduinoLibraryVersion newLib = boardLibs.get(curReplaceLibFQN);
+			for (IPath curReplaceLibFQN : hardwareLibsFQN) {
+				IArduinoLibraryVersion newLib = boardLibs.get(curReplaceLibFQN.toPortableString());
 				if (newLib != null) {
 					// a library with the same name was found so use this one
-					myLibraries.put(newLib.getName(), newLib);
+					myLibraries.put(newLib.getFQN(), newLib);
 				} else {
 					// no new library was found remove the old lib
-					myLibraries.remove(Path.fromPortableString(curReplaceLibFQN).lastSegment());
+					myLibraries.remove(curReplaceLibFQN);
 				}
 			}
 		}
@@ -635,7 +640,14 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			for (IResource curResource : libFolder.members()) {
 				if (curResource instanceof IFolder) {
 					IFolder curFolder = (IFolder) curResource;
-					IArduinoLibraryVersion curLib = myLibraries.get(curFolder.getName());
+
+					IArduinoLibraryVersion curLib =null;
+					for(IArduinoLibraryVersion curknowLib: myLibraries.values()) {
+						if(curknowLib.getName().equals(curFolder.getName())){
+							curLib=curknowLib;
+						}
+					}
+
 					if ((curLib == null) || (!curLib.getInstallPath().equals(curFolder.getLocation()))) {
 						try {
 							curFolder.delete(true, monitor);
@@ -659,7 +671,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 	}
 
 	@Override
-	public Map<String, IArduinoLibraryVersion> getUsedLibraries() {
+	public Map<IPath, IArduinoLibraryVersion> getUsedLibraries() {
 		myLibraries = getLibrariesFromLinks();
 		return new HashMap<>(myLibraries);
 	}
@@ -679,7 +691,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			}
 			IFolder newLibFolder = libFolder.getFolder(curLib.getName());
 			Helpers.LinkFolderToFolder(curLib.getInstallPath(), newLibFolder);
-			myLibraries.put(curLib.getName(), curLib);
+			myLibraries.put(curLib.getFQN(), curLib);
 
 			// exclude bad folders
 			File[] subFolders;
@@ -722,9 +734,9 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		IProgressMonitor monitor = new NullProgressMonitor();
 		IFolder libFolder = getArduinoLibraryFolder();
 		for (IArduinoLibraryVersion curLib : librariesToRemove) {
-			if (myLibraries.containsKey(curLib.getName())) {
+			if (myLibraries.containsKey(curLib.getFQN())) {
 				ret = true;
-				myLibraries.remove(curLib.getName());
+				myLibraries.remove(curLib.getFQN());
 				try {
 					libFolder.getFolder(curLib.getName()).delete(true, monitor);
 				} catch (CoreException e) {
@@ -759,10 +771,8 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 				myOtherDesc.equals(other.myOtherDesc) &&
 				myCompileDescription.equals(other.myCompileDescription) &&
 				myLibraries.size()==other.myLibraries.size()) {
-			for (Entry<String, IArduinoLibraryVersion> curLib : myLibraries.entrySet()) {
-				String key = curLib.getKey();
-				IArduinoLibraryVersion localValue = curLib.getValue();
-				IArduinoLibraryVersion otherValue = other.myLibraries.get(key);
+			for ( IArduinoLibraryVersion localValue : myLibraries.values()) {
+				IArduinoLibraryVersion otherValue = other.myLibraries.get(localValue.getFQN());
 				if (!localValue.equals(otherValue)) {
 					return false;
 				}
