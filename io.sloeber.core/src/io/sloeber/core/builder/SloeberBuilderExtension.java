@@ -130,9 +130,6 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 
 	@SuppressWarnings("nls")
 	private static void generateArduinoSizeCommandFile(IAutoBuildConfigurationDescription autoBuildConfData) {
-		if(!isWindows) {
-			return;
-		}
 		IFile sizeCommandIFile = autoBuildConfData.getBuildFolder().getFile(ARDUINO_SIZE );
 		SloeberConfiguration confDesc = SloeberConfiguration.getFromAutoBuildConfDesc(autoBuildConfData);
 

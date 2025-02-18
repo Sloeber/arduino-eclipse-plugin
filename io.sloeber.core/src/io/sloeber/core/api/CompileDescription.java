@@ -221,10 +221,7 @@ public class CompileDescription {
 		public String getEnvValue() {
 			switch (this) {
 			case ARDUINO_WAY:
-				if (isWindows) {
-					return Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH + ARDUINO_SIZE;
-				}
-				return "${sloeber.size_command.awk}"; //$NON-NLS-1$
+				return Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH + ARDUINO_SIZE;
 			case AVR_ALTERNATIVE:
 				return "${sloeber.size_command.avr}"; //$NON-NLS-1$
 			case RAW_RESULT:
