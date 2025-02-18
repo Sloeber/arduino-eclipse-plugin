@@ -202,6 +202,7 @@ public class Const extends AutoBuildConstants {
 
 
     public static final String RELEASE = "Release";
+    public static final String ARDUINO_SIZE = "arduino-size.cmd";
 
     public static final short PLOTTER_START_DATA = (short) 0xCDAB;// This is the
 

@@ -133,7 +133,7 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 		if(!isWindows) {
 			return;
 		}
-		IFile sizeCommandIFile = autoBuildConfData.getBuildFolder().getFile("arduino-size.bat");
+		IFile sizeCommandIFile = autoBuildConfData.getBuildFolder().getFile(ARDUINO_SIZE );
 		SloeberConfiguration confDesc = SloeberConfiguration.getFromAutoBuildConfDesc(autoBuildConfData);
 
 		File sizeCommandFile = sizeCommandIFile.getLocation().toFile();
