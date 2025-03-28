@@ -49,6 +49,7 @@ import io.sloeber.autoBuild.schema.api.IConfiguration;
 import io.sloeber.autoBuild.schema.api.IProjectType;
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
+import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.internal.ArduinoHardwareLibrary;
 import io.sloeber.core.internal.ArduinoPrivateLibraryVersion;
 import io.sloeber.core.internal.SloeberConfiguration;
@@ -306,6 +307,7 @@ public class SloeberProject extends Common {
 	 	ret.set_CPP_CompileOptions(extraConfig.getValue("cpp.compile")); //$NON-NLS-1$
 	 	ret.set_Link_CompileOptions(extraConfig.getValue("link")); //$NON-NLS-1$
 	 	ret.set_C_andCPP_CompileOptions(extraConfig.getValue("compile")); //$NON-NLS-1$
+	 	ret.setSizeCommand(SizeCommands.valueOf(extraConfig.getValue("compile.sloeber.size.type"),SizeCommands.ARDUINO_WAY)); //$NON-NLS-1$
 
 
 //	 	ret.setSizeCommand(extraConfig.getValue("compile")); //$NON-NLS-1$

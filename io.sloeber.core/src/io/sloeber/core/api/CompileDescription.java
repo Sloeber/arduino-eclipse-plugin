@@ -166,22 +166,54 @@ public class CompileDescription {
 
 		ARDUINO_WAY, AVR_ALTERNATIVE, RAW_RESULT, CUSTOM;
 
+
+
+
+
 		@Override
 		public String toString() {
-			switch (this) {
+			return toString (this);
+		}
+
+		public static String toString(SizeCommands value) {
+
+			switch (value) {
 			case ARDUINO_WAY:
-				return Messages.CompileDescription_SizeArduinoWay;
+				return "Arduino Way"; //$NON-NLS-1$
 			case AVR_ALTERNATIVE:
-				return Messages.CompileDescription_SizeAVRAlternative;
+				return "AVR Alternative"; //$NON-NLS-1$
 			case RAW_RESULT:
-				return Messages.CompileDescription_SizeRawResult;
+				return "Raw result"; //$NON-NLS-1$
 			case CUSTOM:
-				return Messages.CompileDescription_SizeCustom;
+				return "Custom"; //$NON-NLS-1$
 			default:
 				break;
 			}
-			return super.toString();
+			try {
+				return value.toString();
+			} catch (@SuppressWarnings("unused") Exception e) {
+				// ignore exception
+			}
+			return "Arduino Way"; //$NON-NLS-1$
 		}
+
+		public static SizeCommands valueOf(String name, SizeCommands defaultValue) {
+			if (name.equals(toString(ARDUINO_WAY))) {
+				return ARDUINO_WAY;
+			}
+			if (name.equals(toString(AVR_ALTERNATIVE))) {
+				return AVR_ALTERNATIVE;
+			}
+			if (name.equals(toString(RAW_RESULT))) {
+				return RAW_RESULT;
+			}
+			if (name.equals(toString(CUSTOM))) {
+				return CUSTOM;
+			}
+			return defaultValue;
+		}
+
+
 
 		private String myCustomSizeCommand = EMPTY;
 

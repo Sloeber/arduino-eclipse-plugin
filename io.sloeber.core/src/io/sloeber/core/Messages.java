@@ -109,10 +109,6 @@ public class Messages extends NLS {
 	public static String CompileDescription_CustomDebugLevel;
 	public static String CompileDescription_OptimizedForDebug;
 	public static String CompileDescription_OptimizedForRelease;
-	public static String CompileDescription_SizeArduinoWay;
-	public static String CompileDescription_SizeAVRAlternative;
-	public static String CompileDescription_SizeCustom;
-	public static String CompileDescription_SizeRawResult;
 	public static String CompileDescription_WarningsAll;
 	public static String CompileDescription_WarningsCustom;
 	public static String CompileDescription_WarningsDefault;
