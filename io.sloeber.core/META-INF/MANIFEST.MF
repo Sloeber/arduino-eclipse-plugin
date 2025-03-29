@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: io.sloeber.core;singleton:=true
 Bundle-Version: 5.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.core.Activator
