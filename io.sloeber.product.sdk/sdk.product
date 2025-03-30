@@ -209,7 +209,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.e4.rcp.source" installMode="root"/>
       <feature id="org.eclipse.e4.rcp" installMode="root"/>
       <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.core.ssl.feature" installMode="root"/>
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
       <feature id="org.eclipse.epp.mpc" installMode="root"/>
@@ -239,7 +238,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.equinox.p2.user.ui.source" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
-      <feature id="org.eclipse.userstorage" installMode="root"/>
       <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
       <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
       <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
@@ -250,7 +248,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.equinox.p2.rcp.feature.source" installMode="root"/>
       <feature id="org.eclipse.equinox.core.feature.source" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.extras.feature.source" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.ssl.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature" installMode="root"/>
       <feature id="org.eclipse.justj.openjdk.hotspot.jre.full" installMode="root"/>
