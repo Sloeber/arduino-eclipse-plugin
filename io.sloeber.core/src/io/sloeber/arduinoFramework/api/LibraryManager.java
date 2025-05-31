@@ -38,7 +38,7 @@ import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.internal.ArduinoHardwareLibrary;
-import io.sloeber.core.internal.ArduinoPrivateLibraryVersion;
+import io.sloeber.core.internal.ArduinoPrivateHardwareLibraryVersion;
 import io.sloeber.core.internal.Example;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.PackageManager;
@@ -409,7 +409,7 @@ public class LibraryManager {
 					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath);
 					ret.put(retVersion.getFQN().toPortableString(), retVersion);
 				} else {
-					IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);
+					IArduinoLibraryVersion retVersion = new ArduinoPrivateHardwareLibraryVersion(ipath);
 					ret.put(retVersion.getFQN().toPortableString(), retVersion);
 				}
 
