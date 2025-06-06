@@ -87,6 +87,10 @@ public class LibraryManager {
 		return InstancePreferences.getPrivateLibraryPathsString();
 	}
 
+	public static String[] getPrivateLibraryPaths() {
+		return InstancePreferences.getPrivateLibraryPaths();
+	}
+
 	public static void setPrivateLibraryPaths(String[] libraryPaths) {
 		InstancePreferences.setPrivateLibraryPaths(libraryPaths);
 
