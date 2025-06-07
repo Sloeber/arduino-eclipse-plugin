@@ -51,7 +51,7 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.internal.ArduinoHardwareLibrary;
-import io.sloeber.core.internal.ArduinoPrivateLibraryVersion;
+import io.sloeber.core.internal.ArduinoPrivateHardwareLibraryVersion;
 import io.sloeber.core.internal.SloeberConfiguration;
 import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.natures.SloeberNature;
@@ -241,7 +241,7 @@ public class SloeberProject extends Common {
 							continue;
 						}
 
-						IPath privateLibFQN = ArduinoPrivateLibraryVersion.calculateFQN(curLibName);
+						IPath privateLibFQN = ArduinoPrivateHardwareLibraryVersion.calculateFQN(curLibName);
 						foundLib = availableLibs.get(privateLibFQN.toString());
 						if (foundLib != null) {
 							toInstallLibs.add(foundLib);

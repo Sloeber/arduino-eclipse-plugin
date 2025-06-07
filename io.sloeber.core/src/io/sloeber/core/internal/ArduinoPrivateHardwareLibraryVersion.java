@@ -12,18 +12,18 @@ import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.InstancePreferences;
 
-public class ArduinoPrivateLibraryVersion implements IArduinoLibraryVersion {
+public class ArduinoPrivateHardwareLibraryVersion implements IArduinoLibraryVersion {
 	private IPath myInstallPath;
 	private String myName;
 	private IPath myFQN;
 
-	public ArduinoPrivateLibraryVersion(IPath installPath) {
+	public ArduinoPrivateHardwareLibraryVersion(IPath installPath) {
 		myInstallPath = installPath;
 		myName = myInstallPath.lastSegment();
 		myFQN= calculateFQN(getName());
 	}
 
-	public ArduinoPrivateLibraryVersion(String curSaveString) {
+	public ArduinoPrivateHardwareLibraryVersion(String curSaveString) {
 		String[] parts=curSaveString.split(SEMI_COLON);
 		myName=parts[parts.length-1];
 		myFQN= calculateFQN(getName());

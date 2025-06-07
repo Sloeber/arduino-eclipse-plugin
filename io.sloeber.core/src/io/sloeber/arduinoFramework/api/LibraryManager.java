@@ -38,7 +38,7 @@ import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.internal.ArduinoHardwareLibrary;
-import io.sloeber.core.internal.ArduinoPrivateLibraryVersion;
+import io.sloeber.core.internal.ArduinoPrivateHardwareLibraryVersion;
 import io.sloeber.core.internal.Example;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.PackageManager;
@@ -85,6 +85,10 @@ public class LibraryManager {
 
 	public static String getPrivateLibraryPathsString() {
 		return InstancePreferences.getPrivateLibraryPathsString();
+	}
+
+	public static String[] getPrivateLibraryPaths() {
+		return InstancePreferences.getPrivateLibraryPaths();
 	}
 
 	public static void setPrivateLibraryPaths(String[] libraryPaths) {
@@ -409,7 +413,7 @@ public class LibraryManager {
 					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath);
 					ret.put(retVersion.getFQN().toPortableString(), retVersion);
 				} else {
-					IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);
+					IArduinoLibraryVersion retVersion = new ArduinoPrivateHardwareLibraryVersion(ipath);
 					ret.put(retVersion.getFQN().toPortableString(), retVersion);
 				}
 
@@ -469,6 +473,30 @@ public class LibraryManager {
 		}
 
 		return getLibrariesPrivate().get(libFolder.getName());
+	}
+
+	public static IArduinoLibraryVersion getLibraryVersionFromFQN(String FQNLibName, BoardDescription boardDescriptor) {
+		String[] fqnParts = FQNLibName.split(SLACH);
+		if (fqnParts.length < 3) {
+			return null;
+		}
+		if (!SLOEBER_LIBRARY_FQN.equals(fqnParts[0])) {
+			// this is not a library
+			return null;
+		}
+		if (MANAGED.equals(fqnParts[1])) {
+			if (BOARD.equals(fqnParts[2])) {
+				if (boardDescriptor == null) {
+					return null;
+				}
+				return getLibrariesHarware(boardDescriptor).get(FQNLibName);
+			}
+			return getLibrariesdManaged().get(FQNLibName);
+		}
+		if (PRIVATE.equals(fqnParts[1])) {
+			return getLibrariesPrivate().get(FQNLibName);
+		}
+		return null;
 	}
 
 	/**
