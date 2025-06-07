@@ -892,9 +892,17 @@ public class BuildTests {
         theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
         assertNull(Shared.hasBuildErrors(theTestProject),"lib added build should succeed");
 
+        //open and close the project to clear the cache
+        theTestProject.close(null);
+        // just wait a while
+        Thread.sleep(1000);
+
+        theTestProject.open(new NullProgressMonitor());
+
         //There should be 1 lib in the project
+        sloeberConf=ISloeberConfiguration.getActiveConfig(theTestProject, true);
 		Map<IPath, IArduinoLibraryVersion> usedLibs=sloeberConf.getUsedLibraries();
-		assertTrue(usedLibs.size()==0,"Private Lib not found");
+		assertTrue(usedLibs.size()==1,"Private Lib not found");
 
 
     }
