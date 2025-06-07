@@ -902,8 +902,7 @@ public class BuildTests {
         //There should be 1 lib in the project
         sloeberConf=ISloeberConfiguration.getActiveConfig(theTestProject, true);
 		Map<IPath, IArduinoLibraryVersion> usedLibs=sloeberConf.getUsedLibraries();
-		assertTrue(usedLibs.size()==1,"Private Lib not found");
-
+		assertEquals(1,usedLibs.size(),"Private Lib not found");
 
     }
 }
