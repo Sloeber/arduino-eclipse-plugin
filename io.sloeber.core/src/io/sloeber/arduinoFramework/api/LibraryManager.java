@@ -475,6 +475,30 @@ public class LibraryManager {
 		return getLibrariesPrivate().get(libFolder.getName());
 	}
 
+	public static IArduinoLibraryVersion getLibraryVersionFromFQN(String FQNLibName, BoardDescription boardDescriptor) {
+		String[] fqnParts = FQNLibName.split(SLACH);
+		if (fqnParts.length < 3) {
+			return null;
+		}
+		if (!SLOEBER_LIBRARY_FQN.equals(fqnParts[0])) {
+			// this is not a library
+			return null;
+		}
+		if (MANAGED.equals(fqnParts[1])) {
+			if (BOARD.equals(fqnParts[2])) {
+				if (boardDescriptor == null) {
+					return null;
+				}
+				return getLibrariesHarware(boardDescriptor).get(FQNLibName);
+			}
+			return getLibrariesdManaged().get(FQNLibName);
+		}
+		if (PRIVATE.equals(fqnParts[1])) {
+			return getLibrariesPrivate().get(FQNLibName);
+		}
+		return null;
+	}
+
 	/**
 	 * Remove a lib based on the name of the lib
 	 *
