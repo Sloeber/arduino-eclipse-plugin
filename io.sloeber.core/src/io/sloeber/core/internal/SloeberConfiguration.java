@@ -611,7 +611,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 			}
 		}
 		if (!hardwareLibsFQN.isEmpty()) {
-			Map<String, IArduinoLibraryVersion> boardLibs = LibraryManager.getLibrariesHarware(boardDesc);
+			Map<String, IArduinoLibraryVersion> boardLibs = LibraryManager.getLibrariesHarware(boardDesc,true);
 			for (IPath curReplaceLibFQN : hardwareLibsFQN) {
 				IArduinoLibraryVersion newLib = boardLibs.get(curReplaceLibFQN.toPortableString());
 				if (newLib != null) {

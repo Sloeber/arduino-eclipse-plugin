@@ -2,7 +2,7 @@ package io.sloeber.core;
 
 
 
-
+import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.io.FileUtils;
 
@@ -25,8 +27,10 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.internal.core.pdom.indexer.IndexerPreferences;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -801,4 +805,104 @@ public class BuildTests {
 
     }
 
+
+    /**
+     * Use private lib from the workspace.
+     * Close project
+     * open project
+     * Is the lib still there (as does project still build)
+     *
+     * @throws Exception
+     */
+    @Test
+    public void issue1723() throws Exception {
+    	final String projectName = "private_lib";
+    	final String privateLibFolderName = "an_private_lib";
+    	final String privateLibName = "a_private_lib";
+        final String libHeaderContent=("int aFunction();")+System.lineSeparator();
+        String libCodeContent=("#include \""+privateLibName+".h\"")+System.lineSeparator();
+        libCodeContent=libCodeContent+("int aFunction(){")+System.lineSeparator();
+        libCodeContent=libCodeContent+("}")+System.lineSeparator();
+        String libRefContent=("#include \""+privateLibName+".h\"")+System.lineSeparator();
+        libRefContent=libRefContent+("int aRefFunction(){")+System.lineSeparator();
+        libRefContent=libRefContent+("aFunction();")+System.lineSeparator();
+        libRefContent=libRefContent+("}")+System.lineSeparator();
+
+
+    	//create a basic arduino project
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+        IProject theTestProject = null;
+
+        IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+        theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                new CompileDescription(), new NullProgressMonitor());
+        Shared.waitForIndexer(theTestProject);
+
+        //create a private library project
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+        IProject theLibProject= root.getProject("PrivateLibs");
+        theLibProject.create(new NullProgressMonitor());
+        theLibProject.open(new NullProgressMonitor());
+        IFolder libFolder = theLibProject.getFolder(privateLibFolderName);
+        libFolder.create(true, true, new NullProgressMonitor());
+        IFile libHeaderFile=libFolder.getFile(privateLibName+".h");
+        IFile libSourceFile=libFolder.getFile(privateLibName+".cpp");
+
+        Files.write(libHeaderFile.getLocation().toPath(), libHeaderContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+        		StandardOpenOption.CREATE);
+        Files.write(libSourceFile.getLocation().toPath(), libCodeContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+        		StandardOpenOption.CREATE);
+
+
+        //build project (should work)
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        assertNull(Shared.hasBuildErrors(theTestProject),"Created Project does not build.");
+
+
+        //Add code to project that uses private lib
+        IFolder srcFolder = theTestProject.getFolder("src");
+        IFile referingFile=srcFolder.getFile("privateLibUser.cpp");
+        Files.write(referingFile.getLocation().toPath(), libRefContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING,
+        		StandardOpenOption.CREATE);
+
+        //build project (should fail)
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        assertNotNull(Shared.hasBuildErrors(theTestProject),"Lib should be missing; build should fail.");
+
+
+        //add private libs project to the sloeber preferences private libs
+        List<String> privateLibList= new LinkedList<>();
+        privateLibList.add(theLibProject.getLocation().toOSString());
+        privateLibList.addAll( Arrays.asList( LibraryManager.getPrivateLibraryPaths()));
+        LibraryManager.setPrivateLibraryPaths(privateLibList.toArray(new String[privateLibList.size()]));
+
+
+
+        //add the private lib to the project
+        IArduinoLibraryVersion privateArduinoLib=LibraryManager.getLibraryVersionFromFQN(SLOEBER_LIBRARY_FQN+SLACH+PRIVATE+SLACH+libFolder.getName(), null);
+        Collection<IArduinoLibraryVersion> myPrivateLibs =new LinkedList<>();
+        myPrivateLibs.add(privateArduinoLib);
+
+        ISloeberConfiguration sloeberConf=ISloeberConfiguration.getActiveConfig(theTestProject, true);
+		sloeberConf.addLibraries(myPrivateLibs);
+
+        //build project (should work)
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        assertNull(Shared.hasBuildErrors(theTestProject),"lib added build should succeed");
+
+        //open and close the project to clear the cache
+        theTestProject.close(null);
+        // just wait a while
+        Thread.sleep(1000);
+
+        theTestProject.open(new NullProgressMonitor());
+
+        //There should be 1 lib in the project
+        sloeberConf=ISloeberConfiguration.getActiveConfig(theTestProject, true);
+		Map<IPath, IArduinoLibraryVersion> usedLibs=sloeberConf.getUsedLibraries();
+		assertEquals(1,usedLibs.size(),"Private Lib not found");
+
+    }
 }

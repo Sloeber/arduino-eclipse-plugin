@@ -38,7 +38,7 @@ import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.internal.ArduinoHardwareLibrary;
-import io.sloeber.core.internal.ArduinoPrivateLibraryVersion;
+import io.sloeber.core.internal.ArduinoPrivateHardwareLibraryVersion;
 import io.sloeber.core.internal.Example;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.PackageManager;
@@ -85,6 +85,10 @@ public class LibraryManager {
 
 	public static String getPrivateLibraryPathsString() {
 		return InstancePreferences.getPrivateLibraryPathsString();
+	}
+
+	public static String[] getPrivateLibraryPaths() {
+		return InstancePreferences.getPrivateLibraryPaths();
 	}
 
 	public static void setPrivateLibraryPaths(String[] libraryPaths) {
@@ -336,42 +340,58 @@ public class LibraryManager {
 	}
 
 	/**
+	 * A convenience (and downward compatibility method of
+	 * getLibrariesAll(BoardDescription boardDescriptor, true) {
+	 *
+	 * @param confDesc can be null
+	 * @return A map of FQN IArduinoLibraryVersion
+	 */
+	public static TreeMap<String, IArduinoLibraryVersion> getLibrariesAll(BoardDescription boardDescriptor) {
+		return getLibrariesAll( boardDescriptor, true);
+	}
+
+	/**
 	 * Given a sloeber configuration provide all the libraries that can be used by
 	 * this sketch This boils down to all libraries maintained by the Library
 	 * manager plus all the libraries provided by the core plus all the libraries
 	 * provided by the personal libraries
 	 *
 	 * @param confDesc can be null
-	 * @return
+	 * @return if keyIsFQN is true: A map of FQN IArduinoLibraryVersion
+	 * if keyIsFQN is false: A map of location IArduinoLibraryVersion
 	 */
-	public static TreeMap<String, IArduinoLibraryVersion> getLibrariesAll(BoardDescription boardDescriptor) {
+	public static TreeMap<String, IArduinoLibraryVersion> getLibrariesAll(BoardDescription boardDescriptor, boolean keyIsFQN) {
 		TreeMap<String, IArduinoLibraryVersion> libraries = new TreeMap<>();
-		libraries.putAll(getLibrariesdManaged());
-		libraries.putAll(getLibrariesPrivate());
+		libraries.putAll(getLibrariesdManaged(keyIsFQN));
+		libraries.putAll(getLibrariesPrivate(keyIsFQN));
 		if (boardDescriptor != null) {
-			libraries.putAll(getLibrariesHarware(boardDescriptor));
+			libraries.putAll(getLibrariesHarware(boardDescriptor,keyIsFQN));
 		}
 		return libraries;
 	}
 
-	private static Map<String, IArduinoLibraryVersion> getLibrariesdManaged() {
+	private static Map<String, IArduinoLibraryVersion> getLibrariesdManaged(boolean keyIsFQN) {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		for (IArduinoLibraryIndex libindex : libraryIndices) {
 			for (IArduinoLibrary curLib : libindex.getLibraries()) {
 				IArduinoLibraryVersion instVersion = curLib.getInstalledVersion();
 				if (instVersion != null) {
-					ret.put(instVersion.getFQN().toPortableString(), instVersion);
+					if (keyIsFQN) {
+						ret.put(instVersion.getFQN().toPortableString(), instVersion);
+					} else {
+						ret.put(instVersion.getInstallPath().toPortableString(), instVersion);
+					}
 				}
 			}
 		}
 		return ret;
 	}
 
-	private static Map<String, IArduinoLibraryVersion> getLibrariesPrivate() {
+	private static Map<String, IArduinoLibraryVersion> getLibrariesPrivate(boolean keyIsFQN) {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
 		for (String curLibPath : privateLibPaths) {
-			ret.putAll(getLibrariesFromFolder(new Path(curLibPath), 2, false,true));
+			ret.putAll(getLibrariesFromFolder(new Path(curLibPath), 2, false,true,keyIsFQN));
 		}
 		return ret;
 
@@ -381,12 +401,13 @@ public class LibraryManager {
 	 * for a given folder return all subfolders
 	 *
 	 * @param ipath the folder you want the subfolders off
+	 * @param keyIsFQN
 	 * @return The subfolders of the ipath folder. May contain empty values. This
 	 *         method returns a key value pair of key equals foldername and value
 	 *         equals full path.
 	 */
 	private static Map<String, IArduinoLibraryVersion> getLibrariesFromFolder(IPath ipath, int depth,
-			boolean isHardwareLib,boolean isPrivate) {
+			boolean isHardwareLib,boolean isPrivate, boolean keyIsFQN) {
 		if (ConfigurationPreferences.getInstallationPathLibraries().isPrefixOf(ipath)) {
 			System.err.println("The method findAllPrivateLibs should not be called on Library manager installed libs"); //$NON-NLS-1$
 		}
@@ -405,13 +426,9 @@ public class LibraryManager {
 			}
 			String fileExt = (new Path(curChild)).getFileExtension();
 			if (LIBRARY_INDICATION_FILES.contains(curChild) || CODE_EXTENSIONS.contains(fileExt)) {
-				if (isHardwareLib) {
-					IArduinoLibraryVersion retVersion = new ArduinoHardwareLibrary(ipath);
-					ret.put(retVersion.getFQN().toPortableString(), retVersion);
-				} else {
-					IArduinoLibraryVersion retVersion = new ArduinoPrivateLibraryVersion(ipath);
-					ret.put(retVersion.getFQN().toPortableString(), retVersion);
-				}
+				IArduinoLibraryVersion retVersion = isHardwareLib?new ArduinoHardwareLibrary(ipath):new ArduinoPrivateHardwareLibraryVersion(ipath);
+				String key=keyIsFQN?retVersion.getFQN().toPortableString():retVersion.getInstallPath().toPortableString();
+				ret.put(key, retVersion);
 
 				return ret;
 			}
@@ -425,7 +442,7 @@ public class LibraryManager {
 			IPath LibPath = ipath.append(curFolder);
 			File LibPathFile = LibPath.toFile();
 			if (LibPathFile.isDirectory() && !LibPathFile.isHidden()) {
-				ret.putAll(getLibrariesFromFolder(LibPath, depth - 1, isHardwareLib,isPrivate));
+				ret.putAll(getLibrariesFromFolder(LibPath, depth - 1, isHardwareLib,isPrivate,keyIsFQN));
 			}
 		}
 		return ret;
@@ -435,21 +452,22 @@ public class LibraryManager {
 	 * Searches all the hardware dependent libraries of a project. If this is a
 	 * board referencing a core then the libraries of the referenced core are added
 	 * as well
+	 * @param keyIsFQN
 	 *
 	 * @param project the project to find all hardware libraries for
 	 * @return all the library folder names. May contain empty values.
 	 */
-	public static Map<String, IArduinoLibraryVersion> getLibrariesHarware(BoardDescription boardDescriptor) {
+	public static Map<String, IArduinoLibraryVersion> getLibrariesHarware(BoardDescription boardDescriptor, boolean keyIsFQN) {
 		Map<String, IArduinoLibraryVersion> ret = new HashMap<>();
 		// first add the referenced
 		IPath libPath = boardDescriptor.getReferencedCoreLibraryPath();
 		if (libPath != null) {
-			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate()));
+			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate(),keyIsFQN));
 		}
 		// then add the referencing
 		libPath = boardDescriptor.getReferencingLibraryPath();
 		if (libPath != null) {
-			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate()));
+			ret.putAll(getLibrariesFromFolder(libPath, 1, true,boardDescriptor.isPrivate(),keyIsFQN));
 		}
 		return ret;
 	}
@@ -458,17 +476,39 @@ public class LibraryManager {
 		if (boardDescriptor != null) {
 			IPath libPath=boardDescriptor.getReferencedCoreLibraryPath();
 			if(libPath!=null && libPath.isPrefixOf(libFolder.getLocation())) {
-				String FQNLibName=ArduinoHardwareLibrary.calculateFQN(libFolder.getName()).toString();
-				return getLibrariesHarware(boardDescriptor).get(FQNLibName);
+				return getLibrariesHarware(boardDescriptor,false).get(libFolder.getLocation().toPortableString());
 			}
 		}
 
 		if(ConfigurationPreferences.getInstallationPathLibraries().isPrefixOf(libFolder.getLocation())) {
-			String FQNLibName= ArduinoLibraryVersion.calculateFQN(libFolder.getName()).toString();
-			return getLibrariesdManaged().get(FQNLibName);
+			return getLibrariesdManaged(false).get(libFolder.getLocation().toPortableString());
 		}
 
-		return getLibrariesPrivate().get(libFolder.getName());
+		return getLibrariesPrivate(false).get(libFolder.getLocation().toPortableString());
+	}
+
+	public static IArduinoLibraryVersion getLibraryVersionFromFQN(String FQNLibName, BoardDescription boardDescriptor) {
+		String[] fqnParts = FQNLibName.split(SLACH);
+		if (fqnParts.length < 3) {
+			return null;
+		}
+		if (!SLOEBER_LIBRARY_FQN.equals(fqnParts[0])) {
+			// this is not a library
+			return null;
+		}
+		if (MANAGED.equals(fqnParts[1])) {
+			if (BOARD.equals(fqnParts[2])) {
+				if (boardDescriptor == null) {
+					return null;
+				}
+				return getLibrariesHarware(boardDescriptor,true).get(FQNLibName);
+			}
+			return getLibrariesdManaged(true).get(FQNLibName);
+		}
+		if (PRIVATE.equals(fqnParts[1])) {
+			return getLibrariesPrivate(true).get(FQNLibName);
+		}
+		return null;
 	}
 
 	/**
