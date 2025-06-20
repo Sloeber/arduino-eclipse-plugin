@@ -145,6 +145,7 @@ public class SloeberBuilderExtension extends AutoBuildBuilderExtension {
 			}
 			if (!sizeCommandFile.exists()) {
 				FileUtils.write(sizeCommandFile, content, Charset.defaultCharset());
+				sizeCommandFile.setExecutable(true, true);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
