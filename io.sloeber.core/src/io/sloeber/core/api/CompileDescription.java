@@ -253,7 +253,10 @@ public class CompileDescription {
 		public String getEnvValue() {
 			switch (this) {
 			case ARDUINO_WAY:
-				return Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH + ARDUINO_SIZE;
+				if(isLinux||isMac) {
+					return "sh "+  Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH +ARDUINO_SIZE;
+				}
+				return  Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH +ARDUINO_SIZE;
 			case AVR_ALTERNATIVE:
 				return "${sloeber.size_command.avr}"; //$NON-NLS-1$
 			case RAW_RESULT:
