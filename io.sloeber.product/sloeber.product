@@ -219,8 +219,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.cdt" installMode="root"/>
       <feature id="org.eclipse.e4.rcp" installMode="root"/>
       <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
@@ -245,9 +243,7 @@ United States, other countries, or both.
       <feature id="org.eclipse.rse.telnet" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
       <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
-      <feature id="org.eclipse.equinox.core.feature.source" installMode="root"/>
       <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature" installMode="root"/>
       <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
       <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
    </features>
