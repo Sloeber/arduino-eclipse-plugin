@@ -50,4 +50,6 @@ public abstract class IArduinoLibrary  extends Node implements  Comparable<IArdu
 
 	public abstract IPath getInstallPath();
 
+	public abstract boolean canUpdate();
+
 }

@@ -139,7 +139,11 @@ public class ArduinoLibrary   extends IArduinoLibrary {
 
     @Override
     public int compareTo(IArduinoLibrary other) {
+    	if(other==null) {
+    		return 1;
+    	}
         return getID().compareTo(other.getID());
+
     }
 
     //Below are the Node overrides
@@ -172,5 +176,13 @@ public class ArduinoLibrary   extends IArduinoLibrary {
 	public ArduinoLibraryVersion getVersion(VersionNumber versionNumber) {
         return versions.get(versionNumber);
     }
+
+	@Override
+	public boolean canUpdate() {
+		if(!isInstalled()) {
+			return false;
+		}
+		return !getInstalledVersion().equals(getNewestVersion());
+	}
 
 }

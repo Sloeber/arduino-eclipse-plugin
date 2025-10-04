@@ -2,6 +2,7 @@ package io.sloeber.core.internal;
 
 import static io.sloeber.core.api.Const.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
@@ -84,8 +85,16 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 	}
 
 	@Override
-	public int compareTo(IArduinoLibraryVersion o) {
-		return 0;
+	public boolean equals(Object other) {
+		if(other instanceof IArduinoLibraryVersion) {
+			return equals((IArduinoLibraryVersion) other);
+		}
+		return false;
+	}
+
+	@Override
+	public int compareTo(IArduinoLibraryVersion other) {
+		return myFQN.toPortableString().compareTo(other.getFQN().toPortableString());
 	}
 
 	@Override
@@ -105,7 +114,7 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 
 	@Override
 	public List<String> getArchitectures() {
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -125,7 +134,6 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 
 	@Override
 	public String getAuthor() {
-		// TODO Auto-generated method stub
 		return "Author is board provider"; //$NON-NLS-1$
 	}
 
