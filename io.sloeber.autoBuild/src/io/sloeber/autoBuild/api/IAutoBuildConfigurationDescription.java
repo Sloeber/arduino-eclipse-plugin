@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -46,28 +47,33 @@ public interface IAutoBuildConfigurationDescription {
         return getConfig(projectDescription.getActiveConfiguration());
     }
 
-    public static IAutoBuildConfigurationDescription getConfig(ICConfigurationDescription confDesc) {
-        if (confDesc == null)
-            return null;
-        if(confDesc.isReadOnly()) {
-        	/*read only will try to make it writable and that gives
-        	 * Error: Exception in thread "pool-161-thread-2" java.lang.ClassCastException:
-        	 * class io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription cannot be cast to
-        	 * class org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache
-        	 * (io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription is in unnamed module
-        	 * of loader org.eclipse.osgi.internal.loader.EquinoxClassLoader @312045ce;
-        	 * org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache is in unnamed
-        	 * module of loader org.eclipse.osgi.internal.loader.EquinoxClassLoader @587d228d)
-        	 */
-        	return null;
-        }
-        if(!(confDesc.getConfigurationData() instanceof AutoBuildConfigurationDescription)) {
-        	return null;
-        }
-        AutoBuildConfigurationDescription ret = (AutoBuildConfigurationDescription) confDesc.getConfigurationData();
-        return ret;
+	public static IAutoBuildConfigurationDescription getConfig(ICConfigurationDescription confDesc) {
+		if (confDesc == null)
+			return null;
+		try {
+			CConfigurationData confData = confDesc.getConfigurationData();
+			/*
+			 * read only will try to make it writable and that gives Error: Exception in
+			 * thread "pool-161-thread-2" java.lang.ClassCastException: class
+			 * io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription cannot be
+			 * cast to class
+			 * org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache
+			 * (io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription is in
+			 * unnamed module of loader
+			 * org.eclipse.osgi.internal.loader.EquinoxClassLoader @312045ce;
+			 * org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache
+			 * is in unnamed module of loader
+			 * org.eclipse.osgi.internal.loader.EquinoxClassLoader @587d228d)
+			 */
+			if (!(confData instanceof AutoBuildConfigurationDescription)) {
+				return null;
+			}
+			return (AutoBuildConfigurationDescription) confData;
+		} catch (@SuppressWarnings("unused") Exception e) {
+			return null;
+		}
 
-    }
+	}
 
 	/**
 	 * Get the source entries and
