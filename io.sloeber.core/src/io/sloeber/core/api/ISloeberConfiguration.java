@@ -39,6 +39,9 @@ public interface ISloeberConfiguration {
 
     public static ISloeberConfiguration getActiveConfig(ICProjectDescription projectDescription) {
     	IAutoBuildConfigurationDescription autoBuild =IAutoBuildConfigurationDescription.getActiveConfig(projectDescription);
+    	if(autoBuild==null) {
+    		return null;
+    	}
     	if(autoBuild.getAutoBuildConfigurationExtensionDescription() instanceof ISloeberConfiguration) {
     		return (ISloeberConfiguration)autoBuild.getAutoBuildConfigurationExtensionDescription();
     	}
