@@ -49,6 +49,18 @@ public interface IAutoBuildConfigurationDescription {
     public static IAutoBuildConfigurationDescription getConfig(ICConfigurationDescription confDesc) {
         if (confDesc == null)
             return null;
+        if(confDesc.isReadOnly()) {
+        	/*read only will try to make it writable and that gives
+        	 * Error: Exception in thread "pool-161-thread-2" java.lang.ClassCastException:
+        	 * class io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription cannot be cast to
+        	 * class org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache
+        	 * (io.sloeber.autoBuild.integration.AutoBuildConfigurationDescription is in unnamed module
+        	 * of loader org.eclipse.osgi.internal.loader.EquinoxClassLoader @312045ce;
+        	 * org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache is in unnamed
+        	 * module of loader org.eclipse.osgi.internal.loader.EquinoxClassLoader @587d228d)
+        	 */
+        	return null;
+        }
         if(!(confDesc.getConfigurationData() instanceof AutoBuildConfigurationDescription)) {
         	return null;
         }
