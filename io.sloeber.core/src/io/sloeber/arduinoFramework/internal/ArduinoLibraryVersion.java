@@ -223,4 +223,12 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 	public boolean equals(IArduinoLibraryVersion other) {
 		return myFQN.equals(other.getFQN());
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if(other instanceof IArduinoLibraryVersion) {
+			return equals((IArduinoLibraryVersion) other);
+		}
+		return false;
+	}
 }

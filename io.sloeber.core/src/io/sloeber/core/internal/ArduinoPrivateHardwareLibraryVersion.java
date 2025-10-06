@@ -87,8 +87,19 @@ public class ArduinoPrivateHardwareLibraryVersion implements IArduinoLibraryVers
 	}
 
 	@Override
-	public int compareTo(IArduinoLibraryVersion o) {
-		return 0;
+	public boolean equals(Object other) {
+		if(other instanceof IArduinoLibraryVersion) {
+			return equals((IArduinoLibraryVersion) other);
+		}
+		return false;
+	}
+
+	@Override
+	public int compareTo(IArduinoLibraryVersion other) {
+		if (other == null) {
+			return 1;
+		}
+		return myFQN.toPortableString().compareTo(other.getFQN().toPortableString());
 	}
 
 	@Override

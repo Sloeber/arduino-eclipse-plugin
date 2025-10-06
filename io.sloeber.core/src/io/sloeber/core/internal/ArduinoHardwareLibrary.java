@@ -94,6 +94,9 @@ public class ArduinoHardwareLibrary implements IArduinoLibraryVersion {
 
 	@Override
 	public int compareTo(IArduinoLibraryVersion other) {
+		if (other == null) {
+			return 1;
+		}
 		return myFQN.toPortableString().compareTo(other.getFQN().toPortableString());
 	}
 
