@@ -16,9 +16,7 @@ Require-Bundle: org.eclipse.tools.templates.ui,
  org.eclipse.cdt.ui,
  org.eclipse.core.filesystem,
  io.sloeber.autoBuild;bundle-version="4.4.1",
- org.eclipse.tools.templates.core;bundle-version="2.0.0",
- org.eclipse.pde;bundle-version="3.13.3200",
- org.eclipse.pde.ui;bundle-version="3.16.200"
+ org.eclipse.tools.templates.core;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
