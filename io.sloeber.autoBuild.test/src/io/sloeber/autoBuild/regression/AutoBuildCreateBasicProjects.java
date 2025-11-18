@@ -192,6 +192,9 @@ public class AutoBuildCreateBasicProjects {
 	void testMakeBuilderRoot(String inProjectName, String extensionPointID, String extensionID, String projectTypeID,
 			String natureID, ICodeProvider codeProvider, IBuildTools buildTools) throws Exception {
 		if (doTestMakeBuilder) {
+			if(buildTools.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider")) {
+				return;
+			}
 			Assumptions.assumeFalse(buildTools.getProviderID().equals("io.sloeber.autoBuild.Path.BuildToolProvider"),"Ignoring as make is not assumed on the path") ;
 			String projectName = "make_" + inProjectName;
 			if (projectName.length() > 40) {
