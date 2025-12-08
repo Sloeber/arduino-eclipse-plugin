@@ -51,8 +51,6 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </win>
    </launcher>
 
-   <intro introId="io.sloeber.application.intro"/>
-
    <vm>
    </vm>
 
