@@ -32,6 +32,7 @@ public class AutoBuildConstants {
     public static final String TARGET_OBJECTS = "objects";
     public static final String TARGET_ALL = "all";
     public static final String TARGET_CLEAN = "clean";
+    public static final String RELEASE = "Release";
     public static final String DEFAULT_AUTO_MAKE_TARGET = TARGET_OBJECTS;
     public static final String DEFAULT_INCREMENTAL_MAKE_TARGET = TARGET_ALL;
     public static final String DEFAULT_CLEAN_MAKE_TARGET = TARGET_CLEAN;

@@ -327,7 +327,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		IResource rc = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
 		if (rc != null)
 			return rc.getLocation();
-		return null;
+		return entry.getLocation();
 	}
 
 	/**

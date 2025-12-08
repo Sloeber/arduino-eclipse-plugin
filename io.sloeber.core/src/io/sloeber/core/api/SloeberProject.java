@@ -111,8 +111,12 @@ public class SloeberProject extends Common {
 				CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 				ICProjectDescription oldPrjCDesc = cCorePlugin.getProjectDescription(project, false);
 				Set <String>cfgNames=new HashSet<>();
-				for (ICConfigurationDescription curConfig : oldPrjCDesc.getConfigurations()) {
-					cfgNames.add( curConfig.getName());
+				if (oldPrjCDesc == null) {
+					cfgNames.add(RELEASE);
+				} else {
+					for (ICConfigurationDescription curConfig : oldPrjCDesc.getConfigurations()) {
+						cfgNames.add(curConfig.getName());
+					}
 				}
 
 

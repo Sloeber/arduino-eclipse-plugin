@@ -1,6 +1,7 @@
 
 package io.sloeber.autoBuild.integration;
 
+import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
@@ -80,8 +81,12 @@ public class AutoBuildProjectGenerator implements IGenerator {
 				if (myProject.exists()) {
 					// Update the existing configurations
 					ICProjectDescription orgdesc = mngr.getProjectDescription(myProject, false);
-					for (ICConfigurationDescription curConfig : orgdesc.getConfigurations()) {
-						configNames.add(curConfig.getName());
+					if (orgdesc == null) {
+						configNames.add(RELEASE);
+					} else {
+						for (ICConfigurationDescription curConfig : orgdesc.getConfigurations()) {
+							configNames.add(curConfig.getName());
+						}
 					}
 					myLocationURI=myProject.getLocationURI();
 					//CDT reads the .cproject file when setting the configuration for making the delta
