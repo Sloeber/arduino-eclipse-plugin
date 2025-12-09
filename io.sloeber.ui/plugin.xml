@@ -218,11 +218,14 @@
           hasPages="false"
           icon="icons/convertToSloeber.png"
           id="io.sloeber.convert.wizard"
-          name="Convert to Sloeber project"
+          name="%wizard.convert.sloeber.name"
           project="true">
        <selection
              class="org.eclipse.core.resources.IProject">
        </selection>
+              <description>
+          %wizard.convert.sloeber.description
+       </description>
     </wizard>
  </extension>
  <extension
@@ -430,7 +433,7 @@
        </commandParameter>
     </command>
  </extension>
- 
+
  <!-- Definition to know if the active perspective is Arduino -->
 <extension point="org.eclipse.core.expressions.definitions">
   <definition id="io.sloeber.definition.isArduinoPerspective">
@@ -452,8 +455,8 @@
     </with>
   </definition>
 </extension>
- 
- 
+
+
   <extension
        point="org.eclipse.ui.menus">
     <menuContribution
