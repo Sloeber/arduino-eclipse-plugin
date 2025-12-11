@@ -26,7 +26,6 @@
 			<unit id="org.eclipse.swtbot.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.ecf.core.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.wildwebdeveloper.feature.feature.group" version="0.0.0"/>
 			<unit id="epp.package.cpp" version="0.0.0"/>
 			<unit id="epp.package.embedcpp" version="0.0.0"/>
@@ -64,7 +63,6 @@
 			<unit id="org.eclipse.epp.package.embedcpp.feature.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.m2m.qvt.oml.sdk.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.mylyn.cdt.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.tcf.cdt.feature.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.ecf.discovery.feature.feature.group" version="0.0.0"/>
 		</location>

@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.core.runtime,
  junit-jupiter-api,
  org.apache.commons.commons-io,
  org.apache.logging.log4j.api;bundle-version="2.19.0",
- org.apache.logging.log4j.core;bundle-version="2.19.0"
+ org.apache.logging.log4j.core;bundle-version="2.19.0",
+ org.junit;bundle-version="4.13.2"
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor,

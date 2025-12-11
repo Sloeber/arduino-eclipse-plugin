@@ -19,6 +19,7 @@ Require-Bundle: io.sloeber.autoBuild,
  junit-platform-suite-engine;bundle-version="1.10.2",
  junit-platform-commons;bundle-version="1.10.2",
  junit-platform-engine;bundle-version="1.10.2",
- junit-platform-suite-api;bundle-version="1.10.2"
+ junit-platform-suite-api;bundle-version="1.10.2",
+ org.junit;bundle-version="4.13.2"
 Automatic-Module-Name: io.sloeber.autoBuild.test
 Bundle-RequiredExecutionEnvironment: JavaSE-21
