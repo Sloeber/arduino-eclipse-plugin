@@ -213,7 +213,6 @@
         <setEntry value="org.eclipse.tcf.feature:default"/>
         <setEntry value="org.eclipse.tcf.te.feature:default"/>
         <setEntry value="org.eclipse.tcf.te.tcf.core.feature:default"/>
-        <setEntry value="org.eclipse.tcf.te.tcf.launch.cdt.feature:default"/>
         <setEntry value="org.eclipse.test:default"/>
         <setEntry value="org.eclipse.tm.terminal.connector.cdtserial.feature:default"/>
         <setEntry value="org.eclipse.tm.terminal.connector.local.feature:default"/>

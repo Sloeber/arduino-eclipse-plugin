@@ -18,7 +18,6 @@
 			<unit id="org.eclipse.cdt.sdk.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.linuxtools.cdt.libhover.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.tcf.te.tcf.launch.cdt.feature.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="0.0.0"/>
