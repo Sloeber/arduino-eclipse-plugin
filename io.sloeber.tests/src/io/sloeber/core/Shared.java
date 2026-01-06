@@ -84,12 +84,16 @@ public class Shared {
 	}
 
 	public static String hasBuildErrors(IProject project) throws CoreException {
+		String errorMessage = new String();
 		String projectName=project.getName();
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
 		for (IMarker marker : markers) {
 			if (marker.getAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR) {
-				return projectName +": build is marked failed as it has error marker "+marker.toString();
+				errorMessage=errorMessage+marker.getAttribute(IMarker.MESSAGE,"default message")+NEWLINE;
 			}
+		}
+		if(!errorMessage.isBlank()) {
+			return projectName +": build is marked failed with following error markers"+NEWLINE+ errorMessage;
 		}
 		IAutoBuildConfigurationDescription activeConfig = IAutoBuildConfigurationDescription.getActiveConfig(project,
 				false);
@@ -98,14 +102,16 @@ public class Shared {
 		String projName = project.getName();
 		String[] validOutputss = { projName + ".elf", projName + ".bin", projName + ".hex", projName + ".exe",
 				"application.axf" };
+		String searchedFiles=NEWLINE;
 		for (String validOutput : validOutputss) {
 			IFile validFile = buildFolder.getFile(validOutput);
 			if (validFile.exists()) {
 				//as soon as you have 1 valid output the build is seen as successfull
 				return null;
 			}
+			searchedFiles=searchedFiles+validFile.getLocation().toString()+NEWLINE;
 		}
-		return projectName + ": build is marked failed as the project does not contain any of "+validOutputss.toString();
+		return projectName + ": build failed as the project does not contain any of the following files"+searchedFiles;
 	}
 
 
