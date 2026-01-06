@@ -110,7 +110,10 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			// archive build fails
 			"https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
 
-			//moved to diferent place
+			//reuse of filename package_esp32_index.json
+			"https://git.oschina.net/dfrobot/FireBeetle-ESP32/raw/master/package_esp32_index.json",
+
+			//moved to different place
 			"https://dl.espressif.com/dl/package_esp32_index.json",};
 	private static final String[] packageUrlsToIgnoreonWindows = {
 			// following packages did not work in the arduino ide on windows at last test
