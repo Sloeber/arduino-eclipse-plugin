@@ -10,6 +10,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -473,13 +475,14 @@ public class BoardsManager {
 				if (jsonTmpFile.exists()) {
 					jsonTmpFile.delete();
 				}
-				PackageManager.mySafeCopy(new URL(jsonUrl.trim()), jsonTmpFile, false);
+				URL urlSource =new URI(jsonUrl).toURL();
+				PackageManager.mySafeCopy(urlSource, jsonTmpFile, false);
 				if (jsonOldFile.exists()) {
 					jsonOldFile.delete();
 				}
 				jsonFile.renameTo(jsonOldFile);
 				jsonTmpFile.renameTo(jsonFile);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + jsonUrl, e)); //$NON-NLS-1$
 			}
 		}
@@ -544,8 +547,8 @@ public class BoardsManager {
 	private static File getLocalFileName(String url, boolean show_error) {
 		URL packageUrl;
 		try {
-			packageUrl = new URL(url.trim());
-		} catch (MalformedURLException e) {
+			packageUrl = new URI(url.trim()).toURL();
+		} catch (MalformedURLException |URISyntaxException e) {
 			if (show_error) {
 				Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
 			}
