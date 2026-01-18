@@ -6,8 +6,10 @@ import static io.sloeber.core.api.ConfigurationPreferences.*;
 import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -456,37 +458,106 @@ public class BoardsManager {
 	 */
 	private static void downloadJsons(boolean forceDownload) {
 		String[] jsonUrls = getJsonURLList();
+		List<File> localJsonFiles = new ArrayList<>();
 		for (String jsonUrl : jsonUrls) {
 			if (!jsonUrl.trim().isEmpty()) // skip empty lines
-				downloadJson(jsonUrl, forceDownload);
+			{
+				File localJsonFile = getLocalFileName(jsonUrl, true);
+				if (localJsonFile != null){
+					if (localJsonFiles.contains(localJsonFile)) {
+						Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Ignoring " + jsonUrl +" because Sloeber already downloaded a file to "+localJsonFile.toString(), null)); //$NON-NLS-1$ //$NON-NLS-2$
+						continue;
+					}
+					localJsonFiles.add(localJsonFile);
+					downloadJson(jsonUrl,localJsonFile, forceDownload);
+				}
+			}
 		}
 	}
 
-	private static void downloadJson(String jsonUrl, boolean forceDownload) {
-		File jsonFile = getLocalFileName(jsonUrl, true);
-		if (jsonFile == null) {
+	private static void downloadJson(String jsonUrl, File localJsonFile, boolean forceDownload) {
+		File jsonTmpFile = new File(localJsonFile.toString() + ".new"); //$NON-NLS-1$
+		File jsonTmpGZFile = new File(localJsonFile.toString() + ".new.gz"); //$NON-NLS-1$
+		File jsonOldFile = new File(localJsonFile.toString() + ".prev"); //$NON-NLS-1$
+		URL urlSource = null;
+		URL urlGZSource = null;
+		try {
+			urlSource = new URI(jsonUrl).toURL();
+			urlGZSource = new URI(jsonUrl + ".gz").toURL(); //$NON-NLS-1$
+		} catch (MalformedURLException | URISyntaxException e) {
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed json URL " + jsonUrl, e)); //$NON-NLS-1$
 			return;
 		}
-		File jsonTmpFile = new File(jsonFile.toString() + ".new"); //$NON-NLS-1$
-		File jsonOldFile = new File(jsonFile.toString() + ".prev"); //$NON-NLS-1$
-		if (!jsonFile.exists() || forceDownload) {
-			jsonFile.getParentFile().mkdirs();
+		if (!localJsonFile.exists() || forceDownload) {
+			localJsonFile.getParentFile().mkdirs();
 			try {
+				try {
+					// try to download the GZ variant first
+					if (jsonTmpGZFile.exists()) {
+						jsonTmpGZFile.delete();
+					}
+
+					if (PackageManager.mySafeCopy(urlGZSource, jsonTmpGZFile, false)) {
+						if (unzipGZJsonFile(jsonTmpGZFile, jsonTmpFile)) {
+							if (jsonOldFile.exists()) {
+								jsonOldFile.delete();
+							}
+							if (jsonTmpGZFile.exists()) {
+								jsonTmpGZFile.delete();
+							}
+							localJsonFile.renameTo(jsonOldFile);
+							jsonTmpFile.renameTo(localJsonFile);
+							return; // gz file has succsessfully downloaded and uncompressed
+						}
+					}
+				} catch (@SuppressWarnings("unused") Exception e) {
+					// Ignore all errors
+				}
+
+				// As the GZ variant didn't work try without the GZ
 				if (jsonTmpFile.exists()) {
 					jsonTmpFile.delete();
 				}
-				URL urlSource =new URI(jsonUrl).toURL();
-				PackageManager.mySafeCopy(urlSource, jsonTmpFile, false);
-				if (jsonOldFile.exists()) {
-					jsonOldFile.delete();
+				if (PackageManager.mySafeCopy(urlSource, jsonTmpFile, false)) {
+					if (jsonOldFile.exists()) {
+						jsonOldFile.delete();
+					}
+					localJsonFile.renameTo(jsonOldFile);
+					jsonTmpFile.renameTo(localJsonFile);
 				}
-				jsonFile.renameTo(jsonOldFile);
-				jsonTmpFile.renameTo(jsonFile);
-			} catch (Exception e) {
+			} catch (IOException e) {
 				Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + jsonUrl, e)); //$NON-NLS-1$
 			}
 		}
 	}
+
+	static boolean unzipGZJsonFile(File pArchiveFullFileName, File uncompressedFile) {
+
+		try (FileInputStream FileStream= new FileInputStream(pArchiveFullFileName);
+				 GzipCompressorInputStream gzipStream = GzipCompressorInputStream.builder()
+						   .setPath(pArchiveFullFileName.toPath())
+						   .setFileNameCharset(StandardCharsets.ISO_8859_1)
+						   .get();
+				OutputStream out = Files.newOutputStream(uncompressedFile.toPath());
+				) {
+
+
+			final int buffersize=1000;
+			final byte[] buffer = new byte[buffersize];
+			int n = 0;
+			while (-1 != (n = gzipStream.read(buffer))) {
+			    out.write(buffer, 0, n);
+			}
+			out.close();
+			gzipStream.close();
+			return true;
+
+		} catch (IOException e) {
+			Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Extraction failed " + pArchiveFullFileName,e)); //$NON-NLS-1$
+			return false;
+		}
+	}
+
 
 	/**
 	 * This method takes all the json boards file urls and downloads them and parses

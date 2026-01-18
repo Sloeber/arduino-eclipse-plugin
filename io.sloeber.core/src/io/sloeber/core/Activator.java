@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -18,6 +20,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -239,7 +242,7 @@ public class Activator extends Plugin {
                     IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
                     int curFsiStatus = myScope.getInt(FLAG_START, 0) + 1;
                     myScope.putInt(FLAG_START, curFsiStatus);
-                    URL pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
+                    URL pluginStartInitiator = new URI(new String(Activator.this.uri) + Integer.toString(curFsiStatus)).toURL();
                     pluginStartInitiator.getContent();
                 } catch (@SuppressWarnings("unused") Exception e) {
                     // if this happens there is no real harm or functionality
@@ -359,7 +362,7 @@ public class Activator extends Plugin {
 
         try (FileOutputStream to = new FileOutputStream(outFile.toString());) {
             try {
-                URL defaultUrl = new URL("platform:/plugin/io.sloeber.core/" + DefaultFile);
+                URL defaultUrl = new URI("platform:/plugin/io.sloeber.core/" + DefaultFile).toURL();
                 try (InputStream inputStreamDefault = defaultUrl.openConnection().getInputStream();) {
                     while ((bytes_read = inputStreamDefault.read(buffer)) != -1) {
                         to.write(buffer, 0, bytes_read); // write
@@ -368,7 +371,7 @@ public class Activator extends Plugin {
                     e1.printStackTrace();
                     return;
                 }
-            } catch (MalformedURLException e1) {
+            } catch (MalformedURLException | URISyntaxException e1) {
                 e1.printStackTrace();
             }
         } catch (IOException e2) {
@@ -452,9 +455,17 @@ public class Activator extends Plugin {
             break;
         }
         case SLOEBER_STATUS_DEBUG:
-            // break;//remove break to add debugging
+            break;//remove break to add debugging
         default:
-            Activator.getDefault().getLog().log(status);
+            Activator activator =Activator.getDefault();
+            if(activator!=null) {
+            	ILog log =activator.getLog();
+            	if(log!=null) {
+            		log.log(status);
+            		return;
+            	}
+            }
+            System.err.print(status.getMessage());
         }
     }
 
