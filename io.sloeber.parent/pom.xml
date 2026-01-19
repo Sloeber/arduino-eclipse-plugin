@@ -136,6 +136,7 @@
 				<module>../io.sloeber.autoBuild</module>
 				<module>../io.sloeber.autoBuild.ui</module>
 				<module>../io.sloeber.autoBuild.test</module>
+				<module>../io.sloeber.autoBuild.product</module>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
 				<module>../io.sloeber.core.nl1</module>
