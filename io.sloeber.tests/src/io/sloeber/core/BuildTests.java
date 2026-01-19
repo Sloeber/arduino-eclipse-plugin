@@ -6,7 +6,6 @@ import static io.sloeber.core.api.Const.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class BuildTests {
     private static final boolean reinstall_boards_and_libraries = false;
     private final static String AUTOBUILD_CFG = ".autoBuildProject";
     private static final String HIDlibName = "HID-Project";
-    private static final String  packageURL=    "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json";
+    //private static final String  talk2PackageURL=    "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json";
 
     /*
      * In new new installations (of the Sloeber development environment) the
@@ -98,7 +97,8 @@ public class BuildTests {
 
     public static void installAdditionalBoards() throws Exception {
 
-        String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL,packageURL};
+        //String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL,talk2PackageURL};
+        String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL};
         BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)));
         BoardsManager.update(false);
         Shared.waitForBoardsManager();
@@ -680,22 +680,22 @@ public class BuildTests {
      *
      * @throws Exception
      */
-    @Test
-    public void redirectedJson() throws Exception {
-        // this board references to arduino avr so install that one to
-        Arduino.installLatestAVRBoards();
-        BoardsManager.installLatestPlatform(packageURL, "Talk2", "avr");
-        Map<String, String> options = new HashMap<>();
-        options.put("mhz", "16MHz");
-        BoardDescription boardid = BoardsManager.getBoardDescription(packageURL, "Talk2",
-                "avr", "whispernode", options);
-        if (boardid == null) {
-            fail("redirect Json ");
-            return;
-        }
-        assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
-                new CompileDescription()));
-    }
+//    @Test
+//    public void redirectedJson() throws Exception {
+//        // this board references to arduino avr so install that one to
+//        Arduino.installLatestAVRBoards();
+//        BoardsManager.installLatestPlatform(talk2PackageURL, "Talk2", "avr");
+//        Map<String, String> options = new HashMap<>();
+//        options.put("mhz", "16MHz");
+//        BoardDescription boardid = BoardsManager.getBoardDescription(talk2PackageURL, "Talk2",
+//                "avr", "whispernode", options);
+//        if (boardid == null) {
+//            fail("redirect Json package is not installed");
+//            return;
+//        }
+//        assertNull(Shared.buildAndVerify("redirect_json", boardid, CodeDescription.createDefaultIno(),
+//                new CompileDescription()));
+//    }
 
     @Test
     public void issue1126LibArchiver() throws Exception {

@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class PackageManager {
         IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
         IPath archivePath = dlDir.append(pArchiveFileName);
         try {
-            URL dl = new URL(pURL);
+            URL dl = new URI(pURL).toURL();
             dlDir.toFile().mkdir();
             if (!archivePath.toFile().exists() || pForceDownload) {
                 pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
@@ -131,10 +132,15 @@ public class PackageManager {
         Map<File, Long> symLinksModifiedTimes = new HashMap<>();
 
         // Cycle through all the archive entries
+        int numEntries=0;
         while (true) {
+        	numEntries++;
             ArchiveEntry entry = in.getNextEntry();
             if (entry == null) {
-                break;
+            	if(numEntries>1) {
+            		break;
+            	}
+            	throw new IOException(Messages.Manager_archive_to_short);
             }
 
             // Extract entry info
@@ -381,16 +387,16 @@ public class PackageManager {
      * @param localFile
      * @throws IOException
      */
-    protected static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
-        myCopy(url, localFile, report_error, 0);
+    protected static boolean myCopy(URL url, File localFile, boolean report_error) throws IOException {
+        return myCopy(url, localFile, report_error, 0);
     }
 
     @SuppressWarnings("nls")
-    private static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
+    private static boolean myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
             throws IOException {
         if ("file".equals(url.getProtocol())) {
             FileUtils.copyFile(new File(url.getFile()), localFile);
-            return;
+            return true;
         }
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -404,9 +410,10 @@ public class PackageManager {
 
             if (status == HttpURLConnection.HTTP_OK) {
                 try (InputStream stream = url.openStream()) {
-                    Files.copy(stream, localFile.toPath(), REPLACE_EXISTING);
+                    return Files.copy(stream, localFile.toPath(), REPLACE_EXISTING)>20;
+                }catch(IOException e){
+                	throw e;
                 }
-                return;
             }
 
             if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
@@ -414,8 +421,7 @@ public class PackageManager {
                 if (redirectionCounter >= MAX_HTTP_REDIRECTIONS) {
                     throw new IOException("Too many redirections while downloading file.");
                 }
-                myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error, redirectionCounter + 1);
-                return;
+                return myCopy(conn.getURL(), localFile, report_error, redirectionCounter + 1);
             }
             if (report_error) {
                 Activator.log(new Status(IStatus.WARNING, Activator.getId(),
@@ -423,7 +429,7 @@ public class PackageManager {
             }
             throw new IOException("Failed to download url " + url + " error code is: " + status);
 
-        } catch (Exception e) {
+        } catch (IOException  e) {
             if (report_error) {
                 Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
             }
@@ -438,16 +444,18 @@ public class PackageManager {
      *
      * @param url
      * @param localFile
+     * @return true if the file got successfully downloaded, else false
      * @throws IOException
      */
-    public static void mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
+    public static boolean mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
         File savedFile = null;
         if (localFile.exists()) {
             savedFile = File.createTempFile(localFile.getName(), "Sloeber"); //$NON-NLS-1$
             Files.move(localFile.toPath(), savedFile.toPath(), REPLACE_EXISTING);
         }
         try {
-            myCopy(url, localFile, report_error);
+        	Activator.log(new Status(IStatus.INFO, Activator.getId(), "Downloading " + url.toString())); //$NON-NLS-1$
+            return myCopy(url, localFile, report_error);
         } catch (Exception e) {
             if (null != savedFile) {
                 Files.move(savedFile.toPath(), localFile.toPath(), REPLACE_EXISTING);

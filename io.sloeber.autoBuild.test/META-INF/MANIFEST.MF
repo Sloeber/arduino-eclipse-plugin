@@ -4,8 +4,7 @@ Bundle-Name: Test
 Bundle-SymbolicName: io.sloeber.autoBuild.test;singleton:=true
 Bundle-Version: 5.0.0.qualifier
 Require-Bundle: io.sloeber.autoBuild,
- junit-jupiter-api;bundle-version="5.0.0",
- junit-jupiter-params;bundle-version="5.0.0",
+ io.sloeber.autoBuild.ui,
  org.eclipse.core.resources,
  org.eclipse.cdt.core;bundle-version="7.4.200",
  org.eclipse.osgi,
@@ -15,11 +14,17 @@ Require-Bundle: io.sloeber.autoBuild,
  org.eclipse.cdt.core.native,
  org.eclipse.equinox.registry,
  org.eclipse.ui.workbench,
- io.sloeber.autoBuild.ui,
- junit-platform-suite-engine;bundle-version="1.10.2",
- junit-platform-commons;bundle-version="1.10.2",
- junit-platform-engine;bundle-version="1.10.2",
- junit-platform-suite-api;bundle-version="1.10.2",
- org.junit;bundle-version="4.13.2"
+ org.apache.logging.log4j.core,
+ org.apache.logging.log4j.api,
+ org.apache.logging.log4j.slf4j2.impl,
+ junit-jupiter-api;bundle-version="[5.14.1,6.0.0)",
+ junit-jupiter-engine;bundle-version="[5.14.1,6.0.0)",
+ junit-jupiter-migrationsupport;bundle-version="[5.14.1,6.0.0)",
+ junit-jupiter-params;bundle-version="[5.14.1,6.0.0)",
+ junit-platform-commons;bundle-version="[1.14.1,6.0.0)",
+ junit-platform-engine;bundle-version="[1.14.1,6.0.0)",
+ junit-platform-launcher;bundle-version="[1.14.1,6.0.0)",
+ junit-platform-suite-api;bundle-version="[1.14.1,6.0.0)",
+ junit-platform-suite-engine;bundle-version="[1.14.1,6.0.0)"
 Automatic-Module-Name: io.sloeber.autoBuild.test
 Bundle-RequiredExecutionEnvironment: JavaSE-21

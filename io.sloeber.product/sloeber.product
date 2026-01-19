@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="false">
 
    <aboutInfo>
       <image path="/io.sloeber.core/icons/eclipse_lg.png"/>
@@ -218,11 +218,9 @@ United States, other countries, or both.
       <feature id="org.eclipse.cdt.testsrunner.feature" installMode="root"/>
       <feature id="org.eclipse.cdt" installMode="root"/>
       <feature id="org.eclipse.e4.rcp" installMode="root"/>
-      <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
-      <feature id="org.eclipse.epp.mpc" installMode="root"/>
       <feature id="org.eclipse.equinox.core.sdk" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.core.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature" installMode="root"/>
@@ -231,7 +229,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.equinox.p2.user.ui" installMode="root"/>
       <feature id="org.eclipse.help" installMode="root"/>
       <feature id="org.eclipse.jgit" installMode="root"/>
-      <feature id="org.eclipse.justj.openjdk.hotspot.jre.full" installMode="root"/>
       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
       <feature id="org.eclipse.platform" installMode="root"/>
       <feature id="org.eclipse.rcp" installMode="root"/>

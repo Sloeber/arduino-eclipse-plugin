@@ -25,6 +25,7 @@ public class Messages extends NLS {
     public static final String VERSION_TAG = "{VERSION}"; //$NON-NLS-1$
     public static final String HOST_TAG = "{HOST}"; //$NON-NLS-1$
 
+
     public static String ArduinoSerial_Comport_Appeared_and_disappeared;
     public static String ArduinoSerial_Comport_is_not_behaving_as_expected;
     public static String ArduinoSerial_comport_not_found;
@@ -64,6 +65,7 @@ public class Messages extends NLS {
     public static String Helpers_No_boards_txt_found;
     public static String Helpers_tool_reference_missing;
     public static String import_lib_failed;
+    public static String Manager_archive_to_short;
     public static String Manager_archive_error_root_folder_name_mismatch;
     public static String Manager_archive_error_symbolic_link_to_absolute_path;
     public static String Manager_archiver_eror_single_root_folder_required;
