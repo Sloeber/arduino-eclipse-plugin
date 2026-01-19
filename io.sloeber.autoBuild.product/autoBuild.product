@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="AutoBuild" uid="io.sloeber.autoBuild.product" id="io.sloeber.autoBuild.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" type="bundles" includeLaunchers="true" autoIncludeRequirements="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
+   </launcherArgs>
+
+   <windowImages/>
+
+   <launcher>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+      <plugin id="io.sloeber.autoBuild.ui"/>
+      <plugin id="org.eclipse.cdt.make.core"/>
+      <plugin id="org.eclipse.cdt.make.ui"/>
+   </plugins>
+
+
+</product>

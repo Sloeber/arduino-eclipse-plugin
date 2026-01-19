@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="io.sloeber.autoBuild.product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="AutoBuild"
+            application="org.eclipse.ui.ide.workbench">
+      </product>
+   </extension>
+
+</plugin>
