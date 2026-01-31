@@ -36,10 +36,10 @@ public class MinGW32ToolsProvider extends ExtensionBuildToolsProvider {
     	try {
         myMinGWHome = org.eclipse.cdt.internal.core.MinGW.getMinGWHome();
     	}
-    	catch( Exception e) {
+    	catch( @SuppressWarnings("unused") Exception e) {
     		//ignore as this fails in maven build due to lack of gui and as such registry
     		//is not available
-    		e.printStackTrace();
+    		//e.printStackTrace();
     	}
         if (myMinGWHome != null) {
 
