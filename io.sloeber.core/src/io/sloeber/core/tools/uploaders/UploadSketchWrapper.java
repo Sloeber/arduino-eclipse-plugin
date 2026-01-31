@@ -6,6 +6,7 @@ import static io.sloeber.core.api.Const.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -95,7 +96,7 @@ public class UploadSketchWrapper {
                             '=' };
                     IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
                     int curFsiStatus = myScope.getInt(uploadflag, 0) + 1;
-                    URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));
+                    URL pluginStartInitiator = new URI(new String(uri) + Integer.toString(curFsiStatus)).toURL();
                     pluginStartInitiator.getContent();
                     myScope.putInt(uploadflag, curFsiStatus);
                 } catch (Exception e) {
@@ -266,7 +267,7 @@ public class UploadSketchWrapper {
             return true;
         }
 
-        private boolean sshUpload(IProgressMonitor monitor, MessageConsoleStream highStream,
+        private boolean sshUpload(@SuppressWarnings("unused") IProgressMonitor monitor, MessageConsoleStream highStream,
                 MessageConsoleStream outStream, MessageConsoleStream errStream, IFile hexFile, String host,
                 String command) {
             boolean ret = true;
