@@ -676,7 +676,7 @@ public class BoardsManager {
 	}
 
 	private static IPath getThirdPartyURLStoragePath() {
-		return sloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).append(THIRD_PARTY_URL_FILE);
+		return sloeberHomePath.append(THIRD_PARTY_URL_FILE);
 	}
 
 	public static void removeAllInstalledPlatforms() {

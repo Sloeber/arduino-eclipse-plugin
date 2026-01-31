@@ -8,7 +8,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Stream;
@@ -21,6 +20,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import io.sloeber.autoBuild.api.AutoBuildCommon;
@@ -30,7 +30,7 @@ import io.sloeber.core.Activator;
 public class Common {
 
     public final static String sloeberHome = getSloeberHome();
-    public final static IPath sloeberHomePath = new org.eclipse.core.runtime.Path(sloeberHome);
+    public final static IPath sloeberHomePath = new Path(sloeberHome);
     public final static String sloeberHomePathToString = sloeberHomePath.toOSString();
 
     private static String getSloeberHome() {
@@ -39,6 +39,15 @@ public class Common {
             String sloeber_HomeValue = System.getenv(SLOEBER_HOME);
             if (sloeber_HomeValue != null) {
                 if (!sloeber_HomeValue.isEmpty()) {
+                	Path localSloeberHomePath= new Path(sloeber_HomeValue);
+                	// if sloeber home is in the root use arduinoPlugin folder
+                	if(localSloeberHomePath.isRoot()) {
+                		return localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toString();
+                	}
+                	// if arduinoPlugin folder exists use arduinoPlugin folder
+                	if(localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toFile().exists()) {
+                		return localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toString();
+                	}
                     return sloeber_HomeValue;
                 }
             }
@@ -46,7 +55,7 @@ public class Common {
             // use eclipse home as sloeber home
             URL resolvedUrl = Platform.getInstallLocation().getURL();
             URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
-            return Paths.get(resolvedUri).toString();
+            return Paths.get(resolvedUri).toString()+SLACH+SLOEBER_HOME_SUB_FOLDER;
         } catch (URISyntaxException e) {
             // this should not happen
             // but it seems a space in the path makes it happen
@@ -251,15 +260,12 @@ public class Common {
         return "${" + variableName + '}'; //$NON-NLS-1$
     }
 
-    public static void deleteDirectory(org.eclipse.core.runtime.IPath directory) throws IOException {
-        deleteDirectory(Path.of(directory.toOSString()));
-    }
-
-    public static void deleteDirectory(Path directory) throws IOException {
-        try( Stream<Path> stream = Files.walk(directory)){
-            stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    public static void deleteDirectory(IPath directory) throws IOException {
+        try( Stream<java.nio.file.Path> stream = Files.walk(java.nio.file.Path.of(directory.toOSString()))){
+            stream.sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
         }
     }
+
 
     /**
      * this is some code to work around issue

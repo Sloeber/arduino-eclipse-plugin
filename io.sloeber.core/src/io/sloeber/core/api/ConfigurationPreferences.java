@@ -160,7 +160,7 @@ public class ConfigurationPreferences {
 	}
 
 	public static IPath getInstallationPath() {
-		return Common.sloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER);
+		return Common.sloeberHomePath;
 	}
 
 	public static IPath getInstallationPathLibraries() {
