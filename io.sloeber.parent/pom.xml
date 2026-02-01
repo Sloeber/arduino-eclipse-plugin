@@ -50,11 +50,7 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<dependency-resolution>
-					 	<profileProperties>
-					 		<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
-						</profileProperties>
-					</dependency-resolution>
+					<executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-21</executionEnvironment>
 					<target>
 						<file>../io.sloeber.product/sloeber.target</file>
 					</target>

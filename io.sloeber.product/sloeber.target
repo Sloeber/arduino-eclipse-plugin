@@ -21,18 +21,17 @@
 			<unit id="org.eclipse.equinox.sdk.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.rse.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.rse.useractions.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.core.feature.group" version="4.5.700.202408061246"/>
-			<unit id="org.eclipse.rse.dstore.feature.group" version="4.5.700.202408061246"/>
-			<unit id="org.eclipse.rse.ftp.feature.group" version="4.5.700.202408061246"/>
-			<unit id="org.eclipse.rse.local.feature.group" version="4.5.700.202408061246"/>
-			<unit id="org.eclipse.rse.ssh.feature.group" version="4.5.700.202408061246"/>
-			<unit id="org.eclipse.rse.telnet.feature.group" version="4.5.700.202408061246"/>
-			<unit id="org.eclipse.emf.common.feature.group" version="2.37.0.v20251025-0946"/>
-			<unit id="org.eclipse.emf.common.ui.feature.group" version="2.25.0.v20251106-1447"/>
-			<unit id="org.eclipse.emf.ecore.feature.group" version="2.42.0.v20251025-0946"/>
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.44.0.v20251106-1447"/>
-			<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.15.700.v20251126-0427"/>
-			<unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.3.900.v20250616-0711"/>
+			<unit id="org.eclipse.rse.core.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.rse.dstore.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.rse.ftp.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.rse.local.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.rse.ssh.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.rse.telnet.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.emf.common.ui.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.epp.mpc.feature.group" version="0.0.0"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
@@ -61,6 +60,10 @@
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/eclipse/updates/latest"/>
 
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/latest"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.feature.group"/>
 		</location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="DirectFromMaven" missingManifest="error" type="Maven">
 			<dependencies>
@@ -115,5 +118,4 @@
 			</dependencies>
 		</location>
 	</locations>
-	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 </target>
