@@ -53,18 +53,17 @@ public class PackageManager {
      * @param pArchiveFileName
      *            the name of the file in the download folder
      * @param pInstallPath
-     * @param pForceDownload
      * @param pMonitor
      * @return
      */
     public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, IPath pInstallPath,
-            boolean pForceDownload, IProgressMonitor pMonitor) {
+             IProgressMonitor pMonitor) {
         IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
         IPath archivePath = dlDir.append(pArchiveFileName);
         try {
             URL dl = new URI(pURL).toURL();
             dlDir.toFile().mkdir();
-            if (!archivePath.toFile().exists() || pForceDownload) {
+            if (!archivePath.toFile().exists() ) {
                 pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
                 myCopy(dl, archivePath.toFile(), true);
             }
@@ -72,43 +71,43 @@ public class PackageManager {
             return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
                     e);
         }
-        return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archivePath.toString(), pMonitor);
+        return processArchive(pArchiveFileName, pInstallPath, archivePath.toString(), pMonitor);
     }
 
-    private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath, boolean pForceDownload,
+    private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath,
             String pArchiveFullFileName, IProgressMonitor pMonitor) {
         // Create an ArchiveInputStream with the correct archiving algorithm
         String faileToExtractMessage = Messages.Manager_Failed_to_extract.replace(FILE, pArchiveFullFileName);
         if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
             try (TarArchiveInputStream inStream = new TarArchiveInputStream(
                     new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(inStream, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
+                return extract(inStream, pInstallPath.toFile(), 1, true, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else if (pArchiveFileName.endsWith("zip")) { //$NON-NLS-1$
             try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
+                return extract(in, pInstallPath.toFile(), 1, true, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else if (pArchiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
             try (TarArchiveInputStream in = new TarArchiveInputStream(
                     new GzipCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
+                return extract(in, pInstallPath.toFile(), 1, true, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else if (pArchiveFileName.endsWith("tar.zst")) { //$NON-NLS-1$
             try (TarArchiveInputStream in = new TarArchiveInputStream(
                     new ZstdCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
+                return extract(in, pInstallPath.toFile(), 1, true, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else if (pArchiveFileName.endsWith("tar")) { //$NON-NLS-1$
             try (TarArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
+                return extract(in, pInstallPath.toFile(), 1, true, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
@@ -474,11 +473,11 @@ public class PackageManager {
      * @param object
      * @return
      */
-    static public synchronized IStatus downloadAndInstall(ArduinoInstallable installable, boolean forceDownload,
+    static public synchronized IStatus downloadAndInstall(ArduinoInstallable installable,
             IProgressMonitor monitor) {
 
         return downloadAndInstall(installable.getUrl(), installable.getArchiveFileName(), installable.getInstallPath(),
-                forceDownload, monitor);
+                 monitor);
 
     }
 

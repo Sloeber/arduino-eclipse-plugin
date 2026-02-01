@@ -252,7 +252,6 @@ public class BoardsManager {
 	}
 
 	private static IStatus install(IArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
-		boolean forceDownload = false;
 		// Check if we're installed already
 		if (platformVersion.isInstalled()) {
 			System.out.println("reusing platform " + platformVersion.toString()); //$NON-NLS-1$
@@ -265,7 +264,7 @@ public class BoardsManager {
 		System.out.println("start installing platform " + platformVersion.toString()); //$NON-NLS-1$
 
 		MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platformVersion.getName()); //$NON-NLS-1$
-		mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion, forceDownload, monitor));
+		mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion,  monitor));
 		if (!mstatus.isOK()) {
 			// no use installing tools when the boards failed installing
 			return mstatus;
@@ -300,7 +299,7 @@ public class BoardsManager {
 				ArduinoInstallable installable = tool.getInstallable();
 				if (installable != null) {
 					monitor.setTaskName(InstallProgress.getRandomMessage());
-					mstatus.addErrors(PackageManager.downloadAndInstall(installable, forceDownload, monitor));
+					mstatus.addErrors(PackageManager.downloadAndInstall(installable,  monitor));
 				}
 			}
 		}

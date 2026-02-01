@@ -424,14 +424,14 @@ public class Activator extends Plugin {
             }
             if (!localMakePath.append(MAKE_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));
+                log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath,  monitor));
             }
 
             // Install awk if needed
             IPath localAwkPath = ConfigurationPreferences.getAwkPath();
             if (!localAwkPath.append(AWK_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                log(PackageManager.downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath, false, monitor));
+                log(PackageManager.downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath,  monitor));
             }
         }
     }
@@ -500,7 +500,7 @@ public class Activator extends Plugin {
         if (!examplesPath.toFile().exists()) {// examples are not installed
             // Download arduino IDE example programs
             Activator.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
-                    false, monitor));
+                     monitor));
         }
 
 
