@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="false">
+<product name="sloeber" uid="io.sloeber.product" id="io.sloeber.product" application="org.eclipse.ui.ide.workbench" version="5.0.0.qualifier" type="features" includeLaunchers="true" includeJRE="true" autoIncludeRequirements="false">
 
    <aboutInfo>
       <image path="/io.sloeber.core/icons/eclipse_lg.png"/>
@@ -243,6 +243,7 @@ United States, other countries, or both.
       <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
       <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>
       <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
+      <feature id="org.eclipse.epp.mpc" installMode="root"/>
    </features>
 
    <configurations>
