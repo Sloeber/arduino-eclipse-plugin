@@ -97,9 +97,6 @@ public class ArduinoLibrary   extends IArduinoLibrary {
         return getNewestVersion().getTypes();
     }
 
-    public String getUrl() {
-        return getNewestVersion().getUrl();
-    }
 
     /**
      * Get the newest version of this library
