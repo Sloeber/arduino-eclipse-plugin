@@ -68,7 +68,6 @@ public class BuildTests {
     private static final boolean reinstall_boards_and_libraries = false;
     private final static String AUTOBUILD_CFG = ".autoBuildProject";
     private static final String HIDlibName = "HID-Project";
-    //private static final String  talk2PackageURL=    "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json";
 
     /*
      * In new new installations (of the Sloeber development environment) the
