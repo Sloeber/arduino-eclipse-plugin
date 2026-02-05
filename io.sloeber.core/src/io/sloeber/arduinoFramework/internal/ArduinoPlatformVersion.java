@@ -44,10 +44,10 @@ public class ArduinoPlatformVersion  extends IArduinoPlatformVersion {
             myArchitecture = getSafeString(jsonObject, "architecture");
             myVersion = getSafeVersion(jsonObject, "version");
             myCategory = getSafeString(jsonObject, "category");
-            myURL = getSafeString(jsonObject, "url");
+            mydownloadURL = getSafeURL(jsonObject, "url");
             myArchiveFileName = getSafeString(jsonObject, "archiveFileName");
-            myChecksum = getSafeString(jsonObject, "checksum");
-            mySize = getSafeString(jsonObject, "size");
+            myArchiveChecksum = getSafeString(jsonObject, "checksum");
+            myArchiveSize = getSafeInterger(jsonObject, "size");
             for (JsonElement curElement : jsonObject.get("boards").getAsJsonArray()) {
                 myBoards.add(getSafeString(curElement.getAsJsonObject(), "name"));
             }

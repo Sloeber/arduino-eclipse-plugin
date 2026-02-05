@@ -30,9 +30,9 @@ public class ArduinpPlatformToolSystem extends ArduinoInstallable {
         try {
             host = getSafeString(jsonObject, "host");
             myArchiveFileName = getSafeString(jsonObject, "archiveFileName");
-            myURL = getSafeString(jsonObject, "url");
-            myChecksum = getSafeString(jsonObject, "checksum");
-            mySize = getSafeString(jsonObject, "size");
+            mydownloadURL = getSafeURL(jsonObject, "url");
+            myArchiveChecksum = getSafeString(jsonObject, "checksum");
+            myArchiveSize = getSafeInterger(jsonObject, "size");
         } catch (Exception e) {
             throw new JsonParseException("failed to parse Tool json  " + e.getMessage(),e);
         }

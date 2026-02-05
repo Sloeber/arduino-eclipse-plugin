@@ -3,6 +3,7 @@ package io.sloeber.arduinoFramework.internal;
 import static io.sloeber.arduinoFramework.internal.GsonConverter.*;
 import static io.sloeber.core.api.Const.*;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import io.sloeber.arduinoFramework.api.ArduinoInstallable;
 import io.sloeber.arduinoFramework.api.IArduinoLibrary;
 import io.sloeber.arduinoFramework.api.IArduinoLibraryVersion;
 import io.sloeber.arduinoFramework.api.Node;
@@ -37,12 +39,16 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 	private String category;
 	private List<String> architectures = new ArrayList<>();
 	private List<String> types = new ArrayList<>();
-	private String url;
+	private URL myDownloadUrl;
 	private String archiveFileName;
 	private int size;
 	private String checksum;
 	private ArduinoLibrary myParent;
 	private IPath myFQN;
+
+	public ArduinoInstallable getInstallable() {
+		return new ArduinoInstallableSimple(getInstallPath(),getArchiveFileName(), myDownloadUrl, checksum, size, name);
+	}
 
 	@SuppressWarnings("nls")
 	public ArduinoLibraryVersion(JsonElement json, ArduinoLibrary arduinoLibrary) {
@@ -63,7 +69,7 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 			for (JsonElement curType : jsonObject.get("types").getAsJsonArray()) {
 				types.add(curType.getAsString());
 			}
-			url = getSafeString(jsonObject, "url");
+			myDownloadUrl = getSafeURL(jsonObject, "url");
 			archiveFileName = getSafeString(jsonObject, "archiveFileName");
 			size = jsonObject.get("size").getAsInt();
 			checksum = getSafeString(jsonObject, "checksum");
@@ -116,9 +122,6 @@ public class ArduinoLibraryVersion extends Node implements IArduinoLibraryVersio
 		return types;
 	}
 
-	public String getUrl() {
-		return url;
-	}
 
 	public String getArchiveFileName() {
 		return archiveFileName;

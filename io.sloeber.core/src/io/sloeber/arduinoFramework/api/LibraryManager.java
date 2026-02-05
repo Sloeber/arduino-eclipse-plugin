@@ -156,8 +156,8 @@ public class LibraryManager {
 		if (lib.isInstalled()) {
 			return Status.OK_STATUS;
 		}
-		IStatus ret = PackageManager.downloadAndInstall(lib.getUrl(), lib.getArchiveFileName(), lib.getInstallPath(),
-				 monitor);
+		IStatus ret = PackageManager.downloadAndInstall(lib.getInstallable(), monitor);
+
 		FileModifiers.addPragmaOnce(lib.getInstallPath());
 		return ret;
 	}

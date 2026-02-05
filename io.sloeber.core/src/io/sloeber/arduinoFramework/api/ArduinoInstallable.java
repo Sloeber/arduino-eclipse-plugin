@@ -1,13 +1,15 @@
 package io.sloeber.arduinoFramework.api;
 
+import java.net.URL;
+
 import org.eclipse.core.runtime.IPath;
 
 public abstract class ArduinoInstallable {
 
     protected String myArchiveFileName;
-    protected String myURL;
-    protected String myChecksum;
-    protected String mySize;
+    protected URL mydownloadURL;
+    protected String myArchiveChecksum;
+    protected int myArchiveSize;
     protected String myName;
 
     abstract public IPath getInstallPath();
@@ -16,16 +18,16 @@ public abstract class ArduinoInstallable {
         return myArchiveFileName;
     }
 
-    public String getUrl() {
-        return myURL;
+    public URL getDownloadUrl() {
+        return mydownloadURL;
     }
 
-    public String getChecksum() {
-        return myChecksum;
+    public String getArchiveChecksum() {
+        return myArchiveChecksum;
     }
 
-    public String getSize() {
-        return mySize;
+    public int getArchiveSize() {
+        return myArchiveSize;
     }
 
     public String getName() {

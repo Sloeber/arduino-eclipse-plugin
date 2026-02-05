@@ -42,6 +42,7 @@ import org.osgi.service.prefs.Preferences;
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.arduinoFramework.api.BoardsManager;
 import io.sloeber.arduinoFramework.api.LibraryManager;
+import io.sloeber.arduinoFramework.internal.ArduinoInstallableSimple;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.common.InstancePreferences;
@@ -423,15 +424,15 @@ public class Activator extends Plugin {
                 }
             }
             if (!localMakePath.append(MAKE_EXE).toFile().exists()) {
-                IProgressMonitor monitor = new NullProgressMonitor();
-                log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath,  monitor));
+                ArduinoInstallableSimple makeInstallable= ArduinoInstallableSimple.from(localMakePath, MAKE_ZIP,MAKE_URL, MAKE_EXE );
+                log(PackageManager.downloadAndInstall(makeInstallable,  new NullProgressMonitor()));
             }
 
             // Install awk if needed
             IPath localAwkPath = ConfigurationPreferences.getAwkPath();
             if (!localAwkPath.append(AWK_EXE).toFile().exists()) {
-                IProgressMonitor monitor = new NullProgressMonitor();
-                log(PackageManager.downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath,  monitor));
+            	ArduinoInstallableSimple awkInstallable=  ArduinoInstallableSimple.from(localAwkPath, AWK_ZIP,AWK_URL, AWK_EXE );
+                log(PackageManager.downloadAndInstall(awkInstallable,   new NullProgressMonitor()));
             }
         }
     }
@@ -487,11 +488,7 @@ public class Activator extends Plugin {
 //    	long requestedDelay=getUpdateDelay();
 //    	long currentTime= System.currentTimeMillis();
 //    	boolean needsUpdate = currentTime>(requestedDelay+latestUpdate);
-    	if(needsUpdate) {
-    		BoardsManager.update(true );
-    	}else {
-    		BoardsManager.update(false );
-    	}
+    	BoardsManager.update(needsUpdate );
 
         if (!LibraryManager.libsAreInstalled()) {
             LibraryManager.InstallDefaultLibraries(monitor);
@@ -499,8 +496,8 @@ public class Activator extends Plugin {
         IPath examplesPath = ConfigurationPreferences.getInstallationPathExamples();
         if (!examplesPath.toFile().exists()) {// examples are not installed
             // Download arduino IDE example programs
-            Activator.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
-                     monitor));
+        	ArduinoInstallableSimple examplesInstallable= ArduinoInstallableSimple.from(examplesPath, Defaults.EXAMPLE_PACKAGE,Defaults.EXAMPLES_URL, EXAMPLES_FOLDER );
+            Activator.log(PackageManager.downloadAndInstall(examplesInstallable,  monitor));
         }
 
 
