@@ -1,17 +1,16 @@
 package io.sloeber.core.tools;
 
 import static io.sloeber.core.api.Const.*;
-import static java.nio.file.StandardCopyOption.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
+import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +21,16 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.LaxRedirectStrategy;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpEntity;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -37,50 +44,94 @@ import io.sloeber.core.api.ConfigurationPreferences;
 public class PackageManager {
     private static final String FILE = Messages.FILE_TAG;
     private static final String FOLDER = Messages.FOLDER_TAG;
-    private final static int MAX_HTTP_REDIRECTIONS = 5;
+
 
     /**
-     * downloads an archive file from the internet and saves it in the download
-     * folder under the name "pArchiveFileName" then extrats the file to
-     * pInstallPath if pForceDownload is true the file will be downloaded even if
-     * the download file already exists if pForceDownload is false the file will
-     * only be downloaded if the download file does not exists The extraction is
-     * done with processArchive so only files types supported by this method will be
+     * downloads an archive file from the Internet and saves it in the download
+     * folder under the name "pArchiveFileName" then extract the file to
+     * pInstallPath (provided in ArduinoInstallable)
+     * The extraction is done with processArchive so only files types supported by this method will be
      * properly extracted
+     * if ArduinoInstallable contains a valid checksum (not null) or a valid size (>0) these will
+     * be compared to the downloaded file and if there is a mismatch will be deleted.
      *
-     * @param pURL
-     *            the url of the file to download
-     * @param pArchiveFileName
-     *            the name of the file in the download folder
-     * @param pInstallPath
+     * @param ArduinoInstallable object containing the information about the installable
      * @param pMonitor
      * @return
      */
-    public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, IPath pInstallPath,
-             IProgressMonitor pMonitor) {
-        IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
-        IPath archivePath = dlDir.append(pArchiveFileName);
+
+    static public synchronized IStatus downloadAndInstall(ArduinoInstallable installable,
+            IProgressMonitor pMonitor) {
+
+    	URL downloadURL=installable.getDownloadUrl();
+    	String pArchiveFileName=installable.getArchiveFileName();
+
+        IPath downloadFolder = ConfigurationPreferences.getInstallationPathDownload();
+        File downloadedArchiveFile = downloadFolder.append(pArchiveFileName).toFile();
         try {
-            URL dl = new URI(pURL).toURL();
-            dlDir.toFile().mkdir();
-            if (!archivePath.toFile().exists() ) {
-                pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
-                myCopy(dl, archivePath.toFile(), true);
+            downloadFolder.toFile().mkdir();
+            //If a download already exists check the checksum and size
+            if (downloadedArchiveFile.exists() ) {
+            	if(!securityCheckOK(downloadedArchiveFile,installable)) {
+            		downloadedArchiveFile.delete();
+            		System.err.println("Locally stored download " + downloadedArchiveFile.toString()+ " deleted due to size/checksum failure"); //$NON-NLS-1$ //$NON-NLS-2$
+            	}
             }
+            if (!downloadedArchiveFile.exists() ) {
+                pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
+                myCopy(downloadURL, downloadedArchiveFile, false);
+            }
+        	if(!securityCheckOK(downloadedArchiveFile,installable)) {
+        		downloadedArchiveFile.delete();
+        		return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download_correctly.replace(FILE, downloadURL.getPath()));
+        	}
         } catch (Exception e) {
-            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
+            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, downloadURL.getPath()),
                     e);
         }
-        return processArchive(pArchiveFileName, pInstallPath, archivePath.toString(), pMonitor);
+        return processArchive(pArchiveFileName, installable.getInstallPath(), downloadedArchiveFile.toString(), pMonitor);
     }
 
-    private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath,
+    private static boolean securityCheckOK(File downloadedArchiveFile, ArduinoInstallable installable) throws IOException {
+    	//Arduino IDE ignores file size differences
+//		if(installable.getArchiveSize()>0 && (installable.getArchiveSize()!=downloadedArchiveFile.length())) {
+//			return false;
+//		}
+		if(installable.getArchiveChecksum()!=null) {
+
+			try {
+				String protocol=installable.getArchiveChecksum().split(COLON)[0];
+				int numChecksumchars=installable.getArchiveChecksum().length()-protocol.length()-1;
+				String zeros= "0".repeat(numChecksumchars); //$NON-NLS-1$
+				byte[]data = Files.readAllBytes(downloadedArchiveFile.toPath());
+				byte[] hash = MessageDigest.getInstance(protocol).digest(data);
+				String downloadChecksum = zeros+new BigInteger(1, hash).toString(16);
+				downloadChecksum = protocol+COLON+StringUtils.right(downloadChecksum,numChecksumchars);
+				boolean ret =  installable.getArchiveChecksum().equalsIgnoreCase(downloadChecksum);
+				if(!ret) {
+					return false;
+				}
+			} catch (IOException | NoSuchAlgorithmException e) {
+				throw new IOException(Messages.Manager_archive_fail_checksum_calculation.replace(FILE, downloadedArchiveFile.getPath()),e);
+			}
+		}
+		return true;
+	}
+
+	private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath,
             String pArchiveFullFileName, IProgressMonitor pMonitor) {
         // Create an ArchiveInputStream with the correct archiving algorithm
         String faileToExtractMessage = Messages.Manager_Failed_to_extract.replace(FILE, pArchiveFullFileName);
         if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
             try (TarArchiveInputStream inStream = new TarArchiveInputStream(
                     new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
+                return extract(inStream, pInstallPath.toFile(), 1, true, pMonitor);
+            } catch (IOException | InterruptedException e) {
+                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
+            }
+        } else if (pArchiveFileName.endsWith("tar.xz")) { //$NON-NLS-1$
+            try (TarArchiveInputStream inStream = new TarArchiveInputStream(
+                    new XZCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
                 return extract(inStream, pInstallPath.toFile(), 1, true, pMonitor);
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
@@ -98,7 +149,7 @@ public class PackageManager {
             } catch (IOException | InterruptedException e) {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
-        } else if (pArchiveFileName.endsWith("tar.zst")) { //$NON-NLS-1$
+        } else if (pArchiveFileName.endsWith(".zst")) { //$NON-NLS-1$
             try (TarArchiveInputStream in = new TarArchiveInputStream(
                     new ZstdCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
                 return extract(in, pInstallPath.toFile(), 1, true, pMonitor);
@@ -112,7 +163,7 @@ public class PackageManager {
                 return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
             }
         } else {
-            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Format_not_supported);
+            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Format_not_supported+SPACE+pArchiveFullFileName);
         }
     }
 
@@ -379,106 +430,61 @@ public class PackageManager {
         }
     }
 
-    /**
-     * copy a url locally taking into account redirections
-     *
-     * @param url
-     * @param localFile
-     * @throws IOException
-     */
-    protected static boolean myCopy(URL url, File localFile, boolean report_error) throws IOException {
-        return myCopy(url, localFile, report_error, 0);
-    }
+	/**
+	 * copy a url locally taking into account redirections
+	 *
+	 * @param url
+	 * @param localFile
+	 */
+	@SuppressWarnings("nls")
+	public static boolean myCopy(URL url, File localFile, boolean report_error) {
+		if ("file".equals(url.getProtocol())) {
+			try {
+				FileUtils.copyFile(new File(url.getFile()), localFile);
+				return true;
+			} catch (Exception e) {
+				if (report_error) {
+					Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to copy file " + url, e));
+				}
+			}
+			return false;
+		}
+		try (CloseableHttpClient httpClient = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy())
+				.build(); CloseableHttpResponse response = httpClient.execute(new HttpGet(url.toString()));) {
 
-    @SuppressWarnings("nls")
-    private static boolean myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
-            throws IOException {
-        if ("file".equals(url.getProtocol())) {
-            FileUtils.copyFile(new File(url.getFile()), localFile);
-            return true;
-        }
-        try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(30000);
-            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-            conn.addRequestProperty("User-Agent", "Mozilla");
-            conn.addRequestProperty("Referer", "google.com");
+			if (response.getCode() != 200) {
+				if (report_error) {
+					System.err.println("Error: Unable to download file: " + url.toString() + ". Response code "
+							+ response.getCode());
+				}
+				return false;
+			}
 
-            // normally, 3xx is redirect
-            int status = conn.getResponseCode();
+			try (HttpEntity httpEntity = response.getEntity();
+					InputStream inputStream = httpEntity.getContent();
+					FileOutputStream outputStream = new FileOutputStream(localFile.toString());) {
+				byte[] buffer = new byte[4096];
+				int bytesRead;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+				}
+				outputStream.close();
+				inputStream.close();
 
-            if (status == HttpURLConnection.HTTP_OK) {
-                try (InputStream stream = url.openStream()) {
-                    return Files.copy(stream, localFile.toPath(), REPLACE_EXISTING)>20;
-                }catch(IOException e){
-                	throw e;
-                }
-            }
+			}
+			httpClient.close();
+			return true;
 
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-                    || status == HttpURLConnection.HTTP_SEE_OTHER) {
-                if (redirectionCounter >= MAX_HTTP_REDIRECTIONS) {
-                    throw new IOException("Too many redirections while downloading file.");
-                }
-                return myCopy(conn.getURL(), localFile, report_error, redirectionCounter + 1);
-            }
-            if (report_error) {
-                Activator.log(new Status(IStatus.WARNING, Activator.getId(),
-                        "Failed to download url " + url + " error code is: " + status, null));
-            }
-            throw new IOException("Failed to download url " + url + " error code is: " + status);
+		} catch (Exception e) {
+			if (report_error) {
+				Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			}
+		}
+		return false;
+	}
 
-        } catch (IOException  e) {
-            if (report_error) {
-                Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
-            }
-            throw e;
 
-        }
-    }
 
-    /**
-     * copy a url locally taking into account redirections in such a way that if
-     * there is already a file it does not get lost if the download fails
-     *
-     * @param url
-     * @param localFile
-     * @return true if the file got successfully downloaded, else false
-     * @throws IOException
-     */
-    public static boolean mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
-        File savedFile = null;
-        if (localFile.exists()) {
-            savedFile = File.createTempFile(localFile.getName(), "Sloeber"); //$NON-NLS-1$
-            Files.move(localFile.toPath(), savedFile.toPath(), REPLACE_EXISTING);
-        }
-        try {
-        	Activator.log(new Status(IStatus.INFO, Activator.getId(), "Downloading " + url.toString())); //$NON-NLS-1$
-            return myCopy(url, localFile, report_error);
-        } catch (Exception e) {
-            if (null != savedFile) {
-                Files.move(savedFile.toPath(), localFile.toPath(), REPLACE_EXISTING);
-            }
-            throw e;
-        }
-    }
 
-    /**
-     * Given a platform description in a json file download and install all needed
-     * stuff. All stuff is including all tools and core files and hardware specific
-     * libraries. That is (on windows) inclusive the make.exe
-     *
-     * @param installable
-     * @param monitor
-     * @param object
-     * @return
-     */
-    static public synchronized IStatus downloadAndInstall(ArduinoInstallable installable,
-            IProgressMonitor monitor) {
-
-        return downloadAndInstall(installable.getUrl(), installable.getArchiveFileName(), installable.getInstallPath(),
-                 monitor);
-
-    }
 
 }

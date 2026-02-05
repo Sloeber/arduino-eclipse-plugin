@@ -66,6 +66,7 @@ public class Messages extends NLS {
     public static String Helpers_tool_reference_missing;
     public static String import_lib_failed;
     public static String Manager_archive_to_short;
+    public static String Manager_archive_fail_checksum_calculation;
     public static String Manager_archive_error_root_folder_name_mismatch;
     public static String Manager_archive_error_symbolic_link_to_absolute_path;
     public static String Manager_archiver_eror_single_root_folder_required;
@@ -73,6 +74,7 @@ public class Messages extends NLS {
     public static String Manager_Cant_create_folder_exists;
     public static String Manager_Cant_extract_file_exist;
     public static String Manager_Failed_to_download;
+    public static String Manager_Failed_to_download_correctly;
     public static String Manager_Failed_to_extract;
     public static String Manager_Failed_to_parse;
     public static String Manager_Format_not_supported;

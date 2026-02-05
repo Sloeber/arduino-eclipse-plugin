@@ -1,5 +1,8 @@
 package io.sloeber.arduinoFramework.internal;
 
+import java.net.URI;
+import java.net.URL;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -12,8 +15,31 @@ public class GsonConverter {
             return "no info found in file"; //$NON-NLS-1$
         }
         return field.getAsString();
-
     }
+
+	public static URL getSafeURL(JsonObject jsonObject, String fieldName) {
+		try {
+			JsonElement field = jsonObject.get(fieldName);
+			if (field == null) {
+				return null;
+			}
+			return new URI(field.getAsString()).toURL();
+		} catch (@SuppressWarnings("unused") Exception e) {
+			return null;
+		}
+	}
+
+	public static int getSafeInterger(JsonObject jsonObject, String fieldName) {
+		try {
+			JsonElement field = jsonObject.get(fieldName);
+			if (field == null) {
+				return -1;
+			}
+			return field.getAsInt();
+		} catch (@SuppressWarnings("unused") Exception e) {
+			return -1;
+		}
+	}
 
     public static VersionNumber getSafeVersion(JsonObject jsonObject, String fieldName) {
         JsonElement field = jsonObject.get(fieldName);

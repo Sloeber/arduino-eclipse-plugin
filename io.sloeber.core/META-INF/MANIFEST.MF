@@ -28,7 +28,9 @@ Require-Bundle:
  io.sloeber.autoBuild,
  org.eclipse.cdt.make.core,
  org.apache.commons.lang3;bundle-version="3.14.0",
- com.jcraft.jsch
+ com.jcraft.jsch,
+ org.apache.httpcomponents.client5.httpclient5;bundle-version="5.5.1",
+ org.apache.httpcomponents.core5.httpcore5
 Export-Package: cc.arduino.packages;x-internal:=true,
  cc.arduino.packages.discoverers;x-internal:=true,
  cc.arduino.packages.ssh;x-internal:=true,

@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
+import io.sloeber.arduinoFramework.internal.ArduinoLibraryIndex;
 import io.sloeber.arduinoFramework.internal.ArduinoPlatformPackageIndex;
 import io.sloeber.arduinoFramework.internal.ArduinoPlatformTool;
 import io.sloeber.arduinoFramework.internal.ArduinoPlatformToolVersion;
@@ -201,7 +202,7 @@ public class BoardsManager {
 						if (currPlatformIndex > fromIndex) {
 							IArduinoPlatformVersion latestPlatformVersion = curPlatform.getNewestVersion();
 							if (!latestPlatformVersion.getName().toUpperCase().contains(DEPRECATED)) {
-								install(latestPlatformVersion, monitor);
+								Activator.log(install(latestPlatformVersion, monitor));
 							} else {
 								System.out.println("skipping platform " + latestPlatformVersion.toString()); //$NON-NLS-1$
 							}
@@ -241,7 +242,7 @@ public class BoardsManager {
 					IArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestVersion();
 					if (curPlatformVersion != null) {
 						NullProgressMonitor monitor = new NullProgressMonitor();
-						install(curPlatformVersion, monitor);
+						Activator.log(install(curPlatformVersion, monitor));
 						return;
 					}
 				}
@@ -267,6 +268,7 @@ public class BoardsManager {
 		mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion,  monitor));
 		if (!mstatus.isOK()) {
 			// no use installing tools when the boards failed installing
+			System.out.println("Failed to download platform " + platformVersion.toString()); //$NON-NLS-1$
 			return mstatus;
 		}
 
@@ -305,8 +307,18 @@ public class BoardsManager {
 		}
 
 		WorkAround.applyKnownWorkArounds(platformVersion);
-
-		System.out.println("done installing platform " + platformVersion.toString()); //$NON-NLS-1$
+		if(mstatus.isOK()) {
+			System.out.println("done installing platform " + platformVersion.toString()); //$NON-NLS-1$
+		}else {
+			System.out.println("Failed to instal platform " + platformVersion.toString()); //$NON-NLS-1$
+			Activator.log(mstatus);
+			try {
+				deleteDirectory(platformVersion.getInstallPath());
+			} catch (IOException e) {
+				// failed to cleanup after a failed platform version install
+				e.printStackTrace();
+			}
+		}
 		return mstatus;
 	}
 
@@ -474,6 +486,31 @@ public class BoardsManager {
 		}
 	}
 
+	/** process the json file and if processing is ok return true else return false
+	 * Note that with processing is meand read the file, the information is not kept in memory
+	 * So if the processing is ok the file will be processed again later
+	 * This step is only done to avoid overwriting a good file with a bad file
+	 *
+	 * @param jsonFile the json file to test
+	 * @return
+	 */
+	private static boolean validateJson(File jsonFile) {
+		try (Reader reader = new FileReader(jsonFile)) {
+			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
+				new Gson().fromJson(reader, ArduinoPlatformPackageIndex.class);
+				return true;
+			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
+				new Gson().fromJson(reader, ArduinoLibraryIndex.class);
+				return true;
+			}
+
+		}catch(@SuppressWarnings("unused") Exception e) {
+			//ignore as we only want to know whether it is a valid json
+			//e.printStackTrace();
+		}
+		return false;
+	}
+
 	private static void downloadJson(String jsonUrl, File localJsonFile, boolean forceDownload) {
 		File jsonTmpFile = new File(localJsonFile.toString() + ".new"); //$NON-NLS-1$
 		File jsonTmpGZFile = new File(localJsonFile.toString() + ".new.gz"); //$NON-NLS-1$
@@ -491,13 +528,17 @@ public class BoardsManager {
 			localJsonFile.getParentFile().mkdirs();
 			try {
 				try {
+					Activator.log(new Status(IStatus.INFO, Activator.getId(), "Downloading " + jsonUrl)); //$NON-NLS-1$
 					// try to download the GZ variant first
 					if (jsonTmpGZFile.exists()) {
 						jsonTmpGZFile.delete();
 					}
 
-					if (PackageManager.mySafeCopy(urlGZSource, jsonTmpGZFile, false)) {
-						if (unzipGZJsonFile(jsonTmpGZFile, jsonTmpFile)) {
+					if (PackageManager.myCopy(urlGZSource, jsonTmpGZFile, false)) {
+						unzipGZJsonFile(jsonTmpGZFile, jsonTmpFile);
+						// make sure the json can be read before overwriting the original
+						if (validateJson(jsonTmpFile)) {
+
 							if (jsonOldFile.exists()) {
 								jsonOldFile.delete();
 							}
@@ -506,7 +547,8 @@ public class BoardsManager {
 							}
 							localJsonFile.renameTo(jsonOldFile);
 							jsonTmpFile.renameTo(localJsonFile);
-							return; // gz file has succsessfully downloaded and uncompressed
+							Activator.log(new Status(IStatus.INFO, Activator.getId(), urlGZSource + " downloaded")); //$NON-NLS-1$
+							return; // gz file has successfully been downloaded and uncompressed
 						}
 					}
 				} catch (@SuppressWarnings("unused") Exception e) {
@@ -517,43 +559,43 @@ public class BoardsManager {
 				if (jsonTmpFile.exists()) {
 					jsonTmpFile.delete();
 				}
-				if (PackageManager.mySafeCopy(urlSource, jsonTmpFile, false)) {
-					if (jsonOldFile.exists()) {
-						jsonOldFile.delete();
+				if (PackageManager.myCopy(urlSource, jsonTmpFile, false)) {
+					// make sure the json can be read
+					if (validateJson(jsonTmpFile)) {
+						if (jsonOldFile.exists()) {
+							jsonOldFile.delete();
+						}
+						localJsonFile.renameTo(jsonOldFile);
+						jsonTmpFile.renameTo(localJsonFile);
+						Activator.log(new Status(IStatus.INFO, Activator.getId(), urlSource +" downloaded" )); //$NON-NLS-1$
+						return;
 					}
-					localJsonFile.renameTo(jsonOldFile);
-					jsonTmpFile.renameTo(localJsonFile);
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + jsonUrl, e)); //$NON-NLS-1$
+				if (jsonTmpFile.exists()) {
+					jsonTmpFile.delete();
+				}
 			}
+			Activator.log(new Status(IStatus.INFO, Activator.getId(), "Download failed " + jsonUrl )); //$NON-NLS-1$
 		}
 	}
 
-	static boolean unzipGZJsonFile(File pArchiveFullFileName, File uncompressedFile) {
+	static void unzipGZJsonFile(File pArchiveFullFileName, File uncompressedFile) throws Exception {
 
-		try (FileInputStream FileStream= new FileInputStream(pArchiveFullFileName);
-				 GzipCompressorInputStream gzipStream = GzipCompressorInputStream.builder()
-						   .setPath(pArchiveFullFileName.toPath())
-						   .setFileNameCharset(StandardCharsets.ISO_8859_1)
-						   .get();
-				OutputStream out = Files.newOutputStream(uncompressedFile.toPath());
-				) {
+		try (FileInputStream FileStream = new FileInputStream(pArchiveFullFileName);
+				GzipCompressorInputStream gzipStream = GzipCompressorInputStream.builder()
+						.setPath(pArchiveFullFileName.toPath()).setFileNameCharset(StandardCharsets.ISO_8859_1).get();
+				OutputStream out = Files.newOutputStream(uncompressedFile.toPath());) {
 
-
-			final int buffersize=1000;
+			final int buffersize = 1000;
 			final byte[] buffer = new byte[buffersize];
 			int n = 0;
 			while (-1 != (n = gzipStream.read(buffer))) {
-			    out.write(buffer, 0, n);
+				out.write(buffer, 0, n);
 			}
 			out.close();
 			gzipStream.close();
-			return true;
-
-		} catch (IOException e) {
-			Activator.log(new Status(IStatus.WARNING, Activator.getId(), "Extraction failed " + pArchiveFullFileName,e)); //$NON-NLS-1$
-			return false;
 		}
 	}
 
@@ -601,7 +643,12 @@ public class BoardsManager {
 		} catch (Exception e) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
 					Manager_Failed_to_parse.replace(FILE_TAG, jsonFile.getAbsolutePath()), e));
-			jsonFile.delete();// Delete the file so it stops damaging
+			File jsonFileGone=new File(jsonFile.toPath().toString()+SLACH+jsonFile.getName()+"_gone"); //$NON-NLS-1$
+			if(jsonFileGone.exists()) {
+				jsonFileGone.delete();
+			}
+			// keep a copy for investigation
+			jsonFile.renameTo(jsonFileGone);
 		}
 	}
 
