@@ -113,6 +113,12 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			//reuse of filename package_esp32_index.json
 			"https://git.oschina.net/dfrobot/FireBeetle-ESP32/raw/master/package_esp32_index.json",
 
+			//Download fails
+			"http://downloads.konekt.io/arduino/package_konekt_index.json",
+			"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json",
+			"http://clkdiv8.com/download/package_clkdiv8_index.json",
+			"https://rawgit.com/hunianhang/nufront_arduino_json/master/package_tl7788_index.json",
+
 			//moved to different place
 			"https://dl.espressif.com/dl/package_esp32_index.json",};
 	private static final String[] packageUrlsToIgnoreonWindows = {
@@ -362,6 +368,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
 		}
 		BoardsManager.addPackageURLs(toAddList);
+		BoardsManager.update(false);
 
 
 		if (!skipPlatformInstallation) {
