@@ -16,7 +16,6 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.extensionPoint.providers;
 
-import static io.sloeber.autoBuild.api.AutoBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
@@ -89,6 +88,7 @@ public class InternalBuildRunner implements IBuildRunner {
 		return ;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public boolean invokeBuild(int kind, String targetName, IAutoBuildConfigurationDescription inAutoData,
 			IMarkerGenerator markerGenerator, IConsole console, IProgressMonitor monitor) throws CoreException {
@@ -211,6 +211,7 @@ public class InternalBuildRunner implements IBuildRunner {
 						executor.shutdown();
 						// Wait until all threads are finish
 						executor.awaitTermination(20, TimeUnit.MINUTES);
+						executor.close();
 					}
 					epm.deDuplicate();
 
@@ -238,18 +239,18 @@ public class InternalBuildRunner implements IBuildRunner {
 						}
 					}
 
-					String postBuildStep = autoData.getPostbuildStep();
-					postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
-					if (!postBuildStep.isEmpty()) {
-						String announcement = autoData.getPostBuildAnouncement();
-						if (!announcement.isEmpty()) {
-							buildRunnerHelper.toConsole(announcement);
-						}
-						buildRunnerHelper.toConsole(postBuildStep);
-						if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
-							return false;
-						}
-					}
+//					String postBuildStep = autoData.getPostbuildStep();
+//					postBuildStep = resolve(postBuildStep, EMPTY_STRING, WHITESPACE, autoData);
+//					if (!postBuildStep.isEmpty()) {
+//						String announcement = autoData.getPostBuildAnouncement();
+//						if (!announcement.isEmpty()) {
+//							buildRunnerHelper.toConsole(announcement);
+//						}
+//						buildRunnerHelper.toConsole(postBuildStep);
+//						if (launchCommand(postBuildStep, autoData, monitor, buildRunnerHelper) != 0) {
+//							return false;
+//						}
+//					}
 				}
 			}
 			buildRunnerHelper.goodbye();
