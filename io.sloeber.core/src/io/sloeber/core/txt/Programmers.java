@@ -1,5 +1,7 @@
 package io.sloeber.core.txt;
 
+import static io.sloeber.core.api.Const.*;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,8 +12,6 @@ import org.eclipse.core.runtime.IPath;
 import io.sloeber.arduinoFramework.api.BoardDescription;
 
 public class Programmers extends BoardTxtFile {
-	private static final String programmersFileName1 = "programmers.txt";//$NON-NLS-1$
-	private static final String programmersFileName2 = "externalprogrammers.txt";//$NON-NLS-1$
 
 
 
@@ -21,7 +21,7 @@ public class Programmers extends BoardTxtFile {
 
     private static File getActualTxtFile(File programmersFile) {
         String txtFileNamer = programmersFile.getName();
-        if (programmersFileName1.equals(txtFileNamer) || programmersFileName2.equals(txtFileNamer)) {
+        if (PROGRAMMER_TXT_FILE_NAME.equals(txtFileNamer) || EXTERNAL_PROGRAMMERS_TXT_FILE_NAME.equals(txtFileNamer)) {
             return WorkAround.MakeProgrammersSloeberTXT(programmersFile);
         }
         return programmersFile;
@@ -30,11 +30,11 @@ public class Programmers extends BoardTxtFile {
 	private static Programmers[] fromBoards(IPath referencingPlatformPath, IPath referencedPlatformPath,
 			IPath arduinoPlatformPath) {
 		HashSet<File> BoardsFiles = new HashSet<>();
-		BoardsFiles.add(referencingPlatformPath.append(programmersFileName1).toFile());
-		BoardsFiles.add(referencingPlatformPath.append(programmersFileName2).toFile());
+		BoardsFiles.add(referencingPlatformPath.append(PROGRAMMER_TXT_FILE_NAME).toFile());
+		BoardsFiles.add(referencingPlatformPath.append(EXTERNAL_PROGRAMMERS_TXT_FILE_NAME).toFile());
 		if (referencedPlatformPath != null) {
-			BoardsFiles.add(referencedPlatformPath.append(programmersFileName1).toFile());
-			BoardsFiles.add(referencedPlatformPath.append(programmersFileName2).toFile());
+			BoardsFiles.add(referencedPlatformPath.append(PROGRAMMER_TXT_FILE_NAME).toFile());
+			BoardsFiles.add(referencedPlatformPath.append(EXTERNAL_PROGRAMMERS_TXT_FILE_NAME).toFile());
 		}
 		for (Iterator<File> i = BoardsFiles.iterator(); i.hasNext();) {
 			File file = i.next();
@@ -43,8 +43,8 @@ public class Programmers extends BoardTxtFile {
 			}
 		}
 		if ((BoardsFiles.size() == 0) && (referencedPlatformPath == null) && (arduinoPlatformPath != null)) {
-			if (arduinoPlatformPath.append(programmersFileName1).toFile().exists()) {
-				BoardsFiles.add(arduinoPlatformPath.append(programmersFileName1).toFile());
+			if (arduinoPlatformPath.append(PROGRAMMER_TXT_FILE_NAME).toFile().exists()) {
+				BoardsFiles.add(arduinoPlatformPath.append(PROGRAMMER_TXT_FILE_NAME).toFile());
 			}
 		}
 		Programmers ret[] = new Programmers[BoardsFiles.size()];

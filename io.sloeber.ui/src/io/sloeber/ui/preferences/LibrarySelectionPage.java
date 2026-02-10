@@ -1,5 +1,7 @@
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.core.api.Common.SloaberHomeMaintenance;
+import static io.sloeber.core.api.Common.SloaberHomePathIsWritable;
 import static io.sloeber.ui.Activator.*;
 
 import java.util.HashSet;
@@ -44,6 +46,26 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 	@Override
 	protected Control createContents(Composite parent) {
+		if(SloaberHomePathIsWritable) {
+			return createNormalContents(parent);
+		}
+		return createSloeberHomeIsReadOnlyContents(parent);
+	}
+
+	private static Control createSloeberHomeIsReadOnlyContents(Composite parent) {
+		Composite control = new Composite(parent, SWT.NONE);
+		control.setLayout(new GridLayout());
+
+		Text desc = new Text(control, SWT.READ_ONLY);
+		desc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		desc.setBackground(parent.getBackground());
+		desc.setText(SloaberHomeMaintenance);
+
+		return control;
+	}
+
+
+	protected Control createNormalContents(Composite parent) {
 		Composite control = new Composite(parent, SWT.NONE);
 		control.setLayout(new GridLayout());
 
@@ -59,6 +81,9 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 	@Override
 	public boolean performOk() {
+		if(!SloaberHomePathIsWritable) {
+			return true;
+		}
 		if (this.isJobRunning == true) {
 			MessageDialog.openInformation(getShell(), "Library Manager", //$NON-NLS-1$
 					"Library Manager is busy. Please wait some time..."); //$NON-NLS-1$

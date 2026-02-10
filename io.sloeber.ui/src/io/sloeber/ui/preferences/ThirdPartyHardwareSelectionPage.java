@@ -1,6 +1,7 @@
 
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.core.api.Common.*;
 import static io.sloeber.ui.Activator.*;
 
 import java.util.Arrays;
@@ -30,6 +31,9 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 	@Override
 	protected void initialize() {
 		super.initialize();
+		if(!SloaberHomePathIsWritable) {
+			return ;
+		}
 		urlsText.setText(BoardsManager.getJsonURLList());
 	}
 
@@ -38,12 +42,19 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 
 	public ThirdPartyHardwareSelectionPage() {
 		super(org.eclipse.jface.preference.FieldEditorPreferencePage.FLAT);
-		setDescription(Messages.json_maintain);
+		if(SloaberHomePathIsWritable) {
+		setDescription(Messages.json_maintain);}
+		else {
+			setDescription(SloaberHomeMaintenance);
+		}
 		setPreferenceStore(new ScopedPreferenceStore(ConfigurationScope.INSTANCE, MyPreferences.NODE_ARDUINO));
 	}
 
 	@Override
 	public boolean performOk() {
+		if(!SloaberHomePathIsWritable) {
+			return super.performOk();
+		}
 		HashSet<String> toSetList = new HashSet<>(Arrays.asList(urlsText.getStringValue().split(System.lineSeparator())));
 		BoardsManager.setPackageURLs(toSetList);
 		BoardsManager.update(false);
@@ -54,11 +65,21 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
+		if(!SloaberHomePathIsWritable) {
+			return;
+		}
 		urlsText.setText(BoardsManager.getDefaultJsonURLs());
 	}
 
 	@Override
 	protected void createFieldEditors() {
+		if(SloaberHomePathIsWritable) {
+			createNormalFieldEditors();
+		}
+	}
+
+
+	protected void createNormalFieldEditors() {
 		final Composite parent = getFieldEditorParent();
 		GridData gd = new GridData(GridData.FILL,GridData.BEGINNING,true,false);
 		parent.setLayoutData(gd);

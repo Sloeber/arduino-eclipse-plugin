@@ -94,6 +94,9 @@ public class Const extends AutoBuildConstants {
     public static final String SLOEBER_LIBRARY_FQN = "Library";
     public static final String BOARDS_FILE_NAME = "boards" + DOT + TXT;
     public static final String PLATFORM_FILE_NAME = PLATFORM + DOT + TXT;
+    public static final String PROGRAMMER_TXT_FILE_NAME = "programmers" + DOT + TXT;
+    public static final String EXTERNAL_PROGRAMMERS_TXT_FILE_NAME = "externalprogrammers"+ DOT + TXT;
+
 
     public static final String SLOEBER_CFG = "sloeber.cfg";
     public static final String SLOEBER_PROJECT = ".sproject";

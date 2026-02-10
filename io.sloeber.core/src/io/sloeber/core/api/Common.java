@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -29,9 +30,46 @@ import io.sloeber.core.Activator;
 
 public class Common {
 
+	public final static String tempFolder=System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
     public final static String sloeberHome = getSloeberHome();
     public final static IPath sloeberHomePath = new Path(sloeberHome);
     public final static String sloeberHomePathToString = sloeberHomePath.toOSString();
+    public final static  boolean SloaberHomePathIsWritable=!sloeberHomePath.toFile().canRead();
+    public final static  boolean SloaberHomePathWritableDocumented=sloeberHomePath.append(SLOEBER_TXT_FILE_NAME).toFile().exists();
+    public final static String SloaberHomeMaintenance=GetSloaberHomeMaintenance();
+
+
+    @SuppressWarnings("nls")
+	private static String GetSloaberHomeMaintenance() {
+    	if(!SloaberHomePathWritableDocumented) {
+    		//no file found to document why sloeber home is read only
+    		return "Sloeber home is read only. please fix to enable functionality.";
+    	}
+    	try {
+			String txtFile=Files.readString(sloeberHomePath.append(SLOEBER_TXT_FILE_NAME).toPath(), Charset.defaultCharset());
+				int SearchStringIndex = txtFile.indexOf("Maintainer") + 1;
+				if (SearchStringIndex > 0) {
+					int lineStartIndex = txtFile.lastIndexOf("\n", SearchStringIndex) + 1;
+					if (lineStartIndex >= 0) {
+						int lineEndIndex = txtFile.indexOf("\n", lineStartIndex);
+						if (lineEndIndex == -1) {
+							// We are at the last line and it does not end with \n
+							lineEndIndex = txtFile.length();
+						}
+						if (lineEndIndex > lineStartIndex) {
+							String line= txtFile.substring(lineStartIndex, lineEndIndex);
+							String[] lineParts=line.split(EQUAL, 2);
+							if(lineParts.length==2) {
+								return lineParts[1];
+							}
+						}
+					}
+				}
+		} catch (@SuppressWarnings("unused") Exception e) {
+			//just skip and provide error message
+		}
+		return "Sloeber home is read only. Failed to read \"Maintainer=\" in sloeber.txt.";
+    }
 
     private static String getSloeberHome() {
 

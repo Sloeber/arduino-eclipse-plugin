@@ -1,12 +1,14 @@
 package io.sloeber.core.txt;
 
 import static io.sloeber.core.api.Const.*;
+import static io.sloeber.core.api.Common.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,6 +126,36 @@ public class WorkAround {
 
 	}
 
+	private static File getSloeberTxtFile(File txtFile,String txtName,String sloeberName) {
+		if(!txtFile.getName().equals(txtName)) {
+			// wrong file type (should not happen
+			//log error and return original file
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),txtFile.toString()+ "is not a " + txtName));
+			return txtFile;
+		}
+		java.nio.file.Path SloaberHomePath=Paths.get (sloeberHomePath.toPortableString());
+		File sloeberTxtFile=new File(txtFile.toString().replace(txtName, sloeberName));
+		if(SloaberHomePathIsWritable) {
+			// sloeber home is writable
+			return  sloeberTxtFile;
+		}
+		//now we know sloeber home is not writable and deal with this situation
+		if(!sloeberTxtFile.toPath().startsWith(SloaberHomePath)) {
+			// The provided file is not in sloeberhome so
+			// the parent should be a writable folder
+			// as this must be a private platform
+			return  sloeberTxtFile;
+		}
+
+		// now we know we have the correct file and it is in SloeberHome
+		String resolvedTxt = SloaberHomePath.resolve(sloeberTxtFile.toPath()).toString();
+		Path  tempPath=new Path(tempFolder);
+		File boardsSloeberTXT = tempPath.append(resolvedTxt).toFile();
+		new File(boardsSloeberTXT.getParent()).mkdirs();
+		deleteIfOutdated(boardsSloeberTXT);
+		return boardsSloeberTXT;
+	}
+
 	/**
 	 * Get the a workaround boards.txt and if needed create/update it This method
 	 * takes a boards.txt file and returns a worked around file. The worked around
@@ -139,15 +171,7 @@ public class WorkAround {
 		if (!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
-		String inFile = requestedFileToWorkAround.toString();
-		String actualFileToLoad = inFile.replace(BOARDS_FILE_NAME, "boards.sloeber.txt");
-		if (inFile.equals(actualFileToLoad)) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					"Boards.txt file is not recognized " + requestedFileToWorkAround.toString()));
-			return requestedFileToWorkAround;
-		}
-		File boardsSloeberTXT = new File(actualFileToLoad);
-		deleteIfOutdated(boardsSloeberTXT);
+		File boardsSloeberTXT= getSloeberTxtFile(requestedFileToWorkAround,BOARDS_FILE_NAME, "boards.sloeber.txt");
 
 		if (boardsSloeberTXT.exists()) {
 			// if boardsSloeberTXT still exists it is up to date
@@ -215,15 +239,7 @@ public class WorkAround {
 		if (!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
-		String inFile = requestedFileToWorkAround.toString();
-		String actualFileToLoad = inFile.replace(PLATFORM_FILE_NAME, "platform.sloeber.txt");
-		if (inFile.equals(actualFileToLoad)) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					"platform.txt file is not recognized " + requestedFileToWorkAround.toString()));
-			return requestedFileToWorkAround;
-		}
-		File platformSloeberTXT = new File(actualFileToLoad);
-		deleteIfOutdated(platformSloeberTXT);
+		File platformSloeberTXT= getSloeberTxtFile(requestedFileToWorkAround,PLATFORM_FILE_NAME, "platform.sloeber.txt");
 
 		if (platformSloeberTXT.exists()) {
 			// if the worked around file still exists it is up to date
@@ -628,19 +644,10 @@ public class WorkAround {
 		if (!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
-
-		String inFile = requestedFileToWorkAround.toString();
-		String actualFileToLoad = inFile.replace("programmers.txt", "programmers.sloeber.txt");
-		if (inFile.equals(actualFileToLoad)) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					"programmers.txt file is not recognized " + requestedFileToWorkAround.toString()));
-			return requestedFileToWorkAround;
-		}
-		File actualProgrammersTXT = new File(actualFileToLoad);
-		deleteIfOutdated(actualProgrammersTXT);
+		File actualProgrammersTXT= getSloeberTxtFile(requestedFileToWorkAround,PROGRAMMER_TXT_FILE_NAME, "programmers.sloeber.txt");
 
 		if (actualProgrammersTXT.exists()) {
-			// if the worked around file still exists it is up tp date
+			// if the worked around file still exists it is up to date
 			return actualProgrammersTXT;
 		}
 

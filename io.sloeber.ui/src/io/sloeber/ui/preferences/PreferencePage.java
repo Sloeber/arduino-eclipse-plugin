@@ -1,6 +1,7 @@
 package io.sloeber.ui.preferences;
 
 import static io.sloeber.ui.Activator.*;
+import static io.sloeber.core.api.Common.*;
 
 import java.io.File;
 import java.time.Duration;
@@ -331,6 +332,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		inStallLabel.setLayoutData(gd16);
 
 
+
 		myBonjourCheckBox = new Button(netWorkbox, SWT.CHECK | SWT.LEFT );
 		Label bonjourLabel = new Label(netWorkbox, SWT.BEGINNING);
 		bonjourLabel.setText(Messages.ui_enable_bonjour);
@@ -376,8 +378,14 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
 
 		myBonjourCheckBox.setSelection(ConfigurationPreferences.useBonjour());
-		myInstallLibCheckBox.setSelection(ConfigurationPreferences.getInstallLibraries());
 		setJsonDurationComposites(ConfigurationPreferences.getJsonUpdateDelay());
+		if(!SloaberHomePathIsWritable) {
+			myInstallLibCheckBox.setSelection( false);
+			myInstallLibCheckBox.setEnabled(false);
+			myInstallLibCheckBox.setGrayed(true);
+		}else {
+			myInstallLibCheckBox.setSelection(ConfigurationPreferences.getInstallLibraries());
+		}
 
 	}
 
@@ -415,8 +423,12 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	protected void performDefaults() {
 		super.performDefaults();
 		myBonjourCheckBox.setSelection( Defaults.useBonjour);
-		myInstallLibCheckBox.setSelection( Defaults.INSTALL_LIBRARIES);
+		myInstallLibCheckBox.setSelection( Defaults.INSTALL_LIBRARIES );
 		setJsonDurationComposites(Defaults.getJsonUpdateDuration());
+		if(!SloaberHomePathIsWritable) {
+			myInstallLibCheckBox.setSelection( false);
+			myInstallLibCheckBox.setEnabled(false);
+		}
 
 	}
 

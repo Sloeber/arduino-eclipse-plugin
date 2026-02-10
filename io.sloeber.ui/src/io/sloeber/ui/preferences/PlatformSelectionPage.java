@@ -1,6 +1,7 @@
 
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.core.api.Common.*;
 import static io.sloeber.ui.Activator.*;
 
 import java.util.Arrays;
@@ -144,6 +145,9 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	}
 
 	public PlatformSelectionPage() {
+		if(!SloaberHomePathIsWritable) {
+			return;
+		}
 		for (IArduinoPlatformPackageIndex curPackageIndex : BoardsManager.getPackageIndices()) {
 			String pkgIndexID = curPackageIndex.getID();
 			TreeMap<String, TreeMap<String, InstallableVersion[]>> packageMap = new TreeMap<>();
@@ -180,6 +184,26 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 	@Override
 	protected Control createContents(Composite parent) {
+		if(SloaberHomePathIsWritable) {
+			return createNormalContents(parent);
+		}
+		return createSloeberHomeIsReadOnlyContents(parent);
+	}
+
+	private static Control createSloeberHomeIsReadOnlyContents(Composite parent) {
+		Composite control = new Composite(parent, SWT.NONE);
+		control.setLayout(new GridLayout());
+
+		Text desc = new Text(control, SWT.READ_ONLY);
+		desc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		desc.setBackground(parent.getBackground());
+		desc.setText(SloaberHomeMaintenance);
+
+		return control;
+	}
+
+
+	private Control createNormalContents(Composite parent) {
 		Composite control = new Composite(parent, SWT.NONE);
 		control.setLayout(new GridLayout());
 
@@ -486,6 +510,9 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 	@Override
 	public boolean performOk() {
+		if(!SloaberHomePathIsWritable) {
+			return true;
+		}
 		Job installJob = new Job(Messages.ui_adopting_platforms) {
 
 			@Override

@@ -127,14 +127,15 @@ public class Activator extends Plugin {
         IPath installPath = ConfigurationPreferences.getInstallationPath();
         File installFile = installPath.toFile();
         if (installFile.exists()) {
-            if (!installFile.canWrite()) {
+            if ((!SloaberHomePathIsWritable)&& (!SloaberHomePathWritableDocumented)) {
                 errorString += addString + "The folder " + installPath.toString()
                         + " exists but Sloeber does not have write access to it.\n";
                 errorString += "Alternatively use the environment var " + SLOEBER_HOME + ".";
                 addString = "\nand\n";
             }
         } else {
-            if (!installFile.getParentFile().canWrite()) {
+            if (!SloaberHomePathIsWritable) {
+            	//no need to check SloaberHomePathWritableDocumented as the config file can not exist
                 errorString += addString + "Sloeber does not have write access to "
                         + installFile.getParentFile().toString() + " and therefore can not create the folder "
                         + installPath.toString();
