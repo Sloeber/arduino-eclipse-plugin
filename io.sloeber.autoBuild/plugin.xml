@@ -2099,6 +2099,17 @@
                name="compound project">
          </templateCode>
       </extension>
+      <extension
+            id="io.sloeber.autobuild.managedBuildDummy"
+            name="Dummy for auto build (do not use)"
+            point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
+         <projectType
+               id="io.sloeber.autoBuild.projectType.do.not.use"
+               isAbstract="false"
+               isTest="true"
+               name="Sloeber managedbuild dummy do not use">
+         </projectType>
+      </extension>
       
 </plugin>
 
