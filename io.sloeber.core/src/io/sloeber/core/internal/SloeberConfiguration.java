@@ -111,7 +111,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 
 	@Override
 	public OtherDescription getOtherDescription() {
-		return new OtherDescription(myOtherDesc);
+		return new OtherDescription(this,myOtherDesc);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class SloeberConfiguration extends AutoBuildConfigurationExtensionDescrip
 		if (myOtherDesc != null && myOtherDesc.needsRebuild(newOtherDesc)) {
 			getAutoBuildDescription().forceCleanBeforeBuild();
 		}
-		myOtherDesc = new OtherDescription(newOtherDesc);
+		myOtherDesc = new OtherDescription(this,newOtherDesc);
 		setIsDirty();
 	}
 

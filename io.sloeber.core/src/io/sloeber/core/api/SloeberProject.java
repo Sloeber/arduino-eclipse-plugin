@@ -285,12 +285,10 @@ public class SloeberProject extends Common {
 	}
 
 	private static OtherDescription getOtherDescription(KeyValueTree config) {
-		OtherDescription ret =new OtherDescription();
 		if (config == null) {
-			return ret;
+			return new OtherDescription();
 		}
-		ret.setVersionControlled(Boolean.valueOf(config.getValue("other.IS_VERSION_CONTROLLED")).booleanValue()); //$NON-NLS-1$
-		return ret;
+		return new OtherDescription(config);
 	}
 
 	private static CompileDescription getCompileDescription(KeyValueTree oldConfig) {
