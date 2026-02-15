@@ -34,7 +34,7 @@ public class Common {
     public final static String sloeberHome = getSloeberHome();
     public final static IPath sloeberHomePath = new Path(sloeberHome);
     public final static String sloeberHomePathToString = sloeberHomePath.toOSString();
-    public final static  boolean SloaberHomePathIsWritable=!sloeberHomePath.toFile().canRead();
+    public final static  boolean SloaberHomePathIsWritable=sloeberHomePath.toFile().canWrite();
     public final static  boolean SloaberHomePathWritableDocumented=sloeberHomePath.append(SLOEBER_TXT_FILE_NAME).toFile().exists();
     public final static String SloaberHomeMaintenance=GetSloaberHomeMaintenance();
 

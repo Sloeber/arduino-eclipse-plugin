@@ -124,21 +124,21 @@ public class Activator extends Plugin {
 
         String errorString = new String();
         String addString = new String();
-        IPath installPath = ConfigurationPreferences.getInstallationPath();
-        File installFile = installPath.toFile();
+        File installFile = sloeberHomePath.toFile();
         if (installFile.exists()) {
-            if ((!SloaberHomePathIsWritable)&& (!SloaberHomePathWritableDocumented)) {
-                errorString += addString + "The folder " + installPath.toString()
+            if (!SloaberHomePathIsWritable){
+            	if(!SloaberHomePathWritableDocumented) {
+                errorString += addString + "The folder " + sloeberHomePath.toString()
                         + " exists but Sloeber does not have write access to it.\n";
                 errorString += "Alternatively use the environment var " + SLOEBER_HOME + ".";
                 addString = "\nand\n";
-            }
+            }}
         } else {
-            if (!SloaberHomePathIsWritable) {
+            if (!installFile.getParentFile().canWrite()) {
             	//no need to check SloaberHomePathWritableDocumented as the config file can not exist
                 errorString += addString + "Sloeber does not have write access to "
                         + installFile.getParentFile().toString() + " and therefore can not create the folder "
-                        + installPath.toString();
+                        + sloeberHomePath.toString();
                 errorString += "\nAlternatively use the environment var " + SLOEBER_HOME + ".";
                 addString = "\nand\n";
             }
@@ -147,14 +147,14 @@ public class Activator extends Plugin {
         if (isInstallPathToLong()) {
             errorString += errorString + addString;
             errorString += "Due to issues with long pathnames on Windows, the Sloeber installation path must be less than 40 characters. \n";
-            errorString += "Your current path: " + installPath.toString();
+            errorString += "Your current path: " + sloeberHomePath.toString();
             errorString += " is too long and the plugin will no longer function correctly for all boards.\n";
             errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705\n";
             errorString += "Alternatively use the environment var " + SLOEBER_HOME + ".";
             addString = "\nand\n";
         }
-        if (installPath.toString().contains(" ")) {
-            errorString += addString + "The installpath can not contain spaces " + installPath.toString();
+        if (sloeberHomePath.toString().contains(" ")) {
+            errorString += addString + "The installpath can not contain spaces " + sloeberHomePath.toString();
             addString = "\nand\n";
         }
         String workSpacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
