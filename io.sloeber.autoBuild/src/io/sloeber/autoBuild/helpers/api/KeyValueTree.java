@@ -3,9 +3,11 @@ package io.sloeber.autoBuild.helpers.api;
 import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
@@ -95,10 +97,10 @@ public class KeyValueTree {
 		return getKey() + EQUAL + getValue();
 	}
 
-	private String toStringLine(KeyValueTree theRoot) {
+	private void toStringLine(KeyValueTree theRoot,List<String> output) {
 		if ((null == getValue()) || (this == theRoot)) {
 			// leaves without a value should not be logged
-			return EMPTY_STRING;
+			return ;
 		}
 		String seperator = EMPTY_STRING;
 		String ret = EQUAL + getValue();
@@ -108,7 +110,7 @@ public class KeyValueTree {
 			current = current.getParent();
 			seperator = DOT;
 		}
-		return ret + NEWLINE;
+		output.add(ret);
 	}
 
 	public Map<String, String> toKeyValues(boolean addParents) {
@@ -123,17 +125,21 @@ public class KeyValueTree {
 		return toKeyValues(prefix, this);
 	}
 
-	public String dump() {
-		return dump(this);
+	public String  dump() {
+		ArrayList<String> ret=new ArrayList<>();
+		 dump(this, ret);
+		 return String.join(NEWLINE,ret);
 	}
 
-	private String dump(KeyValueTree theRoot) {
+	public void  dump(List<String> output) {
+		 dump(this, output);
+	}
 
-		String stringRepresentation = toStringLine(theRoot);
+	private void dump(KeyValueTree theRoot,List<String> output) {
+		toStringLine(theRoot,output);
 		for (KeyValueTree node : getChildren().values()) {
-			stringRepresentation += node.dump(theRoot);
+			node.dump(theRoot,output);
 		}
-		return stringRepresentation;
 	}
 
 	private Map<String, String> toKeyValues(String prefix, KeyValueTree theRoot) {

@@ -18,6 +18,8 @@ import static io.sloeber.autoBuild.helpers.api.AutoBuildConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -141,7 +143,11 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 
 			// save the project file if needed
 			boolean needsWriting = true;
-			String configText = keyValuePairs.dump();
+
+			ArrayList<String> contentLines=new ArrayList<>();
+			keyValuePairs.dump(contentLines);
+			contentLines.sort(null);
+			String configText = String.join(NEWLINE,contentLines);
 			if (projectFile.exists()) {
 				String curConfigsText = FileUtils.readFileToString(projectFile, AUTOBUILD_CONFIG_FILE_CHARSET);
 				needsWriting = !curConfigsText.equals(configText);
@@ -167,7 +173,11 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 
 			// save the team file if needed
 			needsWriting = true;
-			String teamText = keyValuePairs.dump();
+			ArrayList<String> teamContentLines=new ArrayList<>();
+			keyValuePairs.dump(teamContentLines);
+			teamContentLines.sort(null);
+			String teamText = String.join(NEWLINE,teamContentLines);
+
 			if (teamText.length() < 2) {
 				teamFile.delete(true, monitor);
 				needsWriting = false;
@@ -187,6 +197,7 @@ public class AutoBuildConfigurationDescriptionProvider extends CConfigurationDat
 
 		return baseData;
 	}
+
 
 	@Override
 	public CConfigurationData createConfiguration(ICConfigurationDescription cfgDescription,
