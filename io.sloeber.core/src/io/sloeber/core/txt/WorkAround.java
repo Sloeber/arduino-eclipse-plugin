@@ -127,12 +127,12 @@ public class WorkAround {
 	}
 
 	private static File getSloeberTxtFile(File txtFile,String txtName,String sloeberName) {
-		if(!txtFile.getName().equals(txtName)) {
-			// wrong file type (should not happen
-			//log error and return original file
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),txtFile.toString()+ "is not a " + txtName));
-			return txtFile;
-		}
+//		if(!txtFile.getName().equals(txtName)) {
+//			// wrong file type (should not happen
+//			//log error and return original file
+//			Activator.log(new Status(IStatus.ERROR, Activator.getId(),txtFile.toString()+ "is not a " + txtName));
+//			return txtFile;
+//		}
 		java.nio.file.Path SloaberHomePath=Paths.get (sloeberHomePath.toPortableString());
 		File sloeberTxtFile=new File(txtFile.toString().replace(txtName, sloeberName));
 		if(SloaberHomePathIsWritable) {
