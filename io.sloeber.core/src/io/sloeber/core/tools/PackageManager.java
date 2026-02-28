@@ -83,10 +83,10 @@ public class PackageManager {
             }
         	if(!securityCheckOK(downloadedArchiveFile,installable)) {
         		downloadedArchiveFile.delete();
-        		return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download_correctly.replace(FILE, downloadURL.getPath()));
+        		return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download_correctly.replace(FILE, downloadURL.toString()));
         	}
         } catch (Exception e) {
-            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, downloadURL.getPath()),
+            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, downloadURL.toString() ),
                     e);
         }
         return processArchive(pArchiveFileName, installable.getInstallPath(), downloadedArchiveFile.toString(), pMonitor);
