@@ -46,7 +46,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 38 ";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V3.00.test 39 ";
 
 	private static Map<String, String> USB_replacers;
 
@@ -126,15 +126,18 @@ public class WorkAround {
 
 	}
 
-	private static File getSloeberTxtFile(File txtFile,String txtName,String sloeberName) {
-//		if(!txtFile.getName().equals(txtName)) {
-//			// wrong file type (should not happen
-//			//log error and return original file
-//			Activator.log(new Status(IStatus.ERROR, Activator.getId(),txtFile.toString()+ "is not a " + txtName));
-//			return txtFile;
-//		}
+	private static File getSloeberTxtFile(File txtFile) {
+		String txtFileName=txtFile.getName();
+		if(!txtFileName.endsWith(DOT+TXT)) {
+			// wrong file type not .txt
+			//log error and return original file
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),txtFile.toString()+ "is not a txt file"));
+			return txtFile;
+		}
 		java.nio.file.Path SloaberHomePath=Paths.get (sloeberHomePath.toPortableString());
-		File sloeberTxtFile=new File(txtFile.toString().replace(txtName, sloeberName));
+		String sloeberTxtFileName=txtFileName.replace(DOT+TXT, ".sloeber.txt");
+
+		File sloeberTxtFile=new File(txtFile.getParentFile(),sloeberTxtFileName);
 		if(SloaberHomePathIsWritable) {
 			// sloeber home is writable
 			return  sloeberTxtFile;
@@ -171,7 +174,7 @@ public class WorkAround {
 		if (!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
-		File boardsSloeberTXT= getSloeberTxtFile(requestedFileToWorkAround,BOARDS_FILE_NAME, "boards.sloeber.txt");
+		File boardsSloeberTXT= getSloeberTxtFile(requestedFileToWorkAround);
 
 		if (boardsSloeberTXT.exists()) {
 			// if boardsSloeberTXT still exists it is up to date
@@ -239,7 +242,7 @@ public class WorkAround {
 		if (!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
-		File platformSloeberTXT= getSloeberTxtFile(requestedFileToWorkAround,PLATFORM_FILE_NAME, "platform.sloeber.txt");
+		File platformSloeberTXT= getSloeberTxtFile(requestedFileToWorkAround);
 
 		if (platformSloeberTXT.exists()) {
 			// if the worked around file still exists it is up to date
@@ -644,7 +647,7 @@ public class WorkAround {
 		if (!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
-		File actualProgrammersTXT= getSloeberTxtFile(requestedFileToWorkAround,PROGRAMMER_TXT_FILE_NAME, "programmers.sloeber.txt");
+		File actualProgrammersTXT= getSloeberTxtFile(requestedFileToWorkAround);
 
 		if (actualProgrammersTXT.exists()) {
 			// if the worked around file still exists it is up to date
