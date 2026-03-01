@@ -857,5 +857,12 @@
               <enablement></enablement>
            </commonWizard>
         </extension>
+        <extension
+              point="org.eclipse.ui.ide.markerResolution">
+           <markerResolutionGenerator
+                 class="io.sloeber.ui.MarkerResolutionGenerator.UnresolvedIncludesResolutionGenerator"
+                 markerType="org.eclipse.cdt.core.problem">
+           </markerResolutionGenerator>
+        </extension>
 
 </plugin>
