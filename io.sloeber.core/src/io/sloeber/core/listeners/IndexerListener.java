@@ -2,6 +2,7 @@ package io.sloeber.core.listeners;
 
 import static io.sloeber.core.api.Const.*;
 
+import java.util.HashMap;
 /**
  * this index listener makes it possible to detect missing libraries
  * if configured to do so libraries are added automatically to the project
@@ -152,21 +153,48 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		}
 
 		//find the libs we can add
-		String toInstallLibString=new String();
-		Set< IArduinoLibraryVersion> toInstallLibs=new HashSet<>();
+		Map< String,IArduinoLibraryVersion> toInstallLibs=new HashMap<>();
 		for(IArduinoLibraryVersion curlib:availableLibs.values()) {
 			if(UnresolvedIncludedHeaders.contains(curlib.getName())) {
-				toInstallLibs.add(curlib);
-				toInstallLibString=toInstallLibString+SPACE+curlib.getFQN();
+				IArduinoLibraryVersion prefCurLib=toInstallLibs.get(curlib.getName());
+				if(prefCurLib==null) {
+					//This is the first lib with this name found
+					toInstallLibs.put(curlib.getName(),curlib);
+					continue;
+				}
+					//there is already a library found so check which one we want to keep
+					if(curlib.isHardwareLib()) {
+						//if the curlib is hardware lib use that one
+						toInstallLibs.put(curlib.getName(),curlib);
+						continue;
+					}
+
+					if(prefCurLib.isHardwareLib()||prefCurLib.isPrivateLib()) {
+						//if the previously found lib is hardware or private lib; stick with this one
+						continue;
+					}
+
+					//the pref liob can only be a managed lib
+					// as there should not be 2 managed libs with the same name
+					// the new lib is private and has priority
+
+					toInstallLibs.put(curlib.getName(),curlib);
 			}
 		}
+
+		//Make a string to report which libs will be added
+		String toInstallLibString=new String();
+		for(IArduinoLibraryVersion curlib:toInstallLibs.values()) {
+				toInstallLibString=toInstallLibString+SPACE+curlib.getFQN();
+		}
+
 		boolean ret =false;
 		if (!toInstallLibs.isEmpty()) {
 			// there are possible libraries to add
 			Activator.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
 					+ SloeberCfg.getProject().getName() + COLON + SPACE
 					+ toInstallLibString));
-			ret=ret||SloeberCfg.addLibraries(toInstallLibs);
+			ret=ret||SloeberCfg.addLibraries(toInstallLibs.values());
 		}
 		return ret;
 	}
