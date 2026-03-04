@@ -80,13 +80,18 @@ public class Common {
                 	Path localSloeberHomePath= new Path(sloeber_HomeValue);
                 	// if sloeber home is in the root use arduinoPlugin folder
                 	if(localSloeberHomePath.isRoot()) {
-                		return localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toString();
+                		IPath sloeberFolder=localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER);
+                		createFolderIfNotExists(sloeberFolder);
+                		return sloeberFolder.toString();
                 	}
                 	// if arduinoPlugin folder exists use arduinoPlugin folder
                 	if(localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toFile().exists()) {
-                		return localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toString();
+                		IPath sloeberFolder=localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER);
+                		createFolderIfNotExists(sloeberFolder);
+                		return sloeberFolder.toString();
                 	}
-                    return sloeber_HomeValue;
+            		createFolderIfNotExists(localSloeberHomePath);
+            		return localSloeberHomePath.toString();
                 }
             }
             // no sloeber home provided
@@ -105,7 +110,14 @@ public class Common {
     }
 
 
-    /**
+    private static void createFolderIfNotExists(IPath path) {
+		if(path.toFile().exists()) {
+			return;
+		}
+		path.toFile().mkdirs();
+	}
+
+	/**
      * This method makes sure that a string can be used as a file or folder name
      * <br/>
      * To do this it replaces all unacceptable characters with underscores.<br/>
