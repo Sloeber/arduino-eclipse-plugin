@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.build.IToolChain;
 import org.eclipse.cdt.core.build.IToolChainManager;
+import org.eclipse.cdt.utils.WindowsRegistry;
 import org.eclipse.core.runtime.CoreException;
 
 import io.sloeber.autoBuild.buildTools.api.ExtensionBuildToolsProvider;
@@ -25,12 +26,15 @@ public class UserDefinedBuildToolsProvider extends ExtensionBuildToolsProvider {
 
 	private static void getToolchains() {
 		try {
-			myCDTBuildTools.clear();
-			Collection<IToolChain> allToolchains = manager.getAllToolChains();
-			myHoldsAllTool = allToolchains.size() > 0;
-			for (IToolChain curBuildTools : allToolchains) {
-				CDTBuildTools cdtBuildTools = new CDTBuildTools(curBuildTools);
-				myCDTBuildTools.put(curBuildTools.getId(), cdtBuildTools);
+			WindowsRegistry registry = WindowsRegistry.getRegistry();
+			if (registry != null) {
+				myCDTBuildTools.clear();
+				Collection<IToolChain> allToolchains = manager.getAllToolChains();
+				myHoldsAllTool = allToolchains.size() > 0;
+				for (IToolChain curBuildTools : allToolchains) {
+					CDTBuildTools cdtBuildTools = new CDTBuildTools(curBuildTools);
+					myCDTBuildTools.put(curBuildTools.getId(), cdtBuildTools);
+				}
 			}
 
 		} catch (CoreException e) {
