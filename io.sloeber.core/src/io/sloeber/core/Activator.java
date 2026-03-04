@@ -115,6 +115,7 @@ public class Activator extends Plugin {
                     .node("indexer");
             myScope.put("indexAllFiles", "false");
             myScope.put("indexUnusedHeadersWithDefaultLang", "false");
+            myScope.put("useHeuristicIncludeResolution", "false");
             try {
                 myScope.flush();
             } catch (BackingStoreException e) {
