@@ -1,5 +1,7 @@
 package io.sloeber.ui.MarkerResolutionGenerator;
 
+import static io.sloeber.core.api.Const.*;
+import static io.sloeber.ui.Messages.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,15 +21,15 @@ import io.sloeber.arduinoFramework.api.LibraryManager;
 import io.sloeber.core.api.ConfigurationPreferences;
 import io.sloeber.core.api.ISloeberConfiguration;
 
+
 public class UnresolvedIncludesResolutionGenerator implements IMarkerResolutionGenerator {
 
-	@SuppressWarnings("nls")
 	@Override
 	public IMarkerResolution[] getResolutions(IMarker marker) {
 		IMarkerResolution[] ret = new IMarkerResolution[0];
 		try {
 			Map<String, Object> attributes = marker.getAttributes();
-			Object severityObject = attributes.get("severity");
+			Object severityObject = attributes.get("severity"); //$NON-NLS-1$
 			if (!(severityObject instanceof Integer)) {
 				return ret;
 			}
@@ -35,19 +37,19 @@ public class UnresolvedIncludesResolutionGenerator implements IMarkerResolutionG
 			if (severity != 2) {
 				return ret;
 			}
-			Object messageObject = attributes.get("message");
+			Object messageObject = attributes.get("message"); //$NON-NLS-1$
 			if (!(messageObject instanceof String)) {
 				return ret;
 			}
 			String message = (String) messageObject;
-			if (!message.endsWith(": No such file or directory")) {
+			if (!message.endsWith(": No such file or directory")) { //$NON-NLS-1$
 				return ret;
 			}
-			String libName = message.split(":")[1].trim();
+			String libName = message.split(COLON)[1].trim();
 			if (libName.isBlank()) {
 				return ret;
 			}
-			if (!libName.endsWith(".h")) {
+			if (!libName.endsWith(".h")) { //$NON-NLS-1$
 				return ret;
 			}
 
@@ -67,7 +69,7 @@ public class UnresolvedIncludesResolutionGenerator implements IMarkerResolutionG
 
 						@Override
 						public String getLabel() {
-							return "Add the library to the project";
+							return AddLibraryToProject.replace(LIB_KEY, curlib.getFQN().toString());
 						}
 
 						@Override
@@ -108,21 +110,25 @@ public class UnresolvedIncludesResolutionGenerator implements IMarkerResolutionG
 
 			Map<String, IArduinoLibraryVersion> toInstallLibs = LibraryManager.getLatestInstallableLibraries(librariesToInstall);
 
-			if (toInstallLibs.isEmpty()) {
-				//No installable lib found
+			if (toInstallLibs.size()!=1) {
+				//No or more than 1 installable lib found
+				//skip
 				return ret;
 			}
+			IArduinoLibraryVersion toInstalllLib=toInstallLibs.get(libName);
 
 				ret = new IMarkerResolution[1];
 				ret[0] = new IMarkerResolution() {
 
 					@Override
 					public String getLabel() {
-						return "Install the library in the workspace and add it to the project";
+						return InstallAndAddLibraryToProject.replace(LIB_KEY,toInstalllLib.getName())
+								.replace(VERSION_KEY, toInstalllLib.getVersion().toString())
+								.replace(MAINTAINER, toInstalllLib.getMaintainer());
 					}
 
 					@Override
-					public void run(@SuppressWarnings("hiding") IMarker marker) {
+					public void run( IMarker marker1) {
 						IArduinoLibraryVersion curlib=null;
 
 						for (Entry<String, IArduinoLibraryVersion> curLibSet : toInstallLibs.entrySet()) {

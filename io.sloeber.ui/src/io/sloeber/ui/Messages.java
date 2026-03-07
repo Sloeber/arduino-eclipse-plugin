@@ -14,6 +14,8 @@ public class Messages extends NLS {
     public static final String MAINTAINER = "{MAINTAINER}"; //$NON-NLS-1$
     public static final String EMAIL = "{EMAIL}"; //$NON-NLS-1$
     public static final String URL = "{URL}"; //$NON-NLS-1$
+    public static final String LIB_KEY = "{LIB}"; //$NON-NLS-1$
+    public static final String VERSION_KEY = "{VERSION}"; //$NON-NLS-1$
 
 	public static String ui_select_debug_level;
 
@@ -196,6 +198,10 @@ public class Messages extends NLS {
 	public static String NewProjectSourceLocationPage_ExplainText;
 
 	public static String ui_new_sketch_sketch_source_folder;
+
+	public static String AddLibraryToProject;
+
+	public static String InstallAndAddLibraryToProject;
 
     public static String yes;
 
