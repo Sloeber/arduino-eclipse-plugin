@@ -322,13 +322,12 @@ public class InternalBuildRunner implements IBuildRunner {
 			try {
 				fProcess = launcher.execute(commandPath, onlyArgs, autoData.getEnvironmentVariables(),
 						autoData.getBuildFolder().getLocation(), monitor);
-			} catch ( CoreException e1) {
-				e1.printStackTrace();
+			} catch ( Exception e1) {
+				//e1.printStackTrace();
 				// ignore and handle null case
 			}
 			if (fProcess == null) {
-				String error = "Failed to execute" + NEWLINE + curRecipe + NEWLINE; //$NON-NLS-1$
-				stdout.write(error.getBytes());
+				System.err.println("Failed to execute :" + curRecipe);//$NON-NLS-1$
 				return -999;
 			}
 
