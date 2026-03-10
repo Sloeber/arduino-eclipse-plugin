@@ -166,6 +166,9 @@ public class AutoBuildLanguageSettingsProvider extends AbstractExecutableExtensi
 		if (cfgDescription == null || rc == null || languageId == null) {
 			return null;
 		}
+		if(cfgDescription.getProjectDescription().isCdtProjectCreating()) {
+			return null;
+		}
 		IAutoBuildConfigurationDescription autoConf = IAutoBuildConfigurationDescription.getConfig(cfgDescription);
 		if (autoConf == null) {
 			return null;
