@@ -308,9 +308,10 @@ public class CodeDescription implements ICodeProvider {
 				URL inoFileURL = FileLocator.find(bundle, templatePath.append(DEFAULT_SKETCH_INO), null);
 				URL inoResolvedFileURL = FileLocator.toFileURL(inoFileURL);
 				String inoFileLoc= new Path(inoResolvedFileURL.toURI().getPath()).toOSString();
+				try(InputStream inFileStream=Stream.openContentStream(inoFileLoc, true, replacers);){
 				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString( project.getName() + DOT+INO)),
-						Stream.openContentStream(inoFileLoc, true, replacers),
-						monitor, false);
+						inFileStream, monitor, false);
+				}
 				break;
 			case defaultCPP:
 				URL cppFileURL = FileLocator.find(bundle, templatePath.append(DEFAULT_SKETCH_CPP), null);
@@ -320,12 +321,14 @@ public class CodeDescription implements ICodeProvider {
 				URL hResolvedFileURL = FileLocator.toFileURL(hFileURL);
 				String hFileLoc=  new Path(hResolvedFileURL.toURI().getPath()).toOSString();
 
+				try(InputStream cppFileStream=Stream.openContentStream(cppFileLoc, true, replacers);){
 				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(project.getName() + ".cpp")),
-						Stream.openContentStream(cppFileLoc, true, replacers),
-						monitor, false);
+						cppFileStream, monitor, false);
+				}
+				try(InputStream headerStream=Stream.openContentStream(hFileLoc, true, replacers);){
 				Helpers.addFileToProject(scrContainer.getFile(IPath.fromOSString(project.getName() + ".h")),
-						Stream.openContentStream(hFileLoc, true, replacers),
-						monitor, false);
+						headerStream, monitor, false);
+				}
 				break;
 			case CustomTemplate:
 				IPath folderName = myTemPlateFoldername;

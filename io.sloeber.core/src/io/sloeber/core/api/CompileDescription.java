@@ -254,7 +254,7 @@ public class CompileDescription {
 			switch (this) {
 			case ARDUINO_WAY:
 				if(isLinux||isMac) {
-					return "sh "+  Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH +ARDUINO_SIZE;
+					return "sh "+  Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH +ARDUINO_SIZE; //$NON-NLS-1$
 				}
 				return  Common.makeEnvironmentVar(ENV_KEY_BUILD_PATH) + SLACH +ARDUINO_SIZE;
 			case AVR_ALTERNATIVE:
