@@ -232,13 +232,6 @@ United States, other countries, or both.
       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
       <feature id="org.eclipse.platform" installMode="root"/>
       <feature id="org.eclipse.rcp" installMode="root"/>
-      <feature id="org.eclipse.rse.core" installMode="root"/>
-      <feature id="org.eclipse.rse.dstore" installMode="root"/>
-      <feature id="org.eclipse.rse.ftp" installMode="root"/>
-      <feature id="org.eclipse.rse.local" installMode="root"/>
-      <feature id="org.eclipse.rse.ssh" installMode="root"/>
-      <feature id="org.eclipse.rse.telnet" installMode="root"/>
-      <feature id="org.eclipse.rse" installMode="root"/>
       <feature id="org.eclipse.jgit.ssh.apache" installMode="root"/>
       <feature id="org.eclipse.jgit.http.apache" installMode="root"/>
       <feature id="org.eclipse.jgit.gpg.bc" installMode="root"/>

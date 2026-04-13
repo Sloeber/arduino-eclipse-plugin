@@ -19,14 +19,6 @@
 			<unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.equinox.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.useractions.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.core.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.dstore.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.ftp.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.local.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.ssh.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.rse.telnet.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.emf.common.ui.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
