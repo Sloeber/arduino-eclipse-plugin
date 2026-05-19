@@ -96,7 +96,8 @@ public class Common {
             }
             // no sloeber home provided
             // use eclipse home as sloeber home
-            URL resolvedUrl = Platform.getInstallLocation().getURL();
+            //URL resolvedUrl = Platform.getInstallLocation().getURL();
+            URL resolvedUrl = Platform.getConfigurationLocation().getURL();
             URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
             return Paths.get(resolvedUri).toString()+SLACH+SLOEBER_HOME_SUB_FOLDER;
         } catch (URISyntaxException e) {
