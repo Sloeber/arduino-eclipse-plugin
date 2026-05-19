@@ -86,10 +86,6 @@ public class Activator extends Plugin {
     public void start(BundleContext context) throws Exception {
     	myBundleContext=context;
         instance = this;
-        IPath installPath = ConfigurationPreferences.getInstallationPath();
-        installPath.toFile().mkdirs();
-        IPath downloadPath = ConfigurationPreferences.getInstallationPathDownload();
-        downloadPath.toFile().mkdirs();
         testKnownIssues();
         initializeImportantVariables();
         runPluginCoreStartInstantiatorJob();
