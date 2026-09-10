@@ -80,13 +80,13 @@ public class Common {
                 	Path localSloeberHomePath= new Path(sloeber_HomeValue);
                 	// if sloeber home is in the root use arduinoPlugin folder
                 	if(localSloeberHomePath.isRoot()) {
-                		IPath sloeberFolder=localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER);
+                		IPath sloeberFolder=localSloeberHomePath.append(OLD_SLOEBER_HOME_SUB_FOLDER);
                 		createFolderIfNotExists(sloeberFolder);
                 		return sloeberFolder.toString();
                 	}
                 	// if arduinoPlugin folder exists use arduinoPlugin folder
-                	if(localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER).toFile().exists()) {
-                		IPath sloeberFolder=localSloeberHomePath.append(SLOEBER_HOME_SUB_FOLDER);
+                	if(localSloeberHomePath.append(OLD_SLOEBER_HOME_SUB_FOLDER).toFile().exists()) {
+                		IPath sloeberFolder=localSloeberHomePath.append(OLD_SLOEBER_HOME_SUB_FOLDER);
                 		createFolderIfNotExists(sloeberFolder);
                 		return sloeberFolder.toString();
                 	}
@@ -96,10 +96,16 @@ public class Common {
             }
             // no sloeber home provided
             // use eclipse home as sloeber home
-            //URL resolvedUrl = Platform.getInstallLocation().getURL();
-            URL resolvedUrl = Platform.getConfigurationLocation().getURL();
+            URL resolvedUrl = Platform.getInstallLocation().getURL();
+            //URL resolvedUrl = Platform.getConfigurationLocation().getURL();
             URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
-            return Paths.get(resolvedUri).toString()+SLACH+SLOEBER_HOME_SUB_FOLDER;
+            java.nio.file.Path arduinoPluginFolder= Paths.get(resolvedUri).resolve(OLD_SLOEBER_HOME_SUB_FOLDER);
+            if(arduinoPluginFolder.toFile().exists()) {
+            	//If the ArduinoPluginFolder exists use it
+            	return arduinoPluginFolder.toString();
+            }
+            //use the Sloeber folder if this is all new
+            return Paths.get(resolvedUri).resolve(SLOEBER_HOME_SUB_FOLDER).toString();
         } catch (URISyntaxException e) {
             // this should not happen
             // but it seems a space in the path makes it happen
