@@ -36,11 +36,11 @@ public class Common {
     public final static String sloeberHomePathToString = sloeberHomePath.toOSString();
     public final static  boolean SloaberHomePathIsWritable=sloeberHomePath.toFile().canWrite();
     public final static  boolean SloaberHomePathWritableDocumented=sloeberHomePath.append(SLOEBER_TXT_FILE_NAME).toFile().exists();
-    public final static String SloaberHomeMaintenance=GetSloaberHomeMaintenance();
+    public final static String SloaberHomeMaintenance=getSloeberHomeMaintenance();
 
 
     @SuppressWarnings("nls")
-	private static String GetSloaberHomeMaintenance() {
+	private static String getSloeberHomeMaintenance() {
     	if(!SloaberHomePathWritableDocumented) {
     		//no file found to document why sloeber home is read only
     		return "Sloeber home is read only. please fix to enable functionality.";
@@ -105,7 +105,9 @@ public class Common {
             	return arduinoPluginFolder.toString();
             }
             //use the Sloeber folder if this is all new
-            return Paths.get(resolvedUri).resolve(SLOEBER_HOME_SUB_FOLDER).toString();
+            IPath sloeberFolder= IPath.forPosix(Paths.get(resolvedUri).resolve(SLOEBER_HOME_SUB_FOLDER).toString());
+            createFolderIfNotExists(sloeberFolder);
+            return sloeberFolder.toString();
         } catch (URISyntaxException e) {
             // this should not happen
             // but it seems a space in the path makes it happen
