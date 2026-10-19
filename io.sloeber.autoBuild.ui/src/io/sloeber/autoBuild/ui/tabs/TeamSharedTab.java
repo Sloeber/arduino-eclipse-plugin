@@ -158,10 +158,9 @@ public class TeamSharedTab extends AbstractAutoBuildPropertyTab {
 		myAddExclusionButton.setEnabled(!myText.getText().isBlank());
 		myExclusions.removeAll();
 		if (isShared) {
-			String prefix = myAutoConfDesc.getCdtConfigurationDescription().getName() + DOT;
 			Set<String> exclusions = getCustomTeamExclusionKeys();
 			for (String curExclusion : exclusions) {
-				myExclusions.add(prefix + curExclusion);
+				myExclusions.add( curExclusion);
 			}
 			myRemoveExclusionButton.setEnabled(myExclusions.getSelectionCount() > 0);
 		} else {

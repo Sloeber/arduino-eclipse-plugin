@@ -1291,11 +1291,12 @@ public class AutoBuildConfigurationDescription extends AutoBuildResourceData
 	@Override
 	public Set<String> getDefaultTeamExclusionKeys() {
 		Set<String> ret = new TreeSet<>();
-		ret.add(KEY_TEAM + DOT + KEY_IS_SHARED);
-		ret.add(KEY_NUM_PARRALEL_BUILDS);
-		ret.add(KEY_STOP_ON_FIRST_ERROR);
+		String prefix=getName() + DOT;
+		//ret.add(prefix+KEY_TEAM + DOT + KEY_IS_SHARED);
+		ret.add(prefix+KEY_NUM_PARRALEL_BUILDS);
+		ret.add(prefix+KEY_STOP_ON_FIRST_ERROR);
 		if (myAutoBuildCfgExtDes != null) {
-			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(KEY_EXTENSION));
+			ret.addAll(myAutoBuildCfgExtDes.getTeamDefaultExclusionKeys(prefix+KEY_EXTENSION));
 		}
 		return ret;
 	}
